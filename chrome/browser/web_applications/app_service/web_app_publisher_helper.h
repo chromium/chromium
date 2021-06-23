@@ -25,8 +25,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/app_service/app_notifications.h"
+#include "chrome/browser/apps/app_service/app_web_contents_data.h"
+#include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -48,6 +51,8 @@ class WebAppLaunchManager;
 class WebAppPublisherHelper : public AppRegistrarObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
                               public NotificationDisplayService::Observer,
+                              public MediaCaptureDevicesDispatcher::Observer,
+                              public apps::AppWebContentsData::Client,
 #endif
                               public content_settings::Observer {
  public:
@@ -60,13 +65,19 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
     virtual void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) = 0;
     virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
+
+    virtual void ModifyWebAppCapabilityAccess(
+        const std::string& app_id,
+        absl::optional<bool> accessing_camera,
+        absl::optional<bool> accessing_microphone) = 0;
   };
 
   using LoadIconCallback = base::OnceCallback<void(apps::mojom::IconValuePtr)>;
 
   WebAppPublisherHelper(Profile* profile,
                         apps::mojom::AppType app_type,
-                        Delegate* delegate);
+                        Delegate* delegate,
+                        bool observe_media_requests);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
   ~WebAppPublisherHelper() override;
@@ -130,7 +141,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   bool IsPaused(const std::string& app_id);
 
-  void MaybeRemovePausedApp(const std::string& app_id);
+  // TODO(crbug.com/1194709): Inherit from AppRegistrarObserver, override.
+  void OnWebAppWillBeUninstalled_impl(const std::string& app_id);
 
   void LoadIcon(const std::string& app_id,
                 apps::mojom::IconKeyPtr icon_key,
@@ -231,12 +243,23 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       NotificationDisplayService* service) override;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // MediaCaptureDevicesDispatcher::Observer:
+  void OnRequestUpdate(int render_process_id,
+                       int render_frame_id,
+                       blink::mojom::MediaStreamType stream_type,
+                       const content::MediaRequestState state) override;
+
+  // apps::AppWebContentsData::Client:
+  void OnWebContentsDestroyed(content::WebContents* contents) override;
+#endif
+
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
                                ContentSettingsType content_type) override;
 
-  void Init();
+  void Init(bool observe_media_requests);
 
   apps::IconEffects GetIconEffects(const WebApp* web_app,
                                    absl::optional<bool> is_disabled_opt);
@@ -282,6 +305,12 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
+  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  apps::PausedApps paused_apps_;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
@@ -290,13 +319,13 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::AppNotifications app_notifications_;
 
   badging::BadgeManager* badge_manager_ = nullptr;
+
+  base::ScopedObservation<MediaCaptureDevicesDispatcher,
+                          MediaCaptureDevicesDispatcher::Observer>
+      media_dispatcher_{this};
+
+  apps::MediaRequests media_requests_;
 #endif
-
-  std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
-
-  apps::PausedApps paused_apps_;
 
   base::WeakPtrFactory<WebAppPublisherHelper> weak_ptr_factory_{this};
 };

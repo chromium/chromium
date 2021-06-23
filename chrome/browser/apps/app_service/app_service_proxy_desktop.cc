@@ -79,6 +79,13 @@ void AppServiceProxy::FlushMojoCallsForTesting() {
   receivers_.FlushForTesting();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+web_app::WebAppsPublisherHost*
+AppServiceProxy::WebAppsPublisherHostForTesting() {
+  return web_apps_publisher_host_.get();
+}
+#endif
+
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   return false;

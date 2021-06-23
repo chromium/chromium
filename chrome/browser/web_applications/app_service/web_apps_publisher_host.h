@@ -12,9 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
-#include "chrome/browser/apps/app_service/media_requests.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -41,9 +38,7 @@ class WebAppRegistrar;
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
                              public WebAppPublisherHelper::Delegate,
-                             public AppRegistrarObserver,
-                             public MediaCaptureDevicesDispatcher::Observer,
-                             public apps::AppWebContentsData::Client {
+                             public AppRegistrarObserver {
  public:
   using LoadIconCallback = WebAppPublisherHelper::LoadIconCallback;
 
@@ -112,6 +107,10 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
   void PublishWebApp(apps::mojom::AppPtr app) override;
+  void ModifyWebAppCapabilityAccess(
+      const std::string& app_id,
+      absl::optional<bool> accessing_camera,
+      absl::optional<bool> accessing_microphone) override;
 
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
@@ -121,22 +120,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void OnAppRegistrarDestroyed() override;
   // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
 
-  // MediaCaptureDevicesDispatcher::Observer:
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
-
-  // apps::AppWebContentsData::Client:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
-
   const WebApp* GetWebApp(const AppId& app_id) const;
   apps::mojom::AppPtr Convert(const WebApp* web_app,
                               apps::mojom::Readiness readiness);
-
-  void ModifyCapabilityAccess(const std::string& app_id,
-                              absl::optional<bool> accessing_camera,
-                              absl::optional<bool> accessing_microphone);
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
@@ -153,12 +139,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
-
-  base::ScopedObservation<MediaCaptureDevicesDispatcher,
-                          MediaCaptureDevicesDispatcher::Observer>
-      media_dispatcher_{this};
-
-  apps::MediaRequests media_requests_;
 
   base::WeakPtrFactory<WebAppsPublisherHost> weak_ptr_factory_{this};
 };

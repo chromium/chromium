@@ -20,6 +20,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -332,11 +334,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, MediaRequest) {
   const int render_frame_id = render_frame_host->GetRoutingID();
 
   MockAppPublisher mock_app_publisher;
-  WebAppsPublisherHost web_apps_publisher_host(profile());
+  WebAppsPublisherHost& web_apps_publisher_host =
+      *apps::AppServiceProxyFactory::GetForProfile(profile())
+           ->WebAppsPublisherHostForTesting();
   web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
-  web_apps_publisher_host.Init();
-  mock_app_publisher.Wait();
-  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([render_process_id, render_frame_id,

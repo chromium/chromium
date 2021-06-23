@@ -102,8 +102,6 @@ void WebAppsChromeOs::Initialize() {
   if (!AreWebAppsEnabled(profile())) {
     return;
   }
-
-  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 }
 
 void WebAppsChromeOs::Uninstall(const std::string& app_id,
@@ -320,11 +318,7 @@ void WebAppsChromeOs::OnWebAppWillBeUninstalled(const AppId& app_id) {
     return;
   }
 
-  publisher_helper().MaybeRemovePausedApp(app_id);
-
-  auto result = media_requests_.RemoveRequests(app_id);
-  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
-                         result.microphone);
+  publisher_helper().OnWebAppWillBeUninstalled_impl(app_id);
 
   WebAppsBase::OnWebAppWillBeUninstalled(app_id);
 }
@@ -351,69 +345,6 @@ void WebAppsChromeOs::OnPackageListInitialRefreshed() {
 
 void WebAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
-}
-
-void WebAppsChromeOs::OnRequestUpdate(int render_process_id,
-                                      int render_frame_id,
-                                      blink::mojom::MediaStreamType stream_type,
-                                      const content::MediaRequestState state) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-
-  if (!web_contents) {
-    return;
-  }
-
-  Profile* web_profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (web_profile != profile()) {
-    return;
-  }
-
-  absl::optional<AppId> app_id =
-      FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
-                                     /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app || !Accepts(app_id.value())) {
-    return;
-  }
-
-  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
-    content::WebContentsUserData<
-        apps::AppWebContentsData>::CreateForWebContents(web_contents, this);
-  }
-
-  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
-                                               stream_type, state);
-  ModifyCapabilityAccess(subscribers(), app_id.value(), result.camera,
-                         result.microphone);
-}
-
-void WebAppsChromeOs::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
-      profile(), web_contents->GetLastCommittedURL(),
-      /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app || !Accepts(app_id.value())) {
-    return;
-  }
-
-  auto result =
-      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
-  ModifyCapabilityAccess(subscribers(), app_id.value(), result.camera,
-                         result.microphone);
 }
 
 apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,

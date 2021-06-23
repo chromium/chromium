@@ -104,6 +104,10 @@ class WebAppsBase : public apps::PublisherBase,
   // WebAppPublisherHelper::Delegate overrides.
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
   void PublishWebApp(apps::mojom::AppPtr app) override;
+  void ModifyWebAppCapabilityAccess(
+      const std::string& app_id,
+      absl::optional<bool> accessing_camera,
+      absl::optional<bool> accessing_microphone) override;
 
   // AppRegistrarObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,

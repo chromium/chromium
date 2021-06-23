@@ -117,13 +117,14 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              apps::mojom::AppType app_type,
-                                             Delegate* delegate)
+                                             Delegate* delegate,
+                                             bool observe_media_requests)
     : profile_(profile),
       app_type_(app_type),
       delegate_(delegate),
       provider_(WebAppProvider::Get(profile)) {
   DCHECK(profile_);
-  Init();
+  Init(observe_media_requests);
 }
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
@@ -399,11 +400,24 @@ bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
   return paused_apps_.IsPaused(app_id);
 }
 
-void WebAppPublisherHelper::MaybeRemovePausedApp(const std::string& app_id) {
+void WebAppPublisherHelper::OnWebAppWillBeUninstalled_impl(
+    const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   app_notifications_.RemoveNotificationsForApp(app_id);
 #endif
+
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+
   paused_apps_.MaybeRemoveApp(app_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto result = media_requests_.RemoveRequests(app_id);
+  delegate_->ModifyWebAppCapabilityAccess(app_id, result.camera,
+                                          result.microphone);
+#endif
 }
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
@@ -811,6 +825,64 @@ void WebAppPublisherHelper::OnNotificationDisplayServiceDestroyed(
   DCHECK(notification_display_service_.IsObservingSource(service));
   notification_display_service_.Reset();
 }
+
+void WebAppPublisherHelper::OnRequestUpdate(
+    int render_process_id,
+    int render_frame_id,
+    blink::mojom::MediaStreamType stream_type,
+    const content::MediaRequestState state) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+
+  if (!web_contents) {
+    return;
+  }
+
+  absl::optional<AppId> app_id =
+      FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+                                     /*window_only=*/false);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  const WebApp* web_app = GetWebApp(app_id.value());
+  if (!web_app || !Accepts(app_id.value())) {
+    return;
+  }
+
+  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
+    content::WebContentsUserData<
+        apps::AppWebContentsData>::CreateForWebContents(web_contents, this);
+  }
+
+  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
+                                               stream_type, state);
+  delegate_->ModifyWebAppCapabilityAccess(app_id.value(), result.camera,
+                                          result.microphone);
+}
+
+void WebAppPublisherHelper::OnWebContentsDestroyed(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+
+  absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
+      profile(), web_contents->GetLastCommittedURL(),
+      /*window_only=*/false);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  const WebApp* web_app = GetWebApp(app_id.value());
+  if (!web_app || !Accepts(app_id.value())) {
+    return;
+  }
+
+  auto result =
+      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
+  delegate_->ModifyWebAppCapabilityAccess(app_id.value(), result.camera,
+                                          result.microphone);
+}
 #endif
 
 void WebAppPublisherHelper::OnContentSettingChanged(
@@ -835,7 +907,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
   }
 }
 
-void WebAppPublisherHelper::Init() {
+void WebAppPublisherHelper::Init(bool observe_media_requests) {
   // Allow for web app migration tests.
   if (!AreWebAppsEnabled(profile_) ||
       !provider_->registrar().AsWebAppRegistrar()) {
@@ -860,6 +932,12 @@ void WebAppPublisherHelper::Init() {
 #endif
 
   web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (observe_media_requests) {
+    media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+  }
+#endif
 }
 
 IconEffects WebAppPublisherHelper::GetIconEffects(

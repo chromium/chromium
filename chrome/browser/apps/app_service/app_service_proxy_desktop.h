@@ -47,6 +47,10 @@ class AppServiceProxy : public AppServiceProxyBase {
                  gfx::NativeWindow parent_window) override;
   void FlushMojoCallsForTesting() override;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::WebAppsPublisherHost* WebAppsPublisherHostForTesting();
+#endif
+
  private:
   // apps::AppServiceProxyBase overrides:
   void Initialize() override;

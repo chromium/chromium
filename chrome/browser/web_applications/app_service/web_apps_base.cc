@@ -54,6 +54,16 @@ apps::mojom::AppType GetWebAppType() {
   return apps::mojom::AppType::kWeb;
 }
 
+bool ShouldObserveMediaRequests() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The publisher helper owned by WebAppsPublisherHost observes media requests,
+  // not the publisher helper owned by WebAppsBase.
+  return false;
+#else
+  return true;
+#endif
+}
+
 }  // namespace
 
 WebAppsBase::WebAppsBase(
@@ -62,7 +72,10 @@ WebAppsBase::WebAppsBase(
     : profile_(profile),
       app_service_(nullptr),
       app_type_(GetWebAppType()),
-      publisher_helper_(profile_, app_type_, this) {
+      publisher_helper_(profile_,
+                        app_type_,
+                        this,
+                        ShouldObserveMediaRequests()) {
   Initialize(app_service);
 }
 
@@ -198,6 +211,14 @@ void WebAppsBase::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
 
 void WebAppsBase::PublishWebApp(apps::mojom::AppPtr app) {
   Publish(std::move(app), subscribers_);
+}
+
+void WebAppsBase::ModifyWebAppCapabilityAccess(
+    const std::string& app_id,
+    absl::optional<bool> accessing_camera,
+    absl::optional<bool> accessing_microphone) {
+  ModifyCapabilityAccess(subscribers_, app_id, std::move(accessing_camera),
+                         std::move(accessing_microphone));
 }
 
 void WebAppsBase::OnWebAppManifestUpdated(const AppId& app_id,

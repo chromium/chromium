@@ -8,11 +8,6 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
-#include "chrome/browser/apps/app_service/media_requests.h"
-#include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/app_service/web_apps_base.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -29,10 +24,7 @@ namespace web_app {
 class WebApp;
 
 // An app publisher (in the App Service sense) of Web Apps.
-class WebAppsChromeOs : public WebAppsBase,
-                        public ArcAppListPrefs::Observer,
-                        public MediaCaptureDevicesDispatcher::Observer,
-                        public apps::AppWebContentsData::Client {
+class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,
@@ -83,15 +75,6 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
 
-  // MediaCaptureDevicesDispatcher::Observer:
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
-
-  // apps::AppWebContentsData::Observer:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
-
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
       apps::mojom::MenuType menu_type,
@@ -115,12 +98,6 @@ class WebAppsChromeOs : public WebAppsBase,
   apps::InstanceRegistry* instance_registry_;
 
   ArcAppListPrefs* arc_prefs_ = nullptr;
-
-  base::ScopedObservation<MediaCaptureDevicesDispatcher,
-                          MediaCaptureDevicesDispatcher::Observer>
-      media_dispatcher_{this};
-
-  apps::MediaRequests media_requests_;
 };
 
 }  // namespace web_app

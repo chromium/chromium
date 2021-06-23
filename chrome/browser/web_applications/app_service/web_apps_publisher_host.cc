@@ -32,7 +32,10 @@ namespace web_app {
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::Get(profile)),
-      publisher_helper_(profile, apps::mojom::AppType::kWeb, this) {}
+      publisher_helper_(profile,
+                        apps::mojom::AppType::kWeb,
+                        this,
+                        /*observe_media_requests=*/true) {}
 
 WebAppsPublisherHost::~WebAppsPublisherHost() = default;
 
@@ -59,8 +62,6 @@ void WebAppsPublisherHost::Init() {
     remote_publisher_ =
         service->GetRemote<crosapi::mojom::AppPublisher>().get();
   }
-
-  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
@@ -263,72 +264,15 @@ void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
   }
 
   // TODO(crbug.com/1194709): Keep consistent behavior with WebAppsChromeOs:
-  // remove notifications for app, update paused apps.
+  // remove notifications for app.
 
-  auto result = media_requests_.RemoveRequests(app_id);
-  ModifyCapabilityAccess(app_id, result.camera, result.microphone);
+  publisher_helper().OnWebAppWillBeUninstalled_impl(app_id);
 
   PublishWebApp(publisher_helper().ConvertUninstalledWebApp(web_app));
 }
 
 void WebAppsPublisherHost::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
-}
-
-void WebAppsPublisherHost::OnRequestUpdate(
-    int render_process_id,
-    int render_frame_id,
-    blink::mojom::MediaStreamType stream_type,
-    const content::MediaRequestState state) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-
-  if (!web_contents) {
-    return;
-  }
-
-  absl::optional<AppId> app_id =
-      FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
-                                     /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app) {
-    return;
-  }
-
-  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
-    content::WebContentsUserData<
-        apps::AppWebContentsData>::CreateForWebContents(web_contents, this);
-  }
-
-  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
-                                               stream_type, state);
-  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
-}
-
-void WebAppsPublisherHost::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
-      profile(), web_contents->GetLastCommittedURL(),
-      /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app) {
-    return;
-  }
-
-  auto result =
-      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
-  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
 }
 
 const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
@@ -364,7 +308,7 @@ void WebAppsPublisherHost::PublishWebApp(apps::mojom::AppPtr app) {
   remote_publisher_->OnApps(std::move(apps));
 }
 
-void WebAppsPublisherHost::ModifyCapabilityAccess(
+void WebAppsPublisherHost::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
     absl::optional<bool> accessing_camera,
     absl::optional<bool> accessing_microphone) {
