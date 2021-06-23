@@ -58,7 +58,7 @@ public class ChromeBaseAppCompatActivity
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
-        setTheme(R.style.BaseColorOverlay);
+        setTheme(R.style.ColorOverlay);
         super.onCreate(savedInstanceState);
 
         // Activity level locale overrides must be done in onCreate.

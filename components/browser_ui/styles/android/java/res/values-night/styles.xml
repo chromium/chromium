@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="BaseColorOverlay">
+    <style name="Base.ColorOverlay" parent="">
         <item name="colorPrimary">@color/modern_blue_300</item>
         <item name="colorError">@color/google_red_300</item>
         <item name="android:colorBackground">@color/modern_grey_900</item>

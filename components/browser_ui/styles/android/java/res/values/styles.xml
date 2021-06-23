@@ -180,7 +180,7 @@
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
-    <style name="BaseColorOverlay">
+    <style name="Base.ColorOverlay" parent="">
         <item name="colorPrimary">@color/modern_blue_600</item>
         <item name="colorError">@color/google_red_600</item>
         <item name="android:colorBackground">@color/modern_white</item>
@@ -191,4 +191,6 @@
         <item name="android:textColorPrimary">?attr/colorOnBackground</item>
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
     </style>
+    <!-- Indirection to allow downstream to add attributes. -->
+    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
 </resources>
