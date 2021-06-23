@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 def CheckBreakingInstallerVersionBumpNeeded(input_api, output_api):
@@ -25,7 +26,7 @@ this browser's version.''', items=files)]
     return [output_api.PresubmitPromptWarning('''
 No installer breaking changes detected but
 chrome/installer/setup/last_breaking_installer_version.cc was updated. Please
-update chrome/installer/presubmit.py if more files need to be watched for
+update chrome/installer/PRESUBMIT.py if more files need to be watched for
 breaking installer changes.''')]
 
   return []
