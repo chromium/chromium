@@ -575,7 +575,8 @@ void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(
 std::unique_ptr<SharedImageRepresentationDawn>
 ExternalVkImageBacking::ProduceDawn(SharedImageManager* manager,
                                     MemoryTypeTracker* tracker,
-                                    WGPUDevice wgpuDevice) {
+                                    WGPUDevice wgpuDevice,
+                                    WGPUBackendType backend_type) {
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
   auto wgpu_format = viz::ToWGPUFormat(format());
 

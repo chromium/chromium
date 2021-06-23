@@ -55,7 +55,8 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device) override;
+      WGPUDevice device,
+      WGPUBackendType backend_type) override;
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

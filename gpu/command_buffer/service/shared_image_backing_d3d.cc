@@ -430,7 +430,8 @@ uint32_t SharedImageBackingD3D::GetAllowedDawnUsages() const {
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
                                    MemoryTypeTracker* tracker,
-                                   WGPUDevice device) {
+                                   WGPUDevice device,
+                                   WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
 
   // Persistently open the shared handle by caching it on this backing.

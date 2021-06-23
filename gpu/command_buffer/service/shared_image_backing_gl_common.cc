@@ -118,6 +118,7 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
                                               SharedImageManager* manager,
                                               MemoryTypeTracker* tracker,
                                               WGPUDevice device,
+                                              WGPUBackendType backend_type,
                                               SharedImageBacking* backing,
                                               bool use_passthrough) {
   DCHECK(factory);
@@ -206,7 +207,7 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
   // representation ref.
   factory->DestroySharedImage(dst_mailbox);
 
-  return manager->ProduceDawn(dst_mailbox, tracker, device);
+  return manager->ProduceDawn(dst_mailbox, tracker, device, backend_type);
 }
 
 // static

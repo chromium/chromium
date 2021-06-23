@@ -225,7 +225,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
       scoped_refptr<SharedContextState> context_State);
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       const Mailbox& mailbox,
-      WGPUDevice device);
+      WGPUDevice device,
+      WGPUBackendType backend_type);
   std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       const Mailbox& mailbox);
   std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(

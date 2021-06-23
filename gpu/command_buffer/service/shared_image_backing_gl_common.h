@@ -97,6 +97,7 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
+      WGPUBackendType backend_type,
       SharedImageBacking* backing,
       bool use_passthrough);
 };

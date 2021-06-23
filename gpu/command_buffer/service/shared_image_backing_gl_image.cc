@@ -494,7 +494,8 @@ SharedImageBackingGLImage::ProduceOverlay(SharedImageManager* manager,
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingGLImage::ProduceDawn(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker,
-                                       WGPUDevice device) {
+                                       WGPUDevice device,
+                                       WGPUBackendType backend_type) {
 #if defined(OS_MAC)
   auto result = SharedImageBackingFactoryIOSurface::ProduceDawn(
       manager, this, tracker, device, image_);
@@ -507,7 +508,7 @@ SharedImageBackingGLImage::ProduceDawn(SharedImageManager* manager,
   }
 
   return SharedImageBackingGLCommon::ProduceDawnCommon(
-      factory(), manager, tracker, device, this, IsPassthrough());
+      factory(), manager, tracker, device, backend_type, this, IsPassthrough());
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>

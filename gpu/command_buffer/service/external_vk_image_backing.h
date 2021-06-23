@@ -151,7 +151,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice dawnDevice) override;
+      WGPUDevice dawnDevice,
+      WGPUBackendType backend_type) override;
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

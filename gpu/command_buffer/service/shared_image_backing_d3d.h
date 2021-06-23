@@ -96,7 +96,8 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device) override;
+      WGPUDevice device,
+      WGPUBackendType backend_type) override;
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDump* dump,

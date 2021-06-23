@@ -161,8 +161,8 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
   {
     // Create a Dawn representation to clear the texture contents to a green.
     auto dawn_representation =
-        shared_image_representation_factory_->ProduceDawn(mailbox,
-                                                          dawn_device_.Get());
+        shared_image_representation_factory_->ProduceDawn(
+            mailbox, dawn_device_.Get(), WGPUBackendType_Vulkan);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -322,8 +322,8 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
   {
     // Create a Dawn representation
     auto dawn_representation =
-        shared_image_representation_factory_->ProduceDawn(mailbox,
-                                                          dawn_device_.Get());
+        shared_image_representation_factory_->ProduceDawn(
+            mailbox, dawn_device_.Get(), WGPUBackendType_Vulkan);
     ASSERT_TRUE(dawn_representation);
 
     // Begin access to copy the data out. Skia should have initialized the

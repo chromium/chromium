@@ -67,7 +67,8 @@ class GPU_GLES2_EXPORT SharedImageManager {
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
-      WGPUDevice device);
+      WGPUDevice device,
+      WGPUBackendType backend_type);
   std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);

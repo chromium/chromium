@@ -53,7 +53,8 @@ class SharedImageBackingGLTexture : public SharedImageBacking {
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device) final;
+      WGPUDevice device,
+      WGPUBackendType backend_type) final;
   std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

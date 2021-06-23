@@ -252,7 +252,8 @@ TestSharedImageBacking::ProduceSkia(
 std::unique_ptr<SharedImageRepresentationDawn>
 TestSharedImageBacking::ProduceDawn(SharedImageManager* manager,
                                     MemoryTypeTracker* tracker,
-                                    WGPUDevice device) {
+                                    WGPUDevice device,
+                                    WGPUBackendType backend_type) {
   return std::make_unique<TestSharedImageRepresentationDawn>(manager, this,
                                                              tracker);
 }

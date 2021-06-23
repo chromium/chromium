@@ -137,7 +137,8 @@ bool SharedImageBackingOzone::ProduceLegacyMailbox(
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker,
-                                     WGPUDevice device) {
+                                     WGPUDevice device,
+                                     WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_procs_);
   WGPUTextureFormat webgpu_format = viz::ToWGPUFormat(format());

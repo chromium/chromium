@@ -178,14 +178,15 @@ SharedImageBackingGLTexture::ProduceGLTexturePassthrough(
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingGLTexture::ProduceDawn(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker,
-                                         WGPUDevice device) {
+                                         WGPUDevice device,
+                                         WGPUBackendType backend_type) {
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
   }
 
   return SharedImageBackingGLCommon::ProduceDawnCommon(
-      factory(), manager, tracker, device, this, IsPassthrough());
+      factory(), manager, tracker, device, backend_type, this, IsPassthrough());
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>

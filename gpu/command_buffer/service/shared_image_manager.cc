@@ -229,7 +229,8 @@ std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
 std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
-    WGPUDevice device) {
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -240,7 +241,8 @@ std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceDawn(this, tracker, device);
+  auto representation =
+      (*found)->ProduceDawn(this, tracker, device, backend_type);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
                   "Dawn representation from an incompatible mailbox.";

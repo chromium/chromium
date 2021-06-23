@@ -165,7 +165,8 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device);
+      WGPUDevice device,
+      WGPUBackendType backend_type);
   virtual std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);

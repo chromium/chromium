@@ -137,6 +137,25 @@ dawn_native::DeviceType PowerPreferenceToDawnDeviceType(
   }
 }
 
+WGPUBackendType ToWGPUBackendType(dawn_native::BackendType type) {
+  switch (type) {
+    case dawn_native::BackendType::D3D12:
+      return WGPUBackendType_D3D12;
+    case dawn_native::BackendType::Metal:
+      return WGPUBackendType_Metal;
+    case dawn_native::BackendType::Null:
+      return WGPUBackendType_Null;
+    case dawn_native::BackendType::OpenGL:
+      return WGPUBackendType_OpenGL;
+    case dawn_native::BackendType::OpenGLES:
+      return WGPUBackendType_OpenGLES;
+    case dawn_native::BackendType::Vulkan:
+      return WGPUBackendType_Vulkan;
+  }
+  DCHECK(false);
+  return WGPUBackendType_Null;
+}
+
 }  // namespace
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
@@ -443,6 +462,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // in PerformPollingWork. Dawn will never reuse a previously allocated
   // <ID, generation> pair.
   std::vector<std::pair<uint32_t, uint32_t>> known_devices_;
+  std::unordered_map<uint32_t, WGPUBackendType> device_backend_types_;
 
   bool has_polling_work_ = false;
 
@@ -598,6 +618,9 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   // checked in PerformPollingWork to tick all the live devices and remove all
   // the dead ones.
   known_devices_.emplace_back(device_id, device_generation);
+  dawn_native::BackendType type =
+      dawn_adapters_[requested_adapter_index].GetBackendType();
+  device_backend_types_[device_id] = ToWGPUBackendType(type);
 
   *creation_succeeded = true;
   return error::kNoError;
@@ -992,7 +1015,8 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
 
   // Create a WGPUTexture from the mailbox.
   std::unique_ptr<SharedImageRepresentationDawn> shared_image =
-      shared_image_representation_factory_->ProduceDawn(mailbox, device);
+      shared_image_representation_factory_->ProduceDawn(
+          mailbox, device, device_backend_types_[device_id]);
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
     return error::kInvalidArguments;

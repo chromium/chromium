@@ -65,7 +65,8 @@ class TestSharedImageBacking : public SharedImageBacking {
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device) override;
+      WGPUDevice device,
+      WGPUBackendType backend_type) override;
   std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
