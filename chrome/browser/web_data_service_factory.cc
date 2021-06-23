@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
@@ -125,15 +124,6 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
   // |wrapper| can be null in Incognito mode.
   return wrapper ? wrapper->GetTokenWebData()
                  : scoped_refptr<TokenWebData>(nullptr);
-}
-
-// static
-scoped_refptr<payments::PaymentManifestWebDataService>
-WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
-  return GetPaymentManifestWebDataServiceForBrowserContext(profile,
-                                                           access_type);
 }
 
 // static

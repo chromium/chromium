@@ -17,7 +17,6 @@
 #include "chrome/browser/autofill/android/internal_authenticator_android.h"
 #include "chrome/browser/payments/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
@@ -26,6 +25,7 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -100,9 +100,10 @@ void JNI_PaymentAppServiceBridge_Create(
   std::string top_origin = ConvertJavaStringToUTF8(jtop_origin);
 
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      webdata_services::WebDataServiceWrapperFactory::
+          GetPaymentManifestWebDataServiceForBrowserContext(
+              render_frame_host->GetBrowserContext(),
+              ServiceAccessType::EXPLICIT_ACCESS);
 
   payments::PaymentAppService* service =
       payments::PaymentAppServiceFactory::GetForContext(

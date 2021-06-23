@@ -21,10 +21,6 @@ class Profile;
 class TokenWebData;
 class WebDataServiceWrapper;
 
-namespace payments {
-class PaymentManifestWebDataService;
-}
-
 namespace autofill {
 class AutofillWebDataService;
 }
@@ -60,10 +56,6 @@ class WebDataServiceFactory
   static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(
       Profile* profile,
       ServiceAccessType access_type);
-
-  static scoped_refptr<payments::PaymentManifestWebDataService>
-  GetPaymentManifestWebDataForProfile(Profile* profile,
-                                      ServiceAccessType access_type);
 
   static WebDataServiceFactory* GetInstance();
 

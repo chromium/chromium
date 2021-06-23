@@ -21,7 +21,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -32,6 +31,7 @@
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -158,14 +158,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> icon = GetEncodedIcon("icon.png");
-  WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()),
-      ServiceAccessType::EXPLICIT_ACCESS)
-      ->AddSecurePaymentConfirmationInstrument(
-          std::make_unique<SecurePaymentConfirmationInstrument>(
-              std::move(credential_id), "relying-party.example", u"Stub label",
-              std::move(icon)),
-          /*consumer=*/this);
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationInstrument(
+              std::make_unique<SecurePaymentConfirmationInstrument>(
+                  std::move(credential_id), "relying-party.example",
+                  u"Stub label", std::move(icon)),
+              /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
                      "getSecurePaymentConfirmationStatus()");

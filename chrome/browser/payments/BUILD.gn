@@ -49,6 +49,7 @@ source_set("browser_tests") {
     "//components/payments/core",
     "//components/payments/core:test_support",
     "//components/ukm:test_support",
+    "//components/webdata_services:webdata_services",
     "//device/fido:test_support",
   ]
 
@@ -73,6 +74,7 @@ source_set("browser_tests") {
       "//components/payments/content:utils",
       "//components/payments/content/utility",
       "//components/permissions:permissions",
+      "//components/webdata_services:webdata_services",
     ]
   }
 
