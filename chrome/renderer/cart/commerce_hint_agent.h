@@ -48,6 +48,8 @@ class CommerceHintAgent
       const blink::WebFormElement& form);
 
  private:
+  void ExtractCartFromCurrentFrame();
+
   GURL starting_url_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
@@ -74,6 +76,7 @@ class CommerceHintAgent
   void DidFinishLoad() override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
 };
 
 }  // namespace cart
