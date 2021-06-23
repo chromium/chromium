@@ -761,6 +761,10 @@ const base::FeatureParam<base::TimeDelta>
     kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam{
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::TimeDelta::FromDays(7)};
+// When enabled, OOPIFs will not try to reuse compatible processes from
+// unrelated tabs.
+const base::Feature kDisableProcessReuse{"DisableProcessReuse",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.

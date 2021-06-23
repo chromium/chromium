@@ -15135,6 +15135,60 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
       DepictFrameTree(root));
 }
 
+// Tests that verify the feature disabling process reuse.
+class DisableProcessReusePolicyTest : public SitePerProcessBrowserTest {
+ public:
+  DisableProcessReusePolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kDisableProcessReuse);
+  }
+  ~DisableProcessReusePolicyTest() override = default;
+
+  DisableProcessReusePolicyTest(const DisableProcessReusePolicyTest&) = delete;
+  DisableProcessReusePolicyTest& operator=(
+      const DisableProcessReusePolicyTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// In two tabs with the same site, open a cross site iframe in each (same site
+// for the iframes). Make sure these do not have the same process ID.
+IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
+                       DisableProcessReusePolicy) {
+  GURL url(
+      embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Navigate the subframe cross site, and make sure it is an OOPIF.
+  GURL cross_site_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, cross_site_url));
+  EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
+
+  // Open an new tab in a separate BrowsingInstance with the same url as the
+  // first tab and open a subframe, also to |cross_site_url|.
+  Shell* second_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(second_shell, url));
+  FrameTreeNode* second_root =
+      static_cast<WebContentsImpl*>(second_shell->web_contents())
+          ->GetFrameTree()
+          ->root();
+  FrameTreeNode* second_child = second_root->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(second_child, cross_site_url));
+  EXPECT_TRUE(second_child->current_frame_host()->IsCrossProcessSubframe());
+
+  scoped_refptr<SiteInstanceImpl> second_shell_instance =
+      second_child->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(
+      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE,
+      second_shell_instance->process_reuse_policy());
+
+  EXPECT_NE(child->current_frame_host()->GetProcess(),
+            second_child->current_frame_host()->GetProcess());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestDelayingSitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -15160,6 +15214,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIgnoreCertErrorsBrowserTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisableProcessReusePolicyTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(
     All,

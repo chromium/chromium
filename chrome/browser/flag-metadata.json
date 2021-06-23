@@ -1101,6 +1101,12 @@
     "expiry_milestone": 95
   },
   {
+    "name": "disable-process-reuse",
+    "owners": [
+      "yangsharon@google.com", "alexmos@google.com", "creis@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "disable-threaded-scrolling",
     "owners": [ "bokan", "input-dev" ],
     // This flag is a useful debugging control when investigating scrolling

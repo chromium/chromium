@@ -46389,6 +46389,7 @@ from previous Chrome versions.
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
   <int value="-1144754105" label="ScalableStatusArea:enabled"/>
   <int value="-1144501989" label="UserActivityPredictionMlService:disabled"/>
+  <int value="-1144170722" label="DisableProcessReuse:enabled"/>
   <int value="-1144128534" label="GoogleLensSdkIntent:enabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
@@ -49514,6 +49515,7 @@ from previous Chrome versions.
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1518833340" label="MediaAppDisplayExif:enabled"/>
+  <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>

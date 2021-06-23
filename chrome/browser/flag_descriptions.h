@@ -306,6 +306,9 @@ extern const char kDecodeLossyWebPImagesToYUVDescription[];
 extern const char kDetectTargetEmbeddingLookalikesName[];
 extern const char kDetectTargetEmbeddingLookalikesDescription[];
 
+extern const char kDisableProcessReuse[];
+extern const char kDisableProcessReuseDescription[];
+
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 

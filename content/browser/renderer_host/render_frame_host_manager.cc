@@ -1884,11 +1884,12 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (!frame_tree_node_->IsMainFrame() &&
       !new_instance_impl->HasProcess() &&
       new_instance_impl->RequiresDedicatedProcess()) {
-    // Also give the embedder a chance to override this decision.  Certain
-    // frames have different enough workloads so that it's better to avoid
-    // placing a subframe into an existing process for better performance
-    // isolation.  See https://crbug.com/899418.
-    if (GetContentClient()->browser()->ShouldSubframesTryToReuseExistingProcess(
+    // Also give the embedder and user-specifiable feature a chance to override
+    // this decision. Certain frames have different enough workloads so that
+    // it's better to avoid placing a subframe into an existing process for
+    // better performance isolation.  See https://crbug.com/899418.
+    if (!base::FeatureList::IsEnabled(features::kDisableProcessReuse) &&
+        GetContentClient()->browser()->ShouldSubframesTryToReuseExistingProcess(
             frame_tree_node_->frame_tree()->GetMainFrame())) {
       new_instance_impl->set_process_reuse_policy(
           SiteInstanceImpl::ProcessReusePolicy::

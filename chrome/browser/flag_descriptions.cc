@@ -602,6 +602,12 @@ const char kDeviceDiscoveryNotificationsName[] =
 const char kDeviceDiscoveryNotificationsDescription[] =
     "Device discovery notifications on local network.";
 
+const char kDisableProcessReuse[] = "Disable subframe process reuse";
+const char kDisableProcessReuseDescription[] =
+    "Prevents out-of-process iframes from reusing compatible processes from "
+    "unrelated tabs. This is an experimental mode that will result in more "
+    "processes being created.";
+
 const char kDisallowDocWrittenScriptsUiName[] =
     "Block scripts loaded via document.write";
 const char kDisallowDocWrittenScriptsUiDescription[] =

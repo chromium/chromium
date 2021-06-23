@@ -4922,6 +4922,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          lookalikes::features::kDetectTargetEmbeddingLookalikes)},
 
+    {"disable-process-reuse", flag_descriptions::kDisableProcessReuse,
+     flag_descriptions::kDisableProcessReuseDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kDisableProcessReuse)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-app-data-search", flag_descriptions::kEnableAppDataSearchName,
      flag_descriptions::kEnableAppDataSearchDescription, kOsCrOS,
