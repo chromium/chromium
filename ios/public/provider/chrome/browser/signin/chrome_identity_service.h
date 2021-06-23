@@ -70,6 +70,12 @@ typedef void (^DismissASMViewControllerBlock)(BOOL animated);
 // device. Checking for equality is guaranteed to be valid.
 typedef int MDMDeviceStatus;
 
+// Value returned by IdentityIteratorCallback.
+enum IdentityIteratorCallbackResult {
+  kIdentityIteratorContinueIteration,
+  kIdentityIteratorInterruptIteration,
+};
+
 // ChromeIdentityService abstracts the signin flow on iOS.
 class ChromeIdentityService {
  public:
@@ -102,6 +108,11 @@ class ChromeIdentityService {
    private:
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };
+
+  // Callback invoked for each ChromeIdentity when iterating over them with
+  // `IterateOverIdentities()`.
+  using IdentityIteratorCallback =
+      base::RepeatingCallback<IdentityIteratorCallbackResult(ChromeIdentity*)>;
 
   ChromeIdentityService();
   virtual ~ChromeIdentityService();
@@ -154,6 +165,11 @@ class ChromeIdentityService {
   virtual ChromeIdentityInteractionManager*
   CreateChromeIdentityInteractionManager(
       id<ChromeIdentityInteractionManagerDelegate> delegate) const;
+
+  // Iterates over all known ChromeIdentities, sorted by the ordering used
+  // in account manager, which is typically based on the keychain ordering
+  // of accounts.
+  virtual void IterateOverIdentities(IdentityIteratorCallback callback);
 
   // Returns YES if |identity| is valid and if the service has it in its list of
   // identitites.

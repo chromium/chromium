@@ -172,6 +172,14 @@ FakeChromeIdentityService::CreateFakeChromeIdentityInteractionManager(
   return manager;
 }
 
+void FakeChromeIdentityService::IterateOverIdentities(
+    IdentityIteratorCallback callback) {
+  for (ChromeIdentity* identity in identities_) {
+    if (callback.Run(identity) == kIdentityIteratorInterruptIteration)
+      return;
+  }
+}
+
 bool FakeChromeIdentityService::IsValidIdentity(ChromeIdentity* identity) {
   return [identities_ indexOfObject:identity] != NSNotFound;
 }

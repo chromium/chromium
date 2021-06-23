@@ -60,6 +60,8 @@ ChromeIdentityService::CreateChromeIdentityInteractionManager(
   return nil;
 }
 
+void ChromeIdentityService::IterateOverIdentities(IdentityIteratorCallback) {}
+
 bool ChromeIdentityService::IsValidIdentity(ChromeIdentity* identity) {
   return false;
 }

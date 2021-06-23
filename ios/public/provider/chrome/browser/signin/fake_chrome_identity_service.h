@@ -7,11 +7,12 @@
 
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
+#import <Foundation/Foundation.h>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class FakeChromeIdentityInteractionManager;
-@class NSMutableArray;
 
 namespace ios {
 
@@ -36,6 +37,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   CreateFakeChromeIdentityInteractionManager(
       id<ChromeIdentityInteractionManagerDelegate> delegate) const;
 
+  void IterateOverIdentities(IdentityIteratorCallback callback) override;
   bool IsValidIdentity(ChromeIdentity* identity) override;
   ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id) override;
   bool HasIdentities() override;
@@ -104,7 +106,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   void TriggerIdentityUpdateNotification(ChromeIdentity* identity);
 
  private:
-  NSMutableArray* identities_;
+  NSMutableArray<ChromeIdentity*>* identities_;
 
   // If true, call to GetAccessToken() fakes a MDM error.
   bool _fakeMDMError;
