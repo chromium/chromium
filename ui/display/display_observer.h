@@ -70,6 +70,27 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   ~DisplayObserver() override;
 };
 
+// Caller must ensure the lifetime of `observer` outlives ScopedDisplayObserver
+// and ScopedOptionalDisplayObserver.  The "Optional" version does not care
+// whether there is a display::Screen::GetScreen() to observe or not and will
+// silently noop when there is not.  The non-optional ScopedDisplayObserver
+// will CHECK that display::Screen::GetScreen() exists on construction to
+// receive events from.
+class DISPLAY_EXPORT ScopedOptionalDisplayObserver {
+ public:
+  explicit ScopedOptionalDisplayObserver(DisplayObserver* observer);
+  ~ScopedOptionalDisplayObserver();
+
+ private:
+  DisplayObserver* observer_ = nullptr;
+};
+
+class DISPLAY_EXPORT ScopedDisplayObserver
+    : public ScopedOptionalDisplayObserver {
+ public:
+  explicit ScopedDisplayObserver(DisplayObserver* observer);
+};
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_DISPLAY_OBSERVER_H_
