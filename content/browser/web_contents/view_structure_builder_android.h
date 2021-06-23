@@ -27,7 +27,8 @@ void ViewStructureBuilder_populateViewStructureNode(
     jboolean italic,
     jboolean underline,
     jboolean line_through,
-    const base::android::JavaRef<jstring>& class_name);
+    const base::android::JavaRef<jstring>& class_name,
+    JniIntWrapper child_count);
 
 void ViewStructureBuilder_setViewStructureNodeBounds(
     JNIEnv* env,
