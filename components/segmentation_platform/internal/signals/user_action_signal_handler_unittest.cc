@@ -5,12 +5,15 @@
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "components/segmentation_platform/internal/database/user_action_database.h"
+#include "components/segmentation_platform/internal/database/mock_signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Eq;
 
 namespace segmentation_platform {
 
@@ -20,12 +23,6 @@ const uint64_t kExpectedHash = base::HashMetricName(kExpectedUserAction);
 
 }  // namespace
 
-class MockUserActionDatabase : public UserActionDatabase {
- public:
-  MockUserActionDatabase() = default;
-  MOCK_METHOD(void, WriteUserAction, (uint64_t, base::TimeTicks));
-};
-
 class UserActionSignalHandlerTest : public testing::Test {
  public:
   UserActionSignalHandlerTest() = default;
@@ -34,9 +31,10 @@ class UserActionSignalHandlerTest : public testing::Test {
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
-    user_action_database_ = std::make_unique<MockUserActionDatabase>();
-    user_action_signal_handler_ =
-        std::make_unique<UserActionSignalHandler>(user_action_database_.get());
+    signal_database_ = std::make_unique<MockSignalDatabase>();
+    user_action_signal_handler_ = std::make_unique<UserActionSignalHandler>(
+        signal_database_.get(), &test_clock_);
+    test_clock_.SetNow(base::Time::UnixEpoch() + base::TimeDelta::FromHours(8));
   }
 
   void SetupUserActions() {
@@ -46,28 +44,30 @@ class UserActionSignalHandlerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MockUserActionDatabase> user_action_database_;
+  base::SimpleTestClock test_clock_;
+  std::unique_ptr<MockSignalDatabase> signal_database_;
   std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;
 };
 
 TEST_F(UserActionSignalHandlerTest, UserActionsAreRecorded) {
-  base::TimeTicks time = base::TimeTicks::Now();
-
   // Initialize and register the list of user actions we are listening to.
   user_action_signal_handler_->EnableMetrics(true);
   SetupUserActions();
 
   // Fire a registered user action. It should be recorded.
-  EXPECT_CALL(*user_action_database_, WriteUserAction(kExpectedHash, time));
-  // user_action_signal_handler_->EnableMetrics(true);
-  base::RecordComputedActionAt(kExpectedUserAction, time);
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION, kExpectedHash,
+                          Eq(absl::nullopt), test_clock_.Now(), _));
+  base::RecordComputedActionAt(kExpectedUserAction, base::TimeTicks::Now());
 
   // Fire an unrelated user action. It should be ignored.
   std::string kUnrelatedUserAction = "unrelated_event";
-  EXPECT_CALL(*user_action_database_,
-              WriteUserAction(base::HashMetricName(kUnrelatedUserAction), time))
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION,
+                          base::HashMetricName(kUnrelatedUserAction),
+                          Eq(absl::nullopt), test_clock_.Now(), _))
       .Times(0);
-  base::RecordComputedActionAt(kUnrelatedUserAction, time);
+  base::RecordComputedActionAt(kUnrelatedUserAction, base::TimeTicks::Now());
 }
 
 TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
@@ -75,29 +75,37 @@ TEST_F(UserActionSignalHandlerTest, DisableMetrics) {
   SetupUserActions();
 
   // Metrics is disabled on startup.
-  EXPECT_CALL(*user_action_database_,
-              WriteUserAction(base::HashMetricName(kExpectedUserAction), time))
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION,
+                          base::HashMetricName(kExpectedUserAction),
+                          Eq(absl::nullopt), _, _))
       .Times(0);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
   // Enable metrics.
   user_action_signal_handler_->EnableMetrics(true);
-  EXPECT_CALL(*user_action_database_,
-              WriteUserAction(base::HashMetricName(kExpectedUserAction), time))
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION,
+                          base::HashMetricName(kExpectedUserAction),
+                          Eq(absl::nullopt), _, _))
       .Times(1);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
   // Disable metrics again.
   user_action_signal_handler_->EnableMetrics(false);
-  EXPECT_CALL(*user_action_database_,
-              WriteUserAction(base::HashMetricName(kExpectedUserAction), time))
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION,
+                          base::HashMetricName(kExpectedUserAction),
+                          Eq(absl::nullopt), _, _))
       .Times(0);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 
   // Enable metrics again.
   user_action_signal_handler_->EnableMetrics(true);
-  EXPECT_CALL(*user_action_database_,
-              WriteUserAction(base::HashMetricName(kExpectedUserAction), time))
+  EXPECT_CALL(*signal_database_,
+              WriteSample(SignalType::USER_ACTION,
+                          base::HashMetricName(kExpectedUserAction),
+                          Eq(absl::nullopt), _, _))
       .Times(1);
   base::RecordComputedActionAt(kExpectedUserAction, time);
 }

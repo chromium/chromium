@@ -7,21 +7,24 @@
 
 #include <set>
 
-#include "base/bind.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace segmentation_platform {
 
-class UserActionDatabase;
+class SignalDatabase;
 
 // Responsible for listening to user action events and persisting it to the
 // internal database for future processing.
 class UserActionSignalHandler {
  public:
-  explicit UserActionSignalHandler(UserActionDatabase* user_action_database);
+  explicit UserActionSignalHandler(SignalDatabase* signal_database,
+                                   base::Clock* clock);
   virtual ~UserActionSignalHandler();
 
   // Disallow copy/assign.
@@ -40,7 +43,10 @@ class UserActionSignalHandler {
                     base::TimeTicks action_time);
 
   // The database storing relevant user actions.
-  UserActionDatabase* db_;
+  SignalDatabase* db_;
+
+  // Used for getting current time.
+  base::Clock* clock_;
 
   // The callback registered with user metrics module that gets invoked for
   // every user action.

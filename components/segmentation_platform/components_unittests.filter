@@ -1,4 +1,5 @@
 DummyModelExecutionManagerTest.*
+HistogramSignalHandlerTest.*
 MetadataUtilsTest.*
 ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*

@@ -1,0 +1,51 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_MOCK_SIGNAL_DATABASE_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_MOCK_SIGNAL_DATABASE_H_
+
+#include "base/callback.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace segmentation_platform {
+
+// A mock of the SignalDatabase.
+class MockSignalDatabase : public SignalDatabase {
+ public:
+  MockSignalDatabase();
+  ~MockSignalDatabase();
+
+  MOCK_METHOD(void, Initialize, (SignalDatabase::SuccessCallback), (override));
+  MOCK_METHOD(void,
+              WriteSample,
+              (SignalType,
+               uint64_t,
+               absl::optional<int32_t>,
+               base::Time,
+               SignalDatabase::SuccessCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetSamples,
+              (SignalType,
+               uint64_t,
+               base::Time,
+               base::Time,
+               SignalDatabase::SampleCallback),
+              (override));
+  MOCK_METHOD(
+      void,
+      DeleteSamples,
+      (SignalType, uint64_t, base::Time, SignalDatabase::SuccessCallback),
+      (override));
+  MOCK_METHOD(
+      void,
+      CompactSamplesForDay,
+      (SignalType, uint64_t, base::Time, SignalDatabase::SuccessCallback),
+      (override));
+};
+
+}  // namespace segmentation_platform
+
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_MOCK_SIGNAL_DATABASE_H_
