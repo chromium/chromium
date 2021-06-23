@@ -158,7 +158,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      * Sets up the sync promo view.
      */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSigninPromoController.setUpSyncPromoViewIfAllowed(
+        mSigninPromoController.setUpSyncPromoView(
                 mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }
 

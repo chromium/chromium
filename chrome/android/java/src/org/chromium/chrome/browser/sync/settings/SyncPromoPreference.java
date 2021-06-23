@@ -187,7 +187,7 @@ public class SyncPromoPreference
         }
         PersonalizedSigninPromoView syncPromoView =
                 (PersonalizedSigninPromoView) holder.findViewById(R.id.signin_promo_view_container);
-        mSigninPromoController.setUpSyncPromoViewIfAllowed(
+        mSigninPromoController.setUpSyncPromoView(
                 mProfileDataCache, syncPromoView, this::onPromoDismissClicked);
     }
 

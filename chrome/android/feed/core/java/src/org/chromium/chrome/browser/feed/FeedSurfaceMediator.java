@@ -191,7 +191,7 @@ public class FeedSurfaceMediator
             // blocking the UI thread for several seconds if the accounts cache is not populated
             // yet.
             if (isVisible()) {
-                mSigninPromoController.setUpSyncPromoViewIfAllowed(
+                mSigninPromoController.setUpSyncPromoView(
                         mProfileDataCache, mCoordinator.getSigninPromoView(), null);
             }
         }
@@ -642,6 +642,8 @@ public class FeedSurfaceMediator
     private boolean createSignInPromoIfNeeded() {
         if (!SignInPromo.shouldCreatePromo()
                 || !SigninPromoController.hasNotReachedImpressionLimit(
+                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)
+                || SigninPromoController.shouldHideSyncPromoForNTP(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS)) {
             return false;
         }

@@ -394,7 +394,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * Sets up the sync promo view.
      */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
-        mSigninPromoController.setUpSyncPromoViewIfAllowed(mProfileDataCache, view, null);
+        mSigninPromoController.setUpSyncPromoView(mProfileDataCache, view, null);
     }
 
     // SignInStateObserver implementation.

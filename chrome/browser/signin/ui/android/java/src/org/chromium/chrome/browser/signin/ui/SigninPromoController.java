@@ -104,6 +104,38 @@ public class SigninPromoController {
     }
 
     /**
+     * Determines whether sync promo can be shown for NTP.
+     */
+    public static boolean shouldHideSyncPromoForNTP(@AccessPoint int accessPoint) {
+        assert accessPoint
+                == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS : "Unexpected value for access point: "
+                        + accessPoint;
+
+        final @Nullable Account visibleAccount = getVisibleAccount();
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        return visibleAccount != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+                && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(true);
+    }
+
+    // Find the visible account for sync promos
+    private static @Nullable Account getVisibleAccount() {
+        final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
+        @Nullable
+        Account visibleAccount = CoreAccountInfo.getAndroidAccountFrom(
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        final AccountManagerFacade accountManagerFacade =
+                AccountManagerFacadeProvider.getInstance();
+        if (visibleAccount == null) {
+            visibleAccount =
+                    AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
+        }
+        return visibleAccount;
+    }
+
+    /**
      * Creates a new SigninPromoController.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
@@ -209,39 +241,23 @@ public class SigninPromoController {
     }
 
     /**
-     * Sets up the sync promo view if it is allowed.
+     * Sets up the sync promo view.
      *
      * @param profileDataCache The {@link ProfileDataCache} that stores profile data.
      * @param view The {@link PersonalizedSigninPromoView} that should be set up.
      * @param listener The {@link SigninPromoController.OnDismissListener} to be set to the view.
      */
-    public void setUpSyncPromoViewIfAllowed(ProfileDataCache profileDataCache,
+    public void setUpSyncPromoView(ProfileDataCache profileDataCache,
             PersonalizedSigninPromoView view, SigninPromoController.OnDismissListener listener) {
         final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         assert identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)
                 == null : "Sync is already enabled!";
 
-        // Find the visible account on promo
-        @Nullable
-        Account visibleAccount = CoreAccountInfo.getAndroidAccountFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        if (visibleAccount == null) {
-            visibleAccount =
-                    AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
-        }
-
+        final @Nullable Account visibleAccount = getVisibleAccount();
         // Set up the sync promo
         if (visibleAccount == null) {
             setupPromoView(view, /* profileData= */ null, listener);
-            return;
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(true)
-                && mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
-            // No promo will be visible since setupPromoView() is not invoked.
             return;
         }
         setupPromoView(
