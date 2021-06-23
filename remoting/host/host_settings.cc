@@ -27,6 +27,8 @@ class EmptyHostSettings : public HostSettings {
     return std::string();
   }
 
+  void SetString(const HostSettingKey key, const std::string& value) override {}
+
   void InitializeInstance() override {}
 };
 

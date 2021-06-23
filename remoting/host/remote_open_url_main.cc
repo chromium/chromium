@@ -4,6 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -13,12 +14,12 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/host_settings.h"
 #include "remoting/host/logging.h"
-#include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using remoting::RemoteOpenUrlClient;
-using remoting::mojom::OpenUrlResult;
 
 int main(int argc, char** argv) {
   if (argc > 2) {
@@ -31,6 +32,9 @@ int main(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
   remoting::InitHostLogging();
+
+  base::i18n::InitializeICU();
+  remoting::LoadResources("");
 
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(

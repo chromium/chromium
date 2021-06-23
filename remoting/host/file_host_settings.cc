@@ -5,9 +5,12 @@
 #include "remoting/host/file_host_settings.h"
 
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
 
@@ -41,6 +44,12 @@ void FileHostSettings::InitializeInstance() {
 }
 
 std::string FileHostSettings::GetString(const HostSettingKey key) const {
+#if !defined(NDEBUG)
+  if (task_runner_for_checking_sequence_) {
+    DCHECK(task_runner_for_checking_sequence_->RunsTasksInCurrentSequence());
+  }
+#endif
+
   if (!settings_) {
     VLOG(1) << "Either Initialize() has not been called, or the settings file "
                "doesn't exist.";
@@ -51,6 +60,33 @@ std::string FileHostSettings::GetString(const HostSettingKey key) const {
     return std::string();
   }
   return *string_value;
+}
+
+void FileHostSettings::SetString(const HostSettingKey key,
+                                 const std::string& value) {
+#if !defined(NDEBUG)
+  if (task_runner_for_checking_sequence_) {
+    DCHECK(task_runner_for_checking_sequence_->RunsTasksInCurrentSequence());
+  } else {
+    task_runner_for_checking_sequence_ = base::SequencedTaskRunnerHandle::Get();
+  }
+#endif
+
+  if (!settings_) {
+    VLOG(1) << "Settings file didn't exist. New file will be created.";
+    settings_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  }
+  settings_->SetStringKey(key, value);
+
+  std::string json;
+  JSONStringValueSerializer serializer(&json);
+  if (!serializer.Serialize(*settings_)) {
+    LOG(ERROR) << "Failed to serialize host settings JSON";
+    return;
+  }
+  if (!base::ImportantFileWriter::WriteFileAtomically(settings_file_, json)) {
+    LOG(ERROR) << "Can't write host settings file to " << settings_file_;
+  }
 }
 
 }  // namespace remoting

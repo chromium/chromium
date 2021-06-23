@@ -38,7 +38,7 @@ class RemoteOpenUrlClient final {
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
   void OnRequestTimeout();
 
-  void OpenOnFallbackBrowserInternal(const GURL& url = GURL());
+  void OpenOnFallbackBrowserInternal();
 
   base::OneShotTimer timeout_timer_;
 

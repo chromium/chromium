@@ -33,7 +33,7 @@ group("all") {
       "//remoting/host/it2me:remote_assistance_host",
     ]
 
-    if (enable_me2me_host && !is_win) {
+    if (enable_me2me_host && is_linux) {
       deps += [ "//remoting/host:remote_open_url" ]
     }
   }
@@ -459,13 +459,6 @@ static_library("common") {
     ]
   }
 
-  if (is_linux && !is_chromeos_lacros) {
-    sources += [
-      "pairing_registry_delegate_linux.cc",
-      "pairing_registry_delegate_linux.h",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [ "resources_linux.cc" ]
   }
@@ -478,6 +471,10 @@ static_library("common") {
       "curtain_mode_linux.cc",
       "disconnect_window_linux.cc",
       "keyboard_layout_monitor_linux.cc",
+      "pairing_registry_delegate_linux.cc",
+      "pairing_registry_delegate_linux.h",
+      "remote_open_url_client.cc",
+      "remote_open_url_client.h",
       "url_forwarder_configurator_linux.cc",
       "url_forwarder_configurator_linux.h",
       "xsession_chooser_linux.cc",
@@ -1038,20 +1035,19 @@ if (enable_me2me_host) {
   }
 }
 
-if (enable_me2me_host && !is_win) {
+if (enable_me2me_host && is_linux) {
   executable("remote_open_url") {
-    sources = [
-      "remote_open_url_client.cc",
-      "remote_open_url_client.h",
-      "remote_open_url_main.cc",
-    ]
+    sources = [ "remote_open_url_main.cc" ]
     deps = [
+      ":common",
       ":host_settings",
       ":logging",
-      ":remote_open_url_support",
+      ":remoting_me2me_host_static",
       "//base",
+      "//base:i18n",
       "//mojo/core/embedder:embedder",
       "//remoting/host/mojom",
+      "//ui/base",
       "//url",
     ]
   }

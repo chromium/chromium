@@ -900,6 +900,15 @@ If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></
           Open Screen Recording Preferences
         </message>
       </if>
+      <message name="IDS_REMOTE_OPEN_URL_FAILED" desc="Message shown when Chrome Remote Desktop fails to open a URL from the host device on the client device.">
+        Failed to open <ph name="URL">$1<ex>http://google.com</ex></ph> on the client.
+      </message>
+      <message name="IDS_CHOOSE_FALLBACK_BROWSER" desc="Message shown on a browser chooser dialog when the Chrome Remote Desktop URL forwarder cannot determine the browser for opening a URL locally (when the URL cannot be remotely opened by the client).">
+        Chrome Remote Desktop cannot determine the browser to open URLs locally. Please choose it from the list below.
+      </message>
+      <message name="IDS_BROWSER_IS_INVALID" desc="Message shown when the user has chosen an invalid app as the browser to open URLs locally.">
+        The chosen browser cannot be used to open URLs on the local machine.
+      </message>
       <if expr="is_linux">
         <message name="IDS_SESSION_DIALOG_MESSAGE" desc="The message to show at the top of the session-selection dialog.">
           Select a session to launch within your Chrome Remote Desktop environment. (Note that some session types may not support running within Chrome Remote Desktop and on the local console simultaneously.)
