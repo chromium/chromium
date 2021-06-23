@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="PrintPreview.DestinationAction"
-    enum="PrintPreviewPrintDestinationBuckets" expires_after="2021-07-01">
+    enum="PrintPreviewPrintDestinationBuckets" expires_after="2022-07-01">
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettingsUi"
-    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2021-07-01">
+    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2022-07-01">
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
