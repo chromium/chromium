@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!--
+ "Activation" suffix in these test names communicates to the test harness that
+ this part of the test is run post-activation.
+-->
 <script src="session-history-harness.js"></script>
 <body>
   <script>
@@ -81,6 +85,18 @@
 
       assert(history.length == 1, "History length unchanged");
       assert(location.href == initialLocation, "Location doesn't change");
+    }
+
+    function testHistoryLengthInPrerender() {
+      assert(history.length == 1, "Initial history length");
+    }
+
+    function testHistoryLengthInPrerenderActivation() {
+      assert(history.length == 2, "History length after activation");
+
+      // TODO(http://crbug.com/1220992): Test whether calling history.back()
+      // after activation should go back to the initiator page correctly.
+      // We might need a non-trivial refactoring to test this scenario correctly.
     }
   </script>
 </body>

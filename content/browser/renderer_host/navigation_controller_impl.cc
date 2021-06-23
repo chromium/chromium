@@ -1369,6 +1369,18 @@ bool NavigationControllerImpl::RendererDidNavigate(
   int nav_entry_id = active_entry->GetUniqueID();
   for (FrameTreeNode* node : frame_tree_.Nodes())
     node->current_frame_host()->set_nav_entry_id(nav_entry_id);
+
+  if (navigation_request->IsPrerenderedPageActivation()) {
+    BroadcastHistoryOffsetAndLength();
+    // TODO(crbug.com/1222893): Broadcasting happens after the prerendered page
+    // is activated. As a result, a "prerenderingchange" event listener sees the
+    // history.length which is not updated yet. We should guarantee that
+    // history's length and offset should be updated before a
+    // "prerenderingchange" event listener runs. One possible approach is to use
+    // the same IPC which "prerenderingchange" uses, and propagate history's
+    // length and offset together with that.
+  }
+
   return true;
 }
 
@@ -2184,7 +2196,7 @@ void NavigationControllerImpl::CopyStateFromAndPrune(NavigationController* temp,
   // Adjust indices such that the last entry and pending are at the end now.
   last_committed_entry_index_ = GetEntryCount() - 1;
 
-  SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
+  BroadcastHistoryOffsetAndLength();
 }
 
 bool NavigationControllerImpl::CanPruneAllButLastCommitted() {
@@ -2210,7 +2222,7 @@ void NavigationControllerImpl::PruneAllButLastCommitted() {
   DCHECK_EQ(0, last_committed_entry_index_);
   DCHECK_EQ(1, GetEntryCount());
 
-  SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
+  BroadcastHistoryOffsetAndLength();
 }
 
 void NavigationControllerImpl::PruneAllButLastCommittedInternal() {
@@ -2246,7 +2258,7 @@ void NavigationControllerImpl::DeleteNavigationEntries(
     for (auto it = delete_indices.rbegin(); it != delete_indices.rend(); ++it) {
       RemoveEntryAtIndex(*it);
     }
-    SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
+    BroadcastHistoryOffsetAndLength();
   }
   delegate()->NotifyNavigationEntriesDeleted();
 }
@@ -3986,11 +3998,11 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
   return rfh->policy_container_host()->policies().Clone();
 }
 
-void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,
-                                                         int history_length) {
+void NavigationControllerImpl::BroadcastHistoryOffsetAndLength() {
   OPTIONAL_TRACE_EVENT2(
-      "content", "NavigationControllerImpl::SetHistoryOffsetAndLength",
-      "history_offset", history_offset, "history_length", history_length);
+      "content", "NavigationControllerImpl::BroadcastHistoryOffsetAndLength",
+      "history_offset", GetLastCommittedEntryIndex(), "history_length",
+      GetEntryCount());
 
   auto callback = base::BindRepeating(
       [](int history_offset, int history_length, RenderViewHostImpl* rvh) {
@@ -3998,7 +4010,7 @@ void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,
           broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
         }
       },
-      history_offset, history_length);
+      GetLastCommittedEntryIndex(), GetEntryCount());
   frame_tree_.root()->render_manager()->ExecutePageBroadcastMethod(callback);
 }
 

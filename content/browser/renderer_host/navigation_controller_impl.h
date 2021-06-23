@@ -645,10 +645,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                               bool is_same_document,
                                               NavigationRequest* request);
 
-  // Sets the history to |history_length| entries, with an offset of
-  // |history_offset|. This notifies all renderers involved in rendering the
-  // current page about the new offset and length.
-  void SetHistoryOffsetAndLength(int history_offset, int history_length);
+  // Broadcasts this controller's session history offset and length to all
+  // renderers involved in rendering the current page. The offset is
+  // GetLastCommittedEntryIndex() and length is GetEntryCount().
+  void BroadcastHistoryOffsetAndLength();
 
   // Helper functions used to determine if it is safe to change the internal
   // representation of StoragePartitionId.

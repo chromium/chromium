@@ -7,6 +7,38 @@ function assert(condition, message) {
   }
 }
 
+// Run a test after activation.
+document.addEventListener("prerenderingchange", async (_) => {
+  // history.length is racy on activation. Wait *100ms* as a workaround.
+  // See crbug.com/1222893.
+  await new Promise((resolve) => {
+    window.setTimeout(resolve, 100);
+  });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const testName = urlParams.get("testName");
+  const testChannel = new BroadcastChannel(
+    `test-channel-${testName}`,
+  );
+
+  try {
+    const activationTestFn = testName + "Activation";
+    const testFn = window[activationTestFn];
+    if (!testFn) {
+      testChannel.postMessage("Missing test: " + testName);
+      return;
+    }
+    testFn();
+    testChannel.postMessage("Passed");
+  } catch (e) {
+    testChannel.postMessage(
+      "Failed: " + e.name + ": " + e.message,
+    );
+  } finally {
+    testChannel.close();
+  }
+})
+
 if (document.prerendering) {
   window.onload = async () => {
     const urlParams = new URLSearchParams(window.location.search);

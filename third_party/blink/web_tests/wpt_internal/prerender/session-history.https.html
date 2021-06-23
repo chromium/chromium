@@ -27,6 +27,26 @@
       return result;
     }
 
+    // This will activate the prerendered context created in runTestInPrerender
+    // and then run the post-activation variation of |testName|.
+    async function runTestInActivatedPage(testName) {
+      const testChannel = new BroadcastChannel(`test-channel-${testName}`);
+
+      const result = new Promise((resolve) => {
+        testChannel.addEventListener(
+          "message",
+          (e) => {
+            testChannel.close();
+            resolve(e.data);
+          },
+          { once: true }
+        );
+      });
+
+      testChannel.postMessage("activate");
+      return result;
+    }
+
     promise_test(async () => {
       assert_equals(
         await runTestInPrerender("testHistoryPushStateInPrerender"),
@@ -82,6 +102,17 @@
         "Passed"
       );
     }, "location.reload() navigates independently in a prerender");
+
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testHistoryLengthInPrerender"),
+        "Passed"
+      );
+      assert_equals(
+        await runTestInActivatedPage("testHistoryLengthInPrerender"),
+        "Passed"
+      );
+    }, "history.length should be updated after activation");
 
   </script>
 </body>

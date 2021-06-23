@@ -12,6 +12,12 @@
     );
     const testChannel = new BroadcastChannel(`test-channel-${testName}`);
 
+    // Activate when a test sends a "activate" message.
+    testChannel.addEventListener("message", (e) => {
+      assert(e.data === "activate");
+      window.location.href = `${prerender}?testName=${testName}`;
+    });
+
     // Runs before and after the history manipulation in the prerender page to confirm
     // that the session history of the initiator page is not affected by any history
     // changes in the prerender page.
@@ -48,7 +54,6 @@
         testChannel.postMessage("Failed: " + e.name + ": " + e.message);
       } finally {
         prerenderChannel.close();
-        testChannel.close();
       }
     })();
   </script>
