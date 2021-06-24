@@ -21,14 +21,10 @@ namespace storage {
 class QuotaManager;
 }
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 class QuotaPermissionContext;
 
-// Implements the Quota (Storage) API for a single origin.
+// Implements the Quota (Storage) API for a single StorageKey.
 //
 // QuotaContext indirectly owns all QuotaManagerHost instances associated with a
 // StoragePartition. A new instance is created for every incoming mojo
@@ -41,14 +37,12 @@ class QuotaPermissionContext;
 // is likely to change when QuotaManager moves to the Storage Service.
 class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
  public:
-  // The owner must guarantee that |quota_manager| and |permission_context|
+  // The owner must guarantee that `quota_manager` and `permission_context`
   // outlive this instance.
-  // TODO(crbug.com/1215208): Change the constructor to take a StorageKey
-  // instead of an Origin.
   QuotaManagerHost(
       int process_id,
       int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::QuotaManager* quota_manager,
       QuotaPermissionContext* permission_context,
       scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher);

@@ -71,7 +71,7 @@ void QuotaContext::BindQuotaManagerHostOnIOThread(
 
   // The quota manager currently runs on the I/O thread.
   auto host = std::make_unique<QuotaManagerHost>(
-      process_id, render_frame_id, storage_key.origin(), quota_manager_.get(),
+      process_id, render_frame_id, storage_key, quota_manager_.get(),
       permission_context_.get(), quota_change_dispatcher_);
   auto* host_ptr = host.get();
   receivers_.Add(host_ptr, std::move(receiver), std::move(host));

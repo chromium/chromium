@@ -32,13 +32,13 @@ namespace content {
 QuotaManagerHost::QuotaManagerHost(
     int process_id,
     int render_frame_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::QuotaManager* quota_manager,
     QuotaPermissionContext* permission_context,
     scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher)
     : process_id_(process_id),
       render_frame_id_(render_frame_id),
-      storage_key_(blink::StorageKey(origin)),
+      storage_key_(storage_key),
       quota_manager_(quota_manager),
       permission_context_(permission_context),
       quota_change_dispatcher_(std::move(quota_change_dispatcher)) {
