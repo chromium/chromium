@@ -168,6 +168,15 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
   return std::make_unique<std::vector<extensions::TtsVoice>>();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool CanUseEnhancedNetworkVoices(const GURL& source_url) {
+  // Currently only Select-to-speak can use Enhanced Network voices.
+  return source_url.host() == extension_misc::kSelectToSpeakExtensionId;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -183,6 +192,7 @@ TtsExtensionEngine::~TtsExtensionEngine() = default;
 
 void TtsExtensionEngine::GetVoices(
     content::BrowserContext* browser_context,
+    const GURL& source_url,
     std::vector<content::VoiceData>* out_voices) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   EventRouter* event_router = EventRouter::Get(profile);
@@ -211,6 +221,13 @@ void TtsExtensionEngine::GetVoices(
     auto tts_voices = GetVoicesInternal(profile, extension);
     if (!tts_voices)
       continue;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Only authorized sources can use Enhanced Network voices.
+    if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId &&
+        !CanUseEnhancedNetworkVoices(source_url))
+      continue;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     for (size_t i = 0; i < tts_voices->size(); ++i) {
       const extensions::TtsVoice& voice = tts_voices->at(i);

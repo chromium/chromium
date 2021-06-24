@@ -284,7 +284,8 @@ class TtsApiTest : public ExtensionApiTest {
  protected:
   bool HasVoiceWithName(const std::string& name) {
     std::vector<content::VoiceData> voices;
-    content::TtsController::GetInstance()->GetVoices(profile(), &voices);
+    content::TtsController::GetInstance()->GetVoices(profile(), GURL(),
+                                                     &voices);
     for (auto& voice : voices) {
       if (voice.name == name)
         return true;

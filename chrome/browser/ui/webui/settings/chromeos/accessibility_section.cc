@@ -878,7 +878,7 @@ void AccessibilitySection::UpdateTextToSpeechVoiceSearchTags() {
   content::TtsController* tts_controller =
       content::TtsController::GetInstance();
   std::vector<content::VoiceData> voices;
-  tts_controller->GetVoices(profile(), &voices);
+  tts_controller->GetVoices(profile(), GURL(), &voices);
   if (!voices.empty()) {
     updater.AddSearchTags(GetTextToSpeechVoiceSearchConcepts());
   }

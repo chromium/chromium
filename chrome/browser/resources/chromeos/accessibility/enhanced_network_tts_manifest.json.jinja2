@@ -1,0 +1,23 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "Google Enhanced Network text-to-speech extension",
+  "version": "{{set_version}}",
+  "description": "Prototype",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "scripts": ["enhanced_network_tts/background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "ttsEngine"
+  ],
+  "default_locale": "en",
+  "tts_engine": {
+    "voices": []
+  }
+}

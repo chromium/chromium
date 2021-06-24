@@ -298,7 +298,8 @@ ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
 
 ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
   std::vector<content::VoiceData> voices;
-  content::TtsController::GetInstance()->GetVoices(browser_context(), &voices);
+  content::TtsController::GetInstance()->GetVoices(browser_context(), GURL(),
+                                                   &voices);
 
   auto result_voices = std::make_unique<base::ListValue>();
   for (size_t i = 0; i < voices.size(); ++i) {

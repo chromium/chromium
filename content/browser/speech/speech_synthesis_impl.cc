@@ -115,7 +115,7 @@ void SpeechSynthesisImpl::AddVoiceListObserver(
       std::move(pending_observer));
 
   std::vector<VoiceData> voices;
-  TtsController::GetInstance()->GetVoices(browser_context_, &voices);
+  TtsController::GetInstance()->GetVoices(browser_context_, GURL(), &voices);
   SendVoiceListToObserver(observer.get(), voices);
 
   observer_set_.Add(std::move(observer));
@@ -153,7 +153,7 @@ void SpeechSynthesisImpl::Cancel() {
 
 void SpeechSynthesisImpl::OnVoicesChanged() {
   std::vector<VoiceData> voices;
-  TtsController::GetInstance()->GetVoices(browser_context_, &voices);
+  TtsController::GetInstance()->GetVoices(browser_context_, GURL(), &voices);
   for (auto& observer : observer_set_)
     SendVoiceListToObserver(observer.get(), voices);
 }

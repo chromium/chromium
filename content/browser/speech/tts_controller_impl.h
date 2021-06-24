@@ -61,6 +61,7 @@ class CONTENT_EXPORT TtsControllerImpl
                   int length,
                   const std::string& error_message) override;
   void GetVoices(BrowserContext* browser_context,
+                 const GURL& source_url,
                  std::vector<VoiceData>* out_voices) override;
   void VoicesChanged() override;
   void AddVoicesChangedDelegate(VoicesChangedDelegate* delegate) override;

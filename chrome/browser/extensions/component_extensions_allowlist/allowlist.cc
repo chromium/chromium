@@ -35,6 +35,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
     extension_misc::kAssessmentAssistantExtensionId,
     extension_misc::kCameraAppId,
     extension_misc::kChromeVoxExtensionId,
+    extension_misc::kEnhancedNetworkTtsExtensionId,
     extension_misc::kEspeakSpeechSynthesisExtensionId,
     extension_misc::kGoogleSpeechSynthesisExtensionId,
     extension_misc::kGuestModeTestExtensionId,

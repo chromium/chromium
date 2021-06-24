@@ -48,8 +48,10 @@ class CONTENT_EXPORT TtsEngineDelegate {
  public:
   virtual ~TtsEngineDelegate() {}
 
-  // Return a list of all available voices registered.
+  // Return a list of all available voices registered. |source_url| will be used
+  // for policy decisions by engines to determine which voices to return.
   virtual void GetVoices(BrowserContext* browser_context,
+                         const GURL& source_url,
                          std::vector<VoiceData>* out_voices) = 0;
 
   // Speak the given utterance by sending an event to the given TTS engine.
@@ -124,8 +126,11 @@ class CONTENT_EXPORT TtsController {
                           const std::string& error_message) = 0;
 
   // Return a list of all available voices, including the native voice,
-  // if supported, and all voices registered by engines.
+  // if supported, and all voices registered by engines. |source_url|
+  // will be used for policy decisions by engines to determine which
+  // voices to return.
   virtual void GetVoices(BrowserContext* browser_context,
+                         const GURL& source_url,
                          std::vector<VoiceData>* out_voices) = 0;
 
   // Called by the content embedder or platform implementation when the

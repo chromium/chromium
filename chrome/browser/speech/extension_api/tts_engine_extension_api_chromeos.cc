@@ -128,7 +128,7 @@ bool TtsExtensionEngineChromeOS::IsBuiltInTtsEngineInitialized(
     return true;
 
   std::vector<content::VoiceData> voices;
-  GetVoices(browser_context, &voices);
+  GetVoices(browser_context, GURL(), &voices);
   bool saw_google_tts = false;
   bool saw_espeak = false;
   for (const auto& voice : voices) {

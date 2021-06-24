@@ -63,6 +63,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/switches.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
@@ -683,6 +684,20 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
             &ComponentLoader::FinishLoadSpeechSynthesisExtension,
             weak_factory_.GetWeakPtr(),
             extension_misc::kEspeakSpeechSynthesisExtensionId));
+  }
+
+  if (features::IsEnhancedNetworkVoicesEnabled() &&
+      !Exists(extension_misc::kEnhancedNetworkTtsExtensionId)) {
+    base::FilePath resources_path =
+        base::PathService::CheckedGet(chrome::DIR_RESOURCES);
+    AddComponentFromDirWithManifestFilename(
+        resources_path.Append(extension_misc::kEnhancedNetworkTtsExtensionPath),
+        extension_misc::kEnhancedNetworkTtsExtensionId,
+        extension_misc::kEnhancedNetworkTtsManifestFilename,
+        extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
+        base::BindOnce(&ComponentLoader::FinishLoadSpeechSynthesisExtension,
+                       weak_factory_.GetWeakPtr(),
+                       extension_misc::kEnhancedNetworkTtsExtensionId));
   }
 }
 

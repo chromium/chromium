@@ -39,6 +39,7 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
 
   // Overridden from TtsEngineDelegate:
   void GetVoices(content::BrowserContext* browser_context,
+                 const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override;
   void Speak(content::TtsUtterance* utterance,
              const content::VoiceData& voice) override;

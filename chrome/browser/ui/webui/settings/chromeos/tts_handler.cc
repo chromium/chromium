@@ -77,7 +77,7 @@ void TtsHandler::OnVoicesChanged() {
   content::TtsController* tts_controller =
       content::TtsController::GetInstance();
   std::vector<content::VoiceData> voices;
-  tts_controller->GetVoices(Profile::FromWebUI(web_ui()), &voices);
+  tts_controller->GetVoices(Profile::FromWebUI(web_ui()), GURL(), &voices);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   base::ListValue responses;
   for (const auto& voice : voices) {

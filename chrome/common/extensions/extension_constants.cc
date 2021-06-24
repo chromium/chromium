@@ -91,6 +91,13 @@ const char kAccessibilityCommonGuestManifestFilename[] =
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
 const char kChromeVoxGuestManifestFilename[] = "chromevox_manifest_guest.json";
+const char kEnhancedNetworkTtsExtensionId[] =
+    "jacnkoglebceckolkoapelihnglgaicd";
+const char kEnhancedNetworkTtsExtensionPath[] = "chromeos/accessibility";
+const char kEnhancedNetworkTtsManifestFilename[] =
+    "enhanced_network_tts_manifest.json";
+const char kEnhancedNetworkTtsGuestManifestFilename[] =
+    "enhanced_network_tts_manifest_guest.json";
 const char kSelectToSpeakExtensionId[] = "klbcgckkldhdhonijdbnhhaiedfkllef";
 const char kSelectToSpeakExtensionPath[] = "chromeos/accessibility";
 const char kSelectToSpeakManifestFilename[] = "select_to_speak_manifest.json";

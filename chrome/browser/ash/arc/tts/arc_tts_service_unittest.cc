@@ -47,6 +47,7 @@ class TestableTtsController : public content::TtsController {
   void Pause() override {}
   void Resume() override {}
   void GetVoices(content::BrowserContext* browser_context,
+                 const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}
   void VoicesChanged() override {}
   void AddVoicesChangedDelegate(

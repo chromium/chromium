@@ -190,6 +190,15 @@ extern const char kChromeVoxExtensionPath[];
 extern const char kChromeVoxManifestFilename[];
 // The guest manifest filename of the ChromeVox extension.
 extern const char kChromeVoxGuestManifestFilename[];
+// The extension id of the Enhanced network TTS engine extension.
+extern const char kEnhancedNetworkTtsExtensionId[];
+// Path to preinstalled Enhanced network TTS engine extension (relative to
+// |chrome::DIR_RESOURCES|).
+extern const char kEnhancedNetworkTtsExtensionPath[];
+// The manifest filename of the Enhanced network TTS engine extension.
+extern const char kEnhancedNetworkTtsManifestFilename[];
+// The guest manifest filename of the Enhanced network TTS engine extension.
+extern const char kEnhancedNetworkTtsGuestManifestFilename[];
 // The extension id of the Select-to-speak extension.
 extern const char kSelectToSpeakExtensionId[];
 // Path to preinstalled Select-to-speak extension (relative to

@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+
+assert(is_chromeos_ash)
+
+enhanced_network_tts_dir =
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts"
+
+group("build") {
+  deps = [ ":enhanced_network_tts_copied_files" ]
+}
+
+# Instead of setting up one copy target for each subdirectory, use a script
+# to copy all files.
+run_jsbundler("enhanced_network_tts_copied_files") {
+  mode = "copy"
+  dest_dir = enhanced_network_tts_dir
+  sources = [ "background.js" ]
+  rewrite_rules = [
+    rebase_path(".", root_build_dir) + ":",
+    rebase_path(closure_library_dir, root_build_dir) + ":closure",
+  ]
+}

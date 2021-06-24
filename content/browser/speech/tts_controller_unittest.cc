@@ -130,6 +130,7 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
   }
 
   void GetVoices(BrowserContext* browser_context,
+                 const GURL& source_url,
                  std::vector<VoiceData>* out_voices) override {
     for (const auto& voice : voices_)
       out_voices->push_back(voice);
@@ -927,12 +928,12 @@ TEST_F(TtsControllerTest, GetVoicesOnlineOffline) {
 
   controller()->set_allow_remote_voices(true);
   std::vector<VoiceData> controller_voices;
-  controller()->GetVoices(browser_context(), &controller_voices);
+  controller()->GetVoices(browser_context(), GURL(), &controller_voices);
   EXPECT_EQ(2U, controller_voices.size());
 
   controller_voices.clear();
   controller()->set_allow_remote_voices(false);
-  controller()->GetVoices(browser_context(), &controller_voices);
+  controller()->GetVoices(browser_context(), GURL(), &controller_voices);
   EXPECT_EQ(1U, controller_voices.size());
   EXPECT_EQ("offline", controller_voices[0].name);
 }
