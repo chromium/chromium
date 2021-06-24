@@ -79,6 +79,12 @@ bool TestClipboard::IsFormatAvailable(
   const DataStore& store = GetStore(buffer);
   if (format == ClipboardFormatType::GetFilenamesType())
     return !store.filenames.empty();
+  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
+  if (format == ClipboardFormatType::GetPngType() ||
+      format == ClipboardFormatType::GetBitmapType()) {
+    return base::Contains(store.data, ClipboardFormatType::GetPngType()) ||
+           base::Contains(store.data, ClipboardFormatType::GetBitmapType());
+  }
   return base::Contains(store.data, format);
 }
 

@@ -592,17 +592,13 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
                                       const U8x4* expect_data) {
   WriteBitmap(clipboard, info, reinterpret_cast<const void*>(bitmap_data));
 
+  // Expect to be able to read images as either bitmaps or PNGs.
   EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetBitmapType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
-
-#if !defined(OS_WIN) && !defined(OS_MAC)
-  // On Windows and Mac, PNG and bitmap are separate formats. Due to how the
-  // ScopedClipboardWriter writes bitmaps, only the bitmap format is available.
   EXPECT_TRUE(clipboard->IsFormatAvailable(ClipboardFormatType::GetPngType(),
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
-#endif  // !defined(OS_WIN) && !defined(OS_MAC)
   std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
   SkBitmap image;
   gfx::PNGCodec::Decode(result.data(), result.size(), &image);

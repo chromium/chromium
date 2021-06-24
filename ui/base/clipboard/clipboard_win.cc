@@ -271,6 +271,17 @@ bool ClipboardWin::IsFormatAvailable(
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   if (format == ClipboardFormatType::GetFilenameType())
     return ReadFilenamesAvailable();
+  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
+  if (format == ClipboardFormatType::GetPngType() ||
+      format == ClipboardFormatType::GetBitmapType()) {
+    return ::IsClipboardFormatAvailable(
+               ClipboardFormatType::GetPngType().ToFormatEtc().cfFormat) !=
+               FALSE ||
+           ::IsClipboardFormatAvailable(
+               ClipboardFormatType::GetBitmapType().ToFormatEtc().cfFormat) !=
+               FALSE;
+  }
+
   return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
 }
 

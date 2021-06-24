@@ -28,6 +28,7 @@
 #import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -114,9 +115,15 @@ bool ClipboardMac::IsFormatAvailable(
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
-  if ([format.ToNSString() isEqualToString:NSHTMLPboardType]) {
+  if (format == ClipboardFormatType::GetHtmlType()) {
     return [types containsObject:NSHTMLPboardType] ||
            [types containsObject:NSRTFPboardType];
+  }
+  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
+  if (format == ClipboardFormatType::GetPngType() ||
+      format == ClipboardFormatType::GetBitmapType()) {
+    return [types containsObject:NSPasteboardTypePNG] ||
+           [types containsObject:NSTIFFPboardType];
   }
   return [types containsObject:format.ToNSString()];
 }
