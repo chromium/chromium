@@ -123,15 +123,46 @@ void ShimlessRmaService::SetDifferentOwner(SetDifferentOwnerCallback callback) {
 }
 
 void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
-    ChooseManuallyDisableWriteProtectCallback callback) {}
+    ChooseManuallyDisableWriteProtectCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
+    LOG(ERROR)
+        << "ChooseManuallyDisableWriteProtect called from incorrect state "
+        << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_wp_disable_method()->set_disable_method(
+      rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_PHYSICAL);
+  GetNextStateGeneric(std::move(callback));
+}
 
 void ShimlessRmaService::ChooseRsuDisableWriteProtect(
     ChooseRsuDisableWriteProtectCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {
+    LOG(ERROR) << "ChooseRsuDisableWriteProtect called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_wp_disable_method()->set_disable_method(
+      rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_RSU);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetRsuDisableWriteProtectCode(
     const std::string& code,
     SetRsuDisableWriteProtectCodeCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableRsu) {
+    LOG(ERROR) << "SetRsuDisableWriteProtectCode called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_wp_disable_rsu()->set_unlock_code(code);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {

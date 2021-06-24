@@ -442,6 +442,163 @@ TEST_F(ShimlessRmaServiceTest, SetDifferentOwnerFromWrongStateFails) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, SetManuallyDisableWriteProtect) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kWpDisableMethod);
+        EXPECT_EQ(
+            state.wp_disable_method().disable_method(),
+            rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_PHYSICAL);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseWriteProtectDisableMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest,
+       SetManuallyDisableWriteProtectFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtect) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kWpDisableMethod);
+        EXPECT_EQ(state.wp_disable_method().disable_method(),
+                  rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_RSU);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseWriteProtectDisableMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ChooseRsuDisableWriteProtect(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ChooseRsuDisableWriteProtect(
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectCode) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kWpDisableRsu);
+        EXPECT_EQ(state.wp_disable_rsu().unlock_code(), "test RSU unlock code");
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SetRsuDisableWriteProtectCode(
+      "test RSU unlock code",
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest,
+       SetRsuDisableWriteProtectCodeFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SetRsuDisableWriteProtectCode(
+      "test RSU unlock code",
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
 class FakeErrorObserver : public mojom::ErrorObserver {
  public:
   void OnError(mojom::RmadErrorCode error) override {
