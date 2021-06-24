@@ -186,6 +186,7 @@ vs-chromium-project.txt
 /components/chrome_settings_proto_generated_compile.xml
 /components/cloud_policy_proto_generated_compile.xml
 /components/gcm_driver.xml
+/components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
 /components/ntp_tiles/resources/internal
 /components/resources/default_100_percent/google_chrome
