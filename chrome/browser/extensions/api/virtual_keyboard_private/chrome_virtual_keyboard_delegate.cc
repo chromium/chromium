@@ -504,29 +504,26 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                       keyboard_client->IsEnableFlagSet(
                           keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
   results->SetBoolean("hotrodmode", g_hotrod_keyboard_enabled);
-  std::unique_ptr<base::ListValue> features(new base::ListValue());
+  base::Value features(base::Value::Type::LIST);
 
   keyboard::KeyboardConfig config = keyboard_client->GetKeyboardConfig();
   // TODO(oka): Change this to use config.voice_input.
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "voiceinput", has_audio_input_devices && config.voice_input));
-  features->AppendString(
-      GenerateFeatureFlag("autocomplete", config.auto_complete));
-  features->AppendString(
-      GenerateFeatureFlag("autocorrect", config.auto_correct));
-  features->AppendString(GenerateFeatureFlag("spellcheck", config.spell_check));
-  features->AppendString(
-      GenerateFeatureFlag("handwriting", config.handwriting));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag("autocomplete", config.auto_complete));
+  features.Append(GenerateFeatureFlag("autocorrect", config.auto_correct));
+  features.Append(GenerateFeatureFlag("spellcheck", config.spell_check));
+  features.Append(GenerateFeatureFlag("handwriting", config.handwriting));
+  features.Append(GenerateFeatureFlag(
       "handwritinggesture",
       base::FeatureList::IsEnabled(features::kHandwritingGesture)));
-  features->AppendString(
+  features.Append(
       GenerateFeatureFlag("handwritinggestureediting",
                           base::FeatureList::IsEnabled(
                               chromeos::features::kHandwritingGestureEditing)));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "multiword", chromeos::features::IsAssistiveMultiWordEnabled()));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "floatingkeyboarddefault",
       base::FeatureList::IsEnabled(
           chromeos::features::kVirtualKeyboardFloatingDefault)));
@@ -534,34 +531,34 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   // Flag used to enable system built-in IME decoder instead of NaCl.
   bool mojo_decoder =
       base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder);
-  features->AppendString(GenerateFeatureFlag("usemojodecoder", mojo_decoder));
+  features.Append(GenerateFeatureFlag("usemojodecoder", mojo_decoder));
   // Enabling MojoDecoder implies the 2 previous flags are auto-enabled.
   //   * fstinputlogic
   //   * hmminputlogic
   // TODO(b/171846787): Remove the 3 flags after they are removed from clients.
-  features->AppendString(GenerateFeatureFlag("fstinputlogic", mojo_decoder));
-  features->AppendString(GenerateFeatureFlag("hmminputlogic", mojo_decoder));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag("fstinputlogic", mojo_decoder));
+  features.Append(GenerateFeatureFlag("hmminputlogic", mojo_decoder));
+  features.Append(GenerateFeatureFlag(
       "imemozcproto",
       base::FeatureList::IsEnabled(chromeos::features::kImeMozcProto)));
 
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "borderedkey", base::FeatureList::IsEnabled(
                          chromeos::features::kVirtualKeyboardBorderedKey)));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "assistiveAutoCorrect",
       base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "systemlatinphysicaltyping",
       chromeos::features::IsSystemLatinPhysicalTypingEnabled()));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
-  features->AppendString(GenerateFeatureFlag(
+  features.Append(GenerateFeatureFlag(
       "multipaste", base::FeatureList::IsEnabled(
                         chromeos::features::kVirtualKeyboardMultipaste)));
 
-  results->Set("features", std::move(features));
+  results->SetKey("features", std::move(features));
 
   std::move(on_settings_callback).Run(std::move(results));
 }

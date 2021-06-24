@@ -57,7 +57,7 @@ void SetValue(base::DictionaryValue* dict,
   if (!value)
     return;
 
-  dict->Set(key, ToValue(*value));
+  dict->SetKey(key, base::Value::FromUniquePtrValue(ToValue(*value)));
 }
 
 }  // namespace

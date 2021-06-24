@@ -138,13 +138,13 @@ scoped_refptr<const Extension> CreateServiceWorkerExtension() {
 std::unique_ptr<DictionaryValue> CreateHostSuffixFilter(
     const std::string& suffix) {
   auto filter_dict = std::make_unique<DictionaryValue>();
-  filter_dict->Set("hostSuffix", std::make_unique<Value>(suffix));
+  filter_dict->SetKey("hostSuffix", Value(suffix));
 
-  auto filter_list = std::make_unique<ListValue>();
-  filter_list->Append(std::move(filter_dict));
+  Value filter_list(Value::Type::LIST);
+  filter_list.Append(std::move(*filter_dict));
 
   auto filter = std::make_unique<DictionaryValue>();
-  filter->Set("url", std::move(filter_list));
+  filter->SetKey("url", std::move(filter_list));
   return filter;
 }
 

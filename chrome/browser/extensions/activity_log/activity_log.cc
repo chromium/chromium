@@ -415,8 +415,9 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
       extension_id, base::Time::Now(), Action::ACTION_WEB_REQUEST, api_call);
   action->set_page_url(url);
   action->set_page_incognito(is_incognito);
-  action->mutable_other()->Set(activity_log_constants::kActionWebRequest,
-                               std::move(details));
+  action->mutable_other()->SetKey(
+      activity_log_constants::kActionWebRequest,
+      base::Value::FromUniquePtrValue(std::move(details)));
   activity_log->LogAction(action);
 }
 

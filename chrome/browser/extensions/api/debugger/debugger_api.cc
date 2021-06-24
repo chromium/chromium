@@ -304,8 +304,8 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
   protocol_request.SetInteger("id", request_id);
   protocol_request.SetString("method", method);
   if (command_params) {
-    protocol_request.Set(
-        "params", command_params->additional_properties.CreateDeepCopy());
+    protocol_request.SetKey("params",
+                            command_params->additional_properties.Clone());
   }
 
   std::string json;

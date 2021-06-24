@@ -147,10 +147,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_IDLE;
   }
 
-  auto content_scripts = std::make_unique<base::ListValue>();
-  content_scripts->Append(content_script.ToValue());
-  root->Set(api::content_scripts::ManifestKeys::kContentScripts,
-            std::move(content_scripts));
+  base::Value content_scripts(base::Value::Type::LIST);
+  content_scripts.Append(
+      base::Value::FromUniquePtrValue(content_script.ToValue()));
+  root->SetKey(api::content_scripts::ManifestKeys::kContentScripts,
+               std::move(content_scripts));
 
   base::FilePath manifest_path = temp_dir.GetPath().Append(kManifestFilename);
   JSONFileValueSerializer serializer(manifest_path);

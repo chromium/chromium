@@ -152,7 +152,7 @@ void RegisterItem(OperationResult* result,
     return;
   }
 
-  dict->Set(item_id, std::make_unique<base::DictionaryValue>());
+  dict->SetKey(item_id, base::Value(base::Value::Type::DICTIONARY));
 
   ValueStore::WriteResult write =
       store->Set(ValueStore::DEFAULTS, kStoreKeyRegisteredItems, *dict);

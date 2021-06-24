@@ -104,14 +104,14 @@ class ExtensionGarbageCollectorChromeOSUnitTest
     version_info->SetString(
         ExtensionAssetsManagerChromeOS::kSharedExtensionPath, path.value());
 
-    auto users = std::make_unique<base::ListValue>();
+    base::Value users(base::Value::Type::LIST);
     for (const std::string& user :
          base::SplitString(users_string, ",", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
-      users->AppendString(user);
+      users.Append(user);
     }
-    version_info->Set(ExtensionAssetsManagerChromeOS::kSharedExtensionUsers,
-                      std::move(users));
+    version_info->SetKey(ExtensionAssetsManagerChromeOS::kSharedExtensionUsers,
+                         std::move(users));
     extension_info_weak->SetKey(
         version, base::Value::FromUniquePtrValue(std::move(version_info)));
   }

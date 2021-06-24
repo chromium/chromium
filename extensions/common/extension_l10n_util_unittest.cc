@@ -293,53 +293,51 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsCompressed) {
 MessageBundle* CreateManifestBundle() {
   auto catalog = std::make_unique<base::DictionaryValue>();
 
-  auto name_tree = std::make_unique<base::DictionaryValue>();
-  name_tree->SetString("message", "name");
-  catalog->Set("name", std::move(name_tree));
+  base::Value name_tree(base::Value::Type::DICTIONARY);
+  name_tree.SetStringKey("message", "name");
+  catalog->SetKey("name", std::move(name_tree));
 
-  auto short_name_tree = std::make_unique<base::DictionaryValue>();
-  short_name_tree->SetString("message", "short_name");
-  catalog->Set("short_name", std::move(short_name_tree));
+  base::Value short_name_tree(base::Value::Type::DICTIONARY);
+  short_name_tree.SetStringKey("message", "short_name");
+  catalog->SetKey("short_name", std::move(short_name_tree));
 
-  auto description_tree = std::make_unique<base::DictionaryValue>();
-  description_tree->SetString("message", "description");
-  catalog->Set("description", std::move(description_tree));
+  base::Value description_tree(base::Value::Type::DICTIONARY);
+  description_tree.SetStringKey("message", "description");
+  catalog->SetKey("description", std::move(description_tree));
 
-  auto action_title_tree = std::make_unique<base::DictionaryValue>();
-  action_title_tree->SetString("message", "action title");
-  catalog->Set("title", std::move(action_title_tree));
+  base::Value action_title_tree(base::Value::Type::DICTIONARY);
+  action_title_tree.SetStringKey("message", "action title");
+  catalog->SetKey("title", std::move(action_title_tree));
 
-  auto omnibox_keyword_tree = std::make_unique<base::DictionaryValue>();
-  omnibox_keyword_tree->SetString("message", "omnibox keyword");
-  catalog->Set("omnibox_keyword", std::move(omnibox_keyword_tree));
+  base::Value omnibox_keyword_tree(base::Value::Type::DICTIONARY);
+  omnibox_keyword_tree.SetStringKey("message", "omnibox keyword");
+  catalog->SetKey("omnibox_keyword", std::move(omnibox_keyword_tree));
 
-  auto file_handler_title_tree = std::make_unique<base::DictionaryValue>();
-  file_handler_title_tree->SetString("message", "file handler title");
-  catalog->Set("file_handler_title", std::move(file_handler_title_tree));
+  base::Value file_handler_title_tree(base::Value::Type::DICTIONARY);
+  file_handler_title_tree.SetStringKey("message", "file handler title");
+  catalog->SetKey("file_handler_title", std::move(file_handler_title_tree));
 
-  auto launch_local_path_tree = std::make_unique<base::DictionaryValue>();
-  launch_local_path_tree->SetString("message", "main.html");
-  catalog->Set("launch_local_path", std::move(launch_local_path_tree));
+  base::Value launch_local_path_tree(base::Value::Type::DICTIONARY);
+  launch_local_path_tree.SetStringKey("message", "main.html");
+  catalog->SetKey("launch_local_path", std::move(launch_local_path_tree));
 
-  auto launch_web_url_tree = std::make_unique<base::DictionaryValue>();
-  launch_web_url_tree->SetString("message", "http://www.google.com/");
-  catalog->Set("launch_web_url", std::move(launch_web_url_tree));
+  base::Value launch_web_url_tree(base::Value::Type::DICTIONARY);
+  launch_web_url_tree.SetStringKey("message", "http://www.google.com/");
+  catalog->SetKey("launch_web_url", std::move(launch_web_url_tree));
 
-  auto first_command_description_tree =
-      std::make_unique<base::DictionaryValue>();
-  first_command_description_tree->SetString("message", "first command");
-  catalog->Set("first_command_description",
-               std::move(first_command_description_tree));
+  base::Value first_command_description_tree(base::Value::Type::DICTIONARY);
+  first_command_description_tree.SetStringKey("message", "first command");
+  catalog->SetKey("first_command_description",
+                  std::move(first_command_description_tree));
 
-  auto second_command_description_tree =
-      std::make_unique<base::DictionaryValue>();
-  second_command_description_tree->SetString("message", "second command");
-  catalog->Set("second_command_description",
-               std::move(second_command_description_tree));
+  base::Value second_command_description_tree(base::Value::Type::DICTIONARY);
+  second_command_description_tree.SetStringKey("message", "second command");
+  catalog->SetKey("second_command_description",
+                  std::move(second_command_description_tree));
 
-  auto url_country_tree = std::make_unique<base::DictionaryValue>();
-  url_country_tree->SetString("message", "de");
-  catalog->Set("country", std::move(url_country_tree));
+  base::Value url_country_tree(base::Value::Type::DICTIONARY);
+  url_country_tree.SetStringKey("message", "de");
+  catalog->SetKey("country", std::move(url_country_tree));
 
   std::vector<std::unique_ptr<base::DictionaryValue>> catalogs;
   catalogs.push_back(std::move(catalog));
@@ -512,9 +510,9 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
 
   base::DictionaryValue handler;
   handler.SetString(keys::kActionDefaultTitle, "__MSG_file_handler_title__");
-  auto handlers = std::make_unique<base::ListValue>();
-  handlers->Append(std::move(handler));
-  manifest.Set(keys::kFileBrowserHandlers, std::move(handlers));
+  base::Value handlers(base::Value::Type::LIST);
+  handlers.Append(std::move(handler));
+  manifest.SetKey(keys::kFileBrowserHandlers, std::move(handlers));
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -543,19 +541,19 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionCommandDescription) {
   base::DictionaryValue manifest;
   manifest.SetString(keys::kName, "__MSG_name__");
   manifest.SetString(keys::kDescription, "__MSG_description__");
-  auto commands = std::make_unique<base::DictionaryValue>();
+  base::Value commands(base::Value::Type::DICTIONARY);
   std::string commands_title(keys::kCommands);
 
-  auto first_command = std::make_unique<base::DictionaryValue>();
-  first_command->SetString(keys::kDescription,
-                           "__MSG_first_command_description__");
-  commands->Set("first_command", std::move(first_command));
+  base::DictionaryValue first_command;
+  first_command.SetStringKey(keys::kDescription,
+                             "__MSG_first_command_description__");
+  commands.SetKey("first_command", std::move(first_command));
 
-  auto second_command = std::make_unique<base::DictionaryValue>();
-  second_command->SetString(keys::kDescription,
-                            "__MSG_second_command_description__");
-  commands->Set("second_command", std::move(second_command));
-  manifest.Set(commands_title, std::move(commands));
+  base::DictionaryValue second_command;
+  second_command.SetStringKey(keys::kDescription,
+                              "__MSG_second_command_description__");
+  commands.SetKey("second_command", std::move(second_command));
+  manifest.SetKey(commands_title, std::move(commands));
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -620,19 +618,19 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
   manifest.SetString(keys::kName, "__MSG_name__");
   manifest.SetString(keys::kDescription, "__MSG_description__");
 
-  auto search_provider = std::make_unique<base::DictionaryValue>();
-  search_provider->SetString("name", "__MSG_country__");
-  search_provider->SetString("keyword", "__MSG_omnibox_keyword__");
-  search_provider->SetString("search_url", "http://www.foo.__MSG_country__");
-  search_provider->SetString("favicon_url", "http://www.foo.__MSG_country__");
-  search_provider->SetString("suggest_url", "http://www.foo.__MSG_country__");
-  manifest.Set(keys::kOverrideSearchProvider, std::move(search_provider));
+  base::Value search_provider(base::Value::Type::DICTIONARY);
+  search_provider.SetStringKey("name", "__MSG_country__");
+  search_provider.SetStringKey("keyword", "__MSG_omnibox_keyword__");
+  search_provider.SetStringKey("search_url", "http://www.foo.__MSG_country__");
+  search_provider.SetStringKey("favicon_url", "http://www.foo.__MSG_country__");
+  search_provider.SetStringKey("suggest_url", "http://www.foo.__MSG_country__");
+  manifest.SetPath(keys::kOverrideSearchProvider, std::move(search_provider));
 
   manifest.SetString(keys::kOverrideHomepage, "http://www.foo.__MSG_country__");
 
-  auto startup_pages = std::make_unique<base::ListValue>();
-  startup_pages->AppendString("http://www.foo.__MSG_country__");
-  manifest.Set(keys::kOverrideStartupPage, std::move(startup_pages));
+  base::Value startup_pages(base::Value::Type::LIST);
+  startup_pages.Append("http://www.foo.__MSG_country__");
+  manifest.SetPath(keys::kOverrideStartupPage, std::move(startup_pages));
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());

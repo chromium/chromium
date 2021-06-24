@@ -399,17 +399,17 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
   auto version_info = std::make_unique<base::DictionaryValue>();
   version_info->SetString(kSharedExtensionPath, shared_version_dir.value());
 
-  auto users = std::make_unique<base::ListValue>();
+  base::Value users(base::Value::Type::LIST);
   for (size_t i = 0; i < pending_installs.size(); i++) {
     ExtensionAssetsManagerHelper::PendingInstallInfo& info =
         pending_installs[i];
-      users->AppendString(info.profile->GetProfileUserName());
+    users.Append(info.profile->GetProfileUserName());
 
-      GetExtensionFileTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(info.callback), shared_version_dir));
+    GetExtensionFileTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(info.callback), shared_version_dir));
   }
-  version_info->Set(kSharedExtensionUsers, std::move(users));
+  version_info->SetKey(kSharedExtensionUsers, std::move(users));
   extension_info_weak->SetKey(
       version, base::Value::FromUniquePtrValue(std::move(version_info)));
 }

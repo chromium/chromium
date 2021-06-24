@@ -818,7 +818,8 @@ static std::unique_ptr<base::ListValue> CreatePermissionList(
     std::unique_ptr<base::Value> detail(i->ToValue());
     if (detail) {
       auto tmp(std::make_unique<base::DictionaryValue>());
-      tmp->Set(i->name(), std::move(detail));
+      tmp->SetKey(i->name(),
+                  base::Value::FromUniquePtrValue(std::move(detail)));
       values->Append(std::move(tmp));
     } else {
       values->AppendString(i->name());

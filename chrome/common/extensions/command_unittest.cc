@@ -74,13 +74,13 @@ void CheckParse(const ConstCommandsTestData& data,
     }
 
     input = std::make_unique<base::DictionaryValue>();
-    auto key_dict = std::make_unique<base::DictionaryValue>();
+    base::Value key_dict(base::Value::Type::DICTIONARY);
 
     for (size_t j = 0; j < platforms.size(); ++j)
-      key_dict->SetString(platforms[j], data.key);
+      key_dict.SetStringKey(platforms[j], data.key);
 
-    input->Set("suggested_key", std::move(key_dict));
-    input->SetString("description", data.description);
+    input->SetKey("suggested_key", std::move(key_dict));
+    input->SetStringKey("description", data.description);
 
     bool result = command.Parse(input.get(), data.command_name, i, &error);
     EXPECT_EQ(data.expected_result, result);

@@ -321,8 +321,7 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 
   void CreateHostedApp(ManifestLocation location) {
     base::DictionaryValue values;
-    values.Set(extensions::manifest_keys::kWebURLs,
-               std::make_unique<base::ListValue>());
+    values.SetPath(extensions::manifest_keys::kWebURLs, base::ListValue());
     values.SetString(extensions::manifest_keys::kLaunchWebURL,
                      "http://www.example.com");
     CreateExtensionFromValues(location, &values);

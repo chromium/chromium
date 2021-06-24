@@ -117,11 +117,11 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   // another platform.
   std::string anotherPlatformKey = GetAnotherCommandPlatform() + ":Alt+G";
   const char kNamedCommandName[] = "toggle-feature";
-  auto keybinding = std::make_unique<base::DictionaryValue>();
-  keybinding->SetString("extension", extension->id());
-  keybinding->SetString("command_name", kNamedCommandName);
-  keybinding->SetBoolean("global", false);
-  bindings->Set(anotherPlatformKey, std::move(keybinding));
+  base::Value keybinding(base::Value::Type::DICTIONARY);
+  keybinding.SetStringKey("extension", extension->id());
+  keybinding.SetStringKey("command_name", kNamedCommandName);
+  keybinding.SetBoolKey("global", false);
+  bindings->SetKey(anotherPlatformKey, std::move(keybinding));
 
   CommandService* command_service = CommandService::Get(browser()->profile());
   command_service->RemoveKeybindingPrefs(extension->id(), kNamedCommandName);

@@ -434,10 +434,10 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
   }
   {
     base::DictionaryValue to_set;
-    to_set.Set(key1_, val2_->CreateDeepCopy());
-    to_set.Set(key2_, val2_->CreateDeepCopy());
-    to_set.Set("asdf", val1_->CreateDeepCopy());
-    to_set.Set("qwerty", val3_->CreateDeepCopy());
+    to_set.SetKey(key1_, val2_->Clone());
+    to_set.SetKey(key2_, val2_->Clone());
+    to_set.SetKey("asdf", val1_->Clone());
+    to_set.SetKey("qwerty", val3_->Clone());
 
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, val1_->Clone(), val2_->Clone()));

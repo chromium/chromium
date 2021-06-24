@@ -502,8 +502,7 @@ void UsbTransferFunction::OnTransferInCompleted(
 void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {
   auto transfer_info = std::make_unique<base::DictionaryValue>();
   transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
-  transfer_info->Set(kDataKey,
-                     std::make_unique<base::Value>(base::Value::Type::BINARY));
+  transfer_info->SetKey(kDataKey, base::Value(base::Value::Type::BINARY));
 
   OnCompleted(status, std::move(transfer_info));
 }

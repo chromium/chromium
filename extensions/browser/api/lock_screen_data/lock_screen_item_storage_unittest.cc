@@ -194,7 +194,7 @@ class ItemRegistry {
         std::make_unique<base::DictionaryValue>();
 
     for (const std::string& item_id : items_)
-      result->Set(item_id, std::make_unique<base::DictionaryValue>());
+      result->SetKey(item_id, base::Value(base::Value::Type::DICTIONARY));
 
     return result;
   }

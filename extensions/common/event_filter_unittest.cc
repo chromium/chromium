@@ -56,7 +56,8 @@ class EventFilterUnittest : public testing::Test {
   std::unique_ptr<EventMatcher> MatcherFromURLFilterList(
       std::unique_ptr<ListValue> url_filter_list) {
     auto filter_dict = std::make_unique<DictionaryValue>();
-    filter_dict->Set("url", std::move(url_filter_list));
+    filter_dict->SetKey(
+        "url", base::Value::FromUniquePtrValue(std::move(url_filter_list)));
     return std::make_unique<EventMatcher>(std::move(filter_dict),
                                           MSG_ROUTING_NONE);
   }

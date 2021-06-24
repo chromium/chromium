@@ -558,8 +558,9 @@ ExtensionTabUtil::CreateWindowValueForExtension(
   result->SetInteger(tabs_constants::kHeightKey, bounds.height());
 
   if (populate_tab_behavior == kPopulateTabs)
-    result->Set(tabs_constants::kTabsKey,
-                CreateTabList(&browser, extension, context));
+    result->SetKey(tabs_constants::kTabsKey,
+                   base::Value::FromUniquePtrValue(
+                       CreateTabList(&browser, extension, context)));
 
   return result;
 }

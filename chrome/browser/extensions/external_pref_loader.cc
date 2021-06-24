@@ -437,7 +437,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     }
 
     DVLOG(1) << "Adding extension with id: " << id;
-    prefs->Set(id, std::move(ext_prefs));
+    prefs->SetKey(id, base::Value::FromUniquePtrValue(std::move(ext_prefs)));
   }
 }
 

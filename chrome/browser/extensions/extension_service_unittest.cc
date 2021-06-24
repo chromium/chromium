@@ -677,7 +677,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     base::DictionaryValue* pref = nullptr;
     ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
     EXPECT_TRUE(pref) << msg;
-    pref->Set(pref_path, std::move(value));
+    pref->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
   }
 
   void SetPrefInteg(const std::string& extension_id,

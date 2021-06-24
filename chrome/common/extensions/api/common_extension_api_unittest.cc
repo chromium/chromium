@@ -466,11 +466,11 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
   manifest.SetString("version", "1.0");
   manifest.SetInteger("manifest_version", 2);
   {
-    std::unique_ptr<base::ListValue> permissions_list(new base::ListValue());
+    base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list->AppendString(*i);
+      permissions_list.Append(*i);
     }
-    manifest.Set("permissions", std::move(permissions_list));
+    manifest.SetKey("permissions", std::move(permissions_list));
   }
 
   std::string error;
@@ -551,7 +551,7 @@ scoped_refptr<Extension> CreateHostedApp() {
   base::DictionaryValue values;
   values.SetString(manifest_keys::kName, "test");
   values.SetString(manifest_keys::kVersion, "0.1");
-  values.Set(manifest_keys::kWebURLs, std::make_unique<base::ListValue>());
+  values.SetPath(manifest_keys::kWebURLs, base::Value(base::Value::Type::LIST));
   values.SetString(manifest_keys::kLaunchWebURL,
                    "http://www.example.com");
   std::string error;
@@ -570,19 +570,19 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
   values.SetString(manifest_keys::kPlatformAppBackground,
       "http://www.example.com");
 
-  auto app = std::make_unique<base::DictionaryValue>();
-  auto background = std::make_unique<base::DictionaryValue>();
-  auto scripts = std::make_unique<base::ListValue>();
-  scripts->AppendString("test.js");
-  background->Set("scripts", std::move(scripts));
-  app->Set("background", std::move(background));
-  values.Set(manifest_keys::kApp, std::move(app));
+  base::Value app(base::Value::Type::DICTIONARY);
+  base::DictionaryValue background;
+  base::ListValue scripts;
+  scripts.Append("test.js");
+  background.SetKey("scripts", std::move(scripts));
+  app.SetKey("background", std::move(background));
+  values.SetKey(manifest_keys::kApp, std::move(app));
   {
-    auto permissions_list = std::make_unique<base::ListValue>();
+    base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list->AppendString(*i);
+      permissions_list.Append(*i);
     }
-    values.Set("permissions", std::move(permissions_list));
+    values.SetKey("permissions", std::move(permissions_list));
   }
 
   std::string error;

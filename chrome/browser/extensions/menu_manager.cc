@@ -210,13 +210,16 @@ std::unique_ptr<base::DictionaryValue> MenuItem::ToValue() const {
     value->SetBoolean(kCheckedKey, checked_);
   value->SetBoolean(kEnabledKey, enabled_);
   value->SetBoolean(kVisibleKey, visible_);
-  value->Set(kContextsKey, contexts_.ToValue());
+  value->SetKey(kContextsKey,
+                base::Value::FromUniquePtrValue(contexts_.ToValue()));
   if (parent_id_) {
     DCHECK_EQ(0, parent_id_->uid);
     value->SetString(kParentUIDKey, parent_id_->string_uid);
   }
-  value->Set(kDocumentURLPatternsKey, document_url_patterns_.ToValue());
-  value->Set(kTargetURLPatternsKey, target_url_patterns_.ToValue());
+  value->SetKey(kDocumentURLPatternsKey, base::Value::FromUniquePtrValue(
+                                             document_url_patterns_.ToValue()));
+  value->SetKey(kTargetURLPatternsKey, base::Value::FromUniquePtrValue(
+                                           target_url_patterns_.ToValue()));
   return value;
 }
 

@@ -1864,11 +1864,9 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
         if (!data->json().HasKey(iter.key()) ||
             (data->json().Get(iter.key(), &old_value) &&
              iter.value() != *old_value)) {
-          delta->Set(iter.key() + ".current",
-                     base::Value::ToUniquePtrValue(iter.value().Clone()));
+          delta->SetPath(iter.key() + ".current", iter.value().Clone());
           if (old_value) {
-            delta->Set(iter.key() + ".previous",
-                       base::Value::ToUniquePtrValue(old_value->Clone()));
+            delta->SetPath(iter.key() + ".previous", old_value->Clone());
           }
           changed = true;
         }
@@ -1883,8 +1881,7 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
           IsDownloadDeltaField(iter.key())) {
         // estimatedEndTime disappears after completion, but bytesReceived
         // stays.
-        delta->Set(iter.key() + ".previous",
-                   base::Value::ToUniquePtrValue(iter.value().Clone()));
+        delta->SetPath(iter.key() + ".previous", iter.value().Clone());
         changed = true;
       }
     }

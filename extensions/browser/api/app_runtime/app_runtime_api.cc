@@ -187,9 +187,10 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
   }
 
   if (action_data)
-    launch_data->Set("actionData", action_data->ToValue());
+    launch_data->SetKey(
+        "actionData", base::Value::FromUniquePtrValue(action_data->ToValue()));
 
-  std::unique_ptr<base::ListValue> items(new base::ListValue);
+  base::Value items(base::Value::Type::LIST);
   DCHECK(file_entries.size() == entries.size());
   for (size_t i = 0; i < file_entries.size(); ++i) {
     std::unique_ptr<base::DictionaryValue> launch_item(
@@ -203,9 +204,9 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
     launch_item->SetString("mimeType", entries[i].mime_type);
     launch_item->SetString("entryId", file_entries[i].id);
     launch_item->SetBoolean("isDirectory", entries[i].is_directory);
-    items->Append(std::move(launch_item));
+    items.Append(std::move(*launch_item));
   }
-  launch_data->Set("items", std::move(items));
+  launch_data->SetKey("items", std::move(items));
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
                               std::move(launch_data), context);
 }
