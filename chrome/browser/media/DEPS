@@ -16,6 +16,7 @@ include_rules = [
 specific_include_rules = {
   "cast_mirroring_performance_browsertest\.cc": [
     "+third_party/openscreen/src/cast/streaming",
+    # Required by Open Screen API.
     "+third_party/jsoncpp/source/include/json",
   ],
   "cast_remoting_connector\.cc": [
