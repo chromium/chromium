@@ -100,18 +100,11 @@
     case OmniboxIconTypeImage:
     case OmniboxIconTypeSuggestionIcon:
       if ([self hasCustomAnswerIcon]) {
-        return color::DarkModeDynamicColor(
-            [UIColor colorNamed:@"omnibox_suggestion_answer_icon_color"],
-            self.incognito,
-            [UIColor colorNamed:@"omnibox_suggestion_answer_icon_dark_color"]);
+        return [UIColor colorNamed:@"omnibox_suggestion_answer_icon_color"];
       }
-      return color::DarkModeDynamicColor(
-          [UIColor colorNamed:@"omnibox_suggestion_icon_color"], self.incognito,
-          [UIColor colorNamed:@"omnibox_suggestion_icon_dark_color"]);
+      return [UIColor colorNamed:@"omnibox_suggestion_icon_color"];
     case OmniboxIconTypeFavicon:
-      return color::DarkModeDynamicColor(
-          [UIColor colorNamed:@"omnibox_suggestion_icon_color"], self.incognito,
-          [UIColor colorNamed:@"omnibox_suggestion_icon_dark_color"]);
+      return [UIColor colorNamed:@"omnibox_suggestion_icon_color"];
   }
 }
 
@@ -136,9 +129,7 @@
       return nil;
     case OmniboxIconTypeSuggestionIcon:
       if ([self hasCustomAnswerIcon]) {
-        return color::DarkModeDynamicColor([UIColor colorNamed:kBlueColor],
-                                           self.incognito,
-                                           [UIColor colorNamed:kBlueDarkColor]);
+        return [UIColor colorNamed:kBlueColor];
       }
       return nil;
     case OmniboxIconTypeFavicon:

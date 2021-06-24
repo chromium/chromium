@@ -39,7 +39,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 // The suggestion that this cell is currently displaying.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
-// Whether the cell is currently dispalying in incognito mode or not.
+// Whether the cell is currently displaying in incognito mode or not.
 @property(nonatomic, assign) BOOL incognito;
 
 // Stack view containing all text labels.
@@ -76,9 +76,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _incognito = NO;
 
     self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.selectedBackgroundView.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kTableViewRowHighlightColor], _incognito,
-        [UIColor colorNamed:kTableViewRowHighlightDarkColor]);
+    self.selectedBackgroundView.backgroundColor =
+        [UIColor colorNamed:kTableViewRowHighlightColor];
 
     _textTruncatingLabel =
         [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
@@ -405,17 +404,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   self.suggestion = suggestion;
   self.incognito = incognito;
 
-  // While iOS 12 is still supported, the background color needs to be reset
-  // when the incognito mode changes. Once iOS 12 is no longer supported,
-  // the color should only have to be set once.
-  if (@available(iOS 13, *)) {
-    // Empty because condition should be if (!@available(iOS 13, *)).
-  } else {
-    self.selectedBackgroundView.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kTableViewRowHighlightColor], self.incognito,
-        [UIColor colorNamed:kTableViewRowHighlightDarkColor]);
-  }
-
   self.separator.backgroundColor =
       self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
                      : [UIColor.blackColor colorWithAlphaComponent:0.12];
@@ -478,9 +466,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
   [self.trailingButton setImage:trailingButtonImage
                        forState:UIControlStateNormal];
-  self.trailingButton.tintColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBlueColor], self.incognito,
-      [UIColor colorNamed:kBlueDarkColor]);
+  self.trailingButton.tintColor = [UIColor colorNamed:kBlueColor];
 }
 
 - (NSString*)accessibilityLabel {

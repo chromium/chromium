@@ -113,9 +113,7 @@
                   renderingMode:UIImageRenderingModeAlwaysOriginal];
   button.fullScreenImage = [[UIImage imageNamed:@"incognito_small_badge"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  button.tintColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextPrimaryColor], self.incognito,
-      [UIColor colorNamed:kTextPrimaryDarkColor]);
+  button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   button.accessibilityTraits &= ~UIAccessibilityTraitButton;
   button.userInteractionEnabled = NO;
   button.accessibilityIdentifier = kBadgeButtonIncognitoAccessibilityIdentifier;
