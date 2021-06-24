@@ -91,7 +91,6 @@ appiconset("chromium_icons") {
     "chromium/AppIcon.appiconset/Icon-29.png",
     "chromium/AppIcon.appiconset/Icon-40.png",
     "chromium/AppIcon.appiconset/Icon-58.png",
-    "chromium/AppIcon.appiconset/Icon-76.png",
     "chromium/AppIcon.appiconset/Icon-80.png",
     "chromium/AppIcon.appiconset/Icon-87.png",
   ]
