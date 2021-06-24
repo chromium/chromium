@@ -8,6 +8,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
+import org.chromium.components.permissions.BluetoothChooserAndroidDelegate;
 
 /**
  *  The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome.

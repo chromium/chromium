@@ -35,6 +35,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.BluetoothChooserDialog;
+import org.chromium.components.permissions.BluetoothChooserDialogJni;
+import org.chromium.components.permissions.DeviceItemAdapter;
+import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,6 +52,8 @@ import java.util.concurrent.Callable;
 
 /**
  * Tests for the BluetoothChooserDialog class.
+ *
+ * TODO(crbug.com/1222669): Componentize this test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})

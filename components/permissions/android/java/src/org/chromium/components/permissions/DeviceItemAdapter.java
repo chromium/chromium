@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.device_dialog;
+package org.chromium.components.permissions;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -20,8 +20,6 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
-
-import org.chromium.chrome.R;
 
 import java.util.HashMap;
 import java.util.Map;

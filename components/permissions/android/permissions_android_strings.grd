@@ -203,6 +203,59 @@
       <message name="IDS_OVERLAY_DETECTED_DIALOG_MESSAGE" desc="Dialog message that informs the user about detected overlay window that prevents interaction with permissions.">
         Close any bubbles or overlays from other apps. Then, try again.
       </message>
+
+      <!-- Bluetooth Picker UI strings -->
+      <message name="IDS_BLUETOOTH_ADAPTER_OFF_HELP" desc="The status message to show along with the message when the bluetooth adapter is turned off (to get Help).">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_CONFIRM_BUTTON" desc="The button to confirm association of a website with a Bluetooth device. Use the same term as in 'Pair this Bluetooth headset with your phone.'">
+        Pair
+      </message>
+      <message name="IDS_SIGNAL_STRENGTH_LEVEL_N_BARS" desc="Text to be shown next to devices indicating their received signal strength. [ICU Syntax]">
+        {N_BARS, plural,
+          =1 {Signal Strength Level: # bar}
+          other {Signal Strength Level: # bars}}
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_CONNECTED" desc="Content description for the connected icon next to connected Bluetooth devices.">
+        Connected Device
+      </message>
+      <message name="IDS_BLUETOOTH_DIALOG_TITLE" desc="The header message shown on top of the dialog that lets the user pick a Bluetooth device for the site to pair with. Shown above a list of Bluetooth devices discovered. ">
+        <ph name="SITE">%1$s<ex>https://www.google.com</ex></ph> wants to pair</message>
+      <message name="IDS_BLUETOOTH_NOT_FOUND" desc="The label shown to the user to inform them that no Bluetooth devices were found matching the requirements that the application provided.">
+        No compatible devices found
+      </message>
+      <message name="IDS_BLUETOOTH_SEARCHING" desc="The message shown in the Bluetooth picker dialog while scanning for devices.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph> while scanning for devices…
+      </message>
+      <message name="IDS_BLUETOOTH_NOT_SEEING_IT_IDLE" desc="The message to show at the bottom of the dialog when Bluetooth scanning has uncovered some items but is no longer discovering devices. Allows the user to restart the scan, in case their device is not listed.">
+        <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Get help<ph name="END_LINK1">&lt;/link1&gt;</ph> or <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>re-scan<ph name="END_LINK2">&lt;/link2&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_SERVICES_ON" desc="The message to show when scanning cannot start because Android location services are off, but they must be turned on for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. Location access is <ph name="BEGIN_LINK">&lt;services_link&gt;</ph>turned off for this device<ph name="END_LINK">&lt;/services_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION_AND_SERVICES_ON" desc="The message to show when scanning cannot start because Chrome doesn't have the Location permission and the device's location services are turned off, and both must be enabled in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. <ph name="BEGIN_LINK1">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK1">&lt;/permission_link&gt;</ph>. Location access is also <ph name="BEGIN_LINK2">&lt;services_link&gt;</ph>turned off for this device<ph name="END_LINK2">&lt;/services_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_NEARBY_DEVICES_PERMISSION" desc="The message to show when scanning cannot start because Chrome needs the Nearby devices permission in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs permission to scan for nearby devices. <ph name="BEGIN_LINK">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK">&lt;/permission_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION" desc="The message to show when scanning cannot start because Chrome needs the Location permission in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. <ph name="BEGIN_LINK">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK">&lt;/permission_link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION_HELP" desc="The status message to get more information about why Chrome needs the Location permission in order to scan for Bluetooth devices.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_UNABLE_TO_TURN_ON_ADAPTER" desc="The message to show when Chrome is unable to turn on the Bluetooth adapter.">
+          Chrome is unable to turn on Bluetooth adapter
+      </message>
+      <message name="IDS_BLUETOOTH_ADAPTER_OFF" desc="The message to show when scanning cannot start because the bluetooth adapter is turned off.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Turn on Bluetooth<ph name="END_LINK">&lt;/link&gt;</ph> to allow pairing
+      </message>
+
+      <!-- Item Chooser UI strings -->
+      <message name="IDS_ITEM_CHOOSER_ITEM_NAME_WITH_ID" desc="To distinguish items with the same name, the item chooser shows the item name with id.">
+        <ph name="ITEM_NAME">%1$s<ex>item_name</ex></ph> (<ph name="ITEM_ID">%2$s<ex>item id</ex></ph>)
+      </message>
     </messages>
   </release>
 </grit>

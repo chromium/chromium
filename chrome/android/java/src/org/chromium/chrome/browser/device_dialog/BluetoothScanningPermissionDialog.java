@@ -31,6 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;

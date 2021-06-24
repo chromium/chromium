@@ -1,5 +1,8 @@
 include_rules = [
   "+components/infobars/core",
+  "+components/location/android",
+  "+components/omnibox/browser",
+  "+components/security_state/core",
   "+content/public/android",
   "+ui/android",
 ]

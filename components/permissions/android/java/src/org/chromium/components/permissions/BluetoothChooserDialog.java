@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.device_dialog;
+package org.chromium.components.permissions;
 
 import android.Manifest;
 import android.app.Activity;
@@ -27,8 +27,8 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -50,6 +50,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * The dialog is shown by create() or show(), and always runs finishDialog() as it's closing.
  */
+@JNINamespace("permissions")
 public class BluetoothChooserDialog
         implements ItemChooserDialog.ItemSelectedCallback, PermissionCallback {
     private static final String TAG = "Bluetooth";
@@ -59,7 +60,8 @@ public class BluetoothChooserDialog
     @IntDef({DiscoveryMode.DISCOVERY_FAILED_TO_START, DiscoveryMode.DISCOVERING,
             DiscoveryMode.DISCOVERY_IDLE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface DiscoveryMode {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public @interface DiscoveryMode {
         int DISCOVERY_FAILED_TO_START = 0;
         int DISCOVERING = 1;
         int DISCOVERY_IDLE = 2;
@@ -73,7 +75,8 @@ public class BluetoothChooserDialog
     final Activity mActivity;
 
     // The dialog to show to let the user pick a device.
-    ItemChooserDialog mItemChooserDialog;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public ItemChooserDialog mItemChooserDialog;
 
     // The origin for the site wanting to pair with the bluetooth devices.
     final String mOrigin;
@@ -85,15 +88,16 @@ public class BluetoothChooserDialog
     // The embedder-provided delegate.
     final BluetoothChooserAndroidDelegate mDelegate;
 
-    @VisibleForTesting
-    Drawable mConnectedIcon;
-    @VisibleForTesting
-    String mConnectedIconDescription;
-    @VisibleForTesting
-    Drawable[] mSignalStrengthLevelIcon;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public Drawable mConnectedIcon;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public String mConnectedIconDescription;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public Drawable[] mSignalStrengthLevelIcon;
 
     // A pointer back to the native part of the implementation for this dialog.
-    long mNativeBluetoothChooserDialogPtr;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public long mNativeBluetoothChooserDialogPtr;
 
     // Used to keep track of when the Mode Changed Receiver is registered.
     boolean mIsLocationModeChangedReceiverRegistered;
@@ -104,8 +108,8 @@ public class BluetoothChooserDialog
     // The status message to show when the bluetooth adapter is turned off.
     private final SpannableString mAdapterOffStatus;
 
-    @VisibleForTesting
-    final BroadcastReceiver mLocationModeBroadcastReceiver = new BroadcastReceiver() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public final BroadcastReceiver mLocationModeBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
@@ -137,8 +141,8 @@ public class BluetoothChooserDialog
     /**
      * Creates the BluetoothChooserDialog.
      */
-    @VisibleForTesting
-    BluetoothChooserDialog(WindowAndroid windowAndroid, String origin, int securityLevel,
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public BluetoothChooserDialog(WindowAndroid windowAndroid, String origin, int securityLevel,
             BluetoothChooserAndroidDelegate delegate, long nativeBluetoothChooserDialogPtr) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
@@ -181,8 +185,8 @@ public class BluetoothChooserDialog
     /**
      * Show the BluetoothChooserDialog.
      */
-    @VisibleForTesting
-    void show() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void show() {
         SpannableString origin = new SpannableString(mOrigin);
 
         final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
@@ -431,9 +435,9 @@ public class BluetoothChooserDialog
         return dialog;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    void addOrUpdateDevice(
+    public void addOrUpdateDevice(
             String deviceId, String deviceName, boolean isGATTConnected, int signalStrengthLevel) {
         Drawable icon = null;
         String iconDescription = null;
@@ -450,16 +454,16 @@ public class BluetoothChooserDialog
         mItemChooserDialog.addOrUpdateItem(deviceId, deviceName, icon, iconDescription);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    void closeDialog() {
+    public void closeDialog() {
         mNativeBluetoothChooserDialogPtr = 0;
         mItemChooserDialog.dismiss();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    void notifyAdapterTurnedOff() {
+    public void notifyAdapterTurnedOff() {
         SpannableString adapterOffMessage =
                 SpanApplier.applySpans(mActivity.getString(R.string.bluetooth_adapter_off),
                         new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
@@ -472,9 +476,9 @@ public class BluetoothChooserDialog
         mItemChooserDialog.clear();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    void notifyDiscoveryState(@DiscoveryMode int discoveryState) {
+    public void notifyDiscoveryState(@DiscoveryMode int discoveryState) {
         switch (discoveryState) {
             case DiscoveryMode.DISCOVERY_FAILED_TO_START: {
                 // FAILED_TO_START might be caused by a missing Location
@@ -494,8 +498,9 @@ public class BluetoothChooserDialog
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onDialogFinished(long nativeBluetoothChooserAndroid, int eventType, String deviceId);
         void restartSearch(long nativeBluetoothChooserAndroid);
         // Help links.

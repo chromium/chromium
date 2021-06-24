@@ -19,6 +19,8 @@ source_set("permissions") {
   sources = [
     "chooser_controller.cc",
     "chooser_controller.h",
+    "constants.cc",
+    "constants.h",
     "contexts/accessibility_permission_context.cc",
     "contexts/accessibility_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
@@ -126,6 +128,9 @@ source_set("permissions") {
     sources += [
       "android/android_permission_util.cc",
       "android/android_permission_util.h",
+      "android/bluetooth_chooser_android.cc",
+      "android/bluetooth_chooser_android.h",
+      "android/bluetooth_chooser_android_delegate.h",
       "android/permission_dialog_delegate.cc",
       "android/permission_dialog_delegate.h",
       "android/permission_prompt_android.cc",
@@ -145,6 +150,7 @@ source_set("permissions") {
       "//components/permissions/android:native",
       "//components/prefs",
       "//components/resources:android_resources",
+      "//components/security_state/core:core",
       "//ui/android",
     ]
   } else {

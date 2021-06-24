@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
 #define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
 
-#include "chrome/browser/ui/android/device_dialog/bluetooth_chooser_android_delegate.h"
+#include "components/permissions/android/bluetooth_chooser_android_delegate.h"
 
 #include "base/android/scoped_java_ref.h"
 
 // The implementation of BluetoothChooserAndroidDelegate for Chrome.
 class ChromeBluetoothChooserAndroidDelegate
-    : public BluetoothChooserAndroidDelegate {
+    : public permissions::BluetoothChooserAndroidDelegate {
  public:
   ChromeBluetoothChooserAndroidDelegate();
 

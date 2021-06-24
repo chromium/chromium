@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.device_dialog;
+package org.chromium.components.permissions;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -157,8 +156,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         mListView = (ListView) dialogContainer.findViewById(R.id.items);
         mProgressBar = (ProgressBar) dialogContainer.findViewById(R.id.progress);
         mStatus = (TextView) dialogContainer.findViewById(R.id.status);
-        mTitle = (TextViewWithClickableSpans) dialogContainer.findViewById(
-                R.id.dialog_title);
+        mTitle = (TextViewWithClickableSpans) dialogContainer.findViewById(R.id.dialog_title);
         mEmptyMessage =
                 (TextViewWithClickableSpans) dialogContainer.findViewById(R.id.not_found_message);
 
@@ -232,8 +230,8 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
 
     // Computes the height of the device list, bound to half-multiples of the
     // row height so that it's obvious if there are more elements to scroll to.
-    @VisibleForTesting
-    static int getListHeight(int decorHeight, float density) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static int getListHeight(int decorHeight, float density) {
         float heightDp = decorHeight / density * LISTVIEW_HEIGHT_PERCENT;
         // Round to (an integer + 0.5) times LIST_ROW_HEIGHT.
         heightDp = (Math.round(heightDp / LIST_ROW_HEIGHT_DP - 0.5f) + 0.5f) * LIST_ROW_HEIGHT_DP;
@@ -254,7 +252,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.addContentView(view,
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                              LinearLayout.LayoutParams.MATCH_PARENT));
+                        LinearLayout.LayoutParams.MATCH_PARENT));
         mDialog.setOnCancelListener(dialog -> mItemSelectedCallback.onItemSelected(""));
 
         Window window = mDialog.getWindow();
@@ -263,8 +261,8 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
             // and appear at the top.
             window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
             window.setGravity(Gravity.TOP);
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                             ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         mDialog.show();
@@ -365,8 +363,8 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
                 break;
             case State.DISCOVERY_IDLE:
                 boolean showEmptyMessage = mItemAdapter.isEmpty();
-                mStatus.setText(showEmptyMessage
-                        ? mLabels.statusIdleNoneFound : mLabels.statusIdleSomeFound);
+                mStatus.setText(showEmptyMessage ? mLabels.statusIdleNoneFound
+                                                 : mLabels.statusIdleSomeFound);
                 mEmptyMessage.setText(mLabels.noneFound);
                 mEmptyMessage.setVisibility(showEmptyMessage ? View.VISIBLE : View.GONE);
                 break;

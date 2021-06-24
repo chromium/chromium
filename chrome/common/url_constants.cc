@@ -29,9 +29,6 @@ const char kCastCloudServicesHelpURL[] =
 const char kCastNoDestinationFoundURL[] =
     "https://support.google.com/chromecast/?p=no_cast_destination";
 
-const char kChooserBluetoothOverviewURL[] =
-    "https://support.google.com/chrome?p=bluetooth";
-
 const char kChooserHidOverviewUrl[] =
     "https://support.google.com/chrome?p=webhid";
 

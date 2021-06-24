@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/device_dialog/bluetooth_chooser_android.h"
+#include "components/permissions/android/bluetooth_chooser_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/BluetoothChooserDialog_jni.h"
-#include "chrome/browser/ui/android/device_dialog/bluetooth_chooser_android_delegate.h"
-#include "chrome/common/url_constants.h"
+#include "components/permissions/android/bluetooth_chooser_android_delegate.h"
+#include "components/permissions/android/jni_headers/BluetoothChooserDialog_jni.h"
+#include "components/permissions/constants.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/android/window_android.h"
@@ -17,10 +17,10 @@
 #include "url/origin.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+
+namespace permissions {
 
 BluetoothChooserAndroid::BluetoothChooserAndroid(
     content::RenderFrameHost* frame,
@@ -32,12 +32,12 @@ BluetoothChooserAndroid::BluetoothChooserAndroid(
   const url::Origin origin = frame->GetLastCommittedOrigin();
   DCHECK(!origin.opaque());
 
-  base::android::ScopedJavaLocalRef<jobject> window_android =
+  ScopedJavaLocalRef<jobject> window_android =
       web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject();
 
   // Create (and show) the BluetoothChooser dialog.
   JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> origin_string =
+  ScopedJavaLocalRef<jstring> origin_string =
       base::android::ConvertUTF16ToJavaString(
           env, url_formatter::FormatOriginForSecurityDisplay(origin));
   java_dialog_.Reset(Java_BluetoothChooserDialog_create(
@@ -95,9 +95,9 @@ void BluetoothChooserAndroid::AddOrUpdateDevice(
     int signal_strength_level) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_device_id =
-      ConvertUTF8ToJavaString(env, device_id);
+      base::android::ConvertUTF8ToJavaString(env, device_id);
   ScopedJavaLocalRef<jstring> java_device_name =
-      ConvertUTF16ToJavaString(env, device_name);
+      base::android::ConvertUTF16ToJavaString(env, device_name);
   Java_BluetoothChooserDialog_addOrUpdateDevice(
       env, java_dialog_, java_device_id, java_device_name, is_gatt_connected,
       signal_strength_level);
@@ -133,17 +133,17 @@ void BluetoothChooserAndroid::RestartSearch(JNIEnv*) {
 }
 
 void BluetoothChooserAndroid::ShowBluetoothOverviewLink(JNIEnv* env) {
-  OpenURL(chrome::kChooserBluetoothOverviewURL);
+  OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_OVERVIEW_HELP, "");
 }
 
 void BluetoothChooserAndroid::ShowBluetoothAdapterOffLink(JNIEnv* env) {
-  OpenURL(chrome::kChooserBluetoothOverviewURL);
+  OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_ADAPTER_OFF_HELP, "");
 }
 
 void BluetoothChooserAndroid::ShowNeedLocationPermissionLink(JNIEnv* env) {
-  OpenURL(chrome::kChooserBluetoothOverviewURL);
+  OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_NEED_LOCATION_HELP,
                      "");
 }
@@ -153,3 +153,5 @@ void BluetoothChooserAndroid::OpenURL(const char* url) {
       GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initiated */));
 }
+
+}  // namespace permissions

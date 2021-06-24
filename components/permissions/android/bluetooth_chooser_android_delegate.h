@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
-#define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
+#ifndef COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
+#define COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
 
 #include "base/macros.h"
 
@@ -13,6 +13,8 @@
 namespace content {
 class WebContents;
 }
+
+namespace permissions {
 
 // Provides embedder-level information to BluetoothChooserAndroid.
 class BluetoothChooserAndroidDelegate {
@@ -27,4 +29,6 @@ class BluetoothChooserAndroidDelegate {
       content::WebContents* web_contents) = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_DELEGATE_H_

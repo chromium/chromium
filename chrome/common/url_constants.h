@@ -47,10 +47,6 @@ extern const char kCastCloudServicesHelpURL[];
 // found.
 extern const char kCastNoDestinationFoundURL[];
 
-// The URL for the Bluetooth Overview help center article in the Web Bluetooth
-// Chooser.
-extern const char kChooserBluetoothOverviewURL[];
-
 // The URL for the WebHID API help center article.
 extern const char kChooserHidOverviewUrl[];
 

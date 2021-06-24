@@ -9,6 +9,7 @@ import("//tools/grit/grit_rule.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
@@ -20,6 +21,8 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "res/color/item_chooser_row_icon_color.xml",
+    "res/color/item_chooser_row_text_color.xml",
     "res/drawable-hdpi/exclamation_triangle.png",
     "res/drawable-hdpi/infobar_accessibility_events.png",
     "res/drawable-hdpi/infobar_downloading.png",
@@ -72,7 +75,18 @@ android_resources("java_resources") {
     "res/drawable/gm_filled_usb_24.xml",
     "res/drawable/gm_filled_videocam_20.xml",
     "res/drawable/gm_filled_videocam_24.xml",
+    "res/drawable/ic_bluetooth_connected.xml",
+    "res/drawable/ic_signal_cellular_0_bar.xml",
+    "res/drawable/ic_signal_cellular_1_bar.xml",
+    "res/drawable/ic_signal_cellular_2_bar.xml",
+    "res/drawable/ic_signal_cellular_3_bar.xml",
+    "res/drawable/ic_signal_cellular_4_bar.xml",
+    "res/drawable/item_chooser_row_background.xml",
+    "res/layout/device_item_list.xml",
+    "res/layout/item_chooser_dialog.xml",
+    "res/layout/item_chooser_dialog_row.xml",
     "res/layout/update_permissions_dialog.xml",
+    "res/values/styles.xml",
   ]
   deps = [
     ":permissions_strings_grd",
@@ -94,6 +108,11 @@ java_strings_grd("permissions_strings_grd") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserAndroidDelegate.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
+    "java/src/org/chromium/components/permissions/DeviceItemAdapter.java",
+    "java/src/org/chromium/components/permissions/DeviceItemRow.java",
+    "java/src/org/chromium/components/permissions/ItemChooserDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModel.java",
@@ -107,9 +126,13 @@ android_library("java") {
     "//base:base_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/location/android:location_java",
+    "//components/omnibox/browser:browser_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

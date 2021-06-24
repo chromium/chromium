@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_H_
-#define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_H_
+#ifndef COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_H_
+#define COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_H_
+
+#include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
+
+namespace permissions {
 
 class BluetoothChooserAndroidDelegate;
 
@@ -56,4 +60,6 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
   std::unique_ptr<BluetoothChooserAndroidDelegate> delegate_;
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_CHOOSER_ANDROID_H_
