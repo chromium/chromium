@@ -365,6 +365,9 @@ bool IsPedalsBatch2Enabled();
 // locales. This is only meaningful if batch 2 is enabled.
 bool IsPedalsBatch2NonEnglishEnabled();
 
+// Returns true if the third batch of Pedals is enabled.
+bool IsPedalsBatch3Enabled();
+
 // Returns true if the default icon used for Pedal buttons should be colored.
 bool IsPedalsDefaultIconColored();
 

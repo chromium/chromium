@@ -4075,6 +4075,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "omnibox-pedals-batch3",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "omnibox-pedals-default-icon-colored",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

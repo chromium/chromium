@@ -255,6 +255,10 @@ const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
 const base::Feature kOmniboxPedalsBatch2NonEnglish{
     "OmniboxPedalsBatch2NonEnglish", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable the third batch of Pedals.
+const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature that enables use of the colored version of the default Pedal icon.
 const base::Feature kOmniboxPedalsDefaultIconColored{
     "OmniboxPedalsDefaultIconColored", base::FEATURE_DISABLED_BY_DEFAULT};

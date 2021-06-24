@@ -3742,6 +3742,10 @@ const char kOmniboxPedalsBatch2NonEnglishDescription[] =
     "locales other than 'en' and 'en-GB'. This flag has no effect unless "
     "\"Omnibox Pedals batch 2\" is also enabled.";
 
+const char kOmniboxPedalsBatch3Name[] = "Omnibox Pedals batch 3";
+const char kOmniboxPedalsBatch3Description[] =
+    "Enable the third batch of Omnibox Pedals.";
+
 const char kOmniboxPedalsDefaultIconColoredName[] =
     "Omnibox Pedals Default Icon Colored";
 const char kOmniboxPedalsDefaultIconColoredDescription[] =

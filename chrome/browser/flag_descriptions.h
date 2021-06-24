@@ -2142,6 +2142,9 @@ extern const char kOmniboxPedalsBatch2Description[];
 extern const char kOmniboxPedalsBatch2NonEnglishName[];
 extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
 
+extern const char kOmniboxPedalsBatch3Name[];
+extern const char kOmniboxPedalsBatch3Description[];
+
 extern const char kOmniboxPedalsDefaultIconColoredName[];
 extern const char kOmniboxPedalsDefaultIconColoredDescription[];
 
