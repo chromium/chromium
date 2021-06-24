@@ -30,19 +30,24 @@ be enabled via chrome://memory-internals or about://flags.
    * If you run into the error "Nothing to symbolize" then backtraces are not
      working properly. There are two mechanisms that Chrome attempts to use:
      frame pointers if they're present, and backtrace lib. The former can be
-     forced on with enable_frame_pointers gn arg. This should work on all architectures except for 
-     arm 32.The latter depends on unwind tables.
+     forced on with enable_frame_pointers gn arg. This should work on all architectures except for
+     arm 32. The latter depends on unwind tables.
  5. Load the (now symbolized) trace in chrome://tracing.
 
 ## How to obtain a heap dump (M66+, Android)
 
-To obtain native heap dumps, you will need a custom build of Chrome with the GN
-arguments `enable_profiling = true`, `arm_use_thumb = false` and
-`symbol_level=1`. All other steps are the same.
+On arm64 and x86-64, you can build chrome normally and follow steps above to
+obtain heap dumps.
 
-Alternatively, if you want to use an Official build of Chrome, navigate to
-chrome://flags and set `memlog-stack-mode` to `pseudo`. This will provide
-less-detailed stacks. The stacks also don't require symbolization.
+To obtain native heap dumps on arm32, you will need a custom build of Chrome
+with the GN arguments `enable_profiling = true`, `arm_use_thumb = false`,
+`is_component_build = false` and `symbol_level=1`. All other steps are the same.
+
+Alternatively, if you want to use an official build of Chrome, use
+`is_official_build = true` for arm32. If you want to use a released build,
+profiling only works on Dev and Canary on arm, and all channels on x86-64. In
+this case, you also need to fetch symbols manually and pass to the
+symbolize_trace script above.
 
 ## How to obtain a heap dump (M65 and older)
 
