@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_IOS_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
-#define COMPONENTS_SAFE_BROWSING_IOS_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_IOS_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
+#define COMPONENTS_SAFE_BROWSING_IOS_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
 
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "ios/web/public/web_state_observer.h"
@@ -30,4 +30,4 @@ class RequestCancelerIOS : public RequestCanceler,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_IOS_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_IOS_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_

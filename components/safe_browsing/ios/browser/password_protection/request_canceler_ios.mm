@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/ios/password_protection/request_canceler_ios.h"
+#include "components/safe_browsing/ios/browser/password_protection/request_canceler_ios.h"
 
 #import "ios/web/public/web_state.h"
 

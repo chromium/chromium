@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#import "components/safe_browsing/ios/password_protection/password_protection_service.h"
+#import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 
 class ChromeBrowserState;

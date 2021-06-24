@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/safe_browsing/ios/password_protection/password_protection_request_ios.h"
+#import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -10,7 +10,7 @@
 
 #include "base/task/post_task.h"
 #import "components/safe_browsing/core/password_protection/request_canceler.h"
-#import "components/safe_browsing/ios/password_protection/password_protection_service.h"
+#import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"

@@ -22,7 +22,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/safe_browsing/ios/password_protection/password_protection_request_ios.h"
+#include "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/model_type.h"
