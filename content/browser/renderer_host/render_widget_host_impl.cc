@@ -2883,7 +2883,7 @@ void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
     InputRouterImpl::RequestMouseLockCallback response) {
-  if (pending_mouse_lock_request_) {
+  if (pending_mouse_lock_request_ || IsMouseLocked()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kAlreadyLocked,
                             /*context=*/mojo::NullRemote());
     return;
