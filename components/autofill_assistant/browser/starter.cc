@@ -171,7 +171,8 @@ Starter::Starter(content::WebContents* web_contents,
                  base::WeakPtr<RuntimeManagerImpl> runtime_manager,
                  const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents),
-      next_ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)),
+      current_ukm_source_id_(
+          ukm::GetSourceIdForWebContentsDocument(web_contents)),
       cached_failed_trigger_script_fetches_(
           GetOrCreateFailedTriggerScriptFetchesCache()),
       user_denylisted_domains_(kMaxUserDenylistedCacheSize),
@@ -186,13 +187,6 @@ Starter::Starter(content::WebContents* web_contents,
 }
 
 Starter::~Starter() = default;
-
-void Starter::DidStartNavigation(content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame()) {
-    return;
-  }
-  next_ukm_source_id_ = navigation_handle->GetNextPageUkmSourceId();
-}
 
 void Starter::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -212,6 +206,8 @@ void Starter::DidFinishNavigation(
             .value_or(GURL()));
 
     if (navigated_to_target_domain) {
+      current_ukm_source_id_ =
+          ukm::GetSourceIdForWebContentsDocument(web_contents());
       if (waiting_for_deeplink_navigation_) {
         Start(std::move(pending_trigger_context_));
       }
@@ -227,7 +223,7 @@ void Starter::DidFinishNavigation(
       // Note: this will record for the current domain, not the target domain.
       // There seems to be no way to avoid this.
       Metrics::RecordTriggerScriptStarted(
-          ukm_recorder_, next_ukm_source_id_,
+          ukm_recorder_, ukm::GetSourceIdForWebContentsDocument(web_contents()),
           navigation_handle->IsErrorPage()
               ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
               : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
@@ -249,6 +245,8 @@ void Starter::DidFinishNavigation(
   }
 
   if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
+    current_ukm_source_id_ =
+        ukm::GetSourceIdForWebContentsDocument(web_contents());
     MaybeStartImplicitlyForUrl(
         navigation_handle->GetURL(),
         ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
@@ -429,7 +427,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
     // Fail immediately if there is no deeplink domain to wait for.
     // Note: this will record the impression for the current domain.
     Metrics::RecordTriggerScriptStarted(
-        ukm_recorder_, next_ukm_source_id_,
+        ukm_recorder_, current_ukm_source_id_,
         Metrics::TriggerScriptStarted::NO_INITIAL_URL);
     OnStartDone(/* start_regular_script = */ false);
     return;
@@ -446,7 +444,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   // a baseline.
   if (IsTriggerScriptContext(*pending_trigger_context_)) {
     Metrics::RecordTriggerScriptStarted(
-        ukm_recorder_, next_ukm_source_id_, startup_mode,
+        ukm_recorder_, current_ukm_source_id_, startup_mode,
         platform_delegate_->GetFeatureModuleInstalled(),
         platform_delegate_->GetIsFirstTimeUser());
   }
@@ -546,7 +544,7 @@ void Starter::StartTriggerScript() {
           script_parameters.GetBase64TriggerScriptsResponseProto().value());
       if (!service_request_sender) {
         Metrics::RecordTriggerScriptFinished(
-            ukm_recorder_, next_ukm_source_id_,
+            ukm_recorder_, current_ukm_source_id_,
             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE,
             Metrics::TriggerScriptFinishedState::BASE64_DECODING_ERROR);
         OnTriggerScriptFinished(
@@ -578,7 +576,7 @@ void Starter::StartTriggerScript() {
       std::make_unique<StaticTriggerConditions>(
           platform_delegate_, pending_trigger_context_.get(), startup_url),
       std::make_unique<DynamicTriggerConditions>(), ukm_recorder_,
-      next_ukm_source_id_);
+      current_ukm_source_id_);
 
   // Note: for the duration of the trigger script, the trigger script
   // coordinator will take ownership of the pending trigger context.
