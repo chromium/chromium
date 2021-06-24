@@ -142,12 +142,19 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style.SetGridColumnStart(StyleRef().GridColumnStart());
   child_style.SetGridRowEnd(StyleRef().GridRowEnd());
   child_style.SetGridRowStart(StyleRef().GridRowStart());
+
+  // grid-template-columns, grid-template-rows
   child_style.SetGridTemplateColumns(StyleRef().GridTemplateColumns());
   child_style.SetGridTemplateRows(StyleRef().GridTemplateRows());
   child_style.SetNamedGridArea(StyleRef().NamedGridArea());
   child_style.SetNamedGridAreaColumnCount(
       StyleRef().NamedGridAreaColumnCount());
   child_style.SetNamedGridAreaRowCount(StyleRef().NamedGridAreaRowCount());
+  child_style.SetImplicitNamedGridColumnLines(
+      StyleRef().ImplicitNamedGridColumnLines());
+  child_style.SetImplicitNamedGridRowLines(
+      StyleRef().ImplicitNamedGridRowLines());
+
   child_style.SetRowGap(StyleRef().RowGap());
 
   child_style.SetJustifyContent(StyleRef().JustifyContent());
