@@ -49,6 +49,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
@@ -105,6 +106,7 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 // value.
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
+constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
 constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
 
 // gtk_shell1 exposes request_focus() since version 3.  Below that, it is not
@@ -667,6 +669,18 @@ void WaylandConnection::Global(void* data,
         std::make_unique<WaylandZwpPointerGestures>(
             zwp_pointer_gestures_v1.release(), connection,
             connection->event_source());
+  } else if (!connection->wayland_zwp_pointer_constraints_ &&
+             strcmp(interface, "zwp_pointer_constraints_v1") == 0 &&
+             version >= kMinZwpPointerConstraintsVersion) {
+    auto zwp_pointer_constraints_v1 =
+        wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, version);
+    if (!zwp_pointer_constraints_v1) {
+      LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
+      return;
+    }
+    connection->wayland_zwp_pointer_constraints_ =
+        std::make_unique<WaylandZwpPointerConstraints>(
+            zwp_pointer_constraints_v1.release(), connection);
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =

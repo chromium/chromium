@@ -45,6 +45,7 @@ class WaylandShm;
 class WaylandTouch;
 class WaylandZAuraShell;
 class WaylandZcrCursorShapes;
+class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpLinuxDmabuf;
 class WaylandDataDeviceManager;
@@ -203,6 +204,10 @@ class WaylandConnection {
     return window_drag_controller_.get();
   }
 
+  WaylandZwpPointerConstraints* wayland_zwp_pointer_constraints() const {
+    return wayland_zwp_pointer_constraints_.get();
+  }
+
   XdgForeignWrapper* xdg_foreign() const { return xdg_foreign_.get(); }
 
   // Returns true when dragging is entered or started.
@@ -298,6 +303,8 @@ class WaylandConnection {
   std::unique_ptr<WaylandCursorPosition> wayland_cursor_position_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
+  std::unique_ptr<WaylandZwpPointerConstraints>
+      wayland_zwp_pointer_constraints_;
   std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
   std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
   std::unique_ptr<WaylandDrm> drm_;
