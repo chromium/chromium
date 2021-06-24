@@ -97,14 +97,16 @@ void QRCodeGeneratorServiceImpl::DrawDino(SkCanvas* canvas,
 
   // Clear out a little room for a border, snapped to some number of modules.
   SkRect background = SkRect::MakeLTRB(
-      (dest_rect.left() - dino_border_px) / kModuleSizePixels *
+      std::floor((dest_rect.left() - dino_border_px) / kModuleSizePixels) *
           kModuleSizePixels,
-      (dest_rect.top() - dino_border_px) / kModuleSizePixels *
+      std::floor((dest_rect.top() - dino_border_px) / kModuleSizePixels) *
           kModuleSizePixels,
-      (dest_rect.right() + dino_border_px + kModuleSizePixels - 1) /
-          kModuleSizePixels * kModuleSizePixels,
-      (dest_rect.bottom() + dino_border_px + kModuleSizePixels - 1) /
-          kModuleSizePixels * kModuleSizePixels);
+      std::floor((dest_rect.right() + dino_border_px + kModuleSizePixels - 1) /
+                 kModuleSizePixels) *
+          kModuleSizePixels,
+      std::floor((dest_rect.bottom() + dino_border_px + kModuleSizePixels - 1) /
+                 kModuleSizePixels) *
+          kModuleSizePixels);
   canvas->drawRect(background, paint_background);
 
   // Center the dino within the cleared space, and draw it.
