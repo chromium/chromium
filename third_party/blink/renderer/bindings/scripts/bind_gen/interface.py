@@ -1713,9 +1713,6 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
-    if return_type.is_any or return_type_body.is_object:
-        return T("bindings::V8SetReturnValue(${info}, ${return_value});")
-
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")

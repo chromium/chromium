@@ -19,27 +19,11 @@ template <typename CallbackInfo, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,
                       const ScriptValue& value,
                       ExtraArgs... extra_args) {
-  // Ignore all |extra_args| given as inputs for optimization.
+  // APIs of iterable, maplike, setlike, etc. return their return value of type
+  // ScriptValue regardless of their Web IDL type since they perform `ToV8` on
+  // their side.  The use of `V8Value` (instead of `V8ValueFor`) must be fine
+  // because the value must be created in the current world.
   V8SetReturnValue(info, value.V8Value());
-}
-
-// String types
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const NativeValueTraitsStringAdapter& value,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::NonNullable) {
-  V8SetReturnValue(info, static_cast<String>(value), isolate,
-                   V8ReturnValue::kNonNullable);
-}
-
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const NativeValueTraitsStringAdapter& value,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::Nullable) {
-  V8SetReturnValue(info, static_cast<String>(value), isolate,
-                   V8ReturnValue::kNullable);
 }
 
 // EventListener
@@ -51,18 +35,6 @@ void V8SetReturnValue(const CallbackInfo& info,
   EventListener* event_listener = const_cast<EventListener*>(value);
   info.GetReturnValue().Set(
       JSEventHandler::AsV8Value(isolate, event_target, event_listener));
-}
-
-// IDLDictionaryBase
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const IDLDictionaryBase* dictionary) {
-  // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
-  if (!dictionary)
-    return V8SetReturnValue(info, v8::Null(info.GetIsolate()));
-  V8SetReturnValue(info,
-                   dictionary->ToV8Impl(V8ReturnValue::CreationContext(info),
-                                        info.GetIsolate()));
 }
 
 }  // namespace bindings

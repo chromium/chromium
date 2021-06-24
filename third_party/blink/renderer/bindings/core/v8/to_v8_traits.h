@@ -46,10 +46,9 @@ struct ToV8Traits<IDLAny> {
     // It is not correct to take empty |script_value|.
     // However, some call sites expect to get v8::Undefined
     // when ToV8 takes empty |script_value|.
-    // TODO(crbug.com/1183637): Remove this if-branch.
-    if (script_value.IsEmpty())
-      return v8::Undefined(script_state->GetIsolate());
-    return script_value.V8Value();
+    // TODO(crbug.com/1183637): Enable the following DCHECK.
+    // DCHECK(!script_value.IsEmpty());
+    return script_value.V8ValueFor(script_state);
   }
 
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
@@ -180,7 +179,7 @@ struct ToV8Traits<IDLObject> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     DCHECK(!script_value.IsEmpty());
-    v8::Local<v8::Value> v8_value = script_value.V8Value();
+    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
     // TODO(crbug.com/1185033): Change this if-branch to DCHECK.
     if (!v8_value->IsObject())
       return v8::Undefined(script_state->GetIsolate());
@@ -776,7 +775,7 @@ struct ToV8Traits<IDLNullable<IDLObject>> {
     if (script_value.IsEmpty())
       return v8::Null(script_state->GetIsolate());
 
-    v8::Local<v8::Value> v8_value = script_value.V8Value();
+    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
     DCHECK(v8_value->IsNull() || v8_value->IsObject());
     return v8_value;
   }
