@@ -431,10 +431,17 @@ bool LoadAmdGpuLibraries() {
 }
 
 bool LoadNvidiaLibraries() {
-  // The driver may lazily load libxcb-glx. It's not an error on wayland-only
-  // systems for the library to be missing.
+  // The driver may lazily load several XCB libraries. It's not an error on
+  // wayland-only systems for them to be missing.
   if (!dlopen("libxcb-glx.so.0", dlopen_flag))
     LOG(WARNING) << "dlopen(libxcb-glx.so.0) failed with error: " << dlerror();
+  if (!dlopen("libxcb-dri3.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-dri3.so) failed with error: " << dlerror();
+  if (!dlopen("libxcb-present.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-present.so) failed with error: "
+                 << dlerror();
+  if (!dlopen("libxcb-sync.so", dlopen_flag))
+    LOG(WARNING) << "dlopen(libxcb-sync.so) failed with error: " << dlerror();
   return true;
 }
 
