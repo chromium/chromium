@@ -526,7 +526,7 @@ ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
   // Collapse field types that Chrome treats as identical, e.g. home and
   // billing address fields.
   ServerFieldTypeSet collapsed_field_types;
-  for (const auto& type : possible_types) {
+  for (auto type : possible_types) {
     DCHECK_NE(type, EMPTY_TYPE);
     DCHECK_NE(type, UNKNOWN_TYPE);
 
@@ -2592,7 +2592,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 int64_t AutofillMetrics::FormTypesToBitVector(
     const DenseSet<FormType>& form_types) {
   int64_t form_type_bv = 0;
-  for (const FormType& form_type : form_types) {
+  for (FormType form_type : form_types) {
     DCHECK_LT(static_cast<int64_t>(form_type), 63);
     form_type_bv |= 1LL << static_cast<int64_t>(form_type);
   }

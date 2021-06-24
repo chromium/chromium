@@ -407,7 +407,7 @@ bool StatefulSSLHostStateDelegate::HasAllowException(
   if (!value.get() || !value->is_dict())
     return false;
 
-  for (const auto& pair : value->DictItems()) {
+  for (auto pair : value->DictItems()) {
     if (!pair.second.is_int())
       continue;
 

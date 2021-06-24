@@ -106,8 +106,7 @@ void UpdatePolicyInfo(em::Policy* policy_info,
 void AppendChromePolicyInfoIntoProfileReport(
     const base::Value& policies,
     em::ChromeUserProfileInfo* profile_info) {
-  for (const auto& policy_iter :
-       policies.FindKey("chromePolicies")->DictItems()) {
+  for (auto policy_iter : policies.FindKey("chromePolicies")->DictItems()) {
     UpdatePolicyInfo(profile_info->add_chrome_policies(), policy_iter.first,
                      policy_iter.second);
   }
@@ -121,14 +120,14 @@ void AppendExtensionPolicyInfoIntoProfileReport(
     return;
   }
 
-  for (const auto& extension_iter :
+  for (auto extension_iter :
        policies.FindKey("extensionPolicies")->DictItems()) {
     const base::Value& policies = extension_iter.second;
     if (policies.DictSize() == 0)
       continue;
     auto* extension = profile_info->add_extension_policies();
     extension->set_extension_id(extension_iter.first);
-    for (const auto& policy_iter : policies.DictItems()) {
+    for (auto policy_iter : policies.DictItems()) {
       UpdatePolicyInfo(extension->add_policies(), policy_iter.first,
                        policy_iter.second);
     }

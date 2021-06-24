@@ -235,7 +235,7 @@ bool ReduceComplexity(const cc::Region& region,
   DCHECK(reduced_region);
 
   reduced_region->clear();
-  for (const gfx::Rect& r : region) {
+  for (gfx::Rect r : region) {
     auto it =
         std::find_if(reduced_region->begin(), reduced_region->end(),
                      [&r](const gfx::Rect& a) { return a.SharesEdgeWith(r); });
@@ -1233,7 +1233,7 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           while (occlusion_in_target_space.GetRegionComplexity() >
                  settings_.kMaximumOccluderComplexity) {
             gfx::Rect smallest_rect = *occlusion_in_target_space.begin();
-            for (const auto& occluding_rect : occlusion_in_target_space) {
+            for (auto occluding_rect : occlusion_in_target_space) {
               if (occluding_rect.size().GetCheckedArea().ValueOrDefault(
                       INT_MAX) <
                   smallest_rect.size().GetCheckedArea().ValueOrDefault(
@@ -1275,8 +1275,7 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // safe to use function MapEnclosedRectWith2dAxisAlignedTransform to
           // define occluded region in the quad content space with inverted
           // transform.
-          for (const gfx::Rect& rect_in_target_space :
-               occlusion_in_target_space) {
+          for (gfx::Rect rect_in_target_space : occlusion_in_target_space) {
             if (current_sqs_in_target_space.Intersects(rect_in_target_space)) {
               auto rect_in_content =
                   cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
@@ -1291,8 +1290,7 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
           // render pass quad.
           if (current_sqs_in_target_space.Intersects(
                   backdrop_filters_in_target_space.bounds())) {
-            for (const auto& rect_in_target_space :
-                 backdrop_filters_in_target_space) {
+            for (auto rect_in_target_space : backdrop_filters_in_target_space) {
               auto rect_in_content =
                   cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                       reverse_transform, rect_in_target_space);

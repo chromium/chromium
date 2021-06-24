@@ -92,7 +92,7 @@ std::string EncodeFieldTypes(const ServerFieldTypeSet& available_field_types) {
 
   // Pack the types in |available_field_types| into |bit_field|.
   std::vector<uint8_t> bit_field(kNumBytes, 0);
-  for (const auto& field_type : available_field_types) {
+  for (auto field_type : available_field_types) {
     // Set the appropriate bit in the field.  The bit we set is the one
     // |field_type| % 8 from the left of the byte.
     const size_t byte = field_type / 8;
@@ -375,7 +375,7 @@ std::ostream& operator<<(std::ostream& out,
 bool AllTypesCaptured(const FormStructure& form,
                       const ServerFieldTypeSet& contained_types) {
   for (const auto& field : form) {
-    for (const auto& type : field->possible_types()) {
+    for (auto type : field->possible_types()) {
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
           !contained_types.count(type))
         return false;
@@ -1955,7 +1955,7 @@ void FormStructure::EncodeFormForUpload(
 
     auto* added_field = upload->add_field();
 
-    for (const auto& field_type : field->possible_types()) {
+    for (auto field_type : field->possible_types()) {
       added_field->add_autofill_type(field_type);
     }
 

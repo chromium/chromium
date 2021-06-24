@@ -87,7 +87,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
-  for (const auto& it : pref_data->DictItems()) {
+  for (auto it : pref_data->DictItems()) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
       const base::Value* handler = it.second.FindDictKey(kHandler);

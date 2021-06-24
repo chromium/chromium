@@ -489,7 +489,7 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
     base::Time end) const {
   std::vector<std::string> result;
   auto* dict = prefs_->GetDictionary(kPrefNeverPromptSitesWithTime);
-  for (const auto& entry : dict->DictItems()) {
+  for (auto entry : dict->DictItems()) {
     absl::optional<base::Time> time = util::ValueToTime(entry.second);
     if (!time) {
       NOTREACHED();
@@ -575,7 +575,7 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
   }
 
   std::vector<std::string> languages;
-  for (const auto& language_pair : dict->DictItems()) {
+  for (auto language_pair : dict->DictItems()) {
     std::string chrome_language(language_pair.first);
     language::ToChromeLanguageSynonym(&chrome_language);
     languages.push_back(chrome_language);

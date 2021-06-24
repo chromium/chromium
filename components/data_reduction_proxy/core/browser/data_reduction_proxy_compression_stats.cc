@@ -174,7 +174,7 @@ void RecordDictionaryToHistogram(const std::string& histogram_name,
                                  const base::DictionaryValue* dictionary) {
   base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
-  for (const auto& entry : dictionary->DictItems()) {
+  for (auto entry : dictionary->DictItems()) {
     int key;
     int value = entry.second.GetInt();
     if (value > 0 && base::StringToInt(entry.first, &key)) {

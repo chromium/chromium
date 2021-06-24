@@ -343,7 +343,7 @@ base::Value PrefModelAssociator::MergeDictionaryValues(
   DCHECK(to_value.is_dict());
   base::Value result = to_value.Clone();
 
-  for (const auto& it : from_value.DictItems()) {
+  for (auto it : from_value.DictItems()) {
     const base::Value* from_key_value = &it.second;
     base::Value* to_key_value = result.FindKey(it.first);
     if (to_key_value) {

@@ -337,7 +337,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
   // Now we can clear language list.
   supported_languages_.clear();
   // ... and replace it with the values we just fetched from the server.
-  for (const auto& kv_pair : target_languages->DictItems()) {
+  for (auto kv_pair : target_languages->DictItems()) {
     const std::string& lang = kv_pair.first;
     if (!l10n_util::IsLocaleNameTranslated(lang.c_str(), locale)) {
       // Don't include languages not displayable in current UI language.

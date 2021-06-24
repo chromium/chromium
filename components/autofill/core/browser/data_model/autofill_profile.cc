@@ -1056,7 +1056,7 @@ bool AutofillProfile::IsAnInvalidPhoneNumber(ServerFieldType type) const {
     }
   }
 
-  for (const auto& cur_type : types) {
+  for (auto cur_type : types) {
     if (GetValidityState(cur_type, SERVER) == INVALID)
       return true;
   }

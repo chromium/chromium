@@ -248,7 +248,7 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     auto* dict =
         pref_service->GetDictionary(prefs::kWebTriggeredIsolatedOrigins);
     if (dict) {
-      for (const auto& site_time_pair : dict->DictItems()) {
+      for (auto site_time_pair : dict->DictItems()) {
         // Only isolate origins that haven't expired.
         absl::optional<base::Time> timestamp =
             util::ValueToTime(site_time_pair.second);

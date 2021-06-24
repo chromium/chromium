@@ -76,7 +76,7 @@ void DataUseTrackerPrefs::RemoveExpiredEntriesForPref(
   const base::Time last_date = current_date - base::TimeDelta::FromDays(60);
 
   base::DictionaryValue user_pref_new_dict;
-  for (const auto& it : user_pref_dict->DictItems()) {
+  for (auto it : user_pref_dict->DictItems()) {
     base::Time key_date;
     if (base::Time::FromUTCString(it.first.c_str(), &key_date) &&
         key_date > last_date) {

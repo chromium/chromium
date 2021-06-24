@@ -2224,7 +2224,7 @@ void BrowserAutofillManager::DisambiguateUploadTypes(FormStructure* form) {
     int name_type_count = 0;
 
     bool undisambiuatable_types = false;
-    for (const auto& type : upload_types) {
+    for (auto type : upload_types) {
       switch (AutofillType(type).group()) {
         case FieldTypeGroup::kCreditCard:
           ++credit_card_type_count;

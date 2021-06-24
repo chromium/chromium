@@ -195,7 +195,7 @@ size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
                             const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
   std::vector<std::string> expired_keys;
-  for (const auto& item : verdict_dictionary->DictItems()) {
+  for (auto item : verdict_dictionary->DictItems()) {
     int verdict_received_time;
     T verdict;
     if (!ParseVerdictEntry<T>(&item.second, &verdict_received_time, &verdict,
@@ -300,7 +300,7 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
   // For all the verdicts of the same origin, we key them by |cache_expression|.
   // Its corresponding value is a DictionaryValue contains its creation time and
   // the serialized verdict proto.
-  for (const auto& item : verdict_dictionary->DictItems()) {
+  for (auto item : verdict_dictionary->DictItems()) {
     int verdict_received_time;
     T verdict;
     // Ignore any entry that we cannot parse. These invalid entries will be
@@ -481,7 +481,7 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
   stored_verdict_count_password_on_focus_ = 0;
   stored_verdict_count_password_entry_ = 0;
   for (const ContentSettingPatternSource& source : settings) {
-    for (const auto& item : source.setting_value.DictItems()) {
+    for (auto item : source.setting_value.DictItems()) {
       if (item.first == base::StringPiece(kPasswordOnFocusCacheKey)) {
         stored_verdict_count_password_on_focus_.value() +=
             item.second.DictSize();
@@ -503,7 +503,7 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
       ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, &settings);
   stored_verdict_count_real_time_url_check_ = 0;
   for (const ContentSettingPatternSource& source : settings) {
-    for (const auto& item : source.setting_value.DictItems()) {
+    for (auto item : source.setting_value.DictItems()) {
       if (item.first == base::StringPiece(kRealTimeUrlCacheKey)) {
         stored_verdict_count_real_time_url_check_.value() +=
             item.second.DictSize();
@@ -815,7 +815,7 @@ size_t VerdictCacheManager::GetPhishGuardVerdictCountForURL(
     verdict_cnt +=
         password_on_focus_dict ? password_on_focus_dict->DictSize() : 0;
   } else {
-    for (const auto& item : cache_dictionary->DictItems()) {
+    for (auto item : cache_dictionary->DictItems()) {
       if (item.first == kPasswordOnFocusCacheKey)
         continue;
       verdict_cnt += item.second.DictSize();

@@ -244,7 +244,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
     it->value()->GetAsDictionary(&dict);
     DCHECK(dict);
 
-    for (const auto& pair : dict->DictItems()) {
+    for (auto pair : dict->DictItems()) {
       const auto& key = pair.first;
       const auto& val = pair.second;
       merged_dictionary.SetKey(key, val.Clone());

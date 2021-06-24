@@ -27,7 +27,7 @@ class PolicyLoaderCommandLineTest : public ::testing::Test {
     PolicyMap& map =
         bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     EXPECT_EQ(expected_policies.DictSize(), map.size());
-    for (const auto& expected_policy : expected_policies.DictItems()) {
+    for (auto expected_policy : expected_policies.DictItems()) {
       const PolicyMap::Entry* actual_policy = map.Get(expected_policy.first);
       ASSERT_TRUE(actual_policy);
       EXPECT_EQ(POLICY_LEVEL_MANDATORY, actual_policy->level);

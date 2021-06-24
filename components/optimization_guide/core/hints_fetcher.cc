@@ -368,7 +368,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 
   // Remove any expired hosts.
   std::vector<std::string> entries_to_remove;
-  for (const auto& it : hosts_fetched_list->DictItems()) {
+  for (auto it : hosts_fetched_list->DictItems()) {
     if (base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSecondsD(
             it.second.GetDouble())) < time_clock_->Now()) {
       entries_to_remove.emplace_back(it.first);
@@ -389,7 +389,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
     size_t num_entries_to_remove =
         hosts_fetched_list->DictSize() + hosts_fetched_.size() -
         features::MaxHostsForRecordingSuccessfullyCovered();
-    for (const auto& it : hosts_fetched_list->DictItems()) {
+    for (auto it : hosts_fetched_list->DictItems()) {
       if (entries_to_remove.size() >= num_entries_to_remove)
         break;
       entries_to_remove.emplace_back(it.first);

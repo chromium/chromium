@@ -514,7 +514,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         header_texts) {
       const base::DictionaryValue* headers = nullptr;
       if (header_texts->GetDictionary("a", &headers) && headers) {
-        for (const auto& it : headers->DictItems()) {
+        for (auto it : headers->DictItems()) {
           int suggestion_group_id;
           base::StringToInt(it.first, &suggestion_group_id);
           results->headers_map[suggestion_group_id] =

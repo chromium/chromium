@@ -119,7 +119,7 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
     return absl::nullopt;
   }
 
-  for (const auto& kv : root.DictItems()) {
+  for (auto kv : root.DictItems()) {
     const std::string& field_type = kv.first;
     const base::Value* field_type_dict = &kv.second;
 
@@ -128,7 +128,7 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
       return absl::nullopt;
     }
 
-    for (const auto& value : field_type_dict->DictItems()) {
+    for (auto value : field_type_dict->DictItems()) {
       LanguageCode language(value.first);
       const base::Value* inner_list = &value.second;
 

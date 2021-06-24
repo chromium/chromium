@@ -204,7 +204,7 @@ void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
     types_to_copy = {ADDRESS_HOME_STREET_ADDRESS};
   }
 
-  for (const auto& type : types_to_copy)
+  for (auto type : types_to_copy)
     target->SetRawInfo(type, source.GetRawInfo(type));
 }
 

@@ -87,7 +87,7 @@ int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
   const base::DictionaryValue* global_pref =
       pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings);
   int count = 0;
-  for (const auto& entry : global_pref->DictItems()) {
+  for (auto entry : global_pref->DictItems()) {
     if (entry.second.FindBoolKey(kAccountStorageOptedInKey).value_or(false))
       ++count;
   }

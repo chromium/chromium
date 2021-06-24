@@ -115,7 +115,7 @@ Experiments GetExperiments(PrefService& pref_service) {
   Experiments experiments;
   if (!value->is_dict())
     return experiments;
-  for (const auto& kv : value->DictItems()) {
+  for (auto kv : value->DictItems()) {
     experiments[kv.first] = kv.second.GetString();
   }
   return experiments;

@@ -199,7 +199,7 @@ class PolicyPrefMappingTest {
     if (policies_settings)
       policies_settings_ = policies_settings->Clone();
     if (prefs) {
-      for (const auto& pref_setting : prefs->DictItems())
+      for (auto pref_setting : prefs->DictItems())
         prefs_.push_back(std::make_unique<PrefTestCase>(pref_setting.first,
                                                         pref_setting.second));
     }
@@ -383,7 +383,7 @@ class PolicyTestCases {
                     << parsed_json.error_message;
       return;
     }
-    for (const auto& it : dict->DictItems()) {
+    for (auto it : dict->DictItems()) {
       const std::string policy_name = GetPolicyName(it.first);
       if (policy_name == kInstructionKeyName)
         continue;
@@ -465,7 +465,7 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
 #if defined(OS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_map);
 #endif  // defined(OS_CHROMEOS)
-  for (const auto& it : policies.DictItems()) {
+  for (auto it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     const PolicySettings policy_settings =
         GetPolicySettings(it.first, policies_settings);

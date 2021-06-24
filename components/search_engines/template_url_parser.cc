@@ -177,7 +177,7 @@ void SafeTemplateURLParser::OnXmlParseComplete(
   // to access nodes by tag name in GetChildElementsByTag().
   if (const base::Value* namespaces =
           root.FindDictKey(data_decoder::mojom::XmlParser::kNamespacesKey)) {
-    for (const auto& item : namespaces->DictItems()) {
+    for (auto item : namespaces->DictItems()) {
       namespaces_.push_back(item.first);
     }
   }

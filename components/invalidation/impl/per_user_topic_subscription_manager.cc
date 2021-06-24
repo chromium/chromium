@@ -246,7 +246,7 @@ void PerUserTopicSubscriptionManager::Init() {
 
   std::vector<std::string> keys_to_remove;
   // Load subscribed topics from prefs.
-  for (const auto& it : update->DictItems()) {
+  for (auto it : update->DictItems()) {
     Topic topic = it.first;
     std::string private_topic_name;
     if (it.second.GetAsString(&private_topic_name) &&
