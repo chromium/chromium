@@ -20,6 +20,7 @@
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="android_apps_browser_proxy.html">
 <link rel="import" href="android_apps_subpage.html">
+<link rel="import" href="app_notifications_page/app_notifications_subpage.html">
 <link rel="import" href="app_management_page/app_management_page.html">
 <link rel="import" href="app_management_page/app_detail_view.html">
 <link rel="import" href="app_management_page/uninstall_button.html">
@@ -112,6 +113,8 @@
     <!-- APP NOTIFICATIONS -->
     <template is="dom-if" route-path="/app-notifications" no-search>
       <settings-subpage page-title="$i18n{appNotificationsTitle}">
+        <settings-app-notifications-subpage>
+        </settings-app-notifications-subpage>
       </settings-subpage>
     </template>
 

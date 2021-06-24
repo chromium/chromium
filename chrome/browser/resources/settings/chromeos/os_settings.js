@@ -46,6 +46,7 @@ import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/os_about_page.m.js';
 import './os_about_page/update_warning_dialog.m.js';
 import './os_apps_page/android_apps_subpage.m.js';
+import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_management_page/app_item.m.js';
 import './os_apps_page/app_management_page/app_detail_view.m.js';
 import './os_apps_page/app_management_page/app_management_page.m.js';

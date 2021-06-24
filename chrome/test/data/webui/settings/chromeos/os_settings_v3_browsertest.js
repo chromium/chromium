@@ -272,6 +272,7 @@ TEST_F(
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['AmbientModePhotosPage', 'ambient_mode_photos_page_test.m.js'],
  ['AppsPage', 'apps_page_test.m.js'],
+ ['AppNotificationsSubpage', 'app_notifications_subpage_tests.m.js'],
  ['AppManagementAppDetailView', 'app_detail_view_test.m.js'],
  ['AppManagementAppItem', 'app_item_test.m.js'],
  ['AppManagementArcDetailView', 'arc_detail_view_test.m.js'],

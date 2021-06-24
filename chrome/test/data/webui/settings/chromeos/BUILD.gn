@@ -36,6 +36,7 @@ js_modulizer("modulize") {
     "ambient_mode_page_test.js",
     "ambient_mode_photos_page_test.js",
     "apps_page_test.js",
+    "app_notifications_subpage_tests.js",
     "app_management/app_detail_view_test.js",
     "app_management/app_item_test.js",
     "app_management/app_management_page_tests.js",
