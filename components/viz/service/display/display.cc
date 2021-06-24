@@ -29,6 +29,7 @@
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/damage_frame_annotator.h"
+#include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_resource_provider_gl.h"
@@ -1400,12 +1401,13 @@ void Display::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
   if (DoesPlatformSupportDelegatedInk() &&
-      features::ShouldUsePlatformDelegatedInk()) {
+      features::ShouldUsePlatformDelegatedInk() && output_surface_) {
     output_surface_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));
-  } else {
-    renderer_->GetDelegatedInkPointRenderer(/*create_if_necessary=*/true)
-        ->InitMessagePipeline(std::move(pending_receiver));
+  } else if (DelegatedInkPointRendererBase* ink_renderer =
+                 renderer_->GetDelegatedInkPointRenderer(
+                     /*create_if_necessary=*/true)) {
+    ink_renderer->InitMessagePipeline(std::move(pending_receiver));
   }
 }
 

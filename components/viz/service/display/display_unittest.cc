@@ -61,6 +61,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -5138,6 +5139,44 @@ TEST_P(DelegatedInkDisplayTest,
     EXPECT_TRUE(ink_renderer());
     EXPECT_TRUE(ink_renderer_remote.is_bound());
   }
+}
+
+enum class UnsupportedRendererType { kSoftware, kGL };
+
+class UnsupportedRendererDelegatedInkTest
+    : public DisplayTest,
+      public testing::WithParamInterface<UnsupportedRendererType> {};
+
+struct UnsupportedRendererDelegatedInkTestPassToString {
+  std::string operator()(
+      const testing::TestParamInfo<UnsupportedRendererType> type) const {
+    return type.param == UnsupportedRendererType::kSoftware ? "SoftwareRenderer"
+                                                            : "GLRenderer";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(DelegatedInkTrails,
+                         UnsupportedRendererDelegatedInkTest,
+                         testing::Values(UnsupportedRendererType::kSoftware,
+                                         UnsupportedRendererType::kGL),
+                         UnsupportedRendererDelegatedInkTestPassToString());
+
+// Confirm that trying to use delegated ink trails on an unsupported renderer
+// (anything other than SkiaRenderer) silently fails.
+TEST_P(UnsupportedRendererDelegatedInkTest,
+       DelegatedInkSilentlyFailsOnUnsupportedRenderers) {
+  if (GetParam() == UnsupportedRendererType::kSoftware)
+    SetUpSoftwareDisplay(RendererSettings());
+  else
+    SetUpGpuDisplay(RendererSettings());
+  StubDisplayClient client;
+  display_->Initialize(&client, manager_.surface_manager());
+
+  // Should silently bail early from here. Test will crash if we actually try to
+  // initialize the delegated ink point renderer.
+  mojo::Remote<gfx::mojom::DelegatedInkPointRenderer> ink_renderer_remote;
+  display_->InitDelegatedInkPointRendererReceiver(
+      ink_renderer_remote.BindNewPipeAndPassReceiver());
 }
 
 }  // namespace viz
