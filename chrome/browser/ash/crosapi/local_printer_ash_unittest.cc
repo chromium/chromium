@@ -259,6 +259,15 @@ class LocalPrinterAshTestBase : public testing::Test {
     }
   }
 
+  void SetTerminateServiceOnNextInteraction() {
+    if (SupportFallback()) {
+      unsandboxed_print_backend_service_
+          ->SetTerminateReceiverOnNextInteraction();
+    }
+
+    sandboxed_print_backend_service_->SetTerminateReceiverOnNextInteraction();
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   chromeos::TestCupsPrintersManager& printers_manager() {
@@ -306,7 +315,7 @@ class LocalPrinterAshTest : public LocalPrinterAshTestBase {
 // Testing class to cover `LocalPrinterAsh` handling using either a
 // local task runner or a service.  Makes no attempt to cover fallback when
 // using a service, which is handled separately by
-// `LocalPrinterAshFallbackTest`
+// `LocalPrinterAshServiceTest`.
 class LocalPrinterAshProcessScopeTest
     : public LocalPrinterAshTestBase,
       public testing::WithParamInterface<bool> {
@@ -323,14 +332,15 @@ class LocalPrinterAshProcessScopeTest
 };
 
 // Testing class to cover `LocalPrinterAsh` handling using only a
-// service and when fallback could yield different results.
-class LocalPrinterAshFallbackTest : public LocalPrinterAshTestBase {
+// service.  This can check different behavior for whether fallback is enabled,
+// Mojom data validation conditions, or service termination.
+class LocalPrinterAshServiceTest : public LocalPrinterAshTestBase {
  public:
-  LocalPrinterAshFallbackTest() = default;
-  LocalPrinterAshFallbackTest(const LocalPrinterAshFallbackTest&) = delete;
-  LocalPrinterAshFallbackTest& operator=(const LocalPrinterAshFallbackTest&) =
+  LocalPrinterAshServiceTest() = default;
+  LocalPrinterAshServiceTest(const LocalPrinterAshServiceTest&) = delete;
+  LocalPrinterAshServiceTest& operator=(const LocalPrinterAshServiceTest&) =
       delete;
-  ~LocalPrinterAshFallbackTest() override = default;
+  ~LocalPrinterAshServiceTest() override = default;
 
   bool UseService() override { return true; }
   bool SupportFallback() override { return true; }
@@ -457,6 +467,31 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityInvalidPrinter) {
   EXPECT_FALSE(fetched_caps);
 }
 
+// Tests that fetching capabilities fails if the print backend service
+// terminates early, such as it would from a crash.
+TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
+  Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
+  printers_manager().InstallPrinter("printer1");
+
+  // Add printer capabilities to `test_backend_`.
+  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+
+  // Set up for service to terminate on next use.
+  SetTerminateServiceOnNextInteraction();
+
+  crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
+  local_printer_ash()->GetCapability(
+      /*destination_id=*/"crashing-test-printer",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  EXPECT_FALSE(fetched_caps);
+}
+
 // Test that installed printers to which the user does not have permission to
 // access will receive a dictionary for the capabilities but will not have any
 // settings in that.
@@ -484,7 +519,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityAccessDenied) {
   EXPECT_FALSE(fetched_caps->capabilities);
 }
 
-TEST_F(LocalPrinterAshFallbackTest, GetCapabilityElevatedPermissionsSucceeds) {
+TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);

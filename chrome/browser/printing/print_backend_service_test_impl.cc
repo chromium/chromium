@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/backend/test_print_backend.h"
@@ -23,6 +25,49 @@ void PrintBackendServiceTestImpl::Init(const std::string& locale) {
   print_backend_ = test_print_backend_;
 }
 
+void PrintBackendServiceTestImpl::EnumeratePrinters(
+    mojom::PrintBackendService::EnumeratePrintersCallback callback) {
+  if (terminate_receiver_) {
+    TerminateConnection();
+    return;
+  }
+
+  PrintBackendServiceImpl::EnumeratePrinters(std::move(callback));
+}
+
+void PrintBackendServiceTestImpl::GetDefaultPrinterName(
+    mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
+  if (terminate_receiver_) {
+    TerminateConnection();
+    return;
+  }
+  PrintBackendServiceImpl::GetDefaultPrinterName(std::move(callback));
+}
+
+void PrintBackendServiceTestImpl::GetPrinterSemanticCapsAndDefaults(
+    const std::string& printer_name,
+    mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
+        callback) {
+  if (terminate_receiver_) {
+    TerminateConnection();
+    return;
+  }
+
+  PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
+      printer_name, std::move(callback));
+}
+
+void PrintBackendServiceTestImpl::FetchCapabilities(
+    const std::string& printer_name,
+    mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
+  if (terminate_receiver_) {
+    TerminateConnection();
+    return;
+  }
+
+  PrintBackendServiceImpl::FetchCapabilities(printer_name, std::move(callback));
+}
+
 // static
 std::unique_ptr<PrintBackendServiceTestImpl>
 PrintBackendServiceTestImpl::LaunchUninitialized(
@@ -31,6 +76,11 @@ PrintBackendServiceTestImpl::LaunchUninitialized(
   mojo::PendingReceiver<mojom::PrintBackendService> receiver =
       remote.BindNewPipeAndPassReceiver();
   return std::make_unique<PrintBackendServiceTestImpl>(std::move(receiver));
+}
+
+void PrintBackendServiceTestImpl::TerminateConnection() {
+  DLOG(ERROR) << "Terminating print backend service test connection";
+  receiver_.reset();
 }
 
 // static
