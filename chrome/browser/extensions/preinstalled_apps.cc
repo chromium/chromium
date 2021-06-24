@@ -167,7 +167,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     // Filter out the new pre-installed apps for migrating users, so that we
     // don't randomly install them out of the blue. Two-pass to keep iterators
     // nice and happy.
-    for (const auto& entry : prefs->DictItems()) {
+    for (auto entry : prefs->DictItems()) {
       if (!IsOldPreinstalledApp(entry.first))
         keys_to_erase.insert(entry.first);
     }
@@ -205,7 +205,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     };
 
     std::set<std::string> keys_to_erase;
-    for (const auto& entry : prefs->DictItems()) {
+    for (auto entry : prefs->DictItems()) {
       bool should_re_add = should_re_add_app(entry.first, entry.second);
       if (should_re_add) {
         // Since it will be re-added, mark it as no-longer-migrated.

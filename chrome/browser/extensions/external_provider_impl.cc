@@ -157,7 +157,7 @@ void ExternalProviderImpl::SetPrefs(
 
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
-  for (const auto& it : prefs->DictItems()) {
+  for (auto it : prefs->DictItems()) {
     install_stage_tracker->ReportInstallCreationStage(
         it.first,
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);

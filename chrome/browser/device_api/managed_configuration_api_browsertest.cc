@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 bool DictValueEquals(std::unique_ptr<base::DictionaryValue> value,
                      std::map<std::string, std::string> expected) {
   std::map<std::string, std::string> actual;
-  for (const auto& entry : value->DictItems()) {
+  for (auto entry : value->DictItems()) {
     if (!entry.second.is_string())
       return false;
     actual.insert({entry.first, entry.second.GetString()});

@@ -174,7 +174,7 @@ void RemoveOldestDictionaryEntry(base::DictionaryValue* dict) {
 
   std::string oldest_key;
   base::Time oldest_mod_time = base::Time::Max();
-  for (const auto& iter : dict->DictItems()) {
+  for (auto iter : dict->DictItems()) {
     absl::optional<AvailabilityProberCacheEntry> entry =
         DecodeCacheEntryValue(iter.second);
     if (!entry.has_value()) {

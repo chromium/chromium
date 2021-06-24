@@ -132,7 +132,7 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   if (!apps || !apps->is_dict())
     return {};
   std::vector<std::string> app_ids;
-  for (const auto& kv : apps->DictItems()) {
+  for (auto kv : apps->DictItems()) {
     const auto& app_id = kv.first;
     const auto pv = GetProductVersion(app_id);
     if (pv.IsValid())

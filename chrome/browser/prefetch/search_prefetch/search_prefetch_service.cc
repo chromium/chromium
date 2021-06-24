@@ -541,7 +541,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
     return dictionary->DictSize() > 0;
   }
 
-  for (const auto& element : dictionary->DictItems()) {
+  for (auto element : dictionary->DictItems()) {
     GURL navigation_url(element.first);
     if (!navigation_url.is_valid()) {
       continue;

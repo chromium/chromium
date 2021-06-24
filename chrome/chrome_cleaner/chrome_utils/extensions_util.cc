@@ -120,7 +120,7 @@ void GetExtensionSettingsPoliciesFromParsedJson(
 
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : extension_settings->DictItems()) {
+  for (auto entry : extension_settings->DictItems()) {
     const std::wstring& extension_id = base::UTF8ToWide(entry.first);
     const base::Value& settings_value = entry.second;
 
@@ -189,7 +189,7 @@ void GetDefaultExtensionsFromParsedJson(
 
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : default_extensions->DictItems()) {
+  for (auto entry : default_extensions->DictItems()) {
     std::wstring extension_id = base::UTF8ToWide(entry.first);
     if (!base::Contains(default_extension_whitelist, extension_id)) {
       policies->emplace_back(extension_id, extensions_file, saved_json);
@@ -225,7 +225,7 @@ void GetMasterPreferencesExtensionsFromParsedJson(
   extension_settings->GetAsDictionary(&extension_settings_dictionary);
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : extension_settings_dictionary->DictItems()) {
+  for (auto entry : extension_settings_dictionary->DictItems()) {
     std::wstring extension_id = base::UTF8ToWide(entry.first);
     policies->emplace_back(extension_id, extensions_file, saved_json);
   }

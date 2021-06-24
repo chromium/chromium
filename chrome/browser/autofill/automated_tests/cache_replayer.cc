@@ -582,7 +582,7 @@ std::vector<QueryNode> FindQueryNodesInDomainDict(
     return {};
   }
   std::vector<QueryNode> nodes;
-  for (const auto& pair : domain_dict.DictItems()) {
+  for (auto pair : domain_dict.DictItems()) {
     if (pair.first.find(url_prefix) != std::string::npos) {
       nodes.push_back(QueryNode{GURL(pair.first), &pair.second});
     }

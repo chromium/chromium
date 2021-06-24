@@ -348,7 +348,7 @@ std::string SearchSuggestService::GetBlocklistAsString() {
       prefs::kNtpSearchSuggestionsBlocklist);
 
   std::string blocklist_as_string;
-  for (const auto& dict : blocklist->DictItems()) {
+  for (auto dict : blocklist->DictItems()) {
     blocklist_as_string += dict.first;
 
     if (!dict.second.GetList().empty()) {

@@ -58,7 +58,7 @@ PermissionActionsHistory::GetHistory(const base::Time& begin) {
     return {};
 
   std::vector<PermissionActionsHistory::Entry> matching_actions;
-  for (const auto& permission_entry : dictionary->DictItems()) {
+  for (auto permission_entry : dictionary->DictItems()) {
     const auto permission_actions =
         GetHistoryInternal(begin, permission_entry.first);
 
@@ -122,7 +122,7 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
 
   DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
-  for (const auto& permission_entry : update->DictItems()) {
+  for (auto permission_entry : update->DictItems()) {
     permission_entry.second.EraseListValueIf([delete_begin,
                                               delete_end](const auto& entry) {
       const absl::optional<base::Time> timestamp =

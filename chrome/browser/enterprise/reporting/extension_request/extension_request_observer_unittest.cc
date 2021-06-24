@@ -150,7 +150,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         profile()->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests->DictSize());
-    for (const auto& it : actual_pending_requests->DictItems()) {
+    for (auto it : actual_pending_requests->DictItems()) {
       EXPECT_EQ(expected_removed_requests.end(),
                 std::find(expected_removed_requests.begin(),
                           expected_removed_requests.end(), it.first));

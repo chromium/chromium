@@ -140,12 +140,12 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
   // that ends with "recv-googMaxDecodeMs" inside (it will start with the ssrc
   // id, but we don't care about that). Then collect the string of "values" out
   // of that key and convert those into the |goog_decode_ms| vector of doubles.
-  for (const auto& dictionary_entry : dictionary->DictItems()) {
-    for (const auto& ssrc_entry : dictionary_entry.second.DictItems()) {
+  for (auto dictionary_entry : dictionary->DictItems()) {
+    for (auto ssrc_entry : dictionary_entry.second.DictItems()) {
       if (ssrc_entry.first != "stats")
         continue;
 
-      for (const auto& stat_entry : ssrc_entry.second.DictItems()) {
+      for (auto stat_entry : ssrc_entry.second.DictItems()) {
         if (!base::EndsWith(stat_entry.first, "recv-googMaxDecodeMs",
                             base::CompareCase::SENSITIVE)) {
           continue;

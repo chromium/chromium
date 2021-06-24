@@ -1346,7 +1346,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedTypes) {
                    EXPECT_EQ(26u, result.paths_results.size());
 
                    // The supported types should be marked as false.
-                   for (const auto& result : result.paths_results)
+                   for (auto result : result.paths_results)
                      EXPECT_FALSE(result);
                    *called = true;
                  },

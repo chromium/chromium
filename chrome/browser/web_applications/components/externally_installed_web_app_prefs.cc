@@ -64,7 +64,7 @@ const base::Value* GetPreferenceValue(const PrefService* pref_service,
   // key/value pairs. We expect both N and the number of times
   // GetPreferenceValue is called to be relatively small in practice. If they
   // turn out to be large, we can write a more sophisticated implementation.
-  for (const auto& it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts->DictItems()) {
     const base::Value* root = &it.second;
     const base::Value* v = root;
     if (v->is_dict()) {
@@ -117,7 +117,7 @@ std::map<AppId, GURL> ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     return ids_to_urls;
   }
 
-  for (const auto& it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts->DictItems()) {
     const base::Value* v = &it.second;
     if (!v->is_dict()) {
       continue;

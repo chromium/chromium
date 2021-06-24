@@ -164,7 +164,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
         // is only present in one of the dictionaries, ignore it. This allows us
         // to verify the properties we care about in the test without needing to
         // specify each.
-        for (const auto& it : left_dict.DictItems()) {
+        for (auto it : left_dict.DictItems()) {
           const base::Value* right_value = right_dict.FindKey(it.first);
           if (!right_value || *right_value != it.second)
             return false;

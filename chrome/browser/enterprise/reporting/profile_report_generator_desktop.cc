@@ -86,7 +86,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
   int number_of_requests = 0;
-  for (const auto& it : pending_requests->DictItems()) {
+  for (auto it : pending_requests->DictItems()) {
     if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
             it.first, webstore_update_url, extension_management)) {
       continue;

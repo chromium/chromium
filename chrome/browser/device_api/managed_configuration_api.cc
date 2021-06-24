@@ -319,7 +319,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
   // We need to transform each value into a string.
   base::DictionaryValue result_dict;
-  for (const auto& item : decoding_result.value->DictItems()) {
+  for (auto item : decoding_result.value->DictItems()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);

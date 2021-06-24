@@ -131,7 +131,7 @@ void SetPreferencesFromJson(Profile* profile, const std::string& json) {
   if (!parsed || !parsed->is_dict())
     return;
   DictionaryPrefUpdate update(profile->GetPrefs(), prefs::kDevToolsPreferences);
-  for (const auto& dict_value : parsed->DictItems()) {
+  for (auto dict_value : parsed->DictItems()) {
     if (!dict_value.second.is_string())
       continue;
     update.Get()->SetKey(dict_value.first, std::move(dict_value.second));

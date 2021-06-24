@@ -116,7 +116,7 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   const base::DictionaryValue* uploaded_requests =
       profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
 
-  for (const auto& it : pending_requests->DictItems()) {
+  for (auto it : pending_requests->DictItems()) {
     const std::string& extension_id = it.first;
     if (!ShouldUploadExtensionRequest(extension_id, webstore_update_url,
                                       extension_management)) {
@@ -131,7 +131,7 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
         GenerateReport(extension_id, /*request_data=*/&it.second));
   }
 
-  for (const auto& it : uploaded_requests->DictItems()) {
+  for (auto it : uploaded_requests->DictItems()) {
     const std::string& extension_id = it.first;
 
     // Request is still pending, no need to send remove request.

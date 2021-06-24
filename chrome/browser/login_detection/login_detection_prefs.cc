@@ -46,7 +46,7 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   // not happen unless the pref is corrupt somehow.
   if (dict->DictSize() > GetOauthLoggedInSitesMaxSize()) {
     std::vector<std::string> invalid_sites;
-    for (const auto& site_entry : dict->DictItems()) {
+    for (auto site_entry : dict->DictItems()) {
       if (!util::ValueToTime(site_entry.second))
         invalid_sites.push_back(site_entry.first);
     }
@@ -60,7 +60,7 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
     // Holds the pair of site name, its last login time for the site that was
     // least recently signed-in to be removed.
     absl::optional<std::pair<std::string, base::Time>> site_entry_to_remove;
-    for (const auto& site_entry : dict->DictItems()) {
+    for (auto site_entry : dict->DictItems()) {
       base::Time signin_time = *util::ValueToTime(site_entry.second);
       if (!site_entry_to_remove || signin_time < site_entry_to_remove->second) {
         site_entry_to_remove = std::make_pair(site_entry.first, signin_time);
@@ -79,7 +79,7 @@ bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url) {
 std::vector<url::Origin> GetOAuthSignedInSites(PrefService* pref_service) {
   std::vector<url::Origin> sites;
   if (auto* dict = pref_service->GetDictionary(kOAuthSignedInSitesPref)) {
-    for (const auto& site_entry : dict->DictItems()) {
+    for (auto site_entry : dict->DictItems()) {
       sites.push_back(url::Origin::Create(GURL(site_entry.first)));
     }
   }

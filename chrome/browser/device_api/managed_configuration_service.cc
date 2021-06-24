@@ -48,7 +48,7 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
               return std::move(callback).Run(absl::nullopt);
             }
             std::vector<std::pair<std::string, std::string>> items;
-            for (const auto& it : result->DictItems())
+            for (auto it : result->DictItems())
               items.emplace_back(it.first, it.second.GetString());
             std::move(callback).Run(
                 base::flat_map<std::string, std::string>(std::move(items)));

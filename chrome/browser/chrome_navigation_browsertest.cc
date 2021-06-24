@@ -2465,7 +2465,7 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
     auto* dict = prefs->GetDictionary(
         site_isolation::prefs::kWebTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
-    for (const auto& site_time_pair : dict->DictItems())
+    for (auto site_time_pair : dict->DictItems())
       sites.push_back(site_time_pair.first);
     return sites;
   }

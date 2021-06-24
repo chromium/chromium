@@ -1170,7 +1170,7 @@ TEST_F(PrintPreviewHandlerTest, GetPreview) {
   // appropriate settings.
   const base::Value& preview_params = print_render_frame.GetSettings();
   bool preview_id_found = false;
-  for (const auto& it : preview_params.DictItems()) {
+  for (auto it : preview_params.DictItems()) {
     if (it.first == kPreviewUIID) {  // This is added by the handler.
       preview_id_found = true;
       continue;

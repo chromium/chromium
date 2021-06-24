@@ -4283,7 +4283,7 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
   DCHECK(expiration_dict);
 
   base::flat_map<int, base::Time> expiration_times;
-  for (const auto& it : expiration_dict->DictItems()) {
+  for (auto it : expiration_dict->DictItems()) {
     // key.
     int service = 0;
     bool did_convert = base::StringToInt(it.first, &service);

@@ -102,7 +102,7 @@ namespace internal {
 void FilterPrefs(const std::vector<std::string>& valid_prefixes,
                  base::Value& prefs) {
   std::vector<std::string> prefs_to_remove;
-  for (const auto& it : prefs.DictItems()) {
+  for (auto it : prefs.DictItems()) {
     if (!HasValidPrefix(it.first, valid_prefixes))
       prefs_to_remove.push_back(it.first);
   }

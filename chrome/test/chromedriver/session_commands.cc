@@ -887,7 +887,7 @@ Status ExecuteSetTimeoutLegacy(Session* session,
 Status ExecuteSetTimeoutsW3C(Session* session,
                              const base::DictionaryValue& params,
                              std::unique_ptr<base::Value>* value) {
-  for (const auto& setting : params.DictItems()) {
+  for (auto setting : params.DictItems()) {
     int64_t timeout_ms_int64 = -1;
     base::TimeDelta timeout;
     const std::string& type = setting.first;
