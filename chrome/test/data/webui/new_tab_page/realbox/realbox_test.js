@@ -190,8 +190,10 @@ function createCalculatorMatch(modifiers = {}) {
  */
 function verifyMatch(match, matchEl) {
   assertEquals('option', matchEl.getAttribute('role'));
-  const matchContents = decodeString16(match.contents);
-  const matchDescription = decodeString16(match.description);
+  const matchContents =
+      decodeString16(match.answer ? match.answer.firstLine : match.contents);
+  const matchDescription = decodeString16(
+      match.answer ? match.answer.secondLine : match.description);
   const separatorText =
       matchDescription ? loadTimeData.getString('realboxSeparator') : '';
   assertEquals(
@@ -2290,5 +2292,30 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
     assertEquals('5', realbox.$.input.value);
     assertIconMaskImageUrl(realbox.$.icon, 'calculator.svg');
+  });
+
+  //============================================================================
+  // Test suggestion answer
+  //============================================================================
+
+  test('Test Rich Suggestion Answer for Verbatim Question', async () => {
+    realbox.$.input.value = 'When is Christmas Day';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    const matches = [createSearchMatch({
+      answer: {
+        firstLine: mojoString16('When is Christmas Day'),
+        secondLine: mojoString16('Saturday, December 25, 2021')
+      }
+    })];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+    let matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+    verifyMatch(matches[0], matchEls[0]);
   });
 });

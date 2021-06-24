@@ -15,8 +15,15 @@ struct ACMatchClassification {
   int32 style;
 };
 
+// See components/omnibox/browser/suggestion_answer.h
+struct SuggestionAnswer {
+  mojo_base.mojom.String16 first_line;
+  mojo_base.mojom.String16 second_line;
+};
+
 struct AutocompleteMatch {
   bool allowed_to_be_default_match;
+  SuggestionAnswer? answer;
   mojo_base.mojom.String16 contents;
   array<ACMatchClassification> contents_class;
   mojo_base.mojom.String16 description;

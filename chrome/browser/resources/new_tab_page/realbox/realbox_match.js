@@ -250,8 +250,19 @@ class RealboxMatchElement extends PolymerElement {
     if (!this.match) {
       return '';
     }
-    const contents = decodeString16(this.match.contents);
-    const description = decodeString16(this.match.description);
+    const spanContents = document.createElement('span');
+    spanContents.innerHTML = this.match.answer ?
+        decodeString16(this.match.answer.firstLine) :
+        decodeString16(this.match.contents);
+    const contents = spanContents.textContent || spanContents.innerText;
+
+    const spanDescription = document.createElement('span');
+    spanDescription.innerHTML = this.match.answer ?
+        decodeString16(this.match.answer.secondLine) :
+        decodeString16(this.match.description);
+    const description =
+        spanDescription.textContent || spanDescription.innerText;
+
     return this.match.swapContentsAndDescription ?
         description + this.separatorText_ + contents :
         contents + this.separatorText_ + description;
@@ -276,6 +287,9 @@ class RealboxMatchElement extends PolymerElement {
       return '';
     }
     const match = this.match;
+    if (match.answer) {
+      return decodeString16(match.answer.firstLine);
+    }
     return match.swapContentsAndDescription ?
         this.renderTextWithClassifications_(
                 decodeString16(match.description), match.descriptionClass)
@@ -294,6 +308,9 @@ class RealboxMatchElement extends PolymerElement {
       return '';
     }
     const match = this.match;
+    if (match.answer) {
+      return decodeString16(match.answer.secondLine);
+    }
     return match.swapContentsAndDescription ?
         this.renderTextWithClassifications_(
                 decodeString16(match.contents), match.contentsClass)
@@ -317,7 +334,9 @@ class RealboxMatchElement extends PolymerElement {
    */
   computeIsRichSuggestion_() {
     return this.hasImage ||
-        (this.match && this.match.type === SEARCH_CALCULATOR_ANSWER_TYPE);
+        (this.match &&
+         (this.match.type === SEARCH_CALCULATOR_ANSWER_TYPE ||
+          !!this.match.answer));
   }
 
   /**
