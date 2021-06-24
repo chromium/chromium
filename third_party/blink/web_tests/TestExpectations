@@ -7058,3 +7058,16 @@ crbug.com/1222097 virtual/threaded-prefer-compositing/fast/scrolling/events/over
 # Sheriff
 crbug.com/1223276 external/wpt/layout-instability/input-timestamp.html [ Skip ]
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
+crbug.com/1223327 virtual/prerender/wpt_internal/prerender/unload.html [ Pass Timeout ]
+crbug.com/1222097 external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
+crbug.com/1222097 external/wpt/mediacapture-image/detached-HTMLCanvasElement.html [ Skip ]
+crbug.com/1222097 http/tests/canvas/captureStream-on-detached-canvas.html [ Skip ]
+crbug.com/1222097 virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
+crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
+crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Skip ]
+crbug.com/1222097 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
+crbug.com/1222097 virtual/shared_array_buffer_on_desktop/http/tests/devtools/security/interstitial-sidebar.js [ Skip ]
+crbug.com/1222097 virtual/shared_array_buffer_on_desktop/http/tests/devtools/security/mixed-content-sidebar.js [ Skip ]
+crbug.com/1222097 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
+crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Skip ]
+
