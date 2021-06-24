@@ -23,9 +23,6 @@ class SegmentInfo;
 class PredictionResult;
 }  // namespace proto
 
-// The key to be used to find discrete mapping for segmentation.
-constexpr char kSegmentationDiscreteMappingKey[] = "segmentation";
-
 // Represents a DB layer that stores model metadata and prediction results to
 // the disk.
 class SegmentInfoDatabase {

@@ -7,6 +7,8 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefRegistrySimple;
+
 namespace segmentation_platform {
 
 // The core class of segmentation platform that integrates all the required
@@ -19,6 +21,10 @@ class SegmentationPlatformService : public KeyedService {
   SegmentationPlatformService(const SegmentationPlatformService&) = delete;
   SegmentationPlatformService& operator=(const SegmentationPlatformService&) =
       delete;
+
+  // Registers preferences used by this class in the provided |registry|.  This
+  // should be called for the Profile registry.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 };
 
 }  // namespace segmentation_platform

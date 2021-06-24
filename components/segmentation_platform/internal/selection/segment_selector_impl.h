@@ -20,12 +20,11 @@ class SegmentInfo;
 class SegmentationModelMetadata;
 }  // namespace proto
 
-constexpr base::TimeDelta kSegmentSelectionTTL = base::TimeDelta::FromDays(28);
-
 class SegmentSelectorImpl : public SegmentSelector {
  public:
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
-                      SegmentationResultPrefs* result_prefs);
+                      SegmentationResultPrefs* result_prefs,
+                      const std::string& segmentation_key);
 
   ~SegmentSelectorImpl() override;
 
@@ -82,6 +81,10 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // Helper class to read/write results to the prefs.
   SegmentationResultPrefs* result_prefs_;
+
+  // The key specific to this selection, and used for finding the discrete
+  // mapping and writing to prefs.
+  const std::string segmentation_key_;
 
   // These values are read from prefs or db on init and used for serving the
   // clients in the current session.

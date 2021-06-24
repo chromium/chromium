@@ -11,17 +11,25 @@
 
 using optimization_guide::proto::OptimizationTarget;
 
+class PrefService;
+
 namespace segmentation_platform {
 
 // Struct containing information about the selected segment. Convenient for
 // reading and writing to prefs.
 struct SelectedSegment {
  public:
-  OptimizationTarget segment_id;
-  base::Time selection_time;
-  bool in_use;
-
   explicit SelectedSegment(OptimizationTarget segment_id);
+  ~SelectedSegment();
+
+  // The segment selection result.
+  OptimizationTarget segment_id;
+
+  // The time when the segment was selected.
+  base::Time selection_time;
+
+  // Whether or not the segment selection result is in use.
+  bool in_use;
 };
 
 // Stores the result of segmentation into prefs for faster lookup. The result
@@ -30,15 +38,26 @@ struct SelectedSegment {
 // selected segment has started to be used by clients.
 class SegmentationResultPrefs {
  public:
+  explicit SegmentationResultPrefs(PrefService* pref_service);
   virtual ~SegmentationResultPrefs() = default;
+
+  // Disallow copy/assign.
+  SegmentationResultPrefs(const SegmentationResultPrefs& other) = delete;
+  SegmentationResultPrefs operator=(const SegmentationResultPrefs& other) =
+      delete;
 
   // Writes the selected segment to prefs. Deletes the previous results if
   // |selected_segment| is empty.
   virtual void SaveSegmentationResultToPref(
-      const absl::optional<SelectedSegment>& selected_segment) = 0;
+      const std::string& result_key,
+      const absl::optional<SelectedSegment>& selected_segment);
 
   // Reads the selected segment from pref, if any.
-  virtual absl::optional<SelectedSegment> ReadSegmentationResultFromPref() = 0;
+  virtual absl::optional<SelectedSegment> ReadSegmentationResultFromPref(
+      const std::string& result_key);
+
+ private:
+  PrefService* prefs_;
 };
 
 }  // namespace segmentation_platform

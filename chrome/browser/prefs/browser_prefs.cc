@@ -139,6 +139,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -1003,6 +1004,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if !defined(OS_ANDROID)
   SerialPolicyAllowedPorts::RegisterProfilePrefs(registry);
 #endif
+  segmentation_platform::SegmentationPlatformService::RegisterProfilePrefs(
+      registry);
   SessionStartupPref::RegisterProfilePrefs(registry);
   SharingSyncPreference::RegisterProfilePrefs(registry);
   site_engagement::SiteEngagementService::RegisterProfilePrefs(registry);

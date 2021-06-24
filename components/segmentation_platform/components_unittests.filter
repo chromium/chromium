@@ -6,7 +6,9 @@ ModelExecutionManagerFactoryTest.*
 ModelExecutionManagerTest.*
 ModelExecutionSchedulerTest.*
 SegmentationModelExecutorTest.*
+SegmentationPlatformFeaturesTest.*
 SegmentationPlatformServiceImplTest.*
+SegmentationResultPrefsTest.*
 SegmentInfoDatabaseTest.*
 SegmentSelectorTest.*
 SignalDatabaseImplTest.*
