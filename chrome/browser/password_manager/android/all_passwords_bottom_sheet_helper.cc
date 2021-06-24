@@ -10,7 +10,7 @@
 #include "components/password_manager/core/browser/password_store.h"
 
 AllPasswordsBottomSheetHelper::AllPasswordsBottomSheetHelper(
-    password_manager::PasswordStore* store) {
+    password_manager::PasswordStoreInterface* store) {
   DCHECK(store);
   store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
 }

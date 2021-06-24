@@ -16,6 +16,7 @@
 
 namespace password_manager {
 
+class PasswordStoreInterface;
 struct PasswordForm;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -54,7 +55,7 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
 
   // |https_origin| should specify a valid HTTPS URL.
   HttpPasswordStoreMigrator(const url::Origin& https_origin,
-                            PasswordStore* store,
+                            PasswordStoreInterface* store,
                             network::mojom::NetworkContext* network_context,
                             Consumer* consumer);
   ~HttpPasswordStoreMigrator() override;
@@ -72,7 +73,7 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
  private:
   void ProcessPasswordStoreResults();
 
-  PasswordStore* const store_;
+  PasswordStoreInterface* const store_;
   Consumer* consumer_;
 
   // |ProcessPasswordStoreResults| requires that both |OnHSTSQueryResult| and

@@ -36,7 +36,7 @@ void CredentialManagerPendingPreventSilentAccessTask::OnGetPasswordStoreResults(
 
 void CredentialManagerPendingPreventSilentAccessTask::
     OnGetPasswordStoreResultsFrom(
-        PasswordStore* store,
+        PasswordStoreInterface* store,
         std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
     if (!form->skip_zero_click) {

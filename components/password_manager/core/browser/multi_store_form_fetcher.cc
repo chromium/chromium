@@ -113,7 +113,7 @@ void MultiStoreFormFetcher::OnGetPasswordStoreResults(
 }
 
 void MultiStoreFormFetcher::OnGetPasswordStoreResultsFrom(
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);

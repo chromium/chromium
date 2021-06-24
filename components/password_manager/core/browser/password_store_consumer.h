@@ -17,9 +17,9 @@ namespace password_manager {
 struct FieldInfo;
 struct InteractionsStats;
 struct PasswordForm;
-class PasswordStore;
+class PasswordStoreInterface;
 
-// Reads from the PasswordStore are done asynchronously on a separate
+// Reads from the PasswordStoreInterface are done asynchronously on a separate
 // thread. PasswordStoreConsumer provides the virtual callback method, which is
 // guaranteed to be executed on this (the UI) thread. It also provides the
 // base::CancelableTaskTracker member, which cancels any outstanding
@@ -34,12 +34,12 @@ class PasswordStoreConsumer {
       std::vector<std::unique_ptr<PasswordForm>> results) = 0;
 
   // Like OnGetPasswordStoreResults(), but also receives the originating
-  // PasswordStore as a parameter. This is useful for consumers that query both
-  // the profile-scoped and the account-scoped store.
-  // The default implementation simply calls OnGetPasswordStoreResults(), so
-  // consumers that don't care about the store can just ignore this.
+  // PasswordStoreInterface as a parameter. This is useful for consumers that
+  // query both the profile-scoped and the account-scoped store. The default
+  // implementation simply calls OnGetPasswordStoreResults(), so consumers that
+  // don't care about the store can just ignore this.
   virtual void OnGetPasswordStoreResultsFrom(
-      PasswordStore* store,
+      PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Called when the GetSiteStats() request is finished, with the associated

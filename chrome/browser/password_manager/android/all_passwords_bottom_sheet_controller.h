@@ -33,14 +33,14 @@ class AllPasswordsBottomSheetController
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      password_manager::PasswordStore* store,
+      password_manager::PasswordStoreInterface* store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type,
       password_manager::PasswordManagerClient* client);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
-      password_manager::PasswordStore* store,
+      password_manager::PasswordStoreInterface* store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type);
   ~AllPasswordsBottomSheetController() override;
@@ -88,7 +88,7 @@ class AllPasswordsBottomSheetController
   content::WebContents* web_contents_ = nullptr;
 
   // The controller doesn't take |store_| ownership.
-  password_manager::PasswordStore* store_;
+  password_manager::PasswordStoreInterface* store_;
 
   // A callback method will be consumed when the user dismisses the BottomSheet.
   base::OnceCallback<void()> dismissal_callback_;

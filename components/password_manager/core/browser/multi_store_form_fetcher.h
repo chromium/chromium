@@ -32,7 +32,7 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetPasswordStoreResultsFrom(
-      PasswordStore* store,
+      PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
   // HttpPasswordStoreMigrator::Consumer:
@@ -60,7 +60,8 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   int wait_counter_ = 0;
   std::vector<std::unique_ptr<PasswordForm>> partial_results_;
 
-  base::flat_map<PasswordStore*, std::unique_ptr<HttpPasswordStoreMigrator>>
+  base::flat_map<PasswordStoreInterface*,
+                 std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiStoreFormFetcher);

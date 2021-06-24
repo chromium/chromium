@@ -37,7 +37,7 @@ void OnHSTSQueryResultHelper(
 
 HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
     const url::Origin& https_origin,
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     network::mojom::NetworkContext* network_context,
     Consumer* consumer)
     : store_(store), consumer_(consumer) {
@@ -104,8 +104,11 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
                                         : HttpPasswordMigrationMode::kCopy;
   got_hsts_query_result_ = true;
 
-  if (is_hsts == HSTSResult::kYes)
-    store_->RemoveSiteStats(http_origin_domain_.GetURL());
+  if (is_hsts == HSTSResult::kYes) {
+    SmartBubbleStatsStore* stats_store = store_->GetSmartBubbleStatsStore();
+    if (stats_store)
+      stats_store->RemoveSiteStats(http_origin_domain_.GetURL());
+  }
 
   if (got_password_store_results_)
     ProcessPasswordStoreResults();

@@ -184,7 +184,7 @@ void CredentialManagerPendingRequestTask::OnGetPasswordStoreResults(
 }
 
 void CredentialManagerPendingRequestTask::OnGetPasswordStoreResultsFrom(
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   // localhost is a secure origin but not https.
   if (results.empty() && origin_.scheme() == url::kHttpsScheme) {

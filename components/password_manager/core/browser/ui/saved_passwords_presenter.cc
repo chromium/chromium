@@ -240,7 +240,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   // Profile store passwords are always stored first in `passwords_`.
   auto account_passwords_it = base::ranges::partition_point(

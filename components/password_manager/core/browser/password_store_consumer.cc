@@ -16,7 +16,7 @@ PasswordStoreConsumer::PasswordStoreConsumer() = default;
 PasswordStoreConsumer::~PasswordStoreConsumer() = default;
 
 void PasswordStoreConsumer::OnGetPasswordStoreResultsFrom(
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   OnGetPasswordStoreResults(std::move(results));
 }

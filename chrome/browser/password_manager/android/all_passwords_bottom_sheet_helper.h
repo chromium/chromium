@@ -19,7 +19,7 @@ class AllPasswordsBottomSheetHelper
     : public password_manager::PasswordStoreConsumer {
  public:
   explicit AllPasswordsBottomSheetHelper(
-      password_manager::PasswordStore* store);
+      password_manager::PasswordStoreInterface* store);
   AllPasswordsBottomSheetHelper(const AllPasswordsBottomSheetHelper&) = delete;
   AllPasswordsBottomSheetHelper& operator=(
       const AllPasswordsBottomSheetHelper&) = delete;

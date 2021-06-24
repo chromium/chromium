@@ -25,7 +25,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     base::PassKey<class AllPasswordsBottomSheetControllerTest>,
     std::unique_ptr<AllPasswordsBottomSheetView> view,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    password_manager::PasswordStore* store,
+    password_manager::PasswordStoreInterface* store,
     base::OnceCallback<void()> dismissal_callback,
     FocusedFieldType focused_field_type,
     PasswordManagerClient* client)
@@ -38,7 +38,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
-    password_manager::PasswordStore* store,
+    password_manager::PasswordStoreInterface* store,
     base::OnceCallback<void()> dismissal_callback,
     FocusedFieldType focused_field_type)
     : view_(std::make_unique<AllPasswordsBottomSheetViewImpl>(this)),
