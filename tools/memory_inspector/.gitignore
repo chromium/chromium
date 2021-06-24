@@ -1,4 +1,0 @@
-# Ignore prebuilts (but not the .sha1 required for fetching them from GCS)
-prebuilts/*
-!prebuilts/*.sha1
-!prebuilts/README
