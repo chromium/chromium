@@ -21,6 +21,7 @@ source_set("file_transfer") {
       "ensure_user_mac.cc",
       "file_chooser_mac.mm",
     ]
+    deps += [ "//ui/base" ]
     frameworks = [ "AppKit.framework" ]
   }
 
@@ -35,6 +36,11 @@ source_set("file_transfer") {
       "file_chooser_main_win.cc",
       "file_chooser_win.cc",
       "get_desktop_directory_win.cc",
+    ]
+    deps += [
+      "//ipc:ipc",
+      "//remoting/host:base",
+      "//remoting/host:common",
     ]
   } else {
     sources += [ "get_desktop_directory.cc" ]
@@ -58,6 +64,7 @@ source_set("common") {
     "file_chooser.h",
     "file_operations.h",
     "file_transfer_message_handler.h",
+    "get_desktop_directory.h",
     "ipc_file_operations.h",
     "local_file_operations.h",
     "rtc_log_file_operations.h",
