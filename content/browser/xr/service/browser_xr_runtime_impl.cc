@@ -240,10 +240,6 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
       if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
         return base::FeatureList::IsEnabled(features::kWebXrHandInput);
       }
-      if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
-        return base::FeatureList::IsEnabled(
-            features::kOpenXrExtendedFeatureSupport);
-      }
       return base::Contains(kOpenXRFeatures, feature);
 #endif
   }

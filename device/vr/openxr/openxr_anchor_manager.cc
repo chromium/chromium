@@ -166,7 +166,10 @@ mojom::XRAnchorsDataPtr OpenXrAnchorManager::GetCurrentAnchorsData(
     XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
     if (FAILED(xrLocateSpace(anchor_space, mojo_space_, predicted_display_time,
                              &anchor_from_mojo)) ||
-        !IsPoseValid(anchor_from_mojo.locationFlags)) {
+        !(anchor_from_mojo.locationFlags &
+          XR_SPACE_LOCATION_POSITION_VALID_BIT) ||
+        !(anchor_from_mojo.locationFlags &
+          XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)) {
       updated_anchors[index] =
           mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt);
     } else {
