@@ -355,7 +355,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
             addedElements, [].slice.call(node.getElementsByTagName('*')));
       }
       const formChanged = addedElements.find(function(element) {
-        return element.tagName.match(/(FORM|INPUT|SELECT|OPTION|TEXTAREA)/);
+        return element.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/);
       });
       if (formChanged) {
         const msg = {
@@ -385,7 +385,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
             removedElements, [].slice.call(node.getElementsByTagName('FORM')));
       }
       const formGone = removedElements.find(function(element) {
-        if (element.tagName.match(/(FORM)/)) {
+        if (element.tagName.match(/^(FORM)$/)) {
           for (let k = 0; k < element.elements.length; k++) {
             if (isPasswordField_(element.elements[k])) {
               return true;
