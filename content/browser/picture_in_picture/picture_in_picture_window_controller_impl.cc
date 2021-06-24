@@ -132,7 +132,7 @@ void PictureInPictureWindowControllerImpl::EmbedSurface(
   // id was updated for the same video, this is a no-op. This could be updated
   // for a different video if another media player on the same WebContents
   // enters Picture-in-Picture mode.
-  UpdatePlaybackState(IsPlayerActive(), false);
+  UpdatePlaybackState();
 
   window_->UpdateVideoSize(natural_size);
   window_->SetSurfaceId(surface_id_);
@@ -159,21 +159,18 @@ WebContents* PictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
-void PictureInPictureWindowControllerImpl::UpdatePlaybackState(
-    bool is_playing,
-    bool reached_end_of_stream) {
+void PictureInPictureWindowControllerImpl::UpdatePlaybackState() {
   if (!window_)
     return;
 
-  if (reached_end_of_stream) {
-    window_->SetPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
-    return;
+  auto playback_state = OverlayWindow::PlaybackState::kPaused;
+  if (IsPlayerActive()) {
+    playback_state = OverlayWindow::PlaybackState::kPlaying;
+  } else if (media_position_ && media_position_->end_of_media()) {
+    playback_state = OverlayWindow::PlaybackState::kEndOfVideo;
   }
 
-  DCHECK(active_session_);
-
-  window_->SetPlaybackState(is_playing ? OverlayWindow::PlaybackState::kPlaying
-                                       : OverlayWindow::PlaybackState::kPaused);
+  window_->SetPlaybackState(playback_state);
 }
 
 bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
@@ -350,6 +347,12 @@ void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
   window_->SetHangUpButtonVisibility(media_session_action_hang_up_handled_);
 }
 
+void PictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
+    const absl::optional<media_session::MediaPosition>& media_position) {
+  media_position_ = media_position;
+  UpdatePlaybackState();
+}
+
 gfx::Size PictureInPictureWindowControllerImpl::GetSize() {
   return window_->GetBounds().size();
 }
@@ -363,22 +366,20 @@ void PictureInPictureWindowControllerImpl::MediaStartedPlaying(
   if (!active_session_ || active_session_->player_id() != media_player_id)
     return;
 
-  UpdatePlaybackState(true /* is_playing */, false /* reached_end_of_stream */);
+  UpdatePlaybackState();
 }
 
 void PictureInPictureWindowControllerImpl::MediaStoppedPlaying(
     const MediaPlayerInfo&,
     const MediaPlayerId& media_player_id,
-    WebContentsObserver::MediaStoppedReason reason) {
+    WebContentsObserver::MediaStoppedReason) {
   if (web_contents()->IsBeingDestroyed())
     return;
 
   if (!active_session_ || active_session_->player_id() != media_player_id)
     return;
 
-  UpdatePlaybackState(
-      false /* is_playing */,
-      reason == WebContentsObserver::MediaStoppedReason::kReachedEndOfStream);
+  UpdatePlaybackState();
 }
 
 void PictureInPictureWindowControllerImpl::WebContentsDestroyed() {

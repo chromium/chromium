@@ -187,8 +187,9 @@ TEST_P(MediaSessionControllersManagerTest, PositionState) {
     media_session::test::MockMediaSessionMojoObserver observer(
         *media_session());
 
-    const media_session::MediaPosition expected_position(1.0, base::TimeDelta(),
-                                                         base::TimeDelta());
+    const media_session::MediaPosition expected_position(
+        /*playback_rate=*/1.0, /*duration=*/base::TimeDelta(),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     manager_->OnMediaPositionStateChanged(media_player_id_, expected_position);
 
@@ -205,7 +206,8 @@ TEST_P(MediaSessionControllersManagerTest, PositionState) {
             *media_session());
 
     media_session::MediaPosition expected_position(
-        0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+        /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     manager_->OnMediaPositionStateChanged(media_player_id_, expected_position);
 
@@ -235,10 +237,12 @@ TEST_P(MediaSessionControllersManagerTest, MultiplePlayersWithPositionState) {
   manager_->OnMetadata(media_player_id2_, true, false,
                        media::MediaContentType::Transient);
 
-  media_session::MediaPosition expected_position1(1.0, base::TimeDelta(),
-                                                  base::TimeDelta());
+  media_session::MediaPosition expected_position1(
+      /*playback_rate=*/1.0, /*duration=*/base::TimeDelta(),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
   media_session::MediaPosition expected_position2(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   media_session::test::MockMediaSessionMojoObserver observer(*media_session());
 
@@ -256,7 +260,8 @@ TEST_P(MediaSessionControllersManagerTest, MultiplePlayersWithPositionState) {
 
   // Change the position of the second player.
   media_session::MediaPosition new_position(
-      0.0, base::TimeDelta::FromSeconds(20), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(20),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
   manager_->OnMediaPositionStateChanged(media_player_id2_, new_position);
 
   // Stop the first player.

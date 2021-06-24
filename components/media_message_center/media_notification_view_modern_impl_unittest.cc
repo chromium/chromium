@@ -688,7 +688,8 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateProgressBar) {
   media_session::MediaPosition media_position(
-      1.0, base::TimeDelta::FromSeconds(600), base::TimeDelta::FromSeconds(0));
+      /*playback_rate=*/1.0, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(0), /*end_of_media=*/false);
   GetItem()->MediaSessionPositionChanged(media_position);
   EXPECT_EQ(progress_view()->duration_for_testing(), u"10:00");
 }

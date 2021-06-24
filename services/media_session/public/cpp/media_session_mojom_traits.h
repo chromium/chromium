@@ -104,6 +104,10 @@ struct StructTraits<media_session::mojom::MediaPositionDataView,
     return media_position.last_updated_time_;
   }
 
+  static bool end_of_media(const media_session::MediaPosition& media_position) {
+    return media_position.end_of_media_;
+  }
+
   static bool Read(media_session::mojom::MediaPositionDataView data,
                    media_session::MediaPosition* out);
 };

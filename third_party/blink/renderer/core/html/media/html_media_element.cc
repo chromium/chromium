@@ -4527,11 +4527,13 @@ void HTMLMediaElement::DidMediaMetadataChange(
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(
     double playback_rate,
     base::TimeDelta duration,
-    base::TimeDelta position) {
+    base::TimeDelta position,
+    bool end_of_media) {
   for (auto& observer : media_player_observer_remote_set_->Value()) {
     observer->OnMediaPositionStateChanged(
         media_session::mojom::blink::MediaPosition::New(
-            playback_rate, duration, position, base::TimeTicks::Now()));
+            playback_rate, duration, position, base::TimeTicks::Now(),
+            end_of_media));
   }
 }
 

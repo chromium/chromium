@@ -12,11 +12,13 @@ MediaPosition::MediaPosition() = default;
 
 MediaPosition::MediaPosition(double playback_rate,
                              base::TimeDelta duration,
-                             base::TimeDelta position)
+                             base::TimeDelta position,
+                             bool end_of_media)
     : playback_rate_(playback_rate),
       duration_(duration),
       position_(position),
-      last_updated_time_(base::TimeTicks::Now()) {
+      last_updated_time_(base::TimeTicks::Now()),
+      end_of_media_(end_of_media) {
   DCHECK(duration_ >= base::TimeDelta::FromSeconds(0));
   DCHECK(position_ >= base::TimeDelta::FromSeconds(0));
   DCHECK(position_ <= duration_);
@@ -57,8 +59,10 @@ base::TimeDelta MediaPosition::GetPositionAtTime(base::TimeTicks time) const {
 }
 
 bool MediaPosition::operator==(const MediaPosition& other) const {
-  if (playback_rate_ != other.playback_rate_ || duration_ != other.duration_)
+  if (playback_rate_ != other.playback_rate_ || duration_ != other.duration_ ||
+      end_of_media_ != other.end_of_media_) {
     return false;
+  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   return GetPositionAtTime(now) == other.GetPositionAtTime(now);
@@ -69,9 +73,10 @@ bool MediaPosition::operator!=(const MediaPosition& other) const {
 }
 
 std::string MediaPosition::ToString() const {
-  return base::StringPrintf("playback_rate=%f duration=%f current_time=%f",
-                            playback_rate_, duration_.InSecondsF(),
-                            position_.InSecondsF());
+  return base::StringPrintf(
+      "playback_rate=%f duration=%f current_time=%f end_of_media=%s",
+      playback_rate_, duration_.InSecondsF(), position_.InSecondsF(),
+      end_of_media_ ? "true" : "false");
 }
 
 }  // namespace media_session

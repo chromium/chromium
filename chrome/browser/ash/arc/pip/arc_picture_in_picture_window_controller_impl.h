@@ -40,8 +40,6 @@ class ArcPictureInPictureWindowControllerImpl
   bool IsPlayerActive() override;
   content::WebContents* GetWebContents() override;
   bool TogglePlayPause() override;
-  void UpdatePlaybackState(bool is_playing,
-                           bool reached_end_of_stream) override;
   void SkipAd() override;
   void NextTrack() override;
   void PreviousTrack() override;

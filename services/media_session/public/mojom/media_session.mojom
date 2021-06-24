@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -110,6 +110,7 @@ struct MediaPosition {
   mojo_base.mojom.TimeDelta duration;
   mojo_base.mojom.TimeDelta position;
   mojo_base.mojom.TimeTicks last_updated_time;
+  [MinVersion=13] bool end_of_media;
 };
 
 [Stable, Extensible]

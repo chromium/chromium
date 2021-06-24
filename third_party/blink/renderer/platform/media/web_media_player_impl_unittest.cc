@@ -166,8 +166,11 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
   MOCK_METHOD3(DidMediaMetadataChange,
                void(bool, bool, media::MediaContentType));
-  MOCK_METHOD3(DidPlayerMediaPositionStateChange,
-               void(double, base::TimeDelta, base::TimeDelta position));
+  MOCK_METHOD4(DidPlayerMediaPositionStateChange,
+               void(double,
+                    base::TimeDelta,
+                    base::TimeDelta position,
+                    bool end_of_media));
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
   MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
   MOCK_METHOD0(DidBufferUnderflow, void());
@@ -1590,7 +1593,8 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Playing) {
   Play();
 
   EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           1.0, kAudioOnlyTestFileDuration, base::TimeDelta()));
+                           1.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
+                           /*end_of_media=*/false));
   wmpi_->OnTimeUpdate();
 }
 
@@ -1602,7 +1606,8 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Paused) {
 
   // The effective playback rate is 0.0 while paused.
   EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           0.0, kAudioOnlyTestFileDuration, base::TimeDelta()));
+                           0.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
+                           /*end_of_media=*/false));
   wmpi_->OnTimeUpdate();
 }
 
@@ -1614,22 +1619,48 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_PositionChange) {
   Play();
 
   testing::Sequence sequence;
-  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           0.0, kAudioOnlyTestFileDuration,
-                           base::TimeDelta::FromSecondsD(0.1)))
+  EXPECT_CALL(client_,
+              DidPlayerMediaPositionStateChange(
+                  0.0, kAudioOnlyTestFileDuration,
+                  base::TimeDelta::FromSecondsD(0.1), /*end_of_media=*/false))
       .InSequence(sequence);
   wmpi_->Seek(0.1);
   wmpi_->OnTimeUpdate();
 
   // If we load enough data to resume playback the position should be updated.
-  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           0.5, kAudioOnlyTestFileDuration,
-                           base::TimeDelta::FromSecondsD(0.1)))
+  EXPECT_CALL(client_,
+              DidPlayerMediaPositionStateChange(
+                  0.5, kAudioOnlyTestFileDuration,
+                  base::TimeDelta::FromSecondsD(0.1), /*end_of_media=*/false))
       .InSequence(sequence);
   SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
   wmpi_->OnTimeUpdate();
 
   // No media time progress -> no MediaPositionState change.
+  wmpi_->OnTimeUpdate();
+}
+
+TEST_F(WebMediaPlayerImplTest, MediaPositionState_EndOfMedia) {
+  InitializeWebMediaPlayerImpl();
+  LoadAndWaitForReadyState(kAudioOnlyTestFile,
+                           blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  wmpi_->SetRate(1.0);
+  Play();
+  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+
+  testing::Sequence sequence;
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
+                           1.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
+                           /*end_of_media=*/false))
+      .InSequence(sequence);
+  wmpi_->OnTimeUpdate();
+
+  // If we play through to the end of media the position should be updated.
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
+                           1.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
+                           /*end_of_media=*/true))
+      .InSequence(sequence);
+  SetEnded(true);
   wmpi_->OnTimeUpdate();
 }
 
@@ -1642,7 +1673,8 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_Underflow) {
 
   // Underflow will set the effective playback rate to 0.0.
   EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
-                           0.0, kAudioOnlyTestFileDuration, base::TimeDelta()));
+                           0.0, kAudioOnlyTestFileDuration, base::TimeDelta(),
+                           /*end_of_media=*/false));
   SetReadyState(blink::WebMediaPlayer::kReadyStateHaveCurrentData);
   wmpi_->OnTimeUpdate();
 }
@@ -1654,14 +1686,15 @@ TEST_F(WebMediaPlayerImplTest, MediaPositionState_InfiniteCurrentTime) {
   SetDuration(kInfiniteDuration);
   wmpi_->OnTimeUpdate();
 
-  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(0.0, kInfiniteDuration,
-                                                         kInfiniteDuration));
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(
+                           0.0, kInfiniteDuration, kInfiniteDuration,
+                           /*end_of_media=*/false));
   wmpi_->Seek(kInfiniteDuration.InSecondsF());
   wmpi_->OnTimeUpdate();
 
   testing::Mock::VerifyAndClearExpectations(&client_);
 
-  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(_, _, _)).Times(0);
+  EXPECT_CALL(client_, DidPlayerMediaPositionStateChange(_, _, _, _)).Times(0);
   wmpi_->OnTimeUpdate();
 }
 

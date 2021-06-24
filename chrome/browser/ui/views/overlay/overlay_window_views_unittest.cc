@@ -36,7 +36,6 @@ class TestPictureInPictureWindowController
   void UpdateLayerBounds() override {}
   bool IsPlayerActive() override { return false; }
   content::WebContents* GetWebContents() override { return web_contents_; }
-  void UpdatePlaybackState(bool, bool) override {}
   bool TogglePlayPause() override { return false; }
   void SkipAd() override {}
   void NextTrack() override {}

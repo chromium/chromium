@@ -68,8 +68,8 @@ class DISABLED_MediaControlsProgressViewTest
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgress) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -80,8 +80,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgress) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverHour) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromHours(2) /* duration */,
-      base::TimeDelta::FromMinutes(30) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromHours(2),
+      /*position=*/base::TimeDelta::FromMinutes(30), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -92,8 +92,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverHour) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverDay) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromHours(25) /* duration */,
-      base::TimeDelta::FromHours(5) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromHours(25),
+      /*position=*/base::TimeDelta::FromHours(5), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -105,8 +105,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverDay) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -124,8 +124,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
   media_session::MediaPosition media_position(
-      2 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/2, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -143,8 +143,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressSlowPlayback) {
   media_session::MediaPosition media_position(
-      .5 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/.5, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -162,8 +162,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressSlowPlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressNegativePlayback) {
   media_session::MediaPosition media_position(
-      -1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/-1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -181,8 +181,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressNegativePlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPastDuration) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -202,8 +202,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPastDuration) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressBeforeStart) {
   media_session::MediaPosition media_position(
-      -1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/-1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -223,8 +223,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressBeforeStart) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPaused) {
   media_session::MediaPosition media_position(
-      0 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/0, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -243,8 +243,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPaused) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressTwice) {
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
 
   // Simulate first position change.
   progress_view_->UpdateProgress(media_position);
@@ -254,8 +254,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressTwice) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
   media_session::MediaPosition new_media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(200) /* duration */,
-      base::TimeDelta::FromSeconds(50) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(200),
+      /*position=*/base::TimeDelta::FromSeconds(50), /*end_of_media=*/false);
 
   // Simulate second position change.
   progress_view_->UpdateProgress(new_media_position);

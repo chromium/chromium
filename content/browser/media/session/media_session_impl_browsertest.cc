@@ -2738,7 +2738,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionFaviconBrowserTest, StartupInitalization) {
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
   int player_id = player_observer->StartNewPlayer();
@@ -2773,7 +2774,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateWithOneShotPlayer) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
   int player_id = player_observer->StartNewPlayer();
@@ -2788,7 +2790,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateWithPepperPlayer) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
   int player_id = player_observer->StartNewPlayer();
@@ -2803,7 +2806,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers_OneShot) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
   int player_id = player_observer->StartNewPlayer();
@@ -2828,7 +2832,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        PositionStateRouteWithTwoPlayers_Pepper) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
   int player_id = player_observer->StartNewPlayer();
@@ -2878,8 +2883,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 
     ASSERT_TRUE(ExecJs(main_frame, "document.getElementById('video').play()"));
 
-    observer.WaitForExpectedPosition(
-        media_session::MediaPosition(1.0, duration, base::TimeDelta()));
+    observer.WaitForExpectedPosition(media_session::MediaPosition(
+        /*playback_rate=*/1.0, duration,
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false));
   }
 
   {
@@ -2892,7 +2898,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
     // We might only learn about the rate going back to 1.0 when the media time
     // has already progressed a bit.
     observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
-        1.0, duration, base::TimeDelta::FromSeconds(1)));
+        /*playback_rate=*/1.0, duration,
+        /*position=*/base::TimeDelta::FromSeconds(1), /*end_of_media=*/false));
   }
 
   base::TimeDelta paused_position;
@@ -2905,7 +2912,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
     // Media time may have progressed since the time we seeked to 1s.
     paused_position =
         observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
-            0.0, duration, base::TimeDelta::FromSeconds(1)));
+            /*playback_rate=*/0.0, duration,
+            /*position=*/base::TimeDelta::FromSeconds(1),
+            /*end_of_media=*/false));
   }
 
   base::TimeDelta resumed_position;
@@ -2917,8 +2926,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
 
     // We might only learn about the rate going back to 1.0 when the media time
     // has already progressed a bit.
-    resumed_position = observer.WaitForExpectedPositionAtLeast(
-        media_session::MediaPosition(1.0, duration, paused_position));
+    resumed_position =
+        observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
+            /*playback_rate=*/1.0, duration, paused_position,
+            /*end_of_media=*/false));
   }
 
   {
@@ -2929,8 +2940,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
                        "document.getElementById('video').playbackRate = 2"));
 
     // Media time may have progressed since the time we resumed playback.
-    observer.WaitForExpectedPositionAtLeast(
-        media_session::MediaPosition(2.0, duration, resumed_position));
+    observer.WaitForExpectedPositionAtLeast(media_session::MediaPosition(
+        /*playback_rate=*/2.0, duration, resumed_position,
+        /*end_of_media=*/false));
   }
 
   {

@@ -15,7 +15,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/media_start_stop_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
@@ -43,6 +42,14 @@ class TestOverlayWindow : public OverlayWindow {
   }
   void SetPlaybackState(PlaybackState playback_state) override {
     playback_state_ = playback_state;
+
+    if (expected_playback_state_) {
+      CHECK(playback_state_changed_callback_);
+      if (playback_state == expected_playback_state_) {
+        expected_playback_state_.reset();
+        std::move(playback_state_changed_callback_).Run();
+      }
+    }
   }
   void SetPlayPauseButtonVisibility(bool is_visible) override {
     play_pause_button_visible_ = is_visible;
@@ -64,6 +71,12 @@ class TestOverlayWindow : public OverlayWindow {
     return playback_state_;
   }
 
+  void SetPlaybackStateChangedCallback(PlaybackState state,
+                                       base::OnceClosure callback) {
+    expected_playback_state_ = state;
+    playback_state_changed_callback_ = std::move(callback);
+  }
+
   const absl::optional<bool>& play_pause_button_visible() const {
     return play_pause_button_visible_;
   }
@@ -80,6 +93,10 @@ class TestOverlayWindow : public OverlayWindow {
 
   gfx::Size size_;
   absl::optional<PlaybackState> playback_state_;
+
+  absl::optional<PlaybackState> expected_playback_state_;
+  base::OnceClosure playback_state_changed_callback_;
+
   absl::optional<bool> play_pause_button_visible_;
   absl::optional<bool> next_track_button_visible_;
 
@@ -152,16 +169,17 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::TearDownOnMainThread();
   }
 
-  void WaitForPlaybackState(OverlayWindow::PlaybackState playback_state) {
-    // Make sure to wait if not yet in the |playback_state| state.
-    if (overlay_window()->playback_state() != playback_state) {
-      MediaStartStopObserver observer(
-          shell()->web_contents(),
-          playback_state == OverlayWindow::PlaybackState::kPlaying
-              ? MediaStartStopObserver::Type::kStart
-              : MediaStartStopObserver::Type::kStop);
-      observer.Wait();
-    }
+  void WaitForPlaybackState(OverlayWindow::PlaybackState playback_state,
+                            const base::Location& location = FROM_HERE) {
+    if (overlay_window()->playback_state() == playback_state)
+      return;
+
+    base::RunLoop run_loop;
+    overlay_window()->SetPlaybackStateChangedCallback(playback_state,
+                                                      run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_EQ(overlay_window()->playback_state(), playback_state)
+        << "The wait was started here: " << location.ToString();
   }
 
   // Waits until the Shell's WebContents has the expected title.
@@ -399,6 +417,40 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_EQ(overlay_window()->play_pause_button_visible().value_or(false),
             true);
   window_controller()->TogglePlayPause();
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       PlaybackStateWhenReopenedAfterEndOfStream) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  ASSERT_TRUE(ExecJs(shell(), "addPictureInPictureEventListeners();"));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+
+  ASSERT_EQ(true, EvalJs(shell(), "playToEnd();"));
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
+
+  window_controller()->Close(/*should_pause_video=*/false);
+  WaitForTitle(u"leavepictureinpicture");
+
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       PlaybackStateWhenSeekingWhilePausedAfterEndOfStream) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+
+  ASSERT_EQ(true, EvalJs(shell(), "playToEnd();"));
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kEndOfVideo);
+
+  ASSERT_TRUE(ExecJs(shell(), "video.currentTime = 0;"));
+
   WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 

@@ -185,7 +185,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Notify the client that the playback position has changed.
   virtual void DidPlayerMediaPositionStateChange(double playback_rate,
                                                  base::TimeDelta duration,
-                                                 base::TimeDelta position) = 0;
+                                                 base::TimeDelta position,
+                                                 bool end_of_media) = 0;
 
   // Notify the client that the audio sink cannot be changed.
   virtual void DidDisableAudioOutputSinkChanges() = 0;

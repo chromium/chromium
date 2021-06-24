@@ -576,7 +576,8 @@ class WebMediaPlayerMSTest
       media::MediaContentType media_content_type) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
-                                         base::TimeDelta position) override {}
+                                         base::TimeDelta position,
+                                         bool end_of_media) override {}
   void DidDisableAudioOutputSinkChanges() override {}
   void DidPlayerSizeChange(const gfx::Size& size) override {}
   void DidBufferUnderflow() override {}

@@ -405,7 +405,8 @@ TEST_F(MediaSessionControllerTest, Reinitialize) {
 
 TEST_F(MediaSessionControllerTest, PositionState) {
   media_session::MediaPosition expected_position(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::TimeDelta::FromSeconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
   controller_->OnMediaPositionStateChanged(expected_position);
 

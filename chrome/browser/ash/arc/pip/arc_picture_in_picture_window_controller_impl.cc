@@ -61,12 +61,6 @@ ArcPictureInPictureWindowControllerImpl::GetWebContents() {
   return nullptr;
 }
 
-void ArcPictureInPictureWindowControllerImpl::UpdatePlaybackState(
-    bool is_playing,
-    bool reached_end_of_stream) {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
 bool ArcPictureInPictureWindowControllerImpl::TogglePlayPause() {
   // Should be a no-op on ARC. This is managed on the Android side.
   return false;

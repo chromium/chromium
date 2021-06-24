@@ -289,11 +289,11 @@ void CreateAllocation(base::trace_event::ProcessMemoryDump* pmd,
 bool MediaPositionNeedsUpdate(
     const media_session::MediaPosition& old_position,
     const media_session::MediaPosition& new_position) {
-  if (old_position.playback_rate() != new_position.playback_rate())
+  if (old_position.playback_rate() != new_position.playback_rate() ||
+      old_position.duration() != new_position.duration() ||
+      old_position.end_of_media() != new_position.end_of_media()) {
     return true;
-
-  if (old_position.duration() != new_position.duration())
-    return true;
+  }
 
   // Special handling for "infinite" position required to avoid calculations
   // involving infinities.
@@ -2970,7 +2970,7 @@ void WebMediaPlayerImpl::OnTimeUpdate() {
                                                           : playback_rate_;
 
   media_session::MediaPosition new_position(effective_playback_rate, duration,
-                                            current_time);
+                                            current_time, ended_);
 
   if (!MediaPositionNeedsUpdate(media_position_state_, new_position))
     return;
@@ -2978,7 +2978,7 @@ void WebMediaPlayerImpl::OnTimeUpdate() {
   DVLOG(2) << __func__ << "(" << new_position.ToString() << ")";
   media_position_state_ = new_position;
   client_->DidPlayerMediaPositionStateChange(effective_playback_rate, duration,
-                                             current_time);
+                                             current_time, ended_);
 }
 
 void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,

@@ -221,11 +221,13 @@ void CastMediaNotificationItem::OnMediaStatusUpdated(
   base::TimeDelta duration = status->duration;
   base::TimeDelta current_time =
       status->current_time > duration ? duration : status->current_time;
+  constexpr bool kUnused = false;
   media_position_ = media_session::MediaPosition(
-      status->play_state == media_router::mojom::MediaStatus::PlayState::PLAYING
+      /*playback_rate=*/status->play_state ==
+              media_router::mojom::MediaStatus::PlayState::PLAYING
           ? 1.0
-          : 0.0 /* playback_rate */,
-      duration, current_time);
+          : 0.0,
+      duration, current_time, /*end_of_media=*/kUnused);
 
   if (status->images.empty()) {
     image_downloader_.Reset();

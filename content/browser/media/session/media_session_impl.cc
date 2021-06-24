@@ -545,6 +545,12 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
 
   position_ = position;
 
+  if (auto* pip_window_controller_ =
+          PictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionPositionChanged(position_);
+  }
+
   for (auto& observer : observers_)
     observer->MediaSessionPositionChanged(position_);
 }

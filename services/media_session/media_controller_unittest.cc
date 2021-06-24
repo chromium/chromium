@@ -914,9 +914,11 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Empty) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_WithInfo) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
@@ -957,9 +959,11 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_Empty) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
@@ -981,9 +985,11 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
 }
 
 TEST_F(MediaControllerTest, ActiveController_Position_Observer_Abandoned) {
-  MediaPosition position(1 /* playback_rate */,
-                         base::TimeDelta::FromSeconds(600) /* duration */,
-                         base::TimeDelta::FromSeconds(300) /* position */);
+  MediaPosition position(
+      /*playback_rate=*/1,
+      /*duration=*/base::TimeDelta::FromSeconds(600),
+      /*position=*/base::TimeDelta::FromSeconds(300),
+      /*end_of_media=*/false);
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);

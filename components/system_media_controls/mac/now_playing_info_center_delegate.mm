@@ -92,9 +92,7 @@ void NowPlayingInfoCenterDelegate::StartTimer() {
 }
 
 void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
-  auto position = position_.value_or(media_session::MediaPosition(
-      0 /* playback_rate */, base::TimeDelta::FromSeconds(0) /* duration */,
-      base::TimeDelta::FromSeconds(0) /* position */));
+  auto position = position_.value_or(media_session::MediaPosition());
   auto playback_status =
       playback_status_.value_or(SystemMediaControls::PlaybackStatus::kStopped);
 

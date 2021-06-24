@@ -131,6 +131,7 @@ bool StructTraits<media_session::mojom::MediaPositionDataView,
     return false;
 
   out->playback_rate_ = data.playback_rate();
+  out->end_of_media_ = data.end_of_media();
 
   return true;
 }
