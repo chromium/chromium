@@ -90,6 +90,13 @@ export class NativeLayerCros {
   recordPrinterStatusHistogram(statusReason, didUserAttemptPrint) {}
 
   /**
+   * Records the histogram to capture if the retried printer status was
+   * able to get a valid response from the local printer.
+   * @param {boolean} retrySuccessful
+   */
+  recordPrinterStatusRetrySuccessHistogram(retrySuccessful) {}
+
+  /**
    * Selects all print servers with ids in |printServerIds| to query for their
    * printers.
    * @param {!Array<string>} printServerIds
@@ -154,6 +161,13 @@ export class NativeLayerCrosImpl {
     chrome.send(
         'metricsHandler:recordBooleanHistogram',
         [histogram, didUserAttemptPrint]);
+  }
+
+  /** @override */
+  recordPrinterStatusRetrySuccessHistogram(retrySuccessful) {
+    chrome.send(
+        'metricsHandler:recordBooleanHistogram',
+        ['PrinterStatusRetrySuccess', retrySuccessful]);
   }
 
   /** @override */

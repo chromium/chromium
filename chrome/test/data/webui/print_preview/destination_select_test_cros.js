@@ -430,6 +430,10 @@ suite(printer_status_test_cros.suiteName, function() {
               assertEquals(
                   'print-preview:printer-status-grey',
                   getIconString(dropdown, destination.key));
+              assertEquals(
+                  0,
+                  nativeLayerCros.getCallCount(
+                      'recordPrinterStatusRetrySuccessHistogram'));
               return waitBeforeNextRender(destinationSelect);
             })
             .then(() => {
@@ -440,6 +444,14 @@ suite(printer_status_test_cros.suiteName, function() {
               assertEquals(
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination.key));
+              assertEquals(
+                  1,
+                  nativeLayerCros.getCallCount(
+                      'recordPrinterStatusRetrySuccessHistogram'));
+              assertEquals(
+                  true,
+                  nativeLayerCros.getArgs(
+                      'recordPrinterStatusRetrySuccessHistogram')[0]);
             });
       });
 });

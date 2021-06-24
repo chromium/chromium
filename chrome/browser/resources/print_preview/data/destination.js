@@ -582,13 +582,21 @@ export class Destination {
           if (status) {
             const statusReason = getStatusReasonFromPrinterStatus(
                 /** @type {!PrinterStatus} */ (status));
-            if (statusReason === PrinterStatusReason.PRINTER_UNREACHABLE &&
-                !this.printerStatusRetrySent_) {
+            const isPrinterUnreachable =
+                statusReason === PrinterStatusReason.PRINTER_UNREACHABLE;
+            if (isPrinterUnreachable && !this.printerStatusRetrySent_) {
               this.printerStatusRetrySent_ = true;
               return this.printerStatusWaitForTimerPromise_();
             }
 
             this.printerStatusReason_ = statusReason;
+
+            // If this is the second printer status attempt, record the result.
+            if (this.printerStatusRetrySent_) {
+              NativeLayerCrosImpl.getInstance()
+                  .recordPrinterStatusRetrySuccessHistogram(
+                      !isPrinterUnreachable);
+            }
           }
           return Promise.resolve(this.key);
         });
