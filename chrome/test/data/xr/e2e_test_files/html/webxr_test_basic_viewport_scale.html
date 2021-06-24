@@ -121,8 +121,9 @@ Tests for WebXR dynamic viewport scaling.
         let gotAnyRecommendedViewportScale = false;
         let gotReducedRecommendedViewportScale = false;
         let gotIncreasedRecommendedViewportScale = false;
-        let clearRectangleCount = 1;
+        let clearRectangleCount = 32;
         let minViewportScale = 99999;
+        let maxViewportScale = 0;
         let maxRectangles = 0;
         let frameCount = 0;
 
@@ -134,20 +135,23 @@ Tests for WebXR dynamic viewport scaling.
             if (recScale) {
               if (recScale > 0) {
                 gotAnyRecommendedViewportScale = true;
+                maxViewportScale = Math.max(maxViewportScale, recScale);
               }
               if (gotReducedRecommendedViewportScale) {
                 if (recScale > minViewportScale) {
                   if (!gotIncreasedRecommendedViewportScale) {
                     // Only log the increase once - the session may not terminate immediately after calling done().
-                    console.log("got recommendedViewportScale increase from " + minViewportScale + " to " + recScale);
+                    console.log("got recommendedViewportScale increase from " + minViewportScale + " to " + recScale +
+                                ", frameCount=" + frameCount);
                   }
                   gotIncreasedRecommendedViewportScale = true;
                 }
               } else {
-                if (recScale < 1.0) {
+                if (recScale < maxViewportScale) {
                   gotReducedRecommendedViewportScale = true;
                   minViewportScale=Math.min(minViewportScale, recScale);
-                  console.log("got recommendedViewportScale=" + recScale + " at clearRectangleCount=" + clearRectangleCount);
+                  console.log("got recommendedViewportScale=" + recScale + " at clearRectangleCount=" + clearRectangleCount +
+                              ", frameCount=" + frameCount);
                 }
               }
             }
@@ -175,8 +179,11 @@ Tests for WebXR dynamic viewport scaling.
               // Done with the load test, wait for size to increase again.
               clearRectangleCount = 1;
             } else {
-              // Add more load.
-              clearRectangleCount *= 2;
+              // Add more load every 4th frame. The GPU load feedback is delayed, and we don't want the
+              // exponential growth to overload the system excessively since that could cause test timeouts.
+              if (frameCount % 4 == 0) {
+                clearRectangleCount *= 2;
+              }
             }
           }
           updateSingleTestProgressMessage(
