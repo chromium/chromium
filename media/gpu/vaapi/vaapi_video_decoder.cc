@@ -822,16 +822,12 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     return;
   }
 
-  // If we reset during resolution change, then there is no decode task. In
-  // this case we do nothing and wait for next input. Otherwise, continue
-  // decoding the current task.
-  if (current_decode_task_) {
-    // Retry the current decode task.
-    SetState(State::kDecoding);
-    decoder_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
-  }
+  DCHECK(current_decode_task_);
+  // Retry the current decode task.
+  SetState(State::kDecoding);
+  decoder_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
 }
 
 bool VaapiVideoDecoder::NeedsTranscryption() {
