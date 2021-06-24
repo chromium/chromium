@@ -13,13 +13,11 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -29,7 +27,6 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,15 +48,12 @@ class SharedImageStub;
 class StreamTexture;
 class SyncPointManager;
 
-namespace mojom {
-class GpuChannel;
-}
-
 // Encapsulates an IPC channel between the GPU process and one renderer
 // process. On the renderer side there's a corresponding GpuChannelHost.
-class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
-                                          public IPC::Sender {
+class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
  public:
+  GpuChannel(const GpuChannel&) = delete;
+  GpuChannel& operator=(const GpuChannel&) = delete;
   ~GpuChannel() override;
 
   static std::unique_ptr<GpuChannel> Create(
@@ -126,12 +120,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelError() override;
-
-  // IPC::Sender implementation:
-  bool Send(IPC::Message* msg) override;
-
-  void AddFilter(IPC::MessageFilter* filter);
-  void RemoveFilter(IPC::MessageFilter* filter);
 
   void OnCommandBufferScheduled(CommandBufferStub* stub);
   void OnCommandBufferDescheduled(CommandBufferStub* stub);
@@ -239,9 +227,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   base::ProcessId client_pid_ = base::kNullProcessId;
 
-  // The message filter on the io thread.
-  scoped_refptr<GpuChannelMessageFilter> filter_;
-
   // An optional binder to handle associated interface requests from the Media
   // stack, targeting a specific CommandBuffer.
   CommandBufferMediaBinder command_buffer_media_binder_;
@@ -287,12 +272,14 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   base::flat_map<int32_t, scoped_refptr<StreamTexture>> stream_textures_;
 #endif
 
+  // State shared with the IO thread. Receives all GpuChannel interface messages
+  // and schedules tasks for them appropriately.
+  const scoped_refptr<GpuChannelMessageFilter> filter_;
+
   // Member variables should appear before the WeakPtrFactory, to ensure that
   // any WeakPtrs to Controller are invalidated before its members variable's
   // destructors are executed, rendering them invalid.
   base::WeakPtrFactory<GpuChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuChannel);
 };
 
 }  // namespace gpu

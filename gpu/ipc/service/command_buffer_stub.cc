@@ -166,14 +166,6 @@ void CommandBufferStub::ExecuteDeferredRequest(
   }
 }
 
-bool CommandBufferStub::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-bool CommandBufferStub::Send(IPC::Message* message) {
-  return channel_->Send(message);
-}
-
 bool CommandBufferStub::IsScheduled() {
   return (!command_buffer_.get() || command_buffer_->scheduled());
 }

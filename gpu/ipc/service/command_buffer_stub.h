@@ -32,8 +32,6 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,9 +60,7 @@ class SyncPointClientState;
 // For every CommandBufferStub instance, there's a corresponding
 // CommandBufferProxyImpl client.
 class GPU_IPC_SERVICE_EXPORT CommandBufferStub
-    : public IPC::Listener,
-      public IPC::Sender,
-      public CommandBufferServiceClient,
+    : public CommandBufferServiceClient,
       public DecoderClient,
       public mojom::CommandBuffer,
       public base::SupportsWeakPtr<CommandBufferStub> {
@@ -135,12 +131,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                                int32_t start,
                                int32_t end,
                                WaitForStateCallback callback);
-
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  // IPC::Sender implementation:
-  bool Send(IPC::Message* msg) override;
 
   // CommandBufferServiceClient implementation:
   CommandBatchProcessedResult OnCommandBatchProcessed() override;
@@ -284,12 +274,10 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   gles2::ProgramCache::ScopedCacheUse CreateCacheUse();
 
   // Message handlers:
-  void OnGetState(IPC::Message* reply_message);
   void OnAsyncFlush(int32_t put_offset,
                     uint32_t flush_id,
                     const std::vector<SyncToken>& sync_token_fences);
   void OnDestroyTransferBuffer(int32_t id);
-  void OnGetTransferBuffer(int32_t id, IPC::Message* reply_message);
 
   void OnSignalAck(uint32_t id);
 

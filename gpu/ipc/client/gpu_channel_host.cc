@@ -37,6 +37,7 @@ GpuChannelHost::GpuChannelHost(
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
       listener_(new Listener(), base::OnTaskRunnerDeleter(io_thread_)),
+      connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
       shared_image_interface_(
           this,
           static_cast<int32_t>(
@@ -51,6 +52,10 @@ GpuChannelHost::GpuChannelHost(
                         io_thread_);
   gpu_channel_ = mojo::SharedAssociatedRemote<mojom::GpuChannel>(
       std::move(channel), io_thread_);
+  gpu_channel_.set_disconnect_handler(
+      base::BindOnce(&ConnectionTracker::OnDisconnectedFromGpuProcess,
+                     connection_tracker_),
+      io_thread_);
 
   next_image_id_.GetNext();
   for (int32_t i = 0;
@@ -154,6 +159,8 @@ void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
 }
 
 void GpuChannelHost::DestroyChannel() {
+  gpu_channel_.Disconnect();
+  connection_tracker_->OnDisconnectedFromGpuProcess();
   io_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
@@ -181,6 +188,14 @@ GpuChannelHost::CreateClientSharedImageInterface() {
 }
 
 GpuChannelHost::~GpuChannelHost() = default;
+
+GpuChannelHost::ConnectionTracker::ConnectionTracker() = default;
+
+GpuChannelHost::ConnectionTracker::~ConnectionTracker() = default;
+
+void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
+  is_connected_.store(false);
+}
 
 GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo() = default;
 
@@ -222,12 +237,6 @@ bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
 void GpuChannelHost::Listener::OnChannelError() {
   AutoLock lock(lock_);
   channel_ = nullptr;
-  lost_ = true;
-}
-
-bool GpuChannelHost::Listener::IsLost() const {
-  AutoLock lock(lock_);
-  return lost_;
 }
 
 }  // namespace gpu

@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
@@ -116,7 +117,7 @@ GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,
       base::UnguessableToken::Create(), client_id, kClientTracingId,
       is_gpu_host, true);
   base::ProcessId kProcessId = 1;
-  channel->OnChannelConnected(kProcessId);
+  channel->set_client_pid(kProcessId);
   return channel;
 }
 

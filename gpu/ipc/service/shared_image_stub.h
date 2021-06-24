@@ -15,7 +15,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ipc/ipc_listener.h"
 
 namespace gpu {
 class SharedContextState;
