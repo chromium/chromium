@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,6 +53,24 @@ TEST_F(MetadataUtilsTest, MetadataValidation) {
   metadata.set_time_unit(proto::DAY);
   EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
             metadata_utils::ValidateMetadata(metadata));
+}
+
+TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
+  proto::Feature feature;
+  EXPECT_EQ(metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
+            metadata_utils::ValidateMetadataFeature(feature));
+  auto* user_action = feature.mutable_user_action();
+  EXPECT_EQ(metadata_utils::ValidationResult::NAME_HASH_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+  user_action->set_user_action_hash(123);
+  EXPECT_EQ(metadata_utils::ValidationResult::AGGREGATION_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+  feature.set_aggregation(proto::Aggregation::SUM_COUNT);
+  EXPECT_EQ(metadata_utils::ValidationResult::LENGTH_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+  feature.set_length(456);
+  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+            metadata_utils::ValidateMetadataFeature(feature));
 }
 
 TEST_F(MetadataUtilsTest, HasFreshResults) {
@@ -120,6 +139,9 @@ TEST_F(MetadataUtilsTest, GetNameHashForFeature) {
 
 TEST_F(MetadataUtilsTest, GetSignalTypeForFeature) {
   proto::Feature feature;
+  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
+            metadata_utils::GetSignalTypeForFeature(feature));
+
   proto::UserActionFeature* user_action = feature.mutable_user_action();
   user_action->set_user_action_hash(1);
   EXPECT_EQ(proto::SignalType::USER_ACTION,
@@ -150,6 +172,9 @@ TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {
   EXPECT_EQ(SignalKey::Kind::HISTOGRAM_VALUE,
             metadata_utils::SignalTypeToSignalKind(
                 proto::SignalType::HISTOGRAM_VALUE));
+  EXPECT_EQ(SignalKey::Kind::UNKNOWN,
+            metadata_utils::SignalTypeToSignalKind(
+                proto::SignalType::UNKNOWN_SIGNAL_TYPE));
 }
 
 }  // namespace segmentation_platform

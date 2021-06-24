@@ -28,6 +28,24 @@ ValidationResult ValidateMetadata(
   return ValidationResult::VALIDATION_SUCCESS;
 }
 
+ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
+  if (GetSignalTypeForFeature(feature) ==
+      proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
+    return ValidationResult::SIGNAL_TYPE_INVALID;
+  }
+
+  if (!GetNameHashForFeature(feature).has_value())
+    return ValidationResult::NAME_HASH_NOT_FOUND;
+
+  if (!feature.has_aggregation())
+    return ValidationResult::AGGREGATION_NOT_FOUND;
+
+  if (!feature.has_length())
+    return ValidationResult::LENGTH_NOT_FOUND;
+
+  return ValidationResult::VALIDATION_SUCCESS;
+}
+
 bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_prediction_result())
     return true;
@@ -94,7 +112,6 @@ absl::optional<uint64_t> GetNameHashForFeature(const proto::Feature& feature) {
              feature.histogram_value().has_name_hash()) {
     return feature.histogram_value().name_hash();
   }
-  NOTREACHED();
   return absl::nullopt;
 }
 
@@ -106,7 +123,6 @@ proto::SignalType GetSignalTypeForFeature(const proto::Feature& feature) {
   } else if (feature.has_histogram_value()) {
     return proto::SignalType::HISTOGRAM_VALUE;
   }
-  NOTREACHED();
   return proto::SignalType::UNKNOWN_SIGNAL_TYPE;
 }
 
@@ -119,8 +135,6 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
     case proto::SignalType::HISTOGRAM_VALUE:
       return SignalKey::Kind::HISTOGRAM_VALUE;
     case proto::SignalType::UNKNOWN_SIGNAL_TYPE:
-    default:
-      NOTREACHED();
       return SignalKey::Kind::UNKNOWN;
   }
 }
