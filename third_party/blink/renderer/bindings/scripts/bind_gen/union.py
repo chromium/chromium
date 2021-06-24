@@ -116,7 +116,7 @@ class _UnionMemberImpl(_UnionMember):
     """
 
     def __init__(self, union, idl_type):
-        assert isinstance(union, web_idl.NewUnion)
+        assert isinstance(union, web_idl.Union)
         assert idl_type is None or isinstance(idl_type, web_idl.IdlType)
 
         if idl_type is None:
@@ -150,12 +150,11 @@ class _UnionMemberSubunion(_UnionMember):
     """
 
     def __init__(self, union, subunion):
-        assert isinstance(union, web_idl.NewUnion)
-        assert isinstance(subunion, web_idl.NewUnion)
+        assert isinstance(union, web_idl.Union)
+        assert isinstance(subunion, web_idl.Union)
 
         _UnionMember.__init__(self, base_name=blink_class_name(subunion))
-        self._type_info = blink_type_info(subunion.idl_types[0],
-                                          use_new_union=True)
+        self._type_info = blink_type_info(subunion.idl_types[0])
         self._typedef_aliases = tuple(
             map(lambda typedef: _UnionMemberAlias(impl=self, typedef=typedef),
                 subunion.aliasing_typedefs))
@@ -189,7 +188,7 @@ class _UnionMemberAlias(_UnionMember):
 
 
 def create_union_members(union):
-    assert isinstance(union, web_idl.NewUnion)
+    assert isinstance(union, web_idl.Union)
 
     union_members = list(map(
         lambda member_type: _UnionMemberImpl(union, member_type),
@@ -1105,5 +1104,5 @@ def generate_unions(task_queue):
 
     web_idl_database = package_initializer().web_idl_database()
 
-    for union in web_idl_database.new_union_types:
+    for union in web_idl_database.union_types:
         task_queue.post_task(generate_union, union.identifier)

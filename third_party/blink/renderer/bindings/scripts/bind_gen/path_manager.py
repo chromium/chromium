@@ -94,8 +94,7 @@ class PathManager(object):
         components = sorted(idl_definition.components)  # "core" < "modules"
 
         if len(components) == 0:
-            assert isinstance(idl_definition,
-                              (web_idl.Union, web_idl.NewUnion))
+            assert isinstance(idl_definition, web_idl.Union)
             # Unions of built-in types, e.g. (double or DOMString), do not have
             # a component.
             self._is_cross_components = False
@@ -114,7 +113,7 @@ class PathManager(object):
             # Union does not support cross-component code generation because
             # clients of IDL union must be on an upper or same layer to any of
             # union members.
-            if isinstance(idl_definition, (web_idl.Union, web_idl.NewUnion)):
+            if isinstance(idl_definition, web_idl.Union):
                 self._api_component = components[1]
             else:
                 self._api_component = components[0]
@@ -124,9 +123,7 @@ class PathManager(object):
 
         self._api_dir = self._component_reldirs[self._api_component]
         self._impl_dir = self._component_reldirs[self._impl_component]
-        self._api_basename = name_style.file("v8", idl_definition.identifier)
-        self._impl_basename = name_style.file("v8", idl_definition.identifier)
-        if isinstance(idl_definition, web_idl.NewUnion):
+        if isinstance(idl_definition, web_idl.Union):
             # In case of IDL unions, underscore is used as a separator of union
             # members, so we don't want any underscore inside a union member.
             # For example, (Foo or Bar or Baz) and (FooBar or Baz) are defined
@@ -139,17 +136,13 @@ class PathManager(object):
                 idl_definition.member_tokens)).lower()
             self._api_basename = filename
             self._impl_basename = filename
-        elif isinstance(idl_definition, web_idl.Union):
-            union_class_name = idl_definition.identifier
-            union_filepath = _BACKWARD_COMPATIBLE_UNION_FILEPATHS.get(
-                union_class_name, union_class_name)
-            self._api_basename = name_style.file(union_filepath)
-            self._impl_basename = name_style.file(union_filepath)
-
-        if isinstance(idl_definition, (web_idl.Union, web_idl.NewUnion)):
             self._blink_dir = None
             self._blink_basename = None
         else:
+            self._api_basename = name_style.file("v8",
+                                                 idl_definition.identifier)
+            self._impl_basename = name_style.file("v8",
+                                                  idl_definition.identifier)
             idl_path = idl_definition.debug_info.location.filepath
             self._blink_dir = posixpath.dirname(idl_path)
             self._blink_basename = name_style.file(
@@ -202,36 +195,3 @@ class PathManager(object):
         if ext is not None:
             filename = posixpath.extsep.join([filename, ext])
         return posixpath.join(dirpath, filename)
-
-
-# A hack to make the filepaths to generated IDL unions compatible with the old
-# bindings generator.
-#
-# Copied from |shorten_union_name| defined in
-# //third_party/blink/renderer/bindings/scripts/utilities.py
-_BACKWARD_COMPATIBLE_UNION_FILEPATHS = {
-    # modules/canvas2d/CanvasRenderingContext2D.idl
-    "CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvasOrVideoFrame":
-    "CanvasImageSource",
-    # modules/canvas/htmlcanvas/html_canvas_element_module.idl
-    "CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext":
-    "RenderingContext",
-    # core/frame/window_or_worker_global_scope.idl
-    "HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvasOrVideoFrame":
-    "ImageBitmapSource",
-    # bindings/tests/idls/core/TestTypedefs.idl
-    "NodeOrLongSequenceOrEventOrXMLHttpRequestOrStringOrStringByteStringOrNodeListRecord":
-    "NestedUnionType",
-    # modules/canvas/offscreencanvas/offscreen_canvas_module.idl
-    "OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext":
-    "OffscreenRenderingContext",
-    # core/xmlhttprequest/xml_http_request.idl
-    "DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString":
-    "DocumentOrXMLHttpRequestBodyInit",
-    # modules/beacon/navigator_beacon.idl
-    'ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
-    'ReadableStreamOrXMLHttpRequestBodyInit',
-    # modules/mediasource/source_buffer.idl
-    'EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk':
-    'EncodedAVChunkSequenceOrEncodedAVChunk',
-}

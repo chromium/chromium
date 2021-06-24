@@ -31,7 +31,7 @@ def _make_typedefs_to_unions(typedefs, component_selector):
         map(
             lambda typedef: (blink_class_name(typedef),
                              blink_class_name(typedef.idl_type.
-                                              new_union_definition_object)),
+                                              union_definition_object)),
             filter(
                 lambda typedef: component_selector(
                     [typedef, typedef.idl_type.union_definition_object]),
@@ -59,7 +59,7 @@ def make_typedefs(typedefs, component_selector):
 
 def _make_unions_of_typedefed_member_types(unions, component_selector):
     assert isinstance(unions, (list, tuple))
-    assert all(isinstance(union, web_idl.NewUnion) for union in unions)
+    assert all(isinstance(union, web_idl.Union) for union in unions)
     assert callable(component_selector)
 
     def union_name_of_typedefed_members(idl_type, union):
@@ -111,7 +111,7 @@ def _make_unions_of_typedefed_member_types(unions, component_selector):
 
 def make_unions(unions, component_selector):
     assert isinstance(unions, (list, tuple))
-    assert all(isinstance(union, web_idl.NewUnion) for union in unions)
+    assert all(isinstance(union, web_idl.Union) for union in unions)
     assert callable(component_selector)
 
     return ListNode([
@@ -182,7 +182,7 @@ def generate_typedefs_all(filepath_basename):
             EmptyNode(),
         ])
 
-    all_unions = sorted(web_idl_database.new_union_types,
+    all_unions = sorted(web_idl_database.union_types,
                         key=lambda x: x.identifier)
     for component in components:
         header_blink_ns[component].body.extend([

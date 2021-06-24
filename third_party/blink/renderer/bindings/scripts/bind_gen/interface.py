@@ -705,9 +705,6 @@ def _make_blink_api_call(code_node,
             name = name_style.arg_f("arg{}_{}", index + 1, argument.identifier)
             arguments.append(_format("${{{}}}", name))
 
-    if cg_context.is_return_by_argument:
-        arguments.append("${return_value}")
-
     if cg_context.may_throw_exception:
         arguments.append("${exception_state}")
 
@@ -788,9 +785,6 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             _, api_call = api_calls[0]
             if is_return_type_void:
                 nodes.append(F("{};", api_call))
-            elif cg_context.is_return_by_argument:
-                nodes.append(F("{} ${return_value};", return_type))
-                nodes.append(F("{};", api_call))
             elif "ReflectOnly" in cg_context.member_like.extended_attributes:
                 # [ReflectOnly]
                 nodes.append(F("auto ${return_value} = {};", api_call))
@@ -799,7 +793,7 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
         else:
             branches = SequenceNode()
             for index, api_call in api_calls:
-                if is_return_type_void or cg_context.is_return_by_argument:
+                if is_return_type_void:
                     assignment = "{};".format(api_call)
                 else:
                     assignment = _format("${return_value} = {};", api_call)

@@ -122,7 +122,6 @@ class CodeGenContext(object):
             "idl_location",
             "idl_location_and_name",
             "idl_name",
-            "is_return_by_argument",
             "may_throw_exception",
             "member_like",
             "property_",
@@ -251,11 +250,6 @@ class CodeGenContext(object):
         if self.idl_definition:
             return self.idl_definition.identifier
         return "<<unknown name>>"
-
-    @property
-    def is_return_by_argument(self):
-        # TODO(yukishiino): Remove `is_return_by_argument`.
-        return False
 
     @property
     def is_return_type_promise_type(self):

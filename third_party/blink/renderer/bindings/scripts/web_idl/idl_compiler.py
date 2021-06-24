@@ -29,8 +29,7 @@ from .namespace import Namespace
 from .operation import OperationGroup
 from .reference import RefByIdFactory
 from .typedef import Typedef
-from .union import BackwardCompatibleUnion
-from .union import NewUnion
+from .union import Union
 from .user_defined_type import StubUserDefinedType
 from .user_defined_type import UserDefinedType
 
@@ -767,18 +766,18 @@ class IdlCompiler(object):
 
         grouped_unions = {}  # {unique token: list of union types}
         for union_type in all_union_types:
-            token = NewUnion.unique_token(union_type)
+            token = Union.unique_token(union_type)
             grouped_unions.setdefault(token, []).append(union_type)
 
         irs = {}  # {token: Union.IR}
         for token, union_types in grouped_unions.items():
-            irs[token] = NewUnion.IR(token, union_types)
+            irs[token] = Union.IR(token, union_types)
 
         all_typedefs = self._db.find_by_kind(DatabaseBody.Kind.TYPEDEF)
         for typedef in all_typedefs.values():
             if not typedef.idl_type.is_union:
                 continue
-            token = NewUnion.unique_token(typedef.idl_type)
+            token = Union.unique_token(typedef.idl_type)
             irs[token].typedefs.append(typedef)
 
         for ir_i in irs.values():
@@ -787,54 +786,4 @@ class IdlCompiler(object):
                     ir_i.sub_union_irs.append(ir_j)
 
         for ir in sorted(irs.values()):
-            self._db.register(DatabaseBody.Kind.UNION, NewUnion(ir))
-
-    def _create_backward_compatible_public_unions(self):
-        all_union_types = []  # all instances of UnionType
-
-        def collect_unions(idl_type):
-            if idl_type.is_union:
-                all_union_types.append(idl_type)
-
-        self._idl_type_factory.for_each(collect_unions)
-
-        def unique_key(union_type):
-            """
-            Returns an unique (but meaningless) key.  Returns the same key for
-            the identical union types.
-            """
-            # TODO(peria, yukishiino): Produce unique union names.  Trying to
-            # produce the names compatible to the old bindings generator for
-            # the time being.
-            key_pieces = []
-
-            def flatten_member_types(idl_type):
-                idl_type = idl_type.unwrap()
-                if idl_type.is_union:
-                    for member_type in idl_type.member_types:
-                        flatten_member_types(member_type)
-                else:
-                    key_pieces.append(idl_type.syntactic_form)
-
-            flatten_member_types(union_type)
-            return '|'.join(key_pieces)
-
-        grouped_unions = {}  # {unique key: list of union types}
-        for union_type in all_union_types:
-            key = unique_key(union_type)
-            grouped_unions.setdefault(key, []).append(union_type)
-
-        grouped_typedefs = {}  # {unique key: list of typedefs to the union}
-        all_typedefs = self._db.find_by_kind(DatabaseBody.Kind.TYPEDEF)
-        for typedef in all_typedefs.values():
-            if not typedef.idl_type.is_union:
-                continue
-            key = unique_key(typedef.idl_type)
-            grouped_typedefs.setdefault(key, []).append(typedef)
-
-        for key, union_types in grouped_unions.items():
-            self._db.register(
-                DatabaseBody.Kind.UNION,
-                BackwardCompatibleUnion(union_types=union_types,
-                                        typedef_backrefs=grouped_typedefs.get(
-                                            key, [])))
+            self._db.register(DatabaseBody.Kind.UNION, Union(ir))
