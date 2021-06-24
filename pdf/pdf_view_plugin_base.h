@@ -60,6 +60,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
  public:
   using PDFEngine::Client::ScheduleTaskOnMainThread;
 
+  enum class DocumentLoadState {
+    kLoading = 0,
+    kComplete,
+    kFailed,
+  };
+
   // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.js.
   enum class SaveRequestType {
     kAnnotation = 0,
@@ -143,12 +149,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     kOff = 0,  // Off.
     kPending,  // Enabled but waiting for doc to load.
     kLoaded,   // Fully loaded.
-  };
-
-  enum class DocumentLoadState {
-    kLoading = 0,
-    kComplete,
-    kFailed,
   };
 
   struct BackgroundPart {

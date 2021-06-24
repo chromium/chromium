@@ -66,10 +66,12 @@ class TestPDFiumEngine : public PDFiumEngine {
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
+  using PdfViewPluginBase::document_load_state;
   using PdfViewPluginBase::edit_mode;
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::InitializeEngine;
+  using PdfViewPluginBase::set_document_load_state;
   using PdfViewPluginBase::set_full_frame;
 
   MOCK_METHOD(bool, Confirm, (const std::string&), (override));
@@ -231,6 +233,41 @@ TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderWithoutFullFrame) {
   EXPECT_CALL(fake_plugin_, PluginDidStartLoading()).Times(0);
   EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal());
   fake_plugin_.CreateUrlLoader();
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+}
+
+TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
+  // Notify the render frame about document loading.
+  fake_plugin_.set_full_frame(true);
+  ASSERT_TRUE(fake_plugin_.full_frame());
+  fake_plugin_.CreateUrlLoader();
+
+  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+            fake_plugin_.document_load_state());
+  EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
+
+  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
+  EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
+
+  fake_plugin_.DocumentLoadFailed();
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+            fake_plugin_.document_load_state());
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+}
+
+TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithoutNotifiedRenderFrame) {
+  // The render frame has never been notified about document loading before.
+  ASSERT_FALSE(fake_plugin_.full_frame());
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+
+  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+            fake_plugin_.document_load_state());
+  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
+  EXPECT_CALL(fake_plugin_, PluginDidStopLoading()).Times(0);
+
+  fake_plugin_.DocumentLoadFailed();
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+            fake_plugin_.document_load_state());
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
 
