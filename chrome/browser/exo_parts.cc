@@ -15,7 +15,7 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/exo/chrome_data_exchange_delegate.h"
+#include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 #include "components/exo/server/wayland_server_controller.h"
 
 // static
