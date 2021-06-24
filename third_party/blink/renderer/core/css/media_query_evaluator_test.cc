@@ -22,329 +22,329 @@
 
 namespace blink {
 
-typedef struct {
+struct MediaQueryEvaluatorTestCase {
   const char* input;
   const bool output;
-} MediaQueryEvaluatorTestCase;
+};
 
 MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
-    {"", 1},
-    {" ", 1},
-    {"screen", 1},
-    {"screen and (color)", 1},
-    {"not screen and (color)", 0},
-    {"screen and (device-aspect-ratio: 16/9)", 0},
-    {"screen and (device-aspect-ratio: 1/1)", 1},
-    {"all and (min-color: 2)", 1},
-    {"all and (min-color: 32)", 0},
-    {"all and (min-color-index: 0)", 1},
-    {"all and (min-color-index: 1)", 0},
-    {"all and (monochrome)", 0},
-    {"all and (min-monochrome: 0)", 1},
-    {"all and (grid: 0)", 1},
-    {"(resolution: 2dppx)", 1},
-    {"(resolution: 1dppx)", 0},
-    {"(orientation: portrait)", 1},
-    {"(orientation: landscape)", 0},
-    {"(orientation: url(portrait))", 0},
-    {"(orientation: #portrait)", 0},
-    {"(orientation: @portrait)", 0},
-    {"(orientation: 'portrait')", 0},
-    {"(orientation: @junk portrait)", 0},
-    {"screen and (orientation: @portrait) and (max-width: 1000px)", 0},
-    {"screen and (orientation: @portrait), (max-width: 1000px)", 1},
-    {"tv and (scan: progressive)", 0},
-    {"(pointer: coarse)", 0},
-    {"(pointer: fine)", 1},
-    {"(hover: hover)", 1},
-    {"(hover: on-demand)", 0},
-    {"(hover: none)", 0},
-    {"(display-mode)", 1},
-    {"(display-mode: fullscreen)", 0},
-    {"(display-mode: standalone)", 0},
-    {"(display-mode: minimal-ui)", 0},
-    {"(display-mode: browser)", 1},
-    {"(display-mode: min-browser)", 0},
-    {"(display-mode: url(browser))", 0},
-    {"(display-mode: #browser)", 0},
-    {"(display-mode: @browser)", 0},
-    {"(display-mode: 'browser')", 0},
-    {"(display-mode: @junk browser)", 0},
-    {"(max-device-aspect-ratio: 4294967295/1)", 1},
-    {"(min-device-aspect-ratio: 1/4294967296)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"", true},
+    {" ", true},
+    {"screen", true},
+    {"screen and (color)", true},
+    {"not screen and (color)", false},
+    {"screen and (device-aspect-ratio: 16/9)", false},
+    {"screen and (device-aspect-ratio: 1/1)", true},
+    {"all and (min-color: 2)", true},
+    {"all and (min-color: 32)", false},
+    {"all and (min-color-index: 0)", true},
+    {"all and (min-color-index: 1)", false},
+    {"all and (monochrome)", false},
+    {"all and (min-monochrome: 0)", true},
+    {"all and (grid: 0)", true},
+    {"(resolution: 2dppx)", true},
+    {"(resolution: 1dppx)", false},
+    {"(orientation: portrait)", true},
+    {"(orientation: landscape)", false},
+    {"(orientation: url(portrait))", false},
+    {"(orientation: #portrait)", false},
+    {"(orientation: @portrait)", false},
+    {"(orientation: 'portrait')", false},
+    {"(orientation: @junk portrait)", false},
+    {"screen and (orientation: @portrait) and (max-width: 1000px)", false},
+    {"screen and (orientation: @portrait), (max-width: 1000px)", true},
+    {"tv and (scan: progressive)", false},
+    {"(pointer: coarse)", false},
+    {"(pointer: fine)", true},
+    {"(hover: hover)", true},
+    {"(hover: on-demand)", false},
+    {"(hover: none)", false},
+    {"(display-mode)", true},
+    {"(display-mode: fullscreen)", false},
+    {"(display-mode: standalone)", false},
+    {"(display-mode: minimal-ui)", false},
+    {"(display-mode: browser)", true},
+    {"(display-mode: min-browser)", false},
+    {"(display-mode: url(browser))", false},
+    {"(display-mode: #browser)", false},
+    {"(display-mode: @browser)", false},
+    {"(display-mode: 'browser')", false},
+    {"(display-mode: @junk browser)", false},
+    {"(max-device-aspect-ratio: 4294967295/1)", true},
+    {"(min-device-aspect-ratio: 1/4294967296)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_monochrome_test_cases[] = {
-    {"(color)", 0},
-    {"(monochrome)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(color)", false},
+    {"(monochrome)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_viewport_test_cases[] = {
-    {"all and (min-width: 500px)", 1},
-    {"(min-width: 500px)", 1},
-    {"(min-width: 501px)", 0},
-    {"(max-width: 500px)", 1},
-    {"(max-width: 499px)", 0},
-    {"(width: 500px)", 1},
-    {"(width: 501px)", 0},
-    {"(min-height: 500px)", 1},
-    {"(min-height: 501px)", 0},
-    {"(min-height: 500.02px)", 0},
-    {"(max-height: 500px)", 1},
-    {"(max-height: calc(500px))", 1},
-    {"(max-height: 499.98px)", 0},
-    {"(max-height: 499px)", 0},
-    {"(height: 500px)", 1},
-    {"(height: calc(500px))", 1},
-    {"(height: 500.001px)", 1},
-    {"(height: 499.999px)", 1},
-    {"(height: 500.02px)", 0},
-    {"(height: 499.98px)", 0},
-    {"(height: 501px)", 0},
-    {"(height)", 1},
-    {"(width)", 1},
-    {"(width: whatisthis)", 0},
-    {"screen and (min-width: 400px) and (max-width: 700px)", 1},
-    {"(max-aspect-ratio: 4294967296/1)", 1},
-    {"(max-aspect-ratio: calc(4294967296) / calc(1)", 1},
-    {"(min-aspect-ratio: 1/4294967295)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"all and (min-width: 500px)", true},
+    {"(min-width: 500px)", true},
+    {"(min-width: 501px)", false},
+    {"(max-width: 500px)", true},
+    {"(max-width: 499px)", false},
+    {"(width: 500px)", true},
+    {"(width: 501px)", false},
+    {"(min-height: 500px)", true},
+    {"(min-height: 501px)", false},
+    {"(min-height: 500.02px)", false},
+    {"(max-height: 500px)", true},
+    {"(max-height: calc(500px))", true},
+    {"(max-height: 499.98px)", false},
+    {"(max-height: 499px)", false},
+    {"(height: 500px)", true},
+    {"(height: calc(500px))", true},
+    {"(height: 500.001px)", true},
+    {"(height: 499.999px)", true},
+    {"(height: 500.02px)", false},
+    {"(height: 499.98px)", false},
+    {"(height: 501px)", false},
+    {"(height)", true},
+    {"(width)", true},
+    {"(width: whatisthis)", false},
+    {"screen and (min-width: 400px) and (max-width: 700px)", true},
+    {"(max-aspect-ratio: 4294967296/1)", true},
+    {"(max-aspect-ratio: calc(4294967296) / calc(1)", true},
+    {"(min-aspect-ratio: 1/4294967295)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_float_viewport_test_cases[] = {
-    {"all and (min-width: 600.5px)", 1},
-    {"(min-width: 600px)", 1},
-    {"(min-width: 600.5px)", 1},
-    {"(min-width: 601px)", 0},
-    {"(max-width: 600px)", 0},
-    {"(max-width: 600.5px)", 1},
-    {"(max-width: 601px)", 1},
-    {"(width: 600.5px)", 1},
-    {"(width: 601px)", 0},
-    {"(min-height: 700px)", 1},
-    {"(min-height: 700.125px)", 1},
-    {"(min-height: 701px)", 0},
-    {"(min-height: 700.141px)", 0},
-    {"(max-height: 701px)", 1},
-    {"(max-height: 700.125px)", 1},
-    {"(max-height: 700px)", 0},
-    {"(height: 700.125px)", 1},
-    {"(height: 700.141px)", 0},
-    {"(height: 700.109px)", 0},
-    {"(height: 701px)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"all and (min-width: 600.5px)", true},
+    {"(min-width: 600px)", true},
+    {"(min-width: 600.5px)", true},
+    {"(min-width: 601px)", false},
+    {"(max-width: 600px)", false},
+    {"(max-width: 600.5px)", true},
+    {"(max-width: 601px)", true},
+    {"(width: 600.5px)", true},
+    {"(width: 601px)", false},
+    {"(min-height: 700px)", true},
+    {"(min-height: 700.125px)", true},
+    {"(min-height: 701px)", false},
+    {"(min-height: 700.141px)", false},
+    {"(max-height: 701px)", true},
+    {"(max-height: 700.125px)", true},
+    {"(max-height: 700px)", false},
+    {"(height: 700.125px)", true},
+    {"(height: 700.141px)", false},
+    {"(height: 700.109px)", false},
+    {"(height: 701px)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_float_non_friendly_viewport_test_cases[] = {
-    {"(min-width: 821px)", 1},
-    {"(max-width: 821px)", 1},
-    {"(width: 821px)", 1},
-    {"(min-height: 821px)", 1},
-    {"(max-height: 821px)", 1},
-    {"(height: 821px)", 1},
-    {"(width: 100vw)", 1},
-    {"(height: 100vh)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(min-width: 821px)", true},
+    {"(max-width: 821px)", true},
+    {"(width: 821px)", true},
+    {"(min-height: 821px)", true},
+    {"(max-height: 821px)", true},
+    {"(height: 821px)", true},
+    {"(width: 100vw)", true},
+    {"(height: 100vh)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_print_test_cases[] = {
-    {"print and (min-resolution: 1dppx)", 1},
-    {"print and (min-resolution: 118dpcm)", 1},
-    {"print and (min-resolution: 119dpcm)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"print and (min-resolution: 1dppx)", true},
+    {"print and (min-resolution: 118dpcm)", true},
+    {"print and (min-resolution: 119dpcm)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_non_immersive_test_cases[] = {
-    {"(immersive: 1)", 0},
-    {"(immersive: 0)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(immersive: 1)", false},
+    {"(immersive: 0)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_immersive_test_cases[] = {
-    {"(immersive: 1)", 1},
-    {"(immersive: 0)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(immersive: 1)", true},
+    {"(immersive: 0)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_non_ua_sheet_immersive_test_cases[] = {
-    {"(immersive: 1)", 0},
-    {"(immersive: 0)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(immersive: 1)", false},
+    {"(immersive: 0)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_forcedcolors_active_cases[] = {
-    {"(forced-colors: active)", 1},
-    {"(forced-colors: none)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(forced-colors: active)", true},
+    {"(forced-colors: none)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_forcedcolors_none_cases[] = {
-    {"(forced-colors: active)", 0},
-    {"(forced-colors: none)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(forced-colors: active)", false},
+    {"(forced-colors: none)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
-    {"(prefers-contrast)", 0},
-    {"(prefers-contrast: more)", 0},
-    {"(prefers-contrast: less)", 0},
-    {"(prefers-contrast: forced)", 0},
-    {"(prefers-contrast: no-preference)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", false},
+    {"(prefers-contrast: more)", false},
+    {"(prefers-contrast: less)", false},
+    {"(prefers-contrast: forced)", false},
+    {"(prefers-contrast: no-preference)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
-    {"(prefers-contrast)", 1},
-    {"(prefers-contrast: more)", 1},
-    {"(prefers-contrast: less)", 0},
-    {"(prefers-contrast: forced)", 0},
-    {"(prefers-contrast: no-preference)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", true},
+    {"(prefers-contrast: less)", false},
+    {"(prefers-contrast: forced)", false},
+    {"(prefers-contrast: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
-    {"(prefers-contrast)", 1},
-    {"(prefers-contrast: more)", 0},
-    {"(prefers-contrast: less)", 1},
-    {"(prefers-contrast: forced)", 0},
-    {"(prefers-contrast: no-preference)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", false},
+    {"(prefers-contrast: less)", true},
+    {"(prefers-contrast: forced)", false},
+    {"(prefers-contrast: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_forced_cases[] = {
-    {"(prefers-contrast)", 1},
-    {"(prefers-contrast: more)", 0},
-    {"(prefers-contrast: less)", 0},
-    {"(prefers-contrast: forced)", 1},
-    {"(prefers-contrast: no-preference)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", false},
+    {"(prefers-contrast: less)", false},
+    {"(prefers-contrast: forced)", true},
+    {"(prefers-contrast: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_forced_more_cases[] = {
-    {"(prefers-contrast)", 1},
-    {"(prefers-contrast: more)", 1},
-    {"(prefers-contrast: less)", 0},
-    {"(prefers-contrast: forced)", 1},
-    {"(prefers-contrast: no-preference)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", true},
+    {"(prefers-contrast: less)", false},
+    {"(prefers-contrast: forced)", true},
+    {"(prefers-contrast: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_forced_less_cases[] = {
-    {"(prefers-contrast)", 1},
-    {"(prefers-contrast: more)", 0},
-    {"(prefers-contrast: less)", 1},
-    {"(prefers-contrast: forced)", 1},
-    {"(prefers-contrast: no-preference)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", false},
+    {"(prefers-contrast: less)", true},
+    {"(prefers-contrast: forced)", true},
+    {"(prefers-contrast: no-preference)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_navigationcontrols_back_button_cases[] = {
-    {"(navigation-controls: back-button)", 1},
-    {"(navigation-controls: none)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(navigation-controls: back-button)", true},
+    {"(navigation-controls: none)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_navigationcontrols_none_cases[] = {
-    {"(navigation-controls: back-button)", 0},
-    {"(navigation-controls: none)", 1},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(navigation-controls: back-button)", false},
+    {"(navigation-controls: none)", true},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_screen_spanning_none_cases[] = {
-    {"(screen-spanning)", 0},
-    {"(screen-spanning: single-fold-vertical)", 0},
-    {"(screen-spanning: single-fold-horizontal)", 0},
-    {"(screen-spanning: none)", 1},
-    {"(screen-spanning: 1px)", 0},
-    {"(screen-spanning: 16/9)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(screen-spanning)", false},
+    {"(screen-spanning: single-fold-vertical)", false},
+    {"(screen-spanning: single-fold-horizontal)", false},
+    {"(screen-spanning: none)", true},
+    {"(screen-spanning: 1px)", false},
+    {"(screen-spanning: 16/9)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_vertical_cases[] = {
-    {"(screen-spanning)", 1},
-    {"(screen-spanning: single-fold-vertical)", 1},
-    {"(screen-spanning: single-fold-horizontal)", 0},
-    {"(screen-spanning: none)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(screen-spanning)", true},
+    {"(screen-spanning: single-fold-vertical)", true},
+    {"(screen-spanning: single-fold-horizontal)", false},
+    {"(screen-spanning: none)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_horizontal_cases[] = {
-    {"(screen-spanning)", 1},
-    {"(screen-spanning: single-fold-vertical)", 0},
-    {"(screen-spanning: single-fold-horizontal)", 1},
-    {"(screen-spanning: none)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(screen-spanning)", true},
+    {"(screen-spanning: single-fold-vertical)", false},
+    {"(screen-spanning: single-fold-horizontal)", true},
+    {"(screen-spanning: none)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_none_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 0},
-    {"(device-posture: flat)", 0},
-    {"(device-posture: tent)", 0},
-    {"(device-posture: tablet)", 0},
-    {"(device-posture: book)", 0},
-    {"(device-posture: no-fold)", 1},
-    {"(device-posture: 15)", 0},
-    {"(device-posture: 2px)", 0},
-    {"(device-posture: 16/9)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", false},
+    {"(device-posture: flat)", false},
+    {"(device-posture: tent)", false},
+    {"(device-posture: tablet)", false},
+    {"(device-posture: book)", false},
+    {"(device-posture: no-fold)", true},
+    {"(device-posture: 15)", false},
+    {"(device-posture: 2px)", false},
+    {"(device-posture: 16/9)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_laptop_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 1},
-    {"(device-posture: flat)", 0},
-    {"(device-posture: tent)", 0},
-    {"(device-posture: tablet)", 0},
-    {"(device-posture: book)", 0},
-    {"(device-posture: no-fold)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", true},
+    {"(device-posture: flat)", false},
+    {"(device-posture: tent)", false},
+    {"(device-posture: tablet)", false},
+    {"(device-posture: book)", false},
+    {"(device-posture: no-fold)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_flat_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 0},
-    {"(device-posture: flat)", 1},
-    {"(device-posture: tent)", 0},
-    {"(device-posture: tablet)", 0},
-    {"(device-posture: book)", 0},
-    {"(device-posture: no-fold)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", false},
+    {"(device-posture: flat)", true},
+    {"(device-posture: tent)", false},
+    {"(device-posture: tablet)", false},
+    {"(device-posture: book)", false},
+    {"(device-posture: no-fold)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_tent_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 0},
-    {"(device-posture: flat)", 0},
-    {"(device-posture: tent)", 1},
-    {"(device-posture: tablet)", 0},
-    {"(device-posture: book)", 0},
-    {"(device-posture: no-fold)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", false},
+    {"(device-posture: flat)", false},
+    {"(device-posture: tent)", true},
+    {"(device-posture: tablet)", false},
+    {"(device-posture: book)", false},
+    {"(device-posture: no-fold)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_tablet_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 0},
-    {"(device-posture: flat)", 0},
-    {"(device-posture: tent)", 0},
-    {"(device-posture: tablet)", 1},
-    {"(device-posture: book)", 0},
-    {"(device-posture: no-fold)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", false},
+    {"(device-posture: flat)", false},
+    {"(device-posture: tent)", false},
+    {"(device-posture: tablet)", true},
+    {"(device-posture: book)", false},
+    {"(device-posture: no-fold)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_book_cases[] = {
-    {"(device-posture)", 1},
-    {"(device-posture: laptop)", 0},
-    {"(device-posture: flat)", 0},
-    {"(device-posture: tent)", 0},
-    {"(device-posture: tablet)", 0},
-    {"(device-posture: book)", 1},
-    {"(device-posture: no-fold)", 0},
-    {nullptr, 0}  // Do not remove the terminator line.
+    {"(device-posture)", true},
+    {"(device-posture: laptop)", false},
+    {"(device-posture: flat)", false},
+    {"(device-posture: tent)", false},
+    {"(device-posture: tablet)", false},
+    {"(device-posture: book)", true},
+    {"(device-posture: no-fold)", false},
+    {nullptr, false}  // Do not remove the terminator line.
 };
 
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
