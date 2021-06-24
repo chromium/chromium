@@ -79,7 +79,8 @@ void AndroidNotificationHandler::DisplayNewEntries(
 
       // TODO(crbug.com/1220129): A valid WebContents shouldn't be needed here.
       messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-          message_.get(), web_contents, messages::MessageScopeType::WINDOW);
+          message_.get(), web_contents, messages::MessageScopeType::WINDOW,
+          messages::MessagePriority::kNormal);
     } else {
       JNIEnv* env = AttachCurrentThread();
 

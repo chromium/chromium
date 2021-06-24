@@ -69,7 +69,8 @@ void SaveAddressProfileMessageController::DisplayMessage(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS);
+      message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
+      messages::MessagePriority::kNormal);
 }
 
 bool SaveAddressProfileMessageController::IsMessageDisplayed() {

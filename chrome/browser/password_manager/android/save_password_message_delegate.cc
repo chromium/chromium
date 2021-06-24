@@ -97,7 +97,8 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
   CreateMessage(update_password);
   RecordMessageShownMetrics();
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION);
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
 }
 
 void SavePasswordMessageDelegate::CreateMessage(bool update_password) {

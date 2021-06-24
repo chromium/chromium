@@ -84,7 +84,8 @@ void SafetyTipMessageDelegateTest::EnqueueMessage(
     bool enqueue_expected,
     security_state::SafetyTipStatus safety_tip_status) {
   if (enqueue_expected) {
-    EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+    EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+        .WillOnce(testing::Return(true));
   } else {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(0);
   }

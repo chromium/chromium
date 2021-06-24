@@ -55,8 +55,8 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   // or destroyed, popup blocked message will not be displayed and the
   // method will return false.
   if (!messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-          message.get(), web_contents_,
-          messages::MessageScopeType::NAVIGATION)) {
+          message.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+          messages::MessagePriority::kNormal)) {
     return false;
   }
 

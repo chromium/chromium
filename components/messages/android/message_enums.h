@@ -45,6 +45,10 @@ enum class DismissReason {
   COUNT
 };
 
+// "Urgent" means the user should take actions ASAP, such as responding to
+// permissions or safety warnings.
+enum class MessagePriority { kUrgent, kNormal };
+
 // The constants of message scope type.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
