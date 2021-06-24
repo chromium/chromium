@@ -54,6 +54,12 @@ function generateFakeDevices(numPairedDevices, numUnpairedDevices) {
   return devices;
 }
 
+function flushAsync() {
+  Polymer.dom.flush();
+  // Use setTimeout to wait for the next macrotask.
+  return new Promise(resolve => setTimeout(resolve));
+}
+
 suite('Bluetooth', function() {
   let bluetoothPage = null;
 
@@ -225,13 +231,6 @@ suite('Bluetooth', function() {
 
   suite('SubPage', function() {
     let subpage;
-
-    function flushAsync() {
-      Polymer.dom.flush();
-      return new Promise(resolve => {
-        bluetoothPage.async(resolve);
-      });
-    }
 
     setup(async function() {
       bluetoothApi.simulateAdapterStateChangedForTest({
@@ -755,16 +754,61 @@ suite('Bluetooth', function() {
       Polymer.dom.flush();
     });
 
-    test('Enterprise-managed icon visibility', async function() {
-      // TODO(crbug.com/1208155) Assert on the managed property icon UI instead
-      // of a private property.
-      assertFalse(listItem.shouldShowManagedIcon_);
+    test('Enterprise-managed icon UI state', async function() {
+      const getManagedIcon = () => {
+        return listItem.$$('#managedIcon');
+      };
+      assertFalse(!!getManagedIcon());
 
       browserProxy.setIsDeviceBlockedByPolicyForTest(true);
       listItem.device = fakePairedDevice1;
 
       await browserProxy.whenCalled('isDeviceBlockedByPolicy');
-      assertTrue(listItem.shouldShowManagedIcon_);
+      await flushAsync();
+
+      // The icon should now be showing.
+      const managedIcon = getManagedIcon();
+      assertTrue(!!managedIcon);
+
+      // Simulate hovering over the icon.
+      const showTooltipPromise =
+          eventToPromise('blocked-tooltip-state-change', listItem);
+      managedIcon.dispatchEvent(new Event('mouseenter'));
+
+      // The blocked-tooltip-state-changed event should have been fired.
+      const showTooltipEvent = await showTooltipPromise;
+      assertEquals(showTooltipEvent.detail.show, true);
+      assertEquals(showTooltipEvent.detail.element, managedIcon);
+      assertEquals(showTooltipEvent.detail.address, fakePairedDevice1.address);
+
+      // Simulate the device being unblocked by policy.
+      const hideTooltipPromise =
+          eventToPromise('blocked-tooltip-state-change', listItem);
+      browserProxy.setIsDeviceBlockedByPolicyForTest(false);
+      listItem.device = fakePairedDevice2;
+
+      await browserProxy.whenCalled('isDeviceBlockedByPolicy');
+      await flushAsync();
+      // The icon should now be hidden.
+      assertFalse(!!getManagedIcon());
+
+      // The blocked-tooltip-state-changed event should have been fired again.
+      const hideTooltipEvent = await hideTooltipPromise;
+      assertEquals(hideTooltipEvent.detail.show, false);
+      assertEquals(hideTooltipEvent.detail.element, undefined);
+      assertEquals(hideTooltipEvent.detail.address, fakePairedDevice2.address);
+
+      // Remove the listItem from the DOM.
+      const hideTooltipPromise2 =
+          eventToPromise('blocked-tooltip-state-change', listItem);
+      listItem.remove();
+      await flushAsync();
+
+      // The blocked-tooltip-state-changed event should have been fired again.
+      const hideTooltipEvent2 = await hideTooltipPromise2;
+      assertEquals(hideTooltipEvent2.detail.show, false);
+      assertEquals(hideTooltipEvent2.detail.element, undefined);
+      assertEquals(hideTooltipEvent2.detail.address, fakePairedDevice2.address);
     });
   });
 });

@@ -64,6 +64,13 @@ Polymer({
     this.browserProxy_ = BluetoothPageBrowserProxyImpl.getInstance();
   },
 
+  /** @override */
+  detached() {
+    // Fire an event in case the tooltip was previously showing for the managed
+    // icon in this item and this item is being removed.
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+  },
+
   /**
    * @param {!Event} event
    * @private
@@ -264,6 +271,27 @@ Polymer({
     this.browserProxy_.isDeviceBlockedByPolicy(newValue.address)
         .then((isBlocked) => {
           this.shouldShowManagedIcon_ = isBlocked;
+          if (!this.shouldShowManagedIcon_) {
+            // Fire an event in case the tooltip was previously showing for this
+            // icon and this icon now is hidden.
+            this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+          }
         });
+  },
+
+  /** @private */
+  onShowTooltip_: function() {
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
+  },
+
+  /**
+   * @param {boolean} showTooltip
+   */
+  fireTooltipStateChangeEvent_(showTooltip) {
+    this.fire('blocked-tooltip-state-change', {
+      address: this.device.address,
+      show: showTooltip,
+      element: showTooltip ? this.$$('#managedIcon') : undefined,
+    });
   },
 });

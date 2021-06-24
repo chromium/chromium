@@ -65,7 +65,8 @@
           last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
           deep-link-focus-id$="[[Setting.kBluetoothConnectToDevice]]
               [[Setting.kBluetoothDisconnectFromDevice]]
-              [[Setting.kBluetoothUnpairDevice]]">
+              [[Setting.kBluetoothUnpairDevice]]"
+          on-blocked-tooltip-state-change="onBlockedTooltipStateChange_">
       </bluetooth-device-list-item>
     </template>
   </iron-list>
@@ -91,11 +92,18 @@
     <template>
       <bluetooth-device-list-item actionable device="[[item]]"
           first$="[[!index]]" tabindex$="[[tabIndex]]"
-          deep-link-focus-id$="[[Setting.kBluetoothPairDevice]]">
+          deep-link-focus-id$="[[Setting.kBluetoothPairDevice]]"
+          on-blocked-tooltip-state-change="onBlockedTooltipStateChange_">
       </bluetooth-device-list-item>
     </template>
   </iron-list>
 </div>
+<paper-tooltip id="tooltip"
+    manual-mode
+    position="top"
+    aria-hidden="true">
+  $i18n{bluetoothManaged}
+</paper-tooltip>
 <bluetooth-dialog id="deviceDialog"
     bluetooth="[[bluetooth]]"
     bluetooth-private="[[bluetoothPrivate]]"

@@ -25,6 +25,7 @@ import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_be
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
@@ -235,6 +236,14 @@ Polymer({
   isWindowFocusedFunction_: function() {
     return document.hasFocus();
   },
+
+  /**
+   * The address of the device corresponding to the tooltip if it is currently
+   * showing. If undefined, the tooltip is not showing.
+   * @type {string|undefined}
+   * @private
+   */
+  currentTooltipDeviceAddress_: undefined,
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -703,5 +712,56 @@ Polymer({
         Date.now() - this.discoveryStartTimestampMs_, wasPaired, transport);
 
     this.discoveryStartTimestampMs_ = null;
+  },
+
+  /**
+   * Updates the visibility of the enterprise policy UI tooltip. This is
+   * triggered by the blocked-tooltip-state-change event. This event can be
+   * fired in two cases:
+   * 1) We want to show the tooltip for a given device's icon. Here, show will
+   *    be true and the element will be defined.
+   * 2) We want to make sure there is no tooltip showing for a given device's
+   *    icon. Here, show will be false and the element undefined.
+   * In both cases, address will be the item's device address.
+   * We need to use a common tooltip since a tooltip within the item gets cut
+   * off from the iron-list.
+   * @param {!{detail: {address: string, show: boolean, element: ?HTMLElement}}}
+   *     e
+   * @private
+   */
+  onBlockedTooltipStateChange_: function(e) {
+    const target = e.detail.element;
+    const hide = () => {
+      /** @type {{hide: Function}} */ (this.$.tooltip).hide();
+      this.$.tooltip.removeEventListener('mouseenter', hide);
+      this.currentTooltipDeviceAddress_ = undefined;
+      if (target) {
+        target.removeEventListener('mouseleave', hide);
+        target.removeEventListener('blur', hide);
+        target.removeEventListener('tap', hide);
+      }
+    };
+
+    if (!e.detail.show) {
+      if (this.currentTooltipDeviceAddress_ &&
+          e.detail.address === this.currentTooltipDeviceAddress_) {
+        hide();
+      }
+      return;
+    }
+
+    // paper-tooltip normally determines the target from the |for| property,
+    // which is a selector. Here paper-tooltip is being reused by multiple
+    // potential targets. Since paper-tooltip does not expose a public property
+    // or method to update the target, the private property |_target| is
+    // updated directly.
+    this.$.tooltip._target = target;
+    /** @type {{updatePosition: Function}} */ (this.$.tooltip).updatePosition();
+    target.addEventListener('mouseleave', hide);
+    target.addEventListener('blur', hide);
+    target.addEventListener('tap', hide);
+    this.$.tooltip.addEventListener('mouseenter', hide);
+    this.$.tooltip.show();
+    this.currentTooltipDeviceAddress_ = e.detail.address;
   },
 });
