@@ -97,7 +97,7 @@ class SetPTZExpectations {
 };
 
 template <size_t N>
-std::vector<uint8_t> ToByteVector(const char (&array)[N]) {
+std::vector<uint8_t> ToByteVector(const uint8_t (&array)[N]) {
   return std::vector<uint8_t>(array, array + N);
 }
 
@@ -125,8 +125,8 @@ class ViscaWebcamTest : public testing::Test {
 
 TEST_F(ViscaWebcamTest, Zoom) {
   // Check getting the zoom.
-  const char kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
-  const char kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
+  const uint8_t kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
+  const uint8_t kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
   serial_connection()->SetReceiveBuffer(ToByteVector(kGetZoomResponse));
   Webcam::GetPTZCompleteCallback receive_callback =
       base::BindRepeating(&GetPTZExpectations::OnCallback,
@@ -136,10 +136,10 @@ TEST_F(ViscaWebcamTest, Zoom) {
   serial_connection()->CheckSendBufferAndClear(ToByteVector(kGetZoomCommand));
 
   // Check setting the zoom.
-  const char kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
-                                  0x02, 0x05, 0x03, 0xFF};
+  const uint8_t kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
+                                     0x02, 0x05, 0x03, 0xFF};
   // Note: this is a valid, but empty value because nothing is checking it.
-  const char kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
+  const uint8_t kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
   serial_connection()->SetReceiveBuffer(ToByteVector(kSetZoomResponse));
   Webcam::SetPTZCompleteCallback send_callback =
       base::BindRepeating(&SetPTZExpectations::OnCallback,
