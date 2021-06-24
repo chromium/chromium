@@ -8,6 +8,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.metrics.MetricsSwitches;
+import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
@@ -102,10 +103,10 @@ public final class ProductionSupportedFlagList {
                             + "feature flag until the true runtime cost can be measured."),
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
                     "Enables display cutout (notch) support in WebView for Android P and above."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES,
+            Flag.baseFeature(PowerSchedulerFeatures.WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES,
                     "Forces WebView to do rendering work on LITTLE CPU cores on big.LITTLE "
                             + "architectures"),
-            Flag.baseFeature(AwFeatures.WEBVIEW_POWER_SCHEDULER_THROTTLE_IDLE,
+            Flag.baseFeature(PowerSchedulerFeatures.WEBVIEW_POWER_SCHEDULER_THROTTLE_IDLE,
                     "Restricts all of WebView's out-of-process renderer threads to use only LITTLE "
                             + "CPU cores on big.LITTLE architectures when the power mode is idle. "
                             + "WebViewCpuAffinityRestrictToLittleCores, if set, takes precedence "

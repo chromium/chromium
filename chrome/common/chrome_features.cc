@@ -118,23 +118,6 @@ const base::Feature kContinuousFeeds{"ContinuousFeeds",
 
 const base::Feature kContinuousSearch{"ContinuousSearch",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Restricts all of Chrome's threads to use only LITTLE cores on big.LITTLE
-// architectures.
-const base::Feature kCpuAffinityRestrictToLittleCores{
-    "CpuAffinityRestrictToLittleCores", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Restricts all of Chrome's threads to use only LITTLE cores on big.LITTLE
-// architectures when the detected PowerMode is kIdle or kBackground.
-const base::Feature kPowerSchedulerThrottleIdle{
-    "PowerSchedulerThrottleIdle", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Restricts all of Chrome's threads to use only LITTLE cores on big.LITTLE
-// architectures when the detected PowerMode is kIdle, kBackground, or
-// kNopAnimation.
-const base::Feature kPowerSchedulerThrottleIdleAndNopAnimation{
-    "PowerSchedulerThrottleIdleAndNopAnimation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

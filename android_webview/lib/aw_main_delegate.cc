@@ -393,17 +393,8 @@ void AwMainDelegate::PostFieldTrialInitialization() {
   // are enabled, but only for child processes, as the browser process is shared
   // with the hosting app.
   if (!is_browser_process) {
-    if (base::FeatureList::IsEnabled(
-            android_webview::features::
-                kWebViewCpuAffinityRestrictToLittleCores)) {
-      power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-          power_scheduler::SchedulingPolicy::kLittleCoresOnly);
-    } else if (base::FeatureList::IsEnabled(
-                   android_webview::features::
-                       kWebViewPowerSchedulerThrottleIdle)) {
-      power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-          power_scheduler::SchedulingPolicy::kThrottleIdle);
-    }
+    power_scheduler::PowerScheduler::GetInstance()
+        ->InitializePolicyFromFeatureList();
   }
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)

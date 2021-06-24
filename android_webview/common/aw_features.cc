@@ -18,12 +18,6 @@ const base::Feature kWebViewBrotliSupport{"WebViewBrotliSupport",
 const base::Feature kWebViewConnectionlessSafeBrowsing{
     "WebViewConnectionlessSafeBrowsing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Restricts WebView child processes to use only LITTLE cores on big.LITTLE
-// architectures.
-const base::Feature kWebViewCpuAffinityRestrictToLittleCores{
-    "WebViewCpuAffinityRestrictToLittleCores",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable display cutout support for Android P and above.
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -62,11 +56,6 @@ const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
 // on a dynamically generated allowlist.
 const base::Feature kWebViewAppsPackageNamesAllowlist{
     "WebViewAppsPackageNamesAllowlist", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Restricts all of WebView's out-of-process renderer threads to use only LITTLE
-// cores on big.LITTLE architectures when the power mode is idle.
-const base::Feature kWebViewPowerSchedulerThrottleIdle{
-    "WebViewPowerSchedulerThrottleIdle", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.

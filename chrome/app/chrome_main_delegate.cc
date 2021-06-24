@@ -620,19 +620,8 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // For child processes, this requires allowlisting of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
   // removed, the sandbox allowlist should be updated too.
-  if (base::FeatureList::IsEnabled(
-          features::kCpuAffinityRestrictToLittleCores)) {
-    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-        power_scheduler::SchedulingPolicy::kLittleCoresOnly);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kPowerSchedulerThrottleIdleAndNopAnimation)) {
-    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-        power_scheduler::SchedulingPolicy::kThrottleIdleAndNopAnimation);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kPowerSchedulerThrottleIdle)) {
-    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-        power_scheduler::SchedulingPolicy::kThrottleIdle);
-  }
+  power_scheduler::PowerScheduler::GetInstance()
+      ->InitializePolicyFromFeatureList();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
