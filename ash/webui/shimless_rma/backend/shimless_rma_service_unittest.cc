@@ -15,6 +15,41 @@
 namespace ash {
 namespace shimless_rma {
 
+namespace {
+using chromeos::DBusMethodCallback;
+using chromeos::FakeRmadClient;
+
+class FakeRmadClientForTest : public FakeRmadClient {
+ public:
+  static void Initialize() {
+    // The this pointer is stored in rmad_client.cc:g_instance and deleted when
+    // chromeos::RmadClient::Shutdown() is called in
+    // ShimlessRmaServiceTest::TearDown()
+    new FakeRmadClientForTest();
+  }
+
+  FakeRmadClientForTest() = default;
+  FakeRmadClientForTest(const FakeRmadClientForTest&) = delete;
+  FakeRmadClientForTest& operator=(const FakeRmadClientForTest&) = delete;
+
+  ~FakeRmadClientForTest() override = default;
+
+  void TransitionNextState(
+      const rmad::RmadState& state,
+      DBusMethodCallback<rmad::GetStateReply> callback) override {
+    if (check_state_callback) {
+      check_state_callback.Run(state);
+    }
+
+    FakeRmadClient::TransitionNextState(state, std::move(callback));
+  }
+
+  base::RepeatingCallback<void(const rmad::RmadState& state)>
+      check_state_callback;
+};
+
+}  // namespace
+
 class ShimlessRmaServiceTest : public testing::Test {
  public:
   ShimlessRmaServiceTest() = default;
@@ -22,7 +57,7 @@ class ShimlessRmaServiceTest : public testing::Test {
   ~ShimlessRmaServiceTest() override { base::RunLoop().RunUntilIdle(); }
 
   void SetUp() override {
-    chromeos::RmadClient::InitializeFake();
+    FakeRmadClientForTest::Initialize();
     rmad_client_ = chromeos::RmadClient::Get();
     // ShimlessRmaService has to be created after RmadClient or there will be a
     // null ptr dereference in the service constructor.
@@ -112,8 +147,8 @@ class ShimlessRmaServiceTest : public testing::Test {
     return reply;
   }
 
-  chromeos::FakeRmadClient* fake_rmad_client_() {
-    return google::protobuf::down_cast<chromeos::FakeRmadClient*>(rmad_client_);
+  FakeRmadClientForTest* fake_rmad_client_() {
+    return google::protobuf::down_cast<FakeRmadClientForTest*>(rmad_client_);
   }
 
  protected:
@@ -303,6 +338,105 @@ TEST_F(ShimlessRmaServiceTest, CannotCancelRma) {
   shimless_rma_provider_->AbortRma(
       base::BindLambdaForTesting([&](mojom::RmadErrorCode error) {
         EXPECT_EQ(error, mojom::RmadErrorCode::kCannotCancelRma);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetSameOwner) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kDeviceDestination);
+        EXPECT_EQ(state.device_destination().destination(),
+                  rmad::DeviceDestinationState::RMAD_DESTINATION_SAME);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SetSameOwner(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetSameOwnerFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SetSameOwner(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetDifferentOwner) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kDeviceDestination);
+        EXPECT_EQ(state.device_destination().destination(),
+                  rmad::DeviceDestinationState::RMAD_DESTINATION_DIFFERENT);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SetDifferentOwner(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetDifferentOwnerFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+  shimless_rma_provider_->SetDifferentOwner(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
         run_loop.Quit();
       }));
   run_loop.Run();

@@ -97,9 +97,29 @@ void ShimlessRmaService::UpdateChromeSkipped(UpdateChromeCallback callback) {
 }
 
 void ShimlessRmaService::SetSameOwner(SetSameOwnerCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kDeviceDestination) {
+    LOG(ERROR) << "SetSameOwner called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_device_destination()->set_destination(
+      rmad::DeviceDestinationState::RMAD_DESTINATION_SAME);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetDifferentOwner(SetDifferentOwnerCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kDeviceDestination) {
+    LOG(ERROR) << "SetDifferentOwner called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_device_destination()->set_destination(
+      rmad::DeviceDestinationState::RMAD_DESTINATION_DIFFERENT);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
