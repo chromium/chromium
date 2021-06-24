@@ -60,6 +60,7 @@ class MockErrorDelegateNonStrict : public ArcSupportHost::ErrorDelegate {
   MOCK_METHOD0(OnWindowClosed, void());
   MOCK_METHOD0(OnRetryClicked, void());
   MOCK_METHOD0(OnSendFeedbackClicked, void());
+  MOCK_METHOD0(OnRunNetworkTestsClicked, void());
 };
 
 using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
@@ -189,7 +190,8 @@ TEST_F(ArcSupportHostTest, AuthRetryOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*auth_delegate, OnAuthRetryClicked());
   EXPECT_CALL(*error_delegate, OnWindowClosed()).Times(0);
@@ -237,7 +239,8 @@ TEST_F(ArcSupportHostTest, TermsOfServiceRetryOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*tos_delegate, OnTermsRetryClicked());
   EXPECT_CALL(*error_delegate, OnWindowClosed()).Times(0);
@@ -276,7 +279,8 @@ TEST_F(ArcSupportHostTest, RetryOnGeneralError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      false /* should_show_send_feedback */);
+      false /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*error_delegate, OnRetryClicked());
   fake_arc_support()->ClickRetryButton();
@@ -289,10 +293,24 @@ TEST_F(ArcSupportHostTest, SendFeedbackOnError) {
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
-      true /* should_show_send_feedback */);
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
 
   EXPECT_CALL(*error_delegate, OnSendFeedbackClicked());
   fake_arc_support()->ClickSendFeedbackButton();
 }
 
+TEST_F(ArcSupportHostTest, RunNetworkTestsOnError) {
+  MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
+  support_host()->SetErrorDelegate(error_delegate);
+
+  support_host()->ShowError(
+      ArcSupportHost::ErrorInfo(
+          ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
+
+  EXPECT_CALL(*error_delegate, OnRunNetworkTestsClicked());
+  fake_arc_support()->ClickRunNetworkTestsButton();
+}
 }  // namespace

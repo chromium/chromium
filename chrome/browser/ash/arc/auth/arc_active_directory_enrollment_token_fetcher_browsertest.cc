@@ -368,6 +368,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   void OnWindowClosed() override {}
   void OnRetryClicked() override {}
   void OnSendFeedbackClicked() override {}
+  void OnRunNetworkTestsClicked() override {}
 
   std::unique_ptr<ArcSupportHost> support_host_;
 

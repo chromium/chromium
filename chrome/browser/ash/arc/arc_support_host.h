@@ -133,6 +133,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // Called when send feedback button on error page is clicked.
     virtual void OnSendFeedbackClicked() = 0;
 
+    // Called when network tests link on error page is clicked.
+    virtual void OnRunNetworkTestsClicked() = 0;
+
    protected:
     virtual ~ErrorDelegate() = default;
   };
@@ -181,7 +184,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
                                const std::string& device_management_url_prefix);
 
   // Requests to show the error page
-  void ShowError(ErrorInfo error_info, bool should_show_send_feedback);
+  void ShowError(ErrorInfo error_info,
+                 bool should_show_send_feedback,
+                 bool should_show_run_network_tests);
 
   void SetMetricsPreferenceCheckbox(bool is_enabled, bool is_managed);
   void SetBackupAndRestorePreferenceCheckbox(bool is_enabled, bool is_managed);
@@ -255,6 +260,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // These have valid values iff ui_page_ == ERROR.
   absl::optional<ErrorInfo> error_info_;
   bool should_show_send_feedback_;
+  bool should_show_run_network_tests_;
 
   bool is_arc_managed_ = false;
 

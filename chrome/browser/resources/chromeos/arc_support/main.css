@@ -86,8 +86,13 @@ p.title {
 }
 
 #button-cancel,
+#button-run-network-tests,
 #button-send-feedback {
   margin-inline-end: 6px;
+}
+
+#button-send-feedback {
+  margin-inline-start: 18px;
 }
 
 #overlay-text-content p {

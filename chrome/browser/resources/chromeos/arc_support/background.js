@@ -803,7 +803,9 @@ function onNativeMessage(message) {
   } else if (message.action == 'showPage') {
     showPage(message.page, message.options);
   } else if (message.action == 'showErrorPage') {
-    showErrorPage(message.errorMessage, message.shouldShowSendFeedback);
+    showErrorPage(
+        message.errorMessage, message.shouldShowSendFeedback,
+        message.shouldShowNetworkTests);
   } else if (message.action == 'closeWindow') {
     closeWindow();
   } else if (message.action == 'setWindowBounds') {
@@ -870,7 +872,8 @@ function showPage(pageDivId, options) {
  * @param {?boolean} opt_shouldShowSendFeedback If set to true, show "Send
  *     feedback" button.
  */
-function showErrorPage(errorMessage, opt_shouldShowSendFeedback) {
+function showErrorPage(
+    errorMessage, opt_shouldShowSendFeedback, opt_shouldShowNetworkTests) {
   if (!appWindow) {
     return;
   }
@@ -882,6 +885,8 @@ function showErrorPage(errorMessage, opt_shouldShowSendFeedback) {
   var sendFeedbackElement = doc.getElementById('button-send-feedback');
   sendFeedbackElement.hidden = !opt_shouldShowSendFeedback;
 
+  var networkTestsElement = doc.getElementById('button-run-network-tests');
+  networkTestsElement.hidden = !opt_shouldShowNetworkTests;
   showPage('error');
 }
 
@@ -995,10 +1000,16 @@ chrome.app.runtime.onLaunched.addListener(function() {
       sendNativeMessage('onSendFeedbackClicked');
     };
 
+    var onRunNetworkTests = function() {
+      sendNativeMessage('onRunNetworkTestsClicked');
+    };
+
     var doc = appWindow.contentWindow.document;
     doc.getElementById('button-retry').addEventListener('click', onRetry);
     doc.getElementById('button-send-feedback')
         .addEventListener('click', onSendFeedback);
+    doc.getElementById('button-run-network-tests')
+        .addEventListener('click', onRunNetworkTests);
     doc.getElementById('overlay-close').addEventListener('click', hideOverlay);
     doc.getElementById('privacy-policy-link')
         .addEventListener('click', showPrivacyPolicyOverlay);

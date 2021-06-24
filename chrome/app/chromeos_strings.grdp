@@ -3196,6 +3196,9 @@
   <message name="IDS_ARC_OPT_IN_DIALOG_BUTTON_SEND_FEEDBACK" desc="Send feedback button of the opt-in dialog for Android apps.">
     Send feedback
   </message>
+  <message name="IDS_ARC_OPT_IN_DIALOG_BUTTON_RUN_NETWORK_TESTS" desc="Run network tests button of the opt-in dialog for Android apps.">
+    Check my network
+  </message>
   <message name="IDS_ARC_OPT_IN_DIALOG_PROGRESS_TERMS" desc="Name of Terms Of Services loading progress of the opt-in dialog for Android apps.">
     Just a sec...
   </message>

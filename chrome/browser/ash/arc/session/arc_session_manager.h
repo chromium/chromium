@@ -203,6 +203,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnWindowClosed() override;
   void OnRetryClicked() override;
   void OnSendFeedbackClicked() override;
+  void OnRunNetworkTestsClicked() override;
 
   // StopArc(), then restart. Between them data clear may happens.
   // This is a special method to support enterprise device lost case.
@@ -395,7 +396,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Requests the support host (if it exists) to show the error, and notifies
   // the observers.
   void ShowArcSupportHostError(ArcSupportHost::ErrorInfo error_info,
-                               bool should_show_send_feedback);
+                               bool should_show_send_feedback,
+                               bool should_show_run_network_tests);
 
   // chromeos::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;

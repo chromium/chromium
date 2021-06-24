@@ -124,6 +124,12 @@ void FakeArcSupport::ClickSendFeedbackButton() {
   native_message_host_->OnMessage("{\"event\": \"onSendFeedbackClicked\"}");
 }
 
+void FakeArcSupport::ClickRunNetworkTestsButton() {
+  DCHECK(native_message_host_);
+  DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::ERROR);
+  native_message_host_->OnMessage("{\"event\": \"onRunNetworkTestsClicked\"}");
+}
+
 void FakeArcSupport::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

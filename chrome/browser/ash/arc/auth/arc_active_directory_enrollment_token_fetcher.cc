@@ -226,7 +226,8 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::OnAuthFailed(
   support_host_->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
-      true /* should_show_send_feedback */);
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
   UpdateOptInCancelUMA(OptInCancelReason::NETWORK_ERROR);
 }
 

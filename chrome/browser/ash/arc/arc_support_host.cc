@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -69,6 +70,7 @@ constexpr char kDeviceManagementUrlPrefix[] = "deviceManagementUrlPrefix";
 constexpr char kActionShowErrorPage[] = "showErrorPage";
 constexpr char kErrorMessage[] = "errorMessage";
 constexpr char kShouldShowSendFeedback[] = "shouldShowSendFeedback";
+constexpr char kShouldShowNetworkTests[] = "shouldShowNetworkTests";
 
 // The preference update should have those two fields.
 constexpr char kEnabled[] = "enabled";
@@ -118,6 +120,10 @@ constexpr char kEventOnRetryClicked[] = "onRetryClicked";
 
 // "onSendFeedbackClicked" is fired when a user clicks "Send Feedback" button.
 constexpr char kEventOnSendFeedbackClicked[] = "onSendFeedbackClicked";
+
+// "onRunNetworkTestsClicked" is fired when a user clicks "Check Network"
+// button.
+constexpr char kEventOnRunNetworkTestsClicked[] = "onRunNetworkTestsClicked";
 
 // "onOpenPrivacySettingsPageClicked" is fired when a user clicks privacy
 // settings link.
@@ -313,15 +319,19 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
 }
 
 void ArcSupportHost::ShowError(ErrorInfo error_info,
-                               bool should_show_send_feedback) {
+                               bool should_show_send_feedback,
+                               bool should_show_run_network_tests) {
   ui_page_ = UIPage::ERROR;
   error_info_.emplace(error_info);
   should_show_send_feedback_ = should_show_send_feedback;
+  should_show_run_network_tests_ = should_show_run_network_tests;
   if (!message_host_) {
     if (app_start_pending_) {
       VLOG(2) << "ArcSupportHost::ShowError(" << error_info.error << ", "
               << error_info.arg.value_or(-1) << ", "
-              << should_show_send_feedback << ") is called before connection "
+              << should_show_send_feedback << ", "
+              << should_show_run_network_tests
+              << ") is called before connection "
               << "to ARC support Chrome app is established.";
       return;
     }
@@ -388,6 +398,8 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
 
   message_args.SetString(kErrorMessage, message);
   message_args.SetBoolean(kShouldShowSendFeedback, should_show_send_feedback);
+  message_args.SetBoolean(kShouldShowNetworkTests,
+                          should_show_run_network_tests);
   message_host_->SendMessage(message_args);
 }
 
@@ -456,7 +468,8 @@ void ArcSupportHost::SetMessageHost(arc::ArcSupportMessageHost* message_host) {
     Close();
   } else if (ui_page_ == UIPage::ERROR) {
     DCHECK(error_info_);
-    ShowError(error_info_.value(), should_show_send_feedback_);
+    ShowError(error_info_.value(), should_show_send_feedback_,
+              should_show_run_network_tests_);
   } else {
     ShowPage(ui_page_);
   }
@@ -522,6 +535,9 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.SetString(
       "buttonSendFeedback",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_SEND_FEEDBACK));
+  loadtime_data.SetString("buttonRunNetworkTests",
+                          l10n_util::GetStringUTF16(
+                              IDS_ARC_OPT_IN_DIALOG_BUTTON_RUN_NETWORK_TESTS));
   loadtime_data.SetString(
       "buttonRetry",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_RETRY));
@@ -797,6 +813,9 @@ void ArcSupportHost::OnMessage(const base::DictionaryValue& message) {
   } else if (event == kEventOnSendFeedbackClicked) {
     DCHECK(error_delegate_);
     error_delegate_->OnSendFeedbackClicked();
+  } else if (event == kEventOnRunNetworkTestsClicked) {
+    DCHECK(error_delegate_);
+    error_delegate_->OnRunNetworkTestsClicked();
   } else if (event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else {

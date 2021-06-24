@@ -55,6 +55,7 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   // Error page emulation.
   void ClickRetryButton();
   void ClickSendFeedbackButton();
+  void ClickRunNetworkTestsButton();
 
   bool metrics_mode() const { return metrics_mode_; }
   bool backup_and_restore_managed() const {
