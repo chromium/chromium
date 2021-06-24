@@ -31,6 +31,7 @@ class FederatedIdentitySharingPermissionContextFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_FACTORY_H_

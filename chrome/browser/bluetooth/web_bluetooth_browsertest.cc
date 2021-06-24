@@ -854,6 +854,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
     })()
   )"));
 
+  url::Origin origin =
+      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  permissions::BluetoothChooserContext* context =
+      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
+  auto objects = context->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, objects.size());
+  const auto first_object_key = context->GetKeyForObject(objects.at(0)->value);
+
   // Add a second listener on a different device which is used purely as an
   // indicator of how much to wait until we can be reasonably sure that the
   // second advertisement will not arrive.
@@ -881,11 +889,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   )"));
 
   // Number of granted objects should be 2.
-  url::Origin origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
-  permissions::BluetoothChooserContext* context =
-      BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  const auto objects = context->GetGrantedObjects(origin);
+  objects = context->GetGrantedObjects(origin);
   EXPECT_EQ(2u, objects.size());
 
   // Send first advertisement and wait for the event to be resolved.
@@ -895,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
             content::EvalJs(web_contents_, "first_device_promise"));
 
   // Revoke the permission.
-  context->RevokeObjectPermission(origin, objects.at(0)->value);
+  context->RevokeObjectPermission(origin, first_object_key);
   EXPECT_EQ(1ul, context->GetGrantedObjects(origin).size());
 
   // Send another advertisement after the permission was revoked, this

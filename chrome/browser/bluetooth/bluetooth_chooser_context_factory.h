@@ -19,6 +19,8 @@ class BluetoothChooserContextFactory
     : public BrowserContextKeyedServiceFactory {
  public:
   static permissions::BluetoothChooserContext* GetForProfile(Profile* profile);
+  static permissions::BluetoothChooserContext* GetForProfileIfExists(
+      Profile* profile);
   static BluetoothChooserContextFactory* GetInstance();
 
   // Move-only class.
@@ -38,6 +40,7 @@ class BluetoothChooserContextFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_FACTORY_H_

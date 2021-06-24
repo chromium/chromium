@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -38,12 +39,16 @@ class ObjectPermissionContextBase : public KeyedService {
            content_settings::SettingSource source,
            bool incognito);
     ~Object();
+    std::unique_ptr<Object> Clone();
 
     GURL origin;
     base::Value value;
     content_settings::SettingSource source;
     bool incognito;
   };
+
+  using ObjectMap =
+      std::map<url::Origin, std::map<std::string, std::unique_ptr<Object>>>;
 
   // This observer can be used to be notified of changes to the permission of
   // an object.
@@ -138,13 +143,8 @@ class ObjectPermissionContextBase : public KeyedService {
   // |host_content_settings_map_|.
   virtual bool HasGrantedObjects(const url::Origin& origin);
 
-  // Returns a string which is used to uniquely identify this object. If this
-  // method is extended by a subclass to return unique keys, the new key-based
-  // techniques will be used. Otherwise, class methods will fall back to the
-  // legacy behavior of matching via an object.
-  // TODO(https://crbug.com/1189682): This should be made fully virtual once
-  // backend is updated to make key-based methods more efficient.
-  virtual std::string GetKeyForObject(const base::Value& object);
+  // Returns a string which is used to uniquely identify this object.
+  virtual std::string GetKeyForObject(const base::Value& object) = 0;
 
   // Validates the structure of an object read from
   // |host_content_settings_map_|.
@@ -152,6 +152,11 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Gets the human-readable name for a given object.
   virtual std::u16string GetObjectDisplayName(const base::Value& object) = 0;
+
+  // Triggers the immediate flushing of all scheduled save setting operations.
+  // To be called when the host_content_settings_map_ is about to become
+  // unusable (e.g. browser context shutting down).
+  void FlushScheduledSaveSettingsCalls();
 
  protected:
   // TODO(odejesush): Use this method in all derived classes instead of using a
@@ -167,9 +172,28 @@ class ObjectPermissionContextBase : public KeyedService {
  private:
   base::Value GetWebsiteSetting(const url::Origin& origin,
                                 content_settings::SettingInfo* info);
-  void SetWebsiteSetting(const url::Origin& origin, base::Value value);
+  void SaveWebsiteSetting(const url::Origin& origin);
+  void ScheduleSaveWebsiteSetting(const url::Origin& origin);
+  virtual std::vector<std::unique_ptr<Object>> GetWebsiteSettingObjects();
+  void LoadWebsiteSettingsIntoObjects();
+
+  // Getter for `objects_` used to initialize the structure at first access.
+  // Never use the `objects_` member directly outside of this function.
+  ObjectMap& objects();
 
   HostContentSettingsMap* const host_content_settings_map_;
+
+  // In-memory cache that holds the granted objects. Lazy-initialized by first
+  // call to `objects()`.
+  ObjectMap objects_;
+
+  // Whether the `objects_` member was initialized;
+  bool objects_initialized_ = false;
+
+  // Origins that have a scheduled `SaveWebsiteSetting` call.
+  base::flat_set<url::Origin> origins_with_scheduled_save_settings_calls_;
+
+  base::WeakPtrFactory<ObjectPermissionContextBase> weak_factory_{this};
 };
 
 }  // namespace permissions

@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webid/federated_identity_request_permission_context.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -47,4 +48,10 @@ KeyedService*
 FederatedIdentityRequestPermissionContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new FederatedIdentityRequestPermissionContext(profile);
+}
+
+void FederatedIdentityRequestPermissionContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  GetForProfile(Profile::FromBrowserContext(context))
+      ->FlushScheduledSaveSettingsCalls();
 }

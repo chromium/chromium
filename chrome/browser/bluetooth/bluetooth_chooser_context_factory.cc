@@ -23,6 +23,13 @@ BluetoothChooserContextFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
+// static
+permissions::BluetoothChooserContext*
+BluetoothChooserContextFactory::GetForProfileIfExists(Profile* profile) {
+  return static_cast<permissions::BluetoothChooserContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
+}
+
 BluetoothChooserContextFactory::BluetoothChooserContextFactory()
     : BrowserContextKeyedServiceFactory(
           "BluetoothChooserContext",
@@ -40,4 +47,12 @@ KeyedService* BluetoothChooserContextFactory::BuildServiceInstanceFor(
 content::BrowserContext* BluetoothChooserContextFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+void BluetoothChooserContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* bluetooth_chooser_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (bluetooth_chooser_context)
+    bluetooth_chooser_context->FlushScheduledSaveSettingsCalls();
 }

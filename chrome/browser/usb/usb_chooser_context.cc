@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -413,6 +415,16 @@ void UsbChooserContext::RevokeObjectPermission(const url::Origin& origin,
   }
 
   RecordPermissionRevocation(WEBUSB_PERMISSION_REVOKED_EPHEMERAL);
+}
+
+std::string UsbChooserContext::GetKeyForObject(const base::Value& object) {
+  if (!IsValidObject(object))
+    return std::string();
+  return base::JoinString(
+      {base::NumberToString(*(object.FindIntKey(kVendorIdKey))),
+       base::NumberToString(*(object.FindIntKey(kProductIdKey))),
+       *(object.FindStringKey(kSerialNumberKey))},
+      "|");
 }
 
 bool UsbChooserContext::IsValidObject(const base::Value& object) {

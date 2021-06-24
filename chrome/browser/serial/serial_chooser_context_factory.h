@@ -15,6 +15,7 @@ class Profile;
 class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
  public:
   static SerialChooserContext* GetForProfile(Profile* profile);
+  static SerialChooserContext* GetForProfileIfExists(Profile* profile);
   static SerialChooserContextFactory* GetInstance();
 
  private:
@@ -28,6 +29,7 @@ class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 
   DISALLOW_COPY_AND_ASSIGN(SerialChooserContextFactory);
 };

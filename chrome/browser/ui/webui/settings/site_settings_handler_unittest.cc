@@ -2239,6 +2239,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
                                         ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kGoogleOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
+  auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
+  chooser_context->FlushScheduledSaveSettingsCalls();
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
   // WebUIListenerCallbacks for contentSettingSitePermissionChanged and
@@ -2286,6 +2288,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
                                         ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
+  chooser_context->FlushScheduledSaveSettingsCalls();
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
   // WebUIListenerCallbacks for contentSettingSitePermissionChanged and
@@ -2332,6 +2335,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
                                         ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
+  chooser_context->FlushScheduledSaveSettingsCalls();
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
   // WebUIListenerCallbacks for contentSettingSitePermissionChanged and

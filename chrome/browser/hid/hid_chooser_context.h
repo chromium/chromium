@@ -62,6 +62,7 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
       const device::mojom::HidDeviceInfo& device);
 
   // permissions::ObjectPermissionContextBase implementation:
+  std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   // In addition these methods from ObjectPermissionContextBase are overridden
   // in order to expose ephemeral devices through the public interface.

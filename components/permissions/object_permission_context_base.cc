@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -36,7 +38,9 @@ ObjectPermissionContextBase::ObjectPermissionContextBase(
   DCHECK(host_content_settings_map_);
 }
 
-ObjectPermissionContextBase::~ObjectPermissionContextBase() = default;
+ObjectPermissionContextBase::~ObjectPermissionContextBase() {
+  FlushScheduledSaveSettingsCalls();
+}
 
 ObjectPermissionContextBase::Object::Object(
     const url::Origin& origin,
@@ -49,6 +53,12 @@ ObjectPermissionContextBase::Object::Object(
       incognito(incognito) {}
 
 ObjectPermissionContextBase::Object::~Object() = default;
+
+std::unique_ptr<ObjectPermissionContextBase::Object>
+ObjectPermissionContextBase::Object::Clone() {
+  return std::make_unique<Object>(url::Origin::Create(origin), value.Clone(),
+                                  source, incognito);
+}
 
 void ObjectPermissionContextBase::PermissionObserver::OnObjectPermissionChanged(
     absl::optional<ContentSettingsType> guard_content_settings_type,
@@ -84,21 +94,16 @@ ObjectPermissionContextBase::GetGrantedObject(const url::Origin& origin,
   if (!CanRequestObjectPermission(origin))
     return nullptr;
 
-  content_settings::SettingInfo info;
-  base::Value setting = GetWebsiteSetting(origin, &info);
-
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects)
+  const auto& origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end())
     return nullptr;
 
-  for (auto& object : objects->GetList()) {
-    if (IsValidObject(object) && GetKeyForObject(object) == key) {
-      return std::make_unique<Object>(
-          origin, std::move(object), info.source,
-          host_content_settings_map_->IsOffTheRecord());
-    }
-  }
-  return nullptr;
+  const auto& object_it = origin_objects_it->second.find(std::string(key));
+
+  if (object_it == origin_objects_it->second.end())
+    return nullptr;
+
+  return object_it->second->Clone();
 }
 
 std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
@@ -106,26 +111,189 @@ ObjectPermissionContextBase::GetGrantedObjects(const url::Origin& origin) {
   if (!CanRequestObjectPermission(origin))
     return {};
 
-  content_settings::SettingInfo info;
-  base::Value setting = GetWebsiteSetting(origin, &info);
-
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects)
+  const auto& origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end())
     return {};
 
   std::vector<std::unique_ptr<Object>> results;
-  for (auto& object : objects->GetList()) {
-    if (IsValidObject(object)) {
-      results.push_back(std::make_unique<Object>(
-          origin, std::move(object), info.source,
-          host_content_settings_map_->IsOffTheRecord()));
-    }
-  }
+  for (const auto& object : origin_objects_it->second)
+    results.push_back(object.second->Clone());
+
   return results;
 }
 
 std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
 ObjectPermissionContextBase::GetAllGrantedObjects() {
+  std::vector<std::unique_ptr<Object>> results;
+  for (const auto& objects_entry : objects()) {
+    if (!CanRequestObjectPermission(objects_entry.first))
+      continue;
+
+    for (const auto& object : objects_entry.second)
+      results.push_back(object.second->Clone());
+  }
+  return results;
+}
+
+void ObjectPermissionContextBase::GrantObjectPermission(
+    const url::Origin& origin,
+    base::Value object) {
+  DCHECK(IsValidObject(object));
+
+  const std::string key = GetKeyForObject(object);
+
+  objects()[origin][key] = std::make_unique<Object>(
+      origin, std::move(object),
+      content_settings::SettingSource::SETTING_SOURCE_USER,
+      host_content_settings_map_->IsOffTheRecord());
+
+  ScheduleSaveWebsiteSetting(origin);
+  NotifyPermissionChanged();
+}
+
+void ObjectPermissionContextBase::UpdateObjectPermission(
+    const url::Origin& origin,
+    const base::Value& old_object,
+    base::Value new_object) {
+  auto origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end())
+    return;
+
+  std::string key = GetKeyForObject(old_object);
+  auto object_it = origin_objects_it->second.find(key);
+  if (object_it == origin_objects_it->second.end())
+    return;
+
+  origin_objects_it->second.erase(object_it);
+  key = GetKeyForObject(new_object);
+  DCHECK(!base::Contains(origin_objects_it->second, key));
+
+  GrantObjectPermission(origin, std::move(new_object));
+}
+
+void ObjectPermissionContextBase::RevokeObjectPermission(
+    const url::Origin& origin,
+    const base::Value& object) {
+  DCHECK(IsValidObject(object));
+
+  RevokeObjectPermission(origin, GetKeyForObject(object));
+}
+
+void ObjectPermissionContextBase::RevokeObjectPermission(
+    const url::Origin& origin,
+    const base::StringPiece key) {
+  auto origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end())
+    return;
+
+  auto object_it = origin_objects_it->second.find(std::string(key));
+  if (object_it == origin_objects_it->second.end())
+    return;
+
+  origin_objects_it->second.erase(object_it);
+
+  if (!origin_objects_it->second.size())
+    objects().erase(origin_objects_it);
+
+  ScheduleSaveWebsiteSetting(origin);
+  NotifyPermissionRevoked(origin);
+}
+
+bool ObjectPermissionContextBase::HasGrantedObjects(const url::Origin& origin) {
+  auto origin_objects_it = objects().find(origin);
+  return origin_objects_it != objects().end() &&
+         !origin_objects_it->second.empty();
+}
+
+void ObjectPermissionContextBase::FlushScheduledSaveSettingsCalls() {
+  // Persist any pending object updates that did not have the chance to be
+  // persisted yet.
+  while (!origins_with_scheduled_save_settings_calls_.empty()) {
+    const url::Origin origin =
+        *(origins_with_scheduled_save_settings_calls_.begin());
+    SaveWebsiteSetting(origin);
+  }
+}
+
+bool ObjectPermissionContextBase::IsOffTheRecord() {
+  return host_content_settings_map_->IsOffTheRecord();
+}
+
+void ObjectPermissionContextBase::NotifyPermissionChanged() {
+  for (auto& observer : permission_observer_list_) {
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
+  }
+}
+
+void ObjectPermissionContextBase::NotifyPermissionRevoked(
+    const url::Origin& origin) {
+  for (auto& observer : permission_observer_list_) {
+    observer.OnObjectPermissionChanged(guard_content_settings_type_,
+                                       data_content_settings_type_);
+    observer.OnPermissionRevoked(origin);
+  }
+}
+
+base::Value ObjectPermissionContextBase::GetWebsiteSetting(
+    const url::Origin& origin,
+    content_settings::SettingInfo* info) {
+  std::unique_ptr<base::Value> value =
+      host_content_settings_map_->GetWebsiteSetting(
+          origin.GetURL(), GURL(), data_content_settings_type_, info);
+  if (value)
+    return base::Value::FromUniquePtrValue(std::move(value));
+  return base::Value(base::Value::Type::DICTIONARY);
+}
+
+void ObjectPermissionContextBase::SaveWebsiteSetting(
+    const url::Origin& origin) {
+  auto scheduled_save_it =
+      origins_with_scheduled_save_settings_calls_.find(origin);
+  if (scheduled_save_it == origins_with_scheduled_save_settings_calls_.end()) {
+    // Another scheduled `SaveWebsiteSetting` call has handled this origin
+    // already.
+    return;
+  }
+  origins_with_scheduled_save_settings_calls_.erase(scheduled_save_it);
+
+  auto origin_objects_it = objects().find(origin);
+
+  if (origin_objects_it == objects().end()) {
+    host_content_settings_map_->SetWebsiteSettingDefaultScope(
+        origin.GetURL(), GURL(), data_content_settings_type_, nullptr);
+    return;
+  }
+
+  base::ListValue objects_list;
+  for (const auto& object : origin_objects_it->second) {
+    objects_list.Append(object.second->value.Clone());
+  }
+  base::DictionaryValue website_setting_value;
+  website_setting_value.SetKey(kObjectListKey, std::move(objects_list));
+  host_content_settings_map_->SetWebsiteSettingDefaultScope(
+      origin.GetURL(), GURL(), data_content_settings_type_,
+      base::Value::ToUniquePtrValue(std::move(website_setting_value)));
+}
+
+void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(
+    const url::Origin& origin) {
+  bool success =
+      origins_with_scheduled_save_settings_calls_.insert(origin).second;
+  if (!success) {
+    // There is already a scheduled `SaveWebsiteSetting` call, no need to
+    // schedule another.
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ObjectPermissionContextBase::SaveWebsiteSetting,
+                     weak_factory_.GetWeakPtr(), origin));
+}
+
+std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
+ObjectPermissionContextBase::GetWebsiteSettingObjects() {
   ContentSettingsForOneType content_settings;
   host_content_settings_map_->GetSettingsForOneType(data_content_settings_type_,
                                                     &content_settings);
@@ -165,147 +333,20 @@ ObjectPermissionContextBase::GetAllGrantedObjects() {
   return results;
 }
 
-void ObjectPermissionContextBase::GrantObjectPermission(
-    const url::Origin& origin,
-    base::Value object) {
-  DCHECK(IsValidObject(object));
-
-  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects) {
-    objects =
-        setting.SetKey(kObjectListKey, base::Value(base::Value::Type::LIST));
-  }
-
-  const std::string key = GetKeyForObject(object);
-
-  if (key.empty()) {
-    // Use the legacy behavior.
-    if (!base::Contains(objects->GetList(), object))
-      objects->Append(std::move(object));
-  } else {
-    base::Value::ListView object_list = objects->GetList();
-    auto it = base::ranges::find_if(object_list, [this, &key](auto& obj) {
-      return IsValidObject(obj) && GetKeyForObject(obj) == key;
-    });
-    if (it != object_list.end()) {
-      // Update object permission.
-      *it = std::move(object);
-    } else {
-      // Grant object permission.
-      objects->Append(std::move(object));
-    }
-  }
-
-  SetWebsiteSetting(origin, std::move(setting));
-  NotifyPermissionChanged();
-}
-
-void ObjectPermissionContextBase::UpdateObjectPermission(
-    const url::Origin& origin,
-    const base::Value& old_object,
-    base::Value new_object) {
-  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects)
-    return;
-
-  base::Value::ListView object_list = objects->GetList();
-  auto it = std::find(object_list.begin(), object_list.end(), old_object);
-  if (it == object_list.end())
-    return;
-
-  *it = std::move(new_object);
-  SetWebsiteSetting(origin, std::move(setting));
-  NotifyPermissionChanged();
-}
-
-void ObjectPermissionContextBase::RevokeObjectPermission(
-    const url::Origin& origin,
-    const base::Value& object) {
-  DCHECK(IsValidObject(object));
-
-  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects)
-    return;
-
-  base::Value::ListView object_list = objects->GetList();
-  auto it = std::find(object_list.begin(), object_list.end(), object);
-  if (it != object_list.end())
-    objects->EraseListIter(it);
-
-  SetWebsiteSetting(origin, std::move(setting));
-  NotifyPermissionRevoked(origin);
-}
-
-void ObjectPermissionContextBase::RevokeObjectPermission(
-    const url::Origin& origin,
-    const base::StringPiece key) {
-  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-  if (!objects)
-    return;
-
-  base::Value::ListView object_list = objects->GetList();
-  auto it = base::ranges::find_if(object_list, [this, &key](auto& object) {
-    return IsValidObject(object) && GetKeyForObject(object) == key;
-  });
-  if (it != object_list.end())
-    objects->EraseListIter(it);
-
-  SetWebsiteSetting(origin, std::move(setting));
-  NotifyPermissionRevoked(origin);
-}
-
-bool ObjectPermissionContextBase::HasGrantedObjects(const url::Origin& origin) {
-  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
-  base::Value* objects = setting.FindListKey(kObjectListKey);
-
-  return objects && !objects->GetList().empty();
-}
-
-std::string ObjectPermissionContextBase::GetKeyForObject(
-    const base::Value& object) {
-  return std::string();
-}
-
-bool ObjectPermissionContextBase::IsOffTheRecord() {
-  return host_content_settings_map_->IsOffTheRecord();
-}
-
-void ObjectPermissionContextBase::NotifyPermissionChanged() {
-  for (auto& observer : permission_observer_list_) {
-    observer.OnObjectPermissionChanged(guard_content_settings_type_,
-                                       data_content_settings_type_);
+void ObjectPermissionContextBase::LoadWebsiteSettingsIntoObjects() {
+  auto loaded_objects = GetWebsiteSettingObjects();
+  for (auto& object : loaded_objects) {
+    objects_[url::Origin::Create(object->origin)].emplace(
+        GetKeyForObject(object->value), std::move(object));
   }
 }
 
-void ObjectPermissionContextBase::NotifyPermissionRevoked(
-    const url::Origin& origin) {
-  for (auto& observer : permission_observer_list_) {
-    observer.OnObjectPermissionChanged(guard_content_settings_type_,
-                                       data_content_settings_type_);
-    observer.OnPermissionRevoked(origin);
+ObjectPermissionContextBase::ObjectMap& ObjectPermissionContextBase::objects() {
+  if (!objects_initialized_) {
+    LoadWebsiteSettingsIntoObjects();
+    objects_initialized_ = true;
   }
-}
-
-base::Value ObjectPermissionContextBase::GetWebsiteSetting(
-    const url::Origin& origin,
-    content_settings::SettingInfo* info) {
-  std::unique_ptr<base::Value> value =
-      host_content_settings_map_->GetWebsiteSetting(
-          origin.GetURL(), GURL(), data_content_settings_type_, info);
-  if (value)
-    return base::Value::FromUniquePtrValue(std::move(value));
-  return base::Value(base::Value::Type::DICTIONARY);
-}
-
-void ObjectPermissionContextBase::SetWebsiteSetting(const url::Origin& origin,
-                                                    base::Value value) {
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      origin.GetURL(), GURL(), data_content_settings_type_,
-      base::Value::ToUniquePtrValue(std::move(value)));
+  return objects_;
 }
 
 }  // namespace permissions

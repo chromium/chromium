@@ -22,6 +22,13 @@ HidChooserContext* HidChooserContextFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
+// static
+HidChooserContext* HidChooserContextFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<HidChooserContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
+}
+
 HidChooserContextFactory::HidChooserContextFactory()
     : BrowserContextKeyedServiceFactory(
           "HidChooserContext",
@@ -39,4 +46,12 @@ KeyedService* HidChooserContextFactory::BuildServiceInstanceFor(
 content::BrowserContext* HidChooserContextFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+void HidChooserContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* hid_chooser_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (hid_chooser_context)
+    hid_chooser_context->FlushScheduledSaveSettingsCalls();
 }

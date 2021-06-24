@@ -38,6 +38,7 @@ class SerialChooserContext : public permissions::ObjectPermissionContextBase,
   ~SerialChooserContext() override;
 
   // ObjectPermissionContextBase:
+  std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 

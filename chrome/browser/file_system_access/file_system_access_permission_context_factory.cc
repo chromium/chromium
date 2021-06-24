@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
@@ -53,4 +54,12 @@ FileSystemAccessPermissionContextFactory::GetBrowserContextToUse(
 KeyedService* FileSystemAccessPermissionContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new ChromeFileSystemAccessPermissionContext(profile);
+}
+
+void FileSystemAccessPermissionContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* permission_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (permission_context)
+    permission_context->FlushScheduledSaveSettingsCalls();
 }

@@ -15,6 +15,7 @@ class Profile;
 class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
  public:
   static HidChooserContext* GetForProfile(Profile* profile);
+  static HidChooserContext* GetForProfileIfExists(Profile* profile);
   static HidChooserContextFactory* GetInstance();
 
  private:
@@ -28,6 +29,7 @@ class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 
   DISALLOW_COPY_AND_ASSIGN(HidChooserContextFactory);
 };

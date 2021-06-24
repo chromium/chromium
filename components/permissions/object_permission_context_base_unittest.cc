@@ -21,46 +21,15 @@ namespace {
 const char* kRequiredKey1 = "key-1";
 const char* kRequiredKey2 = "key-2";
 
-// TODO(https://crbug.com/1189682): For as long as we support object-based
-// methods and extending GetKeyForObject is optional for base classes, this file
-// will be a bit complicated.
-// Currently:
-//   - object-based methods are TYPED_TESTs (GetKeyForObject extended/not)
-//   - key-based methods are TEST_Fs which only use
-//   TestKeyedObjectPermissionContext
-// Once object-based methods are removed, typed tests will no longer be needed.
-
-class TestNoKeyObjectPermissionContext : public ObjectPermissionContextBase {
+class TestObjectPermissionContext : public ObjectPermissionContextBase {
  public:
   // This class uses the USB content settings type for testing purposes only.
-  explicit TestNoKeyObjectPermissionContext(
-      content::BrowserContext* browser_context)
+  explicit TestObjectPermissionContext(content::BrowserContext* browser_context)
       : ObjectPermissionContextBase(
             ContentSettingsType::USB_GUARD,
             ContentSettingsType::USB_CHOOSER_DATA,
             PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
-  ~TestNoKeyObjectPermissionContext() override = default;
-
-  bool IsValidObject(const base::Value& object) override {
-    return object.DictSize() == 2 && object.FindKey(kRequiredKey1) &&
-           object.FindKey(kRequiredKey2);
-  }
-
-  std::u16string GetObjectDisplayName(const base::Value& object) override {
-    return {};
-  }
-};
-
-class TestKeyedObjectPermissionContext : public ObjectPermissionContextBase {
- public:
-  // This class uses the USB content settings type for testing purposes only.
-  explicit TestKeyedObjectPermissionContext(
-      content::BrowserContext* browser_context)
-      : ObjectPermissionContextBase(
-            ContentSettingsType::USB_GUARD,
-            ContentSettingsType::USB_CHOOSER_DATA,
-            PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
-  ~TestKeyedObjectPermissionContext() override = default;
+  ~TestObjectPermissionContext() override = default;
 
   bool IsValidObject(const base::Value& object) override {
     return object.DictSize() == 2 && object.FindKey(kRequiredKey1) &&
@@ -86,7 +55,8 @@ class ObjectPermissionContextBaseTest : public testing::Test {
         origin1_(url::Origin::Create(url1_)),
         origin2_(url::Origin::Create(url2_)),
         object1_(base::Value::Type::DICTIONARY),
-        object2_(base::Value::Type::DICTIONARY) {
+        object2_(base::Value::Type::DICTIONARY),
+        context_(browser_context()) {
     object1_.SetStringKey(kRequiredKey1, "value1");
     object1_.SetStringKey(kRequiredKey2, "value2");
     object2_.SetStringKey(kRequiredKey1, "value3");
@@ -109,272 +79,216 @@ class ObjectPermissionContextBaseTest : public testing::Test {
   const url::Origin origin2_;
   base::Value object1_;
   base::Value object2_;
+  TestObjectPermissionContext context_;
 };
 
-template <typename T>
-class ObjectPermissionContextBaseTypedTest
-    : public ObjectPermissionContextBaseTest {
- public:
-  ObjectPermissionContextBaseTypedTest()
-      : ObjectPermissionContextBaseTest(),
-        object_permission_context_(browser_context()) {}
-
-  ~ObjectPermissionContextBaseTypedTest() override = default;
-
- protected:
-  T object_permission_context_;
-};
-
-using TestObjectPermissionContext =
-    testing::Types<TestNoKeyObjectPermissionContext,
-                   TestKeyedObjectPermissionContext>;
-
-TYPED_TEST_SUITE(ObjectPermissionContextBaseTypedTest,
-                 TestObjectPermissionContext);
-
-// ----------------------------OBJECT-BASED METHODS-----------------------------
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest,
-           GrantAndRevokeObjectPermissions) {
+TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeObjectPermissions) {
   MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
+  context_.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object2_.Clone());
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object2_.Clone());
 
-  auto objects =
-      this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(2u, objects.size());
-  EXPECT_EQ(this->object1_, objects[0]->value);
-  EXPECT_EQ(this->object2_, objects[1]->value);
-
-  // Granting permission to one origin should not grant them to another.
-  objects = this->object_permission_context_.GetGrantedObjects(this->origin2_);
-  EXPECT_EQ(0u, objects.size());
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  EXPECT_CALL(mock_observer, OnPermissionRevoked(this->origin1_)).Times(2);
-  this->object_permission_context_.RevokeObjectPermission(this->origin1_,
-                                                          this->object1_);
-  this->object_permission_context_.RevokeObjectPermission(this->origin1_,
-                                                          this->object2_);
-  objects = this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(0u, objects.size());
-}
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest, GrantObjectPermissionTwice) {
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-
-  auto objects =
-      this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(1u, objects.size());
-  EXPECT_EQ(this->object1_, objects[0]->value);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
-  EXPECT_CALL(mock_observer, OnPermissionRevoked(this->origin1_));
-  this->object_permission_context_.RevokeObjectPermission(this->origin1_,
-                                                          this->object1_);
-  objects = this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(0u, objects.size());
-}
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest,
-           GrantAndUpdateObjectPermission) {
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-
-  auto objects =
-      this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(1u, objects.size());
-  EXPECT_EQ(this->object1_, objects[0]->value);
-
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
-  this->object_permission_context_.UpdateObjectPermission(
-      this->origin1_, objects[0]->value, this->object2_.Clone());
-
-  objects = this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(1u, objects.size());
-  EXPECT_EQ(this->object2_, objects[0]->value);
-}
-
-// UpdateObjectPermission() should not grant new permissions.
-TYPED_TEST(ObjectPermissionContextBaseTypedTest,
-           UpdateObjectPermissionWithNonExistentPermission) {
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  // Attempt to update permission for non-existent |this->object1_| permission.
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(0);
-  this->object_permission_context_.UpdateObjectPermission(
-      this->origin1_, this->object1_, this->object2_.Clone());
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  auto objects =
-      this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_TRUE(objects.empty());
-
-  // Grant permission for |this->object2_| but attempt to update permission for
-  // non-existent |this->object1_| permission again.
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object2_.Clone());
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(0);
-  this->object_permission_context_.UpdateObjectPermission(
-      this->origin1_, this->object1_, this->object2_.Clone());
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  objects = this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(1u, objects.size());
-  EXPECT_EQ(this->object2_, objects[0]->value);
-}
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest, GetAllGrantedObjects) {
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin2_, this->object2_.Clone());
-
-  auto objects = this->object_permission_context_.GetAllGrantedObjects();
-  EXPECT_EQ(2u, objects.size());
-  EXPECT_EQ(this->object1_, objects[0]->value);
-  EXPECT_EQ(this->object2_, objects[1]->value);
-}
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest,
-           GetGrantedObjectsWithGuardBlocked) {
-  auto* map = PermissionsClient::Get()->GetSettingsMap(this->browser_context());
-  map->SetContentSettingDefaultScope(this->url1_, this->url1_,
-                                     ContentSettingsType::USB_GUARD,
-                                     CONTENT_SETTING_BLOCK);
-
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin2_, this->object2_.Clone());
-
-  auto objects1 =
-      this->object_permission_context_.GetGrantedObjects(this->origin1_);
-  EXPECT_EQ(0u, objects1.size());
-
-  auto objects2 =
-      this->object_permission_context_.GetGrantedObjects(this->origin2_);
-  ASSERT_EQ(1u, objects2.size());
-  EXPECT_EQ(this->object2_, objects2[0]->value);
-}
-
-TYPED_TEST(ObjectPermissionContextBaseTypedTest,
-           GetAllGrantedObjectsWithGuardBlocked) {
-  auto* map = PermissionsClient::Get()->GetSettingsMap(this->browser_context());
-  map->SetContentSettingDefaultScope(this->url1_, this->url1_,
-                                     ContentSettingsType::USB_GUARD,
-                                     CONTENT_SETTING_BLOCK);
-
-  MockPermissionObserver mock_observer;
-  this->object_permission_context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin1_, this->object1_.Clone());
-  this->object_permission_context_.GrantObjectPermission(
-      this->origin2_, this->object2_.Clone());
-
-  auto objects = this->object_permission_context_.GetAllGrantedObjects();
-  ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(this->url2_, objects[0]->origin);
-  EXPECT_EQ(this->object2_, objects[0]->value);
-}
-
-// ------------------------------KEY-BASED METHODS------------------------------
-
-TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeObjectPermissions_Keyed) {
-  TestKeyedObjectPermissionContext context(browser_context());
-  MockPermissionObserver mock_observer;
-  context.AddObserver(&mock_observer);
-
-  auto object1_key = context.GetKeyForObject(object1_);
-  auto object2_key = context.GetKeyForObject(object2_);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  context.GrantObjectPermission(origin1_, object1_.Clone());
-  context.GrantObjectPermission(origin1_, object2_.Clone());
-
-  auto objects = context.GetGrantedObjects(origin1_);
+  auto objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(2u, objects.size());
   EXPECT_EQ(object1_, objects[0]->value);
   EXPECT_EQ(object2_, objects[1]->value);
 
   // Granting permission to one origin should not grant them to another.
-  objects = context.GetGrantedObjects(origin2_);
+  objects = context_.GetGrantedObjects(origin2_);
   EXPECT_EQ(0u, objects.size());
-
-  // Ensure objects can be retrieved individually.
-  EXPECT_EQ(object1_, context.GetGrantedObject(origin1_, object1_key)->value);
-  EXPECT_EQ(object2_, context.GetGrantedObject(origin1_, object2_key)->value);
 
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
   EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_)).Times(2);
-  context.RevokeObjectPermission(origin1_, object1_key);
-  context.RevokeObjectPermission(origin1_, object2_key);
-  EXPECT_EQ(nullptr, context.GetGrantedObject(origin1_, object1_key));
-  EXPECT_EQ(nullptr, context.GetGrantedObject(origin1_, object2_key));
-  objects = context.GetGrantedObjects(origin1_);
+  context_.RevokeObjectPermission(origin1_, object1_);
+  context_.RevokeObjectPermission(origin1_, object2_);
+  objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(0u, objects.size());
 }
 
-TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermissionTwice_Keyed) {
-  TestKeyedObjectPermissionContext context(browser_context());
+TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermissionTwice) {
   MockPermissionObserver mock_observer;
-  context.AddObserver(&mock_observer);
+  context_.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
-  context.GrantObjectPermission(origin1_, object1_.Clone());
-  context.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
 
-  auto objects = context.GetGrantedObjects(origin1_);
+  auto objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(1u, objects.size());
   EXPECT_EQ(object1_, objects[0]->value);
 
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
   EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
-  context.RevokeObjectPermission(origin1_, context.GetKeyForObject(object1_));
-  objects = context.GetGrantedObjects(origin1_);
+  context_.RevokeObjectPermission(origin1_, object1_);
+  objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(0u, objects.size());
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GrantAndUpdateObjectPermission) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+
+  auto objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(1u, objects.size());
+  EXPECT_EQ(object1_, objects[0]->value);
+
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
+  context_.UpdateObjectPermission(origin1_, objects[0]->value,
+                                  object2_.Clone());
+
+  objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(1u, objects.size());
+  EXPECT_EQ(object2_, objects[0]->value);
+}
+
+// UpdateObjectPermission() should not grant new permissions.
+TEST_F(ObjectPermissionContextBaseTest,
+       UpdateObjectPermissionWithNonExistentPermission) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  // Attempt to update permission for non-existent |object1_| permission.
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(0);
+  context_.UpdateObjectPermission(origin1_, object1_, object2_.Clone());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  auto objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_TRUE(objects.empty());
+
+  // Grant permission for |object2_| but attempt to update permission for
+  // non-existent |object1_| permission again.
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
+  context_.GrantObjectPermission(origin1_, object2_.Clone());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(0);
+  context_.UpdateObjectPermission(origin1_, object1_, object2_.Clone());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(1u, objects.size());
+  EXPECT_EQ(object2_, objects[0]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GetAllGrantedObjects) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+
+  auto objects = context_.GetAllGrantedObjects();
+  EXPECT_EQ(2u, objects.size());
+  EXPECT_EQ(object2_, objects[0]->value);
+  EXPECT_EQ(object1_, objects[1]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GetGrantedObjectsWithGuardBlocked) {
+  auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
+
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+
+  auto objects1 = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(0u, objects1.size());
+
+  auto objects2 = context_.GetGrantedObjects(origin2_);
+  ASSERT_EQ(1u, objects2.size());
+  EXPECT_EQ(object2_, objects2[0]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GetAllGrantedObjectsWithGuardBlocked) {
+  auto* map = PermissionsClient::Get()->GetSettingsMap(browser_context());
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
+
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+
+  auto objects = context_.GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(url2_, objects[0]->origin);
+  EXPECT_EQ(object2_, objects[0]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeObjectPermissions_Keyed) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  auto object1_key = context_.GetKeyForObject(object1_);
+  auto object2_key = context_.GetKeyForObject(object2_);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object2_.Clone());
+
+  auto objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(2u, objects.size());
+  EXPECT_EQ(object1_, objects[0]->value);
+  EXPECT_EQ(object2_, objects[1]->value);
+
+  // Granting permission to one origin should not grant them to another.
+  objects = context_.GetGrantedObjects(origin2_);
+  EXPECT_EQ(0u, objects.size());
+
+  // Ensure objects can be retrieved individually.
+  EXPECT_EQ(object1_, context_.GetGrantedObject(origin1_, object1_key)->value);
+  EXPECT_EQ(object2_, context_.GetGrantedObject(origin1_, object2_key)->value);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_)).Times(2);
+  context_.RevokeObjectPermission(origin1_, object1_key);
+  context_.RevokeObjectPermission(origin1_, object2_key);
+  EXPECT_EQ(nullptr, context_.GetGrantedObject(origin1_, object1_key));
+  EXPECT_EQ(nullptr, context_.GetGrantedObject(origin1_, object2_key));
+  objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(0u, objects.size());
+}
+
+TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermissionTwice_Keyed) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+
+  auto objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(1u, objects.size());
+  EXPECT_EQ(object1_, objects[0]->value);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
+  context_.RevokeObjectPermission(origin1_, context_.GetKeyForObject(object1_));
+  objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(0u, objects.size());
 }
 
 TEST_F(ObjectPermissionContextBaseTest, GrantAndUpdateObjectPermission_Keyed) {
-  TestKeyedObjectPermissionContext context(browser_context());
   MockPermissionObserver mock_observer;
-  context.AddObserver(&mock_observer);
+  context_.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
-  context.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
 
-  auto objects = context.GetGrantedObjects(origin1_);
+  auto objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(1u, objects.size());
   EXPECT_EQ(object1_, objects[0]->value);
 
@@ -388,9 +302,9 @@ TEST_F(ObjectPermissionContextBaseTest, GrantAndUpdateObjectPermission_Keyed) {
   EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _));
   // GrantObjectPermission will update an object if an object with the same key
   // already exists.
-  context.GrantObjectPermission(origin1_, new_object.Clone());
+  context_.GrantObjectPermission(origin1_, new_object.Clone());
 
-  objects = context.GetGrantedObjects(origin1_);
+  objects = context_.GetGrantedObjects(origin1_);
   EXPECT_EQ(1u, objects.size());
   EXPECT_EQ(new_object, objects[0]->value);
 }

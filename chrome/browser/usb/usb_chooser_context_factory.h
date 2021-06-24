@@ -15,6 +15,7 @@ class Profile;
 class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
  public:
   static UsbChooserContext* GetForProfile(Profile* profile);
+  static UsbChooserContext* GetForProfileIfExists(Profile* profile);
   static UsbChooserContextFactory* GetInstance();
 
  private:
@@ -28,6 +29,7 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 
   DISALLOW_COPY_AND_ASSIGN(UsbChooserContextFactory);
 };

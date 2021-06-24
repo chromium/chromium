@@ -303,6 +303,13 @@ WebBluetoothDeviceId BluetoothChooserContext::GetObjectDeviceId(
   return WebBluetoothDeviceId(device_id_str);
 }
 
+std::string BluetoothChooserContext::GetKeyForObject(
+    const base::Value& object) {
+  if (!IsValidObject(object))
+    return std::string();
+  return *(object.FindStringKey(kWebBluetoothDeviceIdKey));
+}
+
 bool BluetoothChooserContext::IsValidObject(const base::Value& object) {
   return object.FindStringKey(kDeviceAddressKey) &&
          object.FindStringKey(kDeviceNameKey) &&

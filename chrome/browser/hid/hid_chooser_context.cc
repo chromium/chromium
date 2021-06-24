@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -99,6 +101,16 @@ std::u16string HidChooserContext::GetObjectDisplayName(
   const std::string* name = object.FindStringKey(kHidDeviceNameKey);
   DCHECK(name);
   return base::UTF8ToUTF16(*name);
+}
+
+std::string HidChooserContext::GetKeyForObject(const base::Value& object) {
+  if (!IsValidObject(object))
+    return std::string();
+  return base::JoinString(
+      {base::NumberToString(*(object.FindIntKey(kHidVendorIdKey))),
+       base::NumberToString(*(object.FindIntKey(kHidProductIdKey))),
+       *(object.FindStringKey(kHidSerialNumberKey))},
+      "|");
 }
 
 bool HidChooserContext::IsValidObject(const base::Value& object) {

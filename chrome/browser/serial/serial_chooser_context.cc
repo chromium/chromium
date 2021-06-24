@@ -9,6 +9,8 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -153,6 +155,23 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
       is_incognito_(profile->IsOffTheRecord()) {}
 
 SerialChooserContext::~SerialChooserContext() = default;
+
+std::string SerialChooserContext::GetKeyForObject(const base::Value& object) {
+  if (!IsValidObject(object))
+    return std::string();
+#if defined(OS_WIN)
+  return *(object.FindStringKey(kDeviceInstanceIdKey));
+#else
+  std::vector<std::string> key_pieces{
+      base::NumberToString(*(object.FindIntKey(kVendorIdKey))),
+      base::NumberToString(*(object.FindIntKey(kProductIdKey))),
+      *(object.FindStringKey(kSerialNumberKey))};
+#if defined(OS_MAC)
+  key_pieces.push_back(*(object.FindStringKey(kUsbDriverKey)));
+#endif  // defined(OS_MAC)
+  return base::JoinString(key_pieces, "|");
+#endif  // defined(OS_WIN)
+}
 
 bool SerialChooserContext::IsValidObject(const base::Value& object) {
   if (!object.is_dict() || !object.FindStringKey(kPortNameKey))

@@ -53,6 +53,7 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
+  std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
