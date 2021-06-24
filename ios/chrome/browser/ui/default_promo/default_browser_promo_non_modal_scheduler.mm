@@ -124,7 +124,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
-    _browserObserver = std::make_unique<BrowserObserverBridge>(self);
   }
   return self;
 }
@@ -226,7 +225,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 - (void)setBrowser:(Browser*)browser {
   if (_browser) {
-    _browser->RemoveObserver(_browserObserver.get());
     self.webStateList = nullptr;
     self.overlayPresenter = nullptr;
   }
@@ -234,7 +232,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   _browser = browser;
 
   if (_browser) {
-    _browser->AddObserver(_browserObserver.get());
+    _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     self.webStateList = _browser->GetWebStateList();
     self.overlayPresenter = OverlayPresenter::FromBrowser(
         _browser, OverlayModality::kInfobarBanner);

@@ -8,11 +8,15 @@
 #error "This file requires ARC support."
 #endif
 
-BrowserObserverBridge::BrowserObserverBridge(id<BrowserObserving> observer)
-    : observer_(observer) {}
+BrowserObserverBridge::BrowserObserverBridge(Browser* browser,
+                                             id<BrowserObserving> observer)
+    : observer_(observer) {
+  browser_observation_.Observe(browser);
+}
 
 BrowserObserverBridge::~BrowserObserverBridge() {}
 
 void BrowserObserverBridge::BrowserDestroyed(Browser* browser) {
   [observer_ browserDestroyed:browser];
+  browser_observation_.Reset();
 }

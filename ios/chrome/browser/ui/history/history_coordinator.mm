@@ -81,8 +81,8 @@
   }
 
   DCHECK(!_browserObserver);
-  _browserObserver = std::make_unique<BrowserObserverBridge>(self);
-  self.browser->AddObserver(_browserObserver.get());
+  _browserObserver =
+      std::make_unique<BrowserObserverBridge>(self.browser, self);
 
   // Initialize and set HistoryMediator
   self.mediator = [[HistoryMediator alloc]
@@ -144,8 +144,6 @@
   self.sharingCoordinator = nil;
 
   if (_browserObserver) {
-    DCHECK(self.browser);
-    self.browser->RemoveObserver(_browserObserver.get());
     _browserObserver.reset();
   }
 
@@ -273,8 +271,6 @@
 - (void)browserDestroyed:(Browser*)browser {
   DCHECK_EQ(browser, self.browser);
   self.historyTableViewController.browser = nil;
-  browser->RemoveObserver(_browserObserver.get());
-  _browserObserver.reset();
 }
 
 #pragma mark - Private
