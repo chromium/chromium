@@ -842,7 +842,7 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        barrier_closure));
 
-  job_coordinator()->Abort(options1.scope);
+  job_coordinator()->Abort(options1.scope, key1);
 
   run_loop.Run();
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
@@ -14,12 +15,9 @@
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
-
-namespace blink {
-class StorageKey;
-}  // namespace blink
 
 namespace content {
 
@@ -57,14 +55,20 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
   // Calls ServiceWorkerRegisterJobBase::Abort() on the specified jobs (all jobs
   // for a given scope, or all jobs entirely) and removes them.
-  void Abort(const GURL& scope);
+  void Abort(const GURL& scope, const blink::StorageKey& key);
   void AbortAll();
 
   // Removes the job. A job that was not aborted must call FinishJob when it is
   // done.
-  void FinishJob(const GURL& scope, ServiceWorkerRegisterJobBase* job);
+  void FinishJob(const GURL& scope,
+                 const blink::StorageKey& key,
+                 ServiceWorkerRegisterJobBase* job);
 
  private:
+  // A given service worker's registration is uniqely identified by the scope
+  // url and the storage key.
+  using UniqueRegistrationKey = std::pair<GURL, blink::StorageKey>;
+
   class JobQueue {
    public:
     JobQueue();
@@ -96,8 +100,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
-  // TODO(crbug.com/1199077): The job_queues_ should be split on key + scope.
-  std::map<GURL, JobQueue> job_queues_;
+  std::map<UniqueRegistrationKey, JobQueue> job_queues_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerJobCoordinator);
 };

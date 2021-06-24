@@ -750,7 +750,7 @@ void ServiceWorkerRegisterJob::Complete(blink::ServiceWorkerStatusCode status) {
 void ServiceWorkerRegisterJob::Complete(blink::ServiceWorkerStatusCode status,
                                         const std::string& status_message) {
   CompleteInternal(status, status_message);
-  context_->job_coordinator()->FinishJob(scope_, this);
+  context_->job_coordinator()->FinishJob(scope_, key_, this);
 }
 
 void ServiceWorkerRegisterJob::CompleteInternal(

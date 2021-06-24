@@ -88,7 +88,7 @@ void ServiceWorkerUnregisterJob::Complete(
     int64_t registration_id,
     blink::ServiceWorkerStatusCode status) {
   CompleteInternal(registration_id, status);
-  context_->job_coordinator()->FinishJob(scope_, this);
+  context_->job_coordinator()->FinishJob(scope_, key_, this);
 }
 
 void ServiceWorkerUnregisterJob::CompleteInternal(

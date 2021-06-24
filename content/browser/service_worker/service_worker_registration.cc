@@ -560,7 +560,7 @@ void ServiceWorkerRegistration::ForceDelete() {
   scoped_refptr<ServiceWorkerRegistration> protect(this);
 
   // Abort any queued or running jobs for this registration.
-  context_->job_coordinator()->Abort(scope());
+  context_->job_coordinator()->Abort(scope(), key());
 
   // The rest of this function is similar to Clear() but is slightly different
   // because this emergency deletion isn't part of the spec and happens

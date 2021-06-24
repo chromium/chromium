@@ -608,7 +608,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
       uninstalling_registrations =
           registry()->GetUninstallingRegistrationsForStorageKey(key);
   for (const auto& uninstalling_registration : uninstalling_registrations) {
-    job_coordinator_->Abort(uninstalling_registration->scope());
+    job_coordinator_->Abort(uninstalling_registration->scope(), key);
     uninstalling_registration->DeleteAndClearImmediately();
   }
 
@@ -639,7 +639,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
         barrier.Run(blink::ServiceWorkerStatusCode::kOk);
       }
     }
-    job_coordinator_->Abort(registration->scope());
+    job_coordinator_->Abort(registration->scope(), key);
     UnregisterServiceWorker(registration->scope(), key, /*is_immediate=*/true,
                             barrier);
   }
