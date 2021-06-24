@@ -17,14 +17,18 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
+using Sample = SignalDatabase::Sample;
+
 namespace {
-std::vector<float> SumCountAggregation(
-    const std::vector<SignalDatabase::Sample>& samples) {
+std::vector<float> SumCountAggregation(const std::vector<Sample>& samples) {
   return std::vector<float>{samples.size()};
 }
 
-std::vector<float> SumValuesAggregation(
-    const std::vector<SignalDatabase::Sample>& samples) {
+std::vector<float> SumValuesAggregation(proto::SignalType signal_type,
+                                        const std::vector<Sample>& samples) {
+  if (signal_type == proto::SignalType::USER_ACTION)
+    return SumCountAggregation(samples);
+
   float sum = 0;
   for (auto& sample : samples)
     sum += sample.second.value();
@@ -48,7 +52,7 @@ std::vector<float> FeatureAggregatorImpl::Process(
     case proto::Aggregation::SUM_COUNT:
       return SumCountAggregation(samples);
     case proto::Aggregation::SUM_VALUES:
-      return SumValuesAggregation(samples);
+      return SumValuesAggregation(signal_type, samples);
     case proto::Aggregation::BUCKETED_COUNT:
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN:
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT:

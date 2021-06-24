@@ -89,7 +89,7 @@ void SignalDatabaseImpl::GetSamples(proto::SignalType signal_type,
                                     uint64_t name_hash,
                                     base::Time start_time,
                                     base::Time end_time,
-                                    SampleCallback callback) {
+                                    SamplesCallback callback) {
   SignalKey dummy_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                       name_hash, base::Time(), base::Time());
   std::string key_prefix = dummy_key.GetPrefixInBinary();
@@ -103,12 +103,12 @@ void SignalDatabaseImpl::GetSamples(proto::SignalType signal_type,
 }
 
 void SignalDatabaseImpl::OnGetSamples(
-    SampleCallback callback,
+    SamplesCallback callback,
     base::Time start_time,
     base::Time end_time,
     bool success,
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
-  std::vector<std::pair<base::Time, absl::optional<int32_t>>> out;
+  std::vector<Sample> out;
   if (!success || !entries) {
     std::move(callback).Run(out);
     return;

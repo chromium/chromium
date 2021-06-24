@@ -49,7 +49,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                   uint64_t name_hash,
                   base::Time start_time,
                   base::Time end_time,
-                  SampleCallback callback) override;
+                  SamplesCallback callback) override;
   void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
                      base::Time end_time,
@@ -64,7 +64,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                              leveldb_proto::Enums::InitStatus status);
 
   void OnGetSamples(
-      SampleCallback callback,
+      SamplesCallback callback,
       base::Time start_time,
       base::Time end_time,
       bool success,

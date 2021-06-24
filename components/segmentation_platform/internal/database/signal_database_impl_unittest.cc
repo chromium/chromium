@@ -16,11 +16,8 @@ bool IsWithinOneSecond(base::Time t1, base::Time t2) {
   return (t1 - t2).magnitude() < base::TimeDelta::FromSeconds(1);
 }
 
-void CheckVectorsEqual(
-    const std::vector<std::pair<base::Time, absl::optional<int32_t>>>&
-        expected_list,
-    const std::vector<std::pair<base::Time, absl::optional<int32_t>>>&
-        actual_list) {
+void CheckVectorsEqual(const std::vector<SignalDatabase::Sample>& expected_list,
+                       const std::vector<SignalDatabase::Sample>& actual_list) {
   EXPECT_EQ(expected_list.size(), actual_list.size());
   unsigned int equal_count = 0;
   for (const auto& expected : expected_list) {
@@ -40,8 +37,7 @@ class SignalDatabaseImplTest : public testing::Test {
   SignalDatabaseImplTest() = default;
   ~SignalDatabaseImplTest() override = default;
 
-  void OnGetSamples(
-      std::vector<std::pair<base::Time, absl::optional<int32_t>>> samples) {
+  void OnGetSamples(std::vector<SignalDatabase::Sample> samples) {
     get_samples_result_ = samples;
   }
 
@@ -70,8 +66,7 @@ class SignalDatabaseImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock test_clock_;
-  std::vector<std::pair<base::Time, absl::optional<int32_t>>>
-      get_samples_result_;
+  std::vector<SignalDatabase::Sample> get_samples_result_;
   std::map<std::string, proto::SignalData> db_entries_;
   leveldb_proto::test::FakeDB<proto::SignalData>* db_{nullptr};
   std::unique_ptr<SignalDatabaseImpl> signal_db_;

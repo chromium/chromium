@@ -25,7 +25,7 @@ class SignalDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using Sample = std::pair<base::Time, absl::optional<int32_t>>;
-  using SampleCallback = base::OnceCallback<void(std::vector<Sample>)>;
+  using SamplesCallback = base::OnceCallback<void(std::vector<Sample>)>;
 
   virtual ~SignalDatabase() = default;
 
@@ -47,7 +47,7 @@ class SignalDatabase {
                           uint64_t name_hash,
                           base::Time start_time,
                           base::Time end_time,
-                          SampleCallback callback) = 0;
+                          SamplesCallback callback) = 0;
 
   // Called to delete database entries having end time earlier than |end_time|.
   virtual void DeleteSamples(proto::SignalType signal_type,
