@@ -28,7 +28,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
     const GURL& script_url,
     const GURL& scope,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     int64_t registration_id,
     int64_t version_id,
     int process_id,
@@ -36,7 +36,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int devtools_agent_route_id,
     ukm::SourceId ukm_source_id)
     : ServiceWorkerVersionBaseInfo(scope,
-                                   origin,
+                                   storage_key,
                                    registration_id,
                                    version_id,
                                    process_id),

@@ -98,7 +98,7 @@ void CookieStoreContext::CreateServiceForWorker(
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
   storage_partition->GetCookieStoreContext()->CreateServiceForTesting(
-      info.origin, std::move(receiver));
+      info.storage_key.origin(), std::move(receiver));
 }
 
 void CookieStoreContext::CreateServiceForTesting(

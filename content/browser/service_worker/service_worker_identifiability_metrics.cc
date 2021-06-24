@@ -24,11 +24,12 @@ void ServiceWorkerIdentifiabilityMetrics::OnNewLiveVersion(
   auto version_it = version_map_.find(version_id);
   if (version_it != version_map_.end()) {
     DCHECK_EQ(version_it->second.ukm_source_id, version_info.ukm_source_id);
-    DCHECK_EQ(version_it->second.origin, version_info.origin.GetURL());
+    DCHECK_EQ(version_it->second.origin,
+              version_info.storage_key.origin().GetURL());
     return;
   }
 
-  GURL origin = version_info.origin.GetURL();
+  GURL origin = version_info.storage_key.origin().GetURL();
   version_map_.emplace(version_id, VersionIdentifiabilityInfo(
                                        version_info.ukm_source_id, origin));
 

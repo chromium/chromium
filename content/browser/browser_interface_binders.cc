@@ -477,7 +477,7 @@ BindServiceWorkerReceiverForOrigin(
              const url::Origin&, mojo::PendingReceiver<Interface>),
          const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
-        auto origin = info.origin;
+        auto origin = info.storage_key.origin();
         RunOrPostTaskToBindServiceWorkerReceiver<
             const url::Origin&, mojo::PendingReceiver<Interface>>(
             host, method, origin, std::move(receiver));
@@ -499,7 +499,7 @@ BindServiceWorkerReceiverForOriginAndFrameId(
              int, const url::Origin&, mojo::PendingReceiver<Interface>),
          const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
-        auto origin = info.origin;
+        auto origin = info.storage_key.origin();
         RunOrPostTaskToBindServiceWorkerReceiver<
             int, const url::Origin&, mojo::PendingReceiver<Interface>>(
             host, method, MSG_ROUTING_NONE, origin, std::move(receiver));

@@ -52,9 +52,7 @@ void BackgroundFetchServiceImpl::CreateForWorker(
           WrapRefCounted(static_cast<StoragePartitionImpl*>(
                              render_process_host->GetStoragePartition())
                              ->GetBackgroundFetchContext()),
-          // TODO(https://crbug.com/1199077): Pass directly the worker's
-          // StorageKey when we will have it.
-          blink::StorageKey(info.origin),
+          info.storage_key,
           /* render_frame_tree_node_id= */ 0,
           /* wc_getter= */ base::NullCallback(), std::move(receiver)));
 }

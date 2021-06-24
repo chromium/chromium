@@ -385,7 +385,7 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   ServiceWorkerVersionInfo info(
       running_status(), status(), fetch_handler_existence(), script_url(),
-      scope(), key().origin(), registration_id(), version_id(),
+      scope(), key(), registration_id(), version_id(),
       embedded_worker()->process_id(), embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id());
   for (const auto& controllee : controllee_map_) {
