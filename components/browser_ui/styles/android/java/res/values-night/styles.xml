@@ -10,9 +10,13 @@
         <item name="android:colorBackground">@color/modern_grey_900</item>
         <item name="colorSurface">@color/modern_grey_900</item>
         <item name="colorOnBackground">@color/modern_white</item>
+        <item name="colorOnSurface">@color/modern_grey_100</item>
         <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
         <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>
         <item name="android:textColorPrimary">?attr/colorOnBackground</item>
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/modern_grey_200</item>
+        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
     </style>
 </resources>

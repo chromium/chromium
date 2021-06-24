@@ -6,9 +6,8 @@
 <resources>
     <!-- The windowLightStatusBar attribute was added in API 23, but we avoid using it via XML prior
          to 28 due to: https://crbug.com/884144 and https://crbug.com/1014844 -->
-    <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings">
-        <item name="android:statusBarColor">@color/default_bg_color</item>
+    <style name="Theme.Chromium.Settings" parent="Base.V27.Theme.Chromium.Settings">
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
 </resources>
-

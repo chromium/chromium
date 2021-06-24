@@ -9,7 +9,8 @@
     android:width="20dp"
     android:height="20dp"
     android:viewportHeight="24.0"
-    android:viewportWidth="24.0">
+    android:viewportWidth="24.0"
+    android:tint="?attr/colorControlNormal">
 
     <path
         android:fillColor="@color/default_icon_color"

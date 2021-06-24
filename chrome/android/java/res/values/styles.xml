@@ -11,20 +11,6 @@
     <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI" />
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
 
-    <style name="Base.Theme.Chromium.WithActionBar">
-        <!-- With ActionBar -->
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
-
-        <!-- We override actionBarTheme because actionBarStyle does not affect the title text color
-             when we use a MaterialComponents based app theme. -->
-        <item name="actionBarTheme">@style/ActionBarThemeOverlay</item>
-    </style>
-
-    <style name="ActionBarThemeOverlay" parent="ThemeOverlay.MaterialComponents.ActionBar">
-        <item name="android:textColorPrimary">@color/default_text_color</item>
-    </style>
-
     <style name="Base.Theme.Chromium.WithWindowAnimation">
         <item name="android:windowContentOverlay">@null</item>
 
@@ -41,7 +27,6 @@
     <style name="Theme.Chromium" parent="Base.Theme.Chromium" />
     <style name="Theme.Chromium.WithWindowAnimation"
         parent="Base.Theme.Chromium.WithWindowAnimation" />
-    <style name="Theme.Chromium.WithActionBar" parent="Base.Theme.Chromium.WithActionBar" />
 
     <!-- Activity themes -->
     <style name="Theme.Chromium.Activity" parent="Theme.Chromium.WithWindowAnimation" />
@@ -98,25 +83,28 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <style name="Base.Theme.Chromium.Settings" parent="Theme.Chromium.WithActionBar">
-        <item name="actionBarStyle">@style/SettingsActionBarModern</item>
+    <style name="Base.Theme.Chromium.Settings" parent="Theme.Chromium">
+        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="toolbarStyle">@style/SettingsToolbarStyle</item>
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
 
         <!-- Text style attributes used by the preference_material.xml layout. -->
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
-
-    <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
+    <style name="Base.V27.Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
+    <style name="Theme.Chromium.Settings" parent="Base.V27.Theme.Chromium.Settings" />
 
     <style name="Theme.Chromium.Settings.ManageSpace">
-        <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193. -->
-        <item name="colorSurface">@color/dark_action_bar_color</item>
+        <!-- With ActionBar -->
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
         <!-- Status bar color -->
         <item name="colorPrimaryDark">@color/dark_status_bar_color</item>
+        <item name="toolbarStyle">@style/ManageSpaceToolbarStyle</item>
         <item name="actionBarStyle">@style/ManageSpaceActionBarModern</item>
-        <item name="actionBarTheme">@style/ManageSpaceActionBarThemeOverlay</item>
     </style>
 
     <!-- Trusted Web Activities -->
@@ -156,8 +144,10 @@
     </style>
 
     <!-- Settings -->
-    <style name="SettingsActionBarModern" parent="@style/Widget.MaterialComponents.ActionBar.Surface">
-        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary</item>
+    <style name="SettingsToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.AccessibilityTextPreference">
@@ -165,11 +155,13 @@
     </style>
 
     <!-- Manage Space Activity styles -->
-    <style name="ManageSpaceActionBarModern" parent="SettingsActionBarModern">
+    <style name="ManageSpaceActionBarModern" parent="Widget.MaterialComponents.ActionBar.Primary">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Light</item>
+        <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193. -->
+        <item name="background">@color/dark_action_bar_color</item>
     </style>
-    <style name="ManageSpaceActionBarThemeOverlay" parent="ActionBarThemeOverlay">
-        <item name="android:textColorPrimary">@color/default_text_color_light</item>
+    <style name="ManageSpaceToolbarStyle" parent="SettingsToolbarStyle">
+        <item name="titleTextColor">@color/default_text_color_light</item>
     </style>
     <style name="ManageSpaceActivityButton">
       <item name="android:layout_width">wrap_content</item>

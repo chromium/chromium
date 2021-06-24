@@ -15,6 +15,7 @@
          tracked in https://crbug.com/1216204. -->
     <attr name="colorOnSurfaceVariant" format="color"/>
     <attr name="colorOnSurfaceInverse" format="color"/>
+    <attr name="elevationOverlayAccentColor" format="color"/>
 
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
