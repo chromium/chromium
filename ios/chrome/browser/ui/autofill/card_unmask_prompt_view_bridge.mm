@@ -42,7 +42,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCVC = kItemTypeEnumZero,
   ItemTypeStatus,
-  ItemTypeStorageSwitch,
 };
 
 }  // namespace
@@ -127,7 +126,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   UIBarButtonItem* _verifyButton;
   CVCItem* _CVCItem;
   StatusItem* _statusItem;
-  CollectionViewSwitchItem* _storageSwitchItem;
 
   // Owns |self|.
   autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
@@ -215,7 +213,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   _CVCItem.instructionsText = instructions;
   _CVCItem.CVCImageResourceID = CVCImageResourceID;
   [model addItem:_CVCItem toSectionWithIdentifier:SectionIdentifierMain];
-  _storageSwitchItem = nil;
 
   // No status item when loading the model.
   _statusItem = nil;
@@ -317,19 +314,12 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   const CGFloat preferredHeightForCVC =
       [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
                                                 forItem:_CVCItem];
-  CGFloat preferredHeightForStorageSwitch = 0;
-  if (_storageSwitchItem) {
-    preferredHeightForStorageSwitch =
-        [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
-                                                  forItem:_storageSwitchItem];
-  }
   const CGFloat preferredHeightForStatus =
       [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
                                                 forItem:_statusItem];
   // Return the size of the replaced content, but make sure it is at least the
   // minimal status cell height.
-  return MAX(preferredHeightForCVC + preferredHeightForStorageSwitch,
-             preferredHeightForStatus);
+  return MAX(preferredHeightForCVC, preferredHeightForStatus);
 }
 
 - (BOOL)inputCVCIsValid:(CVCItem*)item {
@@ -376,20 +366,16 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
 }
 
 - (void)focusInputIfNeeded:(CVCCell*)CVC {
-  // Focus the first visible input, unless the orientation is landscape. In
-  // landscape, the keyboard covers up the storage checkbox shown below this
-  // view and the user might never see it.
-  if (UIInterfaceOrientationIsPortrait(GetInterfaceOrientation())) {
-    // Also check whether any of the inputs are already the first responder and
-    // are non-empty, in which case the focus should be left there.
-    if ((!CVC.monthInput.isFirstResponder || CVC.monthInput.text.length == 0) &&
-        (!CVC.yearInput.isFirstResponder || CVC.yearInput.text.length == 0) &&
-        (!CVC.CVCInput.isFirstResponder || CVC.CVCInput.text.length == 0)) {
-      if (_CVCItem.showDateInput) {
-        [CVC.monthInput becomeFirstResponder];
-      } else {
-        [CVC.CVCInput becomeFirstResponder];
-      }
+  // Focus the first visible input. Also check whether any of the inputs are
+  // already the first responder and are non-empty, in which case the focus
+  // should be left there.
+  if ((!CVC.monthInput.isFirstResponder || CVC.monthInput.text.length == 0) &&
+      (!CVC.yearInput.isFirstResponder || CVC.yearInput.text.length == 0) &&
+      (!CVC.CVCInput.isFirstResponder || CVC.CVCInput.text.length == 0)) {
+    if (_CVCItem.showDateInput) {
+      [CVC.monthInput becomeFirstResponder];
+    } else {
+      [CVC.CVCInput becomeFirstResponder];
     }
   }
 }
@@ -415,17 +401,12 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   controller->OnUnmaskPromptAccepted(
       base::SysNSStringToUTF16(_CVCItem.CVCText),
       base::SysNSStringToUTF16(_CVCItem.monthText),
-      base::SysNSStringToUTF16(yearText), _storageSwitchItem.on,
+      base::SysNSStringToUTF16(yearText), /*should_store_pan=*/false,
       /*enable_fido_auth=*/false);
 }
 
 - (void)onCancel:(id)sender {
   _bridge->PerformClose();
-}
-
-- (void)onStorageSwitchChanged:(UISwitch*)switchView {
-  // Update the item.
-  _storageSwitchItem.on = switchView.on;
 }
 
 - (void)onNewCardLinkTapped:(UIButton*)button {
@@ -516,17 +497,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
       [cellForCVC.buttonForNewCard addTarget:self
                                       action:@selector(onNewCardLinkTapped:)
                             forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-    case ItemTypeStorageSwitch: {
-      CollectionViewSwitchCell* storageSwitchCell =
-          base::mac::ObjCCastStrict<CollectionViewSwitchCell>(cell);
-      storageSwitchCell.textLabel.font = [MDCTypography body2Font];
-      storageSwitchCell.textLabel.textColor =
-          [UIColor colorNamed:kTextSecondaryColor];
-      [storageSwitchCell.switchView addTarget:self
-                                       action:@selector(onStorageSwitchChanged:)
-                             forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:
