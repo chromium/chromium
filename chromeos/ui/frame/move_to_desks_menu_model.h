@@ -15,7 +15,7 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   // The command id for showing the Move to Desks menu. This is an arbitrary
   // number that must not collide with other command ids. If this needs to be
   // updated, choose an unused number.
-  static constexpr int kMenuCommandId = 40985;
+  static constexpr int kMenuCommandId = 40800;
 
   // If `add_title` is true, a title will be added to the Move to Desks menu.
   // Should be set to true if this is a standalone menu and not a submenu.
@@ -26,16 +26,19 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   MoveToDesksMenuModel& operator=(const MoveToDesksMenuModel&) = delete;
   ~MoveToDesksMenuModel() override;
 
+  // To avoid colliding with other command ids, start the sequence of command
+  // ids from |kMenuCommandId| + 1. Also give them explicit values to make the
+  // command ids more discoverable. See crbug.com/1222475.
   enum CommandId {
-    MOVE_TO_DESK_1 = 1,
-    MOVE_TO_DESK_2 = 2,
-    MOVE_TO_DESK_3 = 3,
-    MOVE_TO_DESK_4 = 4,
-    MOVE_TO_DESK_5 = 5,
-    MOVE_TO_DESK_6 = 6,
-    MOVE_TO_DESK_7 = 7,
-    MOVE_TO_DESK_8 = 8,
-    TOGGLE_ASSIGN_TO_ALL_DESKS = 9,
+    MOVE_TO_DESK_1 = 40801,
+    MOVE_TO_DESK_2 = 40802,
+    MOVE_TO_DESK_3 = 40803,
+    MOVE_TO_DESK_4 = 40804,
+    MOVE_TO_DESK_5 = 40805,
+    MOVE_TO_DESK_6 = 40806,
+    MOVE_TO_DESK_7 = 40807,
+    MOVE_TO_DESK_8 = 40808,
+    TOGGLE_ASSIGN_TO_ALL_DESKS = 40809,
   };
 
   // SimpleMenuModel:
