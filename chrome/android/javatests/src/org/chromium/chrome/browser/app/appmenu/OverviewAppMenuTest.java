@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -348,11 +347,10 @@ public class OverviewAppMenuTest {
             MenuItem item = menu.getItem(i);
             if (item.getItemId() == R.id.track_prices_row_menu_id) {
                 int itemGroupId = item.getGroupId();
+                // When StartSurface is disabled, we just care about OVERVIEW_MODE_MENU and the
+                // whole START_SURFACE_MODE_MENU group is invisible.
                 if (itemGroupId == R.id.OVERVIEW_MODE_MENU) {
                     assertTrue(item.isVisible());
-                }
-                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
-                    assertFalse(item.isVisible());
                 }
                 checkedMenuItems++;
             }
@@ -442,10 +440,10 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-    @DisabledTest(message = "crbug.com/1152925")
     public void
     testTrackPriceOnTabsIsEnabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -458,7 +456,12 @@ public class OverviewAppMenuTest {
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
             if (item.getItemId() == R.id.track_prices_row_menu_id) {
-                assertFalse(item.isVisible());
+                int itemGroupId = item.getGroupId();
+                // When StartSurface is enabled, we just care about START_SURFACE_MODE_MENU and the
+                // whole OVERVIEW_MODE_MENU group is invisible.
+                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
+                    assertTrue(item.isVisible());
+                }
                 checkedMenuItems++;
             }
         }

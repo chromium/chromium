@@ -15,14 +15,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.sync.ModelType;
 
 /**
- * A class to handle whether price tracking-related features are turned on by users,
- * including tracking prices on tabs and price drop alerts.
- * Whether the feature is available is controlled by {@link
- * TabUiFeatureUtilities#ENABLE_PRICE_TRACKING}.
+ * A class to handle price tracking-related features.
  */
 public class PriceTrackingUtilities {
     private static final String PRICE_TRACKING_PARAM = "enable_price_tracking";
@@ -74,11 +70,7 @@ public class PriceTrackingUtilities {
      * @return Whether the price tracking feature is enabled and available for use.
      */
     public static boolean isPriceTrackingEnabled() {
-        // TODO(crbug.com/1152925): Now PriceTracking feature is broken if StartSurface is enabled,
-        // we need to remove !StartSurfaceConfiguration.isStartSurfaceEnabled() when the bug is
-        // fixed.
-        return (ENABLE_PRICE_TRACKING.getValue() || ENABLE_PRICE_NOTIFICATION.getValue())
-                && !StartSurfaceConfiguration.isStartSurfaceEnabled();
+        return ENABLE_PRICE_TRACKING.getValue() || ENABLE_PRICE_NOTIFICATION.getValue();
     }
 
     /**

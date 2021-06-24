@@ -137,6 +137,7 @@ public class TabSwitcherCoordinator
                         RecordUserAction.record("MobileMenuGroupTabs");
                         return true;
                     } else if (id == R.id.track_prices_row_menu_id) {
+                        assert mPriceTrackingDialogCoordinator != null;
                         mPriceTrackingDialogCoordinator.show();
                         return true;
                     }
@@ -330,18 +331,11 @@ public class TabSwitcherCoordinator
                         new IphMessageService(mTabGridIphDialogCoordinator);
                 mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
             }
-
-            if (PriceTrackingUtilities.isPriceTrackingEnabled()) {
-                PriceDropNotificationManager notificationManager =
-                        new PriceDropNotificationManager();
-                mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
-                        context, modalDialogManager, this, mTabModelSelector, notificationManager);
-                mPriceMessageService = new PriceMessageService(
-                        mTabListCoordinator, mMediator, notificationManager);
-                mMessageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
-                mMediator.setPriceMessageService(mPriceMessageService);
-            }
         }
+
+        // TODO(crbug.com/1222762): Only call setUpPriceTracking in GRID TabSwitcher.
+        setUpPriceTracking(context, modalDialogManager);
+
         mIsInitialized = true;
     }
 
@@ -363,6 +357,20 @@ public class TabSwitcherCoordinator
                         TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP),
                 new TabSelectionEditorNavigationProvider(
                         mTabSelectionEditorCoordinator.getController()));
+    }
+
+    private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {
+        if (PriceTrackingUtilities.isPriceTrackingEnabled()) {
+            PriceDropNotificationManager notificationManager = new PriceDropNotificationManager();
+            mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
+                    context, modalDialogManager, this, mTabModelSelector, notificationManager);
+            if (mMode == TabListCoordinator.TabListMode.GRID) {
+                mPriceMessageService = new PriceMessageService(
+                        mTabListCoordinator, mMediator, notificationManager);
+                mMessageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
+                mMediator.setPriceMessageService(mPriceMessageService);
+            }
+        }
     }
 
     // TabSwitcher implementation.
