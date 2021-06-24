@@ -194,18 +194,6 @@ struct InstantMostVisitedInfo {
   ~InstantMostVisitedInfo();
 
   std::vector<InstantMostVisitedItem> items;
-
-  // True if the source of the |items| is custom links (i.e.
-  // ntp_tiles::TileSource::CUSTOM_LINKS). Required since the source cannot be
-  // checked if |items| is empty.
-  bool items_are_custom_links = false;
-
-  // True if Most Visited functionality is enabled instead of customizable
-  // shortcuts.
-  bool use_most_visited = false;
-
-  // True if the items are visible and not hidden by the user.
-  bool is_visible = true;
 };
 
 // An InstantMostVisitedItem along with its assigned restricted ID.

@@ -372,6 +372,7 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
+  ntp_tiles::MostVisitedSites::ResetProfilePrefs(prefs);
   prefs->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
 }

@@ -84,9 +84,6 @@ const char kThemeAttributionFormat[] = "-webkit-image-set("
 const char kLTRHtmlTextDirection[] = "ltr";
 const char kRTLHtmlTextDirection[] = "rtl";
 
-// Max character limit for custom link titles.
-const size_t kMaxCustomLinkTitleLength = 150;
-
 void Dispatch(blink::WebLocalFrame* frame, const blink::WebString& script) {
   if (!frame)
     return;
@@ -438,39 +435,6 @@ static const char kDispatchFocusChangedScript[] =
     "  true;"
     "}";
 
-static const char kDispatchAddCustomLinkResult[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.newTabPage &&"
-    "    window.chrome.embeddedSearch.newTabPage.onaddcustomlinkdone &&"
-    "    typeof window.chrome.embeddedSearch.newTabPage"
-    "        .onaddcustomlinkdone === 'function') {"
-    "  window.chrome.embeddedSearch.newTabPage.onaddcustomlinkdone(%s);"
-    "  true;"
-    "}";
-
-static const char kDispatchUpdateCustomLinkResult[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.newTabPage &&"
-    "    window.chrome.embeddedSearch.newTabPage.onupdatecustomlinkdone &&"
-    "    typeof window.chrome.embeddedSearch.newTabPage"
-    "        .onupdatecustomlinkdone === 'function') {"
-    "  window.chrome.embeddedSearch.newTabPage.onupdatecustomlinkdone(%s);"
-    "  true;"
-    "}";
-
-static const char kDispatchDeleteCustomLinkResult[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.newTabPage &&"
-    "    window.chrome.embeddedSearch.newTabPage.ondeletecustomlinkdone &&"
-    "    typeof window.chrome.embeddedSearch.newTabPage"
-    "        .ondeletecustomlinkdone === 'function') {"
-    "  window.chrome.embeddedSearch.newTabPage.ondeletecustomlinkdone(%s);"
-    "  true;"
-    "}";
-
 static const char kDispatchInputCancelScript[] =
     "if (window.chrome &&"
     "    window.chrome.embeddedSearch &&"
@@ -635,9 +599,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static v8::Local<v8::Value> GetMostVisited(v8::Isolate* isolate);
   static bool GetMostVisitedAvailable(v8::Isolate* isolate);
   static v8::Local<v8::Value> GetNtpTheme(v8::Isolate* isolate);
-  static bool GetIsCustomLinks();
-  static bool GetIsUsingMostVisited();
-  static bool GetAreShortcutsVisible();
 
   // Handlers for JS functions visible to all NTPs.
   static void DeleteMostVisitedItem(v8::Isolate* isolate,
@@ -650,15 +611,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   // custom links iframe, and/or the local NTP.
   static v8::Local<v8::Value> GetMostVisitedItemData(v8::Isolate* isolate,
                                                      int rid);
-  static void UpdateCustomLink(int rid,
-                               const std::string& url,
-                               const std::string& title);
-  static void ReorderCustomLink(int rid, int new_pos);
-  static void UndoCustomLinkAction();
-  static void ResetCustomLinks();
-  static void ToggleMostVisitedOrCustomLinks();
-  static void ToggleShortcutsVisibility(bool do_notify);
-  static std::string FixupAndValidateUrl(const std::string& url);
   static void LogEvent(int event);
   static void LogSuggestionEventWithValue(int event, int data);
   static void LogMostVisitedImpression(
@@ -723,11 +675,6 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
       // TODO(https://crbug.com/1020450): remove "themeBackgroundInfo" legacy
       // name when we're sure no third-party NTP needs it.
       .SetProperty("themeBackgroundInfo", &NewTabPageBindings::GetNtpTheme)
-      .SetProperty("isCustomLinks", &NewTabPageBindings::GetIsCustomLinks)
-      .SetProperty("isUsingMostVisited",
-                   &NewTabPageBindings::GetIsUsingMostVisited)
-      .SetProperty("areShortcutsVisible",
-                   &NewTabPageBindings::GetAreShortcutsVisible)
       .SetMethod("deleteMostVisitedItem",
                  &NewTabPageBindings::DeleteMostVisitedItem)
       .SetMethod("undoAllMostVisitedDeletions",
@@ -736,17 +683,6 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
                  &NewTabPageBindings::UndoMostVisitedDeletion)
       .SetMethod("getMostVisitedItemData",
                  &NewTabPageBindings::GetMostVisitedItemData)
-      .SetMethod("updateCustomLink", &NewTabPageBindings::UpdateCustomLink)
-      .SetMethod("reorderCustomLink", &NewTabPageBindings::ReorderCustomLink)
-      .SetMethod("undoCustomLinkAction",
-                 &NewTabPageBindings::UndoCustomLinkAction)
-      .SetMethod("resetCustomLinks", &NewTabPageBindings::ResetCustomLinks)
-      .SetMethod("toggleMostVisitedOrCustomLinks",
-                 &NewTabPageBindings::ToggleMostVisitedOrCustomLinks)
-      .SetMethod("toggleShortcutsVisibility",
-                 &NewTabPageBindings::ToggleShortcutsVisibility)
-      .SetMethod("fixupAndValidateUrl",
-                 &NewTabPageBindings::FixupAndValidateUrl)
       .SetMethod("logEvent", &NewTabPageBindings::LogEvent)
       .SetMethod("logSuggestionEventWithValue",
                  &NewTabPageBindings::LogSuggestionEventWithValue)
@@ -857,35 +793,6 @@ v8::Local<v8::Value> NewTabPageBindings::GetNtpTheme(v8::Isolate* isolate) {
 }
 
 // static
-bool NewTabPageBindings::GetIsCustomLinks() {
-  const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return false;
-
-  return search_box->IsCustomLinks();
-}
-
-// static
-bool NewTabPageBindings::GetIsUsingMostVisited() {
-  const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
-    return false;
-  }
-
-  return search_box->IsUsingMostVisited();
-}
-
-// static
-bool NewTabPageBindings::GetAreShortcutsVisible() {
-  const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
-    return true;
-  }
-
-  return search_box->AreShortcutsVisible();
-}
-
-// static
 void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
                                                v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
@@ -896,15 +803,7 @@ void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
   if (!search_box)
     return;
 
-  // Treat the Most Visited item as a custom link if called from the Most
-  // Visited or edit custom link iframes. This will initialize custom links if
-  // they have not already been initialized.
-  if (HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
-    search_box->DeleteCustomLink(*rid);
-    search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_REMOVE);
-  } else {
-    search_box->DeleteMostVisitedItem(*rid);
-  }
+  search_box->DeleteMostVisitedItem(*rid);
 }
 
 // static
@@ -944,91 +843,6 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisitedItemData(
 
   int render_frame_id = GetMainRenderFrameForCurrentContext()->GetRoutingID();
   return GenerateMostVisitedItemData(isolate, render_frame_id, rid, item);
-}
-
-// static
-void NewTabPageBindings::UpdateCustomLink(int rid,
-                                          const std::string& url,
-                                          const std::string& title) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return;
-
-  // Limit the title to |kMaxCustomLinkTitleLength| characters. If truncated,
-  // adds an ellipsis.
-  std::u16string truncated_title =
-      gfx::TruncateString(base::UTF8ToUTF16(title), kMaxCustomLinkTitleLength,
-                          gfx::CHARACTER_BREAK);
-
-  const GURL gurl(url);
-  // If rid is -1, adds a new link. Otherwise, updates the existing link
-  // indicated by the rid (empty fields will passed as empty strings). This will
-  // initialize custom links if they have not already been initialized.
-  if (rid == -1) {
-    if (!gurl.is_valid() || truncated_title.empty())
-      return;
-    search_box->AddCustomLink(gurl, base::UTF16ToUTF8(truncated_title));
-    search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_ADD);
-  } else {
-    // Check that the URL, if provided, is valid.
-    if (!url.empty() && !gurl.is_valid())
-      return;
-    search_box->UpdateCustomLink(rid, gurl, base::UTF16ToUTF8(truncated_title));
-    search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_UPDATE);
-  }
-}
-
-// static
-void NewTabPageBindings::ReorderCustomLink(int rid, int new_pos) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return;
-  search_box->ReorderCustomLink(rid, new_pos);
-}
-
-// static
-void NewTabPageBindings::UndoCustomLinkAction() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->UndoCustomLinkAction();
-  search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_UNDO);
-}
-
-// static
-void NewTabPageBindings::ResetCustomLinks() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ResetCustomLinks();
-  search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL);
-}
-
-// static
-void NewTabPageBindings::ToggleMostVisitedOrCustomLinks() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ToggleMostVisitedOrCustomLinks();
-  search_box->LogEvent(NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
-}
-
-// static
-void NewTabPageBindings::ToggleShortcutsVisibility(bool do_notify) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->ToggleShortcutsVisibility(do_notify);
-  search_box->LogEvent(
-      NTPLoggingEventType::NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
-}
-
-// static
-std::string NewTabPageBindings::FixupAndValidateUrl(const std::string& url) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
-    return std::string();
-  return search_box->FixupAndValidateUrl(url);
 }
 
 // static
@@ -1316,33 +1130,6 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
 // static
 void SearchBoxExtension::DispatchFocusChange(blink::WebLocalFrame* frame) {
   Dispatch(frame, kDispatchFocusChangedScript);
-}
-
-// static
-void SearchBoxExtension::DispatchAddCustomLinkResult(
-    blink::WebLocalFrame* frame,
-    bool success) {
-  blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
-      kDispatchAddCustomLinkResult, success ? "true" : "false")));
-  Dispatch(frame, script);
-}
-
-// static
-void SearchBoxExtension::DispatchUpdateCustomLinkResult(
-    blink::WebLocalFrame* frame,
-    bool success) {
-  blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
-      kDispatchUpdateCustomLinkResult, success ? "true" : "false")));
-  Dispatch(frame, script);
-}
-
-// static
-void SearchBoxExtension::DispatchDeleteCustomLinkResult(
-    blink::WebLocalFrame* frame,
-    bool success) {
-  blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
-      kDispatchDeleteCustomLinkResult, success ? "true" : "false")));
-  Dispatch(frame, script);
 }
 
 // static

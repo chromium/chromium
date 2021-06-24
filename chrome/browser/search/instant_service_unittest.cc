@@ -74,7 +74,6 @@ class MockInstantService : public InstantService {
   explicit MockInstantService(Profile* profile) : InstantService(profile) {}
   ~MockInstantService() override = default;
 
-  MOCK_METHOD0(ResetCustomLinks, bool());
   MOCK_METHOD0(ResetCustomBackgroundNtpTheme, void());
 };
 
@@ -109,93 +108,6 @@ TEST_F(InstantServiceTest, GetNTPTileSuggestion) {
   ASSERT_EQ(1, (int)items.size());
   EXPECT_EQ(ntp_tiles::TileSource::TOP_SITES, items[0].source);
   EXPECT_EQ(ntp_tiles::TileTitleSource::TITLE_TAG, items[0].title_source);
-}
-
-TEST_F(InstantServiceTest, DoesToggleMostVisitedOrCustomLinks) {
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  ASSERT_FALSE(!most_visited_sites()->IsCustomLinksEnabled());
-  ASSERT_FALSE(instant_service_->most_visited_info_->use_most_visited);
-
-  // Enable most visited tiles.
-  EXPECT_TRUE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_TRUE(!most_visited_sites()->IsCustomLinksEnabled());
-  EXPECT_TRUE(instant_service_->most_visited_info_->use_most_visited);
-
-  // Disable most visited tiles.
-  EXPECT_TRUE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_FALSE(!most_visited_sites()->IsCustomLinksEnabled());
-  EXPECT_FALSE(instant_service_->most_visited_info_->use_most_visited);
-
-  SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  EXPECT_FALSE(most_visited_sites()->IsCustomLinksEnabled());
-  ASSERT_FALSE(instant_service_->most_visited_info_->use_most_visited);
-
-  // Should do nothing if this is a non-Google NTP.
-  EXPECT_FALSE(instant_service_->ToggleMostVisitedOrCustomLinks());
-  EXPECT_FALSE(most_visited_sites()->IsCustomLinksEnabled());
-  EXPECT_FALSE(instant_service_->most_visited_info_->use_most_visited);
-}
-
-TEST_F(InstantServiceTest, DoesToggleShortcutsVisibility) {
-  testing::StrictMock<MockInstantServiceObserver> mock_observer;
-  instant_service_->AddObserver(&mock_observer);
-
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  ASSERT_TRUE(most_visited_sites()->IsShortcutsVisible());
-  ASSERT_TRUE(instant_service_->most_visited_info_->is_visible);
-
-  // Hide shortcuts.
-  EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(0);
-  EXPECT_TRUE(instant_service_->ToggleShortcutsVisibility(false));
-  EXPECT_FALSE(most_visited_sites()->IsShortcutsVisible());
-  EXPECT_FALSE(instant_service_->most_visited_info_->is_visible);
-  task_environment()->RunUntilIdle();
-
-  // Show shortcuts, and check that a notification was sent.
-  EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(1);
-  EXPECT_TRUE(instant_service_->ToggleShortcutsVisibility(true));
-  EXPECT_TRUE(most_visited_sites()->IsShortcutsVisible());
-  EXPECT_TRUE(instant_service_->most_visited_info_->is_visible);
-
-  // Should do nothing if this is a non-Google NTP.
-  EXPECT_CALL(mock_observer, MostVisitedInfoChanged(testing::_)).Times(0);
-  SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  EXPECT_FALSE(instant_service_->ToggleShortcutsVisibility(false));
-  EXPECT_TRUE(most_visited_sites()->IsShortcutsVisible());
-  EXPECT_TRUE(instant_service_->most_visited_info_->is_visible);
-}
-
-TEST_F(InstantServiceTest,
-       DisableUndoCustomLinkActionForNonGoogleSearchProvider) {
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  EXPECT_TRUE(instant_service_->UndoCustomLinkAction());
-
-  SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  EXPECT_FALSE(instant_service_->UndoCustomLinkAction());
-}
-
-TEST_F(InstantServiceTest, DisableResetCustomLinksForNonGoogleSearchProvider) {
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  EXPECT_TRUE(instant_service_->ResetCustomLinks());
-
-  SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  EXPECT_FALSE(instant_service_->ResetCustomLinks());
-}
-
-TEST_F(InstantServiceTest, IsCustomLinksEnabled) {
-  // Test that custom links are only enabled when Most Visited is toggled off
-  // and this is a Google NTP.
-  most_visited_sites()->EnableCustomLinks(true);
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  EXPECT_TRUE(instant_service_->IsCustomLinksEnabled());
-
-  // All other cases should return false.
-  SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());
-  most_visited_sites()->EnableCustomLinks(false);
-  EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());
-  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
-  EXPECT_FALSE(instant_service_->IsCustomLinksEnabled());
 }
 
 TEST_F(InstantServiceTest, SetCustomBackgroundURL) {
@@ -523,7 +435,6 @@ TEST_F(InstantServiceTest, TestNoNtpTheme) {
 
 TEST_F(InstantServiceTest, TestResetToDefault) {
   MockInstantService mock_instant_service_(profile());
-  EXPECT_CALL(mock_instant_service_, ResetCustomLinks());
   EXPECT_CALL(mock_instant_service_, ResetCustomBackgroundNtpTheme());
   mock_instant_service_.ResetToDefault();
 }

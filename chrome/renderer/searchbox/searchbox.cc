@@ -172,23 +172,6 @@ void TranslateIconRestrictedUrl(const GURL& transient_url,
   }
 }
 
-std::string FixupAndValidateUrl(const std::string& url) {
-  GURL gurl = url_formatter::FixupURL(url, /*desired_tld=*/std::string());
-  if (!gurl.is_valid())
-    return std::string();
-
-  // Unless "http" was specified, replaces FixupURL's default "http" with
-  // "https".
-  if (url.find(std::string("http://")) == std::string::npos &&
-      gurl.SchemeIs(url::kHttpScheme)) {
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(url::kHttpsScheme);
-    gurl = gurl.ReplaceComponents(replacements);
-  }
-
-  return gurl.spec();
-}
-
 }  // namespace internal
 
 SearchBox::IconURLHelper::IconURLHelper() = default;
@@ -304,82 +287,6 @@ void SearchBox::UndoMostVisitedDeletion(
   embedded_search_service_->UndoMostVisitedDeletion(page_seq_no_, url);
 }
 
-bool SearchBox::IsCustomLinks() const {
-  return most_visited_info_.items_are_custom_links;
-}
-
-bool SearchBox::IsUsingMostVisited() const {
-  return most_visited_info_.use_most_visited;
-}
-
-bool SearchBox::AreShortcutsVisible() const {
-  return most_visited_info_.is_visible;
-}
-
-void SearchBox::AddCustomLink(const GURL& url, const std::string& title) {
-  if (!url.is_valid()) {
-    AddCustomLinkResult(false);
-    return;
-  }
-  embedded_search_service_->AddCustomLink(
-      page_seq_no_, url, title,
-      base::BindOnce(&SearchBox::AddCustomLinkResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SearchBox::UpdateCustomLink(InstantRestrictedID link_id,
-                                 const GURL& new_url,
-                                 const std::string& new_title) {
-  GURL url = GetURLForMostVisitedItem(link_id);
-  if (!url.is_valid()) {
-    UpdateCustomLinkResult(false);
-    return;
-  }
-  embedded_search_service_->UpdateCustomLink(
-      page_seq_no_, url, new_url, new_title,
-      base::BindOnce(&SearchBox::UpdateCustomLinkResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SearchBox::ReorderCustomLink(InstantRestrictedID link_id, int new_pos) {
-  GURL url = GetURLForMostVisitedItem(link_id);
-  if (!url.is_valid())
-    return;
-  embedded_search_service_->ReorderCustomLink(page_seq_no_, url, new_pos);
-}
-
-void SearchBox::DeleteCustomLink(InstantRestrictedID most_visited_item_id) {
-  GURL url = GetURLForMostVisitedItem(most_visited_item_id);
-  if (!url.is_valid()) {
-    DeleteCustomLinkResult(false);
-    return;
-  }
-  embedded_search_service_->DeleteCustomLink(
-      page_seq_no_, url,
-      base::BindOnce(&SearchBox::DeleteCustomLinkResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SearchBox::UndoCustomLinkAction() {
-  embedded_search_service_->UndoCustomLinkAction(page_seq_no_);
-}
-
-void SearchBox::ResetCustomLinks() {
-  embedded_search_service_->ResetCustomLinks(page_seq_no_);
-}
-
-void SearchBox::ToggleMostVisitedOrCustomLinks() {
-  embedded_search_service_->ToggleMostVisitedOrCustomLinks(page_seq_no_);
-}
-
-void SearchBox::ToggleShortcutsVisibility(bool do_notify) {
-  embedded_search_service_->ToggleShortcutsVisibility(page_seq_no_, do_notify);
-}
-
-std::string SearchBox::FixupAndValidateUrl(const std::string& url) const {
-  return internal::FixupAndValidateUrl(url);
-}
-
 void SearchBox::SetCustomBackgroundInfo(const GURL& background_url,
                                         const std::string& attribution_line_1,
                                         const std::string& attribution_line_2,
@@ -480,45 +387,16 @@ void SearchBox::FocusChanged(OmniboxFocusState new_focus_state,
   }
 }
 
-void SearchBox::AddCustomLinkResult(bool success) {
-  if (can_run_js_in_renderframe_) {
-    SearchBoxExtension::DispatchAddCustomLinkResult(
-        render_frame()->GetWebFrame(), success);
-  }
-}
-
-void SearchBox::UpdateCustomLinkResult(bool success) {
-  if (can_run_js_in_renderframe_) {
-    SearchBoxExtension::DispatchUpdateCustomLinkResult(
-        render_frame()->GetWebFrame(), success);
-  }
-}
-
-void SearchBox::DeleteCustomLinkResult(bool success) {
-  if (can_run_js_in_renderframe_) {
-    SearchBoxExtension::DispatchDeleteCustomLinkResult(
-        render_frame()->GetWebFrame(), success);
-  }
-}
-
 void SearchBox::MostVisitedInfoChanged(
     const InstantMostVisitedInfo& most_visited_info) {
   has_received_most_visited_ = true;
-  most_visited_info_.items_are_custom_links =
-      most_visited_info.items_are_custom_links;
 
   std::vector<InstantMostVisitedItemIDPair> last_known_items;
   GetMostVisitedItems(&last_known_items);
 
-  if (AreMostVisitedItemsEqual(last_known_items, most_visited_info.items) &&
-      most_visited_info_.use_most_visited ==
-          most_visited_info.use_most_visited &&
-      most_visited_info_.is_visible == most_visited_info.is_visible) {
+  if (AreMostVisitedItemsEqual(last_known_items, most_visited_info.items)) {
     return;  // Do not send duplicate onmostvisitedchange events.
   }
-
-  most_visited_info_.use_most_visited = most_visited_info.use_most_visited;
-  most_visited_info_.is_visible = most_visited_info.is_visible;
 
   most_visited_items_cache_.AddItems(most_visited_info.items);
   if (can_run_js_in_renderframe_) {

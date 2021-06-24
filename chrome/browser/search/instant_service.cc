@@ -29,7 +29,6 @@
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/most_visited_iframe_source.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -200,26 +199,8 @@ InstantService::InstantService(Profile* profile)
 
   most_visited_sites_ = ChromeMostVisitedSitesFactory::NewForProfile(profile_);
   if (most_visited_sites_) {
-    // Determine if we are using a third-party NTP. Custom links should only be
-    // enabled for the default NTP.
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(profile_);
-    if (template_url_service) {
-      search_provider_observer_ = std::make_unique<SearchProviderObserver>(
-          template_url_service,
-          base::BindRepeating(&InstantService::OnSearchProviderChanged,
-                              weak_ptr_factory_.GetWeakPtr()));
-    }
-
-    // If custom links are enabled, an additional tile may be returned making up
-    // to ntp_tiles::kMaxNumCustomLinks custom links including the
-    // "Add shortcut" button.
     most_visited_sites_->AddMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
-    most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
-
-    most_visited_info_->use_most_visited = !IsCustomLinksEnabled();
-    most_visited_info_->is_visible = most_visited_sites_->IsShortcutsVisible();
   }
 
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
@@ -304,100 +285,6 @@ void InstantService::UndoAllMostVisitedDeletions() {
   if (most_visited_sites_) {
     most_visited_sites_->ClearBlockedUrls();
   }
-}
-
-bool InstantService::AddCustomLink(const GURL& url, const std::string& title) {
-  return most_visited_sites_ &&
-         most_visited_sites_->AddCustomLink(url, base::UTF8ToUTF16(title));
-}
-
-bool InstantService::UpdateCustomLink(const GURL& url,
-                                      const GURL& new_url,
-                                      const std::string& new_title) {
-  return most_visited_sites_ && most_visited_sites_->UpdateCustomLink(
-                                    url, new_url, base::UTF8ToUTF16(new_title));
-}
-
-bool InstantService::ReorderCustomLink(const GURL& url, int new_pos) {
-  return most_visited_sites_ &&
-         most_visited_sites_->ReorderCustomLink(url, new_pos);
-}
-
-bool InstantService::DeleteCustomLink(const GURL& url) {
-  return most_visited_sites_ && most_visited_sites_->DeleteCustomLink(url);
-}
-
-bool InstantService::UndoCustomLinkAction() {
-  // Non-Google NTPs are not supported.
-  if (!most_visited_sites_ || !search_provider_observer_ ||
-      !search_provider_observer_->is_google()) {
-    return false;
-  }
-  most_visited_sites_->UndoCustomLinkAction();
-  return true;
-}
-
-bool InstantService::ResetCustomLinks() {
-  // Non-Google NTPs are not supported.
-  if (!most_visited_sites_ || !search_provider_observer_ ||
-      !search_provider_observer_->is_google()) {
-    return false;
-  }
-  most_visited_sites_->UninitializeCustomLinks();
-  return true;
-}
-
-bool InstantService::ToggleMostVisitedOrCustomLinks() {
-  // Non-Google NTPs are not supported.
-  if (!most_visited_sites_ || !search_provider_observer_ ||
-      !search_provider_observer_->is_google()) {
-    return false;
-  }
-  bool use_most_visited = most_visited_sites_->IsCustomLinksEnabled();
-  most_visited_info_->use_most_visited = use_most_visited;
-  bool was_initialized = most_visited_sites_->IsCustomLinksInitialized();
-
-  // Custom links is enabled if Most Visited is disabled.
-  // Note: This will eventually call |NotifyAboutMostVisitedInfo|, except in the
-  // case below.
-  most_visited_sites_->EnableCustomLinks(!use_most_visited);
-
-  // If custom links is enabled but not initialized, MostVisitedSites will not
-  // notify |OnURLsAvailable| and |NotifyAboutMostVisitedInfo| will not be
-  // called.
-  //
-  // This is because custom links are considered Most Visited items before
-  // initialization. As such their NTPTile metadata is the same, and observers
-  // are not notified if the list of NTPTiles was not changed.
-  //
-  // Therefore, we need to manually call |NotifyAboutMostVisitedInfo| if the
-  // user has never customized their shortcuts.
-  //
-  // For more details, see custom_links_mananger.h and most_visited_sites.h.
-  if ((!was_initialized && !most_visited_sites_->IsCustomLinksInitialized()) ||
-      // Ensure that the add shortcut button status is correct when there is no
-      // custom link.
-      most_visited_sites_->GetCustomLinkNum() == 0) {
-    NotifyAboutMostVisitedInfo();
-  }
-
-  return true;
-}
-
-bool InstantService::ToggleShortcutsVisibility(bool do_notify) {
-  // Non-Google NTPs are not supported.
-  if (!most_visited_sites_ || !search_provider_observer_ ||
-      !search_provider_observer_->is_google()) {
-    return false;
-  }
-  bool is_visible = !most_visited_sites_->IsShortcutsVisible();
-  most_visited_sites_->SetShortcutsVisible(is_visible);
-  most_visited_info_->is_visible = is_visible;
-
-  if (do_notify) {
-    NotifyAboutMostVisitedInfo();
-  }
-  return true;
 }
 
 void InstantService::UpdateNtpTheme() {
@@ -577,11 +464,6 @@ void InstantService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   UpdateNtpTheme();
 }
 
-void InstantService::OnSearchProviderChanged() {
-  DCHECK(most_visited_sites_);
-  most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
-}
-
 void InstantService::OnURLsAvailable(
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
@@ -600,8 +482,6 @@ void InstantService::OnURLsAvailable(
     item.data_generation_time = tile.data_generation_time;
     most_visited_info_->items.push_back(item);
   }
-  most_visited_info_->items_are_custom_links =
-      (most_visited_sites_ && most_visited_sites_->IsCustomLinksInitialized());
 
   NotifyAboutMostVisitedInfo();
 }
@@ -616,11 +496,6 @@ void InstantService::NotifyAboutMostVisitedInfo() {
 void InstantService::NotifyAboutNtpTheme() {
   for (InstantServiceObserver& observer : observers_)
     observer.NtpThemeChanged(*theme_);
-}
-
-bool InstantService::IsCustomLinksEnabled() {
-  return search_provider_observer_ && search_provider_observer_->is_google() &&
-         most_visited_sites_->IsCustomLinksEnabled();
 }
 
 void InstantService::BuildNtpTheme() {
@@ -864,20 +739,8 @@ bool InstantService::IsCustomBackgroundSet() {
   return true;
 }
 
-bool InstantService::AreShortcutsCustomized() {
-  return most_visited_info_->items_are_custom_links;
-}
-
-std::pair<bool, bool> InstantService::GetCurrentShortcutSettings() {
-  bool using_most_visited = !most_visited_sites_->IsCustomLinksEnabled();
-  bool is_visible = most_visited_sites_->IsShortcutsVisible();
-  return std::make_pair(using_most_visited, is_visible);
-}
-
 void InstantService::ResetToDefault() {
-  ResetCustomLinks();
   ResetCustomBackgroundNtpTheme();
-  ntp_tiles::MostVisitedSites::ResetProfilePrefs(pref_service_);
 }
 
 void InstantService::UpdateCustomBackgroundColorAsync(

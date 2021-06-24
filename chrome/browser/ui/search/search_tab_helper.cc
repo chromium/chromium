@@ -273,57 +273,6 @@ void SearchTabHelper::OnUndoAllMostVisitedDeletions() {
     instant_service_->UndoAllMostVisitedDeletions();
 }
 
-bool SearchTabHelper::OnAddCustomLink(const GURL& url,
-                                      const std::string& title) {
-  DCHECK(!url.is_empty());
-  if (instant_service_)
-    return instant_service_->AddCustomLink(url, title);
-  return false;
-}
-
-bool SearchTabHelper::OnUpdateCustomLink(const GURL& url,
-                                         const GURL& new_url,
-                                         const std::string& new_title) {
-  DCHECK(!url.is_empty());
-  if (instant_service_)
-    return instant_service_->UpdateCustomLink(url, new_url, new_title);
-  return false;
-}
-
-bool SearchTabHelper::OnReorderCustomLink(const GURL& url, int new_pos) {
-  DCHECK(!url.is_empty());
-  if (instant_service_)
-    return instant_service_->ReorderCustomLink(url, new_pos);
-  return false;
-}
-
-bool SearchTabHelper::OnDeleteCustomLink(const GURL& url) {
-  DCHECK(!url.is_empty());
-  if (instant_service_)
-    return instant_service_->DeleteCustomLink(url);
-  return false;
-}
-
-void SearchTabHelper::OnUndoCustomLinkAction() {
-  if (instant_service_)
-    instant_service_->UndoCustomLinkAction();
-}
-
-void SearchTabHelper::OnResetCustomLinks() {
-  if (instant_service_)
-    instant_service_->ResetCustomLinks();
-}
-
-void SearchTabHelper::OnToggleMostVisitedOrCustomLinks() {
-  if (instant_service_)
-    instant_service_->ToggleMostVisitedOrCustomLinks();
-}
-
-void SearchTabHelper::OnToggleShortcutsVisibility(bool do_notify) {
-  if (instant_service_)
-    instant_service_->ToggleShortcutsVisibility(do_notify);
-}
-
 void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,
                                  base::TimeDelta time) {
   if (logger_)

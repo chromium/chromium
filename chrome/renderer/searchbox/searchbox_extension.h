@@ -30,12 +30,6 @@ class SearchBoxExtension {
                                                 const std::u16string& identity,
                                                 bool identity_match);
   static void DispatchFocusChange(blink::WebLocalFrame* frame);
-  static void DispatchAddCustomLinkResult(blink::WebLocalFrame* frame,
-                                          bool success);
-  static void DispatchUpdateCustomLinkResult(blink::WebLocalFrame* frame,
-                                             bool success);
-  static void DispatchDeleteCustomLinkResult(blink::WebLocalFrame* frame,
-                                             bool success);
   static void DispatchInputCancel(blink::WebLocalFrame* frame);
   static void DispatchInputStart(blink::WebLocalFrame* frame);
   static void DispatchKeyCaptureChange(blink::WebLocalFrame* frame);

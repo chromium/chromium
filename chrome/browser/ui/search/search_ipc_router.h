@@ -54,36 +54,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     // Called when the EmbeddedSearch wants to undo all Most Visited deletions.
     virtual void OnUndoAllMostVisitedDeletions() = 0;
 
-    // Called when the EmbeddedSearch wants to add a custom link.
-    virtual bool OnAddCustomLink(const GURL& url, const std::string& title) = 0;
-
-    // Called when the EmbeddedSearch wants to update a custom link.
-    virtual bool OnUpdateCustomLink(const GURL& url,
-                                    const GURL& new_url,
-                                    const std::string& new_title) = 0;
-
-    // Called when the EmbeddedSearch wants to reorder a custom link.
-    virtual bool OnReorderCustomLink(const GURL& url, int new_pos) = 0;
-
-    // Called when the EmbeddedSearch wants to delete a custom link.
-    virtual bool OnDeleteCustomLink(const GURL& url) = 0;
-
-    // Called when the EmbeddedSearch wants to undo the previous custom link
-    // action.
-    virtual void OnUndoCustomLinkAction() = 0;
-
-    // Called when the EmbeddedSearch wants to delete all custom links and
-    // use Most Visited sites instead.
-    virtual void OnResetCustomLinks() = 0;
-
-    // Called when the EmbeddedSearch wants to switch between custom links and
-    // Most Visited.
-    virtual void OnToggleMostVisitedOrCustomLinks() = 0;
-
-    // Called when the EmbeddedSearch wants to toggle visibility of the
-    // shortcuts.
-    virtual void OnToggleShortcutsVisibility(bool do_notify) = 0;
-
     // Called to signal that an event has occurred on the New Tab Page at a
     // particular time since navigation start.
     virtual void OnLogEvent(NTPLoggingEventType event,
@@ -174,14 +144,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual bool ShouldProcessDeleteMostVisitedItem() = 0;
     virtual bool ShouldProcessUndoMostVisitedDeletion() = 0;
     virtual bool ShouldProcessUndoAllMostVisitedDeletions() = 0;
-    virtual bool ShouldProcessAddCustomLink() = 0;
-    virtual bool ShouldProcessUpdateCustomLink() = 0;
-    virtual bool ShouldProcessReorderCustomLink() = 0;
-    virtual bool ShouldProcessDeleteCustomLink() = 0;
-    virtual bool ShouldProcessUndoCustomLinkAction() = 0;
-    virtual bool ShouldProcessResetCustomLinks() = 0;
-    virtual bool ShouldProcessToggleMostVisitedOrCustomLinks() = 0;
-    virtual bool ShouldProcessToggleShortcutsVisibility() = 0;
     virtual bool ShouldProcessLogEvent() = 0;
     virtual bool ShouldProcessLogSuggestionEventWithValue() = 0;
     virtual bool ShouldSendSetInputInProgress(bool is_active_tab) = 0;
@@ -249,25 +211,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   void DeleteMostVisitedItem(int page_seq_no, const GURL& url) override;
   void UndoMostVisitedDeletion(int page_seq_no, const GURL& url) override;
   void UndoAllMostVisitedDeletions(int page_seq_no) override;
-  void AddCustomLink(int page_seq_no,
-                     const GURL& url,
-                     const std::string& title,
-                     AddCustomLinkCallback callback) override;
-  void UpdateCustomLink(int page_seq_no,
-                        const GURL& url,
-                        const GURL& new_url,
-                        const std::string& new_title,
-                        UpdateCustomLinkCallback callback) override;
-  void ReorderCustomLink(int page_seq_no,
-                         const GURL& url,
-                         int new_pos) override;
-  void DeleteCustomLink(int page_seq_no,
-                        const GURL& url,
-                        DeleteCustomLinkCallback callback) override;
-  void UndoCustomLinkAction(int page_seq_no) override;
-  void ResetCustomLinks(int page_seq_no) override;
-  void ToggleMostVisitedOrCustomLinks(int page_seq_no) override;
-  void ToggleShortcutsVisibility(int page_seq_no, bool do_notify) override;
   void LogEvent(int page_seq_no,
                 NTPLoggingEventType event,
                 base::TimeDelta time) override;
