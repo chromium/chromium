@@ -65,10 +65,10 @@ class BuildConfigGenerator extends DefaultTask {
      * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT versions.
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
-      "androidx_constraintlayout",
-      "androidx_legacy",
-      "androidx_multidex_multidex",
-      "androidx_test",
+      'androidx_constraintlayout',
+      'androidx_legacy',
+      'androidx_multidex_multidex',
+      'androidx_test',
     ]
 
     // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
@@ -971,15 +971,15 @@ class BuildConfigGenerator extends DefaultTask {
     private void validateDependencies(
             Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
         dependencies.each { dependency ->
-            if (dependency.id.contains("androidx") && !dependency.fileName.contains("SNAPSHOT")) {
+            if (dependency.id.contains('androidx') && !dependency.fileName.contains('SNAPSHOT')) {
                 boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
                     allowedPrefix -> dependency.id.startsWith(allowedPrefix)
                 }
                 if (!hasAllowedDep) {
-                     String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version."
-                          + "If this is expected, add the library to "
-                          + "|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.")
-                     throw new IllegalStateException(errorMsg)
+                    String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version."
+                          + 'If this is expected, add the library to '
+                          + '|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.')
+                    throw new IllegalStateException(errorMsg)
                 }
             }
         }
