@@ -296,14 +296,11 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   if (!app_id)
     return nullptr;
 
-  // TODO: Handle multi-profile scenario.
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
-    return nullptr;
-
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  DCHECK(active_user);
   Profile* user_profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+      ash::ProfileHelper::Get()->GetProfileByUser(active_user);
   if (!user_profile)
     return nullptr;
 

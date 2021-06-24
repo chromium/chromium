@@ -51,6 +51,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -829,6 +830,17 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 
 std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     const {
+  DCHECK(current_account_id_.is_valid());
+  const user_manager::User* current_user =
+      user_manager::UserManager::Get()->FindUser(current_account_id_);
+  // Only regular user or child user has gaia account and can be supported here.
+  // For other types of users (e.g., guest user, public user, etc), we don't
+  // support desk templates feature for them.
+  if (!current_user ||
+      !user_manager::User::TypeHasGaiaAccount(current_user->GetType())) {
+    return nullptr;
+  }
+
   std::unique_ptr<DeskTemplate> desk_template =
       std::make_unique<DeskTemplate>();
   desk_template->set_template_name(active_desk_->name());
