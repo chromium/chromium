@@ -428,9 +428,13 @@ void AuthenticationService::OnPrimaryAccountChanged(
 
 void AuthenticationService::OnIdentityListChanged(bool keychain_reload) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // IsAuthenticated() should not be called since the primary account might
-    // have been removed with this update. If this happens, IsAuthenticated()
-    // returns NO, but we still need to call ReloadCredentialsFromIdentities().
+    // IdentityManager::HasPrimaryAccount() needs to be called instead of
+    // AuthenticationService::IsAuthenticated() or
+    // AuthenticationService::GetAuthenticatedIdentity().
+    // If the primary identity has just been removed, GetAuthenticatedIdentity()
+    // would return NO (since this method tests if the primary identity exists
+    // in ChromeIdentityService).
+    // In this case, we do need to call ReloadCredentialsFromIdentities().
     return;
   }
   // The list of identities may change while in an authorized call. Signing out
