@@ -61,6 +61,9 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
   base::OnceCallback<void(bool)> lookup_callback_;
 };
 
+void LoadPackageNamesAllowlistComponent(
+    component_updater::ComponentLoaderPolicyVector& policies);
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_COMPONENT_UPDATER_LOADER_POLICIES_AW_APPS_PACKAGE_NAMES_ALLOWLIST_COMPONENT_LOADER_POLICY_H_

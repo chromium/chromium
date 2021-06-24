@@ -15,9 +15,11 @@
 #include <vector>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -61,6 +63,13 @@ bool IsLoggingPackageNameAllowed(int allowlist_fd,
 
   return optimization_guide::BloomFilter(numHash, numBits, bloom_filter_data)
       .Contains(package_name);
+}
+
+void SetShouldRecordPackageName(bool package_present_in_allowlist) {
+  auto* metrics_service_client = AwMetricsServiceClient::GetInstance();
+  DCHECK(metrics_service_client);
+  metrics_service_client->SetShouldRecordPackageName(
+      package_present_in_allowlist);
 }
 
 }  // namespace
@@ -143,6 +152,18 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed() {
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   GetWebViewAppsPackageNamesAllowlistPublicKeyHash(hash);
+}
+
+void LoadPackageNamesAllowlistComponent(
+    component_updater::ComponentLoaderPolicyVector& policies) {
+  if (!base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
+    return;
+  }
+  policies.push_back(
+      std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
+          AwMetricsServiceClient::GetInstance()->GetAppPackageName(),
+          base::BindOnce(&SetShouldRecordPackageName)));
 }
 
 }  // namespace android_webview
