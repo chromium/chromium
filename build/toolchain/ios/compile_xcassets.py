@@ -30,42 +30,12 @@ SECTION_HEADER = re.compile('^/\\* ([^ ]*) \\*/$')
 # Name of the section containing informational messages that can be ignored.
 NOTICE_SECTION = 'com.apple.actool.compilation-results'
 
-# Regular expressions matching spurious messages from actool that should be
-# ignored (as they are bogus). Generally a bug should be filed with Apple
-# when adding a pattern here.
-SPURIOUS_PATTERNS = [
-    re.compile(v) for v in [
-        # crbug.com/770634, likely a bug in Xcode 9.1 beta, remove once build
-        # requires a version of Xcode with a fix.
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: \(null\)',
-
-        # crbug.com/770634, likely a bug in Xcode 9.2 beta, remove once build
-        # requires a version of Xcode with a fix.
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app'
-        ' icons only apply to iPad apps targeting releases of iOS prior to'
-        ' 10.0.',
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]\[\]: notice: 76x76@1x app'
-        ' icons only apply to iPad apps targeting releases of iOS prior to'
-        ' 10.0.',
-    ]
-]
-
 # Map special type of asset catalog to the corresponding command-line
 # parameter that need to be passed to actool.
 ACTOOL_FLAG_FOR_ASSET_TYPE = {
     '.appiconset': '--app-icon',
     '.launchimage': '--launch-image',
 }
-
-
-def IsSpuriousMessage(line):
-  """Returns whether line contains a spurious message that should be ignored."""
-  for pattern in SPURIOUS_PATTERNS:
-    match = pattern.search(line)
-    if match is not None:
-      return True
-  return False
-
 
 def FixAbsolutePathInLine(line, relative_paths):
   """Fix absolute paths present in |line| to relative paths."""
@@ -114,8 +84,6 @@ def FilterCompilerOutput(compiler_output, relative_paths):
       current_section = match.group(1)
       continue
     if current_section and current_section != NOTICE_SECTION:
-      if IsSpuriousMessage(line):
-        continue
       if not data_in_section:
         data_in_section = True
         filtered_output.append('/* %s */\n' % current_section)
