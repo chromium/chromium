@@ -38,6 +38,8 @@ import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -392,6 +394,8 @@ public class StartSurfaceTest {
         "/hide_switch_when_no_incognito_tabs/true/show_last_active_tab_only/true"})
     public void testShow_SingleAsHomepage_SingleTabNoMVTiles() {
         // clang-format on
+        Assume.assumeFalse("https://crbug.com/1205642, https://crbug.com/1214303",
+                !mUseInstantStart && mImmediateReturn && VERSION.SDK_INT == VERSION_CODES.M);
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
