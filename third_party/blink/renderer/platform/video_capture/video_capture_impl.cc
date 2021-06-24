@@ -409,6 +409,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
                   gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
                   video_capture_impl_.gpu_factories_->GpuMemoryBufferManager(),
                   video_capture_impl_.pool_);
+      if (!gpu_memory_buffer_) {
+        LOG(ERROR) << "Failed to open GpuMemoryBuffer handle";
+        return false;
+      }
     }
   }
   // After initializing, either |frame_| or |gpu_memory_buffer_| has been set.
