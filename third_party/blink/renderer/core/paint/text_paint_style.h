@@ -26,7 +26,7 @@ struct CORE_EXPORT TextPaintStyle {
   Color emphasis_mark_color;
   float stroke_width;
   mojom::blink::ColorScheme color_scheme;
-  const ShadowList* shadow;
+  scoped_refptr<const ShadowList> shadow;
   absl::optional<AppliedTextDecoration> selection_text_decoration;
 
   bool operator==(const TextPaintStyle& other) const {
