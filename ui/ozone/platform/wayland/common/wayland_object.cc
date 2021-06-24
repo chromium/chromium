@@ -17,6 +17,7 @@
 #include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
+#include <relative-pointer-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
@@ -263,6 +264,17 @@ const wl_interface* ObjectTraits<zwp_pointer_gestures_v1>::interface =
     &zwp_pointer_gestures_v1_interface;
 void (*ObjectTraits<zwp_pointer_gestures_v1>::deleter)(
     zwp_pointer_gestures_v1*) = &zwp_pointer_gestures_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_relative_pointer_manager_v1>::interface =
+    &zwp_relative_pointer_manager_v1_interface;
+void (*ObjectTraits<zwp_relative_pointer_manager_v1>::deleter)(
+    zwp_relative_pointer_manager_v1*) =
+    &zwp_relative_pointer_manager_v1_destroy;
+
+const wl_interface* ObjectTraits<zwp_relative_pointer_v1>::interface =
+    &zwp_relative_pointer_v1_interface;
+void (*ObjectTraits<zwp_relative_pointer_v1>::deleter)(
+    zwp_relative_pointer_v1*) = &zwp_relative_pointer_v1_destroy;
 
 const wl_interface* ObjectTraits<wp_viewport>::interface =
     &wp_viewport_interface;
