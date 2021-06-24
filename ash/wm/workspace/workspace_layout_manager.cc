@@ -32,6 +32,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "base/command_line.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -539,10 +540,25 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   // of |windows_| to avoid invalidating an iterator. Since both workspace and
   // always_on_top containers' layouts are managed by this class all the
   // appropriate windows will be included in the iteration.
-  WindowSet windows(windows_);
-  for (aura::Window* window : windows) {
+  // Use an `aura::WindowTracker` since `OnWillRemoveWindowFromLayout()` may
+  // remove windows from `windows_`.
+  std::vector<aura::Window*> windows(windows_.begin(), windows_.end());
+  aura::WindowTracker tracker(windows);
+  while (!tracker.windows().empty()) {
+    aura::Window* window = tracker.Pop();
     if (window == active_desk_fullscreen_window)
       continue;
+
+    // TODO(crbug.com/1200594): Remove after fix.
+    int window_id = window->GetId();
+    int window_width = window->bounds().width();
+    int window_height = window->bounds().height();
+    base::debug::Alias(&window_id);
+    base::debug::Alias(&window_width);
+    base::debug::Alias(&window_height);
+    DEBUG_ALIAS_FOR_CSTR(window_name, window->GetName().c_str(), 128);
+    DEBUG_ALIAS_FOR_CSTR(window_title,
+                         base::UTF16ToUTF8(window->GetTitle()).c_str(), 128);
 
     WindowState* window_state = WindowState::Get(window);
     if (active_desk_fullscreen_window)
