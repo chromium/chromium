@@ -338,11 +338,6 @@ void TestPasswordStore::RemoveSiteStatsImpl(const GURL& origin_domain) {
   NOTIMPLEMENTED();
 }
 
-std::vector<InteractionsStats> TestPasswordStore::GetAllSiteStatsImpl() {
-  NOTIMPLEMENTED();
-  return std::vector<InteractionsStats>();
-}
-
 PasswordStoreChangeList TestPasswordStore::AddInsecureCredentialImpl(
     const InsecureCredential& insecure_credential) {
   InsecureCredential cred = insecure_credential;

@@ -66,11 +66,11 @@ class StatisticsTableTest : public testing::Test {
 
 TEST_F(StatisticsTableTest, Sanity) {
   EXPECT_TRUE(db()->AddRow(test_data()));
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(test_data()));
+  EXPECT_THAT(db()->GetAllRowsForTest(), ElementsAre(test_data()));
   EXPECT_THAT(db()->GetRows(test_data().origin_domain),
               ElementsAre(test_data()));
   EXPECT_TRUE(db()->RemoveRow(test_data().origin_domain));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
 }
 
@@ -79,7 +79,7 @@ TEST_F(StatisticsTableTest, Reload) {
 
   ReloadDatabase();
 
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(test_data()));
+  EXPECT_THAT(db()->GetAllRowsForTest(), ElementsAre(test_data()));
   EXPECT_THAT(db()->GetRows(test_data().origin_domain),
               ElementsAre(test_data()));
 }
@@ -89,12 +89,12 @@ TEST_F(StatisticsTableTest, DoubleOperation) {
   test_data().dismissal_count++;
   EXPECT_TRUE(db()->AddRow(test_data()));
 
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(test_data()));
+  EXPECT_THAT(db()->GetAllRowsForTest(), ElementsAre(test_data()));
   EXPECT_THAT(db()->GetRows(test_data().origin_domain),
               ElementsAre(test_data()));
 
   EXPECT_TRUE(db()->RemoveRow(test_data().origin_domain));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
   EXPECT_TRUE(db()->RemoveRow(test_data().origin_domain));
 }
@@ -106,11 +106,11 @@ TEST_F(StatisticsTableTest, DifferentUsernames) {
 
   EXPECT_TRUE(db()->AddRow(stats1));
   EXPECT_TRUE(db()->AddRow(stats2));
-  EXPECT_THAT(db()->GetAllRows(), UnorderedElementsAre(stats1, stats2));
+  EXPECT_THAT(db()->GetAllRowsForTest(), UnorderedElementsAre(stats1, stats2));
   EXPECT_THAT(db()->GetRows(test_data().origin_domain),
               UnorderedElementsAre(stats1, stats2));
   EXPECT_TRUE(db()->RemoveRow(test_data().origin_domain));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
 }
 
@@ -131,7 +131,7 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
   EXPECT_TRUE(db()->AddRow(stats2));
   EXPECT_TRUE(db()->AddRow(stats3));
   EXPECT_TRUE(db()->AddRow(stats4));
-  EXPECT_THAT(db()->GetAllRows(),
+  EXPECT_THAT(db()->GetAllRowsForTest(),
               UnorderedElementsAre(stats1, stats2, stats3, stats4));
   EXPECT_THAT(db()->GetRows(stats1.origin_domain), ElementsAre(stats1));
   EXPECT_THAT(db()->GetRows(stats2.origin_domain), ElementsAre(stats2));
@@ -141,7 +141,8 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
   // Remove the entry with the timestamp 1 with no origin filter.
   EXPECT_TRUE(db()->RemoveStatsByOriginAndTime(
       base::NullCallback(), base::Time(), base::Time::FromTimeT(2)));
-  EXPECT_THAT(db()->GetAllRows(), UnorderedElementsAre(stats2, stats3, stats4));
+  EXPECT_THAT(db()->GetAllRowsForTest(),
+              UnorderedElementsAre(stats2, stats3, stats4));
   EXPECT_THAT(db()->GetRows(stats1.origin_domain), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats2.origin_domain), ElementsAre(stats2));
   EXPECT_THAT(db()->GetRows(stats3.origin_domain), ElementsAre(stats3));
@@ -155,7 +156,7 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
       // NOLINTNEXTLINE(modernize-use-transparent-functors)
       base::BindRepeating(std::not_equal_to<GURL>(), stats3.origin_domain),
       base::Time::FromTimeT(2), base::Time()));
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(stats3));
+  EXPECT_THAT(db()->GetAllRowsForTest(), ElementsAre(stats3));
   EXPECT_THAT(db()->GetRows(stats1.origin_domain), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats2.origin_domain), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats3.origin_domain), ElementsAre(stats3));
@@ -165,7 +166,7 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
   // This should delete the remaining entry.
   EXPECT_TRUE(db()->RemoveStatsByOriginAndTime(
       base::NullCallback(), base::Time::FromTimeT(2), base::Time()));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats1.origin_domain), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats2.origin_domain), IsEmpty());
   EXPECT_THAT(db()->GetRows(stats3.origin_domain), IsEmpty());
@@ -175,7 +176,7 @@ TEST_F(StatisticsTableTest, RemoveStatsByOriginAndTime) {
 TEST_F(StatisticsTableTest, BadURL) {
   test_data().origin_domain = GURL("trash");
   EXPECT_FALSE(db()->AddRow(test_data()));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
   EXPECT_FALSE(db()->RemoveRow(test_data().origin_domain));
 }
@@ -183,7 +184,7 @@ TEST_F(StatisticsTableTest, BadURL) {
 TEST_F(StatisticsTableTest, EmptyURL) {
   test_data().origin_domain = GURL();
   EXPECT_FALSE(db()->AddRow(test_data()));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetAllRowsForTest(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
   EXPECT_FALSE(db()->RemoveRow(test_data().origin_domain));
 }

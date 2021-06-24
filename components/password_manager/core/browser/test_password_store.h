@@ -121,7 +121,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       base::Time delete_end) override;
   void AddSiteStatsImpl(const InteractionsStats& stats) override;
   void RemoveSiteStatsImpl(const GURL& origin_domain) override;
-  std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
   PasswordStoreChangeList AddInsecureCredentialImpl(
       const InsecureCredential& insecure_credentials) override;
   PasswordStoreChangeList RemoveInsecureCredentialsImpl(
