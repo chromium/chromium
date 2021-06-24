@@ -23,6 +23,10 @@ mean ...?" message.
 |:--------------------------------------:|:-----------------------------:|
 | ![Interstitial page](interstitial.png) | ![Safety Tip bubble](tip.png) |
 
+These warnings do not indicate that the site the user has visited is malicious.
+They only indicate that the site looks like another site, and the user should
+make sure that they're on the site that they expected.
+
 ## Examples of lookalike domains
 
 Chrome's heuristics are designed to detect spoofing techniques in the wild. Some
@@ -68,6 +72,20 @@ mistakes:
    user-visible warnings.
 
 
+## Not all users see all warnings
+
+Chrome shows warnings in part based on a users' browsing history. This allows
+Chrome to be both more helpful (by providing better recommendations) and make
+fewer mistakes (by not flagging lookalikes for irrelevant sites).
+
+Chrome only shows warnings on sites that the user has not used frequently.
+Further, Chrome will only recommend sites that are either well-known (i.e. top)
+sites, or the user has an established relationship.
+
+Sites that show a warning to you may not show for another user, unless that user
+has visited the same sites that you have.
+
+
 ## Appealing a Lookalike Warning
 
 If you operate a site that erroneously triggers lookalike warnings in Chrome,
@@ -76,8 +94,9 @@ can suppress the warning for all Chrome users when necessary.
 
 In the case of compelling spoofs, we may ask you to demonstrate that you not
 only own the site on which the warning is shown, but the site that Chrome
-believes that your site is spoofing. We may also decline to suppress the warning
-if the domain is only used internally (i.e. no external users are impacted).
+believes that your site is spoofing. We may also opt to suppress warnings, but
+only for a limited period of time (generally 6 months). This is generally used
+for cases where a site is changing its domain name.
 
 Appeals for domains triggered by a given heuristic are generally considered for
 the 6 months following the release of that heuristic. These six months are
@@ -87,3 +106,22 @@ new sites in Chrome to ensure that their new domain does not trigger warnings.
 
 If you are a site operator and would like to request an appeal, please fill out
 a [request](https://forms.gle/BxV3JGbCbRjucDxq6).
+
+
+## Reasons an appeal might be denied
+
+There are several reasons that may lead us to deny your appeal. Most commonly,
+appeals are denied for domains that are only used internally (i.e. for testing
+or in an enterprise setting) or where we think few users will see the warning.
+
+For sites that are used for testing or in an enterprise setting, we recommend
+using the [Enterprise
+Policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=LookalikeWarningAllowlistDomains)
+to suppress the warning for impacted users.
+
+For newly created sites, we encourage domain owners to choose domains that do
+not look like domains used by other sites commonly visited by your users.
+
+Many warnings are also only encountered by a small fraction of users who happen
+to intersect with both sites. See a further description of this above.
+
