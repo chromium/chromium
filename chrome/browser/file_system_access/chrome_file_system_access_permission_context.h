@@ -138,8 +138,8 @@ class ChromeFileSystemAccessPermissionContext
   bool OriginHasWriteAccess(const url::Origin& origin);
 
   // Called by FileSystemAccessTabHelper when a top-level frame was navigated
-  // away from |origin| to some other origin.
-  void NavigatedAwayFromOrigin(const url::Origin& origin);
+  // away from |origin| to some other origin. Is virtual for testing purposes.
+  virtual void NavigatedAwayFromOrigin(const url::Origin& origin);
 
   content::BrowserContext* profile() const { return profile_; }
 

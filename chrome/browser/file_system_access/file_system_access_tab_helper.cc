@@ -13,7 +13,7 @@ FileSystemAccessTabHelper::~FileSystemAccessTabHelper() = default;
 void FileSystemAccessTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation) {
   // We only care about top-level navigations that actually committed.
-  if (!navigation->IsInMainFrame() || !navigation->HasCommitted())
+  if (!navigation->IsInPrimaryMainFrame() || !navigation->HasCommitted())
     return;
 
   auto src_origin = url::Origin::Create(navigation->GetPreviousMainFrameURL());

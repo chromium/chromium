@@ -1433,6 +1433,7 @@ if (!is_android) {
       "../browser/federated_learning/floc_eligibility_browsertest.cc",
       "../browser/federated_learning/floc_id_provider_browsertest.cc",
       "../browser/federated_learning/floc_origin_trial_browsertest.cc",
+      "../browser/file_system_access/file_system_access_tab_helper_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
       "../browser/font_access/font_access_context_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",
