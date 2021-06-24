@@ -6193,6 +6193,12 @@ crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/2979697
+crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Pass Failure ]
+crbug.com/1222114 http/tests/devtools/console/console-dir-es6.js [ Pass Failure ]
+crbug.com/1222114 http/tests/devtools/console/console-functions.js [ Pass Failure ]
+crbug.com/1222114 http/tests/devtools/sources/debugger/properties-special.js [ Pass Failure ]
+
 # Expected to fail with SuppressDifferentOriginSubframeJSDialogs feature disabled, tested in VirtualTestSuite
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html [ Failure ]
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html [ Failure ]
