@@ -80,18 +80,6 @@ bool ProfilerGroup::CanProfile(LocalDOMWindow* local_window,
     return false;
   }
 
-  // Bypass COOP/COEP checks when the |--disable-web-security| flag is present.
-  auto* local_frame = local_window->GetFrame();
-  DCHECK(local_frame);
-  if (local_frame->GetSettings()->GetWebSecurityEnabled() &&
-      !local_window->CrossOriginIsolatedCapability()) {
-    if (exception_state) {
-      exception_state->ThrowSecurityError(
-          "performance.profile() requires COOP+COEP (web.dev/coop-coep)");
-    }
-    return false;
-  }
-
   return true;
 }
 
