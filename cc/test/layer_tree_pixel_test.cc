@@ -29,6 +29,7 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/ipc/gl_in_process_context.h"
 
@@ -373,7 +374,10 @@ SkBitmap LayerTreePixelTest::CopyMailboxToBitmap(
   if (sync_token.HasData())
     gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 
-  GLuint texture_id = gl->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+  GLuint texture_id =
+      gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  gl->BeginSharedImageAccessDirectCHROMIUM(
+      texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
   GLuint fbo = 0;
   gl->GenFramebuffers(1, &fbo);
@@ -393,6 +397,7 @@ SkBitmap LayerTreePixelTest::CopyMailboxToBitmap(
                  pixels.get());
 
   gl->DeleteFramebuffers(1, &fbo);
+  gl->EndSharedImageAccessDirectCHROMIUM(texture_id);
   gl->DeleteTextures(1, &texture_id);
 
   EXPECT_TRUE(color_space.IsValid());

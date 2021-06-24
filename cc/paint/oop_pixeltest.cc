@@ -23,6 +23,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
@@ -227,7 +228,10 @@ class OopPixelTest : public testing::Test,
                            const gpu::Mailbox& mailbox,
                            const RasterOptions& options) {
     // Import the texture in gl, create an fbo and bind the texture to it.
-    GLuint gl_texture_id = gl->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+    GLuint gl_texture_id =
+        gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+    gl->BeginSharedImageAccessDirectCHROMIUM(
+        gl_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     GLuint fbo_id;
     gl->GenFramebuffers(1, &fbo_id);
     gl->BindFramebuffer(GL_FRAMEBUFFER, fbo_id);
@@ -241,8 +245,10 @@ class OopPixelTest : public testing::Test,
         new unsigned char[width * height * 4]);
     gl->ReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data.get());
 
-    gl->DeleteTextures(1, &gl_texture_id);
     gl->DeleteFramebuffers(1, &fbo_id);
+
+    gl->EndSharedImageAccessDirectCHROMIUM(gl_texture_id);
+    gl->DeleteTextures(1, &gl_texture_id);
 
     // Swizzle rgba->bgra
     std::vector<SkPMColor> colors;
