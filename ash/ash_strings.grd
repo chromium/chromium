@@ -2674,6 +2674,17 @@ This file contains the strings for ash.
         Your Chromebook needs to stay on and connected to power during this time. Make sure the charger or adapter cables are completely plugged in, both to your Chromebook and the power outlet. Do not turn off your Chromebook.
       </message>
 
+      <!-- Fast Pair strings -->
+      <message name="IDS_FAST_PAIR_CONNECTION_ERROR_TITLE" desc="Notification title shown when a there is a Fast Pair connection error.">
+        Couldn't connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
+      </message>
+      <message name="IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE" desc="Notification message shown when a there is a Fast Pair connection error.">
+        Open Bluetooth settings to pair the device manually
+      </message>
+      <message name="IDS_FAST_PAIR_SETTINGS_BUTTON" desc="Button title shown to direct users to settings when there is an error connecting with Fast Pair">
+        Settings
+      </message>
+
       <!-- In-session auth dialog strings -->
       <message name="IDS_ASH_IN_SESSION_AUTH_TITLE" desc="Text shown in the auth dialog to indicate authentication is needed.">
         Verify your identity

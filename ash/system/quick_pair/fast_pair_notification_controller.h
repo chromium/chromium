@@ -6,11 +6,13 @@
 #define ASH_SYSTEM_QUICK_PAIR_FAST_PAIR_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/callback.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
 // This controller creates and manages a message_center::Notification for each
-// FastPair corresponding notification.
+// FastPair corresponding notification event.
 class ASH_EXPORT FastPairNotificationController {
  public:
   FastPairNotificationController();
@@ -22,7 +24,10 @@ class ASH_EXPORT FastPairNotificationController {
 
  private:
   // Creates and displays corresponding system notification.
-  void ShowErrorNotification();
+  void ShowErrorNotification(const std::u16string& device_name,
+                             gfx::Image device_image,
+                             base::OnceClosure launch_bluetooth_pairing,
+                             base::OnceCallback<void(bool)> on_close);
   void ShowDiscoveryNotification();
   void ShowPairingNotification();
 };
