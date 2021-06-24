@@ -20,16 +20,16 @@ class DeskModelObserver {
   DeskModelObserver(const DeskModelObserver&) = delete;
   DeskModelObserver& operator=(const DeskModelObserver&) = delete;
 
-  // Invoked when desk templates are added, removed remotely. This is the
-  // mechanism for the sync server to push changes in the state of the model to
-  // clients.
-  virtual void EntriesAddedRemotely(
+  // Invoked when desk templates are added/updated, removed remotely via sync.
+  // This is the mechanism for the sync server to push changes in the state of
+  // the model to clients.
+  virtual void EntriesAddedOrUpdatedRemotely(
       const std::vector<const DeskTemplate*>& new_entries) = 0;
   virtual void EntriesRemovedRemotely(
       const std::vector<std::string>& uuids) = 0;
 
-  // Invoked when desk templates are added, removed locally.
-  virtual void EntriesAddedLocally(
+  // Invoked when desk templates are added/updated, removed locally.
+  virtual void EntriesAddedOrUpdatedLocally(
       const std::vector<const DeskTemplate*>& new_entries) = 0;
   virtual void EntriesRemovedLocally(const std::vector<std::string>& uuids) = 0;
 
