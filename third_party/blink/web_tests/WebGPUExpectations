@@ -185,6 +185,9 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty
 # Assert in debug build
 crbug.com/dawn/614 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:binding_must_contain_resource_defined_in_layout:* [ Crash ]
 
+# filtering/non-filtering not implemented
+crbug.com/dawn/367 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:binding_must_contain_resource_defined_in_layout:resourceType="filtSamp";entry={"sampler":{"type":"non-filtering"}} [ Failure ]
+
 # Crash with validation layers (Vulkan/D3D12).
 crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
 
