@@ -245,20 +245,9 @@ promise_test(async t => {
   // We can guarantee that all encodes are processed after a flush.
   assert_equals(encoder.encodeQueueSize, 0);
 
-  // The first frame may have been dropped when reconfiguring.
-  // This shouldn't happen, and should be fixed/called out in the spec, but
-  // this is preptively added to prevent flakiness.
-  // TODO: Remove these checks when implementations handle this correctly.
-  assert_true(output_chunks.length == 1 || output_chunks.length == 2);
-
-  if (output_chunks.length == 1) {
-    // If we only have one chunk frame, make sure we droped the frame that was
-    // in flight when we reconfigured.
-    assert_equals(output_chunks[0].timestamp, frame2.timestamp);
-  } else {
-    assert_equals(output_chunks[0].timestamp, frame1.timestamp);
-    assert_equals(output_chunks[1].timestamp, frame2.timestamp);
-  }
+  assert_true(output_chunks.length == 2);
+  assert_equals(output_chunks[0].timestamp, frame1.timestamp);
+  assert_equals(output_chunks[1].timestamp, frame2.timestamp);
 
   output_chunks = [];
 

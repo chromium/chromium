@@ -113,6 +113,7 @@ const validConfigs = [
     width: 800,
     height: 600,
     bitrate: 7000000,
+    bitrateMode: "variable",
     framerate: 60,
     scalabilityMode: "L1T2",
     futureConfigFeature: 'foo',
@@ -123,6 +124,7 @@ const validConfigs = [
     width: 1280,
     height: 720,
     bitrate: 7000000,
+    bitrateMode: "constant",
     framerate: 25,
     futureConfigFeature: 'foo',
   }
@@ -142,6 +144,8 @@ validConfigs.forEach(config => {
       assert_equals(new_config.bitrate, config.bitrate);
     if (config.framerate)
       assert_equals(new_config.framerate, config.framerate);
+    if (config.bitrateMode)
+      assert_equals(new_config.bitrateMode, config.bitrateMode);
   }, "VideoEncoder.isConfigSupported() supports:" + JSON.stringify(config));
 });
 

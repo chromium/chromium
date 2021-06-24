@@ -44,7 +44,8 @@ async function encode_decode_test(codec, acc, avc_format) {
     hardwareAcceleration: acc,
     width: w,
     height: h,
-    bitrate: 5000000,
+    bitrate: 1000000,
+    bitrateMode: "constant"
   };
 
   if (avc_format != null) {

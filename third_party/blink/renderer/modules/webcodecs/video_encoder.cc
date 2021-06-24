@@ -332,6 +332,12 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
   if (config.hasHardwareAcceleration())
     result->setHardwareAcceleration(config.hardwareAcceleration());
 
+  if (config.hasAlpha())
+    result->setAlpha(config.alpha());
+
+  if (config.hasBitrateMode())
+    result->setBitrateMode(config.bitrateMode());
+
   if (config.hasAvc() && config.avc()->hasFormat()) {
     auto* avc = AvcEncoderConfig::Create();
     avc->setFormat(config.avc()->format());

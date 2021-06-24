@@ -12,6 +12,7 @@ dictionary VideoEncoderConfig {
   AlphaOption alpha = "discard";
 
   [EnforceRange] unsigned long long bitrate;
+  BitrateMode bitrateMode = "variable";
 
   double framerate;
 
