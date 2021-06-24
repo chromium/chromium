@@ -184,21 +184,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultAutoplaySetting" enum="ContentSetting"
-    expires_after="2021-10-24">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default autoplay setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultCookiesSetting" enum="ContentSetting"
-    expires_after="2021-10-25">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default cookies setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultIdleDetectionSetting"
-    enum="ContentSetting" expires_after="2021-06-19">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -207,42 +207,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultImagesSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default image setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultJavaScriptSetting"
-    enum="ContentSetting" expires_after="2021-10-25">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default JavaScript setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultLocationSetting" enum="ContentSetting"
-    expires_after="2021-10-25">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default location setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamCameraSetting"
-    enum="ContentSetting" expires_after="2021-06-19">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default camera setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamMicSetting"
-    enum="ContentSetting" expires_after="2021-06-19">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default microphone setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMIDISysExSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -252,7 +252,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultNotificationsSetting"
-    enum="ContentSetting" expires_after="2021-06-19">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default notification setting at profile open.</summary>
@@ -269,35 +269,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default popups setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default sound setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSubresourceFilterSetting"
-    enum="ContentSetting" expires_after="2021-08-22">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default subresource filter setting at profile open</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultUsbGuardSetting" enum="ContentSetting"
-    expires_after="2021-06-19">
+    expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default permission setting for WebUSB at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultWebBluetoothGuardSetting"
-    enum="ContentSetting" expires_after="2021-06-19">
+    enum="ContentSetting" expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
