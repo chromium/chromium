@@ -651,6 +651,11 @@ class BuildConfigGenerator extends DefaultTask {
                 // the library is present: b/70887421
                 sb.append('  deps += [":androidx_fragment_fragment_java"]\n')
                 break
+            case 'androidx_lifecycle_lifecycle_process':
+                sb.append('\n')
+                sb.append('  # Only useful for very old SDKs.\n')
+                sb.append('  ignore_proguard_configs = true\n')
+                break
             case 'android_arch_lifecycle_runtime':
             case 'android_arch_lifecycle_viewmodel':
             case 'androidx_lifecycle_lifecycle_runtime':
