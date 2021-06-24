@@ -119,7 +119,13 @@ using chrome_test_util::SettingsCollectionView;
                                    grey_accessibilityID(
                                        kSettingsGoogleSyncAndServicesCellId),
                                    nil)] performAction:grey_tap()];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  // If the consent screen was previously scrolled it will not need to be
+  // scrolled again.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)]
+      performAction:grey_tap()];
 
   // Check Sync On label is visible and user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
