@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -886,14 +885,6 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* window : mru_windows) {
-    // For now we'll ignore ARC, crostini and lacros windows in desk template.
-    const AppType app_type =
-        static_cast<AppType>(window->GetProperty(aura::client::kAppType));
-    if (app_type != AppType::BROWSER && app_type != AppType::CHROME_APP &&
-        app_type != AppType::SYSTEM_APP) {
-      continue;
-    }
-
     std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
         shell->shell_delegate()->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)

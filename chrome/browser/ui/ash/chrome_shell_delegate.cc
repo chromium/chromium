@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screenshot_delegate.h"
@@ -55,6 +56,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "url/gurl.h"
 
@@ -92,6 +94,25 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   for (int i = 0; i < tab_strip_model->count(); ++i)
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
   return urls;
+}
+
+// Returns true if |window| is supported in desk templates feature.
+bool IsWindowSupportedForDeskTemplate(aura::Window* window) {
+  // For now we'll ignore ARC, crostini and lacros windows in desk template.
+  const ash::AppType app_type =
+      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+  if (app_type != ash::AppType::BROWSER &&
+      app_type != ash::AppType::CHROME_APP &&
+      app_type != ash::AppType::SYSTEM_APP) {
+    return false;
+  }
+  // Exclude window that does not asscociate with an app id.
+  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
+  if (!app_id)
+    return false;
+
+  // TODO: Exclude incognito browser windows.
+  return true;
 }
 
 }  // namespace
@@ -292,8 +313,7 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
 std::unique_ptr<full_restore::AppLaunchInfo>
 ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     aura::Window* window) const {
-  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
-  if (!app_id)
+  if (!IsWindowSupportedForDeskTemplate(window))
     return nullptr;
 
   const user_manager::User* active_user =
@@ -311,6 +331,8 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
           user_profile->GetPath());
   DCHECK(full_restore_data);
 
+  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
+  DCHECK(app_id);
   const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
   std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
       std::make_unique<full_restore::AppLaunchInfo>(*app_id, window_id);
