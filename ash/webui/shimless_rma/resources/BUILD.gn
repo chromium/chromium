@@ -26,6 +26,7 @@ polymer_element_files = [
   "reimaging_firmware_update_page.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
+  "wrapup_repair_complete_page.js",
 ]
 
 generate_grd("build_grd") {
@@ -70,6 +71,7 @@ js_type_check("closure_compile_module") {
     ":reimaging_firmware_update_page",
     ":shimless_rma",
     ":shimless_rma_types",
+    ":wrapup_repair_complete_page",
   ]
 }
 
@@ -197,6 +199,13 @@ js_library("reimaging_firmware_update_page") {
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+  ]
+}
+
+js_library("wrapup_repair_complete_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
 }
 

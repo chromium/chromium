@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './onboarding_choose_destination_page.js';
 import './onboarding_choose_wp_disable_method_page.js';
 import './onboarding_enter_rsu_wp_disable_code_page.js';
@@ -14,6 +13,8 @@ import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_wp_disable_complete_page.js';
 import './reimaging_firmware_update_page.js';
 import './shimless_rma_shared_css.js';
+import './wrapup_repair_complete_page.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -108,6 +109,12 @@ const StateComponentMapping = {
   },
   [RmaState.kChooseFirmwareReimageMethod]: {
     componentIs: 'reimaging-firmware-update-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kRepairComplete]: {
+    componentIs: 'wrapup-repair-complete-page',
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,

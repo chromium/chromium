@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
     ":reimaging_firmware_update_page_test",
     ":shimless_rma_app_test",
     ":shimless_rma_unified_test",
+    ":wrapup_repair_complete_page_test",
   ]
 }
 
@@ -131,5 +132,14 @@ js_library("reimaging_firmware_update_page_test") {
 
 js_library("shimless_rma_unified_test") {
   deps = []
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("wrapup_repair_complete_page_test") {
+  deps = [
+    "//ash/webui/shimless_rma/resources:wrapup_repair_complete_page",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

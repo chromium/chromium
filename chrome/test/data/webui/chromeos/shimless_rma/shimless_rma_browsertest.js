@@ -49,6 +49,7 @@ const debug_suites_list = [
   'OnboardingWaitForManualWpDisablePageTest',
   'ReimagingFirmwareUpdatePageTest',
   'ShimlessRMAAppTest',
+  'WrapupRepairCompletePageTest',
 ];
 
 TEST_F('ShimlessRMABrowserTest', 'All', function() {

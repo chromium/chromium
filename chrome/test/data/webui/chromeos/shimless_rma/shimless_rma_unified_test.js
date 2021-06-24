@@ -14,6 +14,7 @@ import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
+import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
 
 window.test_suites_list = [];
 
@@ -40,3 +41,4 @@ runSuite(
     onboardingWaitForManualWpDisablePageTest);
 runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
+runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);

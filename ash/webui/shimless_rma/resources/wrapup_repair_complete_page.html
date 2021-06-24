@@ -1,0 +1,44 @@
+<style include="cr-shared-style shimless-rma-shared">
+  cr-dialog::part(dialog) {
+    width: 700px;
+  }
+</style>
+
+<base-page orientation="column">
+  <!-- TODO(joonbug): Update text for i18n -->
+  <div slot="header">
+    <h1>Repair completed</h1>
+    <p>Your repair was successful. You can exit or take some additional actions.</h2>
+  </div>
+  <div slot="body">
+    <cr-button id="diagnosticsButton" on-click="onDiagnosticsButtonClick_">Run Diagnostics</cr-button>
+    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">See RMA Logs</cr-button>
+    <cr-button id="batteryCutButton" on-click="onBatteryCutButtonClick_">Battery Cutoff</cr-button>
+  </div>
+</base-page>
+
+<!-- TODO(joonbug): Update for i18n -->
+<cr-dialog id="logsDialog" close-text="close">
+  <div slot="title">
+    RMA Logs
+  </div>
+  <div slot="body">
+    Logs..
+    <hr>
+    <cr-button id="closeLogDialogButton" on-click="onCancelClick_">Cancel</cr-button>
+    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">Save to ...</cr-button>
+  </div>
+</cr-dialog>
+
+<!-- TODO(joonbug): Update for i18n -->
+<cr-dialog id="batteryCutDialog" close-text="close">
+  <div slot="title">
+    Unplug your cord to cut off battery
+  </div>
+  <div slot="body">
+    Shut down your device to complete battery cut off
+    <hr>
+    <cr-button id="closeBatteryDialogButton" on-click="onCancelClick_">Cancel</cr-button>
+    <cr-button id="shutdownButton" on-click="onShutdownClick_">Shut down</cr-button>
+  </div>
+</cr-dialog>
