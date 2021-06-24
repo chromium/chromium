@@ -21,7 +21,7 @@
 // #import {constants} from './constants.m.js';
 // #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 // #import {ActionsModel} from './actions_model.js';
-// #import {PathComponent} from './path_component.js';
+// #import {PathComponent} from './path_component.m.js';
 // #import {HoldingSpaceUtil} from './holding_space_util.js';
 // #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.js';
 // #import {EntryList} from '../../common/js/files_app_entry_types.js';

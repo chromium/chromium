@@ -2,38 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
-import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-
-import {FileType} from '../../common/js/file_type.js';
-import {str, util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
-import {FilesQuickView} from '../elements/files_quick_view.js';
-
-import {constants} from './constants.m.js';
-import {DialogType} from './dialog_type.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
-import {FileTasks} from './file_tasks.m.js';
-import {MetadataItem} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {MetadataBoxController} from './metadata_box_controller.js';
-import {QuickViewModel} from './quick_view_model.js';
-import {QuickViewUma} from './quick_view_uma.js';
-import {TaskController} from './task_controller.js';
-import {ThumbnailLoader} from './thumbnail_loader.m.js';
-import {FileListSelectionModel} from './ui/file_list_selection_model.js';
-import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-import {ListContainer} from './ui/list_container.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {MetadataItem} from './metadata/metadata_item.js';
+// #import {FileTasks} from './file_tasks.m.js';
+// #import {FilesQuickView} from '../elements/files_quick_view.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
+// #import {MetadataBoxController} from './metadata_box_controller.js';
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
+// #import {TaskController} from './task_controller.m.js';
+// #import {QuickViewModel} from './quick_view_model.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
+// #import {ListContainer} from './ui/list_container.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
+// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
+// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+// #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+// #import {FileType} from '../../common/js/file_type.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
+// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
+// #import {constants} from './constants.m.js';
+// #import {util, str} from '../../common/js/util.js';
+// #import {DialogType} from './dialog_type.m.js';
+// #import {QuickViewUma} from './quick_view_uma.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// clang-format on
 
 /**
  * Controller for QuickView.
  */
-export class QuickViewController {
+/* #export */ class QuickViewController {
   /**
    * This should be initialized with |init_| method.
    *
@@ -41,7 +41,7 @@ export class QuickViewController {
    * @param {!MetadataModel} metadataModel
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!ListContainer} listContainer
-   * @param {!MultiMenuButton} selectionMenuButton
+   * @param {!cr.ui.MultiMenuButton} selectionMenuButton
    * @param {!QuickViewModel} quickViewModel
    * @param {!TaskController} taskController
    * @param {!FileListSelectionModel} fileListSelectionModel
@@ -189,6 +189,9 @@ export class QuickViewController {
       // Workaround: Polymer.Base is only defined on Polymer2.
       // For Polymer3 the QuickView is already imported at the top.
       if (window.Polymer && window.Polymer.Base) {
+        /* #ignore */ Polymer.Base.importHref(
+            /* #ignore */ constants.FILES_QUICK_VIEW_HTML,
+            /* #ignore */ () => resolve(quickView), reject);
       } else {
         resolve(quickView);
       }

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DirectoryModel} from './directory_model.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
-import {SpinnerController} from './spinner_controller.js';
-import {ListContainer} from './ui/list_container.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {SpinnerController} from './spinner_controller.m.js';
+// #import {ListContainer} from './ui/list_container.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
 
 /**
  * Handler for scan related events of DirectoryModel.
  */
-export class ScanController {
+/* #export */ class ScanController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!ListContainer} listContainer

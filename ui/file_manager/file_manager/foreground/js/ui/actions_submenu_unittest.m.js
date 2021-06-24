@@ -7,7 +7,7 @@ import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {util} from '../../../common/js/util.js';
-import {MockActionModel, MockActionsModel} from '../mock_actions_model.js';
+import {MockActionModel, MockActionsModel} from '../mock_actions_model.m.js';
 
 import {ActionsSubmenu} from './actions_submenu.js';
 

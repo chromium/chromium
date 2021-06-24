@@ -9,7 +9,7 @@ import {util} from '../../../common/js/util.js';
 import {FakeEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
-import {PathComponent} from '../path_component.js';
+import {PathComponent} from '../path_component.m.js';
 
 import {BreadCrumb} from './breadcrumb.js';
 import {ListContainer} from './list_container.js';

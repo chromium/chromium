@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format off
+// #import {FileTransferController} from './file_transfer_controller.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.js';
+// #import {Crostini} from '../../externs/background/crostini.js';
+// #import {NamingController} from './naming_controller.m.js';
+// #import {MetadataUpdateController} from './metadata_update_controller.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
+// #import {FileManagerUI} from './ui/file_manager_ui.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
+// #import {DialogType} from './dialog_type.m.js';
+// #import {strf, util, str} from '../../common/js/util.js';
+// #import {FileTasks} from './file_tasks.m.js';
+// #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {TaskHistory} from './task_history.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
 
-import {str, strf, util} from '../../common/js/util.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
-
-import {DialogType} from './dialog_type.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
-import {FileTasks} from './file_tasks.m.js';
-import {FileTransferController} from './file_transfer_controller.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {MetadataUpdateController} from './metadata_update_controller.js';
-import {NamingController} from './naming_controller.js';
-import {TaskHistory} from './task_history.m.js';
-import {FileManagerUI} from './ui/file_manager_ui.js';
-
-export class TaskController {
+/* #export */ class TaskController {
   /**
    * @param {DialogType} dialogType
    * @param {!VolumeManager} volumeManager
@@ -128,37 +128,37 @@ export class TaskController {
     this.canExecuteMoreActions_ = false;
 
     /**
-     * @private {!Command}
+     * @private {!cr.ui.Command}
      * @const
      */
-    this.defaultTaskCommand_ =
-        assertInstanceof(document.querySelector('#default-task'), Command);
+    this.defaultTaskCommand_ = assertInstanceof(
+        document.querySelector('#default-task'), cr.ui.Command);
 
     /**
      * More actions command that uses #open-with as selector due to the
      * open-with command used previously for the same task.
-     * @private {!Command}
+     * @private {!cr.ui.Command}
      * @const
      */
     this.openWithCommand_ =
-        assertInstanceof(document.querySelector('#open-with'), Command);
+        assertInstanceof(document.querySelector('#open-with'), cr.ui.Command);
 
     /**
      * More actions command that uses #open-with as selector due to the
      * open-with command used previously for the same task.
-     * @private {!Command}
+     * @private {!cr.ui.Command}
      * @const
      */
-    this.moreActionsCommand_ =
-        assertInstanceof(document.querySelector('#more-actions'), Command);
+    this.moreActionsCommand_ = assertInstanceof(
+        document.querySelector('#more-actions'), cr.ui.Command);
 
     /**
      * Show sub menu command that uses #show-submenu as selector.
-     * @private {!Command}
+     * @private {!cr.ui.Command}
      * @const
      */
-    this.showSubMenuCommand_ =
-        assertInstanceof(document.querySelector('#show-submenu'), Command);
+    this.showSubMenuCommand_ = assertInstanceof(
+        document.querySelector('#show-submenu'), cr.ui.Command);
 
     /**
      * @private {Promise<!FileTasks>}
@@ -216,7 +216,7 @@ export class TaskController {
     }
 
     // 'select' event from ComboButton has the item as event.item.
-    // 'activate' event from MenuButton has the item as event.target.data.
+    // 'activate' event from cr.ui.MenuButton has the item as event.target.data.
     const item = event.item || event.target.data;
     this.getFileTasks()
         .then(tasks => {
