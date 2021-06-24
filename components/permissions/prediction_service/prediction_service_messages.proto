@@ -66,10 +66,16 @@ message PermissionFeatures {
   // Features related to the notification permission.
   message NotificationPermission {}
 
+  // Features related to the geolocation permission.
+  message GeolocationPermission {}
+
   // This field has two purposes:
   //   * it specifies the permission type
   //   * it contains the possible additional features for the specified type.
-  oneof permission_type { NotificationPermission notification_permission = 2; }
+  oneof permission_type {
+    NotificationPermission notification_permission = 2;
+    GeolocationPermission geolocation_permission = 3;
+  }
 }
 // Permission suggestion with the predicted likelihood that the user will grant
 // the permission prompt (more details at go/hedgehog-backend).
@@ -77,10 +83,16 @@ message PermissionPrediction {
   // Additional information regarding the notification suggestion.
   message NotificationPrediction {}
 
+  // Additional information regarding the geolocation prediction.
+  message GeolocationPrediction {}
+
   // This field has two purposes:
   //   * it specifies the permission type for which we generated the suggestion
   //   * it contains the possible additional information for the specified type.
-  oneof prediction_type { NotificationPrediction notification_prediction = 1; }
+  oneof prediction_type {
+    NotificationPrediction notification_prediction = 1;
+    GeolocationPrediction geolocation_prediction = 3;
+  }
 
   // Information about how likely a user is to perform a specific action.
   message Likelihood {
