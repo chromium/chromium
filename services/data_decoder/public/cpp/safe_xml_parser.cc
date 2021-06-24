@@ -89,7 +89,7 @@ bool GetXmlElementNamespacePrefix(const base::Value& element,
 
   // The namespaces dictionary is prefix -> URI, so we have to do a reverse
   // lookup.
-  for (const auto& item : namespaces->DictItems()) {
+  for (auto item : namespaces->DictItems()) {
     if (item.second.GetString() == namespace_uri) {
       *prefix = item.first;
       return true;

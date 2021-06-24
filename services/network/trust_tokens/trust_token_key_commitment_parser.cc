@@ -216,7 +216,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     return result;
   if (!maybe_keys->is_dict())
     return nullptr;
-  for (const auto& kv : maybe_keys->DictItems()) {
+  for (auto kv : maybe_keys->DictItems()) {
     const base::Value& item = kv.second;
     if (!item.is_dict())
       continue;
@@ -287,7 +287,7 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
 
   std::vector<Entry> parsed_entries;
 
-  for (const auto& kv : maybe_value->DictItems()) {
+  for (auto kv : maybe_value->DictItems()) {
     const std::string& raw_key_from_json = kv.first;
     absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(raw_key_from_json));

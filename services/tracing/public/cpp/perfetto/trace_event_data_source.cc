@@ -291,7 +291,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
     return;
   }
 
-  for (const auto& it : metadata_dict->DictItems()) {
+  for (auto it : metadata_dict->DictItems()) {
     auto* new_metadata = event_bundle->add_metadata();
     new_metadata->set_name(it.first.c_str());
 
