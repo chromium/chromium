@@ -129,6 +129,14 @@ def try_builder(
                 test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test/.+",
             ),
         ),
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium.blink_web_tests_try_test_results",
+            predicate = resultdb.test_result_predicate(
+                # Match the "blink_web_tests" target and all of its
+                # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
+                test_id_regexp = "ninja://[^/]*blink_web_tests/.+",
+            ),
+        ),
     ]
     merged_resultdb_bigquery_exports.extend(
         defaults.get_value(
