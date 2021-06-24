@@ -15,13 +15,13 @@
 
     <include layout="@layout/top_bar"/>
 
-    <LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical"
-	    android:background="@color/modern_grey_200">
-	    
-	    <TextView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/modern_grey_200">
+
+        <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,14 +31,16 @@
             android:paddingLeft="18dp"
             android:paddingRight="18dp"
             android:layout_marginBottom="17dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/note_title_outline"
             android:textAppearance="@style/TextAppearance.TextSmall"/>
 
-	    <androidx.recyclerview.widget.RecyclerView
-	      android:id="@+id/note_carousel"
-	      android:layout_width="match_parent"
-	      android:layout_height="match_parent"
-	      android:orientation="horizontal"/>
-	</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/note_carousel"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="horizontal"
+          android:layout_below="@id/title"
+          android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
 </LinearLayout>
