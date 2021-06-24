@@ -1780,11 +1780,17 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
 
         if (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            // TODO(1210431): We shouldn't need to post this. Instead we should wait until the
+            // TODO(1222695): We shouldn't need to post this. Instead we should wait until the
             //                dependencies are ready. This logic was introduced to move asynchronous
             //                observer events from the infra (LayoutManager) into the feature using
             //                it.
-            mControlContainer.post(() -> updateForLayout(LayoutType.TAB_SWITCHER, true));
+            mControlContainer.post(() -> {
+                // TODO(1201279): This check is synonymous with whether ToolbarManager has been
+                //                destroyed. This would otherwise use the CallbackController, but
+                //                that causes start surface tests to lock up.
+                if (mLayoutStateProvider == null) return;
+                updateForLayout(LayoutType.TAB_SWITCHER, true);
+            });
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);
