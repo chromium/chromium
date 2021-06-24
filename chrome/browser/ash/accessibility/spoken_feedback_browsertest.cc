@@ -684,11 +684,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
       "Quick Settings, Press search plus left to access the notification "
       "center., window");
 
-  // Avatar button.
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
-  sm_.ExpectSpeech(GetParam() == kTestAsGuestUser ? "Guest" : "");
-  sm_.ExpectSpeech("Button");
-
+  // Avatar button. Disabled for guest account.
+  if (GetParam() != kTestAsGuestUser) {
+    sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Button");
+  }
   // Exit button.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeech(GetParam() == kTestAsGuestUser ? "Exit guest" : "Sign out");
