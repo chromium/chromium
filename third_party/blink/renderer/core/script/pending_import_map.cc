@@ -76,11 +76,10 @@ void PendingImportMap::RegisterImportMap() const {
     return;
 
   // Steps 7 and 8.
-  LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
-  if (!frame)
+  Modulator* modulator = Modulator::From(
+      ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame()));
+  if (!modulator)
     return;
-
-  Modulator* modulator = Modulator::From(ToScriptStateForMainWorld(frame));
 
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);

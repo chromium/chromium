@@ -780,8 +780,7 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
 ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
   DCHECK(context);
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (LocalFrame* frame = window->GetFrame())
-      return ToScriptState(frame, world);
+    return ToScriptState(window->GetFrame(), world);
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
     if (WorkerOrWorkletScriptController* script = scope->ScriptController())
       return script->GetScriptState();
@@ -790,6 +789,8 @@ ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
 }
 
 ScriptState* ToScriptState(LocalFrame* frame, DOMWrapperWorld& world) {
+  if (!frame)
+    return nullptr;
   v8::HandleScope handle_scope(ToIsolate(frame));
   return ToScriptStateImpl(frame, world);
 }

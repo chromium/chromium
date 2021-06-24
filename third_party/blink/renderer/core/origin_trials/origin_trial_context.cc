@@ -342,10 +342,7 @@ void OriginTrialContext::InitializePendingFeatures() {
   // ready for script in that case, so bail out.
   if (!window || !window->document())
     return;
-  LocalFrame* frame = window->GetFrame();
-  if (!frame)
-    return;
-  ScriptState* script_state = ToScriptStateForMainWorld(frame);
+  ScriptState* script_state = ToScriptStateForMainWorld(window->GetFrame());
   if (!script_state)
     return;
   if (!script_state->ContextIsValid())

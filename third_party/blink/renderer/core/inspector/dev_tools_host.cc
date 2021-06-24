@@ -120,8 +120,6 @@ void DevToolsHost::Trace(Visitor* visitor) const {
 void DevToolsHost::EvaluateScript(const String& expression) {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  if (!frontend_frame_)
-    return;
   ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
   if (!script_state)
     return;

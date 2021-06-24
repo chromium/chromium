@@ -406,8 +406,7 @@ Response InspectorAnimationAgent::resolveAnimation(
       To<KeyframeEffect>(animation->effect())->EffectTarget();
   Document* document = element->ownerDocument();
   LocalFrame* frame = document ? document->GetFrame() : nullptr;
-  ScriptState* script_state =
-      frame ? ToScriptStateForMainWorld(frame) : nullptr;
+  ScriptState* script_state = ToScriptStateForMainWorld(frame);
   if (!script_state)
     return Response::ServerError("Element not associated with a document.");
 
