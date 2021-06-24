@@ -449,7 +449,21 @@ void GpuChannelManager::SetChannelClientPid(int client_id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   GpuChannel* gpu_channel = LookupChannel(client_id);
   if (gpu_channel) {
-    DCHECK_EQ(gpu_channel->client_pid(), base::kNullProcessId);
+    // TODO(rockot): It's possible to receive different PIDs for the same
+    // GpuChannel because some clients may reuse a client ID. For example, if a
+    // Content renderer crashes and restarts, the new process will use the same
+    // GPU client ID that the crashed process used. In such cases, this
+    // SetChannelClientPid (which comes from the GPU host, not the client
+    // process) may arrive late with the crashed process PID, followed shortly
+    // thereafter by the current PID of the client.
+    //
+    // For a short window of time this means a GpuChannel may have a stale PID
+    // value. It's not a serious issue since the PID is only informational and
+    // not required for security or application correctness, but we should still
+    // address it. One option is to introduce a separate host-controlled
+    // interface that is paired with the GpuChannel during Establish, which the
+    // host can then use to asynchronously push down a PID for the specific
+    // channel instance.
     gpu_channel->set_client_pid(client_pid);
   }
 }
