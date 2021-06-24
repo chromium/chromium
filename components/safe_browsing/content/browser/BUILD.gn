@@ -5,7 +5,7 @@
 import("//build/config/features.gni")
 
 # NOTE: This target is separated from :browser as
-# //components/safe_browsing/content/web_ui, which :browser depends on, depends
+# //components/safe_browsing/content/browser/web_ui, which :browser depends on, depends
 # on this.
 # TODO(crbug.com/1216341): Consider folding all of three these together into
 # :browser, along with the other browser process code in
@@ -50,9 +50,9 @@ source_set("browser") {
     "//base:i18n",
     "//components/back_forward_cache",
     "//components/history/core/browser",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common",
     "//components/safe_browsing/content/common:interfaces",
-    "//components/safe_browsing/content/web_ui:web_ui",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:ping_manager",
@@ -143,8 +143,8 @@ source_set("client_side_detection") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common:interfaces",
-    "//components/safe_browsing/content/web_ui:web_ui",
     "//components/safe_browsing/core:client_model_proto",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",

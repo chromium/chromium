@@ -36,7 +36,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/file_type_policies.h"
 #include "components/safe_browsing/core/proto/download_file_types.pb.h"
 #include "content/public/browser/browser_task_traits.h"

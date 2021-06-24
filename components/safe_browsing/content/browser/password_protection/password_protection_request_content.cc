@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
-#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "content/public/browser/browser_task_traits.h"

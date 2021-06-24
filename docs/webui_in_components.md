@@ -12,7 +12,7 @@
 
 # Creating WebUI Interfaces in `components/`
 
-To create a WebUI interface in `components/` you need to follow different steps from [Creating WebUI Interfaces in `chrome/`](https://www.chromium.org/developers/webui). This guide is specific to creating a WebUI interface in `src/components/`. It is based on the steps I went through to create the WebUI infrastructure for chrome://safe-browsing in 'src/components/safe_browsing/content/web_ui/'.
+To create a WebUI interface in `components/` you need to follow different steps from [Creating WebUI Interfaces in `chrome/`](https://www.chromium.org/developers/webui). This guide is specific to creating a WebUI interface in `src/components/`. It is based on the steps I went through to create the WebUI infrastructure for chrome://safe-browsing in 'src/components/safe_browsing/content/browser/web_ui/'.
 
 [TOC]
 

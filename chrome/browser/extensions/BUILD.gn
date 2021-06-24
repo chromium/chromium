@@ -865,7 +865,7 @@ static_library("extensions") {
     "//components/proxy_config",
     "//components/resources",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/content/web_ui:web_ui",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_WEB_UI_SAFE_BROWSING_UI_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_WEB_UI_SAFE_BROWSING_UI_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -635,4 +635,4 @@ class CrSBLogVoidify {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_WEB_UI_SAFE_BROWSING_UI_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_

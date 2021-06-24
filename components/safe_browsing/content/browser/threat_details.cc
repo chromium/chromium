@@ -28,7 +28,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
-#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/db/hit_report.h"
 #include "components/safe_browsing/core/features.h"

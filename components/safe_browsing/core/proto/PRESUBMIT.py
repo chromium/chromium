@@ -11,7 +11,7 @@ def CheckChangeOnUpload(input_api, output_api):
   # the WebUI and extension API idl file.
   proto_path = 'components/safe_browsing/core/proto/csd.proto'
   realtime_proto_path = 'components/safe_browsing/core/proto/realtimeapi.proto'
-  web_ui_path = 'components/safe_browsing/content/web_ui/safe_browsing_ui.cc'
+  web_ui_path = 'components/safe_browsing/content/browser/web_ui/safe_browsing_ui.cc'
   idl_path = 'chrome/common/extensions/api/safe_browsing_private.idl'
 
   if proto_path in input_api.change.LocalPaths():
