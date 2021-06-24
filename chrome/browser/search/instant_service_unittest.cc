@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/instant_unittest_base.h"
@@ -494,7 +495,14 @@ TEST_F(InstantServiceTest, LocalImageDoesNotHaveAttribution) {
   EXPECT_EQ(GURL(), theme->custom_background_attribution_action_url);
 }
 
-TEST_F(InstantServiceTest, TestUpdateCustomBackgroundColor) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223439
+#define MAYBE_TestUpdateCustomBackgroundColor \
+  DISABLED_TestUpdateCustomBackgroundColor
+#else
+#define MAYBE_TestUpdateCustomBackgroundColor TestUpdateCustomBackgroundColor
+#endif
+TEST_F(InstantServiceTest, MAYBE_TestUpdateCustomBackgroundColor) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(32, 32);
   bitmap.eraseColor(SK_ColorRED);
