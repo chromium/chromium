@@ -915,13 +915,14 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
   // our interceptors_ a chance to intercept the request for the new location.
   redirect_info_ = redirect_info;
 
+  GURL previous_url = url_;
   url_ = redirect_info.new_url;
 
   network::mojom::URLResponseHead* head_ptr = head.get();
   auto on_receive_redirect = base::BindOnce(
       &NavigationURLLoaderImpl::NotifyRequestRedirected,
       weak_factory_.GetWeakPtr(), redirect_info, std::move(head));
-  ParseHeaders(url_, head_ptr, std::move(on_receive_redirect));
+  ParseHeaders(previous_url, head_ptr, std::move(on_receive_redirect));
 }
 
 void NavigationURLLoaderImpl::OnUploadProgress(
@@ -1070,7 +1071,20 @@ void NavigationURLLoaderImpl::ParseHeaders(
   // - ServiceWorker
   // - WebUI
   if (head->parsed_headers) {
+#if DCHECK_IS_ON()
+    // In debug mode, force reparsing the headers and check that they match.
+    auto check = [](base::OnceClosure continuation,
+                    network::mojom::URLResponseHead* head,
+                    network::mojom::ParsedHeadersPtr parsed_headers) {
+      DCHECK(parsed_headers.Equals(head->parsed_headers));
+      std::move(continuation).Run();
+    };
+    GetNetworkService()->ParseHeaders(
+        url, head->headers,
+        base::BindOnce(check, std::move(continuation), head));
+#else
     std::move(continuation).Run();
+#endif
     return;
   }
 
