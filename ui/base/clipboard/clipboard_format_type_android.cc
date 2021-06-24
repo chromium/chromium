@@ -97,7 +97,8 @@ const ClipboardFormatType& ClipboardFormatType::GetPngType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
-  return ClipboardFormatType::GetPngType();
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeImageURI);
+  return *type;
 }
 
 // static

@@ -32,6 +32,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ui_base_jni_headers/Clipboard_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 
 // TODO:(andrewhayden) Support additional formats in Android: URI, HTML,
@@ -86,6 +87,25 @@ SkBitmap GetImageData(
   return gfx::CreateSkBitmapFromJavaBitmap(java_bitmap);
 }
 
+// Add a format:jstr pair to map, if jstr is null or is empty, then remove that
+// entry.
+void JNI_Clipboard_AddMapEntry(JNIEnv* env,
+                               std::map<ClipboardFormatType, std::string>* map,
+                               const ClipboardFormatType& format,
+                               const ScopedJavaLocalRef<jstring>& jstr) {
+  if (jstr.is_null()) {
+    map->erase(format);
+    return;
+  }
+
+  std::string str = ConvertJavaStringToUTF8(env, jstr.obj());
+  if (!str.empty()) {
+    (*map)[format] = str;
+  } else {
+    map->erase(format);
+  }
+}
+
 class ClipboardMap {
  public:
   ClipboardMap();
@@ -93,6 +113,7 @@ class ClipboardMap {
   void SetJavaSideNativePtr(Clipboard* clipboard);
   std::string Get(const ClipboardFormatType& format);
   void GetImage(ReadImageCallback callback);
+  void DidGetImage(ReadImageCallback callback, const SkBitmap& result);
   uint64_t GetSequenceNumber() const;
   base::Time GetLastModifiedTime() const;
   void ClearLastModifiedTime();
@@ -165,7 +186,35 @@ std::string ClipboardMap::Get(const ClipboardFormatType& format) {
 void ClipboardMap::GetImage(ReadImageCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetImageData, clipboard_manager_), std::move(callback));
+      base::BindOnce(&GetImageData, clipboard_manager_),
+      base::BindOnce(&ClipboardMap::DidGetImage, base::Unretained(this),
+                     std::move(callback)));
+}
+
+void ClipboardMap::DidGetImage(ReadImageCallback callback,
+                               const SkBitmap& result) {
+  // GetImage attempts to read from the Java Clipboard, which sometimes is not
+  // available. For example, Android 10+ only grants access to the clipboard to
+  // the app which currently has focus, which is not the case in unit tests.
+  // https://developer.android.com/about/versions/10/privacy/changes#clipboard-data
+  if (!result.isNull()) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // If the map is up-to-date, attempt to read from our in-memory clipboard map
+  // if we did not receive a valid bitmap from the Java Clipboard.
+  // Ex: if the app is not in focus.
+  if (map_state_ != MapState::kUpToDate) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+
+  std::string png_str = g_map.Get().Get(ClipboardFormatType::GetPngType());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(reinterpret_cast<const unsigned char*>(png_str.data()),
+                        png_str.size(), &bitmap);
+  std::move(callback).Run(std::move(bitmap));
 }
 
 uint64_t ClipboardMap::GetSequenceNumber() const {
@@ -184,6 +233,12 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
   base::AutoLock lock(lock_);
   if (map_state_ == MapState::kUpToDate) {
     // If the 'map_' is up to date, we can just check with it.
+    // Images can be read if either bitmap or PNG types are available.
+    if (format == ClipboardFormatType::GetPngType() ||
+        format == ClipboardFormatType::GetBitmapType()) {
+      return base::Contains(map_, ClipboardFormatType::GetPngType()) ||
+             base::Contains(map_, ClipboardFormatType::GetBitmapType());
+    }
     return base::Contains(map_, format);
   }
 
@@ -201,8 +256,10 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
     return Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::GetUrlType()) {
     return Java_Clipboard_hasUrl(env, clipboard_manager_);
-  } else if (format == ClipboardFormatType::GetType(kMimeTypeImageURI)) {
-    return Java_Clipboard_hasImage(env, clipboard_manager_);
+  } else if (format == ClipboardFormatType::GetBitmapType()) {
+    // We can read images from either the Android clipboard or the local map.
+    return Java_Clipboard_hasImage(env, clipboard_manager_) ||
+           base::Contains(map_, ClipboardFormatType::GetPngType());
   }
 
   // Android unsupported format types, check local only.
@@ -227,6 +284,7 @@ std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
       formats.push_back(ClipboardFormatType::GetUrlType());
     }
     if (Java_Clipboard_hasImage(env, clipboard_manager_)) {
+      // TODO(asully): push back PNG type once ReadPng implemented.
       formats.push_back(ClipboardFormatType::GetBitmapType());
     }
   }
@@ -238,7 +296,7 @@ std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
         (it.first == ClipboardFormatType::GetPlainTextType() ||
          it.first == ClipboardFormatType::GetHtmlType() ||
          it.first == ClipboardFormatType::GetUrlType() ||
-         it.first == ClipboardFormatType::GetType(kMimeTypeImageURI))) {
+         it.first == ClipboardFormatType::GetBitmapType())) {
       continue;
     }
     formats.push_back(it.first);
@@ -290,14 +348,22 @@ void ClipboardMap::CommitToAndroidClipboard() {
         env, map_[ClipboardFormatType::GetPlainTextType()]);
     DCHECK(str.obj());
     Java_Clipboard_setText(env, clipboard_manager_, str);
-  } else if (base::Contains(map_, ClipboardFormatType::GetBitmapType())) {
+  } else if (base::Contains(map_, ClipboardFormatType::GetPngType())) {
+    // Committing the PNG data to the Android clipboard will create an image
+    // with a corresponding URI. Once this has been created, update the local
+    // clipboard with this URI.
     ScopedJavaLocalRef<jbyteArray> image_data =
-        ToJavaByteArray(env, map_[ClipboardFormatType::GetBitmapType()]);
+        ToJavaByteArray(env, map_[ClipboardFormatType::GetPngType()]);
     ScopedJavaLocalRef<jstring> image_extension =
         ConvertUTF8ToJavaString(env, kPngExtension);
     DCHECK(image_data.obj());
+    // TODO(crbug.com/1223215) In unit tests, `jimageuri` is empty.
     Java_Clipboard_setImage(env, clipboard_manager_, image_data,
                             image_extension);
+    ScopedJavaLocalRef<jstring> jimageuri =
+        Java_Clipboard_getImageUriString(env, clipboard_manager_);
+    JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::GetBitmapType(),
+                              jimageuri);
   } else {
     Java_Clipboard_clear(env, clipboard_manager_);
     // TODO(huangdarwin): Implement raw clipboard support for arbitrary formats.
@@ -320,25 +386,6 @@ void ClipboardMap::Clear() {
 
 void ClipboardMap::SetLastModifiedTimeWithoutRunningCallback(base::Time time) {
   last_modified_time_ = time;
-}
-
-// Add a format:jstr pair to map, if jstr is null or is empty, then remove that
-// entry.
-void JNI_Clipboard_AddMapEntry(JNIEnv* env,
-                               std::map<ClipboardFormatType, std::string>* map,
-                               const ClipboardFormatType& format,
-                               const ScopedJavaLocalRef<jstring>& jstr) {
-  if (jstr.is_null()) {
-    map->erase(format);
-    return;
-  }
-
-  std::string str = ConvertJavaStringToUTF8(env, jstr.obj());
-  if (!str.empty()) {
-    (*map)[format] = str;
-  } else {
-    map->erase(format);
-  }
 }
 
 void ClipboardMap::UpdateLastModifiedTime(base::Time time) {
@@ -372,8 +419,9 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
                             jhtml);
   JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::GetUrlType(),
                             jurl);
-  JNI_Clipboard_AddMapEntry(
-      env, &map_, ClipboardFormatType::GetType(kMimeTypeImageURI), jimageuri);
+  JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::GetBitmapType(),
+                            jimageuri);
+  // TODO(asully): Figure out how to handle PNG type once ReadPng implemented.
 
   map_state_ = MapState::kUpToDate;
 }
@@ -447,11 +495,6 @@ bool ClipboardAndroid::IsFormatAvailable(
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  if (format == ClipboardFormatType::GetBitmapType()) {
-    return g_map.Get().HasFormat(
-        ClipboardFormatType::GetType(kMimeTypeImageURI));
-  }
   return g_map.Get().HasFormat(format);
 }
 
@@ -480,8 +523,13 @@ void ClipboardAndroid::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
   if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  // We can read images from either the Android clipboard or the local map.
+  if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer,
+                        data_dst) ||
+      IsFormatAvailable(ClipboardFormatType::GetPngType(), buffer, data_dst)) {
+    // TODO(asully): Push back PNG type once ReadPng implemented.
+    types->push_back(base::UTF8ToUTF16(kMimeTypeImageURI));
+  }
 
   // these formats aren't supported by the ClipboardMap currently, but might
   // be one day?
@@ -723,7 +771,7 @@ void ClipboardAndroid::WriteBitmap(const SkBitmap& sk_bitmap) {
       gfx::Image::CreateFrom1xBitmap(sk_bitmap).As1xPNGBytes();
   std::string packed(image_memory->front_as<char>(), image_memory->size());
 
-  g_map.Get().Set(ClipboardFormatType::GetBitmapType(), packed);
+  g_map.Get().Set(ClipboardFormatType::GetPngType(), packed);
 }
 
 void ClipboardAndroid::WriteData(const ClipboardFormatType& format,

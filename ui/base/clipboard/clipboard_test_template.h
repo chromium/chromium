@@ -606,8 +606,7 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
 }
 
 #if !defined(OS_ANDROID)
-// TODO(https://crbug.com/1056650): Re-enable these tests after fixing the root
-// cause. This test only fails on Android.
+// TODO(crbug.com/815537): Re-enable this test once death tests work on Android.
 
 // Only kN32_SkColorType bitmaps are allowed in the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
@@ -620,6 +619,7 @@ TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
                                &kRGBAF16Premul, &kRGBAPremul),
                "");
 }
+#endif  // !defined(OS_ANDROID)
 
 TYPED_TEST(ClipboardTest, Bitmap_N32_Premul) {
   constexpr U8x4 b[4 * 3] = {
@@ -646,6 +646,9 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
   TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
 
+#if !defined(OS_ANDROID)
+// TODO(crbug.com/815537): Re-enable this test once death tests work on Android.
+
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
@@ -659,6 +662,7 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
       "");
 }
 
+// TODO(crbug.com/1201018): Enable on Android once ReadPng is implemented.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
   constexpr U8x4 b[4 * 3] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
@@ -672,6 +676,7 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
                             SkImageInfo::MakeN32Premul(4, 3), b, b);
 }
 
+// TODO(crbug.com/1201018): Enable on Android once ReadPng is implemented.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
   constexpr U8x4 b[2 * 7] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
