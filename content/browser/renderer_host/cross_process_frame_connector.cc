@@ -327,17 +327,34 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
 void CrossProcessFrameConnector::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
     const absl::optional<blink::FrameVisualProperties>& visual_properties) {
-  if (visual_properties.has_value())
-    SynchronizeVisualProperties(visual_properties.value(), false);
-  UpdateViewportIntersectionInternal(intersection_state);
+  bool intersection_changed = !intersection_state.Equals(intersection_state_);
+  if (intersection_changed) {
+    bool visual_properties_changed = false;
+    if (visual_properties.has_value()) {
+      absl::optional<blink::VisualProperties> last_properties =
+          view_->host()->LastComputedVisualProperties();
+      SynchronizeVisualProperties(visual_properties.value(), false);
+      visual_properties_changed =
+          last_properties != view_->host()->LastComputedVisualProperties();
+    }
+    UpdateViewportIntersectionInternal(intersection_state,
+                                       visual_properties_changed);
+  } else if (visual_properties.has_value()) {
+    SynchronizeVisualProperties(visual_properties.value(), true);
+  }
 }
 
 void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
-    const blink::mojom::ViewportIntersectionState& intersection_state) {
+    const blink::mojom::ViewportIntersectionState& intersection_state,
+    bool include_visual_properties) {
   intersection_state_ = intersection_state;
   if (view_) {
+    // Only ship over the visual properties if they were included in the update
+    // viewport intersection message.
     view_->UpdateViewportIntersection(
-        intersection_state_, view_->host()->LastComputedVisualProperties());
+        intersection_state_, include_visual_properties
+                                 ? view_->host()->LastComputedVisualProperties()
+                                 : absl::nullopt);
   }
 
   if (IsVisible()) {

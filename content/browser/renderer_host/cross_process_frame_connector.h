@@ -355,7 +355,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   void MaybeLogShownCrash(ShownAfterCrashingReason reason);
 
   void UpdateViewportIntersectionInternal(
-      const blink::mojom::ViewportIntersectionState& intersection_state);
+      const blink::mojom::ViewportIntersectionState& intersection_state,
+      bool include_visual_properties);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
   RenderWidgetHostViewChildFrame* view_ = nullptr;

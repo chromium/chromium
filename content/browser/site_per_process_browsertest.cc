@@ -629,7 +629,7 @@ void SitePerProcessBrowserTestBase::ForceUpdateViewportIntersection(
   frame_tree_node->render_manager()
       ->GetProxyToParent()
       ->cross_process_frame_connector()
-      ->UpdateViewportIntersectionInternal(intersection_state);
+      ->UpdateViewportIntersectionInternal(intersection_state, false);
 }
 
 void SitePerProcessBrowserTestBase::RunPostedTasks() {
