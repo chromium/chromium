@@ -282,7 +282,7 @@ void MultiBuffer::ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks) {
     lru_->IncrementDataSize(-static_cast<int64_t>(blocks.size()));
   }
 
-  for (const auto& freed_range : freed) {
+  for (auto freed_range : freed) {
     if (freed_range.second) {
       // Technically, there shouldn't be any observers in this range
       // as all observers really should be pinning the range where it's
@@ -457,14 +457,14 @@ void MultiBuffer::MergeFrom(MultiBuffer* other) {
     lru_->IncrementDataSize(static_cast<int64_t>(data_.size() - data_size));
   }
   // Update present_
-  for (const auto& r : other->present_) {
+  for (auto r : other->present_) {
     if (r.second) {
       present_.SetInterval(r.first.begin, r.first.end, 1);
     }
   }
   // Notify existing readers.
   auto last = present_.begin();
-  for (const auto& r : other->present_) {
+  for (auto r : other->present_) {
     if (r.second) {
       auto i = present_.find(r.first.begin);
       if (i != last) {
@@ -548,7 +548,7 @@ void MultiBuffer::PinRange(const BlockId& from,
 }
 
 void MultiBuffer::PinRanges(const IntervalMap<BlockId, int32_t>& ranges) {
-  for (const auto& r : ranges) {
+  for (auto r : ranges) {
     if (r.second != 0) {
       PinRange(r.first.begin, r.first.end, r.second);
     }

@@ -552,7 +552,7 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
   bool is_first_section = true;
   wtf_size_t row_index = 0;
   wtf_size_t section_index = 0;
-  for (const NGBlockNode& section : grouped_children) {
+  for (NGBlockNode section : grouped_children) {
     if (!section.IsEmptyTableSection()) {
       ComputeSectionInlineConstraints(
           section, is_fixed_layout, is_first_section, table_writing_mode,

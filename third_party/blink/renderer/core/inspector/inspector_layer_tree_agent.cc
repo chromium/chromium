@@ -113,7 +113,7 @@ BuildScrollRectsForLayer(const cc::Layer* layer, bool report_wheel_scrollers) {
       std::make_unique<protocol::Array<protocol::LayerTree::ScrollRect>>();
   const cc::Region& non_fast_scrollable_rects =
       layer->non_fast_scrollable_region();
-  for (const gfx::Rect& rect : non_fast_scrollable_rects) {
+  for (gfx::Rect rect : non_fast_scrollable_rects) {
     scroll_rects->emplace_back(BuildScrollRect(
         IntRect(rect),
         protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
@@ -121,7 +121,7 @@ BuildScrollRectsForLayer(const cc::Layer* layer, bool report_wheel_scrollers) {
   const cc::Region& touch_event_handler_regions =
       layer->touch_action_region().GetAllRegions();
 
-  for (const gfx::Rect& rect : touch_event_handler_regions) {
+  for (gfx::Rect rect : touch_event_handler_regions) {
     scroll_rects->emplace_back(BuildScrollRect(
         IntRect(rect),
         protocol::LayerTree::ScrollRect::TypeEnum::TouchEventHandler));
@@ -129,7 +129,7 @@ BuildScrollRectsForLayer(const cc::Layer* layer, bool report_wheel_scrollers) {
 
   if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
     const cc::Region& wheel_event_handler_region = layer->wheel_event_region();
-    for (const gfx::Rect& rect : wheel_event_handler_region) {
+    for (gfx::Rect rect : wheel_event_handler_region) {
       scroll_rects->emplace_back(BuildScrollRect(
           IntRect(rect),
           protocol::LayerTree::ScrollRect::TypeEnum::WheelEventHandler));

@@ -2213,7 +2213,7 @@ HitTestLayerRectList* Internals::touchEventTargetLayerRects(
                          IntSize(layer->bounds()));
 
       Vector<IntRect> layer_hit_test_rects;
-      for (const auto& hit_test_rect : touch_action_region.GetAllRegions())
+      for (auto hit_test_rect : touch_action_region.GetAllRegions())
         layer_hit_test_rects.push_back(IntRect(hit_test_rect));
       MergeRects(layer_hit_test_rects);
 
@@ -2517,7 +2517,7 @@ DOMRectList* Internals::nonFastScrollableRects(
   Vector<IntRect> layer_non_fast_scrollable_rects;
   for (auto* layer : *layer_tree_host) {
     const cc::Region& non_fast_region = layer->non_fast_scrollable_region();
-    for (const gfx::Rect& non_fast_rect : non_fast_region) {
+    for (gfx::Rect non_fast_rect : non_fast_region) {
       gfx::RectF layer_rect(non_fast_rect);
 
       // Map |layer_rect| into screen space.

@@ -294,7 +294,7 @@ LayoutUnit GridTrackSizingAlgorithm::GridAreaBreadthForChild(
   const Vector<GridTrack>& all_tracks = Tracks(direction);
   const GridSpan& span = grid_.GridItemSpan(child, direction);
   LayoutUnit grid_area_breadth;
-  for (const auto& track_position : span)
+  for (auto track_position : span)
     grid_area_breadth += all_tracks[track_position].BaseSize();
 
   if (add_content_alignment_offset) {
@@ -314,7 +314,7 @@ bool GridTrackSizingAlgorithm::IsIntrinsicSizedGridArea(const LayoutBox& child,
   DCHECK(WasSetup());
   GridTrackSizingDirection direction = GridDirectionForAxis(axis);
   const GridSpan& span = grid_.GridItemSpan(child, direction);
-  for (const auto& track_position : span) {
+  for (auto track_position : span) {
     const GridTrackSize& track_size =
         RawGridTrackSize(direction, track_position);
     // We consider fr units as 'auto' for the min sizing function.
@@ -452,7 +452,7 @@ LayoutUnit GridTrackSizingAlgorithmStrategy::MinSizeForChild(
         algorithm_.GetGrid().GridItemSpan(child, Direction());
     LayoutUnit max_breadth;
     const Vector<GridTrack>& all_tracks = algorithm_.Tracks(Direction());
-    for (const auto& track_position : span) {
+    for (auto track_position : span) {
       const GridTrackSize& track_size =
           all_tracks[track_position].CachedTrackSize();
       if (!track_size.HasFixedMaxTrackBreadth())
@@ -1118,7 +1118,7 @@ void GridTrackSizingAlgorithm::SizeTrackToFitNonSpanningItem(
 bool GridTrackSizingAlgorithm::SpanningItemCrossesFlexibleSizedTracks(
     const GridSpan& span) const {
   const Vector<GridTrack>& track_list = Tracks(direction_);
-  for (const auto& track_position : span) {
+  for (auto track_position : span) {
     const GridTrackSize& track_size =
         track_list[track_position].CachedTrackSize();
     if (track_size.MinTrackBreadth().IsFlex() ||
@@ -1426,7 +1426,7 @@ void GridTrackSizingAlgorithm::IncreaseSizesToAccommodateSpanningItems(
     grow_beyond_growth_limits_tracks.Shrink(0);
     filtered_tracks.Shrink(0);
     LayoutUnit spanning_tracks_size;
-    for (const auto& track_position : item_span) {
+    for (auto track_position : item_span) {
       GridTrack& track = all_tracks[track_position];
       const GridTrackSize& track_size = track.CachedTrackSize();
       spanning_tracks_size +=
@@ -1551,7 +1551,7 @@ double GridTrackSizingAlgorithm::FindFrUnitSize(
   const Vector<GridTrack>& all_tracks = Tracks(direction_);
   double flex_factor_sum = 0;
   Vector<size_t, 8> flexible_tracks_indexes;
-  for (const auto& track_index : tracks_span) {
+  for (auto track_index : tracks_span) {
     const GridTrackSize& track_size = all_tracks[track_index].CachedTrackSize();
     if (!track_size.MaxTrackBreadth().IsFlex()) {
       left_over_space -= all_tracks[track_index].BaseSize();

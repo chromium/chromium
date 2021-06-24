@@ -40,8 +40,7 @@ PositionInFlatTree TextSegments::FindBoundaryForward(
   DCHECK(position.IsNotNull());
   PositionInFlatTree last_position = position;
   bool is_start_contents = true;
-  for (const auto& inline_contents :
-       TextOffsetMapping::ForwardRangeOf(position)) {
+  for (auto inline_contents : TextOffsetMapping::ForwardRangeOf(position)) {
     const TextOffsetMapping mapping(inline_contents);
     const String text = mapping.GetText();
     const unsigned offset =
@@ -65,8 +64,7 @@ PositionInFlatTree TextSegments::FindBoundaryBackward(
   DCHECK(position.IsNotNull());
   PositionInFlatTree last_position = position;
   bool is_start_contents = true;
-  for (const auto& inline_contents :
-       TextOffsetMapping::BackwardRangeOf(position)) {
+  for (auto inline_contents : TextOffsetMapping::BackwardRangeOf(position)) {
     const TextOffsetMapping mapping(inline_contents);
     const String text = mapping.GetText();
     const unsigned offset = is_start_contents
