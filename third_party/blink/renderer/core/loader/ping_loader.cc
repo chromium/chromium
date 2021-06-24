@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -315,6 +316,11 @@ void PingLoader::SendViolationReport(ExecutionContext* execution_context,
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (window && window->GetFrame())
     window->GetFrame()->Client()->DidDispatchPingLoader(report_url);
+
+  // For Workers, the fetcher is lazily loaded, so we must ensure it's
+  // available.
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context))
+    scope->EnsureFetcher();
   RawResource::Fetch(params, execution_context->Fetcher(), nullptr);
 }
 
