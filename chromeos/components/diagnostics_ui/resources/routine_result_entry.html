@@ -1,7 +1,7 @@
 <style include="diagnostics-shared">
   .entryRow {
     align-items: center;
-    column-gap: 15px;
+    column-gap: 16px;
     display: grid;
     grid-template-columns: auto 1fr;
     height: 40px;
@@ -9,13 +9,18 @@
 
   #routine {
     @apply --diagnostics-routine-name-font;
+    align-items: center;
+    display: inline-flex;
   }
 
   .routineLinkContainer {
-    --iron-icon-width: var(--diagnostics-default-font-size);
-    --iron-icon-height: var(--diagnostics-default-font-size);
-    --iron-icon-fill-color: var(--diagnostics-routine-name-color);
-    vertical-align: text-bottom;
+    margin-left: 8px;
+  }
+
+  .routineLink {
+    --iron-icon-fill-color: var(--cros-icon-color-primary);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
   }
 </style>
 
@@ -24,11 +29,11 @@
       aria-labelledby="routine">
   </text-badge>
   <div id="routine" aria-hidden="true">
-    [[routineType_]]
+    <span>[[routineType_]]</span>
     <span class="routineLinkContainer" hidden$="[[!routineLink_]]">
-      <a href="[[routineLink_]]" aria-labelledby="routine">
+      <a href="[[routineLink_]]" class="routineLink" aria-labelledby="routine">
         <iron-icon icon="cr:open-in-new"></iron-icon>
       </a>
     </span>
-  </div>
+    </div>
 </div>
