@@ -395,11 +395,22 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
   // |stop| nulls-our _downloadTask and |Cancel| destroys the task. Call |stop|
-  // first to perform all coordinator cleanups, but retain |_downloadTask|
+  // first to perform all coordinator cleanups, but copy |_downloadTask|
   // pointer to destroy the task.
   web::DownloadTask* downloadTask = _downloadTask;
   [self stop];
-  downloadTask->Cancel();
+
+  // The pointer may be null if -stop was called before -cancelDownload.
+  // This can happen during shutdown because -stop is called when the UI
+  // is destroyed, but whether or not -cancelDownload is called depends
+  // on whether the object is deallocated or not when the block created
+  // in -downloadManagerViewControllerDidClose: is executed. Due to the
+  // autorelease pool, it is not possible to control how the order of
+  // those two events. Thus, this code needs to support a null value at
+  // this point.
+  if (downloadTask) {
+    downloadTask->Cancel();
+  }
 }
 
 // Called when Google Drive app is installed after starting StoreKitCoordinator.
