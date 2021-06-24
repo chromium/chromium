@@ -254,7 +254,7 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
   base::Value error_codes = net::GetNetConstants();
   const base::DictionaryValue* net_error_codes_dict = nullptr;
 
-  for (const auto& item : error_codes.DictItems()) {
+  for (auto item : error_codes.DictItems()) {
     if (item.first == kNetworkErrorKey) {
       item.second.GetAsDictionary(&net_error_codes_dict);
       break;

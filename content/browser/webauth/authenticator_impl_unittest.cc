@@ -860,7 +860,7 @@ void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
   ASSERT_TRUE(test);
   ASSERT_TRUE(test->is_dict());
 
-  for (const auto& item : subset->DictItems()) {
+  for (auto item : subset->DictItems()) {
     base::Value* test_value = test->FindKey(item.first);
     if (test_value == nullptr) {
       ADD_FAILURE() << item.first << " does not exist in the test dictionary";
