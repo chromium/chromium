@@ -155,7 +155,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
   // returns the empty string.
-  std::string GetAppPackageName() override;
+  std::string GetAppPackageNameIfLoggable() override;
 
   // content::NotificationObserver
   void Observe(int type,
@@ -174,6 +174,11 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
     return metrics_state_manager_.get();
   }
 
+  // Returns the embedding application's package name (unconditionally). The
+  // value returned by this method shouldn't be logged/stored anywhere, callers
+  // should use `GetAppPackageNameIfLoggable`.
+  std::string GetAppPackageName();
+
  protected:
   // Called by MaybeStartMetrics() to allow embedder specific initialization.
   virtual void OnMetricsStart() = 0;
@@ -191,7 +196,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // per mille sample rate. This value will be based on a persisted value, so it
   // should be consistent across restarts. This value should also be mostly
   // consistent across upgrades, to avoid significantly impacting IsInSample()
-  // and IsInPackageNameSample(). Virtual for testing.
+  // and ShouldRecordPackageName(). Virtual for testing.
   virtual int GetSampleBucketValue() const;
 
   // Determines if the client is within the random sample of clients for which
@@ -201,15 +206,15 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   bool IsInSample() const;
 
   // Determines if the embedder app is the type of app for which we may log the
-  // package name. If this returns false, GetAppPackageName() must return empty
-  // string. Virtual for testing.
+  // package name. If this returns false, GetAppPackageNameIfLoggable() must
+  // return empty string. Virtual for testing.
   virtual bool CanRecordPackageNameForAppType();
 
   // Determines if this client falls within the group for which it's acceptable
   // to include the embedding app's package name. If this returns false,
-  // GetAppPackageName() must return the empty string (for
+  // GetAppPackageNameIfLoggable() must return the empty string (for
   // privacy/fingerprintability reasons).
-  bool IsInPackageNameSample();
+  virtual bool ShouldRecordPackageName();
 
   // Caps the rate at which we include package names in UMA logs, expressed as a
   // per mille value. See GetSampleRatePerMille() for a description of how per
@@ -220,10 +225,6 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // Called by CreateMetricsService, allows the embedder to register additional
   // MetricsProviders. Does nothing by default.
   virtual void RegisterAdditionalMetricsProviders(MetricsService* service);
-
-  // Returns the embedding application's package name (unconditionally). Virtual
-  // for testing.
-  virtual std::string GetAppPackageNameInternal();
 
   // Returns whether there are any OffTheRecord browsers/tabs open.
   virtual bool IsOffTheRecordSessionActive();

@@ -199,10 +199,10 @@ void MetricsLog::RecordUserAction(const std::string& key,
 // static
 void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
                                          SystemProfileProto* system_profile) {
-  RecordCoreSystemProfile(client->GetVersionString(), client->GetChannel(),
-                          client->IsExtendedStableChannel(),
-                          client->GetApplicationLocale(),
-                          client->GetAppPackageName(), system_profile);
+  RecordCoreSystemProfile(
+      client->GetVersionString(), client->GetChannel(),
+      client->IsExtendedStableChannel(), client->GetApplicationLocale(),
+      client->GetAppPackageNameIfLoggable(), system_profile);
 
   std::string brand_code;
   if (client->GetBrand(&brand_code))

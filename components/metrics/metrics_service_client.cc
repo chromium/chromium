@@ -127,7 +127,7 @@ bool MetricsServiceClient::AreNotificationListenersEnabledOnAllProfiles() {
   return false;
 }
 
-std::string MetricsServiceClient::GetAppPackageName() {
+std::string MetricsServiceClient::GetAppPackageNameIfLoggable() {
   return std::string();
 }
 

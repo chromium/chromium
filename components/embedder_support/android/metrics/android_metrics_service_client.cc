@@ -595,8 +595,9 @@ int AndroidMetricsServiceClient::GetSampleBucketValue() const {
 
 bool AndroidMetricsServiceClient::IsInSample() const {
   // Called in MaybeStartMetrics(), after |metrics_service_| is created.
-  // NOTE IsInSample and IsInPackageNameSample deliberately use the same hash to
-  // guarantee we never exceed 10% of total, opted-in clients for PackageNames.
+  // NOTE IsInSample and ShouldRecordPackageName deliberately use the same hash
+  // to guarantee we never exceed 10% of total, opted-in clients for
+  // PackageNames.
   return GetSampleBucketValue() < GetSampleRatePerMille();
 }
 
@@ -607,7 +608,7 @@ bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
   return Java_AndroidMetricsServiceClient_canRecordPackageNameForAppType(env);
 }
 
-bool AndroidMetricsServiceClient::IsInPackageNameSample() {
+bool AndroidMetricsServiceClient::ShouldRecordPackageName() {
   // Check if this client falls within the group for which it's acceptable to
   // log package name. This guarantees we enforce the privacy requirement
   // because we never log package names for more than kPackageNameLimitRate
@@ -620,13 +621,13 @@ bool AndroidMetricsServiceClient::IsInPackageNameSample() {
 void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(
     MetricsService* service) {}
 
-std::string AndroidMetricsServiceClient::GetAppPackageName() {
-  if (IsInPackageNameSample() && CanRecordPackageNameForAppType())
-    return GetAppPackageNameInternal();
+std::string AndroidMetricsServiceClient::GetAppPackageNameIfLoggable() {
+  if (ShouldRecordPackageName() && CanRecordPackageNameForAppType())
+    return GetAppPackageName();
   return std::string();
 }
 
-std::string AndroidMetricsServiceClient::GetAppPackageNameInternal() {
+std::string AndroidMetricsServiceClient::GetAppPackageName() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_app_name =
       Java_AndroidMetricsServiceClient_getAppPackageName(env);

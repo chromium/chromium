@@ -1153,7 +1153,7 @@ bool ChromeMetricsServiceClient::
   return notification_listeners_active_;
 }
 
-std::string ChromeMetricsServiceClient::GetAppPackageName() {
+std::string ChromeMetricsServiceClient::GetAppPackageNameIfLoggable() {
   return metrics::GetAppPackageName();
 }
 

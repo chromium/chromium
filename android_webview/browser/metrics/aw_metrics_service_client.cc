@@ -9,8 +9,10 @@
 
 #include "android_webview/browser/metrics/aw_stability_metrics_provider.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
@@ -85,6 +87,21 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
     return kStableSampledInRatePerMille;
   }
   return kBetaDevCanarySampledInRatePerMille;
+}
+
+bool AwMetricsServiceClient::ShouldRecordPackageName() {
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
+    return should_record_package_name_;
+  }
+  // Revert to the default implementation of using a random sample to decide
+  // whether to record the app package name or not.
+  return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
+}
+
+void AwMetricsServiceClient::SetShouldRecordPackageName(
+    bool should_record_package_name) {
+  should_record_package_name_ = should_record_package_name;
 }
 
 void AwMetricsServiceClient::OnMetricsStart() {

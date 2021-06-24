@@ -91,7 +91,7 @@ TestMetricsServiceClient::GetMetricsReportingDefaultState() {
   return enable_default_;
 }
 
-std::string TestMetricsServiceClient::GetAppPackageName() {
+std::string TestMetricsServiceClient::GetAppPackageNameIfLoggable() {
   return "test app";
 }
 

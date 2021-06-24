@@ -154,7 +154,7 @@ class MetricsServiceClient {
   // string (this is the same as the default behavior). If the package name
   // should not be logged for privacy/fingerprintability reasons, the embedder
   // should return the empty string.
-  virtual std::string GetAppPackageName();
+  virtual std::string GetAppPackageNameIfLoggable();
 
   // Gets the key used to sign metrics uploads. This will be used to compute an
   // HMAC-SHA256 signature of an uploaded log.

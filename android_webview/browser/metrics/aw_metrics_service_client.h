@@ -87,6 +87,16 @@ enum class BackfillInstallDate {
 // the client ID (generating a new ID if there was none). If this client is in
 // the sample, it then calls MetricsService::Start(). If consent was not
 // granted, MaybeStartMetrics() instead clears the client ID, if any.
+//
+// Similarly, when
+// `android_webview::features::kWebViewAppsPackageNamesAllowlist` is enabled,
+// WebView will try to lookup the embedding app's package name in a list of apps
+// whose package names are allowed to be recorded. This operation takes place on
+// a background thread. The result of the lookup is then posted back on the UI
+// thread and SetShouldRecordPackageName() will be called. Unlike user's
+// consent, the metrics service doesn't currently block on the allowlist lookup
+// result. If the result isn't present at the moment of creating a metrics log,
+// it assumes that the app package name isn't allowed to be logged.
 
 class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
                                public WebViewAppStateObserver {
@@ -134,8 +144,25 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
 
+  // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
+  // enabled:
+  // - It returns `true` if the app is in the list of allowed apps.
+  // - It returns `false` if the app isn't in the allowlist or if the lookup
+  //   operation fails or hasn't finished yet.
+  //
+  // If the feature isn't enabled, the default sampling behaviour in
+  // `::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName` is used.
+  bool ShouldRecordPackageName() override;
+
+  // Sets whether the embedding app's package name is allowed to be recorded in
+  // UMA logs or not. This is determened by looking up the app package name in a
+  // dynamically downloaded allowlist of apps see
+  // `AwAppsPackageNamesAllowlistComponentLoaderPolicy`.
+  void SetShouldRecordPackageName(bool should_record_package_name);
+
  private:
   bool app_in_foreground_ = false;
+  bool should_record_package_name_ = false;
   std::unique_ptr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);

@@ -46,7 +46,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   base::TimeDelta GetStandardUploadInterval() override;
   bool IsReportingPolicyManaged() override;
   EnableMetricsDefault GetMetricsReportingDefaultState() override;
-  std::string GetAppPackageName() override;
+  std::string GetAppPackageNameIfLoggable() override;
   bool ShouldResetClientIdsOnClonedInstall() override;
   MetricsLogStore::StorageLimits GetStorageLimits() const override;
 
