@@ -37,6 +37,8 @@ struct Device {
   const Protocol protocol;
 };
 
+std::ostream& operator<<(std::ostream& stream, Device device);
+
 }  // namespace quick_pair
 }  // namespace chromeos
 
