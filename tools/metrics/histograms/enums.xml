@@ -23630,6 +23630,16 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Error"/>
 </enum>
 
+<enum name="EnterpriseAccountStatus">
+  <summary>Account status fetched before enrollment process starts.</summary>
+  <int value="0" label="Unknown account"/>
+  <int value="1" label="Consumer account with consumer domain"/>
+  <int value="2" label="Consumer account with business domain"/>
+  <int value="3" label="Organisational account, domain is not verified"/>
+  <int value="4" label="Organisational account, domain is verified"/>
+  <int value="5" label="Dasher account"/>
+</enum>
+
 <enum name="EnterpriseAttributesTPMConsistencyType">
   <int value="0" label="no attributes, other mode, TPM unlocked">
     valid: machine in pristine state

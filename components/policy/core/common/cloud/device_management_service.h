@@ -222,6 +222,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_CERT_PROVISIONING_REQUEST = 25,
       TYPE_PSM_HAS_DEVICE_STATE_REQUEST = 26,
       TYPE_UPLOAD_ENCRYPTED_REPORT = 27,
+      TYPE_CHECK_USER_ACCOUNT = 28,
     };
 
     // The set of HTTP query parameters of the request.

@@ -83,6 +83,8 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
       return dm_protocol::kValueRequestPsmHasDeviceState;
+    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
+      return dm_protocol::kValueCheckUserAccount;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
       NOTREACHED() << "Not a DMServer request type " << type;

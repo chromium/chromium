@@ -39,6 +39,7 @@ const char kValueAppType[] = "Chrome";
 const char kValueDeviceType[] = "2";
 const char kValueRequestAutoEnrollment[] = "enterprise_check";
 const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
+const char kValueCheckUserAccount[] = "check_user_account";
 const char kValueRequestPolicy[] = "policy";
 const char kValueRequestRegister[] = "register";
 const char kValueRequestApiAuthorization[] = "api_authorization";

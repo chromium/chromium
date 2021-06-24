@@ -21,6 +21,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Enterprise.AccountStatusCheckResult"
+    enum="EnterpriseAccountStatus" expires_after="M99">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Recorded when user enters their account on license packged device during
+    enrollment process.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ActiveDirectoryJoin"
     enum="ActiveDirectoryDomainJoinType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
