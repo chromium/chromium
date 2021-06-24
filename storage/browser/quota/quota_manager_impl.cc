@@ -92,18 +92,30 @@ bool IsSupportedIncognitoType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kPersistent;
 }
 
-QuotaErrorOr<BucketInfo> CreateBucketOnDBThread(const StorageKey& storage_key,
-                                                const std::string& bucket_name,
-                                                QuotaDatabase* database) {
+QuotaErrorOr<BucketInfo> GetOrCreateBucketOnDBThread(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    QuotaDatabase* database) {
   DCHECK(database);
-  return database->CreateBucket(storage_key, bucket_name);
+  return database->GetOrCreateBucket(storage_key, bucket_name);
+}
+
+QuotaErrorOr<BucketInfo> CreateBucketOnDBThread(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    QuotaDatabase* database) {
+  DCHECK(database);
+  return database->CreateBucketForTesting(storage_key, bucket_name,  // IN-TEST
+                                          storage_type);
 }
 
 QuotaErrorOr<BucketInfo> GetBucketOnDBThread(const StorageKey& storage_key,
                                              const std::string& bucket_name,
+                                             blink::mojom::StorageType type,
                                              QuotaDatabase* database) {
   DCHECK(database);
-  return database->GetBucket(storage_key, bucket_name);
+  return database->GetBucket(storage_key, bucket_name, type);
 }
 
 bool GetPersistentHostQuotaOnDBThread(const std::string& host,
@@ -944,7 +956,7 @@ void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
   settings_timestamp_ = base::TimeTicks::Now();
 }
 
-void QuotaManagerImpl::CreateBucket(
+void QuotaManagerImpl::GetOrCreateBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
@@ -952,7 +964,22 @@ void QuotaManagerImpl::CreateBucket(
   LazyInitialize();
 
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&CreateBucketOnDBThread, storage_key, bucket_name),
+      base::BindOnce(&GetOrCreateBucketOnDBThread, storage_key, bucket_name),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucket,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::CreateBucketForTesting(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LazyInitialize();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&CreateBucketOnDBThread, storage_key, bucket_name,
+                     storage_type),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -960,12 +987,13 @@ void QuotaManagerImpl::CreateBucket(
 void QuotaManagerImpl::GetBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name,
+    blink::mojom::StorageType type,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
 
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&GetBucketOnDBThread, storage_key, bucket_name),
+      base::BindOnce(&GetBucketOnDBThread, storage_key, bucket_name, type),
       base::BindOnce(&QuotaManagerImpl::DidGetBucket,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

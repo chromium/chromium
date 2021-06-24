@@ -166,28 +166,50 @@ bool QuotaDatabase::SetHostQuota(const std::string& host,
   return true;
 }
 
-QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucket(
+QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucket(
     const StorageKey& storage_key,
     const std::string& bucket_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
-  QuotaErrorOr<BucketInfo> bucket_result = GetBucket(storage_key, bucket_name);
-  if (bucket_result.ok()) {
-    return QuotaError::kEntryExistsError;
-  } else if (bucket_result.error() != QuotaError::kNotFound) {
+  QuotaErrorOr<BucketInfo> bucket_result =
+      GetBucket(storage_key, bucket_name, StorageType::kTemporary);
+
+  if (bucket_result.ok())
+    return bucket_result;
+
+  if (bucket_result.error() != QuotaError::kNotFound)
     return bucket_result.error();
-  }
 
   base::Time now = base::Time::Now();
-  // Bucket usage is only for temporary storage types.
   return CreateBucketInternal(storage_key, StorageType::kTemporary, bucket_name,
+                              /*use_count=*/0, now, now);
+}
+
+QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
+    const StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug/1210252): Update to not execute 2 sql statements on creation.
+  QuotaErrorOr<BucketInfo> bucket_result =
+      GetBucket(storage_key, bucket_name, storage_type);
+
+  if (bucket_result.ok())
+    return QuotaError::kEntryExistsError;
+
+  if (bucket_result.error() != QuotaError::kNotFound)
+    return bucket_result.error();
+
+  base::Time now = base::Time::Now();
+  return CreateBucketInternal(storage_key, storage_type, bucket_name,
                               /*use_count=*/0, now, now);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
     const StorageKey& storage_key,
-    const std::string& bucket_name) {
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
   if (open_error != QuotaError::kNone)
@@ -201,8 +223,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, storage_key.Serialize());
-  // Bucket usage is only for temporary storage types.
-  statement.BindInt(1, static_cast<int>(StorageType::kTemporary));
+  statement.BindInt(1, static_cast<int>(storage_type));
   statement.BindString(2, bucket_name);
 
   if (!statement.Step()) {
@@ -211,8 +232,8 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
   }
 
   return BucketInfo(BucketId(statement.ColumnInt64(0)), storage_key,
-                    StorageType::kTemporary, bucket_name,
-                    statement.ColumnTime(1), statement.ColumnInt(2));
+                    storage_type, bucket_name, statement.ColumnTime(1),
+                    statement.ColumnInt(2));
 }
 
 bool QuotaDatabase::SetStorageKeyLastAccessTime(const StorageKey& storage_key,

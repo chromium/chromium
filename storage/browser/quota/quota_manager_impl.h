@@ -160,18 +160,32 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Returns a proxy object that can be used on any thread.
   QuotaManagerProxy* proxy() { return proxy_.get(); }
 
-  // Creates a bucket for `storage_key` with `bucket_name` and returns the
-  // BucketInfo to the callback. Will return a QuotaError to the callback on
-  // operation failure.
-  void CreateBucket(const blink::StorageKey& storage_key,
-                    const std::string& bucket_name,
-                    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+  // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
+  // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
+  // a new bucket with the specified policies. Returns a QuotaError if the
+  // operation has failed.
+  void GetOrCreateBucket(const blink::StorageKey& storage_key,
+                         const std::string& bucket_name,
+                         base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+
+  // Creates a bucket for `origin` with `bucket_name` and returns BucketInfo
+  // to the callback. Will return a QuotaError to the callback on operation
+  // failure.
+  //
+  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // StorageType is kTemporary.
+  void CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
   // Retrieves the BucketInfo of the bucket with `bucket_name` for `storage_key`
   // and returns it to the callback. Will return a QuotaError if the bucket does
   // not exist or on operation failure.
   void GetBucket(const blink::StorageKey& storage_key,
                  const std::string& bucket_name,
+                 blink::mojom::StorageType type,
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
   // Called by clients or webapps. Returns usage per host.

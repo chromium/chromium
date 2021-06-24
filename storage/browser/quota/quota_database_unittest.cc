@@ -197,25 +197,32 @@ TEST_P(QuotaDatabaseTest, HostQuota) {
   EXPECT_FALSE(db.GetHostQuota(kHost, kPerm, &quota));
 }
 
-TEST_P(QuotaDatabaseTest, CreateBucket) {
+TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
 
-  QuotaErrorOr<BucketInfo> result = db.CreateBucket(storage_key, bucket_name);
+  QuotaErrorOr<BucketInfo> result =
+      db.GetOrCreateBucket(storage_key, bucket_name);
   ASSERT_TRUE(result.ok());
 
-  BucketInfo bucket = result.value();
-  ASSERT_GT(bucket.id.value(), 0);
-  ASSERT_EQ(bucket.name, bucket_name);
-  ASSERT_EQ(bucket.storage_key, storage_key);
+  BucketInfo created_bucket = result.value();
+  ASSERT_GT(created_bucket.id.value(), 0);
+  ASSERT_EQ(created_bucket.name, bucket_name);
+  ASSERT_EQ(created_bucket.storage_key, storage_key);
+  ASSERT_EQ(created_bucket.type, kTemp);
 
-  // Trying to create an existing bucket should return false.
-  result = db.CreateBucket(storage_key, bucket_name);
-  ASSERT_FALSE(result.ok());
-  EXPECT_EQ(result.error(), QuotaError::kEntryExistsError);
+  // Should return the same bucket when querying again.
+  result = db.GetOrCreateBucket(storage_key, bucket_name);
+  ASSERT_TRUE(result.ok());
+
+  BucketInfo retrieved_bucket = result.value();
+  ASSERT_EQ(retrieved_bucket.id, created_bucket.id);
+  ASSERT_EQ(retrieved_bucket.name, created_bucket.name);
+  ASSERT_EQ(retrieved_bucket.storage_key, created_bucket.storage_key);
+  ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
 }
 
 TEST_P(QuotaDatabaseTest, GetBucket) {
@@ -226,28 +233,32 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketInfo> result = db.CreateBucket(storage_key, bucket_name);
+  QuotaErrorOr<BucketInfo> result =
+      db.CreateBucketForTesting(storage_key, bucket_name, kPerm);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
+  ASSERT_EQ(created_bucket.type, kPerm);
 
-  result = db.GetBucket(storage_key, bucket_name);
+  result = db.GetBucket(storage_key, bucket_name, kPerm);
   ASSERT_TRUE(result.ok());
   EXPECT_EQ(result.value().id, created_bucket.id);
   EXPECT_EQ(result.value().name, created_bucket.name);
   EXPECT_EQ(result.value().storage_key, created_bucket.storage_key);
+  ASSERT_EQ(result.value().type, created_bucket.type);
 
   // Can't retrieve buckets with name mismatch.
-  result = db.GetBucket(storage_key, "does_not_exist");
+  result = db.GetBucket(storage_key, "does_not_exist", kPerm);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Can't retrieve buckets with StorageKey mismatch.
-  result = db.GetBucket(
-      StorageKey::CreateFromStringForTesting("http://example/"), bucket_name);
+  result =
+      db.GetBucket(StorageKey::CreateFromStringForTesting("http://example/"),
+                   bucket_name, kPerm);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
@@ -259,7 +270,8 @@ TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketInfo> result = db.GetBucket(storage_key, bucket_name);
+  QuotaErrorOr<BucketInfo> result =
+      db.GetBucket(storage_key, bucket_name, kTemp);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
@@ -278,7 +290,8 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  QuotaErrorOr<BucketInfo> result = db.GetBucket(storage_key, bucket_name);
+  QuotaErrorOr<BucketInfo> result =
+      db.GetBucket(storage_key, bucket_name, kTemp);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kDatabaseError);
 

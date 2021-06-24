@@ -139,18 +139,28 @@ class QuotaManagerImplTest : public testing::Test {
     return mock_quota_client_ptr;
   }
 
-  void CreateBucket(const StorageKey& storage_key,
-                    const std::string& bucket_name) {
-    quota_manager_impl_->CreateBucket(
+  void GetOrCreateBucket(const StorageKey& storage_key,
+                         const std::string& bucket_name) {
+    quota_manager_impl_->GetOrCreateBucket(
         storage_key, bucket_name,
         base::BindOnce(&QuotaManagerImplTest::DidGetBucket,
                        weak_factory_.GetWeakPtr()));
   }
 
+  void CreateBucketForTesting(const StorageKey& storage_key,
+                              const std::string& bucket_name,
+                              blink::mojom::StorageType storage_type) {
+    quota_manager_impl_->CreateBucketForTesting(
+        storage_key, bucket_name, storage_type,
+        base::BindOnce(&QuotaManagerImplTest::DidGetBucket,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   void GetBucket(const StorageKey& storage_key,
-                 const std::string& bucket_name) {
+                 const std::string& bucket_name,
+                 blink::mojom::StorageType storage_type) {
     quota_manager_impl_->GetBucket(
-        storage_key, bucket_name,
+        storage_key, bucket_name, storage_type,
         base::BindOnce(&QuotaManagerImplTest::DidGetBucket,
                        weak_factory_.GetWeakPtr()));
   }
@@ -615,36 +625,38 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
   }
 }
 
-TEST_F(QuotaManagerImplTest, CreateBucket) {
+TEST_F(QuotaManagerImplTest, GetOrCreateBucket) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
 
-  CreateBucket(storage_key, bucket_name);
+  GetOrCreateBucket(storage_key, bucket_name);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(bucket_.ok());
 
-  // Try creating a bucket with the same name.
-  CreateBucket(storage_key, bucket_name);
+  BucketId created_bucket_id = bucket_.value().id;
+
+  GetOrCreateBucket(storage_key, bucket_name);
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(bucket_.ok());
+  EXPECT_TRUE(bucket_.ok());
+  EXPECT_EQ(bucket_.value().id, created_bucket_id);
 }
 
 TEST_F(QuotaManagerImplTest, GetBucket) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
 
-  CreateBucket(storage_key, bucket_name);
+  CreateBucketForTesting(storage_key, bucket_name, kTemp);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(bucket_.ok());
   BucketInfo created_bucket = bucket_.value();
 
-  GetBucket(storage_key, bucket_name);
+  GetBucket(storage_key, bucket_name, kTemp);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(bucket_.ok());
   BucketInfo retrieved_bucket = bucket_.value();
   EXPECT_EQ(created_bucket.id, retrieved_bucket.id);
 
-  GetBucket(storage_key, "bucket_b");
+  GetBucket(storage_key, "bucket_b", kTemp);
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(bucket_.ok());
   EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);

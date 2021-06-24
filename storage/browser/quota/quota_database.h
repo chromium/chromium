@@ -85,18 +85,28 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                     int64_t quota);
   bool DeleteHostQuota(const std::string& host, blink::mojom::StorageType type);
 
-  // Creates a bucket with `bucket_name` for the `storage_key` and returns the
-  // BucketInfo for the new bucket. Returns a QuotaError if a bucket
-  // already exists or if the operation has failed.
+  // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
+  // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
+  // a new bucket with the specified policies. Returns a QuotaError if the
+  // operation has failed.
   // TODO(crbug/1203467): Include more policies when supported.
-  QuotaErrorOr<BucketInfo> CreateBucket(const blink::StorageKey& storage_key,
-                                        const std::string& bucket_name);
+  QuotaErrorOr<BucketInfo> GetOrCreateBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name);
+
+  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // StorageType is kTemporary.
+  QuotaErrorOr<BucketInfo> CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type);
 
   // Retrieves BucketInfo of the bucket with `bucket_name` for `storage_key`.
   // Returns a QuotaError::kEntryNotFound if the bucket does not exist, or
   // a QuotaError::kDatabaseError if the operation has failed.
   QuotaErrorOr<BucketInfo> GetBucket(const blink::StorageKey& storage_key,
-                                     const std::string& bucket_name);
+                                     const std::string& bucket_name,
+                                     blink::mojom::StorageType storage_type);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
