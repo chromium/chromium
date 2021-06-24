@@ -1,0 +1,16 @@
+<!doctype html>
+<style>
+div {
+ writing-mode: vertical-rl;
+ font-size: 100px;
+}
+div::before { content: "[*]"; text-combine-upright: all; }
+.bug::before { white-space: pre; }
+}
+</style>
+<div id="target">ab</div>
+<script>
+document.body.offsetHeight;
+const target = document.getElementById('target');
+target.classList.add('bug');
+</script>

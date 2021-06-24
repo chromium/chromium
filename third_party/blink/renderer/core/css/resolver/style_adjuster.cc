@@ -258,8 +258,10 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
   style.SetMinHeight(size.Height());
   style.SetMinWidth(size.Width());
   style.SetWidth(size.Width());
+  AdjustStyleForCombinedText(style);
+}
 
-  // Set others
+void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
   style.ResetTextCombine();
   style.SetLetterSpacing(0.0f);
   style.SetTextAlign(ETextAlign::kCenter);

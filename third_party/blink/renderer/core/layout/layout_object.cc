@@ -2384,6 +2384,16 @@ void LayoutObject::SetPseudoElementStyle(
     return;
   }
 
+  if (IsText() && UNLIKELY(IsA<LayoutNGTextCombine>(Parent()))) {
+    // See http://crbug.com/1222640
+    scoped_refptr<ComputedStyle> combined_text_style =
+        GetDocument().GetStyleResolver().CreateComputedStyle();
+    combined_text_style->InheritFrom(*pseudo_style);
+    StyleAdjuster::AdjustStyleForCombinedText(*combined_text_style);
+    SetStyle(std::move(combined_text_style));
+    return;
+  }
+
   SetStyle(std::move(pseudo_style));
 }
 
