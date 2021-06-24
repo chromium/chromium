@@ -25,9 +25,12 @@ suite('PasswordsAndForms', function() {
     element.prefs = prefsElement.prefs;
     document.body.appendChild(element);
 
-    element.$$('dom-if[route-path="/passwords"]').if = true;
-    element.$$('dom-if[route-path="/payments"]').if = true;
-    element.$$('dom-if[route-path="/addresses"]').if = true;
+    element.shadowRoot.querySelector('dom-if[route-path="/passwords"]').if =
+        true;
+    element.shadowRoot.querySelector('dom-if[route-path="/payments"]').if =
+        true;
+    element.shadowRoot.querySelector('dom-if[route-path="/addresses"]').if =
+        true;
     flush();
     return element;
   }
@@ -196,7 +199,7 @@ suite('PasswordsAndForms', function() {
 
       assertDeepEquals(
           list.map(entry => new MultiStorePasswordUiEntry(entry)),
-          element.$$('#passwordSection').savedPasswords);
+          element.shadowRoot.querySelector('#passwordSection').savedPasswords);
 
       // The callback is coming from the manager, so the element shouldn't
       // have additional calls to the manager after the base expectations.
@@ -221,7 +224,8 @@ suite('PasswordsAndForms', function() {
 
       assertDeepEquals(
           list.map(entry => new MultiStoreExceptionEntry(entry)),
-          element.$$('#passwordSection').passwordExceptions);
+          element.shadowRoot.querySelector('#passwordSection')
+              .passwordExceptions);
 
       // The callback is coming from the manager, so the element shouldn't
       // have additional calls to the manager after the base expectations.
@@ -243,7 +247,9 @@ suite('PasswordsAndForms', function() {
           addressList, cardList);
       flush();
 
-      assertEquals(addressList, element.$$('#autofillSection').addresses);
+      assertEquals(
+          addressList,
+          element.shadowRoot.querySelector('#autofillSection').addresses);
 
       // The callback is coming from the manager, so the element shouldn't
       // have additional calls to the manager after the base expectations.
@@ -265,7 +271,9 @@ suite('PasswordsAndForms', function() {
           addressList, cardList);
       flush();
 
-      assertEquals(cardList, element.$$('#paymentsSection').creditCards);
+      assertEquals(
+          cardList,
+          element.shadowRoot.querySelector('#paymentsSection').creditCards);
 
       // The callback is coming from the manager, so the element shouldn't
       // have additional calls to the manager after the base expectations.
@@ -319,7 +327,9 @@ suite('PasswordsUITest', function() {
   test('Compromised Credential', async function() {
     // Check if sublabel is empty
     assertEquals(
-        '', autofillPage.$$('#passwordManagerSubLabel').innerText.trim());
+        '',
+        autofillPage.shadowRoot.querySelector('#passwordManagerSubLabel')
+            .innerText.trim());
 
     // Simulate one compromised password
     const leakedPasswords = [
@@ -335,6 +345,8 @@ suite('PasswordsUITest', function() {
 
     // With compromised credentials sublabel should have text
     assertNotEquals(
-        '', autofillPage.$$('#passwordManagerSubLabel').innerText.trim());
+        '',
+        autofillPage.shadowRoot.querySelector('#passwordManagerSubLabel')
+            .innerText.trim());
   });
 });

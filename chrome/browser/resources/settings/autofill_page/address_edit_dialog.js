@@ -18,66 +18,88 @@ import '../controls/settings_textarea.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-Polymer({
-  is: 'settings-address-edit-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsAddressEditDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+class SettingsAddressEditDialogElement extends
+    SettingsAddressEditDialogElementBase {
+  static get is() {
+    return 'settings-address-edit-dialog';
+  }
 
-  properties: {
-    /** @type {chrome.autofillPrivate.AddressEntry} */
-    address: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    title_: String,
+  static get properties() {
+    return {
+      /** @type {chrome.autofillPrivate.AddressEntry} */
+      address: Object,
 
-    /** @private {!Array<!chrome.autofillPrivate.CountryEntry>} */
-    countries_: Array,
+      /** @private */
+      title_: String,
 
-    /**
-     * Updates the address wrapper.
-     * @private {string|undefined}
-     */
-    countryCode_: {
-      type: String,
-      observer: 'onUpdateCountryCode_',
-    },
+      /** @private {!Array<!chrome.autofillPrivate.CountryEntry>} */
+      countries_: Array,
 
-    /** @private {!Array<!Array<!AddressComponentUI>>} */
-    addressWrapper_: Object,
+      /**
+       * Updates the address wrapper.
+       * @private {string|undefined}
+       */
+      countryCode_: {
+        type: String,
+        observer: 'onUpdateCountryCode_',
+      },
 
-    /** @private */
-    phoneNumber_: String,
+      /** @private {!Array<!Array<!AddressComponentUI>>} */
+      addressWrapper_: Object,
 
-    /** @private */
-    email_: String,
+      /** @private */
+      phoneNumber_: String,
 
-    /** @private */
-    canSave_: Boolean,
+      /** @private */
+      email_: String,
 
-    /**
-     * True if honorifics are enabled.
-     * @private
-     */
-    showHonorific_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showHonorific');
+      /** @private */
+      canSave_: Boolean,
+
+      /**
+       * True if honorifics are enabled.
+       * @private
+       */
+      showHonorific_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showHonorific');
+        }
       }
-    }
-  },
+    };
+  }
+
+
+  constructor() {
+    super();
+
+    /** @type {!CountryDetailManager} */
+    this.countryInfo = CountryDetailManagerImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
-    this.countryInfo = CountryDetailManagerImpl.getInstance();
+  connectedCallback() {
+    super.connectedCallback();
+
     this.countryInfo.getCountryList().then(countryList => {
       this.countries_ = countryList;
 
@@ -91,7 +113,7 @@ Polymer({
       this.email_ =
           this.address.emailAddresses ? this.address.emailAddresses[0] : '';
 
-      this.async(() => {
+      window.setTimeout(() => {
         if (Object.keys(this.address).length === 0 && countryList.length > 0) {
           // If the address is completely empty, the dialog is creating a new
           // address. The first address in the country list is what we suspect
@@ -103,12 +125,22 @@ Polymer({
         } else {
           this.countryCode_ = this.address.countryCode;
         }
-      });
+      }, 0);
     });
 
     // Open is called on the dialog after the address wrapper has been
     // updated.
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * Returns a class to denote how long this entry is.
@@ -117,7 +149,7 @@ Polymer({
    */
   long_(setting) {
     return setting.component.isLongField ? 'long' : '';
-  },
+  }
 
   /**
    * Updates the wrapper that represents this address in the country's format.
@@ -126,32 +158,34 @@ Polymer({
   updateAddressWrapper_() {
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
-    this.countryInfo.getAddressFormat(countryCode).then(format => {
-      this.addressWrapper_ = format.components.flatMap(component => {
-        // If this is the name field, add a honorific title row before the name.
-        const addHonorific = component.row[0].field ===
-                chrome.autofillPrivate.AddressField.FULL_NAME &&
-            this.showHonorific_;
-        const row = component.row.map(
-            component => new AddressComponentUI(this.address, component));
-        return addHonorific ?
-            [[this.createHonorificAddressComponentUI(this.address)], row] :
-            [row];
-      });
+    this.countryInfo.getAddressFormat(/** @type {string} */ (countryCode))
+        .then(format => {
+          this.addressWrapper_ = format.components.flatMap(component => {
+            // If this is the name field, add a honorific title row before the
+            // name.
+            const addHonorific = component.row[0].field ===
+                    chrome.autofillPrivate.AddressField.FULL_NAME &&
+                this.showHonorific_;
+            const row = component.row.map(
+                component => new AddressComponentUI(this.address, component));
+            return addHonorific ?
+                [[this.createHonorificAddressComponentUI(this.address)], row] :
+                [row];
+          });
 
-      // Flush dom before resize and savability updates.
-      flush();
+          // Flush dom before resize and savability updates.
+          flush();
 
-      this.updateCanSave_();
+          this.updateCanSave_();
 
-      this.fire('on-update-address-wrapper');  // For easier testing.
+          this.fire_('on-update-address-wrapper');  // For easier testing.
 
-      const dialog = /** @type {HTMLDialogElement} */ (this.$.dialog);
-      if (!dialog.open) {
-        dialog.showModal();
-      }
-    });
-  },
+          const dialog = /** @type {HTMLDialogElement} */ (this.$.dialog);
+          if (!dialog.open) {
+            dialog.showModal();
+          }
+        });
+  }
 
   updateCanSave_() {
     const inputs = this.$.dialog.querySelectorAll('.address-column, select');
@@ -159,14 +193,14 @@ Polymer({
     for (let i = 0; i < inputs.length; ++i) {
       if (inputs[i].value) {
         this.canSave_ = true;
-        this.fire('on-update-can-save');  // For easier testing.
+        this.fire_('on-update-can-save');  // For easier testing.
         return;
       }
     }
 
     this.canSave_ = false;
-    this.fire('on-update-can-save');  // For easier testing.
-  },
+    this.fire_('on-update-can-save');  // For easier testing.
+  }
 
   /**
    * @param {!chrome.autofillPrivate.CountryEntry} country
@@ -175,7 +209,7 @@ Polymer({
    */
   getCode_(country) {
     return country.countryCode || 'SPACER';
-  },
+  }
 
   /**
    * @param {!chrome.autofillPrivate.CountryEntry} country
@@ -184,7 +218,7 @@ Polymer({
    */
   getName_(country) {
     return country.name || '------';
-  },
+  }
 
   /**
    * @param {!chrome.autofillPrivate.CountryEntry} country
@@ -193,12 +227,12 @@ Polymer({
    */
   isDivision_(country) {
     return !country.countryCode;
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /**
    * Handler for tapping the save button.
@@ -218,9 +252,9 @@ Polymer({
     this.address.phoneNumbers = this.phoneNumber_ ? [this.phoneNumber_] : [];
     this.address.emailAddresses = this.email_ ? [this.email_] : [];
 
-    this.fire('save-address', this.address);
+    this.fire_('save-address', this.address);
     this.$.dialog.close();
-  },
+  }
 
   /**
    * Syncs the country code back to the address and rebuilds the address
@@ -231,14 +265,15 @@ Polymer({
   onUpdateCountryCode_(countryCode) {
     this.address.countryCode = countryCode;
     this.updateAddressWrapper_();
-  },
+  }
 
   /** @private */
   onCountryChange_() {
     const countrySelect =
-        /** @type {!HTMLSelectElement} */ (this.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            this.shadowRoot.querySelector('select'));
     this.countryCode_ = countrySelect.value;
-  },
+  }
 
   /**
    * Propagates focus to the <select> when country row is focused
@@ -247,9 +282,10 @@ Polymer({
    */
   onCountryRowFocus_() {
     const countrySelect =
-        /** @type {!HTMLSelectElement} */ (this.$$('select'));
+        /** @type {!HTMLSelectElement} */ (
+            this.shadowRoot.querySelector('select'));
     countrySelect.focus();
-  },
+  }
 
   /**
    * Prevents clicking random spaces within country row but outside of <select>
@@ -261,7 +297,7 @@ Polymer({
     if (e.path[0].tagName !== 'SELECT') {
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * @param {!chrome.autofillPrivate.AddressEntry} address
@@ -274,8 +310,11 @@ Polymer({
       isLongField: true,
       placerholder: undefined,
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsAddressEditDialogElement.is, SettingsAddressEditDialogElement);
 
 /**
  * Creates a wrapper against a single data member for an address.

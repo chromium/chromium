@@ -16,8 +16,8 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -28,69 +28,82 @@ import {loadTimeData} from '../i18n_setup.js';
  */
 const NICKNAME_INVALID_REGEX = new RegExp('.*\\d+.*');
 
-Polymer({
-  is: 'settings-credit-card-edit-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsCreditCardEditDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  properties: {
-    /**
-     * The credit card being edited.
-     * @type {!chrome.autofillPrivate.CreditCardEntry}
-     */
-    creditCard: Object,
+/** @polymer */
+class SettingsCreditCardEditDialogElement extends
+    SettingsCreditCardEditDialogElementBase {
+  static get is() {
+    return 'settings-credit-card-edit-dialog';
+  }
 
-    /**
-     * The actual title that's used for this dialog. Will be context sensitive
-     * based on if |creditCard| is being created or edited.
-     * @private
-     */
-    title_: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The list of months to show in the dropdown.
-     * @private {!Array<string>}
-     */
-    monthList_: {
-      type: Array,
-      value: [
-        '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'
-      ],
-    },
+  static get properties() {
+    return {
+      /**
+       * The credit card being edited.
+       * @type {!chrome.autofillPrivate.CreditCardEntry}
+       */
+      creditCard: Object,
 
-    /**
-     * The list of years to show in the dropdown.
-     * @private {!Array<string>}
-     */
-    yearList_: Array,
+      /**
+       * The actual title that's used for this dialog. Will be context sensitive
+       * based on if |creditCard| is being created or edited.
+       * @private
+       */
+      title_: String,
 
-    /** @private */
-    expirationYear_: String,
+      /**
+       * The list of months to show in the dropdown.
+       * @private {!Array<string>}
+       */
+      monthList_: {
+        type: Array,
+        value: [
+          '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'
+        ],
+      },
 
-    /** @private {string|undefined} */
-    expirationMonth_: String,
+      /**
+       * The list of years to show in the dropdown.
+       * @private {!Array<string>}
+       */
+      yearList_: Array,
 
-    /**
-     * Whether the current nickname input is invalid.
-     * @private
-     */
-    nicknameInvalid_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      expirationYear_: String,
 
-    /** @private */
-    expired_: {
-      type: Boolean,
-      computed: 'computeExpired_(expirationMonth_, expirationYear_)',
-      reflectToAttribute: true,
-      observer: 'onExpiredChanged_',
-    },
-  },
+      /** @private {string|undefined} */
+      expirationMonth_: String,
 
-  behaviors: [
-    I18nBehavior,
-  ],
+      /**
+       * Whether the current nickname input is invalid.
+       * @private
+       */
+      nicknameInvalid_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      expired_: {
+        type: Boolean,
+        computed: 'computeExpired_(expirationMonth_, expirationYear_)',
+        reflectToAttribute: true,
+        observer: 'onExpiredChanged_',
+      },
+    };
+  }
 
   /**
    * @return {boolean} True iff the provided expiration date is passed.
@@ -109,10 +122,12 @@ Polymer({
         expirationYear < now.getFullYear() ||
         (expirationYear === now.getFullYear() &&
          expirationMonth <= now.getMonth()));
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.title_ = this.i18n(
         this.creditCard.guid ? 'editCreditCardTitle' : 'addCreditCardTitle');
 
@@ -141,17 +156,17 @@ Polymer({
     }
     this.yearList_ = yearList;
 
-    this.async(() => {
+    window.setTimeout(() => {
       this.expirationYear_ = selectedYear.toString();
       this.expirationMonth_ = this.creditCard.expirationMonth;
       this.$.dialog.showModal();
-    });
-  },
+    }, 0);
+  }
 
   /** Closes the dialog. */
   close() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
@@ -159,7 +174,7 @@ Polymer({
    */
   onCancelButtonTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /**
    * Handler for tapping the save button.
@@ -173,19 +188,21 @@ Polymer({
     this.creditCard.expirationYear = this.expirationYear_;
     this.creditCard.expirationMonth = this.expirationMonth_;
     this.trimCreditCard_();
-    this.fire('save-credit-card', this.creditCard);
+    this.dispatchEvent(new CustomEvent(
+        'save-credit-card',
+        {bubbles: true, composed: true, detail: this.creditCard}));
     this.close();
-  },
+  }
 
   /** @private */
   onMonthChange_() {
     this.expirationMonth_ = this.monthList_[this.$.month.selectedIndex];
-  },
+  }
 
   /** @private */
   onYearChange_() {
     this.expirationYear_ = this.yearList_[this.$.year.selectedIndex];
-  },
+  }
 
   /** @private */
   saveEnabled_() {
@@ -197,7 +214,7 @@ Polymer({
             (this.creditCard.cardNumber &&
              this.creditCard.cardNumber.trim())) &&
         !this.expired_ && !this.nicknameInvalid_;
-  },
+  }
 
   /**
    * Handles a11y error announcement the same way as in cr-input.
@@ -205,18 +222,22 @@ Polymer({
    */
   onExpiredChanged_() {
     const ERROR_ID = 'expired-error';
-    const errorElement = this.$$(`#${ERROR_ID}`);
+    const errorElement = this.shadowRoot.querySelector(`#${ERROR_ID}`);
     // Readding attributes is needed for consistent announcement by VoiceOver
     if (this.expired_) {
       errorElement.setAttribute('role', 'alert');
-      this.$$(`#month`).setAttribute('aria-errormessage', ERROR_ID);
-      this.$$(`#year`).setAttribute('aria-errormessage', ERROR_ID);
+      this.shadowRoot.querySelector(`#month`).setAttribute(
+          'aria-errormessage', ERROR_ID);
+      this.shadowRoot.querySelector(`#year`).setAttribute(
+          'aria-errormessage', ERROR_ID);
     } else {
       errorElement.removeAttribute('role');
-      this.$$(`#month`).removeAttribute('aria-errormessage');
-      this.$$(`#year`).removeAttribute('aria-errormessage');
+      this.shadowRoot.querySelector(`#month`).removeAttribute(
+          'aria-errormessage');
+      this.shadowRoot.querySelector(`#year`).removeAttribute(
+          'aria-errormessage');
     }
-  },
+  }
 
   /**
    * Validate no digits are used in nickname. Display error message and disable
@@ -226,7 +247,7 @@ Polymer({
   validateNickname_() {
     this.nicknameInvalid_ =
         NICKNAME_INVALID_REGEX.test(this.creditCard.nickname);
-  },
+  }
 
   /**
    * @param {string|undefined} nickname of the card, undefined when not set.
@@ -235,7 +256,7 @@ Polymer({
    */
   computeNicknameCharCount_(nickname) {
     return (nickname || '').length;
-  },
+  }
 
   /**
    * @return {string} 'true' or 'false' for the aria-invalid attribute
@@ -244,7 +265,7 @@ Polymer({
    */
   getExpirationAriaInvalid_() {
     return this.expired_ ? 'true' : 'false';
-  },
+  }
 
   /**
    * Trim credit card's name, cardNumber and nickname if exist.
@@ -260,5 +281,9 @@ Polymer({
     if (this.creditCard.nickname) {
       this.creditCard.nickname = this.creditCard.nickname.trim();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCreditCardEditDialogElement.is,
+    SettingsCreditCardEditDialogElement);

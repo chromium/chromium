@@ -23,9 +23,11 @@ import './passwords_shared_css.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+
+import {SettingsAddressRemoveConfirmationDialogElement} from './address_remove_confirmation_dialog.js';
 
 /** @typedef {chrome.autofillPrivate.CreditCardEntry} */
 let CreditCardEntry;
@@ -102,57 +104,73 @@ export class AutofillManagerImpl {
 
 addSingletonGetter(AutofillManagerImpl);
 
-Polymer({
-  is: 'settings-autofill-section',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsAutofillSectionElement extends PolymerElement {
+  static get is() {
+    return 'settings-autofill-section';
+  }
 
-  properties: {
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * An array of saved addresses.
+       * @type {!Array<!AutofillManager.AddressEntry>}
+       */
+      addresses: Array,
+
+      /**
+       * The model for any address related action menus or dialogs.
+       * @private {?chrome.autofillPrivate.AddressEntry}
+       */
+      activeAddress: Object,
+
+      /** @private */
+      showAddressDialog_: Boolean,
+
+      /** @private */
+      showAddressRemoveConfirmationDialog_: Boolean,
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * An array of saved addresses.
-     * @type {!Array<!AutofillManager.AddressEntry>}
+     * The element to return focus to, when the currently active dialog is
+     * closed.
+     * @private {?HTMLElement}
      */
-    addresses: Array,
+    this.activeDialogAnchor_ = null;
 
     /**
-     * The model for any address related action menus or dialogs.
-     * @private {?chrome.autofillPrivate.AddressEntry}
+     * @type {AutofillManager}
+     * @private
      */
-    activeAddress: Object,
+    this.autofillManager_ = null;
 
-    /** @private */
-    showAddressDialog_: Boolean,
-
-    /** @private */
-    showAddressRemoveConfirmationDialog_: Boolean,
-  },
-
-  listeners: {
-    'save-address': 'saveAddress_',
-  },
-
-  /**
-   * The element to return focus to, when the currently active dialog is
-   * closed.
-   * @private {?HTMLElement}
-   */
-  activeDialogAnchor_: null,
-
-  /**
-   * @type {AutofillManager}
-   * @private
-   */
-  autofillManager_: null,
-
-  /**
-   * @type {?function(!Array<!AutofillManager.AddressEntry>,
-   *     !Array<!CreditCardEntry>)}
-   * @private
-   */
-  setPersonalDataListener_: null,
+    /**
+     * @type {?function(!Array<!AutofillManager.AddressEntry>,
+     *     !Array<!CreditCardEntry>)}
+     * @private
+     */
+    this.setPersonalDataListener_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+    this.addEventListener('save-address', this.saveAddress_);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     // Create listener functions.
     /** @type {function(!Array<!AutofillManager.AddressEntry>)} */
     const setAddressesListener = addressList => {
@@ -182,17 +200,19 @@ Polymer({
 
     // Record that the user opened the address settings.
     chrome.metricsPrivate.recordUserAction('AutofillAddressesViewed');
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.autofillManager_.removePersonalDataManagerListener(
         /**
            @type {function(!Array<!AutofillManager.AddressEntry>,
                !Array<!CreditCardEntry>)}
          */
         (this.setPersonalDataListener_));
-  },
+  }
 
   /**
    * Open the address action menu.
@@ -211,7 +231,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.addressSharedMenu)
         .showAt(dotsButton);
     this.activeDialogAnchor_ = dotsButton;
-  },
+  }
 
   /**
    * Handles tapping on the "Add address" button.
@@ -223,14 +243,14 @@ Polymer({
     this.activeAddress = {};
     this.showAddressDialog_ = true;
     this.activeDialogAnchor_ = /** @type {HTMLElement} */ (this.$.addAddress);
-  },
+  }
 
   /** @private */
   onAddressDialogClose_() {
     this.showAddressDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchor_));
     this.activeDialogAnchor_ = null;
-  },
+  }
 
   /**
    * Handles tapping on the "Edit" address button.
@@ -241,13 +261,14 @@ Polymer({
     e.preventDefault();
     this.showAddressDialog_ = true;
     this.$.addressSharedMenu.close();
-  },
+  }
 
   /** @private */
-  onAddressRemoveConfirmationDialogClose_: function() {
+  onAddressRemoveConfirmationDialogClose_() {
     // Check if the dialog was confirmed before closing it.
     if (/** @type {!SettingsAddressRemoveConfirmationDialogElement} */
-        (this.$$('settings-address-remove-confirmation-dialog'))
+        (this.shadowRoot.querySelector(
+             'settings-address-remove-confirmation-dialog'))
             .wasConfirmed()) {
       this.autofillManager_.removeAddress(
           /** @type {string} */ (this.activeAddress.guid));
@@ -255,7 +276,7 @@ Polymer({
     this.showAddressRemoveConfirmationDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchor_));
     this.activeDialogAnchor_ = null;
-  },
+  }
 
   /**
    * Handles tapping on the "Remove" address button.
@@ -264,7 +285,7 @@ Polymer({
   onMenuRemoveAddressTap_() {
     this.showAddressRemoveConfirmationDialog_ = true;
     this.$.addressSharedMenu.close();
-  },
+  }
 
   /**
    * Returns true if the list exists and has items.
@@ -274,7 +295,7 @@ Polymer({
    */
   hasSome_(list) {
     return !!(list && list.length);
-  },
+  }
 
   /**
    * Listens for the save-address event, and calls the private API.
@@ -283,5 +304,8 @@ Polymer({
    */
   saveAddress_(event) {
     this.autofillManager_.saveAddress(event.detail);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsAutofillSectionElement.is, SettingsAutofillSectionElement);

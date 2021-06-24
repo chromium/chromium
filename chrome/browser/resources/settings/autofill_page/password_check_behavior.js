@@ -232,3 +232,12 @@ export const PasswordCheckBehavior = {
     this.leakedPasswords = resultList;
   },
 };
+
+/** @interface */
+export class PasswordCheckBehaviorInterface {
+  /** @return {!Array<!PasswordManagerProxy.InsecureCredential>} */
+  get leakedPasswords() {}
+
+  /** @return {string} */
+  get compromisedPasswordsCount() {}
+}

@@ -13,41 +13,50 @@ import '../i18n_setup.js';
 import '../settings_shared_css.js';
 import './passwords_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-credit-card-list-entry',
+/** @polymer */
+class SettingsCreditCardListEntryElement extends PolymerElement {
+  static get is() {
+    return 'settings-credit-card-list-entry';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    I18nBehavior,
-  ],
-
-  properties: {
-    /**
-     * A saved credit card.
-     * @type {!chrome.autofillPrivate.CreditCardEntry}
-     */
-    creditCard: Object,
-  },
+  static get properties() {
+    return {
+      /**
+       * A saved credit card.
+       * @type {!chrome.autofillPrivate.CreditCardEntry}
+       */
+      creditCard: Object,
+    };
+  }
 
   /**
    * Opens the credit card action menu.
    * @private
    */
   onDotsMenuClick_() {
-    this.fire('dots-card-menu-click', {
-      creditCard: this.creditCard,
-      anchorElement: this.$$('#creditCardMenu'),
-    });
-  },
+    this.dispatchEvent(new CustomEvent('dots-card-menu-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        creditCard: this.creditCard,
+        anchorElement: this.shadowRoot.querySelector('#creditCardMenu'),
+      }
+    }));
+  }
 
   /** @private */
   onRemoteEditClick_() {
-    this.fire('remote-card-menu-click');
-  },
+    this.dispatchEvent(new CustomEvent('remote-card-menu-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /**
    * The 3-dot menu should not be shown if the card is entirely remote.
@@ -57,5 +66,8 @@ Polymer({
   showDots_() {
     return !!(
         this.creditCard.metadata.isLocal || this.creditCard.metadata.isCached);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCreditCardListEntryElement.is, SettingsCreditCardListEntryElement);

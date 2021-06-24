@@ -7,33 +7,47 @@
  * the placeholder avatar if the user is not signed-in.
  */
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
-Polymer({
-  is: 'settings-avatar-icon',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsAvatarIconElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
+  static get is() {
+    return 'settings-avatar-icon';
+  }
 
-  properties: {
-    /**
-     * The URL for the currently selected profile icon.
-     * @private
-     */
-    avatarUrl_: {
-      type: String,
-      value: '',
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The URL for the currently selected profile icon.
+       * @private
+       */
+      avatarUrl_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     /** @param {!Array<!StoredAccount>} accounts */
     const setAvatarUrl = accounts => {
       this.avatarUrl_ = (accounts.length > 0 && !!accounts[0].avatarImage) ?
@@ -42,6 +56,7 @@ Polymer({
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setAvatarUrl);
     this.addWebUIListener('stored-accounts-updated', setAvatarUrl);
-  },
+  }
+}
 
-});
+customElements.define(SettingsAvatarIconElement.is, SettingsAvatarIconElement);

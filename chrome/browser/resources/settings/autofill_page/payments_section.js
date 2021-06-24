@@ -23,9 +23,8 @@ import './payments_list.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
@@ -155,100 +154,132 @@ export class PaymentsManagerImpl {
 
 addSingletonGetter(PaymentsManagerImpl);
 
-Polymer({
-  is: 'settings-payments-section',
+/**
+ * @typedef {!CustomEvent<{
+ *   creditCard: !chrome.autofillPrivate.CreditCardEntry,
+ *   anchorElement: !HTMLElement
+ * }>}
+ */
+let DotsCardMenuiClickEvent;
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsPaymentsSectionElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+class SettingsPaymentsSectionElement extends
+    SettingsPaymentsSectionElementBase {
+  static get is() {
+    return 'settings-payments-section';
+  }
 
-  properties: {
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * An array of all saved credit cards.
+       * @type {!Array<!CreditCardEntry>}
+       */
+      creditCards: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * An array of all saved UPI IDs.
+       * @type {!Array<!string>}
+       */
+      upiIds: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * Set to true if user can be verified through FIDO authentication.
+       * @private
+       */
+      userIsFidoVerifiable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'fidoAuthenticationAvailableForAutofill');
+        },
+      },
+
+      /**
+       * The model for any credit card related action menus or dialogs.
+       * @private {?chrome.autofillPrivate.CreditCardEntry}
+       */
+      activeCreditCard: Object,
+
+      /** @private */
+      showCreditCardDialog_: Boolean,
+
+      /** @private */
+      migratableCreditCardsInfo_: String,
+
+      /**
+       * Whether migration local card on settings page is enabled.
+       * @private
+       */
+      migrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('migrationEnabled');
+        },
+        readOnly: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * An array of all saved credit cards.
-     * @type {!Array<!CreditCardEntry>}
+     * The element to return focus to; when the currently active dialog is
+     * closed.
+     * @private {?HTMLElement}
      */
-    creditCards: {
-      type: Array,
-      value: () => [],
-    },
+    this.activeDialogAnchor_ = null;
 
     /**
-     * An array of all saved UPI IDs.
-     * @type {!Array<!string>}
-     */
-    upiIds: {
-      type: Array,
-      value: () => [],
-    },
-
-    /**
-     * Set to true if user can be verified through FIDO authentication.
+     * @type {PaymentsManager}
      * @private
      */
-    userIsFidoVerifiable_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'fidoAuthenticationAvailableForAutofill');
-      },
-    },
+    this.paymentsManager_ = null;
 
     /**
-     * The model for any credit card related action menus or dialogs.
-     * @private {?chrome.autofillPrivate.CreditCardEntry}
-     */
-    activeCreditCard: Object,
-
-    /** @private */
-    showCreditCardDialog_: Boolean,
-
-    /** @private */
-    migratableCreditCardsInfo_: String,
-
-    /**
-     * Whether migration local card on settings page is enabled.
+     * @type {?function(!Array<!AutofillManager.AddressEntry>,
+     *     !Array<!CreditCardEntry>)}
      * @private
      */
-    migrationEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('migrationEnabled');
-      },
-      readOnly: true,
-    },
-  },
-
-  listeners: {
-    'save-credit-card': 'saveCreditCard_',
-    'dots-card-menu-click': 'onCreditCardDotsMenuTap_',
-    'remote-card-menu-click': 'onRemoteEditCreditCardTap_',
-  },
-
-  /**
-   * The element to return focus to, when the currently active dialog is
-   * closed.
-   * @private {?HTMLElement}
-   */
-  activeDialogAnchor_: null,
-
-  /**
-   * @type {PaymentsManager}
-   * @private
-   */
-  PaymentsManager_: null,
-
-  /**
-   * @type {?function(!Array<!AutofillManager.AddressEntry>,
-   *     !Array<!CreditCardEntry>)}
-   * @private
-   */
-  setPersonalDataListener_: null,
+    this.setPersonalDataListener_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+
+    this.addEventListener('save-credit-card', this.saveCreditCard_);
+    this.addEventListener(
+        'dots-card-menu-click',
+        e => this.onCreditCardDotsMenuTap_(
+            /** @type {!DotsCardMenuiClickEvent} */ (e)));
+    this.addEventListener(
+        'remote-card-menu-click', this.onRemoteEditCreditCardTap_);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     // Create listener function.
     /** @type {function(!Array<!CreditCardEntry>)} */
     const setCreditCardsListener = cardList => {
@@ -293,23 +324,23 @@ Polymer({
 
     // Record that the user opened the payments settings.
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.paymentsManager_.removePersonalDataManagerListener(
         /**
            @type {function(!Array<!AutofillManager.AddressEntry>,
                !Array<!CreditCardEntry>)}
          */
         (this.setPersonalDataListener_));
-  },
+  }
 
   /**
    * Opens the credit card action menu.
-   * @param {!CustomEvent<{creditCard:
-   *     !chrome.autofillPrivate.CreditCardEntry, anchorElement:
-   *     !HTMLElement}>} e
+   * @param {!DotsCardMenuiClickEvent} e
    * @private
    */
   onCreditCardDotsMenuTap_(e) {
@@ -319,7 +350,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.creditCardSharedMenu)
         .showAt(e.detail.anchorElement);
     this.activeDialogAnchor_ = e.detail.anchorElement;
-  },
+  }
 
   /**
    * Handles tapping on the "Add credit card" button.
@@ -337,7 +368,7 @@ Polymer({
     this.showCreditCardDialog_ = true;
     this.activeDialogAnchor_ =
         /** @type {HTMLElement} */ (this.$.addCreditCard);
-  },
+  }
 
   /** @private */
   onCreditCardDialogClose_() {
@@ -345,7 +376,7 @@ Polymer({
     focusWithoutInk(assert(this.activeDialogAnchor_));
     this.activeDialogAnchor_ = null;
     this.activeCreditCard = null;
-  },
+  }
 
   /**
    * Handles tapping on the "Edit" credit card button.
@@ -362,13 +393,13 @@ Polymer({
     }
 
     this.$.creditCardSharedMenu.close();
-  },
+  }
 
   /** @private */
   onRemoteEditCreditCardTap_() {
     this.paymentsManager_.logServerCardLinkClicked();
     window.open(loadTimeData.getString('manageCreditCardsUrl'));
-  },
+  }
 
   /**
    * Handles tapping on the "Remove" credit card button.
@@ -379,7 +410,7 @@ Polymer({
         /** @type {string} */ (this.activeCreditCard.guid));
     this.$.creditCardSharedMenu.close();
     this.activeCreditCard = null;
-  },
+  }
 
   /**
    * Handles tapping on the "Clear copy" button for cached credit cards.
@@ -390,7 +421,7 @@ Polymer({
         /** @type {string} */ (this.activeCreditCard.guid));
     this.$.creditCardSharedMenu.close();
     this.activeCreditCard = null;
-  },
+  }
 
   /**
    * Handles clicking on the "Migrate" button for migrate local credit
@@ -399,7 +430,7 @@ Polymer({
    */
   onMigrateCreditCardsClick_() {
     this.paymentsManager_.migrateCreditCards();
-  },
+  }
 
   /**
    * Records changes made to the "Allow sites to check if you have payment
@@ -409,7 +440,7 @@ Polymer({
   onCanMakePaymentChange_() {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.PAYMENT_METHOD);
-  },
+  }
 
   /**
    * Listens for the save-credit-card event, and calls the private API.
@@ -418,7 +449,7 @@ Polymer({
    */
   saveCreditCard_(event) {
     this.paymentsManager_.saveCreditCard(event.detail);
-  },
+  }
 
   /**
    * @param {boolean} creditCardEnabled
@@ -428,7 +459,7 @@ Polymer({
    */
   shouldShowFidoToggle_(creditCardEnabled, userIsFidoVerifiable) {
     return creditCardEnabled && userIsFidoVerifiable;
-  },
+  }
 
   /**
    * Listens for the enable-authentication event, and calls the private API.
@@ -436,8 +467,9 @@ Polymer({
    */
   setFIDOAuthenticationEnabledState_() {
     this.paymentsManager_.setCreditCardFIDOAuthEnabledState(
-        this.$$('#autofillCreditCardFIDOAuthToggle').checked);
-  },
+        this.shadowRoot.querySelector('#autofillCreditCardFIDOAuthToggle')
+            .checked);
+  }
 
   /**
    * @param {!Array<!CreditCardEntry>} creditCards
@@ -470,6 +502,8 @@ Polymer({
         this.i18n('migratableCardsInfoMultiple');
 
     return true;
-  },
+  }
+}
 
-});
+customElements.define(
+    SettingsPaymentsSectionElement.is, SettingsPaymentsSectionElement);

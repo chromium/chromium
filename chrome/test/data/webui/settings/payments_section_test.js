@@ -22,14 +22,16 @@ suite('PaymentSectionUiTest', function() {
     };
     document.body.appendChild(section);
 
-    assertFalse(!!section.$$('#autofillExtensionIndicator'));
+    assertFalse(
+        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
     section.set('prefs.autofill.credit_card_enabled.extensionId', 'test-id-1');
     section.set(
         'prefs.autofill.credit_card_fido_auth_enabled.extensionId',
         'test-id-2');
     flush();
 
-    assertTrue(!!section.$$('#autofillExtensionIndicator'));
+    assertTrue(
+        !!section.shadowRoot.querySelector('#autofillExtensionIndicator'));
   });
 });
 
@@ -96,7 +98,7 @@ suite('PaymentsSection', function() {
    */
   function getLocalAndServerCreditCardListItems() {
     return document.body.querySelector('settings-payments-section')
-        .$$('#paymentsList')
+        .shadowRoot.querySelector('#paymentsList')
         .shadowRoot.querySelectorAll('settings-credit-card-list-entry');
   }
 
@@ -107,7 +109,8 @@ suite('PaymentsSection', function() {
    * @return {?HTMLElement}
    */
   function getCardRowShadowRoot(paymentsList) {
-    const row = paymentsList.$$('settings-credit-card-list-entry');
+    const row = paymentsList.shadowRoot.querySelector(
+        'settings-credit-card-list-entry');
     assertTrue(!!row);
     return row.shadowRoot;
   }
@@ -119,7 +122,8 @@ suite('PaymentsSection', function() {
    * @return {?HTMLElement}
    */
   function getUPIRowShadowRoot(paymentsList) {
-    const row = paymentsList.$$('settings-upi-id-list-entry');
+    const row =
+        paymentsList.shadowRoot.querySelector('settings-upi-id-list-entry');
     assertTrue(!!row);
     return row.shadowRoot;
   }
@@ -129,14 +133,18 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
 
-    const creditCardList = section.$$('#paymentsList');
+    const creditCardList = section.shadowRoot.querySelector('#paymentsList');
     assertTrue(!!creditCardList);
     assertEquals(0, getLocalAndServerCreditCardListItems().length);
 
-    assertFalse(creditCardList.$$('#noPaymentMethodsLabel').hidden);
-    assertTrue(creditCardList.$$('#creditCardsHeading').hidden);
-    assertFalse(section.$$('#autofillCreditCardToggle').disabled);
-    assertFalse(section.$$('#addCreditCard').disabled);
+    assertFalse(
+        creditCardList.shadowRoot.querySelector('#noPaymentMethodsLabel')
+            .hidden);
+    assertTrue(
+        creditCardList.shadowRoot.querySelector('#creditCardsHeading').hidden);
+    assertFalse(
+        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
+    assertFalse(section.shadowRoot.querySelector('#addCreditCard').disabled);
   });
 
   test('verifyCreditCardsDisabled', function() {
@@ -144,8 +152,9 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: false}});
 
-    assertFalse(section.$$('#autofillCreditCardToggle').disabled);
-    assertTrue(section.$$('#addCreditCard').hidden);
+    assertFalse(
+        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
+    assertTrue(section.shadowRoot.querySelector('#addCreditCard').hidden);
   });
 
   test('verifyCreditCardCount', function() {
@@ -160,22 +169,26 @@ suite('PaymentsSection', function() {
 
     const section = createPaymentsSection(
         creditCards, /*upiIds=*/[], {credit_card_enabled: {value: true}});
-    const creditCardList = section.$$('#paymentsList');
+    const creditCardList = section.shadowRoot.querySelector('#paymentsList');
     assertTrue(!!creditCardList);
     assertEquals(
         creditCards.length, getLocalAndServerCreditCardListItems().length);
 
-    assertTrue(creditCardList.$$('#noPaymentMethodsLabel').hidden);
-    assertFalse(creditCardList.$$('#creditCardsHeading').hidden);
-    assertFalse(section.$$('#autofillCreditCardToggle').disabled);
-    assertFalse(section.$$('#addCreditCard').disabled);
+    assertTrue(creditCardList.shadowRoot.querySelector('#noPaymentMethodsLabel')
+                   .hidden);
+    assertFalse(
+        creditCardList.shadowRoot.querySelector('#creditCardsHeading').hidden);
+    assertFalse(
+        section.shadowRoot.querySelector('#autofillCreditCardToggle').disabled);
+    assertFalse(section.shadowRoot.querySelector('#addCreditCard').disabled);
   });
 
   test('verifyCreditCardFields', function() {
     const creditCard = createCreditCardEntry();
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     assertEquals(
         creditCard.metadata.summaryLabel,
         rowShadowRoot.querySelector('#creditCardLabel').textContent);
@@ -190,7 +203,8 @@ suite('PaymentsSection', function() {
     creditCard.metadata.isLocal = true;
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
     const outlinkButton =
@@ -203,7 +217,8 @@ suite('PaymentsSection', function() {
     creditCard.metadata.isLocal = false;
     const section =
         createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertFalse(!!menuButton);
     const outlinkButton =
@@ -309,7 +324,8 @@ suite('PaymentsSection', function() {
         .then(function() {
           // Not expired, but still can't be saved, because there's no
           // name.
-          const expiredError = creditCardDialog.$$('#expired-error');
+          const expiredError =
+              creditCardDialog.shadowRoot.querySelector('#expired-error');
           assertEquals('hidden', getComputedStyle(expiredError).visibility);
           assertTrue(creditCardDialog.$.saveButton.disabled);
 
@@ -364,7 +380,8 @@ suite('PaymentsSection', function() {
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Local credit cards will show the overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
@@ -394,7 +411,8 @@ suite('PaymentsSection', function() {
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // Cached remote CCs will show overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
     assertTrue(!!menuButton);
@@ -424,7 +442,8 @@ suite('PaymentsSection', function() {
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     // No overflow menu when not cached.
-    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getCardRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     assertTrue(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     assertFalse(!!rowShadowRoot.querySelector('#creditCardMenu'));
   });
@@ -439,7 +458,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertTrue(section.$$('#migrateCreditCards').hidden);
+    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
   });
 
   test('verifyMigrationButtonNotShownIfCreditCardDisabled', function() {
@@ -450,7 +469,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: false}});
 
-    assertTrue(section.$$('#migrateCreditCards').hidden);
+    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
   });
 
   test('verifyMigrationButtonNotShownIfNoCardIsMigratable', function() {
@@ -461,7 +480,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertTrue(section.$$('#migrateCreditCards').hidden);
+    assertTrue(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
   });
 
   test('verifyMigrationButtonShown', function() {
@@ -471,7 +490,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         [creditCard], /*upiIds=*/[], {credit_card_enabled: {value: true}});
 
-    assertFalse(section.$$('#migrateCreditCards').hidden);
+    assertFalse(section.shadowRoot.querySelector('#migrateCreditCards').hidden);
   });
 
   test('verifyFIDOAuthToggleShownIfUserIsVerifiable', function() {
@@ -482,7 +501,8 @@ suite('PaymentsSection', function() {
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
 
-    assertTrue(!!section.$$('#autofillCreditCardFIDOAuthToggle'));
+    assertTrue(!!section.shadowRoot.querySelector(
+        '#autofillCreditCardFIDOAuthToggle'));
   });
 
   test('verifyFIDOAuthToggleNotShownIfUserIsNotVerifiable', function() {
@@ -492,7 +512,8 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[],
         {credit_card_enabled: {value: true}});
-    assertFalse(!!section.$$('#autofillCreditCardFIDOAuthToggle'));
+    assertFalse(!!section.shadowRoot.querySelector(
+        '#autofillCreditCardFIDOAuthToggle'));
   });
 
   test('verifyFIDOAuthToggleCheckedIfOptedIn', function() {
@@ -503,7 +524,9 @@ suite('PaymentsSection', function() {
       credit_card_enabled: {value: true},
       credit_card_fido_auth_enabled: {value: true}
     });
-    assertTrue(section.$$('#autofillCreditCardFIDOAuthToggle').checked);
+    assertTrue(
+        section.shadowRoot.querySelector('#autofillCreditCardFIDOAuthToggle')
+            .checked);
   });
 
   test('verifyFIDOAuthToggleUncheckedIfOptedOut', function() {
@@ -514,7 +537,9 @@ suite('PaymentsSection', function() {
       credit_card_enabled: {value: true},
       credit_card_fido_auth_enabled: {value: false}
     });
-    assertFalse(section.$$('#autofillCreditCardFIDOAuthToggle').checked);
+    assertFalse(
+        section.shadowRoot.querySelector('#autofillCreditCardFIDOAuthToggle')
+            .checked);
   });
 
   test('verifyUpiIdRow', function() {
@@ -522,7 +547,8 @@ suite('PaymentsSection', function() {
 
     const section = createPaymentsSection(
         /*creditCards=*/[], ['vpa@indianbank'], /*prefValues=*/ {});
-    const rowShadowRoot = getUPIRowShadowRoot(section.$$('#paymentsList'));
+    const rowShadowRoot =
+        getUPIRowShadowRoot(section.shadowRoot.querySelector('#paymentsList'));
     assertTrue(!!rowShadowRoot);
     assertEquals(
         rowShadowRoot.querySelector('#upiIdLabel').textContent,
@@ -535,7 +561,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[], /*prefValues=*/ {});
 
-    const paymentsList = section.$$('#paymentsList');
+    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
     const upiRows =
         paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
 
@@ -549,7 +575,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], upiIds, /*prefValues=*/ {});
 
-    const paymentsList = section.$$('#paymentsList');
+    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
     const upiRows =
         paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
 
@@ -564,7 +590,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], upiIds, /*prefValues=*/ {});
 
-    const paymentsList = section.$$('#paymentsList');
+    const paymentsList = section.shadowRoot.querySelector('#paymentsList');
     const upiRows =
         paymentsList.shadowRoot.querySelectorAll('settings-upi-id-list-entry');
 
@@ -578,7 +604,7 @@ suite('PaymentsSection', function() {
     const section = createPaymentsSection(
         /*creditCards=*/[], /*upiIds=*/[], /*prefValues=*/ {});
 
-    section.$$('#canMakePaymentToggle').click();
+    section.shadowRoot.querySelector('#canMakePaymentToggle').click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
 
