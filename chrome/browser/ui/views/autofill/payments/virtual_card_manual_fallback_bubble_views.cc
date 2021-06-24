@@ -75,7 +75,8 @@ void VirtualCardManualFallbackBubbleViews::Init() {
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   layout->AddView(
       CreateRowItemLabel(controller_->GetVirtualCardNumberFieldLabel()));
-  layout->AddView(CreateRowItemButton(controller_->GetVirtualCard()->number()));
+  layout->AddView(CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField::kCardNumber));
 
   // Adds a row for expiration date.
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
@@ -97,13 +98,13 @@ void VirtualCardManualFallbackBubbleViews::Init() {
                       /*horizontal=*/
                       ChromeLayoutProvider::Get()->GetDistanceMetric(
                           views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
-  expiry_row->AddChildView(CreateRowItemButton(
-      controller_->GetVirtualCard()->Expiration2DigitMonthAsString()));
+  expiry_row->AddChildView(CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField::kExpirationMonth));
   expiry_row->AddChildView(std::make_unique<views::Label>(u"/"));
   // TODO(crbug.com/1196021): Validate this works when the expiration year field
   // is for two-digit numbers
-  expiry_row->AddChildView(CreateRowItemButton(
-      controller_->GetVirtualCard()->Expiration4DigitYearAsString()));
+  expiry_row->AddChildView(CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField::kExpirationYear));
   layout->AddView(std::move(expiry_row));
 
   // Adds a row for the cardholder name.
@@ -113,8 +114,8 @@ void VirtualCardManualFallbackBubbleViews::Init() {
                                   views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
   layout->AddView(
       CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
-  layout->AddView(CreateRowItemButton(
-      controller_->GetVirtualCard()->GetRawInfo(CREDIT_CARD_NAME_FULL)));
+  layout->AddView(CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField::kCardholderName));
 
   // Adds a row for CVC.
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
@@ -122,13 +123,14 @@ void VirtualCardManualFallbackBubbleViews::Init() {
                               ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
   layout->AddView(CreateRowItemLabel(controller_->GetCvcFieldLabel()));
-  layout->AddView(CreateRowItemButton(controller_->GetCvc()));
+  layout->AddView(
+      CreateRowItemButtonForField(VirtualCardManualFallbackBubbleField::kCvc));
 }
 
 ui::ImageModel VirtualCardManualFallbackBubbleViews::GetWindowIcon() {
   // Fall back to network icon if no specific icon is provided.
   // TODO(crbug.com/1218628): Fallback logic might be put inside
-  // BrowserAutofillManager or PDM.
+  // BrowserAutofillManager or PDM. Remove GetVirtualCard() afterwards.
   if (controller_->GetBubbleTitleIcon().IsEmpty()) {
     gfx::Image card_image =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -162,15 +164,13 @@ void VirtualCardManualFallbackBubbleViews::OnWidgetClosing(
 }
 
 std::unique_ptr<views::MdTextButton>
-VirtualCardManualFallbackBubbleViews::CreateRowItemButton(
-    const std::u16string& text) {
+VirtualCardManualFallbackBubbleViews::CreateRowItemButtonForField(
+    VirtualCardManualFallbackBubbleField field) {
+  std::u16string text = controller_->GetValueForField(field);
   auto button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
-          [](std::u16string text,
-             VirtualCardManualFallbackBubbleViews* bubble) {
-            bubble->controller_->UpdateClipboard(text);
-          },
-          text, base::Unretained(this)),
+          &VirtualCardManualFallbackBubbleController::OnFieldClicked,
+          controller_->GetWeakPtr(), field),
       text, views::style::CONTEXT_BUTTON);
   button->SetCornerRadius(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMaximum, button->GetPreferredSize()));

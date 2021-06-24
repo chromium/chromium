@@ -275,6 +275,9 @@ class CreditCard : public AutofillDataModel {
   // The last four digits of the card number (or possibly less if there aren't
   // enough characters).
   std::u16string LastFourDigits() const;
+  // The well-formatted full digits for display, we will add white space as
+  // separator between digits, e.g. "1234 5678 9000 0000".
+  std::u16string FullDigitsForDisplay() const;
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   std::u16string NetworkForDisplay() const;
   // A label for this card formatted as '****2345'.

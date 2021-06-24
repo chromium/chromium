@@ -114,8 +114,20 @@ std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetCvcFieldLabel()
       IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL);
 }
 
-std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetCvc() const {
-  return virtual_card_cvc_;
+std::u16string VirtualCardManualFallbackBubbleControllerImpl::GetValueForField(
+    VirtualCardManualFallbackBubbleField field) const {
+  switch (field) {
+    case VirtualCardManualFallbackBubbleField::kCardNumber:
+      return virtual_card_.FullDigitsForDisplay();
+    case VirtualCardManualFallbackBubbleField::kExpirationMonth:
+      return virtual_card_.Expiration2DigitMonthAsString();
+    case VirtualCardManualFallbackBubbleField::kExpirationYear:
+      return virtual_card_.Expiration4DigitYearAsString();
+    case VirtualCardManualFallbackBubbleField::kCardholderName:
+      return virtual_card_.GetRawInfo(CREDIT_CARD_NAME_FULL);
+    case VirtualCardManualFallbackBubbleField::kCvc:
+      return virtual_card_cvc_;
+  }
 }
 
 const CreditCard*
@@ -156,6 +168,16 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
       metric, is_user_gesture_);
 
   UpdatePageActionIcon();
+}
+
+void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
+    VirtualCardManualFallbackBubbleField field) const {
+  // TODO(crbug.com/1196021): Add metric for each field so that we could know
+  // form filling accuracy.
+  // Strip the whitespaces that were added to the card number for legibility.
+  UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
+                      ? CreditCard::StripSeparators(GetValueForField(field))
+                      : GetValueForField(field));
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
@@ -206,6 +228,11 @@ void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
 void VirtualCardManualFallbackBubbleControllerImpl::SetEventObserverForTesting(
     ObserverForTest* observer_for_test) {
   observer_for_test_ = observer_for_test;
+}
+
+base::WeakPtr<VirtualCardManualFallbackBubbleController>
+VirtualCardManualFallbackBubbleControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardManualFallbackBubbleControllerImpl)

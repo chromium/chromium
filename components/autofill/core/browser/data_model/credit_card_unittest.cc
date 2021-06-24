@@ -1733,6 +1733,32 @@ TEST(CreditCardTest, LastFourDigits) {
             card.ObfuscatedLastFourDigits());
 }
 
+TEST(CreditCardTest, FullDigitsForDisplay) {
+  CreditCard card(base::GenerateGUID(), "https://www.example.com/");
+  ASSERT_EQ(std::u16string(), card.FullDigitsForDisplay());
+
+  test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
+                          "2010", "1");
+  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+
+  // Unstripped card number.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"5212-3412-3412-3489");
+  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+
+  // 15-digit card number stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"378282246310005");
+  ASSERT_EQ(u"378282246310005", card.FullDigitsForDisplay());
+
+  // 19-digit card number stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"4532261615476013542");
+  ASSERT_EQ(u"4532261615476013542", card.FullDigitsForDisplay());
+
+  // Ideally FullDigitsForDisplay shouldn't be invoked for masked cards.Test
+  // here just in case. Masked card stays the same.
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
+  ASSERT_EQ(u"3489", card.FullDigitsForDisplay());
+}
+
 // Verifies that a credit card should be updated.
 struct ShouldUpdateExpirationTestCase {
   bool should_update_expiration;

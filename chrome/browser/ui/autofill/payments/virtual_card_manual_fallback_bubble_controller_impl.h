@@ -49,11 +49,15 @@ class VirtualCardManualFallbackBubbleControllerImpl
   std::u16string GetExpirationDateFieldLabel() const override;
   std::u16string GetCardholderNameFieldLabel() const override;
   std::u16string GetCvcFieldLabel() const override;
-  std::u16string GetCvc() const override;
+  std::u16string GetValueForField(
+      VirtualCardManualFallbackBubbleField field) const override;
   const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-  void UpdateClipboard(const std::u16string& text) const override;
+  void OnFieldClicked(
+      VirtualCardManualFallbackBubbleField field) const override;
+  base::WeakPtr<VirtualCardManualFallbackBubbleController> GetWeakPtr()
+      override;
 
  protected:
   explicit VirtualCardManualFallbackBubbleControllerImpl(
@@ -69,6 +73,9 @@ class VirtualCardManualFallbackBubbleControllerImpl
   friend class content::WebContentsUserData<
       VirtualCardManualFallbackBubbleControllerImpl>;
   friend class VirtualCardManualFallbackBubbleViewsInteractiveUiTest;
+
+  // Updates the system clipboard with the |text|.
+  void UpdateClipboard(const std::u16string& text) const;
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
 
@@ -89,6 +96,9 @@ class VirtualCardManualFallbackBubbleControllerImpl
   bool should_icon_be_visible_ = false;
 
   ObserverForTest* observer_for_test_ = nullptr;
+
+  base::WeakPtrFactory<VirtualCardManualFallbackBubbleControllerImpl>
+      weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

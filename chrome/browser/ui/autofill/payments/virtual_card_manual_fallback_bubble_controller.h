@@ -16,6 +16,16 @@ namespace autofill {
 class AutofillBubbleBase;
 class CreditCard;
 
+// The fields inside of the virtual card manual fallback bubble.
+enum class VirtualCardManualFallbackBubbleField {
+  kCardNumber = 0,
+  kExpirationMonth = 1,
+  kExpirationYear = 2,
+  kCardholderName = 3,
+  kCvc = 4,
+  kMaxValue = kCvc,
+};
+
 // Interface that exposes controller functionality to
 // VirtualCardManualFallbackBubbleViews. The bubble is shown when the virtual
 // card option in the Autofill credit card suggestion list is clicked. It
@@ -63,8 +73,9 @@ class VirtualCardManualFallbackBubbleController {
   // Returns the descriptive label of the CVC field.
   virtual std::u16string GetCvcFieldLabel() const = 0;
 
-  // Returns the CVC value of the virtual card.
-  virtual std::u16string GetCvc() const = 0;
+  // Returns the text value of the |field| for display.
+  virtual std::u16string GetValueForField(
+      VirtualCardManualFallbackBubbleField field) const = 0;
 
   // Returns the related virtual card.
   virtual const CreditCard* GetVirtualCard() const = 0;
@@ -76,8 +87,13 @@ class VirtualCardManualFallbackBubbleController {
   // why the bubble was closed.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
-  // Updates the system clipboard with the |text|.
-  virtual void UpdateClipboard(const std::u16string& text) const = 0;
+  // Handles the event of clicking the |field|'s button.
+  virtual void OnFieldClicked(
+      VirtualCardManualFallbackBubbleField field) const = 0;
+
+  // Returns a WeakPtr to this instance.
+  virtual base::WeakPtr<VirtualCardManualFallbackBubbleController>
+  GetWeakPtr() = 0;
 };
 
 }  // namespace autofill

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/test/widget_test.h"
 
@@ -58,11 +59,15 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
 
   void ShowBubble() {
     CreditCard card = test::GetFullServerCard();
+    ShowBubble(&card, /*virtual_card_cvc=*/u"123");
+  }
+
+  void ShowBubble(const CreditCard* virtual_card,
+                  const std::u16string& virtual_card_cvc) {
     ResetEventWaiterForSequence({BubbleEvent::BUBBLE_SHOWN});
     // Passing in empty image will fall back to use card network icon.
-    GetController()->ShowBubble(&card,
-                                /*virtual_card_cvc=*/u"123",
-                                /*card_image=*/gfx::Image());
+    GetController()->ShowBubble(virtual_card, virtual_card_cvc,
+                                /*virtual_card_image=*/gfx::Image());
     event_waiter_->Wait();
   }
 
@@ -95,6 +100,14 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   }
 
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
+
+  std::u16string GetValueForField(VirtualCardManualFallbackBubbleField field) {
+    return GetController()->GetValueForField(field);
+  }
+
+  void ClickOnField(VirtualCardManualFallbackBubbleField field) {
+    GetController()->OnFieldClicked(field);
+  }
 
   VirtualCardManualFallbackBubbleControllerImpl* GetController() {
     if (!browser() || !browser()->tab_strip_model() ||
@@ -156,6 +169,34 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   destroyed_waiter.Wait();
   EXPECT_FALSE(GetBubbleViews());
   EXPECT_FALSE(GetIconView()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+                       CopyFieldValue) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string clipboard_text;
+
+  // Explicitly override the card number for testing.
+  CreditCard card = test::GetFullServerCard();
+  card.SetNumber(u"5454545454545454");
+  ShowBubble(&card, u"345");
+  // Verify the displayed text. We change the format of card number in the ui.
+  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCvc),
+            u"345");
+  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCardNumber),
+            u"5454 5454 5454 5454");
+
+  // Simulate clicking on the cvc field. Copy cvc value to the clipboard.
+  ClickOnField(VirtualCardManualFallbackBubbleField::kCvc);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"345");
+  // Simluate clicking on the card number field, ensure that the copied card
+  // number doesn't contain spaces.
+  ClickOnField(VirtualCardManualFallbackBubbleField::kCardNumber);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"5454545454545454");
 }
 
 // Disabled due to flakiness: crbug.com/1223042

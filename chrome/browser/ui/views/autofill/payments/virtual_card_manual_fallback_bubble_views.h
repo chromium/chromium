@@ -47,10 +47,10 @@ class VirtualCardManualFallbackBubbleViews
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;
 
-  // Creates a button with text in it. If the button is pressed, the text of it
+  // Creates a button for the |field|. If the button is pressed, the text of it
   // will be copied to the clipboard.
-  std::unique_ptr<views::MdTextButton> CreateRowItemButton(
-      const std::u16string& text);
+  std::unique_ptr<views::MdTextButton> CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField field);
 
   VirtualCardManualFallbackBubbleController* controller_;
 
