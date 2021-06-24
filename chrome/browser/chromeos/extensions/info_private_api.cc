@@ -275,10 +275,9 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(list[i].is_string());
     std::string property_name = list[i].GetString();
     std::unique_ptr<base::Value> value = GetValue(property_name);
-    if (value) {
-      result.SetPath(property_name,
-                     base::Value::FromUniquePtrValue(std::move(value)));
-    }
+    if (value)
+      result.SetKey(property_name,
+                    base::Value::FromUniquePtrValue(std::move(value)));
   }
   return RespondNow(OneArgument(std::move(result)));
 }

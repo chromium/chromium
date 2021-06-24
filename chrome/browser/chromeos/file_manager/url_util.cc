@@ -88,7 +88,7 @@ GURL GetFileManagerMainPageUrlWithParams(
   arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {
-    auto types_list = std::make_unique<base::ListValue>();
+    base::ListValue types_list;
     for (size_t i = 0; i < file_types->extensions.size(); ++i) {
       auto extensions_list = std::make_unique<base::ListValue>();
       for (size_t j = 0; j < file_types->extensions[i].size(); ++j) {
@@ -107,9 +107,9 @@ GURL GetFileManagerMainPageUrlWithParams(
       dict->SetBoolean("selected",
                        (static_cast<size_t>(file_type_index) == (i + 1)));
 
-      types_list->Set(i, std::move(dict));
+      types_list.Set(i, std::move(dict));
     }
-    arg_value.Set("typeList", std::move(types_list));
+    arg_value.SetKey("typeList", std::move(types_list));
 
     arg_value.SetBoolean("includeAllFiles", file_types->include_all_files);
   }

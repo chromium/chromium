@@ -384,7 +384,8 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   auto file_entries = file_manager::util::ConvertEntryDefinitionListToListValue(
       *entry_definition_list);
 
-  details->Set("entries", std::move(file_entries));
+  details->SetKey("entries",
+                  base::Value::FromUniquePtrValue(std::move(file_entries)));
   event_args->Append(std::move(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,

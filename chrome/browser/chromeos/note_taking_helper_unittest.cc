@@ -274,10 +274,12 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
             .Build();
 
     if (action_handlers)
-      manifest->Set("action_handlers", std::move(action_handlers));
+      manifest->SetKey("action_handlers", base::Value::FromUniquePtrValue(
+                                              std::move(action_handlers)));
 
     if (permissions)
-      manifest->Set("permissions", std::move(permissions));
+      manifest->SetKey("permissions",
+                       base::Value::FromUniquePtrValue(std::move(permissions)));
 
     return extensions::ExtensionBuilder()
         .SetManifest(std::move(manifest))

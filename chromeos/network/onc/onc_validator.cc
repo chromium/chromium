@@ -291,7 +291,7 @@ bool Validator::ValidateRecommendedField(
     return true;
   }
 
-  std::unique_ptr<base::ListValue> repaired_recommended(new base::ListValue);
+  base::ListValue repaired_recommended;
   for (const auto& entry : recommended_list->GetList()) {
     std::string field_name;
     if (!entry.GetAsString(&field_name)) {
@@ -325,10 +325,10 @@ bool Validator::ValidateRecommendedField(
       continue;
     }
 
-    repaired_recommended->AppendString(field_name);
+    repaired_recommended.AppendString(field_name);
   }
 
-  result->Set(::onc::kRecommended, std::move(repaired_recommended));
+  result->SetKey(::onc::kRecommended, std::move(repaired_recommended));
   return true;
 }
 

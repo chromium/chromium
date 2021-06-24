@@ -166,15 +166,15 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
     base::DictionaryValue test_arg;
     test_arg.SetString(kTestNameKey, test_name);
 
-    std::unique_ptr<base::ListValue> enabled_list(new base::ListValue);
+    base::ListValue enabled_list;
     for (size_t i = 0; i < enabled_features.size(); ++i)
-      enabled_list->AppendString(enabled_features[i]);
-    test_arg.Set(kEnabledFeaturesKey, std::move(enabled_list));
+      enabled_list.AppendString(enabled_features[i]);
+    test_arg.SetKey(kEnabledFeaturesKey, std::move(enabled_list));
 
-    std::unique_ptr<base::ListValue> disabled_list(new base::ListValue);
+    base::ListValue disabled_list;
     for (size_t i = 0; i < disabled_features.size(); ++i)
-      disabled_list->AppendString(disabled_features[i]);
-    test_arg.Set(kDisabledFeaturesKey, std::move(disabled_list));
+      disabled_list.AppendString(disabled_features[i]);
+    test_arg.SetKey(kDisabledFeaturesKey, std::move(disabled_list));
 
     return base::JSONWriter::Write(test_arg, result);
   }

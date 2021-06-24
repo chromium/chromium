@@ -66,7 +66,7 @@ void UpdateDict(base::DictionaryValue* dict,
                 bool set_or_clear,
                 std::unique_ptr<base::Value> value) {
   if (set_or_clear)
-    dict->Set(pref_path, std::move(value));
+    dict->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
   else
     dict->Remove(pref_path, NULL);
 }

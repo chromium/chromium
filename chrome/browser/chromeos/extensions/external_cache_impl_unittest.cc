@@ -107,22 +107,21 @@ class ExternalCacheImplTest : public testing::Test,
     return dir.Append(id + "-" + version + ".crx");
   }
 
-  std::unique_ptr<base::DictionaryValue> CreateEntryWithUpdateUrl(
-      bool from_webstore) {
-    auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                     from_webstore
-                         ? extension_urls::GetWebstoreUpdateUrl().spec()
-                         : kNonWebstoreUpdateUrl);
+  base::DictionaryValue CreateEntryWithUpdateUrl(bool from_webstore) {
+    base::DictionaryValue entry;
+    entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                    from_webstore
+                        ? extension_urls::GetWebstoreUpdateUrl().spec()
+                        : kNonWebstoreUpdateUrl);
     return entry;
   }
 
-  std::unique_ptr<base::DictionaryValue> CreateEntryWithExternalCrx() {
-    auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(extensions::ExternalProviderImpl::kExternalCrx,
-                     kExternalCrxPath);
-    entry->SetString(extensions::ExternalProviderImpl::kExternalVersion,
-                     kExternalCrxVersion);
+  base::DictionaryValue CreateEntryWithExternalCrx() {
+    base::DictionaryValue entry;
+    entry.SetString(extensions::ExternalProviderImpl::kExternalCrx,
+                    kExternalCrxPath);
+    entry.SetString(extensions::ExternalProviderImpl::kExternalVersion,
+                    kExternalCrxVersion);
     return entry;
   }
 
@@ -150,12 +149,12 @@ TEST_F(ExternalCacheImplTest, Basic) {
       true, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
-  prefs->Set(kTestExtensionId1, CreateEntryWithUpdateUrl(true));
+  prefs->SetKey(kTestExtensionId1, CreateEntryWithUpdateUrl(true));
   CreateExtensionFile(cache_dir, kTestExtensionId1, "1");
-  prefs->Set(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
-  prefs->Set(kTestExtensionId3, CreateEntryWithUpdateUrl(false));
+  prefs->SetKey(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
+  prefs->SetKey(kTestExtensionId3, CreateEntryWithUpdateUrl(false));
   CreateExtensionFile(cache_dir, kTestExtensionId3, "3");
-  prefs->Set(kTestExtensionId4, CreateEntryWithUpdateUrl(false));
+  prefs->SetKey(kTestExtensionId4, CreateEntryWithUpdateUrl(false));
 
   external_cache.UpdateExtensionsList(std::move(prefs));
   content::RunAllTasksUntilIdle();
@@ -289,8 +288,8 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
       true, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
-  prefs->Set(kTestExtensionId1, CreateEntryWithExternalCrx());
-  prefs->Set(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
+  prefs->SetKey(kTestExtensionId1, CreateEntryWithExternalCrx());
+  prefs->SetKey(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
 
   external_cache.UpdateExtensionsList(std::move(prefs));
   content::RunAllTasksUntilIdle();

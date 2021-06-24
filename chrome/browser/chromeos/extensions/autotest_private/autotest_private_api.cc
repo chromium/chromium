@@ -201,8 +201,7 @@ int AccessArray(const volatile int arr[], const volatile int* index) {
   return arr[*index];
 }
 
-std::unique_ptr<base::ListValue> GetHostPermissions(const Extension* ext,
-                                                    bool effective_perm) {
+base::ListValue GetHostPermissions(const Extension* ext, bool effective_perm) {
   const PermissionsData* permissions_data = ext->permissions_data();
 
   const URLPatternSet* pattern_set = nullptr;
@@ -214,20 +213,20 @@ std::unique_ptr<base::ListValue> GetHostPermissions(const Extension* ext,
     pattern_set = &permissions_data->active_permissions().explicit_hosts();
   }
 
-  auto permissions = std::make_unique<base::ListValue>();
+  base::ListValue permissions;
   for (const auto& perm : *pattern_set)
-    permissions->AppendString(perm.GetAsString());
+    permissions.AppendString(perm.GetAsString());
 
   return permissions;
 }
 
-std::unique_ptr<base::ListValue> GetAPIPermissions(const Extension* ext) {
-  auto permissions = std::make_unique<base::ListValue>();
+base::ListValue GetAPIPermissions(const Extension* ext) {
+  base::ListValue permissions;
   std::set<std::string> perm_list =
       ext->permissions_data()->active_permissions().GetAPIsAsStrings();
   for (std::set<std::string>::const_iterator perm = perm_list.begin();
        perm != perm_list.end(); ++perm) {
-    permissions->AppendString(*perm);
+    permissions.AppendString(*perm);
   }
   return permissions;
 }
@@ -1289,7 +1288,7 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
   ExtensionActionManager* extension_action_manager =
       ExtensionActionManager::Get(browser_context());
 
-  auto extensions_values = std::make_unique<base::ListValue>();
+  base::ListValue extensions_values;
   ExtensionList all;
   all.insert(all.end(), extensions.begin(), extensions.end());
   all.insert(all.end(), disabled_extensions.begin(), disabled_extensions.end());
@@ -1308,11 +1307,11 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
     extension_value->SetString(
         "optionsUrl", OptionsPageInfo::GetOptionsPage(extension).spec());
 
-    extension_value->Set("hostPermissions",
-                         GetHostPermissions(extension, false));
-    extension_value->Set("effectiveHostPermissions",
-                         GetHostPermissions(extension, true));
-    extension_value->Set("apiPermissions", GetAPIPermissions(extension));
+    extension_value->SetKey("hostPermissions",
+                            GetHostPermissions(extension, false));
+    extension_value->SetKey("effectiveHostPermissions",
+                            GetHostPermissions(extension, true));
+    extension_value->SetKey("apiPermissions", GetAPIPermissions(extension));
 
     ManifestLocation location = extension->location();
     extension_value->SetBoolean("isComponent",
@@ -1331,12 +1330,12 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
         "hasPageAction",
         action && action->action_type() == ActionInfo::TYPE_PAGE);
 
-    extensions_values->Append(std::move(extension_value));
+    extensions_values.Append(std::move(extension_value));
   }
 
   std::unique_ptr<base::DictionaryValue> return_value(
       new base::DictionaryValue);
-  return_value->Set("extensions", std::move(extensions_values));
+  return_value->SetKey("extensions", std::move(extensions_values));
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(return_value))));
 }

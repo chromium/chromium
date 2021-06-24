@@ -245,7 +245,7 @@ std::string DeviceCommandScreenshotTest::CreatePayloadFromResultCode(
   std::string payload;
   base::DictionaryValue root_dict;
   if (result_code != DeviceCommandScreenshotJob::SUCCESS)
-    root_dict.Set(kResultFieldName, std::make_unique<base::Value>(result_code));
+    root_dict.SetKey(kResultFieldName, base::Value(result_code));
   base::JSONWriter::Write(root_dict, &payload);
   return payload;
 }

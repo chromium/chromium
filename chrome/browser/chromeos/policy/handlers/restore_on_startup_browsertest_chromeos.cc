@@ -51,10 +51,10 @@ void RestoreOnStartupTestChromeOS::GetMandatoryPoliciesValue(
     base::DictionaryValue* policy) const {
   policy->SetInteger(key::kRestoreOnStartup,
                      SessionStartupPref::kPrefValueURLs);
-  std::unique_ptr<base::ListValue> urls(new base::ListValue);
-  urls->AppendString(kStartUpURL1);
-  urls->AppendString(kStartUpURL2);
-  policy->Set(key::kRestoreOnStartupURLs, std::move(urls));
+  base::ListValue urls;
+  urls.AppendString(kStartUpURL1);
+  urls.AppendString(kStartUpURL2);
+  policy->SetKey(key::kRestoreOnStartupURLs, std::move(urls));
 }
 
 void RestoreOnStartupTestChromeOS::VerifyStartUpURLs() {
