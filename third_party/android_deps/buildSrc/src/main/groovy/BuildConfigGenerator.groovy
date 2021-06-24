@@ -13,6 +13,7 @@ import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Collection
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -58,6 +59,16 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
+    ]
+
+    /**
+     * Prefixes of androidx dependencies which are allowed to use non-SNAPSHOT versions.
+     */
+    static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
+      "androidx_constraintlayout",
+      "androidx_legacy",
+      "androidx_multidex_multidex",
+      "androidx_test",
     ]
 
     // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
@@ -397,6 +408,8 @@ class BuildConfigGenerator extends DefaultTask {
         mergeLicensesDeps.each { dependency ->
             mergeLicenses(dependency, normalisedRepoPath)
         }
+
+        validateDependencies(graph.dependencies.values())
 
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, normalisedRepoPath)
@@ -923,19 +936,21 @@ class BuildConfigGenerator extends DefaultTask {
             return dependency1.id <=> dependency2.id
         }
 
-        List<ChromiumDepGraph.DependencyDescription> fixedDependencies = depGraph.dependencies.values().findAll {
+        List<ChromiumDepGraph.DependencyDescription> buildCompileDependencies
+        buildCompileDependencies = depGraph.dependencies.values().findAll {
             dependency -> dependency.usedInBuild
         }
-        fixedDependencies.sort(dependencyComparator).each { dependency ->
+
+        buildCompileDependencies.sort(dependencyComparator).each { dependency ->
             appendBuildTarget(dependency, depGraph.dependencies, sb)
         }
 
         sb.append('if (!limit_android_deps) {\n')
-        List<ChromiumDepGraph.DependencyDescription> buildWithChromiumDependencies
-        buildWithChromiumDependencies = depGraph.dependencies.values().findAll {
+        List<ChromiumDepGraph.DependencyDescription> otherDependencies
+        otherDependencies = depGraph.dependencies.values().findAll {
             dependency -> !dependency.usedInBuild
         }
-        buildWithChromiumDependencies.sort(dependencyComparator).each { dependency ->
+        otherDependencies.sort(dependencyComparator).each { dependency ->
             appendBuildTarget(dependency, depGraph.dependencies, sb)
         }
         sb.append('}\n')
@@ -951,6 +966,23 @@ class BuildConfigGenerator extends DefaultTask {
             out = 'import("//build/config/android/rules.gni")\n' + out
         }
         buildFile.write(out)
+    }
+
+    private void validateDependencies(
+            Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
+        dependencies.each { dependency ->
+            if (dependency.id.contains("androidx") && !dependency.fileName.contains("SNAPSHOT")) {
+                boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
+                    allowedPrefix -> dependency.id.startsWith(allowedPrefix)
+                }
+                if (!hasAllowedDep) {
+                     String errorMsg = ("${dependency.fileName} uses non-SNAPSHOT version."
+                          + "If this is expected, add the library to "
+                          + "|ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES| list.")
+                     throw new IllegalStateException(errorMsg)
+                }
+            }
+        }
     }
 
     private String generateInternalTargetVisibilityLine() {
