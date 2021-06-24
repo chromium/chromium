@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
@@ -370,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
 #if defined(OS_MAC)
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
-   DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
+  DISABLE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
 #else
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
    HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
 #if defined(OS_MAC)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
-   DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
+  DISABLE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
 #else
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
    HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
@@ -694,8 +695,15 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
+#if defined(OS_WIN)
+#define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
+  DISABLE_RegularTabCannotReadIncognitoTabCaptureHandle
+#else
+#define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
+  RegularTabCannotReadIncognitoTabCaptureHandle
+#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
-                       RegularTabCannotReadIncognitoTabCaptureHandle) {
+                       MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
                         /*self_capture=*/false, BrowserType::kIncognito);
@@ -745,9 +753,16 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
+#if defined(OS_WIN)
+#define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
+  DISABLE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
+#else
+#define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
+  IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
+#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture) {
+    MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture) {
   TabInfo tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
                         /*self_capture=*/true, BrowserType::kIncognito);
