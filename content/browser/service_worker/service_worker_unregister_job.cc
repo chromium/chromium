@@ -13,7 +13,6 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_utils.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -23,8 +22,9 @@ typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
     ServiceWorkerContextCore* context,
     const GURL& scope,
+    const blink::StorageKey& key,
     bool is_immediate)
-    : context_(context), scope_(scope), is_immediate_(is_immediate) {
+    : context_(context), scope_(scope), key_(key), is_immediate_(is_immediate) {
   DCHECK(context_);
 }
 
@@ -36,7 +36,7 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 
 void ServiceWorkerUnregisterJob::Start() {
   context_->registry()->FindRegistrationForScope(
-      scope_, blink::StorageKey(url::Origin::Create(scope_)),
+      scope_, key_,
       base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
                      weak_factory_.GetWeakPtr()));
 }

@@ -93,7 +93,9 @@ void ServiceWorkerJobCoordinator::Unregister(
     bool is_immediate,
     ServiceWorkerUnregisterJob::UnregistrationCallback callback) {
   std::unique_ptr<ServiceWorkerRegisterJobBase> job(
-      new ServiceWorkerUnregisterJob(context_, scope, is_immediate));
+      new ServiceWorkerUnregisterJob(
+          context_, scope, blink::StorageKey(url::Origin::Create(scope)),
+          is_immediate));
   ServiceWorkerUnregisterJob* queued_job =
       static_cast<ServiceWorkerUnregisterJob*>(
           job_queues_[scope].Push(std::move(job)));
