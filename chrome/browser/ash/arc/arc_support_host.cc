@@ -500,145 +500,143 @@ bool ArcSupportHost::Initialize() {
   const bool is_child =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  auto loadtime_data = std::make_unique<base::DictionaryValue>();
-  loadtime_data->SetString("appWindow", l10n_util::GetStringUTF16(
-                                            IDS_ARC_PLAYSTORE_ICON_TITLE_BETA));
-  loadtime_data->SetString(
+  base::DictionaryValue loadtime_data;
+  loadtime_data.SetString("appWindow", l10n_util::GetStringUTF16(
+                                           IDS_ARC_PLAYSTORE_ICON_TITLE_BETA));
+  loadtime_data.SetString(
       "greetingHeader", l10n_util::GetStringUTF16(IDS_ARC_OOBE_TERMS_HEADING));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "initializingHeader",
       l10n_util::GetStringUTF16(IDS_ARC_PLAYSTORE_SETTING_UP_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "greetingDescription",
       l10n_util::GetStringUTF16(IDS_ARC_OOBE_TERMS_DESCRIPTION));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "buttonAgree",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "buttonCancel",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_CANCEL));
-  loadtime_data->SetString(
-      "buttonNext",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_NEXT));
-  loadtime_data->SetString(
+  loadtime_data.SetString("buttonNext", l10n_util::GetStringUTF16(
+                                            IDS_ARC_OPT_IN_DIALOG_BUTTON_NEXT));
+  loadtime_data.SetString(
       "buttonSendFeedback",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_SEND_FEEDBACK));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "buttonRetry",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_BUTTON_RETRY));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "progressTermsLoading",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_PROGRESS_TERMS));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "progressAndroidLoading",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_PROGRESS_ANDROID));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "authorizationFailed",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_AUTHORIZATION_FAILED));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "termsOfService",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_DIALOG_TERMS_OF_SERVICE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textMetricsEnabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_ENABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_ENABLED));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textMetricsDisabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_DISABLED));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textMetricsManagedEnabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_ENABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_ENABLED));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textMetricsManagedDisabled",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textBackupRestore",
       l10n_util::GetStringUTF16(is_child
                                     ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD
                                     : IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE));
-  loadtime_data->SetString("textPaiService",
-                           l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PAI));
-  loadtime_data->SetString(
+  loadtime_data.SetString("textPaiService",
+                          l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PAI));
+  loadtime_data.SetString(
       "textGoogleServiceConfirmation",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_GOOGLE_SERVICE_CONFIRMATION));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "textLocationService",
       l10n_util::GetStringUTF16(is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
                                          : IDS_ARC_OPT_IN_LOCATION_SETTING));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "serverError",
       l10n_util::GetStringUTF16(IDS_ARC_SERVER_COMMUNICATION_ERROR));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "controlledByPolicy",
       l10n_util::GetStringUTF16(IDS_CONTROLLED_SETTING_POLICY));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreStatisticsTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreStatistics",
       l10n_util::GetStringUTF16(is_child
                                     ? IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD
                                     : IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreBackupAndRestoreTitle",
       l10n_util::GetStringUTF16(
           IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreBackupAndRestore",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_CHILD
                    : IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreLocationServicesTitle",
       l10n_util::GetStringUTF16(
           IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMoreLocationServices",
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
                    : IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMorePaiServiceTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "learnMorePaiService",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE));
-  loadtime_data->SetString(
-      "overlayClose",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_LEARN_MORE_CLOSE));
-  loadtime_data->SetString(
+  loadtime_data.SetString("overlayClose", l10n_util::GetStringUTF16(
+                                              IDS_ARC_OPT_IN_LEARN_MORE_CLOSE));
+  loadtime_data.SetString(
       "privacyPolicyLink",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "activeDirectoryAuthTitle",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_TITLE));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "activeDirectoryAuthDesc",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_DESC));
-  loadtime_data->SetString(
+  loadtime_data.SetString(
       "overlayLoading", l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 
-  loadtime_data->SetBoolean(kArcManaged, is_arc_managed_);
-  loadtime_data->SetBoolean("isOwnerProfile",
-                            chromeos::ProfileHelper::IsOwnerProfile(profile_));
+  loadtime_data.SetBoolean(kArcManaged, is_arc_managed_);
+  loadtime_data.SetBoolean("isOwnerProfile",
+                           chromeos::ProfileHelper::IsOwnerProfile(profile_));
 
   const std::string& country_code = base::CountryCodeForCurrentTimezone();
-  loadtime_data->SetString("countryCode", country_code);
+  loadtime_data.SetString("countryCode", country_code);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  webui::SetLoadTimeDataDefaults(app_locale, loadtime_data.get());
-  loadtime_data->SetString("locale", app_locale);
+  webui::SetLoadTimeDataDefaults(app_locale, &loadtime_data);
+  loadtime_data.SetString("locale", app_locale);
 
   base::DictionaryValue message;
   message.SetString(kAction, kActionInitialize);
-  message.Set(kData, std::move(loadtime_data));
+  message.SetKey(kData, std::move(loadtime_data));
 
   const std::string device_id = user_manager::known_user::GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));

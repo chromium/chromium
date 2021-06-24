@@ -914,9 +914,9 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledUpdateCheckTests) {
   base::DictionaryValue expected_val;
   expected_val.SetPath({"update_check_time", "hour"}, base::Value(23));
   expected_val.SetPath({"update_check_time", "minute"}, base::Value(35));
-  expected_val.Set("frequency", std::make_unique<base::Value>("DAILY"));
-  expected_val.Set("day_of_week", std::make_unique<base::Value>("MONDAY"));
-  expected_val.Set("day_of_month", std::make_unique<base::Value>(15));
+  expected_val.SetKey("frequency", base::Value("DAILY"));
+  expected_val.SetKey("day_of_week", base::Value("MONDAY"));
+  expected_val.SetKey("day_of_month", base::Value(15));
   SetDeviceScheduledUpdateCheck(json_string);
   VerifyPolicyValue(kDeviceScheduledUpdateCheck, &expected_val);
 }
@@ -1266,9 +1266,9 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledReboot) {
   base::DictionaryValue expected_val;
   expected_val.SetPath({"reboot_time", "hour"}, base::Value(22));
   expected_val.SetPath({"reboot_time", "minute"}, base::Value(30));
-  expected_val.Set("frequency", std::make_unique<base::Value>("MONTHLY"));
-  expected_val.Set("day_of_week", std::make_unique<base::Value>("MONDAY"));
-  expected_val.Set("day_of_month", std::make_unique<base::Value>(15));
+  expected_val.SetKey("frequency", base::Value("MONTHLY"));
+  expected_val.SetKey("day_of_week", base::Value("MONDAY"));
+  expected_val.SetKey("day_of_month", base::Value(15));
   SetDeviceScheduledReboot(json_string);
   VerifyPolicyValue(kDeviceScheduledReboot, &expected_val);
 }

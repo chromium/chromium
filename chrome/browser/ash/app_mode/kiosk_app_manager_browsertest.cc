@@ -106,9 +106,9 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
   base::DictionaryValue value;
   value.SetString("name", name);
   value.SetString("version", version);
-  std::unique_ptr<base::ListValue> scripts(new base::ListValue);
-  scripts->AppendString("main.js");
-  value.Set("app.background.scripts", std::move(scripts));
+  base::ListValue scripts;
+  scripts.AppendString("main.js");
+  value.SetPath("app.background.scripts", std::move(scripts));
   value.SetBoolean("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
     value.SetString("kiosk.required_platform_version",
@@ -316,16 +316,16 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     base::FilePath icon_path =
         CopyFileToTempDir(data_dir.AppendASCII(icon_file_name));
 
-    std::unique_ptr<base::DictionaryValue> apps_dict(new base::DictionaryValue);
-    apps_dict->SetString(app_id + ".name", app_name);
-    apps_dict->SetString(app_id + ".icon", icon_path.MaybeAsASCII());
-    apps_dict->SetString(app_id + ".required_platform_version",
-                         required_platform_version);
+    base::DictionaryValue apps_dict;
+    apps_dict.SetString(app_id + ".name", app_name);
+    apps_dict.SetString(app_id + ".icon", icon_path.MaybeAsASCII());
+    apps_dict.SetString(app_id + ".required_platform_version",
+                        required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
     DictionaryPrefUpdate dict_update(local_state,
                                      KioskAppManager::kKioskDictionaryName);
-    dict_update->Set(KioskAppDataBase::kKeyApps, std::move(apps_dict));
+    dict_update->SetKey(KioskAppDataBase::kKeyApps, std::move(apps_dict));
 
     // Make the app appear in device settings.
     base::ListValue device_local_accounts;

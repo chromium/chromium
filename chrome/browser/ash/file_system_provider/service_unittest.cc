@@ -66,17 +66,16 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
   manifest.SetKey(extensions::manifest_keys::kManifestVersion, base::Value(2));
   manifest.SetKey(extensions::manifest_keys::kName, base::Value("unused"));
 
-  std::unique_ptr<base::ListValue> permissions_list(new base::ListValue());
-  permissions_list->AppendString("fileSystemProvider");
-  manifest.Set(extensions::manifest_keys::kPermissions,
-               std::move(permissions_list));
+  base::ListValue permissions_list;
+  permissions_list.AppendString("fileSystemProvider");
+  manifest.SetKey(extensions::manifest_keys::kPermissions,
+                  std::move(permissions_list));
 
-  std::unique_ptr<base::DictionaryValue> capabilities(
-      new base::DictionaryValue);
-  capabilities->SetString("source", "network");
-  capabilities->SetBoolean("watchable", true);
-  manifest.Set(extensions::manifest_keys::kFileSystemProviderCapabilities,
-               std::move(capabilities));
+  base::DictionaryValue capabilities;
+  capabilities.SetString("source", "network");
+  capabilities.SetBoolean("watchable", true);
+  manifest.SetKey(extensions::manifest_keys::kFileSystemProviderCapabilities,
+                  std::move(capabilities));
 
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(

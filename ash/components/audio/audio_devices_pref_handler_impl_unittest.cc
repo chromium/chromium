@@ -111,10 +111,10 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
       DictionaryPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesState);
       base::DictionaryValue* pref = update.Get();
-      std::unique_ptr<base::DictionaryValue> state(new base::DictionaryValue());
-      state->SetBoolean("active", kPresetState.active);
-      state->SetBoolean("activate_by_user", kPresetState.activate_by_user);
-      pref->Set(preset_key, std::move(state));
+      base::DictionaryValue state;
+      state.SetBoolean("active", kPresetState.active);
+      state.SetBoolean("activate_by_user", kPresetState.activate_by_user);
+      pref->SetPath(preset_key, std::move(state));
     }
 
     {

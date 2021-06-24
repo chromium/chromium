@@ -86,7 +86,8 @@ bool MigrateDeviceIdInSettings(base::DictionaryValue* settings,
     return false;
 
   DCHECK_EQ(intended_key, GetDeviceIdString(device));
-  settings->Set(intended_key, std::move(value));
+  settings->SetPath(intended_key,
+                    base::Value::FromUniquePtrValue(std::move(value)));
   return true;
 }
 
@@ -174,10 +175,10 @@ void AudioDevicesPrefHandlerImpl::SetMuteValue(const AudioDevice& device,
 void AudioDevicesPrefHandlerImpl::SetDeviceActive(const AudioDevice& device,
                                                   bool active,
                                                   bool activate_by_user) {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetBoolean(kActiveKey, active);
+  base::DictionaryValue dict;
+  dict.SetBoolean(kActiveKey, active);
   if (active)
-    dict->SetBoolean(kActivateByUserKey, activate_by_user);
+    dict.SetBoolean(kActivateByUserKey, activate_by_user);
 
   // Use this opportunity to remove device record under deprecated device ID,
   // if one exists.
@@ -185,7 +186,7 @@ void AudioDevicesPrefHandlerImpl::SetDeviceActive(const AudioDevice& device,
     std::string old_device_id = GetVersionedDeviceIdString(device, 1);
     device_state_settings_->Remove(old_device_id, nullptr);
   }
-  device_state_settings_->Set(GetDeviceIdString(device), std::move(dict));
+  device_state_settings_->SetPath(GetDeviceIdString(device), std::move(dict));
   SaveDevicesStatePref();
 }
 

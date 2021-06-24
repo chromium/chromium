@@ -152,12 +152,12 @@ class DisplayPrefsTest : public AshTestBase {
     DCHECK(!name.empty());
 
     base::DictionaryValue* pref_data = update.Get();
-    std::unique_ptr<base::Value> layout_value(new base::DictionaryValue());
+    base::Value layout_value(base::Value::Type::DICTIONARY);
     base::Value* value = nullptr;
     if (pref_data->Get(name, &value) && value != nullptr)
-      layout_value.reset(value->DeepCopy());
-    if (display::DisplayLayoutToJson(display_layout, layout_value.get()))
-      pref_data->Set(name, std::move(layout_value));
+      layout_value = value->Clone();
+    if (display::DisplayLayoutToJson(display_layout, &layout_value))
+      pref_data->SetPath(name, std::move(layout_value));
   }
 
   void StoreDisplayPropertyForList(const display::DisplayIdList& list,
@@ -170,13 +170,12 @@ class DisplayPrefsTest : public AshTestBase {
 
     base::Value* layout_value = pref_data->FindKey(name);
     if (layout_value) {
-      static_cast<base::DictionaryValue*>(layout_value)
-          ->Set(key, std::move(value));
+      layout_value->SetPath(key,
+                            base::Value::FromUniquePtrValue(std::move(value)));
     } else {
-      std::unique_ptr<base::DictionaryValue> layout_value(
-          new base::DictionaryValue());
-      layout_value->SetBoolean(key, value != nullptr);
-      pref_data->Set(name, std::move(layout_value));
+      base::DictionaryValue layout_value;
+      layout_value.SetBoolean(key, value != nullptr);
+      pref_data->SetPath(name, std::move(layout_value));
     }
   }
 
@@ -198,12 +197,12 @@ class DisplayPrefsTest : public AshTestBase {
     const std::string name = base::NumberToString(id);
 
     base::DictionaryValue* pref_data = update.Get();
-    auto insets_value = std::make_unique<base::DictionaryValue>();
-    insets_value->SetInteger("insets_top", insets.top());
-    insets_value->SetInteger("insets_left", insets.left());
-    insets_value->SetInteger("insets_bottom", insets.bottom());
-    insets_value->SetInteger("insets_right", insets.right());
-    pref_data->Set(name, std::move(insets_value));
+    base::DictionaryValue insets_value;
+    insets_value.SetInteger("insets_top", insets.top());
+    insets_value.SetInteger("insets_left", insets.left());
+    insets_value.SetInteger("insets_bottom", insets.bottom());
+    insets_value.SetInteger("insets_right", insets.right());
+    pref_data->SetKey(name, std::move(insets_value));
   }
 
   display::Display::Rotation GetRotation() {

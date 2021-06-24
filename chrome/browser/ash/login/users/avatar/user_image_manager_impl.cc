@@ -449,26 +449,23 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
 
   PrefService* local_state = g_browser_process->local_state();
 
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-  entry->Set(kImagePathNodeName,
-             std::make_unique<base::Value>(image_path_.value()));
-  entry->Set(kImageIndexNodeName, std::make_unique<base::Value>(image_index_));
+  base::DictionaryValue entry;
+  entry.SetKey(kImagePathNodeName, base::Value(image_path_.value()));
+  entry.SetKey(kImageIndexNodeName, base::Value(image_index_));
   if (!image_url_.is_empty())
-    entry->Set(kImageURLNodeName,
-               std::make_unique<base::Value>(image_url_.spec()));
+    entry.SetKey(kImageURLNodeName, base::Value(image_url_.spec()));
 
   const base::Value* existing_value =
       local_state->GetDictionary(kUserImageProperties)
           ->FindDictKey(account_id().GetUserEmail());
 
-  if (existing_value && *existing_value == *entry) {
+  if (existing_value && *existing_value == entry) {
     return;
   }
 
   DictionaryPrefUpdate update(local_state, kUserImageProperties);
 
-  update->SetKey(account_id().GetUserEmail(),
-                 base::Value::FromUniquePtrValue(std::move(entry)));
+  update->SetKey(account_id().GetUserEmail(), std::move(entry));
 
   parent_->user_manager_->NotifyLocalStateChanged();
 }

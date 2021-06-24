@@ -725,7 +725,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
         entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
                          extension_urls::GetWebstoreUpdateUrl().spec());
       }
-      prefs->Set(app_id, std::move(entry));
+      prefs->SetPath(app_id, base::Value::FromUniquePtrValue(std::move(entry)));
     }
   }
 

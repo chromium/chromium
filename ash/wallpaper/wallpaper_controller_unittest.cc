@@ -2952,14 +2952,14 @@ namespace {
 class WallpaperControllerPrefTest : public AshTestBase {
  public:
   WallpaperControllerPrefTest() {
-    auto property = std::make_unique<base::DictionaryValue>();
-    property->SetInteger("rotation",
-                         static_cast<int>(display::Display::ROTATE_90));
-    property->SetInteger("width", 800);
-    property->SetInteger("height", 600);
+    base::DictionaryValue property;
+    property.SetInteger("rotation",
+                        static_cast<int>(display::Display::ROTATE_90));
+    property.SetInteger("width", 800);
+    property.SetInteger("height", 600);
 
     DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
-    update.Get()->Set("2200000000", std::move(property));
+    update.Get()->SetKey("2200000000", std::move(property));
   }
 
   ~WallpaperControllerPrefTest() override = default;

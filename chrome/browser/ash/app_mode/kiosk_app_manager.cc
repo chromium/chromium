@@ -795,17 +795,17 @@ void KioskAppManager::UpdateExternalCachePrefs() {
   // Request external_cache_ to download new apps and update the existing apps.
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   for (size_t i = 0; i < apps_.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
+    base::DictionaryValue entry;
 
     if (apps_[i]->update_url().is_valid()) {
-      entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                       apps_[i]->update_url().spec());
+      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                      apps_[i]->update_url().spec());
     } else {
-      entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                       extension_urls::GetWebstoreUpdateUrl().spec());
+      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                      extension_urls::GetWebstoreUpdateUrl().spec());
     }
 
-    prefs->Set(apps_[i]->app_id(), std::move(entry));
+    prefs->SetPath(apps_[i]->app_id(), std::move(entry));
   }
   external_cache_->UpdateExtensionsList(std::move(prefs));
 }
