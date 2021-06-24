@@ -12,12 +12,20 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-passwords-deletion-dialog',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsPasswordsDeletionDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-passwords-deletion-dialog';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+
 
   /**
    * Click handler for the "OK" button.
@@ -25,5 +33,9 @@ Polymer({
    */
   onOkClick_() {
     this.$.dialog.close();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsPasswordsDeletionDialogElement.is,
+    SettingsPasswordsDeletionDialogElement);

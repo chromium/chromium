@@ -114,7 +114,8 @@ suite('ClearBrowsingDataDesktop', function() {
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
     return testBrowserProxy.whenCalled('initialize').then(() => {
-      assertTrue(element.$$('#clearBrowsingDataDialog').open);
+      assertTrue(
+          element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
     });
   });
 
@@ -129,7 +130,8 @@ suite('ClearBrowsingDataDesktop', function() {
       hasError: false,
     });
     flush();
-    assertFalse(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+    assertFalse(!!element.shadowRoot.querySelector(
+        '#clearBrowsingDataDialog [slot=footer]'));
 
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
@@ -137,7 +139,8 @@ suite('ClearBrowsingDataDesktop', function() {
       hasError: false,
     });
     flush();
-    assertTrue(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+    assertTrue(!!element.shadowRoot.querySelector(
+        '#clearBrowsingDataDialog [slot=footer]'));
     assertTrue(isChildVisible(element, '#sync-info'));
     assertFalse(isChildVisible(element, '#sync-paused-info'));
     assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
@@ -186,8 +189,9 @@ suite('ClearBrowsingDataDesktop', function() {
       hasError: false,
     });
     flush();
-    assertTrue(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
-    const syncInfo = element.$$('#sync-info');
+    assertTrue(!!element.shadowRoot.querySelector(
+        '#clearBrowsingDataDialog [slot=footer]'));
+    const syncInfo = element.shadowRoot.querySelector('#sync-info');
     assertTrue(isVisible(syncInfo));
     const signoutLink = syncInfo.querySelector('a[href]');
     assertTrue(!!signoutLink);
@@ -203,8 +207,9 @@ suite('ClearBrowsingDataDesktop', function() {
       statusAction: StatusAction.REAUTHENTICATE,
     });
     flush();
-    assertTrue(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
-    const syncInfo = element.$$('#sync-paused-info');
+    assertTrue(!!element.shadowRoot.querySelector(
+        '#clearBrowsingDataDialog [slot=footer]'));
+    const syncInfo = element.shadowRoot.querySelector('#sync-paused-info');
     assertTrue(isVisible(syncInfo));
     const signinLink = syncInfo.querySelector('a[href]');
     assertTrue(!!signinLink);
@@ -220,8 +225,10 @@ suite('ClearBrowsingDataDesktop', function() {
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
     flush();
-    assertTrue(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
-    const syncInfo = element.$$('#sync-passphrase-error-info');
+    assertTrue(!!element.shadowRoot.querySelector(
+        '#clearBrowsingDataDialog [slot=footer]'));
+    const syncInfo =
+        element.shadowRoot.querySelector('#sync-passphrase-error-info');
     assertTrue(isVisible(syncInfo));
     const passphraseLink = syncInfo.querySelector('a[href]');
     assertTrue(!!passphraseLink);
@@ -234,7 +241,8 @@ suite('ClearBrowsingDataDesktop', function() {
       signedIn: false,
     });
     flush();
-    assertFalse(isVisible(element.$$('#searchHistoryTextBox')));
+    assertFalse(
+        isVisible(element.shadowRoot.querySelector('#searchHistoryTextBox')));
   });
 
   test('ClearBrowsingDataSearchHistorySignedIn', function() {
@@ -242,7 +250,8 @@ suite('ClearBrowsingDataDesktop', function() {
       signedIn: true,
     });
     flush();
-    assertTrue(isVisible(element.$$('#searchHistoryTextBox')));
+    assertTrue(
+        isVisible(element.shadowRoot.querySelector('#searchHistoryTextBox')));
   });
 });
 
@@ -268,18 +277,20 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   });
 
   test('ClearBrowsingDataTap', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
-    assertFalse(element.$$('#installedAppsDialog').open);
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
+    assertFalse(element.shadowRoot.querySelector('#installedAppsDialog').open);
 
-    const cancelButton = element.$$('.cancel-button');
+    const cancelButton = element.shadowRoot.querySelector('.cancel-button');
     assertTrue(!!cancelButton);
-    const actionButton = element.$$('.action-button');
+    const actionButton = element.shadowRoot.querySelector('.action-button');
     assertTrue(!!actionButton);
-    const spinner = element.$$('paper-spinner-lite');
+    const spinner = element.shadowRoot.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
 
     // Select a datatype for deletion to enable the clear button.
-    const cookieCheckbox = element.$$('#cookiesCheckboxBasic');
+    const cookieCheckbox =
+        element.shadowRoot.querySelector('#cookiesCheckboxBasic');
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
 
@@ -298,7 +309,9 @@ suite('ClearBrowsingDataAllPlatforms', function() {
           const installedApps = args[2];
           assertEquals(1, dataTypes.length);
           assertEquals('browser.clear_data.cookies_basic', dataTypes[0]);
-          assertTrue(element.$$('#clearBrowsingDataDialog').open);
+          assertTrue(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
           assertTrue(cancelButton.disabled);
           assertTrue(actionButton.disabled);
           assertTrue(spinner.active);
@@ -314,24 +327,29 @@ suite('ClearBrowsingDataAllPlatforms', function() {
           // assertions.
         })
         .then(function() {
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
           assertFalse(cancelButton.disabled);
           assertFalse(actionButton.disabled);
           assertFalse(spinner.active);
-          assertFalse(!!element.$$('#historyNotice'));
-          assertFalse(!!element.$$('#passwordsNotice'));
+          assertFalse(!!element.shadowRoot.querySelector('#historyNotice'));
+          assertFalse(!!element.shadowRoot.querySelector('#passwordsNotice'));
 
           // Check that the dialog didn't switch to installed apps.
-          assertFalse(element.$$('#installedAppsDialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#installedAppsDialog').open);
         });
   });
 
   test('ClearBrowsingDataClearButton', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
 
-    const actionButton = element.$$('.action-button');
+    const actionButton = element.shadowRoot.querySelector('.action-button');
     assertTrue(!!actionButton);
-    const cookieCheckboxBasic = element.$$('#cookiesCheckboxBasic');
+    const cookieCheckboxBasic =
+        element.shadowRoot.querySelector('#cookiesCheckboxBasic');
     assertTrue(!!cookieCheckboxBasic);
     // Initially the button is disabled because all checkboxes are off.
     assertTrue(actionButton.disabled);
@@ -340,20 +358,22 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(cookieCheckboxBasic.checked);
     assertFalse(actionButton.disabled);
     // Switching to advanced disables the button.
-    element.$$('cr-tabs').selected = 1;
+    element.shadowRoot.querySelector('cr-tabs').selected = 1;
     assertTrue(actionButton.disabled);
     // Switching back enables it again.
-    element.$$('cr-tabs').selected = 0;
+    element.shadowRoot.querySelector('cr-tabs').selected = 0;
     assertFalse(actionButton.disabled);
   });
 
   test('showHistoryDeletionDialog', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
-    const actionButton = element.$$('.action-button');
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
+    const actionButton = element.shadowRoot.querySelector('.action-button');
     assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
-    const cookieCheckbox = element.$$('#cookiesCheckboxBasic');
+    const cookieCheckbox =
+        element.shadowRoot.querySelector('#cookiesCheckboxBasic');
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
     assertFalse(actionButton.disabled);
@@ -376,14 +396,17 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         })
         .then(function() {
           flush();
-          const notice = element.$$('#historyNotice');
+          const notice = element.shadowRoot.querySelector('#historyNotice');
           assertTrue(!!notice);
-          const noticeActionButton = notice.$$('.action-button');
+          const noticeActionButton =
+              notice.shadowRoot.querySelector('.action-button');
           assertTrue(!!noticeActionButton);
 
           // The notice should have replaced the main dialog.
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
-          assertTrue(notice.$$('#dialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
+          assertTrue(notice.shadowRoot.querySelector('#dialog').open);
 
           const whenNoticeClosed = eventToPromise('close', notice);
 
@@ -393,19 +416,23 @@ suite('ClearBrowsingDataAllPlatforms', function() {
           return whenNoticeClosed;
         })
         .then(function() {
-          const notice = element.$$('#historyNotice');
+          const notice = element.shadowRoot.querySelector('#historyNotice');
           assertFalse(!!notice);
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
         });
   });
 
   test('showPasswordsDeletionDialog', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
-    const actionButton = element.$$('.action-button');
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
+    const actionButton = element.shadowRoot.querySelector('.action-button');
     assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
-    const cookieCheckbox = element.$$('#cookiesCheckboxBasic');
+    const cookieCheckbox =
+        element.shadowRoot.querySelector('#cookiesCheckboxBasic');
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
     assertFalse(actionButton.disabled);
@@ -427,14 +454,17 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         })
         .then(function() {
           flush();
-          const notice = element.$$('#passwordsNotice');
+          const notice = element.shadowRoot.querySelector('#passwordsNotice');
           assertTrue(!!notice);
-          const noticeActionButton = notice.$$('.action-button');
+          const noticeActionButton =
+              notice.shadowRoot.querySelector('.action-button');
           assertTrue(!!noticeActionButton);
 
           // The notice should have replaced the main dialog.
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
-          assertTrue(notice.$$('#dialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
+          assertTrue(notice.shadowRoot.querySelector('#dialog').open);
 
           const whenNoticeClosed = eventToPromise('close', notice);
 
@@ -444,19 +474,23 @@ suite('ClearBrowsingDataAllPlatforms', function() {
           return whenNoticeClosed;
         })
         .then(function() {
-          const notice = element.$$('#passwordsNotice');
+          const notice = element.shadowRoot.querySelector('#passwordsNotice');
           assertFalse(!!notice);
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
         });
   });
 
   test('showBothHistoryAndPasswordsDeletionDialog', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
-    const actionButton = element.$$('.action-button');
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
+    const actionButton = element.shadowRoot.querySelector('.action-button');
     assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
-    const cookieCheckbox = element.$$('#cookiesCheckboxBasic');
+    const cookieCheckbox =
+        element.shadowRoot.querySelector('#cookiesCheckboxBasic');
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
     assertFalse(actionButton.disabled);
@@ -481,14 +515,17 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         })
         .then(function() {
           flush();
-          const notice = element.$$('#historyNotice');
+          const notice = element.shadowRoot.querySelector('#historyNotice');
           assertTrue(!!notice);
-          const noticeActionButton = notice.$$('.action-button');
+          const noticeActionButton =
+              notice.shadowRoot.querySelector('.action-button');
           assertTrue(!!noticeActionButton);
 
           // The notice should have replaced the main dialog.
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
-          assertTrue(notice.$$('#dialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
+          assertTrue(notice.shadowRoot.querySelector('#dialog').open);
 
           const whenNoticeClosed = eventToPromise('close', notice);
 
@@ -500,20 +537,25 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         })
         .then(function() {
           // The passwords notice should have replaced the history notice.
-          const historyNotice = element.$$('#historyNotice');
+          const historyNotice =
+              element.shadowRoot.querySelector('#historyNotice');
           assertFalse(!!historyNotice);
-          const passwordsNotice = element.$$('#passwordsNotice');
+          const passwordsNotice =
+              element.shadowRoot.querySelector('#passwordsNotice');
           assertTrue(!!passwordsNotice);
         })
         .then(function() {
           flush();
-          const notice = element.$$('#passwordsNotice');
+          const notice = element.shadowRoot.querySelector('#passwordsNotice');
           assertTrue(!!notice);
-          const noticeActionButton = notice.$$('.action-button');
+          const noticeActionButton =
+              notice.shadowRoot.querySelector('.action-button');
           assertTrue(!!noticeActionButton);
 
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
-          assertTrue(notice.$$('#dialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
+          assertTrue(notice.shadowRoot.querySelector('#dialog').open);
 
           const whenNoticeClosed = eventToPromise('close', notice);
 
@@ -523,16 +565,19 @@ suite('ClearBrowsingDataAllPlatforms', function() {
           return whenNoticeClosed;
         })
         .then(function() {
-          const notice = element.$$('#passwordsNotice');
+          const notice = element.shadowRoot.querySelector('#passwordsNotice');
           assertFalse(!!notice);
-          assertFalse(element.$$('#clearBrowsingDataDialog').open);
+          assertFalse(
+              element.shadowRoot.querySelector('#clearBrowsingDataDialog')
+                  .open);
         });
   });
 
   test('Counters', function() {
-    assertTrue(element.$$('#clearBrowsingDataDialog').open);
+    assertTrue(
+        element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
 
-    const checkbox = element.$$('#cacheCheckboxBasic');
+    const checkbox = element.shadowRoot.querySelector('#cacheCheckboxBasic');
     assertEquals('browser.clear_data.cache_basic', checkbox.pref.key);
 
     // Simulate a browsing data counter result for history. This checkbox's
@@ -543,9 +588,10 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   test('history rows are hidden for supervised users', function() {
     assertFalse(loadTimeData.getBoolean('isSupervised'));
-    assertFalse(element.$$('#browsingCheckbox').hidden);
-    assertFalse(element.$$('#browsingCheckboxBasic').hidden);
-    assertFalse(element.$$('#downloadCheckbox').hidden);
+    assertFalse(element.shadowRoot.querySelector('#browsingCheckbox').hidden);
+    assertFalse(
+        element.shadowRoot.querySelector('#browsingCheckboxBasic').hidden);
+    assertFalse(element.shadowRoot.querySelector('#downloadCheckbox').hidden);
 
     element.remove();
     testBrowserProxy.reset();
@@ -556,16 +602,18 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     flush();
 
     return testBrowserProxy.whenCalled('initialize').then(function() {
-      assertTrue(element.$$('#browsingCheckbox').hidden);
-      assertTrue(element.$$('#browsingCheckboxBasic').hidden);
-      assertTrue(element.$$('#downloadCheckbox').hidden);
+      assertTrue(element.shadowRoot.querySelector('#browsingCheckbox').hidden);
+      assertTrue(
+          element.shadowRoot.querySelector('#browsingCheckboxBasic').hidden);
+      assertTrue(element.shadowRoot.querySelector('#downloadCheckbox').hidden);
     });
   });
 
   if (isChromeOS) {
     // On ChromeOS the footer is never shown.
     test('ClearBrowsingDataSyncAccountInfo', function() {
-      assertTrue(element.$$('#clearBrowsingDataDialog').open);
+      assertTrue(
+          element.shadowRoot.querySelector('#clearBrowsingDataDialog').open);
 
       // Not syncing.
       webUIListenerCallback('sync-status-changed', {
@@ -573,7 +621,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         hasError: false,
       });
       flush();
-      assertFalse(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+      assertFalse(!!element.shadowRoot.querySelector(
+          '#clearBrowsingDataDialog [slot=footer]'));
 
       // Syncing.
       webUIListenerCallback('sync-status-changed', {
@@ -581,7 +630,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         hasError: false,
       });
       flush();
-      assertFalse(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+      assertFalse(!!element.shadowRoot.querySelector(
+          '#clearBrowsingDataDialog [slot=footer]'));
 
       // Sync passphrase error.
       webUIListenerCallback('sync-status-changed', {
@@ -590,7 +640,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         statusAction: StatusAction.ENTER_PASSPHRASE,
       });
       flush();
-      assertFalse(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+      assertFalse(!!element.shadowRoot.querySelector(
+          '#clearBrowsingDataDialog [slot=footer]'));
 
       // Other sync error.
       webUIListenerCallback('sync-status-changed', {
@@ -599,7 +650,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         statusAction: StatusAction.NO_ACTION,
       });
       flush();
-      assertFalse(!!element.$$('#clearBrowsingDataDialog [slot=footer]'));
+      assertFalse(!!element.shadowRoot.querySelector(
+          '#clearBrowsingDataDialog [slot=footer]'));
     });
   }
 });
@@ -646,7 +698,8 @@ suite('InstalledApps', function() {
 
     await testBrowserProxy.whenCalled('getInstalledApps');
     await whenAttributeIs(element.$.installedAppsDialog, 'open', '');
-    const firstInstalledApp = element.$$('installed-app-checkbox');
+    const firstInstalledApp =
+        element.shadowRoot.querySelector('installed-app-checkbox');
     assertTrue(!!firstInstalledApp);
     assertEquals(
         'google.com', firstInstalledApp.installed_app.registerableDomain);

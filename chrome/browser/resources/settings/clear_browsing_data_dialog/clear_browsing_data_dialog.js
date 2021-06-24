@@ -21,15 +21,15 @@ import '../icons.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp} from './clear_browsing_data_browser_proxy.js';
 
@@ -85,201 +85,218 @@ function replaceDialog(oldDialog, newDialog) {
 let UpdateSyncStateEvent;
 
 
-Polymer({
-  is: 'settings-clear-browsing-data-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsClearBrowsingDataDialogElementBase = mixinBehaviors(
+    [WebUIListenerBehavior, RouteObserverBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsClearBrowsingDataDialogElement extends
+    SettingsClearBrowsingDataDialogElementBase {
+  static get is() {
+    return 'settings-clear-browsing-data-dialog';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The current sync status, supplied by SyncBrowserProxy.
-     * TODO(dpapad): make |syncStatus| private.
-     * @type {?SyncStatus}
-     */
-    syncStatus: Object,
-
-    /**
-     * Results of browsing data counters, keyed by the suffix of
-     * the corresponding data type deletion preference, as reported
-     * by the C++ side.
-     * @private {!Object<string>}
-     */
-    counters_: {
-      type: Object,
-      // Will be filled as results are reported.
-      value() {
-        return {};
-      }
-    },
-
-    /**
-     * List of options for the dropdown menu.
-     * @private {!DropdownMenuOptionList}
-     */
-    clearFromOptions_: {
-      readOnly: true,
-      type: Array,
-      value: [
-        {value: 0, name: loadTimeData.getString('clearPeriodHour')},
-        {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
-        {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
-        {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
-        {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
-      ],
-    },
-
-    /** @private */
-    clearingInProgress_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    clearingDataAlertString_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    clearButtonDisabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    isSupervised_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isSupervised');
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    showHistoryDeletionDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The current sync status, supplied by SyncBrowserProxy.
+       * TODO(dpapad): make |syncStatus| private.
+       * @type {?SyncStatus}
+       */
+      syncStatus: Object,
 
-    /** @private */
-    showPasswordsDeletionDialogLater_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Results of browsing data counters, keyed by the suffix of
+       * the corresponding data type deletion preference, as reported
+       * by the C++ side.
+       * @private {!Object<string>}
+       */
+      counters_: {
+        type: Object,
+        // Will be filled as results are reported.
+        value() {
+          return {};
+        }
+      },
 
-    /** @private */
-    showPasswordsDeletionDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * List of options for the dropdown menu.
+       * @private {!DropdownMenuOptionList}
+       */
+      clearFromOptions_: {
+        readOnly: true,
+        type: Array,
+        value: [
+          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
+          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
+          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
+          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
+          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+        ],
+      },
 
-    /** @private */
-    isSignedIn_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      clearingInProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    isSyncConsented_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      clearingDataAlertString_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    isSyncingHistory_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      clearButtonDisabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    shouldShowCookieException_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isSupervised_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSupervised');
+        },
+      },
 
-    /** @private */
-    isSyncPaused_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeIsSyncPaused_(syncStatus)',
-    },
+      /** @private */
+      showHistoryDeletionDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    hasPassphraseError_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeHasPassphraseError_(syncStatus)',
-    },
+      /** @private */
+      showPasswordsDeletionDialogLater_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    hasOtherSyncError_: {
-      type: Boolean,
-      value: false,
-      computed:
-          'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
-    },
+      /** @private */
+      showPasswordsDeletionDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {Array<string>} */
-    tabsNames_: {
-      type: Array,
-      value: () =>
-          [loadTimeData.getString('basicPageTitle'),
-           loadTimeData.getString('advancedPageTitle'),
-],
-    },
+      /** @private */
+      isSignedIn_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Installed apps that might be cleared if the user clears browsing data
-     * for the selected time period.
-     * @private {!Array<!InstalledApp>}
-     */
-    installedApps_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @private */
+      isSyncConsented_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    installedAppsFlagEnabled_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('installedAppsInCbd'),
-    },
+      /** @private */
+      isSyncingHistory_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    searchHistoryLinkFlagEnabled_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('searchHistoryLink'),
-    },
+      /** @private */
+      shouldShowCookieException_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    shouldShowSearchHistoryLabel_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeShouldShowSearchHistoryLabel_(isSignedIn_)'
-    },
-  },
+      /** @private */
+      isSyncPaused_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeIsSyncPaused_(syncStatus)',
+      },
 
-  listeners: {'settings-boolean-control-change': 'updateClearButtonState_'},
+      /** @private */
+      hasPassphraseError_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeHasPassphraseError_(syncStatus)',
+      },
 
-  /** @private {ClearBrowsingDataBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      hasOtherSyncError_: {
+        type: Boolean,
+        value: false,
+        computed:
+            'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
+      },
 
-  /** @private {?SyncBrowserProxy} */
-  syncBrowserProxy_: null,
+      /** @private {Array<string>} */
+      tabsNames_: {
+        type: Array,
+        value: () =>
+            [loadTimeData.getString('basicPageTitle'),
+             loadTimeData.getString('advancedPageTitle'),
+    ],
+      },
+
+      /**
+       * Installed apps that might be cleared if the user clears browsing data
+       * for the selected time period.
+       * @private {!Array<!InstalledApp>}
+       */
+      installedApps_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @private */
+      installedAppsFlagEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('installedAppsInCbd'),
+      },
+
+      /** @private */
+      searchHistoryLinkFlagEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchHistoryLink'),
+      },
+
+      /** @private */
+      shouldShowSearchHistoryLabel_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShouldShowSearchHistoryLabel_(isSignedIn_)'
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {ClearBrowsingDataBrowserProxy} */
+    this.browserProxy_ = null;
+
+    /** @private {?SyncBrowserProxy} */
+    this.syncBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
@@ -290,15 +307,20 @@ Polymer({
         'update-sync-state', this.updateSyncState_.bind(this));
     this.addWebUIListener(
         'update-counter-text', this.updateCounterText_.bind(this));
-  },
+
+    this.addEventListener(
+        'settings-boolean-control-change', this.updateClearButtonState_);
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = ClearBrowsingDataBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize().then(() => {
       this.$.clearBrowsingDataDialog.showModal();
     });
-  },
+  }
 
   /**
    * Handler for when the sync state is pushed from the browser.
@@ -307,7 +329,7 @@ Polymer({
    */
   handleSyncStatus_(syncStatus) {
     this.syncStatus = syncStatus;
-  },
+  }
 
   /**
    * Returns true if either clearing is in progress or no data type is selected.
@@ -318,7 +340,7 @@ Polymer({
    */
   isClearButtonDisabled_(clearingInProgress, clearButtonDisabled) {
     return clearingInProgress || clearButtonDisabled;
-  },
+  }
 
   /**
    * Disables the Clear Data button if no data type is selected.
@@ -332,7 +354,7 @@ Polymer({
       return;
     }
     this.clearButtonDisabled_ = this.getSelectedDataTypes_(tab).length === 0;
-  },
+  }
 
   /**
    * Record visits to the CBD dialog.
@@ -345,7 +367,7 @@ Polymer({
     if (currentRoute === routes.CLEAR_BROWSER_DATA) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_DialogCreated');
     }
-  },
+  }
 
   /**
    * Updates the history description to show the relevant information
@@ -360,7 +382,7 @@ Polymer({
     this.isSyncingHistory_ = event.syncingHistory;
     this.shouldShowCookieException_ = event.shouldShowCookieException;
     this.$.clearBrowsingDataDialog.classList.add('fully-rendered');
-  },
+  }
 
   /**
    * Choose a label for the history checkbox.
@@ -385,7 +407,7 @@ Polymer({
       return historySummarySignedIn;
     }
     return historySummary;
-  },
+  }
 
   /**
    * Whether the search history text box should be shown.
@@ -395,7 +417,7 @@ Polymer({
    */
   computeShouldShowSearchHistoryLabel_(isSignedIn) {
     return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
-  },
+  }
 
   /**
    * Choose a label for the cookie checkbox.
@@ -411,7 +433,7 @@ Polymer({
       return cookiesSummarySignedIn;
     }
     return cookiesSummary;
-  },
+  }
 
   /**
    * Updates the text of a browsing data counter corresponding to the given
@@ -425,7 +447,7 @@ Polymer({
     // Strip the common prefix, i.e. use only "<datatype>".
     const matches = prefName.match(/^browser\.clear_data\.(\w+)$/);
     this.set('counters_.' + assert(matches[1]), text);
-  },
+  }
 
   /**
    * Returns a list of selected data types.
@@ -442,7 +464,7 @@ Polymer({
       }
     });
     return dataTypes;
-  },
+  }
 
   /**
    * Gets a list of top 5 installed apps that have been launched
@@ -452,11 +474,11 @@ Polymer({
    * @return {!Promise}
    * @private
    */
-  getInstalledApps_: async function() {
+  async getInstalledApps_() {
     const tab = this.$.tabs.selectedItem;
     const timePeriod = tab.querySelector('.time-range-select').pref.value;
     this.installedApps_ = await this.browserProxy_.getInstalledApps(timePeriod);
-  },
+  }
 
   /** @private */
   shouldShowInstalledApps_() {
@@ -468,13 +490,13 @@ Polymer({
       'History.ClearBrowsingData.InstalledAppsDialogShown', haveInstalledApps
     ]);
     return haveInstalledApps;
-  },
+  }
 
   /**
    * Logs interactions with the installed app dialog to UMA.
    * @private
    */
-  recordInstalledAppsInteractions_: function() {
+  recordInstalledAppsInteractions_() {
     if (this.installedApps_.length === 0) {
       return;
     }
@@ -488,14 +510,14 @@ Polymer({
     chrome.metricsPrivate.recordPercentage(
         'History.ClearBrowsingData.InstalledDeselectedPercent',
         Math.round(100 * uncheckedAppCount / this.installedApps_.length));
-  },
+  }
 
   /**
    * Clears browsing data and maybe shows a history notice.
    * @return {!Promise}
    * @private
    */
-  clearBrowsingData_: async function() {
+  async clearBrowsingData_() {
     this.clearingInProgress_ = true;
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
     const tab = this.$.tabs.selectedItem;
@@ -516,7 +538,11 @@ Polymer({
             dataTypes, timePeriod, this.installedApps_);
     this.clearingInProgress_ = false;
     IronA11yAnnouncer.requestAvailability();
-    this.fire('iron-announce', {text: loadTimeData.getString('clearedData')});
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {text: loadTimeData.getString('clearedData')}
+    }));
     this.showHistoryDeletionDialog_ = showHistoryNotice;
     // If both the history notice and the passwords notice should be shown, show
     // the history notice first, and then show the passwords notice once the
@@ -538,12 +564,12 @@ Polymer({
           /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
           isLastDialog);
     }
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.clearBrowsingDataDialog.cancel();
-  },
+  }
 
   /**
    * Handles the closing of the notice about other forms of browsing history.
@@ -559,7 +585,7 @@ Polymer({
       this.showPasswordsDeletionDialogLater_ = false;
       this.showPasswordsDeletionDialog_ = true;
     }
-  },
+  }
 
   /**
    * Handles the closing of the notice about incomplete passwords deletion.
@@ -568,7 +594,7 @@ Polymer({
    */
   onPasswordsDeletionDialogClose_(e) {
     this.showPasswordsDeletionDialog_ = false;
-  },
+  }
 
   /**
    * Records an action when the user changes between the basic and advanced tab.
@@ -583,7 +609,7 @@ Polymer({
       chrome.metricsPrivate.recordUserAction(
           'ClearBrowsingData_SwitchTo_AdvancedTab');
     }
-  },
+  }
 
   /**
    * Called when the user clicks the link in the footer.
@@ -611,7 +637,7 @@ Polymer({
         Router.getInstance().navigateTo(routes.SYNC);
       }
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -621,7 +647,7 @@ Polymer({
     return !!this.syncStatus.hasError &&
         !this.syncStatus.hasUnrecoverableError &&
         this.syncStatus.statusAction === StatusAction.REAUTHENTICATE;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -630,7 +656,7 @@ Polymer({
   computeHasPassphraseError_() {
     return !!this.syncStatus.hasError &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -639,7 +665,7 @@ Polymer({
   computeHasOtherError_() {
     return this.syncStatus !== undefined && !!this.syncStatus.hasError &&
         !this.isSyncPaused_ && !this.hasPassphraseError_;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -651,13 +677,13 @@ Polymer({
     showFooter = !!this.syncStatus && !!this.syncStatus.signedIn;
     // </if>
     return showFooter;
-  },
+  }
 
   /**
    * @return {!Promise}
    * @private
    */
-  onClearBrowsingDataClick_: async function() {
+  async onClearBrowsingDataClick_() {
     await this.getInstalledApps_();
     if (this.shouldShowInstalledApps_()) {
       replaceDialog(
@@ -666,7 +692,7 @@ Polymer({
     } else {
       await this.clearBrowsingData_();
     }
-  },
+  }
 
   /** @private */
   hideInstalledApps_() {
@@ -677,7 +703,7 @@ Polymer({
     replaceDialog(
         /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
         /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
-  },
+  }
 
   /** @private */
   onCancelInstalledApps_() {
@@ -688,13 +714,13 @@ Polymer({
     replaceDialog(
         /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
         /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
-  },
+  }
 
   /**
    * Handles the tap confirm button in installed apps.
    * @private
    */
-  onInstalledAppsConfirmClick_: async function() {
+  async onInstalledAppsConfirmClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'History.ClearBrowsingData.InstalledAppsDialogAction',
         InstalledAppsDialogActions.CLEAR_BUTTON,
@@ -702,4 +728,8 @@ Polymer({
     this.recordInstalledAppsInteractions_();
     await this.clearBrowsingData_();
   }
-});
+}
+
+customElements.define(
+    SettingsClearBrowsingDataDialogElement.is,
+    SettingsClearBrowsingDataDialogElement);

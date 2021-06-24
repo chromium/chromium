@@ -12,21 +12,31 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InstalledApp} from './clear_browsing_data_browser_proxy.js';
 
-Polymer({
-  is: 'installed-app-checkbox',
+/** @polymer */
+class InstalledAppCheckboxElement extends PolymerElement {
+  static get is() {
+    return 'installed-app-checkbox';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {InstalledApp} */
-    installed_app: Object,
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
-  },
-});
+  static get properties() {
+    return {
+      /** @type {InstalledApp} */
+      installed_app: Object,
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+}
+
+customElements.define(
+    InstalledAppCheckboxElement.is, InstalledAppCheckboxElement);
