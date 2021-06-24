@@ -14,11 +14,32 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
+
+class MockFeatureAggregator : public FeatureAggregator {
+ public:
+  MockFeatureAggregator() = default;
+  MOCK_METHOD(std::vector<float>,
+              Process,
+              (SignalType signal_type,
+               proto::Aggregation aggregation,
+               uint64_t length,
+               const base::Time& end_time,
+               const base::TimeDelta& bucket_duration,
+               const std::vector<SignalDatabase::Sample>& samples),
+              (const override));
+  MOCK_METHOD(void,
+              FilterEnumSamples,
+              (const std::vector<uint32_t>& accepted_enum_values,
+               std::vector<SignalDatabase::Sample>& samples),
+              (const override));
+};
+
 class ModelExecutionManagerTest : public testing::Test {
  public:
   ModelExecutionManagerTest() = default;
@@ -39,10 +60,13 @@ class ModelExecutionManagerTest : public testing::Test {
 
   void CreateModelExecutionManager(
       std::vector<OptimizationTarget> segment_ids) {
+    auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
+    feature_aggregator_ = feature_aggregator.get();
+
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(), segment_ids,
-        segment_database_.get());
+        segment_database_.get(), std::move(feature_aggregator));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -70,6 +94,7 @@ class ModelExecutionManagerTest : public testing::Test {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  MockFeatureAggregator* feature_aggregator_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };

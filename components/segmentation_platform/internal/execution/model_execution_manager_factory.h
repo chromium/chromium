@@ -17,6 +17,7 @@ class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
+class FeatureAggregator;
 class SegmentInfoDatabase;
 
 // Creates a ModelExecutionManager that is appropriate for the current platform.
@@ -27,7 +28,8 @@ std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::vector<optimization_guide::proto::OptimizationTarget> segment_ids,
-    SegmentInfoDatabase* segment_database);
+    SegmentInfoDatabase* segment_database,
+    std::unique_ptr<FeatureAggregator> feature_aggregator);
 
 }  // namespace segmentation_platform
 

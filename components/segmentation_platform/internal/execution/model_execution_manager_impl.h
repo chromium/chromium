@@ -24,6 +24,7 @@ using proto::OptimizationTarget;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
+class FeatureAggregator;
 namespace proto {
 class SegmentInfo;
 }  // namespace proto
@@ -47,7 +48,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       std::vector<OptimizationTarget> segment_ids,
-      SegmentInfoDatabase* segment_database);
+      SegmentInfoDatabase* segment_database,
+      std::unique_ptr<FeatureAggregator> feature_aggregator);
   ~ModelExecutionManagerImpl() override;
 
   // Disallow copy/assign.
@@ -65,7 +67,6 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   void OnSegmentInfoFetched(std::unique_ptr<ExecutionState> state,
                             absl::optional<proto::SegmentInfo> segment_info);
   void ProcessFeatures(std::unique_ptr<ExecutionState> state);
-
   void RunModelExecutionCallback(ModelExecutionCallback callback,
                                  float result,
                                  ModelExecutionStatus status);
@@ -73,6 +74,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   std::map<OptimizationTarget, std::unique_ptr<SegmentationModelHandler>>
       model_handlers_;
   SegmentInfoDatabase* segment_database_;
+  std::unique_ptr<FeatureAggregator> feature_aggregator_;
+
   base::WeakPtrFactory<ModelExecutionManagerImpl> weak_ptr_factory_{this};
 };
 
