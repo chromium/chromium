@@ -144,6 +144,22 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mContainerMediator.updateTabObscured(isObscured);
     }
 
+    /**
+     * Temporarily force the container to hide until the corresponding show event occurs.
+     * @return a token that should be passed to {@link showContainer} when unhiding.
+     */
+    public int hideContainer() {
+        return mContainerMediator.hideContainer();
+    }
+
+    /**
+     * Release a force hide of the container.
+     * @param token from the {@link hideContainer} call.
+     */
+    public void showContainer(int token) {
+        mContainerMediator.showContainer(token);
+    }
+
     private void registerResource() {
         if (mResourceRegistered) return;
 

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.HashSet;
 
@@ -32,13 +33,15 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private Runnable mRequestLayout;
     private final Supplier<Integer> mDefaultTopContainerHeightSupplier;
     private final Callback<Boolean> mHideToolbarShadow;
+    private final TokenHolder mVisibilityTokenHolder =
+            new TokenHolder(this::onVisibilityTokenUpdate);
 
     private Runnable mOnFinishedHide;
     private boolean mInitialized;
     private boolean mIsVisible;
     private boolean mWantVisible;
-    private boolean mIsTabObscured;
     private int mJavaLayoutHeight;
+    private int mObscuredToken = TokenHolder.INVALID_TOKEN;
 
     ContinuousSearchContainerMediator(BrowserControlsStateProvider browserControlsStateProvider,
             LayoutStateProvider layoutStateProvider,
@@ -58,21 +61,39 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         mRequestLayout = requestLayout;
     }
 
+    int hideContainer() {
+        return mVisibilityTokenHolder.acquireToken();
+    }
+
+    void showContainer(int token) {
+        mVisibilityTokenHolder.releaseToken(token);
+    }
+
     /**
      * Called when the obscurity state of the current Tab changes.
      * @param isObscured Whether the tab is obscured.
      */
     void updateTabObscured(boolean isObscured) {
-        mIsTabObscured = isObscured;
+        if (isObscured) {
+            assert mObscuredToken == TokenHolder.INVALID_TOKEN;
+            mObscuredToken = hideContainer();
+            return;
+        }
+        assert mObscuredToken != TokenHolder.INVALID_TOKEN;
+        showContainer(mObscuredToken);
+        mObscuredToken = TokenHolder.INVALID_TOKEN;
+    }
+
+    private void onVisibilityTokenUpdate() {
         if (mModel == null) return;
 
         // Avoid showing on unobscure if the UI should be hidden.
-        if (!mWantVisible && !isObscured) return;
+        if (!mWantVisible && !mVisibilityTokenHolder.hasTokens()) return;
 
         // Avoid obscuring if already in the correct state.
-        if (mIsVisible == !isObscured) return;
+        if (mIsVisible != mVisibilityTokenHolder.hasTokens()) return;
 
-        updateVisibility(!isObscured, true);
+        updateVisibility(!mVisibilityTokenHolder.hasTokens(), true);
     }
 
     /**
@@ -159,14 +180,14 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
         // Show the composited view when the UI is at least partly visible and native
         // can run animations. This change will happen on the next composited frame.
-        final boolean showCompositedView =
-                !mIsTabObscured && isUiVisible && mCanAnimateNativeBrowserControls.get();
+        final boolean showCompositedView = !mVisibilityTokenHolder.hasTokens() && isUiVisible
+                && mCanAnimateNativeBrowserControls.get();
         mModel.set(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE, showCompositedView);
 
         // If we're running the animations in native, the Android view should only be visible when
         // the container is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries. This change will happen immediately.
-        final int androidViewState = mIsTabObscured
+        final int androidViewState = mVisibilityTokenHolder.hasTokens()
                 ? View.INVISIBLE
                 : !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
                         ? View.GONE

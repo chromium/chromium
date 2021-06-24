@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.concurrent.TimeoutException;
 
@@ -315,6 +316,43 @@ public class ContinuousSearchContainerMediatorTest {
                 DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
 
         Assert.assertTrue("Tab obscurity should change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
+    }
+
+    /**
+     * Tests that multiple tab obscures are handled correctly.
+     */
+    @Test
+    public void testForceShowHide() {
+        triggerShow();
+
+        // Top controls are fully visible.
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
+
+        // Unhide while unhidden should be a no-op.
+        mMediator.showContainer(TokenHolder.INVALID_TOKEN);
+
+        int firstToken = mMediator.hideContainer();
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT, 0, false,
+                -DEFAULT_CONTAINER_HEIGHT, -0, false, View.INVISIBLE);
+
+        Assert.assertFalse("Hide container should change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
+
+        // Hide again while already hidden.
+        int secondToken = mMediator.hideContainer();
+
+        // First unhide should be a no-op.
+        mMediator.showContainer(secondToken);
+        Assert.assertFalse("Nested force hides shouldn't change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
+
+        mMediator.showContainer(firstToken);
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
+
+        Assert.assertTrue("Show container should change mMediator.mIsVisible.",
                 mMediator.isVisibleForTesting());
     }
 

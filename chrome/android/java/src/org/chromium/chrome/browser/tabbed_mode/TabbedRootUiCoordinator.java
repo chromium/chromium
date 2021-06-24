@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
+import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -98,6 +99,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
@@ -129,6 +131,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
     private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
+    private FindToolbarObserver mContinuousSearchFindToolbarObserver;
     private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
 
@@ -271,10 +274,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mContinuousSearchContainerCoordinator != null) {
             getTabObscuringHandler().removeObserver(mContinuousSearchTabObscuringHandlerObserver);
             mContinuousSearchContainerCoordinator.removeHeightObserver(mContinuousSearchObserver);
+            if (mFindToolbarManager != null) {
+                mFindToolbarManager.removeObserver(mContinuousSearchFindToolbarObserver);
+            }
             mContinuousSearchContainerCoordinator.destroy();
             mContinuousSearchContainerCoordinator = null;
             mContinuousSearchObserver = null;
             mContinuousSearchTabObscuringHandlerObserver = null;
+            mContinuousSearchFindToolbarObserver = null;
         }
 
         if (mMerchantTrustSignalsCoordinator != null) {
@@ -642,6 +649,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mContinuousSearchTabObscuringHandlerObserver =
                 isObscured -> mContinuousSearchContainerCoordinator.updateTabObscured(isObscured);
         getTabObscuringHandler().addObserver(mContinuousSearchTabObscuringHandlerObserver);
+
+        if (!mActivity.supportsFindInPage()) return;
+
+        assert mFindToolbarManager != null;
+
+        mContinuousSearchFindToolbarObserver = new FindToolbarObserver() {
+            private int mToken = TokenHolder.INVALID_TOKEN;
+
+            @Override
+            public void onFindToolbarShown() {
+                assert mToken == TokenHolder.INVALID_TOKEN;
+                mToken = mContinuousSearchContainerCoordinator.hideContainer();
+            }
+
+            @Override
+            public void onFindToolbarHidden() {
+                mContinuousSearchContainerCoordinator.showContainer(mToken);
+                mToken = TokenHolder.INVALID_TOKEN;
+            }
+        };
+        mFindToolbarManager.addObserver(mContinuousSearchFindToolbarObserver);
     }
 
     /**
