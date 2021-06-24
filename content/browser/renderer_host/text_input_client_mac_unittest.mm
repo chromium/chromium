@@ -209,7 +209,8 @@ TEST_F(TextInputClientMacTest, GetRectForRange) {
   EXPECT_EQ(kSuccessValue, rect);
 }
 
-TEST_F(TextInputClientMacTest, TimeoutRectForRange) {
+// Disabled due to flakiness: crbug.com/1218499
+TEST_F(TextInputClientMacTest, DISABLED_TimeoutRectForRange) {
   base::RunLoop run_loop;
   local_frame()->SetCallback(run_loop.QuitClosure());
   gfx::Rect rect =
