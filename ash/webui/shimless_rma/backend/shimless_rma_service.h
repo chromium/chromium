@@ -9,6 +9,7 @@
 
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
+#include "chromeos/dbus/rmad/rmad_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -17,7 +18,8 @@
 namespace ash {
 namespace shimless_rma {
 
-class ShimlessRmaService : public mojom::ShimlessRmaService {
+class ShimlessRmaService : public mojom::ShimlessRmaService,
+                           public chromeos::RmadClient::Observer {
  public:
   ShimlessRmaService();
   ShimlessRmaService(const ShimlessRmaService&) = delete;
@@ -92,6 +94,16 @@ class ShimlessRmaService : public mojom::ShimlessRmaService {
   void BindInterface(
       mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver);
 
+  // RmadClient::Observer interface.
+  void Error(rmad::RmadErrorCode error) override;
+  void CalibrationProgress(
+      rmad::CalibrateComponentsState::CalibrationComponent component,
+      double progress) override;
+  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
+                            double progress) override;
+  void HardwareWriteProtectionState(bool enabled) override;
+  void PowerCableState(bool plugged_in) override;
+
  private:
   template <class Callback>
   void GetNextStateGeneric(Callback callback);
@@ -103,6 +115,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService {
 
   rmad::RmadState state_proto_;
 
+  mojo::Remote<mojom::ErrorObserver> error_observer_;
+  mojo::Remote<mojom::CalibrationObserver> calibration_observer_;
+  mojo::Remote<mojom::ProvisioningObserver> provisioning_observer_;
+  mojo::Remote<mojom::HardwareWriteProtectionStateObserver>
+      hwwp_state_observer_;
+  mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 
   // Note: This should remain the last member so it'll be destroyed and

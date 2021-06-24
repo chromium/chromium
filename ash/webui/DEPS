@@ -4,4 +4,5 @@ include_rules = [
   # Code in //ash runs in the browser process.
   "+content/public/browser",
   "+content/public/test",
+  "+mojo/core/embedder",
 ]

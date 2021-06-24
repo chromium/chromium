@@ -24,6 +24,7 @@ test("ash_webui_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
     "//ui/base:base",
   ]
 

@@ -9,7 +9,16 @@
 
 // Overview of Shimless RMA and the mojo interface.
 //
-// rmad service manages the state of shimless RMA and the webui presents the
+// RMA stands for Return Merchandise Authorization which is the point when the
+// device is returned by the customer for return, replacement or repair. In this
+// case it is used as shorthand for the whole repair flow from the time it
+// leaves the customer until it is returned.
+//
+// The shimless RMA application manages the final step of device repair before
+// a device is returned to a customer or restocked. It replaces the USB RMA shim
+// that required OEMs maintain a fleet of specially configured thumb drives.
+//
+// The rmad service manages the state of shimless RMA and the webui presents the
 // user with the available options for the current state.
 // When choices have been made they are sent from the webui to the browser for
 // validation and forwarding to rmad. rmad returns the next state and

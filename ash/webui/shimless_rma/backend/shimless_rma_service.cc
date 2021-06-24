@@ -18,13 +18,45 @@ using StateTraits =
 
 using ErrorTraits = mojo::EnumTraits<mojom::RmadErrorCode, rmad::RmadErrorCode>;
 
+using CalibrationTraits =
+    mojo::EnumTraits<mojom::CalibrationComponent,
+                     rmad::CalibrateComponentsState::CalibrationComponent>;
+
+using ProvisionTraits =
+    mojo::EnumTraits<mojom::ProvisioningStep,
+                     rmad::ProvisionDeviceState::ProvisioningStep>;
+
+class RmadObserver : chromeos::RmadClient::Observer {
+ public:
+  void Error(rmad::RmadErrorCode error) override {}
+
+  // Called when calibration progress is updated.
+  void CalibrationProgress(
+      rmad::CalibrateComponentsState::CalibrationComponent component,
+      double progress) override {}
+
+  // Called when provisioning progress is updated.
+  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
+                            double progress) override {}
+
+  // Called when hardware write protection state changes.
+  void HardwareWriteProtectionState(bool enabled) override {}
+
+  // Called when power cable is plugged in or removed.
+  void PowerCableState(bool plugged_in) override {}
+};
+
 }  // namespace
 
-// TODO(gavindodd): Declare an observer class and register an instance when
-// the mojom interface is created.
+ShimlessRmaService::ShimlessRmaService() {
+  // TODO(gavindodd): Is there a guarantee that rmad client exists at this time?
+  chromeos::RmadClient::Get()->AddObserver(this);
+}
 
-ShimlessRmaService::ShimlessRmaService() {}
-ShimlessRmaService::~ShimlessRmaService() = default;
+ShimlessRmaService::~ShimlessRmaService() {
+  // TODO(gavindodd): Is there a guarantee that rmad client exists at this time?
+  chromeos::RmadClient::Get()->RemoveObserver(this);
+}
 
 void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
   chromeos::RmadClient::Get()->GetCurrentState(base::BindOnce(
@@ -148,34 +180,81 @@ void ShimlessRmaService::FinalizeAndShutdown(CutoffBatteryCallback callback) {
 void ShimlessRmaService::CutoffBattery(CutoffBatteryCallback callback) {
 }
 
+////////////////////////////////
 // Observers
+void ShimlessRmaService::Error(rmad::RmadErrorCode error) {
+  mojom::RmadErrorCode mojo_error = ErrorTraits::ToMojom(error);
+  if (error_observer_.is_bound()) {
+    error_observer_->OnError(mojo_error);
+  }
+}
+
+void ShimlessRmaService::CalibrationProgress(
+    rmad::CalibrateComponentsState::CalibrationComponent component,
+    double progress) {
+  mojom::CalibrationComponent mojo_component =
+      CalibrationTraits::ToMojom(component);
+  if (calibration_observer_.is_bound()) {
+    calibration_observer_->OnCalibrationUpdated(mojo_component, progress);
+  }
+}
+
+void ShimlessRmaService::ProvisioningProgress(
+    rmad::ProvisionDeviceState::ProvisioningStep step,
+    double progress) {
+  mojom::ProvisioningStep mojo_step = ProvisionTraits::ToMojom(step);
+  if (provisioning_observer_.is_bound()) {
+    provisioning_observer_->OnProvisioningUpdated(mojo_step, progress);
+  }
+}
+
+void ShimlessRmaService::HardwareWriteProtectionState(bool enabled) {
+  if (hwwp_state_observer_.is_bound()) {
+    hwwp_state_observer_->OnHardwareWriteProtectionStateChanged(enabled);
+  }
+}
+
+void ShimlessRmaService::PowerCableState(bool plugged_in) {
+  if (power_cable_observer_.is_bound()) {
+    power_cable_observer_->OnPowerCableStateChanged(plugged_in);
+  }
+}
 
 void ShimlessRmaService::ObserveError(
     ::mojo::PendingRemote<mojom::ErrorObserver> observer) {
+  error_observer_.Bind(std::move(observer));
 }
 
 void ShimlessRmaService::ObserveCalibrationProgress(
     ::mojo::PendingRemote<mojom::CalibrationObserver> observer) {
+  calibration_observer_.Bind(std::move(observer));
 }
 
 void ShimlessRmaService::ObserveProvisioningProgress(
     ::mojo::PendingRemote<mojom::ProvisioningObserver> observer) {
+  provisioning_observer_.Bind(std::move(observer));
 }
 
 void ShimlessRmaService::ObserveHardwareWriteProtectionState(
     ::mojo::PendingRemote<mojom::HardwareWriteProtectionStateObserver>
         observer) {
+  hwwp_state_observer_.Bind(std::move(observer));
 }
 
 void ShimlessRmaService::ObservePowerCableState(
     ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) {
+  power_cable_observer_.Bind(std::move(observer));
 }
 
+////////////////////////////////
+// Mojom binding.
 void ShimlessRmaService::BindInterface(
     mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
 }
 
+////////////////////////////////
+// RmadClient response handlers.
 template <class Callback>
 void ShimlessRmaService::GetNextStateGeneric(Callback callback) {
   chromeos::RmadClient::Get()->TransitionNextState(

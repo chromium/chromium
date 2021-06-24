@@ -22,12 +22,19 @@ class ShimlessRmaServiceTest : public testing::Test {
   ~ShimlessRmaServiceTest() override { base::RunLoop().RunUntilIdle(); }
 
   void SetUp() override {
-    shimless_rma_provider_ = std::make_unique<ShimlessRmaService>();
     chromeos::RmadClient::InitializeFake();
     rmad_client_ = chromeos::RmadClient::Get();
+    // ShimlessRmaService has to be created after RmadClient or there will be a
+    // null ptr dereference in the service constructor.
+    shimless_rma_provider_ = std::make_unique<ShimlessRmaService>();
   }
 
-  void TearDown() override { chromeos::RmadClient::Shutdown(); }
+  void TearDown() override {
+    // ShimlessRmaService has to be shutdown before RmadClient or there will be
+    // a null ptr dereference in the service destructor.
+    shimless_rma_provider_.reset();
+    chromeos::RmadClient::Shutdown();
+  }
 
   rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
     rmad::RmadState* state = new rmad::RmadState();
@@ -299,6 +306,126 @@ TEST_F(ShimlessRmaServiceTest, CannotCancelRma) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+class FakeErrorObserver : public mojom::ErrorObserver {
+ public:
+  void OnError(mojom::RmadErrorCode error) override {
+    observations.push_back(error);
+  }
+
+  std::vector<mojom::RmadErrorCode> observations;
+  mojo::Receiver<mojom::ErrorObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, NoErrorObserver) {
+  // FakeErrorObserver fake_observer;
+  // shimless_rma_provider_->ObserveError(
+  //     fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerErrorObservation(
+      rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
+  run_loop.RunUntilIdle();
+  // EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveError) {
+  FakeErrorObserver fake_observer;
+  shimless_rma_provider_->ObserveError(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerErrorObservation(
+      rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+class FakeCalibrationObserver : public mojom::CalibrationObserver {
+ public:
+  void OnCalibrationUpdated(mojom::CalibrationComponent component,
+                            float progress) override {
+    observations.push_back(
+        std::pair<mojom::CalibrationComponent, float>(component, progress));
+  }
+
+  std::vector<std::pair<mojom::CalibrationComponent, float>> observations;
+  mojo::Receiver<mojom::CalibrationObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
+  FakeCalibrationObserver fake_observer;
+  shimless_rma_provider_->ObserveCalibrationProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerCalibrationProgressObservation(
+      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_ACCELEROMETER,
+      0.25);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+class FakeProvisioningObserver : public mojom::ProvisioningObserver {
+ public:
+  void OnProvisioningUpdated(mojom::ProvisioningStep step,
+                             float progress) override {
+    observations.push_back(
+        std::pair<mojom::ProvisioningStep, float>(step, progress));
+  }
+
+  std::vector<std::pair<mojom::ProvisioningStep, float>> observations;
+  mojo::Receiver<mojom::ProvisioningObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveProvisioning) {
+  FakeProvisioningObserver fake_observer;
+  shimless_rma_provider_->ObserveProvisioningProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerProvisioningProgressObservation(
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+class FakeHardwareWriteProtectionStateObserver
+    : public mojom::HardwareWriteProtectionStateObserver {
+ public:
+  void OnHardwareWriteProtectionStateChanged(bool enabled) override {
+    observations.push_back(enabled);
+  }
+
+  std::vector<bool> observations;
+  mojo::Receiver<mojom::HardwareWriteProtectionStateObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareWriteProtectionState) {
+  FakeHardwareWriteProtectionStateObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareWriteProtectionState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerHardwareWriteProtectionStateObservation(false);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+class FakePowerCableStateObserver : public mojom::PowerCableStateObserver {
+ public:
+  void OnPowerCableStateChanged(bool enabled) override {
+    observations.push_back(enabled);
+  }
+
+  std::vector<bool> observations;
+  mojo::Receiver<mojom::PowerCableStateObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObservePowerCableState) {
+  FakePowerCableStateObserver fake_observer;
+  shimless_rma_provider_->ObservePowerCableState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerPowerCableStateObservation(false);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
 }  // namespace shimless_rma
