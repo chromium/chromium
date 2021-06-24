@@ -77389,6 +77389,19 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-056.html": [
+      "e9c22901f7dfa2a7fdef0567f2e77177803516d4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-000.html": [
       "72b10f5cdd3092a042f1f90bff04e9428d61608e",
       [
@@ -86007,6 +86020,216 @@
        [
         [
          "/css/css-content/attr-case-insensitive-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-details.html": [
+      "6ac94c3e865aaf808fb9cdb1f11807c2e43a3e8c",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-details-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-fieldset.html": [
+      "4ada3b7b01d79e38abc171edf4bf7607fb856cef",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-fieldset-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-input.html": [
+      "5cc76ba11de411520a880aac2f582f9f9068c165",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-input-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-math.html": [
+      "2d5e78f678f62ee5c3ded1680875f4cefe3bc737",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-math-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-option.html": [
+      "5eff47776119aecfccd8efcf728eac1d0b116be3",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-option-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-block.html": [
+      "c8d15df3eafe1e9a2f8d0b4485c7538c9ccec749",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-block-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-columns.html": [
+      "b3fceb1c4f4d4f8bb5304430ff19b73903f58b11",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-columns-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-flex.html": [
+      "0b6c6cab14f078006224898e032add1022eb6ebb",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-flex-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-grid.html": [
+      "e97f7848acb82fe154a00776b909f87ac2f0f904",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-grid-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-ruby.html": [
+      "8434d9619068e5f48539ee0d942412372e31c813",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-ruby-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-root-table.html": [
+      "92e4a7730b938f1f155ef2fff5f044f3ee531e68",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-root-table-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-select-1.html": [
+      "450dd66e216be980689be8cc56f8f2fe91d27bfa",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-select-1-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "content-none-select-2.html": [
+      "4b8f0f5c3247a383eab241a116ca48c010d19b3c",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-select-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-span-dynamic.html": [
+      "078be9928a61603987467c2a97bf5a27985a19a3",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-span-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-span.html": [
+      "b963869cfeed60f2423b970c707a91e3ce838b22",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-span-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-none-table.html": [
+      "723e2e41467db17fd6ad5af5ec0e9e44d0ce9a89",
+      [
+       null,
+       [
+        [
+         "/css/css-content/content-none-table-ref.html",
          "=="
         ]
        ],
@@ -119386,6 +119609,19 @@
         [
          [
           "/css/css-masking/clip-path/clip-path-svg-text-backdrop-filter-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-svg-text-font-loading.html": [
+       "230c36ce6e731b8303b78471454e5c78408f81d5",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
           "=="
          ]
         ],
@@ -223944,6 +224180,66 @@
       "9b718b994e071be5bd2d9038058441bee500d57f",
       []
      ],
+     "content-none-details-ref.html": [
+      "ea844dc030207a6da5cdcfa9443887878c6324c8",
+      []
+     ],
+     "content-none-fieldset-ref.html": [
+      "49a86e7a0f7fa736618c4e1aa836b4c3feddc34c",
+      []
+     ],
+     "content-none-input-ref.html": [
+      "faa3ba3734c628a5db4e732d5b655f16b2cd81f3",
+      []
+     ],
+     "content-none-math-ref.html": [
+      "5e43f2ece4d1c7edf8a1609fe6168e933003fdff",
+      []
+     ],
+     "content-none-option-ref.html": [
+      "336c5bfb94bea7e6855f85a214cfcb2e99841a38",
+      []
+     ],
+     "content-none-root-block-ref.html": [
+      "e3c2adb4178e5d40f15a7d7967d3cb375d36723f",
+      []
+     ],
+     "content-none-root-columns-ref.html": [
+      "661c064ad3dfbd7ac359b77d956df1b1e439f4e1",
+      []
+     ],
+     "content-none-root-flex-ref.html": [
+      "b14e9f14f9376de03d562b8f12892ecdc27239dd",
+      []
+     ],
+     "content-none-root-grid-ref.html": [
+      "9b092c664b93ce01ccf2ec41a2a885c7148267ad",
+      []
+     ],
+     "content-none-root-ruby-ref.html": [
+      "cfb0ecd86622da02b8684d9ce915bb1fd20731cd",
+      []
+     ],
+     "content-none-root-table-ref.html": [
+      "d32fdf05256b41802f9dd2fe9ffa1feb0d4b1991",
+      []
+     ],
+     "content-none-select-1-ref.html": [
+      "5fef3a498cd36b2ab4d89b14448ecc334c259260",
+      []
+     ],
+     "content-none-select-2-ref.html": [
+      "4848b57d9578ffd7478ce59d05231abd2119f900",
+      []
+     ],
+     "content-none-span-ref.html": [
+      "cec124a3d4574104240243f1f6e44d95fcbd333c",
+      []
+     ],
+     "content-none-table-ref.html": [
+      "ec5d16721067a71ffe76fd43b60826fca6d735a9",
+      []
+     ],
      "element-replacement-alt-ref.html": [
       "ef8a6f3953c239733026c92541789ca5b942178b",
       []
@@ -285632,7 +285928,7 @@
      ]
     },
     "testcommon.js": [
-     "811e802ba5648a64d2f055041e43e1845aafb09d",
+     "286a51b9c8f658f58ab51a69e0937eb9c3a0ccf1",
      []
     ]
    },
@@ -433439,7 +433735,7 @@
    },
    "mediacapture-insertable-streams": {
     "MediaStreamTrackGenerator-audio.https.html": [
-     "d89d0ac79d7cd938068bb8ede3781505e037ac38",
+     "16bea6a312824ed423b367c49934661c47c229fe",
      [
       null,
       {}
@@ -456852,6 +457148,13 @@
        {}
       ]
      ],
+     "progress-based-animation-timeline.html": [
+      "dfc3fb0dde54b44e22a8628d90c759af8f12b422",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-timeline-cssom.tentative.html": [
       "1e6f581992f239f863e6a0afea27654d142ee291",
       [
@@ -456883,6 +457186,13 @@
     ],
     "current-time.html": [
      "6682939b1c4dea94a359f5c720f244fb5932eac9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "effect-updateTiming.html": [
+     "6e72ad1d330d5e339dd739c249e7207fe2286551",
      [
       null,
       {}
@@ -456955,8 +457265,22 @@
       {}
      ]
     ],
-    "progress-based-current-time.tenative.html": [
+    "progress-based-current-time.tentative.html": [
      "34702b865ad3f26ac5a0645ff55f053407e6d3ec",
+     [
+      null,
+      {}
+     ]
+    ],
+    "progress-based-scroll-animation.tentative.html": [
+     "7f53368b2173d099a250bcffe739157d6f4c1c64",
+     [
+      null,
+      {}
+     ]
+    ],
+    "progress-based-scroll-timeline-phases.tentative.html": [
+     "0c4bd229d6ed5a330a980b79be27588b78282e55",
      [
       null,
       {}

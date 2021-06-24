@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Layout shift right after user input is observable via PerformanceObserver. assert_equals: expected false but got true
+Harness: the test ran to completion.
+
