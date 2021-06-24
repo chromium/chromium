@@ -786,31 +786,11 @@ void ChromeNewWindowClient::OpenAppWithIntent(
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
                                             int32_t task_id) {
+  DCHECK(IsCameraAppEnabled());
+  ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
+      queries, arc::GetArcWindow(task_id));
   apps::RecordAppLaunch(extension_misc::kCameraAppId,
                         apps::mojom::LaunchSource::kFromArc);
-
-  Profile* const profile = ProfileManager::GetActiveUserProfile();
-  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
-  if (provider && provider->system_web_app_manager().IsAppEnabled(
-                      web_app::SystemAppType::CAMERA)) {
-    ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
-        queries, arc::GetArcWindow(task_id));
-    return;
-  }
-
-  const extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::Extension* extension =
-      registry->GetInstalledExtension(extension_misc::kCameraAppId);
-
-  auto url = GURL(extensions::Extension::GetBaseURLFromExtensionId(
-                      extension_misc::kCameraAppId)
-                      .spec() +
-                  queries);
-
-  apps::LaunchPlatformAppWithUrl(profile, extension,
-                                 /*handler_id=*/std::string(), url,
-                                 /*referrer_url=*/GURL());
 }
 
 void ChromeNewWindowClient::CloseCameraApp() {
@@ -829,13 +809,7 @@ void ChromeNewWindowClient::CloseCameraApp() {
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-
-  if (extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
-          extension_misc::kCameraAppId) != nullptr)
-    return true;
-
   auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
-
   return provider && provider->system_web_app_manager().IsAppEnabled(
                          web_app::SystemAppType::CAMERA);
 }

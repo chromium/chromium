@@ -32,21 +32,6 @@ class CameraAppUI : public ui::MojoWebUIController,
               std::unique_ptr<CameraAppUIDelegate> delegate);
   ~CameraAppUI() override;
 
-  // [To be deprecated] This method is only used for CCA as a platform app and
-  // will be deprecated once we migrate CCA to SWA.
-  // Connects to CameraAppDeviceProvider which could be used to get
-  // CameraAppDevice from video capture service through CameraAppDeviceBridge.
-  static void ConnectToCameraAppDeviceProvider(
-      content::RenderFrameHost* source,
-      mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver);
-
-  // [To be deprecated] This method is only used for CCA as a platform app and
-  // will be deprecated once we migrate CCA to SWA.
-  // Connects to CameraAppHelper that could handle camera intents.
-  static void ConnectToCameraAppHelper(
-      content::RenderFrameHost* source,
-      mojo::PendingReceiver<chromeos_camera::mojom::CameraAppHelper> receiver);
-
   // Instantiates implementor of the cros::mojom::CameraAppDeviceProvider mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(

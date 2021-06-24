@@ -80,6 +80,7 @@ CameraAppHelperImpl::CameraAppHelperImpl(
       has_external_screen_(HasExternalScreen()),
       pending_intent_id_(absl::nullopt),
       window_(window) {
+  DCHECK(camera_app_ui);
   DCHECK(window);
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
   ash::TabletMode::Get()->AddObserver(this);
@@ -103,10 +104,7 @@ void CameraAppHelperImpl::Bind(
     mojo::PendingReceiver<mojom::CameraAppHelper> receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
-
-  if (camera_app_ui_) {
-    pending_intent_id_ = ParseIntentIdFromUrl(camera_app_ui_->url());
-  }
+  pending_intent_id_ = ParseIntentIdFromUrl(camera_app_ui_->url());
 }
 
 void CameraAppHelperImpl::HandleCameraResult(
@@ -152,7 +150,6 @@ void CameraAppHelperImpl::SetScreenStateMonitor(
 
 void CameraAppHelperImpl::IsMetricsAndCrashReportingEnabled(
     IsMetricsAndCrashReportingEnabledCallback callback) {
-  DCHECK_NE(camera_app_ui_, nullptr);
   std::move(callback).Run(
       camera_app_ui_->delegate()->IsMetricsAndCrashReportingEnabled());
 }
@@ -175,27 +172,22 @@ void CameraAppHelperImpl::CheckExternalScreenState() {
 }
 
 void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
-  DCHECK_NE(camera_app_ui_, nullptr);
   camera_app_ui_->delegate()->OpenFileInGallery(name);
 }
 
 void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
-  DCHECK_NE(camera_app_ui_, nullptr);
   camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
 }
 
 void CameraAppHelperImpl::SetCameraUsageMonitor(
     mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
     SetCameraUsageMonitorCallback callback) {
-  DCHECK_NE(camera_app_ui_, nullptr);
   camera_app_ui_->app_window_manager()->SetCameraUsageMonitor(
       window_, std::move(usage_monitor), std::move(callback));
 }
 
 void CameraAppHelperImpl::GetWindowStateController(
     GetWindowStateControllerCallback callback) {
-  DCHECK_NE(camera_app_ui_, nullptr);
-
   if (!window_state_controller_) {
     window_state_controller_ =
         std::make_unique<chromeos::CameraAppWindowStateController>(
@@ -210,10 +202,6 @@ void CameraAppHelperImpl::GetWindowStateController(
 
 void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
                                                   const std::string& name) {
-  // This function is only supported on SWA.
-  if (camera_app_ui_ == nullptr) {
-    return;
-  }
   auto file_path = camera_app_ui_->delegate()->GetFilePathInArcByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Drop the broadcast request due to invalid file path in ARC "
@@ -227,7 +215,6 @@ void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
 void CameraAppHelperImpl::MonitorFileDeletion(
     const std::string& name,
     MonitorFileDeletionCallback callback) {
-  DCHECK_NE(camera_app_ui_, nullptr);
   camera_app_ui_->delegate()->MonitorFileDeletion(
       name, base::BindOnce(
                 [](MonitorFileDeletionCallback callback,

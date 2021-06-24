@@ -156,14 +156,6 @@ void PopulateChromeFrameBindersForExtension(
     }
   }
 
-  if (extension->id().compare(extension_misc::kCameraAppId) == 0 ||
-      extension->id().compare(extension_misc::kCameraAppDevId) == 0) {
-    binder_map->Add<cros::mojom::CameraAppDeviceProvider>(base::BindRepeating(
-        &chromeos::CameraAppUI::ConnectToCameraAppDeviceProvider));
-    binder_map->Add<chromeos_camera::mojom::CameraAppHelper>(
-        base::BindRepeating(&chromeos::CameraAppUI::ConnectToCameraAppHelper));
-  }
-
   if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
     binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
         base::BindRepeating(&BindGoogleTtsStream));
