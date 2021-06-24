@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -61,9 +62,14 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
   void OnAccountsCookieDeletedByUserAction() override;
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
 
  private:
   void UpdatePrimaryAccountIfNeeded();
+  void UpdateAccountsInCookieJarInfoIfNotStale(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
@@ -87,6 +93,8 @@ IdentityManagerObserver::IdentityManagerObserver(
 
   identity_manager_->AddObserver(this);
   UpdatePrimaryAccountIfNeeded();
+  // TODO(crbug.com/1148328): call UpdateAccountsInCookieJarInfoIfNotStale() if
+  // needed once tests are fixed.
 }
 
 IdentityManagerObserver::~IdentityManagerObserver() {
@@ -99,10 +107,20 @@ void IdentityManagerObserver::OnPrimaryAccountChanged(
 }
 
 void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
+  // TODO(crbug.com/1148328): remove this handler once tests can mimic
+  // OnAccountInCookieUpdated() properly.
   backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::RemoveAllStoredKeys,
-                     backend_));
+      base::BindOnce(
+          &StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo,
+          backend_, signin::AccountsInCookieJarInfo()));
+  notify_keys_changed_callback_.Run();
+}
+
+void IdentityManagerObserver::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  UpdateAccountsInCookieJarInfoIfNotStale(accounts_in_cookie_jar_info);
   notify_keys_changed_callback_.Run();
 }
 
@@ -125,6 +143,17 @@ void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
                      backend_, optional_primary_account));
+}
+
+void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNotStale(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
+  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+    backend_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo,
+            backend_, accounts_in_cookie_jar_info));
+  }
 }
 
 // Backend delegate that dispatches delegate notifications to custom callbacks,

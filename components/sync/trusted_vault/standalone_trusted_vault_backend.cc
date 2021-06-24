@@ -4,10 +4,13 @@
 
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -17,10 +20,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/os_crypt/os_crypt.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/time.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_switches.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace syncer {
 
@@ -66,6 +71,15 @@ void RetrieveIsRecoverabilityDegradedCompleted(
     base::OnceCallback<void(bool)> cb,
     TrustedVaultRecoverabilityStatus status) {
   std::move(cb).Run(status == TrustedVaultRecoverabilityStatus::kDegraded);
+}
+
+base::flat_set<std::string> GetGaiaIDs(
+    const std::vector<gaia::ListedAccount>& listed_accounts) {
+  base::flat_set<std::string> result;
+  for (const auto& listed_account : listed_accounts) {
+    result.insert(listed_account.gaia_id);
+  }
+  return result;
 }
 
 }  // namespace
@@ -115,7 +129,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   // |primary_account_| is set before FetchKeys() call and this may cause
   // redundant sync error in the UI (for key retrieval), especially during the
   // browser startup. Try to find a way to avoid this issue.
-  if (!connection_ || !primary_account_ || !per_user_vault ||
+  if (!connection_ || !primary_account_.has_value() || !per_user_vault ||
       !per_user_vault->local_device_registration_info().device_registered() ||
       AreConnectionRequestsThrottled(account_info.gaia)) {
     // Keys download attempt is not possible.
@@ -185,23 +199,19 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   MaybeRegisterDevice(gaia_id);
 }
 
-void StandaloneTrustedVaultBackend::RemoveAllStoredKeys() {
-  base::DeleteFile(file_path_);
-  data_.Clear();
-  AbandonConnectionRequest();
-  ongoing_get_recoverability_request_.reset();
-  ongoing_add_recovery_method_request_.reset();
-}
-
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     const absl::optional<CoreAccountInfo>& primary_account) {
   if (primary_account == primary_account_) {
+    // Still need to complete deferred deletion, e.g. if primary account was
+    // cleared before browser shutdown but not handled here.
+    RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
     return;
   }
   primary_account_ = primary_account;
   AbandonConnectionRequest();
   ongoing_get_recoverability_request_.reset();
   ongoing_add_recovery_method_request_.reset();
+  RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
   if (!primary_account_.has_value()) {
     DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
@@ -225,6 +235,42 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
                              recovery_method.method_type_hint,
                              std::move(recovery_method.completion_callback));
   }
+}
+
+void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
+  const base::flat_set<std::string> gaia_ids_in_cookie_jar =
+      base::STLSetUnion<base::flat_set<std::string>>(
+          GetGaiaIDs(accounts_in_cookie_jar_info.signed_in_accounts),
+          GetGaiaIDs(accounts_in_cookie_jar_info.signed_out_accounts));
+
+  // Primary account data shouldn't be removed immediately, but it needs to be
+  // removed once account become non-primary if it was ever removed from cookie
+  // jar.
+  if (primary_account_.has_value() &&
+      !base::Contains(gaia_ids_in_cookie_jar, primary_account_->gaia)) {
+    sync_pb::LocalTrustedVaultPerUser* primary_account_data_ =
+        FindUserVault(primary_account_->gaia);
+    primary_account_data_->set_should_delete_keys_when_non_primary(true);
+  }
+
+  auto should_remove_user_data =
+      [&gaia_ids_in_cookie_jar, &primary_account = primary_account_](
+          const sync_pb::LocalTrustedVaultPerUser& per_user_data) {
+        const std::string& gaia_id = per_user_data.gaia_id();
+        if (primary_account.has_value() && gaia_id == primary_account->gaia) {
+          // Don't delete primary account data.
+          return false;
+        }
+        // Delete data if account isn't in cookie jar.
+        return !base::Contains(gaia_ids_in_cookie_jar, gaia_id);
+      };
+
+  data_.mutable_user()->erase(
+      std::remove_if(data_.mutable_user()->begin(), data_.mutable_user()->end(),
+                     should_remove_user_data),
+      data_.mutable_user()->end());
+  WriteToDisk(data_, file_path_);
 }
 
 bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
@@ -429,7 +475,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
     TrustedVaultRegistrationStatus status) {
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
-  DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
+  DCHECK(primary_account_.has_value() && primary_account_->gaia == gaia_id);
 
   // This method should be called only as a result of
   // |ongoing_connection_request_| completion/failure, verify this condition
@@ -460,7 +506,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     TrustedVaultDownloadKeysStatus status,
     const std::vector<std::vector<uint8_t>>& vault_keys,
     int last_vault_key_version) {
-  DCHECK(primary_account_ && primary_account_->gaia == gaia_id);
+  DCHECK(primary_account_.has_value() && primary_account_->gaia == gaia_id);
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
   DCHECK(ongoing_fetch_keys_gaia_id_ == gaia_id);
 
@@ -569,6 +615,23 @@ void StandaloneTrustedVaultBackend::RecordFailedConnectionRequestForThrottling(
 
   FindUserVault(gaia_id)->set_last_failed_request_millis_since_unix_epoch(
       TimeToProtoTime(clock_->Now()));
+  WriteToDisk(data_, file_path_);
+}
+
+void StandaloneTrustedVaultBackend::
+    RemoveNonPrimaryAccountKeysIfMarkedForDeletion() {
+  auto should_remove_user_data =
+      [&primary_account = primary_account_](
+          const sync_pb::LocalTrustedVaultPerUser& per_user_data) {
+        return per_user_data.should_delete_keys_when_non_primary() &&
+               (!primary_account.has_value() ||
+                primary_account->gaia != per_user_data.gaia_id());
+      };
+
+  data_.mutable_user()->erase(
+      std::remove_if(data_.mutable_user()->begin(), data_.mutable_user()->end(),
+                     should_remove_user_data),
+      data_.mutable_user()->end());
   WriteToDisk(data_, file_path_);
 }
 

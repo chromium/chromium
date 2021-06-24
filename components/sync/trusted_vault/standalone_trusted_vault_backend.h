@@ -24,6 +24,10 @@ namespace base {
 class Clock;
 }  // namespace base
 
+namespace signin {
+struct AccountsInCookieJarInfo;
+}  // namespace signin
+
 namespace syncer {
 
 // Provides interfaces to store/remove keys to/from file storage.
@@ -81,13 +85,17 @@ class StandaloneTrustedVaultBackend
   // |account_info| will trigger a key download attempt.
   bool MarkKeysAsStale(const CoreAccountInfo& account_info);
 
-  // Removes all keys for all accounts from both memory and |file_path_|. Called
-  // when accounts cookie deleted by the user action.
-  void RemoveAllStoredKeys();
-
   // Sets/resets |primary_account_|.
   void SetPrimaryAccount(
       const absl::optional<CoreAccountInfo>& primary_account);
+
+  // Handles changes of accounts in cookie jar and removes keys for some
+  // accounts:
+  // 1. Non-primary account keys are removed if account isn't in cookie jar.
+  // 2. Primary account keys marked for deferred deletion if account isn't in
+  // cookie jar.
+  void UpdateAccountsInCookieJarInfo(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
@@ -149,6 +157,10 @@ class StandaloneTrustedVaultBackend
   // Records request failure time, that will be used to determine whether new
   // requests should be throttled.
   void RecordFailedConnectionRequestForThrottling(const std::string& gaia_id);
+
+  // Removes all data for non-primary accounts if they were previously marked
+  // for deletion due to accounts in cookie jar changes.
+  void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
   const base::FilePath file_path_;
 

@@ -45,6 +45,10 @@ message LocalTrustedVaultPerUser {
   // to transient errors) request was sent to the vault service. Used for
   // throttling requests to the server.
   optional int64 last_failed_request_millis_since_unix_epoch = 6;
+
+  // Whether keys relevant for the user should be deleted when account becomes
+  // non-primary.
+  optional bool should_delete_keys_when_non_primary = 7;
 }
 
 message LocalTrustedVault {

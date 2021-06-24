@@ -17,6 +17,7 @@
 #include "base/test/simple_test_clock.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
@@ -68,6 +69,19 @@ CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   CoreAccountInfo account_info;
   account_info.gaia = gaia_id;
   return account_info;
+}
+
+sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
+    const base::FilePath& path) {
+  std::string ciphertext;
+  base::ReadFileToString(path, &ciphertext);
+
+  std::string decrypted_content;
+  OSCrypt::DecryptString(ciphertext, &decrypted_content);
+
+  sync_pb::LocalTrustedVault proto;
+  proto.ParseFromString(decrypted_content);
+  return proto;
 }
 
 class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
@@ -305,7 +319,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
   other_backend->FetchKeys(account_info_2, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldRemoveAllStoredKeys) {
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
   const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
   const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
 
@@ -317,7 +331,14 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRemoveAllStoredKeys) {
   backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
                        /*last_key_version=*/1);
 
-  backend()->RemoveAllStoredKeys();
+  // Make sure that backend handles primary account changes prior
+  // UpdateAccountsInCookieJarInfo() call.
+  backend()->SetPrimaryAccount(account_info_1);
+  backend()->SetPrimaryAccount(absl::nullopt);
+
+  // Keys should be removed immediately if account is not primary and not in
+  // cookie jar.
+  backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
 
   // Keys should be removed from both in-memory and disk storages.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
@@ -328,7 +349,67 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRemoveAllStoredKeys) {
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
 
-  EXPECT_FALSE(base::PathExists(file_path()));
+  // Read the file from disk and verify that keys were removed from disk
+  // storage.
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  EXPECT_THAT(proto.user_size(), Eq(0));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDeferPrimaryAccountKeysDeletion) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
+  backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
+  backend()->SetPrimaryAccount(account_info);
+
+  // Keys should not be removed immediately.
+  backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Reset primary account, keys should be deleted from both in-memory and disk
+  // storage.
+  backend()->SetPrimaryAccount(absl::nullopt);
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Read the file from disk and verify that keys were removed from disk
+  // storage.
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  EXPECT_THAT(proto.user_size(), Eq(0));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldCompletePrimaryAccountKeysDeletionAfterRestart) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
+  backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
+  backend()->SetPrimaryAccount(account_info);
+
+  // Keys should not be removed immediately.
+  backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Mimic browser restart and reset primary account.
+  auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+      file_path(),
+      /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
+      /*connection=*/nullptr);
+  new_backend->ReadDataFromDisk();
+  new_backend->SetPrimaryAccount(absl::nullopt);
+
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  new_backend->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Read the file from disk and verify that keys were removed from disk
+  // storage.
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
