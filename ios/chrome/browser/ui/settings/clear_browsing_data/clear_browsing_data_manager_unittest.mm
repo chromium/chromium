@@ -5,8 +5,13 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_manager.h"
 
 #include "base/bind.h"
+#include "base/mac/foundation_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/search_engines/template_url_data_util.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -17,6 +22,7 @@
 #include "ios/chrome/browser/browsing_data/fake_browsing_data_remover.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -25,7 +31,9 @@
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -37,6 +45,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using TemplateURLPrepopulateData::GetAllPrepopulatedEngines;
+using TemplateURLPrepopulateData::PrepopulatedEngine;
 
 namespace {
 
@@ -64,11 +75,19 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<AuthenticationServiceDelegateFake>());
+
+    // Load TemplateURLService.
+    template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
+        browser_state_.get());
+    template_url_service_->Load();
 
     ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
         ->AddIdentities(@[ @"foo" ]);
@@ -93,6 +112,48 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                 ->GetAllIdentities(nullptr) firstObject];
   }
 
+  // Adds a prepopulated search engine to TemplateURLService.
+  // |prepopulate_id| should be big enough (>1000) to avoid collision with real
+  // prepopulated search engines. The collision happens when
+  // TemplateURLService::SetUserSelectedDefaultSearchProvider is called, in the
+  // callback of PrefService the DefaultSearchManager will update the searchable
+  // URL of default search engine from prepopulated search engines list.
+  TemplateURL* AddPriorSearchEngine(const std::string& short_name,
+                                    const GURL& searchable_url,
+                                    int prepopulate_id,
+                                    bool set_default) {
+    DCHECK_GT(prepopulate_id, 1000);
+    TemplateURLData data;
+    data.SetShortName(base::ASCIIToUTF16(short_name));
+    data.SetKeyword(base::ASCIIToUTF16(short_name));
+    data.SetURL(searchable_url.possibly_invalid_spec());
+    data.favicon_url = TemplateURL::GenerateFaviconURL(searchable_url);
+    data.prepopulate_id = prepopulate_id;
+    TemplateURL* url =
+        template_url_service_->Add(std::make_unique<TemplateURL>(data));
+    if (set_default)
+      template_url_service_->SetUserSelectedDefaultSearchProvider(url);
+    return url;
+  }
+
+  // Adds a custom search engine to TemplateURLService.
+  TemplateURL* AddCustomSearchEngine(const std::string& short_name,
+                                     const GURL& searchable_url,
+                                     base::Time last_visited_time,
+                                     bool set_default) {
+    TemplateURLData data;
+    data.SetShortName(base::ASCIIToUTF16(short_name));
+    data.SetKeyword(base::ASCIIToUTF16(short_name));
+    data.SetURL(searchable_url.possibly_invalid_spec());
+    data.favicon_url = TemplateURL::GenerateFaviconURL(searchable_url);
+    data.last_visited = last_visited_time;
+    TemplateURL* url =
+        template_url_service_->Add(std::make_unique<TemplateURL>(data));
+    if (set_default)
+      template_url_service_->SetUserSelectedDefaultSearchProvider(url);
+    return url;
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -101,10 +162,14 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   ClearBrowsingDataManager* manager_;
   syncer::TestSyncService* test_sync_service_;
   IntegerPrefMember time_range_pref_;
+  TemplateURLService* template_url_service_;  // weak
 };
 
 // Tests model is set up with all appropriate items and sections.
 TEST_F(ClearBrowsingDataManagerTest, TestModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSearchHistoryLinkIOS);
+
   [manager_ loadModel:model_];
 
   EXPECT_EQ(3, [model_ numberOfSections]);
@@ -116,6 +181,9 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
 // Tests model is set up with correct number of items and sections if signed in
 // but sync is off.
 TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSearchHistoryLinkIOS);
+
   // Ensure that sync is not running.
   test_sync_service_->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
@@ -132,6 +200,9 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSearchHistoryLinkIOS);
+
   ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
@@ -163,6 +234,9 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSearchHistoryLinkIOS);
+
   ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
 
   PrefService* prefs = browser_state_->GetPrefs();
@@ -194,6 +268,9 @@ TEST_F(ClearBrowsingDataManagerTest,
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSearchHistoryLinkIOS);
+
   [manager_ loadModel:model_];
   NSArray* timeRangeItems =
       [model_ itemsInSectionWithIdentifier:SectionIdentifierTimeRange];
@@ -212,6 +289,189 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
       l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS),
       timeRangeItem.detailText);
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignIn(fake_identity());
+
+  [manager_ loadModel:model_];
+
+  ASSERT_TRUE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+  ASSERT_FALSE(
+      ![model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount]);
+  ListItem* googleAccount =
+      [model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount];
+  TableViewLinkHeaderFooterItem* accountFooterTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
+  ASSERT_TRUE(([accountFooterTextItem.text rangeOfString:@"Google"].location !=
+               NSNotFound));
+  ASSERT_EQ(2u, accountFooterTextItem.urls.size());
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignOut(signin_metrics::ABORT_SIGNIN,
+                /*force_clear_browsing_data=*/false, nil);
+
+  [manager_ loadModel:model_];
+
+  ASSERT_FALSE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignIn(fake_identity());
+
+  // Set DSE to one from "prepoulated list".
+  const std::string kEngineP1Name = "prepopulated-1";
+  const GURL kEngineP1Url = GURL("https://p1.com?q={searchTerms}");
+
+  AddPriorSearchEngine(/* short_name */ kEngineP1Name,
+                       /* searchable_url */ kEngineP1Url,
+                       /* prepopulated_id */ 1001, /* set_default */ true);
+
+  [manager_ loadModel:model_];
+
+  ASSERT_TRUE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+  ASSERT_FALSE(
+      ![model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount]);
+  ListItem* googleAccount =
+      [model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount];
+  TableViewLinkHeaderFooterItem* accountFooterTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
+  ASSERT_TRUE(
+      ([accountFooterTextItem.text
+           rangeOfString:[NSString
+                             stringWithCString:kEngineP1Name.c_str()
+                                      encoding:[NSString
+                                                   defaultCStringEncoding]]]
+           .location != NSNotFound));
+  ASSERT_EQ(1u, accountFooterTextItem.urls.size());
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignOut(signin_metrics::ABORT_SIGNIN,
+                /*force_clear_browsing_data=*/false, nil);
+
+  // Set DSE to one from "prepoulated list".
+  const std::string kEngineP1Name = "prepopulated-1";
+  // NSString kEngineP1NameNS = kEngineP1Name as NS
+  const GURL kEngineP1Url = GURL("https://p1.com?q={searchTerms}");
+
+  AddPriorSearchEngine(/* short_name */ kEngineP1Name,
+                       /* searchable_url */ kEngineP1Url,
+                       /* prepopulated_id */ 1001, /* set_default */ true);
+
+  [manager_ loadModel:model_];
+
+  ASSERT_TRUE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+  ASSERT_FALSE(
+      ![model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount]);
+  ListItem* googleAccount =
+      [model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount];
+  TableViewLinkHeaderFooterItem* accountFooterTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
+  ASSERT_TRUE(
+      ([accountFooterTextItem.text
+           rangeOfString:[NSString
+                             stringWithCString:kEngineP1Name.c_str()
+                                      encoding:[NSString
+                                                   defaultCStringEncoding]]]
+           .location != NSNotFound));
+  ASSERT_EQ(0u, accountFooterTextItem.urls.size());
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignIn(fake_identity());
+
+  // Set DSE to a be fully custom.
+  const std::string kEngineC1Name = "custom-1";
+  const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
+
+  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
+                        /* searchable_url */ kEngineC1Url,
+                        /* last_visited_time */ base::Time::Now() -
+                            base::TimeDelta::FromSeconds(10),
+                        /* set_default */ true);
+
+  [manager_ loadModel:model_];
+
+  ASSERT_TRUE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+  ASSERT_FALSE(
+      ![model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount]);
+  ListItem* googleAccount =
+      [model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount];
+  TableViewLinkHeaderFooterItem* accountFooterTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
+  ASSERT_FALSE(
+      ([accountFooterTextItem.text
+           rangeOfString:[NSString
+                             stringWithCString:kEngineC1Name.c_str()
+                                      encoding:[NSString
+                                                   defaultCStringEncoding]]]
+           .location != NSNotFound));
+  ASSERT_EQ(1u, accountFooterTextItem.urls.size());
+}
+
+TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
+
+  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+      ->SignOut(signin_metrics::ABORT_SIGNIN,
+                /*force_clear_browsing_data=*/false, nil);
+
+  // Set DSE to a be fully custom.
+  const std::string kEngineC1Name = "custom-1";
+  const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
+
+  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
+                        /* searchable_url */ kEngineC1Url,
+                        /* last_visited_time */ base::Time::Now() -
+                            base::TimeDelta::FromSeconds(10),
+                        /* set_default */ true);
+
+  [manager_ loadModel:model_];
+
+  ASSERT_TRUE(
+      [model_ hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]);
+  ASSERT_FALSE(
+      ![model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount]);
+  ListItem* googleAccount =
+      [model_ footerForSectionWithIdentifier:SectionIdentifierGoogleAccount];
+  TableViewLinkHeaderFooterItem* accountFooterTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(googleAccount);
+  ASSERT_FALSE(
+      ([accountFooterTextItem.text
+           rangeOfString:[NSString
+                             stringWithCString:kEngineC1Name.c_str()
+                                      encoding:[NSString
+                                                   defaultCStringEncoding]]]
+           .location != NSNotFound));
+  ASSERT_EQ(0u, accountFooterTextItem.urls.size());
 }
 
 }  // namespace

@@ -549,6 +549,21 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY" desc="Footer message in the settings to clear browsing data that informs the user that clearing browsing data will not sign them out of Chrome and that other forms of history will still be available.">
         You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">BEGIN_LINK</ph>history.google.com<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_GOOGLE_DSE" desc="Footer message in the settings to clear browsing data that informs the user they can seperately delete their search history and/or other account info at the 2 links provided.">
+        You won't be signed out of your Google Account. To clear <ph name="BEGIN_LINK">BEGIN_LINK</ph>search<ph name="END_LINK">END_LINK</ph> or other forms of history, visit <ph name="BEGIN_LINK">BEGIN_LINK</ph>My Google Account<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_IN" desc="Footer message in the settings to clear browsing data that informs a signed in user that they will need to look up instructions to delete their search history from their DSE, as well as that they won't be signed out and where to delete other account data.">
+        Your search engine is <ph name="DSE_NAME">$1<ex>DuckDuckGo</ex></ph>. See their instructions for deleting your search history, if applicable. You won't be signed out of your Google Account. To clear other forms of history visit <ph name="BEGIN_LINK">BEGIN_LINK</ph>My Google Activity<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_OUT" desc="Footer message in the settings to clear browsing data that informs the user that they will need to look up instructions to delete their search history from their DSE.">
+        Your search engine is <ph name="DSE_NAME">$1<ex>DuckDuckGo</ex></ph>. See their instructions for deleting your search history, if applicable.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_IN" desc="Footer message in the settings to clear browsing data that informs a signed in user that they will need to look up instructions to delete their search history from a DSE that is not well known to Google, as well as that they won't be signed out and where to delete other account data.">
+        See your search engine’s instructions for deleting your search history, if applicable. You won't be signed out of your Google Account. To clear other forms of history visit <ph name="BEGIN_LINK">BEGIN_LINK</ph>My Google Activity<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_OUT" desc="Footer message in the settings to clear browsing data that informs the user that they will need to look up instructions to delete their search history from a DSE that is not well known to Google.">
+        See your search engine’s instructions for deleting your search history, if applicable.
+      </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_CLEAR_SYNC_AND_SAVED_SITE_DATA" desc="Footer message in the settings to clear browsing data that informs the user the synced data will be cleared on all devices and that saved site settings will not be deleted.">
         This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>

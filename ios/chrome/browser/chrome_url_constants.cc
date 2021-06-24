@@ -107,6 +107,9 @@ const char kClearBrowsingDataLearnMoreURL[] =
 const char kClearBrowsingDataMyActivityUrlInFooterURL[] =
     "https://history.google.com/history/?utm_source=chrome_cbd";
 
+const char kClearBrowsingDataSearchMyActivityUrlInFooterURL[] =
+    "https://myactivity.google.com/myactivity?product=19";
+
 const char kClearBrowsingDataMyActivityUrlInDialogURL[] =
     "https://history.google.com/history/?utm_source=chrome_n";
 

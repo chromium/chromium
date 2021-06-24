@@ -91,6 +91,10 @@ extern const char kClearBrowsingDataLearnMoreURL[];
 // Options.
 extern const char kClearBrowsingDataMyActivityUrlInFooterURL[];
 
+// Google search history URL for the footer in Clear Browsing Data in the
+// Privacy Section
+extern const char kClearBrowsingDataSearchMyActivityUrlInFooterURL[];
+
 // Google history URL for the dialog that informs the user that the history data
 // in the Clear Browsing Data under Privacy Options.
 extern const char kClearBrowsingDataMyActivityUrlInDialogURL[];

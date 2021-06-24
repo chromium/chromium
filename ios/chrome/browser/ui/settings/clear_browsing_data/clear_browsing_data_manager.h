@@ -56,6 +56,9 @@ enum ClearBrowsingDataItemType {
   // Item showing time range to remove data and allowing user to edit time
   // range.
   ItemTypeTimeRange,
+  // Footer noting user will not be signed out of chrome and how to delete
+  // search history based on set default search engine (DSE).
+  ItemTypeFooterGoogleAccountDSEBased,
 };
 
 // Manager that serves as the bulk of the logic for
