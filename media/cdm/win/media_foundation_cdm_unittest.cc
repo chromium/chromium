@@ -42,6 +42,15 @@ std::vector<uint8_t> StringToVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
 
+// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
+// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
+// and `T` is the callback's type.
+ACTION_TEMPLATE(InvokeCallbackArgument,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_1_VALUE_PARAMS(p0)) {
+  std::move(const_cast<T&>(std::get<k>(args))).Run(p0);
+}
+
 }  // namespace
 
 using Microsoft::WRL::ComPtr;
@@ -193,7 +202,10 @@ TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpV1_1_KeyStatusUsable) {
   Initialize();
   EXPECT_CALL(is_type_supported_cb_,
               Run("video/mp4;codecs=\"avc1\";features=\"hdcp=1\"", _))
-      .WillOnce(SetArgReferee<1>(/*is_supported=*/true));
+      .WillOnce(
+          InvokeCallbackArgument<1,
+                                 MediaFoundationCdm::IsTypeSupportedResultCB>(
+              /*is_supported=*/true));
 
   CdmKeyInformation::KeyStatus key_status;
   cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion1_1,
@@ -207,7 +219,10 @@ TEST_F(MediaFoundationCdmTest,
   Initialize();
   EXPECT_CALL(is_type_supported_cb_,
               Run("video/mp4;codecs=\"avc1\";features=\"hdcp=2\"", _))
-      .WillOnce(SetArgReferee<1>(/*is_supported=*/false));
+      .WillOnce(
+          InvokeCallbackArgument<1,
+                                 MediaFoundationCdm::IsTypeSupportedResultCB>(
+              /*is_supported=*/false));
 
   CdmKeyInformation::KeyStatus key_status;
   cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion2_3,

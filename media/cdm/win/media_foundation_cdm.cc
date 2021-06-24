@@ -348,14 +348,11 @@ void MediaFoundationCdm::GetStatusForPolicy(
   const std::string content_type =
       base::StringPrintf("video/mp4;codecs=\"avc1\";features=\"hdcp=%d\"",
                          GetHdcpValue(min_hdcp_version));
-  bool is_supported = false;
-  is_type_supported_cb_.Run(content_type, is_supported);
 
-  if (is_supported) {
-    promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
-  } else {
-    promise->resolve(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
-  }
+  is_type_supported_cb_.Run(
+      content_type,
+      base::BindOnce(&MediaFoundationCdm::OnIsTypeSupportedResult,
+                     weak_factory_.GetWeakPtr(), std::move(promise)));
 }
 
 void MediaFoundationCdm::CreateSessionAndGenerateRequest(
@@ -597,6 +594,16 @@ void MediaFoundationCdm::OnHardwareContextReset() {
   if (FAILED(Initialize())) {
     DLOG(ERROR) << __func__ << ": Re-initialization failed";
     DCHECK(!mf_cdm_);
+  }
+}
+
+void MediaFoundationCdm::OnIsTypeSupportedResult(
+    std::unique_ptr<KeyStatusCdmPromise> promise,
+    bool is_supported) {
+  if (is_supported) {
+    promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+  } else {
+    promise->resolve(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
   }
 }
 

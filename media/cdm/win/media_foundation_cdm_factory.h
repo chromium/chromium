@@ -50,6 +50,9 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
+  // Callback to MediaFoundationCDM to resolve the promise.
+  using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
+
   void OnCdmOriginIdObtained(
       const std::string& key_system,
       const CdmConfig& cdm_config,
@@ -66,7 +69,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
 
   void IsTypeSupported(const std::string& key_system,
                        const std::string& content_type,
-                       bool& result);
+                       IsTypeSupportedResultCB is_type_supported_result_cb);
 
   HRESULT CreateMfCdmInternal(
       const std::string& key_system,

@@ -36,9 +36,13 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   using CreateMFCdmCB = base::RepeatingCallback<
       void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
 
+  // Callback to MediaFoundationCDM to resolve the promise.
+  using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
+
   // Callback to IMFMediaFoundataionCdmFactory's IsTypeSupported.
   using IsTypeSupportedCB =
-      base::RepeatingCallback<void(const std::string&, bool&)>;
+      base::RepeatingCallback<void(const std::string&,
+                                   IsTypeSupportedResultCB)>;
 
   // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
   // before calling any other methods.
@@ -99,6 +103,10 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   // Called when hardware context reset happens.
   void OnHardwareContextReset();
+
+  // Called when IsTypeSupported() result is available.
+  void OnIsTypeSupportedResult(std::unique_ptr<KeyStatusCdmPromise> promise,
+                               bool is_supported);
 
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;

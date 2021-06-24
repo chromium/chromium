@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
@@ -149,6 +150,14 @@ HRESULT BuildCdmProperties(const base::UnguessableToken& origin_id,
   return S_OK;
 }
 
+bool IsTypeSupportedInternal(
+    ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
+    const std::string& key_system,
+    const std::string& content_type) {
+  return cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
+                                      base::UTF8ToWide(content_type).c_str());
+}
+
 }  // namespace
 
 MediaFoundationCdmFactory::MediaFoundationCdmFactory(
@@ -244,19 +253,25 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   return S_OK;
 }
 
-void MediaFoundationCdmFactory::IsTypeSupported(const std::string& key_system,
-                                                const std::string& content_type,
-                                                bool& result) {
+void MediaFoundationCdmFactory::IsTypeSupported(
+    const std::string& key_system,
+    const std::string& content_type,
+    IsTypeSupportedResultCB is_type_supported_result_cb) {
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   HRESULT hr = GetCdmFactory(key_system, cdm_factory);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to GetCdmFactory. hr=" << hr;
-    result = false;
+    std::move(is_type_supported_result_cb).Run(false);
     return;
   }
 
-  result = cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
-                                        base::UTF8ToWide(content_type).c_str());
+  // Note that IsTypeSupported may take up to 10s, so run it on a separate
+  // thread to unblock the main thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&IsTypeSupportedInternal, cdm_factory, key_system,
+                     content_type),
+      std::move(is_type_supported_result_cb));
 }
 
 HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
