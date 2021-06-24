@@ -52,8 +52,8 @@ constexpr bool ShareSameStore(const password_manager::PasswordForm& lhs,
 namespace password_manager {
 
 SavedPasswordsPresenter::SavedPasswordsPresenter(
-    scoped_refptr<PasswordStore> profile_store,
-    scoped_refptr<PasswordStore> account_store)
+    scoped_refptr<PasswordStoreInterface> profile_store,
+    scoped_refptr<PasswordStoreInterface> account_store)
     : profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
   DCHECK(profile_store_);
@@ -100,7 +100,7 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
     return false;
 
   found->password_value = std::move(new_password);
-  PasswordStore& store =
+  PasswordStoreInterface& store =
       form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
   store.UpdateLogin(*found);
   NotifyEdited(*found);
@@ -142,7 +142,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
   // class.
   if (username_changed || password_changed) {
     for (const auto& old_form : forms) {
-      PasswordStore& store = GetStoreFor(old_form);
+      PasswordStoreInterface& store = GetStoreFor(old_form);
       PasswordForm new_form = old_form;
       new_form.username_value = new_username;
       new_form.password_value = new_password;
@@ -282,7 +282,8 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   NotifySavedPasswordsChanged();
 }
 
-PasswordStore& SavedPasswordsPresenter::GetStoreFor(const PasswordForm& form) {
+PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(
+    const PasswordForm& form) {
   DCHECK_NE(form.IsUsingAccountStore(), form.IsUsingProfileStore());
   return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
