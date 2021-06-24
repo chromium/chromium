@@ -2777,6 +2777,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins"
+    units="VMsTrimmed" expires_after="M99">
+  <owner>yusukes@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <summary>
+    Number of ARCVM's crosvm trimmed in the last 30 minutes. Recorded every 30
+    minutes as long as ARCVM trimming is enabled. Available on ChromeOS. Also,
+    one last report is emitted for the &lt;= 30 minute period since the last
+    report, at browser exit, and that the sample is scaled. For example, when 1
+    trim was done since the last report and the browser exits 15 minutes after
+    the last report, 2 is recorded on the browser exit.
+  </summary>
+</histogram>
+
 <histogram name="Memory.WorkingSetTrim.RendererTrimCount"
     units="RenderersTrimmed" expires_after="M95">
   <owner>bgeffon@chromium.org</owner>

@@ -12,6 +12,8 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
@@ -130,6 +132,15 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
+  static size_t GetArcVmTrimCountForFinalReport(
+      size_t current_arcvm_trim_count,
+      const base::TimeDelta& time_since_last_arcvm_trim_metric_report,
+      const base::TimeDelta& arcvm_trim_backoff_time,
+      const base::TimeDelta& arcvm_trim_metric_report_delay);
+
+  void ReportArcVmTrimMetric();
+  void ReportArcVmTrimMetricOnDestruction();
+
   Graph* graph_ = nullptr;
 
   bool trim_on_freeze_ = false;
@@ -139,6 +150,12 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // This map contains the last trim time of arc processes.
   std::map<base::ProcessId, base::TimeTicks> arc_processes_last_trim_;
+
+  // A timer for periodically reporting UMA stats.
+  base::RepeatingTimer arcvm_trim_metric_report_timer_;
+
+  size_t arcvm_trim_count_ = 0;
+  base::ElapsedTimer time_since_last_arcvm_trim_metric_report_;
 
   base::WeakPtrFactory<WorkingSetTrimmerPolicyChromeOS> weak_ptr_factory_{this};
 

@@ -8,6 +8,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -197,13 +198,8 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 
   void SetUp() override {
     GraphTestHarness::SetUp();
-
-    // Add our mock policy to the graph.
-    auto mock_policy = std::make_unique<
-        testing::NiceMock<MockWorkingSetTrimmerPolicyChromeOS>>();
-
-    policy_ = mock_policy.get();
-    graph()->PassToGraph(std::move(mock_policy));
+    RecreatePolicy(base::BindLambdaForTesting(
+        [](MockWorkingSetTrimmerPolicyChromeOS*) {}));
   }
 
   void TearDown() override {
@@ -214,6 +210,36 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   void DefaultOnTrimArcVmProcessesAndQuit(bool need_reclaim) {
     policy()->DefaultOnTrimArcVmProcesses(need_reclaim);
     run_loop()->Quit();
+  }
+
+  size_t GetArcVmTrimCountForFinalReport(
+      size_t current_arcvm_trim_count,
+      const base::TimeDelta& time_since_last_arcvm_trim_metric_report,
+      const base::TimeDelta& arcvm_trim_backoff_time,
+      const base::TimeDelta& arcvm_trim_metric_report_delay) {
+    return policy()->GetArcVmTrimCountForFinalReport(
+        current_arcvm_trim_count, time_since_last_arcvm_trim_metric_report,
+        arcvm_trim_backoff_time, arcvm_trim_metric_report_delay);
+  }
+
+  // Creates a new policy and runs the |callback| with the policy before passing
+  // it to the graph().
+  void RecreatePolicy(
+      base::OnceCallback<void(MockWorkingSetTrimmerPolicyChromeOS* policy)>
+          callback) {
+    if (policy_)
+      graph()->TakeFromGraph(policy_);
+    // Add our mock policy to the graph.
+    auto mock_policy = std::make_unique<
+        testing::NiceMock<MockWorkingSetTrimmerPolicyChromeOS>>();
+    policy_ = mock_policy.get();
+    std::move(callback).Run(policy_);
+    graph()->PassToGraph(std::move(mock_policy));
+  }
+
+  void TakePolicyFromGraph() {
+    graph()->TakeFromGraph(policy_);
+    policy_ = nullptr;
   }
 
   void RecreateRunLoop() { run_loop_ = std::make_unique<base::RunLoop>(); }
@@ -783,6 +809,91 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   policy()->listener().SimulatePressureNotification(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
+}
+
+// Tests that the UMA reporting is done every 30 minutes.
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ReportArcVmTrimMetric) {
+  base::HistogramTester tester;
+
+  // Crates the policy _after_ ARCVM trimming is enabled. This is necessary to
+  // start the time for UMA reporting.
+  RecreatePolicy(base::BindLambdaForTesting(
+      [](MockWorkingSetTrimmerPolicyChromeOS* policy) {
+        policy->trim_arcvm_on_memory_pressure(true);
+      }));
+
+  FastForwardBy(base::TimeDelta::FromMinutes(15));
+  run_loop()->RunUntilIdle();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 0);
+
+  FastForwardBy(base::TimeDelta::FromMinutes(15));
+  run_loop()->RunUntilIdle();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
+
+  FastForwardBy(base::TimeDelta::FromMinutes(30));
+  run_loop()->RunUntilIdle();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 2);
+
+  TakePolicyFromGraph();
+}
+
+// Tests that the final UMA reporting is done when the policy is detached from
+// the graph.
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ReportArcVmTrimMetricOnDestrution) {
+  base::HistogramTester tester;
+
+  // Crates the policy _after_ ARCVM trimming is enabled. This is necessary to
+  // start the time for UMA reporting.
+  RecreatePolicy(base::BindLambdaForTesting(
+      [](MockWorkingSetTrimmerPolicyChromeOS* policy) {
+        policy->trim_arcvm_on_memory_pressure(true);
+      }));
+
+  FastForwardBy(base::TimeDelta::FromMinutes(30));
+  run_loop()->RunUntilIdle();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
+
+  FastForwardBy(base::TimeDelta::FromMinutes(15));
+  run_loop()->RunUntilIdle();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
+
+  TakePolicyFromGraph();
+  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 2);
+}
+
+// Tests that the |arcvm_trim_count_| calculation for the final report is
+// properly done.
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, GetArcVmTrimCountForFinalReport) {
+  constexpr base::TimeDelta kBackoffTime = base::TimeDelta::FromMinutes(15);
+  constexpr base::TimeDelta kMetricReportDelay =
+      base::TimeDelta::FromMinutes(30);
+
+  // If 0 trim has been done in the last 15 minutes, 0 should be reported.
+  EXPECT_EQ(0u,
+            GetArcVmTrimCountForFinalReport(0, base::TimeDelta::FromMinutes(15),
+                                            kBackoffTime, kMetricReportDelay));
+
+  // If 1 trim has been done in the last 28 minutes, 1 should be reported.
+  EXPECT_EQ(1u,
+            GetArcVmTrimCountForFinalReport(1, base::TimeDelta::FromMinutes(28),
+                                            kBackoffTime, kMetricReportDelay));
+
+  // If 1 trim has been done in the last 15 minutes, 2 should be reported.
+  EXPECT_EQ(2u,
+            GetArcVmTrimCountForFinalReport(1, base::TimeDelta::FromMinutes(15),
+                                            kBackoffTime, kMetricReportDelay));
+
+  // If 2 trims have been done in the last 28 minutes, 2 should be reported.
+  EXPECT_EQ(2u,
+            GetArcVmTrimCountForFinalReport(2, base::TimeDelta::FromMinutes(28),
+                                            kBackoffTime, kMetricReportDelay));
+
+  // If 2 trims has been done in the last 15 minutes, 3 should be reported.
+  // This is not 4 because of |kBackoffTime|. Only 3 trims are possible within
+  // |kMetricReportDelay|.
+  EXPECT_EQ(3u,
+            GetArcVmTrimCountForFinalReport(2, base::TimeDelta::FromMinutes(15),
+                                            kBackoffTime, kMetricReportDelay));
 }
 
 }  // namespace policies
