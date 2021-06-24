@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class HoldingSpaceController;
 class HoldingSpaceItem;
 
 // A class owning a `ui::Layer` which paints a ring to indicate progress.
@@ -24,6 +25,12 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
   HoldingSpaceProgressRing(const HoldingSpaceProgressRing&) = delete;
   HoldingSpaceProgressRing& operator=(const HoldingSpaceProgressRing&) = delete;
   ~HoldingSpaceProgressRing() override;
+
+  // Returns an instance which paints a ring to indicate progress of all holding
+  // space items in the model attached to the specified `controller`.
+  static std::unique_ptr<HoldingSpaceProgressRing> CreateForController(
+      HoldingSpaceController* controller,
+      bool use_light_mode_as_default);
 
   // Returns an instance which paints a ring to indicate progress of the
   // specified holding space `item`.

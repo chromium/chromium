@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
@@ -254,9 +255,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
       std::make_unique<HoldingSpaceTrayIcon>(shelf));
   previews_tray_icon_->SetVisible(false);
 
-  // Enable context menu, which supports an action to toggle item previews.
-  set_context_menu_controller(this);
-
   // Drop target overlay.
   // NOTE: The `drop_target_overlay_` will only be visible when:
   //   * a drag is in progress,
@@ -268,6 +266,17 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // Drop target icon.
   drop_target_icon_ =
       drop_target_overlay_->AddChildView(CreateDropTargetIcon());
+
+  // Progress ring.
+  // NOTE: The `progress_ring_` will only be visible when:
+  //   * there is at least one in-progress item in the attached model, and
+  //   * previews are hidden.
+  progress_ring_ = HoldingSpaceProgressRing::CreateForController(
+      HoldingSpaceController::Get(), /*use_light_mode_as_default=*/false);
+  layer()->Add(progress_ring_->layer());
+
+  // Enable context menu, which supports an action to toggle item previews.
+  set_context_menu_controller(this);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -449,7 +458,13 @@ void HoldingSpaceTray::Layout() {
   // The `drop_target_overlay_` should always fill this view's bounds as they
   // are perceived by the user. Note that the user perceives the bounds of this
   // view to be its background bounds, not its local bounds.
-  drop_target_overlay_->SetBoundsRect(GetMirroredRect(GetBackgroundBounds()));
+  const gfx::Rect background_bounds(GetBackgroundBounds());
+  drop_target_overlay_->SetBoundsRect(GetMirroredRect(background_bounds));
+
+  // The `progress_ring_` should also fill this view's bounds as they are
+  // perceived by the user, but these bounds do not need to be mirrored since
+  // they are in layer coordinates.
+  progress_ring_->layer()->SetBounds(background_bounds);
 }
 
 void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
@@ -483,6 +498,9 @@ void HoldingSpaceTray::OnThemeChanged() {
   // Drop target icon.
   drop_target_icon_->SetImage(
       gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize, color));
+
+  // Progress ring.
+  progress_ring_->InvalidateLayer();
 }
 
 void HoldingSpaceTray::UpdateVisibility() {
@@ -711,6 +729,7 @@ void HoldingSpaceTray::UpdatePreviewsVisibility() {
 
   default_tray_icon_->SetVisible(!show_previews);
   previews_tray_icon_->SetVisible(show_previews);
+  progress_ring_->layer()->SetVisible(!show_previews);
 
   if (!show_previews) {
     previews_tray_icon_->Clear();

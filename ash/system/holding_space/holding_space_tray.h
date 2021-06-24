@@ -41,6 +41,7 @@ class ImageView;
 
 namespace ash {
 
+class HoldingSpaceProgressRing;
 class HoldingSpaceTrayIcon;
 
 // The HoldingSpaceTray shows the tray button in the bottom area of the screen.
@@ -202,6 +203,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // The icon parented by the `drop_target_overlay_` to indicate that this view
   // is a drop target capable of handling the current drag payload.
   views::ImageView* drop_target_icon_ = nullptr;
+
+  // Owns the `ui::Layer` which paints a ring to indicate progress of all
+  // holding space items in the model attached to the holding space controller.
+  // NOTE: The `ui::Layer` is *not* painted if there are no items in progress.
+  std::unique_ptr<HoldingSpaceProgressRing> progress_ring_;
 
   // When the holding space previews feature is enabled, the user can enable/
   // disable previews at runtime. This registrar is associated with the active

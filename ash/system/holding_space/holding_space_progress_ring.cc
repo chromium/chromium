@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
@@ -35,9 +36,125 @@ float CalculateSweepAngle(float progress) {
   return 360.f * progress;
 }
 
+// HoldingSpaceControllerProgressRing ------------------------------------------
+
+// A class owning a `ui::Layer` which paints a ring to indicate progress of all
+// items in the model attached to its associated holding space `controller_`.
+// NOTE: The owned `layer()` is not painted if there are no items in progress.
+class HoldingSpaceControllerProgressRing
+    : public HoldingSpaceProgressRing,
+      public HoldingSpaceControllerObserver,
+      public HoldingSpaceModelObserver {
+ public:
+  HoldingSpaceControllerProgressRing(HoldingSpaceController* controller,
+                                     bool use_light_mode_as_default)
+      : HoldingSpaceProgressRing(use_light_mode_as_default),
+        controller_(controller) {
+    controller_observation_.Observe(controller_);
+    if (controller_->model())
+      OnHoldingSpaceModelAttached(controller_->model());
+  }
+
+ private:
+  // HoldingSpaceProgressRing:
+  absl::optional<float> GetProgress() const override {
+    // If there is no `model` attached, then there are no in-progress holding
+    // space items. Return `1.f` to prevent the progress ring from painting.
+    const HoldingSpaceModel* model = controller_->model();
+    if (!model)
+      return 1.f;
+
+    // TODO(crbug.com/1184438): The below progress calculation is a temporary
+    // approximation until a more accurate cumulative progress calculation is
+    // implemented in a follow up CL.
+    float cumulative_progress = 0.f;
+    int number_of_in_progress_items = 0;
+
+    // Iterate over all holding space items.
+    for (const auto& item : model->items()) {
+      // Ignore any holding space items that are not yet initialized, since
+      // they are not visible to the user, or items that are not in-progress,
+      // since they do not contribute to cumulative progress.
+      if (!item->IsInitialized() || !item->IsInProgress())
+        continue;
+
+      // If any holding space `item` has indeterminate progress, then cumulative
+      // progress is also indeterminate.
+      if (!item->progress().has_value())
+        return absl::nullopt;
+
+      // Update incremental tracking of cumulative progress.
+      cumulative_progress += item->progress().value();
+      ++number_of_in_progress_items;
+    }
+
+    // If there are no in-progress holding space items, return `1.f` to prevent
+    // the progress ring from painting.
+    if (number_of_in_progress_items == 0)
+      return 1.f;
+
+    // Return the average progress as a temporary approximation until a more
+    // accurate cumulative progress can be calculated.
+    return cumulative_progress / number_of_in_progress_items;
+  }
+
+  // HoldingSpaceControllerObserver:
+  void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override {
+    model_observation_.Observe(model);
+    InvalidateLayer();
+  }
+
+  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override {
+    model_observation_.Reset();
+    InvalidateLayer();
+  }
+
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override {
+    for (const HoldingSpaceItem* item : items) {
+      if (item->IsInitialized() && item->IsInProgress()) {
+        InvalidateLayer();
+        return;
+      }
+    }
+  }
+
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override {
+    for (const HoldingSpaceItem* item : items) {
+      if (item->IsInitialized() && item->IsInProgress()) {
+        InvalidateLayer();
+        return;
+      }
+    }
+  }
+
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+    if (item->IsInitialized())
+      InvalidateLayer();
+  }
+
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
+    if (item->IsInProgress())
+      InvalidateLayer();
+  }
+
+  // The associated holding space `controller_` for which to indicate progress
+  // of all holding space items in its attached model.
+  HoldingSpaceController* const controller_;
+
+  base::ScopedObservation<HoldingSpaceController,
+                          HoldingSpaceControllerObserver>
+      controller_observation_{this};
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observation_{this};
+};
+
 // HoldingSpaceItemProgressRing ------------------------------------------------
 
-// A class owning a `ui::Layer` which paints a ring to indicate progress of an
+// A class owning a `ui::Layer` which paints a ring to indicate progress of its
 // associated holding space `item_`. NOTE: The owned `layer()` is not painted if
 // the associated `item_` is not in progress.
 class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
@@ -94,6 +211,15 @@ HoldingSpaceProgressRing::HoldingSpaceProgressRing(
 }
 
 HoldingSpaceProgressRing::~HoldingSpaceProgressRing() = default;
+
+// static
+std::unique_ptr<HoldingSpaceProgressRing>
+HoldingSpaceProgressRing::CreateForController(
+    HoldingSpaceController* controller,
+    bool use_light_mode_as_default) {
+  return std::make_unique<HoldingSpaceControllerProgressRing>(
+      controller, use_light_mode_as_default);
+}
 
 // static
 std::unique_ptr<HoldingSpaceProgressRing>
