@@ -498,7 +498,7 @@ static_library("ui") {
     "//components/reading_list/features:flags",
     "//components/renderer_context_menu",
     "//components/resources",
-    "//components/safe_browsing/content/password_protection",
+    "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/web_ui",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",

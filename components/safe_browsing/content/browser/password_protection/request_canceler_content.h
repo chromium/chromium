@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
 
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,4 +24,4 @@ class RequestCancelerContent : public RequestCanceler,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_

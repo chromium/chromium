@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 
 namespace content {
 class WebContents;
@@ -21,4 +21,4 @@ scoped_refptr<PasswordProtectionRequestContent> CreateDummyRequest(
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_

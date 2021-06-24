@@ -27,7 +27,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/safe_browsing/content/password_protection/password_protection_test_util.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

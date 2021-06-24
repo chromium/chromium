@@ -15,7 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/page_info/page_info.h"
-#include "components/safe_browsing/content/password_protection/password_protection_test_util.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "content/public/test/browser_test.h"

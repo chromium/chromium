@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/password_protection/password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "content/public/browser/browser_thread.h"
 
 #include <stddef.h>
@@ -13,8 +13,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/zoom/zoom_controller.h"

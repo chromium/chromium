@@ -309,7 +309,7 @@ test("components_unittests") {
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.
       "//components/reporting/storage/resources:unit_tests",
-      "//components/safe_browsing/content/password_protection:password_protection_unittest",
+      "//components/safe_browsing/content/browser/password_protection:password_protection_unittest",
       "//components/safe_browsing/content/triggers:unit_tests",
       "//components/safe_browsing/content/web_ui:unit_tests",
       "//components/safe_browsing/core/browser:token_fetcher_unit_tests",

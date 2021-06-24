@@ -1,7 +1,7 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/safe_browsing/content/password_protection/password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 
 #include <memory>
 
@@ -24,11 +24,11 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-forward.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
-#include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
@@ -369,8 +369,7 @@ class PasswordProtectionServiceBaseTest
     safe_browsing::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */,
-        false /* restore_session*/);
+        false /* store_last_modified */, false /* restore_session*/);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     auto token_fetcher =
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();

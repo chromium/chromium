@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/password_protection/password_protection_test_util.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 
-#include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace safe_browsing {

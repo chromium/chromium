@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
 
-#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace safe_browsing {

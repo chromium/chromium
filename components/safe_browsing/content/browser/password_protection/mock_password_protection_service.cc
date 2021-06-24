@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/db/database_manager.h"

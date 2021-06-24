@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
 
 #include "base/macros.h"
-#include "components/safe_browsing/content/password_protection/password_protection_service.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace safe_browsing {
@@ -120,4 +120,4 @@ class MockPasswordProtectionService : public PasswordProtectionService {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_

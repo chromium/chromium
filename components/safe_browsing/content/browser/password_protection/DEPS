@@ -7,7 +7,6 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/url_formatter",
   "+components/zoom",
-  "+content/public/browser",
   "+content/public/test",
   "+net",
   "+services/network/public",
