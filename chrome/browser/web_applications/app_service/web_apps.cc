@@ -42,9 +42,4 @@ void WebApps::UninstallImpl(Profile* profile,
   }
 }
 
-apps::mojom::AppPtr WebApps::Convert(const WebApp* web_app,
-                                     apps::mojom::Readiness readiness) {
-  return publisher_helper().ConvertWebApp(web_app, readiness);
-}
-
 }  // namespace web_app

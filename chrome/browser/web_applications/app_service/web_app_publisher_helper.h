@@ -141,9 +141,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   bool IsPaused(const std::string& app_id);
 
-  // TODO(crbug.com/1194709): Inherit from AppRegistrarObserver, override.
-  void OnWebAppWillBeUninstalled_impl(const std::string& app_id);
-
   void LoadIcon(const std::string& app_id,
                 apps::mojom::IconKeyPtr icon_key,
                 apps::mojom::IconType icon_type,
@@ -219,6 +216,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 #endif
 
   // AppRegistrarObserver:
+  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppManifestUpdated(const AppId& app_id,
+                               base::StringPiece old_name) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
   void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                             bool is_locally_installed) override;

@@ -21,8 +21,6 @@ class Profile;
 
 namespace web_app {
 
-class WebApp;
-
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
  public:
@@ -63,10 +61,6 @@ class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
 
-  // AppRegistrarObserver:
-  void OnWebAppInstalled(const AppId& app_id) override;
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
-
   // ArcAppListPrefs::Observer overrides.
   void OnPackageInstalled(
       const arc::mojom::ArcPackageInfo& package_info) override;
@@ -82,10 +76,6 @@ class WebAppsChromeOs : public WebAppsBase, public ArcAppListPrefs::Observer {
       GetMenuModelCallback callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
-  apps::mojom::AppPtr Convert(const WebApp* web_app,
-                              apps::mojom::Readiness readiness) override;
-  void ConvertWebApps(apps::mojom::Readiness readiness,
-                      std::vector<apps::mojom::AppPtr>* apps_out);
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
 

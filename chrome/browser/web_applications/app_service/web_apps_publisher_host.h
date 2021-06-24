@@ -34,11 +34,10 @@ class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
 
-// This WebAppsPublisherHost observes AppRegistrar on Lacros, and calls
+// This WebAppsPublisherHost observes web app updates on Lacros, and calls
 // WebAppsCrosapi to inform the Ash browser of the current set of web apps.
 class WebAppsPublisherHost : public crosapi::mojom::AppController,
-                             public WebAppPublisherHelper::Delegate,
-                             public AppRegistrarObserver {
+                             public WebAppPublisherHelper::Delegate {
  public:
   using LoadIconCallback = WebAppPublisherHelper::LoadIconCallback;
 
@@ -112,17 +111,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
 
-  // AppRegistrarObserver:
-  void OnWebAppInstalled(const AppId& app_id) override;
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
-  // TODO(crbug.com/1194709): Add more overrides, guided by WebAppsChromeOs.
-
   const WebApp* GetWebApp(const AppId& app_id) const;
-  apps::mojom::AppPtr Convert(const WebApp* web_app,
-                              apps::mojom::Readiness readiness);
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
@@ -136,9 +125,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
-
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
 
   base::WeakPtrFactory<WebAppsPublisherHost> weak_ptr_factory_{this};
 };

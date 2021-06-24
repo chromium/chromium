@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -83,7 +84,6 @@ WebAppsBase::~WebAppsBase() = default;
 
 void WebAppsBase::Shutdown() {
   if (provider_) {
-    registrar_observation_.Reset();
     publisher_helper().Shutdown();
   }
 }
@@ -98,22 +98,6 @@ bool WebAppsBase::Accepts(const std::string& app_id) const {
   return WebAppPublisherHelper::Accepts(app_id);
 }
 
-void WebAppsBase::OnWebAppInstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (web_app && Accepts(app_id)) {
-    Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
-  }
-}
-
-void WebAppsBase::OnWebAppWillBeUninstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app || !Accepts(app_id)) {
-    return;
-  }
-
-  Publish(publisher_helper().ConvertUninstalledWebApp(web_app), subscribers_);
-}
-
 void WebAppsBase::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service) {
   DCHECK(profile_);
@@ -123,8 +107,6 @@ void WebAppsBase::Initialize(
 
   provider_ = WebAppProvider::Get(profile_);
   DCHECK(provider_);
-
-  registrar_observation_.Observe(&provider_->registrar());
 
   PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
@@ -221,18 +203,6 @@ void WebAppsBase::ModifyWebAppCapabilityAccess(
                          std::move(accessing_microphone));
 }
 
-void WebAppsBase::OnWebAppManifestUpdated(const AppId& app_id,
-                                          base::StringPiece old_name) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (web_app && Accepts(app_id)) {
-    Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
-  }
-}
-
-void WebAppsBase::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
-}
-
 void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
                                  std::vector<apps::mojom::AppPtr>* apps_out) {
   const WebAppRegistrar* registrar = GetRegistrar();
@@ -242,7 +212,8 @@ void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
 
   for (const WebApp& web_app : registrar->GetApps()) {
     if (Accepts(web_app.app_id())) {
-      apps_out->push_back(Convert(&web_app, readiness));
+      apps_out->push_back(
+          publisher_helper().ConvertWebApp(&web_app, readiness));
     }
   }
 }

@@ -306,23 +306,6 @@ void WebAppsChromeOs::SetWindowMode(const std::string& app_id,
   publisher_helper().SetWindowMode(app_id, window_mode);
 }
 
-void WebAppsChromeOs::OnWebAppInstalled(const AppId& app_id) {
-  provider()->registry_controller().SetAppIsDisabled(
-      app_id, publisher_helper().IsWebAppInDisabledList(app_id));
-  WebAppsBase::OnWebAppInstalled(app_id);
-}
-
-void WebAppsChromeOs::OnWebAppWillBeUninstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app || !Accepts(app_id)) {
-    return;
-  }
-
-  publisher_helper().OnWebAppWillBeUninstalled_impl(app_id);
-
-  WebAppsBase::OnWebAppWillBeUninstalled(app_id);
-}
-
 void WebAppsChromeOs::OnPackageInstalled(
     const arc::mojom::ArcPackageInfo& package_info) {
   ApplyChromeBadge(package_info.package_name);
@@ -345,15 +328,6 @@ void WebAppsChromeOs::OnPackageListInitialRefreshed() {
 
 void WebAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
-}
-
-apps::mojom::AppPtr WebAppsChromeOs::Convert(const WebApp* web_app,
-                                             apps::mojom::Readiness readiness) {
-  DCHECK(web_app->chromeos_data().has_value());
-  bool is_disabled = web_app->chromeos_data()->is_disabled;
-  return publisher_helper().ConvertWebApp(
-      web_app,
-      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
 }
 
 void WebAppsChromeOs::ApplyChromeBadge(const std::string& package_name) {

@@ -12,8 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -37,8 +35,7 @@ class WebAppRegistrar;
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsBase : public apps::PublisherBase,
                     public WebAppPublisherHelper::Delegate,
-                    public base::SupportsWeakPtr<WebAppsBase>,
-                    public AppRegistrarObserver {
+                    public base::SupportsWeakPtr<WebAppsBase> {
  public:
   WebAppsBase(const mojo::Remote<apps::mojom::AppService>& app_service,
               Profile* profile);
@@ -52,10 +49,6 @@ class WebAppsBase : public apps::PublisherBase,
   const WebApp* GetWebApp(const AppId& app_id) const;
 
   bool Accepts(const std::string& app_id) const;
-
-  // AppRegistrarObserver:
-  void OnWebAppInstalled(const AppId& app_id) override;
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
@@ -109,13 +102,6 @@ class WebAppsBase : public apps::PublisherBase,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
 
-  // AppRegistrarObserver:
-  void OnWebAppManifestUpdated(const AppId& app_id,
-                               base::StringPiece old_name) override;
-  void OnAppRegistrarDestroyed() override;
-
-  virtual apps::mojom::AppPtr Convert(const WebApp* web_app,
-                                      apps::mojom::Readiness readiness) = 0;
   void ConvertWebApps(apps::mojom::Readiness readiness,
                       std::vector<apps::mojom::AppPtr>* apps_out);
   void StartPublishingWebApps(
@@ -124,9 +110,6 @@ class WebAppsBase : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
-
-  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
 
   WebAppProvider* provider_ = nullptr;
 

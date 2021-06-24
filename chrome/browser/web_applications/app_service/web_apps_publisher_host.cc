@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -66,11 +67,9 @@ void WebAppsPublisherHost::Init() {
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebAppsPublisherHost::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-  registrar_observation_.Observe(&registrar());
 }
 
 void WebAppsPublisherHost::Shutdown() {
-  registrar_observation_.Reset();
   publisher_helper().Shutdown();
 }
 
@@ -84,13 +83,14 @@ void WebAppsPublisherHost::SetPublisherForTesting(
 }
 
 void WebAppsPublisherHost::OnReady() {
-  if (!remote_publisher_ || !registrar_observation_.IsObserving()) {
+  if (!remote_publisher_) {
     return;
   }
 
   std::vector<apps::mojom::AppPtr> apps;
   for (const WebApp& web_app : registrar().GetApps()) {
-    apps.push_back(Convert(&web_app, apps::mojom::Readiness::kReady));
+    apps.push_back(publisher_helper().ConvertWebApp(
+        &web_app, apps::mojom::Readiness::kReady));
   }
   remote_publisher_->OnApps(std::move(apps));
 }
@@ -238,55 +238,8 @@ void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
   std::move(callback).Run(std::move(menu_items));
 }
 
-void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  PublishWebApp(Convert(web_app, apps::mojom::Readiness::kReady));
-}
-
-void WebAppsPublisherHost::OnWebAppManifestUpdated(const AppId& app_id,
-                                                   base::StringPiece old_name) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  PublishWebApp(Convert(web_app, apps::mojom::Readiness::kReady));
-}
-
-void WebAppsPublisherHost::OnWebAppWillBeUninstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  // TODO(crbug.com/1194709): Keep consistent behavior with WebAppsChromeOs:
-  // remove notifications for app.
-
-  publisher_helper().OnWebAppWillBeUninstalled_impl(app_id);
-
-  PublishWebApp(publisher_helper().ConvertUninstalledWebApp(web_app));
-}
-
-void WebAppsPublisherHost::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
-}
-
 const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
-}
-
-apps::mojom::AppPtr WebAppsPublisherHost::Convert(
-    const WebApp* web_app,
-    apps::mojom::Readiness readiness) {
-  DCHECK(web_app->chromeos_data().has_value());
-  apps::mojom::AppPtr app =
-      publisher_helper().ConvertWebApp(web_app, readiness);
-  app->icon_key = publisher_helper().MakeIconKey(web_app);
-  return app;
 }
 
 void WebAppsPublisherHost::PublishWebApps(

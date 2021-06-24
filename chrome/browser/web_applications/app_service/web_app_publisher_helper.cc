@@ -238,6 +238,14 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app,
     apps::mojom::Readiness readiness) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(web_app->chromeos_data().has_value());
+  bool is_disabled = web_app->chromeos_data()->is_disabled;
+  if (is_disabled) {
+    readiness = apps::mojom::Readiness::kDisabledByPolicy;
+  }
+#endif
+
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       app_type(), web_app->app_id(), readiness, web_app->name(),
       GetHighestPriorityInstallSource(web_app));
@@ -270,11 +278,8 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
                        : apps::mojom::OptionalBool::kFalse;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (web_app->chromeos_data().has_value()) {
-    bool is_disabled = web_app->chromeos_data()->is_disabled;
-    if (is_disabled) {
-      UpdateAppDisabledMode(app);
-    }
+  if (is_disabled) {
+    UpdateAppDisabledMode(app);
   }
 
   apps::mojom::OptionalBool has_notification =
@@ -398,26 +403,6 @@ void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
 
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
   return paused_apps_.IsPaused(app_id);
-}
-
-void WebAppPublisherHelper::OnWebAppWillBeUninstalled_impl(
-    const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  app_notifications_.RemoveNotificationsForApp(app_id);
-#endif
-
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app || !Accepts(app_id)) {
-    return;
-  }
-
-  paused_apps_.MaybeRemoveApp(app_id);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto result = media_requests_.RemoveRequests(app_id);
-  delegate_->ModifyWebAppCapabilityAccess(app_id, result.camera,
-                                          result.microphone);
-#endif
 }
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
@@ -693,6 +678,49 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
+}
+
+void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1194709): Consider moving this into install finalizer.
+  provider_->registry_controller().SetAppIsDisabled(
+      app_id, IsWebAppInDisabledList(app_id));
+#endif
+
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app && Accepts(app_id)) {
+    delegate_->PublishWebApp(
+        ConvertWebApp(web_app, apps::mojom::Readiness::kReady));
+  }
+}
+
+void WebAppPublisherHelper::OnWebAppManifestUpdated(
+    const AppId& app_id,
+    base::StringPiece old_name) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app && Accepts(app_id)) {
+    delegate_->PublishWebApp(
+        ConvertWebApp(web_app, apps::mojom::Readiness::kReady));
+  }
+}
+
+void WebAppPublisherHelper::OnWebAppWillBeUninstalled(const AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app || !Accepts(app_id)) {
+    return;
+  }
+
+  paused_apps_.MaybeRemoveApp(app_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  app_notifications_.RemoveNotificationsForApp(app_id);
+
+  auto result = media_requests_.RemoveRequests(app_id);
+  delegate_->ModifyWebAppCapabilityAccess(app_id, result.camera,
+                                          result.microphone);
+#endif
+
+  delegate_->PublishWebApp(ConvertUninstalledWebApp(web_app));
 }
 
 void WebAppPublisherHelper::OnAppRegistrarDestroyed() {

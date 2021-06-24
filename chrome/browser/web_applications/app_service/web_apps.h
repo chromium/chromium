@@ -18,8 +18,6 @@ class Profile;
 
 namespace web_app {
 
-class WebApp;
-
 // An app publisher (in the App Service sense) of Web Apps.
 class WebApps : public WebAppsBase {
  public:
@@ -34,11 +32,6 @@ class WebApps : public WebAppsBase {
                             const std::string& app_id,
                             apps::mojom::UninstallSource uninstall_source,
                             gfx::NativeWindow parent_window);
-
- private:
-  // WebAppsBase overrides.
-  apps::mojom::AppPtr Convert(const WebApp* web_app,
-                              apps::mojom::Readiness readiness) override;
 };
 
 }  // namespace web_app
