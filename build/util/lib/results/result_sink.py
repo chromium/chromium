@@ -8,19 +8,19 @@ import os
 
 import six
 
-from pylib.base import base_test_result
 import requests  # pylint: disable=import-error
+from . import result_types
 
-# Maps base_test_results to the luci test-result.proto.
+# Maps result_types to the luci test-result.proto.
 # https://godoc.org/go.chromium.org/luci/resultdb/proto/v1#TestStatus
 RESULT_MAP = {
-    base_test_result.ResultType.UNKNOWN: 'ABORT',
-    base_test_result.ResultType.PASS: 'PASS',
-    base_test_result.ResultType.FAIL: 'FAIL',
-    base_test_result.ResultType.CRASH: 'CRASH',
-    base_test_result.ResultType.TIMEOUT: 'ABORT',
-    base_test_result.ResultType.SKIP: 'SKIP',
-    base_test_result.ResultType.NOTRUN: 'SKIP',
+    result_types.UNKNOWN: 'ABORT',
+    result_types.PASS: 'PASS',
+    result_types.FAIL: 'FAIL',
+    result_types.CRASH: 'CRASH',
+    result_types.TIMEOUT: 'ABORT',
+    result_types.SKIP: 'SKIP',
+    result_types.NOTRUN: 'SKIP',
 }
 
 
@@ -46,6 +46,7 @@ class ResultSinkClient(object):
   This assumes that the rdb stream has been called already and that the
   server is listening.
   """
+
   def __init__(self, context):
     base_url = 'http://%s/prpc/luci.resultsink.v1.Sink' % context['address']
     self.test_results_url = base_url + '/ReportTestResults'
@@ -76,8 +77,7 @@ class ResultSinkClient(object):
       N/A
     """
     assert status in RESULT_MAP
-    expected = status in (base_test_result.ResultType.PASS,
-                          base_test_result.ResultType.SKIP)
+    expected = status in (result_types.PASS, result_types.SKIP)
     result_db_status = RESULT_MAP[status]
 
     tr = {

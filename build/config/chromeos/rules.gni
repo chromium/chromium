@@ -334,6 +334,7 @@ template("generate_runner_script") {
       "//build/android/pylib/base/",
       "//build/android/pylib/results/",
       "//build/chromeos/",
+      "//build/util/",
 
       # Needed for various SDK components used below.
       "//build/cros_cache/chrome-sdk/misc/",

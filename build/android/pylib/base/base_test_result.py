@@ -8,29 +8,21 @@ from __future__ import absolute_import
 import threading
 import six
 
+from lib.results import result_types  # pylint: disable=import-error
+
 
 class ResultType(object):
-  """Class enumerating test types."""
-  # The test passed.
-  PASS = 'SUCCESS'
+  """Class enumerating test types.
 
-  # The test was intentionally skipped.
-  SKIP = 'SKIPPED'
-
-  # The test failed.
-  FAIL = 'FAILURE'
-
-  # The test caused the containing process to crash.
-  CRASH = 'CRASH'
-
-  # The test timed out.
-  TIMEOUT = 'TIMEOUT'
-
-  # The test ran, but we couldn't determine what happened.
-  UNKNOWN = 'UNKNOWN'
-
-  # The test did not run.
-  NOTRUN = 'NOTRUN'
+  Wraps the results defined in //build/util/lib/results/.
+  """
+  PASS = result_types.PASS
+  SKIP = result_types.SKIP
+  FAIL = result_types.FAIL
+  CRASH = result_types.CRASH
+  TIMEOUT = result_types.TIMEOUT
+  UNKNOWN = result_types.UNKNOWN
+  NOTRUN = result_types.NOTRUN
 
   @staticmethod
   def GetTypes():

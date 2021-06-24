@@ -133,8 +133,12 @@
 ../skia_gold_common/skia_gold_properties.py
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
+../util/lib/__init__.py
 ../util/lib/common/chrome_test_server_spawner.py
 ../util/lib/common/unittest_util.py
+../util/lib/results/__init__.py
+../util/lib/results/result_sink.py
+../util/lib/results/result_types.py
 convert_dex_profile.py
 devil_chromium.py
 gyp/dex.py
@@ -151,7 +155,6 @@ pylib/base/environment.py
 pylib/base/environment_factory.py
 pylib/base/output_manager.py
 pylib/base/output_manager_factory.py
-pylib/base/result_sink.py
 pylib/base/test_collection.py
 pylib/base/test_exception.py
 pylib/base/test_instance.py
