@@ -1,5 +1,5 @@
 ## Permissions Policy Guide (Previously Feature Policy)
-Permissions policy is the new name for feature policy with a new HTTP header which uses [structured header](https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html) syntax. Code currently under feature_policy directory in chromium repository has not been renamed yet.
+Permissions policy is the new name for feature policy with a new HTTP header which uses [structured header](https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html) syntax.
 
 ### How to add a new feature to permissions policy
 
@@ -49,7 +49,7 @@ policy is undetermined, consider shipping the feature behind a runtime-enabled f
 
 ##### Define new feature
 1. Permissions policy features are defined in
-`third_party/blink/renderer/core/feature_policy/feature_policy_features.json5`. Add the new feature,
+`third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5`. Add the new feature,
 placing any runtime-enabled feature or origin trial dependencies in its "depends_on" field as
 described in the file's comments.  This list is used to generate `permissions_policy_helper.cc`.
 
@@ -76,7 +76,7 @@ See: https://github.com/w3c/webappsec-permissions-policy/blob/main/features.md
 
 ##### Write web-platform-tests
 To test the new feature with permissions policy, refer to
-`third_party/blink/web_tests/external/wpt/feature-policy/README.md` for
+`third_party/blink/web_tests/external/wpt/permissions-policy/README.md` for
 instructions on how to use the permissions policy test framework.
 
 ## Document Policy Guide
@@ -102,12 +102,12 @@ policy is undetermined, consider shipping the feature behind a runtime-enabled f
 
 ##### Define new feature
 1. Document policy features are defined in
-`third_party/blink/renderer/core/feature_policy/document_policy_features.json5`. Add the new feature,
+`third_party/blink/renderer/core/permissions_policy/document_policy_features.json5`. Add the new feature,
 placing any runtime-enabled feature or origin trial dependencies in its "depends_on" field as
 described in the file's comments.
 
 2. Append the new feature enum with a brief description as well in
-`third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom`
+`third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom`
 
 ##### Integrate the feature behaviour with document policy
 The most common way to check if features are enabled is `ExecutionContext::IsFeatureEnabled`.
