@@ -46,23 +46,66 @@ grit("resources") {
   ]
 }
 
+# Convenience template for WebUIs using generate_grd.
+# TODO(calamity): Further deduplicate with non-generated grit targets.
+template("chromeos_generated_grit") {
+  grit(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "source",
+                           ])
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    outputs = [
+      "chromeos_$target_name.pak",
+      "grit/chromeos_$target_name.h",
+      "grit/chromeos_${target_name}_map.cc",
+      "grit/chromeos_${target_name}_map.h",
+    ]
+    output_dir = "$root_gen_dir/chromeos"
+  }
+}
+
 # Resources used by chrome://camera-app.
-grit("camera_app_resources") {
-  enable_input_discovery_for_gn_analyze = false
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-
+chromeos_generated_grit("camera_app_resources") {
+  source = "$root_gen_dir/chromeos/components/camera_app_ui/chromeos_camera_app_resources.grd"
   deps = [ "//chromeos/components/camera_app_ui:build_grd" ]
+}
 
-  camera_app_gen_dir = "$root_gen_dir/chromeos/components/camera_app_ui"
-  source = "$camera_app_gen_dir/chromeos_camera_app_resources.grd"
-  outputs = [
-    "grit/chromeos_camera_app_resources.h",
-    "grit/chromeos_camera_app_resources_map.cc",
-    "grit/chromeos_camera_app_resources_map.h",
-    "chromeos_camera_app_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
+# Resources used by chrome://eche-app
+chromeos_generated_grit("eche_app_resources") {
+  source = "$root_gen_dir/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd"
+  deps = [ "//chromeos/components/eche_app_ui:build_grd" ]
+}
+
+# Resources used by chrome://personalization SWA.
+chromeos_generated_grit("personalization_app_resources") {
+  source = "$root_gen_dir/chromeos/components/personalization_app/resources/chromeos_personalization_app_resources.grd"
+  deps = [ "//chromeos/components/personalization_app/resources:build_grd" ]
+}
+
+if (!is_official_build) {
+  # Resources used by chrome://sample-system-web-app
+  chromeos_generated_grit("sample_system_web_app_resources") {
+    source = "$root_gen_dir/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_resources.grd"
+    deps =
+        [ "//chromeos/components/sample_system_web_app_ui:build_trusted_grd" ]
+  }
+
+  # Resources used by chrome-untrusted://sample-system-web-app
+  chromeos_generated_grit("sample_system_web_app_untrusted_resources") {
+    source = "$root_gen_dir/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_untrusted_resources.grd"
+    deps =
+        [ "//chromeos/components/sample_system_web_app_ui:build_untrusted_grd" ]
+  }
+
+  # Resources used by chrome://demo-mode-app
+  chromeos_generated_grit("demo_mode_app_resources") {
+    source = "$root_gen_dir/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd"
+    deps = [ "//chromeos/components/demo_mode_app_ui:build_grd" ]
+  }
 }
 
 # Resources used by chrome://connectivity-diagnostics
@@ -143,61 +186,6 @@ grit("help_app_kids_magazine_bundle_resources") {
     "chromeos_help_app_kids_magazine_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-}
-
-if (!is_official_build) {
-  # Resources used by chrome://sample-system-web-app
-  grit("sample_system_web_app_resources") {
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    sample_system_web_app_gen_dir =
-        "$root_gen_dir/chromeos/components/sample_system_web_app_ui"
-    source = "$sample_system_web_app_gen_dir/chromeos_sample_system_web_app_resources.grd"
-    deps =
-        [ "//chromeos/components/sample_system_web_app_ui:build_trusted_grd" ]
-
-    outputs = [
-      "grit/chromeos_sample_system_web_app_resources.h",
-      "grit/chromeos_sample_system_web_app_resources_map.cc",
-      "grit/chromeos_sample_system_web_app_resources_map.h",
-      "chromeos_sample_system_web_app_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chromeos"
-  }
-
-  # Resources used by chrome-untrusted://sample-system-web-app
-  grit("sample_system_web_app_untrusted_resources") {
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    sample_system_web_app_gen_dir =
-        "$root_gen_dir/chromeos/components/sample_system_web_app_ui"
-    source = "$sample_system_web_app_gen_dir/chromeos_sample_system_web_app_untrusted_resources.grd"
-    deps =
-        [ "//chromeos/components/sample_system_web_app_ui:build_untrusted_grd" ]
-
-    outputs = [
-      "grit/chromeos_sample_system_web_app_untrusted_resources.h",
-      "grit/chromeos_sample_system_web_app_untrusted_resources_map.cc",
-      "grit/chromeos_sample_system_web_app_untrusted_resources_map.h",
-      "chromeos_sample_system_web_app_untrusted_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chromeos"
-  }
-
-  # Resources used by chrome://demo-mode-app
-  grit("demo_mode_app_resources") {
-    enable_input_discovery_for_gn_analyze = false
-    demo_mode_app_gen_dir = "$root_gen_dir/chromeos/components/demo_mode_app_ui"
-    source = "$demo_mode_app_gen_dir/chromeos_demo_mode_app_resources.grd"
-    deps = [ "//chromeos/components/demo_mode_app_ui:build_grd" ]
-    outputs = [
-      "grit/chromeos_demo_mode_app_resources.h",
-      "grit/chromeos_demo_mode_app_resources_map.cc",
-      "grit/chromeos_demo_mode_app_resources_map.h",
-      "chromeos_demo_mode_app_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chromeos"
-  }
 }
 
 # Resources used by chrome://telemetry-extension
@@ -295,23 +283,6 @@ grit("diagnostics_app_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-# Resources used by chrome://eche-app
-grit("eche_app_resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  eche_app_gen_dir = "$root_gen_dir/chromeos/components/eche_app_ui"
-  source = "$eche_app_gen_dir/chromeos_eche_app_resources.grd"
-  deps = [ "//chromeos/components/eche_app_ui:build_grd" ]
-
-  outputs = [
-    "grit/chromeos_eche_app_resources.h",
-    "grit/chromeos_eche_app_resources_map.cc",
-    "grit/chromeos_eche_app_resources_map.h",
-    "chromeos_eche_app_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
-}
-
 # Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
 grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.
@@ -330,25 +301,6 @@ grit("eche_bundle_resources") {
     "grit/chromeos_eche_bundle_resources_map.cc",
     "grit/chromeos_eche_bundle_resources_map.h",
     "chromeos_eche_bundle_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
-}
-
-# Resources used by chrome://personalization SWA.
-grit("personalization_app_resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  personalization_app_gen_dir =
-      "$root_gen_dir/chromeos/components/personalization_app/resources"
-  source =
-      "$personalization_app_gen_dir/chromeos_personalization_app_resources.grd"
-  deps = [ "//chromeos/components/personalization_app/resources:build_grd" ]
-
-  outputs = [
-    "grit/chromeos_personalization_app_resources.h",
-    "grit/chromeos_personalization_app_resources_map.cc",
-    "grit/chromeos_personalization_app_resources_map.h",
-    "chromeos_personalization_app_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
 }
