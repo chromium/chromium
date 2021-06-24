@@ -215,9 +215,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
             mParentId = criticalPersistedTabDataProto.getParentId();
             mRootId = criticalPersistedTabDataProto.getRootId();
             mTimestampMillis = criticalPersistedTabDataProto.getTimestampMillis();
-            mWebContentsState =
-                    new WebContentsState(criticalPersistedTabDataProto.getWebContentsStateBytes()
-                                                 .asReadOnlyByteBuffer());
+            ByteString webContentsStateByteString =
+                    criticalPersistedTabDataProto.getWebContentsStateBytes();
+            mWebContentsState = new WebContentsState(
+                    ByteBuffer.allocateDirect(webContentsStateByteString.size()));
+            webContentsStateByteString.copyTo(mWebContentsState.buffer());
             mWebContentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             mUrl = mWebContentsState.getVirtualUrlFromState() == null
                     ? GURL.emptyGURL()
