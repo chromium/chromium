@@ -13,7 +13,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {util} from '../../../common/js/util.js';
 import {DialogType} from '../dialog_type.m.js';
 import {FileListModel} from '../file_list_model.m.js';
-import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
 import {FileGrid} from './file_grid.js';
 import {FileTable} from './file_table.js';

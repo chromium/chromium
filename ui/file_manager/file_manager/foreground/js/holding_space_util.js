@@ -6,13 +6,11 @@
  * @fileoverview Utility methods for the holding space feature.
  */
 
-// clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {xfm} from '../../common/js/xfm.js';
-// clang-format on
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 
-/* #export */ class HoldingSpaceUtil {
+export class HoldingSpaceUtil {
   /**
    * Returns the key in localStorage to store the time (in milliseconds) of the
    * first pin to holding space.

@@ -17,7 +17,7 @@ import {str, util} from '../../../common/js/util.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';

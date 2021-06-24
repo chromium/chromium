@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FileTransferController} from './file_transfer_controller.m.js';
+// #import {FileTransferController} from './file_transfer_controller.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.js';
 // #import {Crostini} from '../../externs/background/crostini.js';
 // #import {NamingController} from './naming_controller.m.js';
-// #import {MetadataUpdateController} from './metadata_update_controller.m.js';
+// #import {MetadataUpdateController} from './metadata_update_controller.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';

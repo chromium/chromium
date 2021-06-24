@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {AllowedPaths} from '../../common/js/volume_manager_types.js';
-// #import {DialogType} from './dialog_type.m.js';
-// clang-format on
+import {AllowedPaths} from '../../common/js/volume_manager_types.js';
+import {DialogType} from './dialog_type.m.js';
 
-/* #export */ class LaunchParam {
+export class LaunchParam {
   /**
    * @param {!Object} unformatted Unformatted option.
    */

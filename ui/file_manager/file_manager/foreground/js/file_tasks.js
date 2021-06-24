@@ -18,7 +18,7 @@
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.js';
-// #import {FileTransferController} from './file_transfer_controller.m.js';
+// #import {FileTransferController} from './file_transfer_controller.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {FileType} from '../../common/js/file_type.js';

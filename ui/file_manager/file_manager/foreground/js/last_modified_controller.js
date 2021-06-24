@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {FileTable} from './ui/file_table.js';
-// #import {util} from '../../common/js/util.js';
+import {util} from '../../common/js/util.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {FileTable} from './ui/file_table.js';
 
 /**
  * Controls last modified column in the file table.
  */
-/* #export */ class LastModifiedController {
+export class LastModifiedController {
   /**
    * @param {!FileTable} fileTable File table UI.
    * @param {!DirectoryModel} directoryModel Directory model.

@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.js';
-// #import {ListContainer} from './ui/list_container.js';
-// #import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.m.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {DragSelector} from './ui/drag_selector.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
-// #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
-// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.js';
-// #import {FileType} from '../../common/js/file_type.js';
-// #import {util, strf} from '../../common/js/util.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.m.js';
+import {FileSelectionHandler} from './file_selection.m.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {DragSelector} from './ui/drag_selector.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * Global (placed in the window object) variable name to hold internal
@@ -40,7 +40,7 @@ const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
  */
 let FileAsyncData;
 
-/* #export */ class FileTransferController {
+export class FileTransferController {
   /**
    * @param {!Document} doc Owning document.
    * @param {!ListContainer} listContainer List container.
@@ -148,17 +148,17 @@ let FileAsyncData;
     this.sourceNotFoundErrorCount_ = 0;
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
-    this.copyCommand_ = /** @type {!cr.ui.Command} */ (
+    this.copyCommand_ = /** @type {!Command} */ (
         queryRequiredElement('command#copy', assert(this.document_.body)));
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
-    this.cutCommand_ = /** @type {!cr.ui.Command} */ (
+    this.cutCommand_ = /** @type {!Command} */ (
         queryRequiredElement('command#cut', assert(this.document_.body)));
 
     /**
@@ -203,7 +203,7 @@ let FileAsyncData;
   }
 
   /**
-   * @param {!cr.ui.List} list Items in the list will be draggable.
+   * @param {!List} list Items in the list will be draggable.
    * @private
    */
   attachDragSource_(list) {
@@ -218,7 +218,7 @@ let FileAsyncData;
   }
 
   /**
-   * @param {!cr.ui.List} list List itself and its directory items will could
+   * @param {!List} list List itself and its directory items will could
    *                          be drop target.
    * @param {boolean=} opt_onlyIntoDirectories If true only directory list
    *     items could be drop targets. Otherwise any other place of the list
@@ -644,7 +644,7 @@ let FileAsyncData;
   }
 
   /**
-   * @param {!cr.ui.List} list Drop target list
+   * @param {!List} list Drop target list
    * @param {!Event} event A dragstart event of DOM.
    * @private
    */
@@ -711,7 +711,7 @@ let FileAsyncData;
   }
 
   /**
-   * @param {!cr.ui.List} list Drop target list.
+   * @param {!List} list Drop target list.
    * @param {!Event} event A dragend event of DOM.
    * @private
    */
@@ -729,7 +729,7 @@ let FileAsyncData;
   /**
    * @param {boolean} onlyIntoDirectories True if the drag is only into
    *     directories.
-   * @param {(!cr.ui.List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree)} list Drop target list.
    * @param {Event} event A dragover event of DOM.
    * @private
    */
@@ -747,7 +747,7 @@ let FileAsyncData;
   }
 
   /**
-   * @param {(!cr.ui.List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree)} list Drop target list.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
@@ -786,7 +786,7 @@ let FileAsyncData;
 
     this.lastEnteredTarget_ = event.target;
     let item = event.target;
-    while (item && !(item instanceof cr.ui.TreeItem)) {
+    while (item && !(item instanceof TreeItem)) {
       item = item.parentNode;
     }
 

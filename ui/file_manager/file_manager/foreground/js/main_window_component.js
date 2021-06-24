@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TaskController} from './task_controller.m.js';
-// #import {NamingController} from './naming_controller.m.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {FileFilter} from './directory_contents.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {str, util} from '../../common/js/util.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileTapHandler} from './ui/file_tap_handler.js';
-// #import {ListContainer} from './ui/list_container.js';
-// #import {AppStateController} from './app_state_controller.m.js';
-// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
-// clang-format on
+import {metrics} from '../../common/js/metrics.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {AppStateController} from './app_state_controller.m.js';
+import {DialogType} from './dialog_type.m.js';
+import {FileFilter} from './directory_contents.m.js';
+import {DirectoryModel} from './directory_model.m.js';
+import {FileSelectionHandler} from './file_selection.m.js';
+import {NamingController} from './naming_controller.m.js';
+import {TaskController} from './task_controller.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {FileTapHandler} from './ui/file_tap_handler.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * Component for the main window.
@@ -29,7 +28,7 @@
  * The class also observes model/browser API's event to update the misc
  * components.
  */
-/* #export */ class MainWindowComponent {
+export class MainWindowComponent {
   /**
    * @param {DialogType} dialogType
    * @param {!FileManagerUI} ui

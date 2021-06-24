@@ -12,7 +12,7 @@
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.js';
-// #import {FileWatcher} from './file_watcher.m.js';
+// #import {FileWatcher} from './file_watcher.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
 // #import {constants} from './constants.m.js';

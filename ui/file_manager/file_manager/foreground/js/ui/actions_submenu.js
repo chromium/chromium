@@ -8,7 +8,7 @@ import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {util} from '../../../common/js/util.js';
-import {ActionsModel} from '../actions_model.m.js';
+import {ActionsModel} from '../actions_model.js';
 
 export class ActionsSubmenu {
   /** @param {!Menu} menu */

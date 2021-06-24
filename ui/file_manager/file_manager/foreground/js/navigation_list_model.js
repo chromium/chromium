@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
+// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {AndroidAppListModel} from './android_app_list_model.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';

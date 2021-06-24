@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LaunchParam} from './launch_param.m.js';
+// #import {LaunchParam} from './launch_param.js';
 // #import {NamingController} from './naming_controller.m.js';
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';

@@ -8,7 +8,7 @@
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {FilesQuickView} from '../elements/files_quick_view.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {MetadataBoxController} from './metadata_box_controller.m.js';
+// #import {MetadataBoxController} from './metadata_box_controller.js';
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {TaskController} from './task_controller.m.js';
 // #import {QuickViewModel} from './quick_view_model.m.js';

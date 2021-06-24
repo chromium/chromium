@@ -14,7 +14,7 @@ import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {constants} from '../constants.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
-import {HoldingSpaceUtil} from '../holding_space_util.m.js';
+import {HoldingSpaceUtil} from '../holding_space_util.js';
 
 
 /**

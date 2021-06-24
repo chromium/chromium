@@ -40,8 +40,7 @@ class FileManagerApp {
   /**
    * Start-up: load the page scripts in order: fakes first (to provide chrome.*
    * API that the files app foreground scripts expect for initial render), then
-   * the files app foreground scripts. Note main_scripts.js should have 'defer'
-   * true per crbug.com/496525.
+   * the files app foreground scripts.
    */
   async run() {
     await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
@@ -55,7 +54,7 @@ class FileManagerApp {
     // Avoid double loading the LoadTimeData strings.
     window.loadTimeData.data_ = null;
 
-    await new ScriptLoader('foreground/js/main.m.js', {type: 'module'}).load();
+    await new ScriptLoader('foreground/js/main.js', {type: 'module'}).load();
 
     // Restore the window.cr.webUI* objects.
     window.cr.webUIResponse = origWebUIResponse;

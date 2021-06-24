@@ -2,32 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-// clang-format off
-// #import {importer} from '../../common/js/importer_common.js';
-// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {util, strf, str} from '../../common/js/util.js';
-// #import {queryRequiredElement, getRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {importer} from '../../common/js/importer_common.js';
+import {metrics} from '../../common/js/metrics.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
+import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
-
-// Namespace
-// eslint-disable-next-line
-/* #ignore */ var importer = importer || {};
+import {FileSelectionHandler} from './file_selection.m.js';
 
 /** @private @enum {string} */
 importer.ActivityState = {
@@ -670,7 +660,7 @@ importer.RuntimeCommandWidget = class {
     // Use a timeout of 400 ms.
     window.setTimeout(() => {
       if (!fired) {
-        cr.dispatchSimpleEvent(element, 'transitionend', true);
+        dispatchSimpleEvent(element, 'transitionend', true);
       }
     }, timeout);
   }
@@ -1326,5 +1316,4 @@ importer.RuntimeControllerEnvironment = class {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {importer};
+export {importer};

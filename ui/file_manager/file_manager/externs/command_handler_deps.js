@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionsController} from '../foreground/js/actions_controller.m.js';
+import {ActionsController} from '../foreground/js/actions_controller.js';
 import {DialogType} from '../foreground/js/dialog_type.m.js';
 import {FileFilter} from '../foreground/js/directory_contents.m.js';
 import {DirectoryModel} from '../foreground/js/directory_model.m.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.m.js';
 import {FileSelection, FileSelectionHandler} from '../foreground/js/file_selection.m.js';
-import {FileTransferController} from '../foreground/js/file_transfer_controller.m.js';
+import {FileTransferController} from '../foreground/js/file_transfer_controller.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {NamingController} from '../foreground/js/naming_controller.m.js';
 import {ProvidersModel} from '../foreground/js/providers_model.m.js';

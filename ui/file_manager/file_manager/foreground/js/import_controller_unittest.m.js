@@ -16,7 +16,7 @@ import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js'
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {importer} from './import_controller.m.js';
+import {importer} from './import_controller.js';
 
 /** @const {!Event} */
 const EMPTY_EVENT = new Event('directory-changed');

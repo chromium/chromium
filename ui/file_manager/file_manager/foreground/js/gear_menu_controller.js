@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProvidersModel} from './providers_model.m.js';
-// #import {CommandHandler} from './file_manager_commands.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {ProvidersMenu} from './ui/providers_menu.js';
-// #import {GearMenu} from './ui/gear_menu.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
-// #import {str, util} from '../../common/js/util.js';
-// clang-format on
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {CommandHandler} from './file_manager_commands.m.js';
+import {ProvidersModel} from './providers_model.m.js';
+import {GearMenu} from './ui/gear_menu.js';
+import {MultiMenuButton} from './ui/multi_menu_button.js';
+import {ProvidersMenu} from './ui/providers_menu.js';
 
 
-/* #export */ class GearMenuController {
+export class GearMenuController {
   /**
-   * @param {!cr.ui.MultiMenuButton} gearButton
+   * @param {!MultiMenuButton} gearButton
    * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!GearMenu} gearMenu
    * @param {!ProvidersMenu} providersMenu
@@ -28,7 +27,7 @@
   constructor(
       gearButton, toggleRipple, gearMenu, providersMenu, directoryModel,
       commandHandler, providersModel) {
-    /** @private @const {!cr.ui.MultiMenuButton} */
+    /** @private @const {!MultiMenuButton} */
     this.gearButton_ = gearButton;
 
     /** @private @const {!FilesToggleRippleElement} */

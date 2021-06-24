@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-// #import {util} from '../../common/js/util.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {AsyncUtil} from '../../common/js/async_util.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {xfm} from '../../common/js/xfm.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 
 /**
  * The drive mount path used in the xfm.storage. It must be '/drive'.
@@ -19,11 +18,11 @@
 const STORED_DRIVE_MOUNT_PATH = '/drive';
 
 /**
- * Model for the folder shortcuts. This object is cr.ui.ArrayDataModel-like
+ * Model for the folder shortcuts. This object is ArrayDataModel-like
  * object with additional methods for the folder shortcut feature.
  * This uses xfm.storage as backend. Items are always sorted by URL.
  */
-/* #export */ class FolderShortcutsDataModel extends cr.EventTarget {
+export class FolderShortcutsDataModel extends EventTarget {
   /**
    * @param {!FilteredVolumeManager} volumeManager Volume manager instance.
    */
@@ -471,7 +470,7 @@ const STORED_DRIVE_MOUNT_PATH = '/drive';
   }
 
   /**
-   * Fires a 'permuted' event, which is compatible with cr.ui.ArrayDataModel.
+   * Fires a 'permuted' event, which is compatible with ArrayDataModel.
    * @param {Array<number>} permutation Permutation array.
    */
   firePermutedEvent_(permutation) {
