@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -685,6 +686,45 @@ TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
   ASSERT_FALSE(app_list_bubble_presenter->IsShowing());
   // Test that only one show was recorded.
   histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
+}
+
+using AppListAppCountMetricTest = AshTestBase;
+
+// Verify that the number of items in the app list are recorded correctly.
+TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
+  base::HistogramTester histogram;
+  histogram.ExpectTotalCount("Apps.AppList.NumberOfApps", 0);
+  histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 0);
+
+  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+
+  // Add 5 items to the app list.
+  for (int i = 0; i < 5; i++) {
+    model->AddItem(
+        std::make_unique<AppListItem>(base::StringPrintf("app_id_%d", i)));
+  }
+
+  // Check that 5 items are recorded as being in the app list.
+  RecordPeriodicAppListMetrics();
+  histogram.ExpectBucketCount("Apps.AppList.NumberOfApps", 5, 1);
+  histogram.ExpectBucketCount("Apps.AppList.NumberOfRootLevelItems", 5, 1);
+  histogram.ExpectTotalCount("Apps.AppList.NumberOfApps", 1);
+  histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 1);
+
+  // Create a folder and add 3 items to it.
+  const std::string folder_id = base::StringPrintf("folder_id");
+  auto folder = std::make_unique<AppListFolderItem>(folder_id);
+  model->AddItem(std::move(folder));
+  for (int i = 0; i < 3; i++) {
+    auto item =
+        std::make_unique<AppListItem>(base::StringPrintf("id_in_folder_%d", i));
+    model->AddItemToFolder(std::move(item), folder_id);
+  }
+
+  // Check that the folder and its items are recorded in the metrics.
+  RecordPeriodicAppListMetrics();
+  histogram.ExpectBucketCount("Apps.AppList.NumberOfApps", 8, 1);
+  histogram.ExpectBucketCount("Apps.AppList.NumberOfRootLevelItems", 6, 1);
 }
 
 }  // namespace ash

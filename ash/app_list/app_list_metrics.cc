@@ -7,11 +7,16 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/model/app_list_folder_item.h"
+#include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -189,6 +194,30 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
                                   base::TimeDelta time) {
   base::UmaHistogramMediumTimes(
       kAppListOpenTimePrefix + GetAppListOpenMethod(source), time);
+}
+
+void RecordPeriodicAppListMetrics() {
+  int number_of_apps_in_launcher = 0;
+  int number_of_root_level_items = 0;
+
+  AppListItemList* item_list =
+      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  for (size_t i = 0; i < item_list->item_count(); ++i) {
+    AppListItem* item = item_list->item_at(i);
+    if (item->GetItemType() == AppListFolderItem::kItemType) {
+      AppListFolderItem* folder = static_cast<AppListFolderItem*>(item);
+      number_of_apps_in_launcher += folder->item_list()->item_count();
+      number_of_root_level_items++;
+    } else if (!item->is_page_break()) {
+      number_of_apps_in_launcher++;
+      number_of_root_level_items++;
+    }
+  }
+
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfApps",
+                           number_of_apps_in_launcher);
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfRootLevelItems",
+                           number_of_root_level_items);
 }
 
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,

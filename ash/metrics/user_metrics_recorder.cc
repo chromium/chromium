@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/metrics/desktop_task_switch_metric_recorder.h"
@@ -485,6 +486,7 @@ void UserMetricsRecorder::RecordPeriodicMetrics() {
 
   if (IsUserInActiveDesktopEnvironment()) {
     RecordShelfItemCounts();
+    RecordPeriodicAppListMetrics();
     UMA_HISTOGRAM_COUNTS_100("Ash.NumberOfVisibleWindowsInPrimaryDisplay",
                              GetNumVisibleWindowsInPrimaryDisplay());
 

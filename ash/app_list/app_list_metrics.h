@@ -209,6 +209,8 @@ void RecordZeroStateSearchResultRemovalHistogram(
 void RecordAppListUserJourneyTime(AppListShowSource source,
                                   base::TimeDelta time);
 
+void RecordPeriodicAppListMetrics();
+
 ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
                                              const AppListModel* model,
                                              const SearchModel* search_model);
