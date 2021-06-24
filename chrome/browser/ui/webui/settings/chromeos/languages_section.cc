@@ -281,8 +281,6 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE},
       {"websiteLanguagesTitle",
        IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_TITLE},
-      {"translateTargetLabel",
-       IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL},
       {"offerToTranslateThisLanguage",
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_THIS_LANGUAGE},
       {"offerTranslationLabel",
@@ -318,6 +316,12 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl)));
+  html_source->AddString(
+      "translateTargetLabel",
+      l10n_util::GetStringUTF16(
+          ash::features::IsQuickAnswersV2Enabled()
+              ? IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL_WITH_QUICK_ANSWERS
+              : IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL));
   html_source->AddString(
       "changeDeviceLanguageDialogDescription",
       l10n_util::GetStringFUTF16(
