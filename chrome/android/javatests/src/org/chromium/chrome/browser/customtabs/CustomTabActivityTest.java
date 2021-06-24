@@ -82,6 +82,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
@@ -1009,6 +1010,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug/1216498")
     public void testPageLoadMetricsAreSent() throws Exception {
         checkPageLoadMetrics(true);
     }
