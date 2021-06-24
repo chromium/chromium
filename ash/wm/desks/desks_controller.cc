@@ -181,6 +181,40 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
   return active_window == app_list_controller->GetWindow();
 }
 
+// Observer to observe the desk switch animation and destroy itself when the
+// animation is finished.
+class DeskSwitchAnimationObserver : public DesksController::Observer {
+ public:
+  explicit DeskSwitchAnimationObserver(
+      base::OnceCallback<void(bool)> complete_callback)
+      : complete_callback_(std::move(complete_callback)) {
+    DesksController::Get()->AddObserver(this);
+  }
+  DeskSwitchAnimationObserver(const DeskSwitchAnimationObserver& other) =
+      delete;
+  DeskSwitchAnimationObserver& operator=(
+      const DeskSwitchAnimationObserver& rhs) = delete;
+
+  ~DeskSwitchAnimationObserver() override {
+    DesksController::Get()->RemoveObserver(this);
+  }
+
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override {}
+  void OnDeskRemoved(const Desk* desk) override {}
+  void OnDeskReordered(int old_index, int new_index) override {}
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override {}
+  void OnDeskSwitchAnimationLaunching() override {}
+  void OnDeskSwitchAnimationFinished() override {
+    std::move(complete_callback_).Run(/*success=*/true);
+    delete this;
+  }
+
+ private:
+  base::OnceCallback<void(bool)> complete_callback_;
+};
+
 }  // namespace
 
 // Helper class which wraps around a OneShotTimer and used for recording how
@@ -895,12 +929,17 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
     return;
   }
 
-  // TODO: Run the callback after the desk animation is complete.
+  // If there is an ongoing animation, we should stop it before creating and
+  // activating the new desk, which triggers its own animation.
+  if (animation_)
+    animation_.reset();
+
   NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
   Desk* desk = desks().back().get();
   desk->SetName(desk_name, /*set_by_user=*/true);
+  new DeskSwitchAnimationObserver(std::move(callback));
   ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
-  std::move(callback).Run(/*success=*/true);
+  DCHECK(animation_);
 }
 
 void DesksController::UpdateDesksDefaultNames() {
