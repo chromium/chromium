@@ -9913,7 +9913,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="MobileFriendliness">
+<event name="MobileFriendliness" singular="True">
   <owner>kumagi@google.com</owner>
   <owner>gaul@google.com</owner>
   <metric name="AllowUserZoom" enum="Boolean">
