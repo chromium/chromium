@@ -79,8 +79,7 @@ class DISPLAY_EXPORT DisplayList {
   // Checks for general struct validity. This permits empty lists, and the
   // current display may be unspecified, but non-empty lists must specify a
   // primary display and the displays must not use repeated id values.
-  // TODO(msw): Rename this IsValidOrEmpty().
-  bool IsValid() const;
+  bool IsValidOrEmpty() const;
 
   // Checks for validity, and for the presence of primary and current displays.
   // This is a stronger check than IsValid, which allows the list to be empty.

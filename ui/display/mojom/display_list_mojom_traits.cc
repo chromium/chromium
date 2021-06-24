@@ -15,7 +15,7 @@ bool StructTraits<display::mojom::DisplayListDataView, display::DisplayList>::
   if (!data.ReadDisplays(&displays))
     return false;
   *out = display::DisplayList(displays, data.primary_id(), data.current_id());
-  return out->IsValid();
+  return out->IsValidOrEmpty();
 }
 
 }  // namespace mojo

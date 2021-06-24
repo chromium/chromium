@@ -39,7 +39,7 @@ TEST(StructTraitsTest, DisplayListPrimaryMustBeInvalidWhenEmpty) {
   i->current_id = display::kInvalidDisplayId;
   EXPECT_DCHECK_DEATH({
     SerializeAndDeserialize<display::mojom::DisplayList>(i, o);
-    EXPECT_FALSE(o.IsValid());
+    EXPECT_FALSE(o.IsValidOrEmpty());
   });
 }
 
@@ -52,7 +52,7 @@ TEST(StructTraitsTest, DisplayListCurrentMustBeInvalidWhenEmpty) {
   i->current_id = 1;
   EXPECT_DCHECK_DEATH({
     SerializeAndDeserialize<display::mojom::DisplayList>(i, o);
-    EXPECT_FALSE(o.IsValid());
+    EXPECT_FALSE(o.IsValidOrEmpty());
   });
 }
 
@@ -66,7 +66,7 @@ TEST(StructTraitsTest, DisplayListPrimaryIdMustBePresent) {
   EXPECT_NE(i->primary_id, i->displays[0].id());
   EXPECT_DCHECK_DEATH({
     SerializeAndDeserialize<display::mojom::DisplayList>(i, o);
-    EXPECT_FALSE(o.IsValid());
+    EXPECT_FALSE(o.IsValidOrEmpty());
   });
 }
 
@@ -80,7 +80,7 @@ TEST(StructTraitsTest, DisplayListCurrentIdMustBePresent) {
   EXPECT_NE(i->current_id, i->displays[0].id());
   EXPECT_DCHECK_DEATH({
     SerializeAndDeserialize<display::mojom::DisplayList>(i, o);
-    EXPECT_FALSE(o.IsValid());
+    EXPECT_FALSE(o.IsValidOrEmpty());
   });
 }
 
@@ -94,7 +94,7 @@ TEST(StructTraitsTest, DisplayListDisplaysIdsMustBeUnique) {
   EXPECT_EQ(i->displays[0].id(), i->displays[1].id());
   EXPECT_DCHECK_DEATH({
     SerializeAndDeserialize<display::mojom::DisplayList>(i, o);
-    EXPECT_FALSE(o.IsValid());
+    EXPECT_FALSE(o.IsValidOrEmpty());
   });
 }
 

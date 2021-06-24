@@ -25,7 +25,7 @@ DisplayList::DisplayList(const Displays& displays,
     primary_id_ = displays_[0].id();
 #endif  // OS_FUCHSIA
   DCHECK(observers_.empty());
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
 }
 
 DisplayList::DisplayList(const DisplayList& other)
@@ -34,7 +34,7 @@ DisplayList::DisplayList(const DisplayList& other)
       current_id_(other.current_id_) {
   DCHECK(other.observers_.empty());
   DCHECK(observers_.empty());
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
 }
 
 DisplayList& DisplayList::operator=(const DisplayList& other) {
@@ -43,7 +43,7 @@ DisplayList& DisplayList::operator=(const DisplayList& other) {
   current_id_ = other.current_id_;
   DCHECK(other.observers_.empty());
   DCHECK(observers_.empty());
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
   return *this;
 }
 
@@ -140,7 +140,7 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
   }
   for (DisplayObserver& observer : observers_)
     observer.OnDisplayMetricsChanged(*local_display, changed_values);
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
   return changed_values;
 }
 
@@ -153,7 +153,7 @@ void DisplayList::AddDisplay(const Display& display, Type type) {
     primary_id_ = display.id();
   for (DisplayObserver& observer : observers_)
     observer.OnDisplayAdded(display);
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
 }
 
 void DisplayList::RemoveDisplay(int64_t id) {
@@ -177,20 +177,23 @@ void DisplayList::RemoveDisplay(int64_t id) {
     observer.OnDisplayRemoved(display);
     observer.OnDidRemoveDisplays();
   }
-  DCHECK(IsValid());
+  DCHECK(IsValidOrEmpty());
 }
 
-bool DisplayList::IsValid() const {
+bool DisplayList::IsValidOrEmpty() const {
   // The primary and current ids must be invalid when `displays_` is empty.
   if (displays_.empty())
     return primary_id_ == kInvalidDisplayId && current_id_ == kInvalidDisplayId;
 
-  // Ensure ids are unique.
-  base::flat_set<int64_t> display_ids;
-  display_ids.reserve(displays_.size());
-  for (const auto& display : displays_) {
-    if (!display_ids.insert(display.id()).second)
-      return false;
+  // Ensure ids are unique. 96% of clients have a display count <= 3, 98% <= 4,
+  // with a max count of 16 seen on Windows. With these low counts we can use
+  // a brute force search.
+  for (auto outer = displays_.begin(); outer != displays_.end(); ++outer) {
+    for (auto inner = outer + 1; inner != displays_.end(); ++inner) {
+      if (inner->id() == outer->id()) {
+        return false;
+      }
+    }
   }
 
   // The primary id must correspond to a `displays_` entry.
@@ -207,7 +210,7 @@ bool DisplayList::IsValid() const {
 }
 
 bool DisplayList::IsValidAndHasPrimaryAndCurrentDisplays() const {
-  return IsValid() && GetPrimaryDisplayIterator() != displays_.end() &&
+  return IsValidOrEmpty() && GetPrimaryDisplayIterator() != displays_.end() &&
          FindDisplayById(current_id_) != displays_.end();
 }
 

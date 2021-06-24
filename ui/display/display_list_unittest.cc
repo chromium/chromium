@@ -110,7 +110,7 @@ TEST(DisplayListTest, AddUpdateRemove) {
 
 TEST(DisplayListTest, EmptyIsValid) {
   DisplayList display_list;
-  EXPECT_TRUE(display_list.IsValid());
+  EXPECT_TRUE(display_list.IsValidOrEmpty());
 }
 
 TEST(DisplayListTest, FirstDisplayAddedIsForcedToBePrimary) {
@@ -122,19 +122,19 @@ TEST(DisplayListTest, FirstDisplayAddedIsForcedToBePrimary) {
 TEST(DisplayListTest, SinglePrimaryDisplayNoCurrentIdIsValid) {
   DisplayList display_list({Display(1)}, /*primary_id=*/1,
                            /*current_id=*/kInvalidDisplayId);
-  EXPECT_TRUE(display_list.IsValid());
+  EXPECT_TRUE(display_list.IsValidOrEmpty());
 }
 
 TEST(DisplayListTest, SinglePrimaryDisplayWithCurrentIdIsValid) {
   DisplayList display_list({Display(1)}, /*primary_id=*/1, /*current_id=*/1);
-  EXPECT_TRUE(display_list.IsValid());
+  EXPECT_TRUE(display_list.IsValidOrEmpty());
 }
 
 TEST(DisplayListTest, PrimaryMustBeInvalidWhenEmpty) {
   // `primary_id` must be kInvalidDisplayId if `displays` is empty.
   EXPECT_DCHECK_DEATH(EXPECT_FALSE(
       DisplayList({}, /*primary_id=*/1, /*current_id=*/kInvalidDisplayId)
-          .IsValid()));
+          .IsValidOrEmpty()));
 }
 
 TEST(DisplayListTest, CurrentMustBeInvalidWhenEmpty) {
@@ -142,29 +142,38 @@ TEST(DisplayListTest, CurrentMustBeInvalidWhenEmpty) {
   EXPECT_DCHECK_DEATH(
       EXPECT_FALSE(DisplayList({}, /*primary_id=*/kInvalidDisplayId,
                                /*current_id=*/1)
-                       .IsValid()));
+                       .IsValidOrEmpty()));
 }
 
 TEST(DisplayListTest, PrimaryIdMustBePresent) {
   // `primary_id` must match an element of `displays`.
   EXPECT_DCHECK_DEATH(EXPECT_FALSE(DisplayList({Display(1)}, /*primary_id=*/2,
                                                /*current_id=*/1)
-                                       .IsValid()));
+                                       .IsValidOrEmpty()));
 }
 
 TEST(DisplayListTest, CurrentIdMustBePresent) {
   // `current_id` must match an element of `displays`.
   EXPECT_DCHECK_DEATH(EXPECT_FALSE(DisplayList({Display(1)}, /*primary_id=*/1,
                                                /*current_id=*/2)
-                                       .IsValid()));
+                                       .IsValidOrEmpty()));
 }
 
 TEST(DisplayListTest, DisplaysIdsMustBeUnique) {
-  // `displays` must use unique id values.
-  EXPECT_DCHECK_DEATH(EXPECT_FALSE(DisplayList({Display(1), Display(1)},
-                                               /*primary_id=*/1,
-                                               /*current_id=*/1)
-                                       .IsValid()));
+  // Make sure the duplicate-checking code correctly handles the single display
+  // case.
+  EXPECT_TRUE(DisplayList({Display(1)},
+                          /*primary_id=*/1,
+                          /*current_id=*/1)
+                  .IsValidOrEmpty());
+
+  // Test with a handful of display ids.
+  EXPECT_DCHECK_DEATH(
+      EXPECT_FALSE(DisplayList({Display(9), Display(1), Display(5), Display(2),
+                                Display(11), Display(5), Display(7)},
+                               /*primary_id=*/1,
+                               /*current_id=*/1)
+                       .IsValidOrEmpty()));
 }
 
 TEST(DisplayListTest, IsValidAndHasPrimaryAndCurrentDisplaysEmpty) {

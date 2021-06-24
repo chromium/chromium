@@ -18,17 +18,17 @@ template <>
 struct StructTraits<display::mojom::DisplayListDataView, display::DisplayList> {
   static const std::vector<display::Display>& displays(
       const display::DisplayList& r) {
-    DCHECK(r.IsValid());
+    DCHECK(r.IsValidOrEmpty());
     return r.displays();
   }
 
   static int64_t primary_id(const display::DisplayList& r) {
-    DCHECK(r.IsValid());
+    DCHECK(r.IsValidOrEmpty());
     return r.primary_id();
   }
 
   static int64_t current_id(const display::DisplayList& r) {
-    DCHECK(r.IsValid());
+    DCHECK(r.IsValidOrEmpty());
     return r.current_id();
   }
 
