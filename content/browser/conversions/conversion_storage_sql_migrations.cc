@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "content/browser/conversions/conversion_storage_sql.h"
 #include "content/browser/conversions/sql_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "net/base/schemeful_site.h"
@@ -92,49 +91,7 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
   return impressions;
 }
 
-}  // namespace
-
-bool ConversionStorageSqlMigrations::UpgradeSchema(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
-  base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
-
-  if (meta_table->GetVersionNumber() == 1) {
-    if (!MigrateToVersion2(conversion_storage, db, meta_table))
-      return false;
-  }
-  if (meta_table->GetVersionNumber() == 2) {
-    if (!MigrateToVersion3(conversion_storage, db, meta_table))
-      return false;
-  }
-  if (meta_table->GetVersionNumber() == 3) {
-    if (!MigrateToVersion4(conversion_storage, db, meta_table))
-      return false;
-  }
-  if (meta_table->GetVersionNumber() == 4) {
-    if (!MigrateToVersion5(conversion_storage, db, meta_table))
-      return false;
-  }
-  if (meta_table->GetVersionNumber() == 5) {
-    if (!MigrateToVersion6(conversion_storage, db, meta_table))
-      return false;
-  }
-  if (meta_table->GetVersionNumber() == 6) {
-    if (!MigrateToVersion7(conversion_storage, db, meta_table))
-      return false;
-  }
-  // Add similar if () blocks for new versions here.
-
-  base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
-                                base::ThreadTicks::Now() - start_timestamp);
-  return true;
-}
-
-bool ConversionStorageSqlMigrations::MigrateToVersion2(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. This results in smaller
   // transactions, so it's less likely that a transaction's buffer will need to
   // spill to disk. Also, if the database grows a lot and Chrome stops (user
@@ -245,10 +202,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
   return transaction.Commit();
 }
 
-bool ConversionStorageSqlMigrations::MigrateToVersion3(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion3(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // |MigrateToVersion2|.
   sql::Transaction transaction(db);
@@ -326,10 +280,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion3(
   return transaction.Commit();
 }
 
-bool ConversionStorageSqlMigrations::MigrateToVersion4(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion4(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // |MigrateToVersion2|.
   sql::Transaction transaction(db);
@@ -372,10 +323,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion4(
   return transaction.Commit();
 }
 
-bool ConversionStorageSqlMigrations::MigrateToVersion5(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion5(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // |MigrateToVersion2|.
   sql::Transaction transaction(db);
@@ -398,10 +346,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion5(
   return transaction.Commit();
 }
 
-bool ConversionStorageSqlMigrations::MigrateToVersion6(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion6(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // |MigrateToVersion2|.
   sql::Transaction transaction(db);
@@ -476,10 +421,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion6(
   return transaction.Commit();
 }
 
-bool ConversionStorageSqlMigrations::MigrateToVersion7(
-    ConversionStorageSql* conversion_storage,
-    sql::Database* db,
-    sql::MetaTable* meta_table) {
+bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   // Wrap each migration in its own transaction. See comment in
   // |MigrateToVersion2|.
   sql::Transaction transaction(db);
@@ -591,6 +533,43 @@ bool ConversionStorageSqlMigrations::MigrateToVersion7(
 
   meta_table->SetVersionNumber(7);
   return transaction.Commit();
+}
+
+}  // namespace
+
+bool UpgradeConversionStorageSqlSchema(sql::Database* db,
+                                       sql::MetaTable* meta_table) {
+  base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
+
+  if (meta_table->GetVersionNumber() == 1) {
+    if (!MigrateToVersion2(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 2) {
+    if (!MigrateToVersion3(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 3) {
+    if (!MigrateToVersion4(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 4) {
+    if (!MigrateToVersion5(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 5) {
+    if (!MigrateToVersion6(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 6) {
+    if (!MigrateToVersion7(db, meta_table))
+      return false;
+  }
+  // Add similar if () blocks for new versions here.
+
+  base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
+                                base::ThreadTicks::Now() - start_timestamp);
+  return true;
 }
 
 }  // namespace content

@@ -956,8 +956,7 @@ bool ConversionStorageSql::InitializeSchema(bool db_empty) {
     return CreateSchema();
   }
 
-  return ConversionStorageSqlMigrations::UpgradeSchema(this, db_.get(),
-                                                       &meta_table_);
+  return UpgradeConversionStorageSqlSchema(db_.get(), &meta_table_);
 }
 
 bool ConversionStorageSql::CreateSchema() {

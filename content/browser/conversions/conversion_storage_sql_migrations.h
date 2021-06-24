@@ -12,17 +12,14 @@ class MetaTable;
 
 namespace content {
 
-class ConversionStorageSql;
-
 // Changes to the SQL database schema or data format must be accompanied by
 // a database migration. This includes new columns, new tables, or changes to
 // existing stored data. Data loss must be avoided during migrations, because
 // the impact could extend to weeks of conversion data.
 //
-// To do a migration, add a new method
-// `ConversionStorageSqlMigrations::MigrateToVersionN()` which performs the
-// modifications to the old database, and increment `kCurrentVersionNumber` in
-// conversion_storage_sql.cc.
+// To do a migration, add a new function `MigrateToVersionN()` which performs
+// the modifications to the old database, and increment `kCurrentVersionNumber`
+// in conversion_storage_sql.cc.
 //
 // Generate a new sql file which will hold the new database schema:
 //  * Build and open the Chromium executable
@@ -43,37 +40,10 @@ class ConversionStorageSql;
 // `ConversionStorageSqlMigrationsTest::GetCurrentSchema()` to use the sql file
 // generated above.
 
-// Helper class which updates the existing sql database of
-// `ConversionStorageSql` to the most current schema.
-class ConversionStorageSqlMigrations {
- public:
-  // Upgrades |conversion_storage|'s underlying |db| to the latest schema, and
-  // updates the version stored in |meta_table| accordingly. Must be called with
-  // an open |db|.
-  static bool UpgradeSchema(ConversionStorageSql* conversion_storage,
-                            sql::Database* db,
-                            sql::MetaTable* meta_table);
-
- private:
-  static bool MigrateToVersion2(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-  static bool MigrateToVersion3(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-  static bool MigrateToVersion4(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-  static bool MigrateToVersion5(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-  static bool MigrateToVersion6(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-  static bool MigrateToVersion7(ConversionStorageSql* conversion_storage,
-                                sql::Database* db,
-                                sql::MetaTable* meta_table);
-};
+// Upgrades |db| to the latest schema, and updates the version stored in
+// |meta_table| accordingly. Must be called with an open |db|.
+bool UpgradeConversionStorageSqlSchema(sql::Database* db,
+                                       sql::MetaTable* meta_table);
 
 }  // namespace content
 
