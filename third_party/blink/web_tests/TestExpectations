@@ -7070,4 +7070,5 @@ crbug.com/1222097 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sec
 crbug.com/1222097 virtual/shared_array_buffer_on_desktop/http/tests/devtools/security/mixed-content-sidebar.js [ Skip ]
 crbug.com/1222097 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Skip ]
+crbug.com/1222097 virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Skip ]
 
