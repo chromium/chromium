@@ -118,6 +118,7 @@ test_common_source_files = [
   "tests/test_url_loader.h",
   "tests/test_url_request.cc",
   "tests/test_url_request.h",
+  "tests/test_utils.h",
   "tests/test_utils.cc",
   "tests/test_var.cc",
   "tests/test_var.h",
@@ -225,6 +226,7 @@ source_set("corb_test_plugin_sources") {
   sources = [
     "tests/corb_test_plugin.cc",
     "tests/test_utils.cc",
+    "tests/test_utils.h",
   ]
 
   deps = [
@@ -397,7 +399,10 @@ if (enable_nacl) {
         "GL_GLEXT_PROTOTYPES",
         "PPAPI_TEST_IMPLEMENTATION",
       ]
-      deps = [ "//ppapi/cpp" ]
+      deps = [
+        "//ppapi/cpp",
+        "//ppapi/native_client/src/untrusted/irt_stub:ppapi_stub_lib",
+      ]
       if (current_cpu == "pnacl") {
         pretranslate_pexe = true
       }
