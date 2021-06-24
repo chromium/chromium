@@ -181,8 +181,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   const auto& data = app_restore_data_iter->second;
   // Verify window info are correctly captured.
   EXPECT_EQ(browser_bounds, data->current_bounds.value());
-  EXPECT_EQ(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey),
-            data->visible_on_all_workspaces.value());
+  // `visible_on_all_workspaces` should have been reset even though the captured
+  // window has kVisibleOnAllWorkspacesKey key.
+  EXPECT_FALSE(data->visible_on_all_workspaces.has_value());
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
