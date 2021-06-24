@@ -160,6 +160,64 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
     robots_rules_server_.VerifyRequestedOrigins(expected_robots_requests);
   }
 
+  void VerifyCompressedImageFetch(
+      const std::set<std::string>& expected_image_requests) {
+    if (!expected_image_requests.empty()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+          SubresourceRedirectResult::kRedirectable, 1);
+      histogram_tester_.ExpectBucketCount(
+          "SubresourceRedirect.CompressionAttempt.ResponseCode", net::HTTP_OK,
+          1);
+      histogram_tester_.ExpectBucketCount(
+          "SubresourceRedirect.CompressionAttempt.ResponseCode",
+          net::HTTP_TEMPORARY_REDIRECT, 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SubresourceRedirect.CompressionAttempt.ServerResponded", true, 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+    }
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+    VerifyImageCompressionPageInfoState(true);
+    image_compression_server_.VerifyRequestedImagePaths(
+        expected_image_requests);
+
+    using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+    auto ukm_metrics = GetImageCompressionUkmMetrics();
+    EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
+    EXPECT_THAT(ukm_metrics,
+                testing::Contains(testing::Key(
+                    ImageCompressionUkm::kNavigationToRequestStartNameHash)));
+    EXPECT_THAT(ukm_metrics,
+                testing::Contains(testing::Key(
+                    ImageCompressionUkm::kNavigationToRequestSentNameHash)));
+    EXPECT_THAT(
+        ukm_metrics,
+        testing::Contains(testing::Key(
+            ImageCompressionUkm::kNavigationToResponseReceivedNameHash)));
+    EXPECT_THAT(ukm_metrics,
+                testing::Contains(testing::Key(
+                    ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash)));
+    if (!expected_image_requests.empty()) {
+      EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
+                static_cast<SubresourceRedirectResult>(
+                    ukm_metrics[ImageCompressionUkm::kRedirectResultNameHash]));
+      EXPECT_LT(
+          10U,
+          ukm_metrics[ImageCompressionUkm::kCompressionPercentageNameHash]);
+    } else {
+      EXPECT_EQ(SubresourceRedirectResult::kIneligibleBlinkDisallowed,
+                static_cast<SubresourceRedirectResult>(
+                    ukm_metrics[ImageCompressionUkm::kRedirectResultNameHash]));
+    }
+  }
+
  protected:
   bool enable_lite_mode_;
   bool enable_login_robots_compression_feature_;
@@ -1190,63 +1248,12 @@ IN_PROC_BROWSER_TEST_P(
   FetchHistogramsFromChildProcesses();
 
   if (is_compression_expected) {
-    histogram_tester_.ExpectUniqueSample(
-        "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-        SubresourceRedirectResult::kRedirectable, 1);
-    histogram_tester_.ExpectTotalCount(
-        "SubresourceRedirect.CompressionAttempt.ResponseCode", 2);
-    histogram_tester_.ExpectBucketCount(
-        "SubresourceRedirect.CompressionAttempt.ResponseCode", net::HTTP_OK, 1);
-    histogram_tester_.ExpectBucketCount(
-        "SubresourceRedirect.CompressionAttempt.ResponseCode",
-        net::HTTP_TEMPORARY_REDIRECT, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "SubresourceRedirect.CompressionAttempt.ServerResponded", true, 1);
-
     VerifyRobotsRulesFetch({image_url.GetWithEmptyPath().spec()});
-    image_compression_server_.VerifyRequestedImagePaths(
-        {"/load_image/image.png"});
+    VerifyCompressedImageFetch({"/load_image/image.png"});
   } else {
-    histogram_tester_.ExpectTotalCount(
-        "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 0);
-    histogram_tester_.ExpectTotalCount(
-        "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
-    histogram_tester_.ExpectTotalCount(
-        "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
-
     VerifyRobotsRulesFetch({});
-    image_compression_server_.VerifyRequestedImagePaths({});
+    VerifyCompressedImageFetch({});
   }
-  histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
-
-  using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
-  auto ukm_metrics = GetImageCompressionUkmMetrics();
-  EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
-  EXPECT_THAT(ukm_metrics,
-              testing::Contains(testing::Key(
-                  ImageCompressionUkm::kNavigationToRequestStartNameHash)));
-  EXPECT_THAT(ukm_metrics,
-              testing::Contains(testing::Key(
-                  ImageCompressionUkm::kNavigationToRequestSentNameHash)));
-  EXPECT_THAT(ukm_metrics,
-              testing::Contains(testing::Key(
-                  ImageCompressionUkm::kNavigationToResponseReceivedNameHash)));
-  EXPECT_THAT(ukm_metrics,
-              testing::Contains(testing::Key(
-                  ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash)));
-  if (is_compression_expected) {
-    EXPECT_EQ(SubresourceRedirectResult::kRedirectable,
-              static_cast<SubresourceRedirectResult>(
-                  ukm_metrics[ImageCompressionUkm::kRedirectResultNameHash]));
-    EXPECT_LT(10U,
-              ukm_metrics[ImageCompressionUkm::kCompressionPercentageNameHash]);
-  } else {
-    EXPECT_EQ(SubresourceRedirectResult::kIneligibleBlinkDisallowed,
-              static_cast<SubresourceRedirectResult>(
-                  ukm_metrics[ImageCompressionUkm::kRedirectResultNameHash]));
-  }
-  VerifyImageCompressionPageInfoState(true);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1357,5 +1364,44 @@ IN_PROC_BROWSER_TEST_F(
                 ukm_metrics[ImageCompressionUkm::kRedirectResultNameHash]));
   VerifyImageCompressionPageInfoState(false);
 }
+
+class SubresourceRedirectLoginRobotsCSPRestrictedImageBrowserTest
+    : public SubresourceRedirectLoginRobotsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SubresourceRedirectLoginRobotsCSPRestrictedImageBrowserTest()
+      : SubresourceRedirectLoginRobotsBrowserTest(
+            {{"allow_csp_restricted_images",
+              allow_csp_restricted_images() ? "true" : "false"}},
+            true, /* enable_lite_mode */
+            true  /* enable_login_robots_compression_feature */
+        ) {}
+
+  bool allow_csp_restricted_images() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SubresourceRedirectLoginRobotsCSPRestrictedImageBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestDefaultSrcRestrictedImageAllowed)) {
+  CreateUkmRecorder();
+  robots_rules_server_.AddRobotsRules(
+      GetHttpsTestURL("/"),
+      {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
+  NavigateAndWaitForLoad(browser(),
+                         GetHttpsTestURL("/load_image/image_csp_img_src.html"));
+
+  if (allow_csp_restricted_images()) {
+    VerifyRobotsRulesFetch({GetHttpsTestURL("/").spec()});
+    VerifyCompressedImageFetch({"/load_image/image.png"});
+  } else {
+    VerifyRobotsRulesFetch({});
+    VerifyCompressedImageFetch({});
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SubresourceRedirectLoginRobotsCSPRestrictedImageBrowserTest,
+    testing::Bool() /* allow_csp_restricted_images */);
 
 }  // namespace subresource_redirect

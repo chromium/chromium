@@ -291,6 +291,141 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(), /* is_save_data_enabled_*/
         ::testing::Bool() /* allow_javascript_crossorigin_images */));
 
+class SubresourceRedirectCSPSimTest : public ::testing::WithParamInterface<
+                                          bool /*allow_csp_restricted_images*/>,
+                                      public SimTest {
+ protected:
+  SubresourceRedirectCSPSimTest() {
+    base::FieldTrialParams params;
+    params["allow_csp_restricted_images"] =
+        allow_csp_restricted_images() ? "true" : "false";
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSubresourceRedirect, params}}, {});
+    GetNetworkStateNotifier().SetSaveDataEnabled(true);
+  }
+
+  bool allow_csp_restricted_images() const { return GetParam(); }
+
+  void LoadMainResource(const String& html_body) {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+
+    main_resource.Complete(html_body);
+    GetDocument().UpdateStyleAndLayoutTree();
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+  }
+
+  void ScrollDownToLoadImage() {
+    // Scroll down until the image is visible.
+    GetDocument().View()->LayoutViewport()->SetScrollOffset(
+        ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
+    if (Compositor().NeedsBeginFrame())
+      Compositor().BeginFrame();
+    test::RunPendingTasks();
+  }
+
+  // Verifies previews state for the fetched request URL.
+  void VerifySubresourceRedirectPreviewsState(
+      const String& url,
+      bool is_subresource_redirect_allowed) {
+    PreviewsState previews_state = GetDocument()
+                                       .Fetcher()
+                                       ->CachedResource(KURL(url))
+                                       ->GetResourceRequest()
+                                       .GetPreviewsState();
+    EXPECT_EQ(is_subresource_redirect_allowed,
+              (previews_state & PreviewsTypes::kSubresourceRedirectOn) != 0);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
+};
+
+// cross-origin image disallowed by CSP default-src directive should not load.
+TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByDefaultSrc) {
+  LoadMainResource(R"HTML(
+        <head>
+          <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        </head>
+        <body>
+          <img src='https://crossorigin.com/img.png' loading='lazy'/>
+        </body>
+      )HTML");
+  ScrollDownToLoadImage();
+  EXPECT_TRUE(std::any_of(ConsoleMessages().begin(), ConsoleMessages().end(),
+                          [](const auto& console_message) {
+                            return console_message.Contains(
+                                "Refused to load the image");
+                          }));
+}
+
+// cross-origin image disallowed by CSP img-src directive should not load.
+TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByImgSrc) {
+  LoadMainResource(R"HTML(
+        <head>
+          <meta http-equiv="Content-Security-Policy" content="img-src 'self'">
+        </head>
+        <body>
+          <img src='https://crossorigin.com/img.png' loading='lazy'/>
+        </body>
+      )HTML");
+  ScrollDownToLoadImage();
+  EXPECT_TRUE(std::any_of(ConsoleMessages().begin(), ConsoleMessages().end(),
+                          [](const auto& console_message) {
+                            return console_message.Contains(
+                                "Refused to load the image");
+                          }));
+}
+
+TEST_P(SubresourceRedirectCSPSimTest, RestrictedByDefaultSrc) {
+  std::unique_ptr<SimSubresourceRequest> redirected_image;
+  WTF::String img_url = "https://example.com/img.png";
+  SimRequestBase::Params params;
+  if (allow_csp_restricted_images()) {
+    // Simulate a redirect to LitePages.
+    img_url = "https://litepages.googlezip.net/example.com/img.png";
+    params.redirect_url = img_url;
+    redirected_image = std::make_unique<SimSubresourceRequest>(
+        "https://example.com/img.png", "image/png", params);
+  }
+
+  SimSubresourceRequest image_resource(img_url, "image/png");
+  LoadMainResource(R"HTML(
+        <head>
+          <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        </head>
+        <body>
+          <img src='https://example.com/img.png' loading='lazy'/>
+        </body>
+      )HTML");
+  ScrollDownToLoadImage();
+  image_resource.Complete(ReadTestImage());
+
+  VerifySubresourceRedirectPreviewsState("https://example.com/img.png",
+                                         allow_csp_restricted_images());
+
+  if (allow_csp_restricted_images()) {
+    histogram_tester_.ExpectTotalCount(
+        "SubresourceRedirect.Blink.Ineligibility", 0);
+  } else {
+    EXPECT_LE(1, histogram_tester_.GetBucketCount(
+                     "SubresourceRedirect.Blink.Ineligibility",
+                     BlinkSubresourceRedirectIneligibility::
+                         kContentSecurityPolicyDefaultSrcRestricted));
+  }
+  // No CSP error should be reported.
+  EXPECT_TRUE(std::none_of(ConsoleMessages().begin(), ConsoleMessages().end(),
+                           [](const auto& console_message) {
+                             return console_message.Contains(
+                                 "Refused to load the image");
+                           }));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceRedirectCSPSimTest,
+                         /* allow_csp_restricted_images */ ::testing::Bool());
+
 }  // namespace
 
 }  // namespace blink
