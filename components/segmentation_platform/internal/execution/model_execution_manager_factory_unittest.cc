@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
@@ -28,6 +31,7 @@ class ModelExecutionManagerFactoryTest : public testing::Test {
         optimization_guide::TestOptimizationGuideModelProvider>();
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     feature_aggregator_ = std::make_unique<FeatureAggregatorImpl>();
+    test_clock_.SetNow(base::Time::Now());
   }
 
   void TearDown() override {
@@ -39,7 +43,9 @@ class ModelExecutionManagerFactoryTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
+  base::SimpleTestClock test_clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  std::unique_ptr<SignalDatabase> signal_database_;
   std::unique_ptr<FeatureAggregatorImpl> feature_aggregator_;
 };
 
@@ -48,7 +54,8 @@ TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
       optimization_guide_model_provider_.get(),
       task_environment_.GetMainThreadTaskRunner(),
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB},
-      segment_database_.get(), std::move(feature_aggregator_));
+      &test_clock_, segment_database_.get(), signal_database_.get(),
+      std::move(feature_aggregator_));
   // This should work regardless of whether a DummyModelExecutionManager or
   // ModelExecutionManagerImpl is returned.
   CHECK(model_execution_manager);
