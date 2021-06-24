@@ -9,7 +9,7 @@
 
 @class UIButton;
 
-@protocol CredentialListConsumerDelegate <NSObject>
+@protocol CredentialListHandler <NSObject>
 
 // Called when the user taps the cancel button in the navigation bar.
 - (void)navigationCancelButtonWasPressed:(UIButton*)button;
@@ -28,7 +28,7 @@
 @protocol CredentialListConsumer <NSObject>
 
 // The delegate for the actions in the consumer.
-@property(nonatomic, weak) id<CredentialListConsumerDelegate> delegate;
+@property(nonatomic, weak) id<CredentialListHandler> delegate;
 
 // Tells the consumer to show the passed in suggested and all passwords.
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested

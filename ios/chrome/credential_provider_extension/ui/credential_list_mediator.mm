@@ -14,7 +14,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface CredentialListMediator () <CredentialListConsumerDelegate>
+@interface CredentialListMediator () <CredentialListHandler>
 
 // The UI Handler of the feature.
 @property(nonatomic, weak) id<CredentialListUIHandler> UIHandler;
@@ -93,7 +93,7 @@
   });
 }
 
-#pragma mark - CredentialListConsumerDelegate
+#pragma mark - CredentialListHandler
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
   NSError* error =

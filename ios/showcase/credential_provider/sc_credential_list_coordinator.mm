@@ -81,7 +81,7 @@ NSArray<id<Credential>>* allPasswords = @[
 }
 
 @interface SCCredentialListCoordinator () <CredentialDetailsConsumerDelegate,
-                                           CredentialListConsumerDelegate>
+                                           CredentialListHandler>
 @property(nonatomic, strong) CredentialListViewController* viewController;
 @end
 
@@ -99,7 +99,7 @@ NSArray<id<Credential>>* allPasswords = @[
                                     allPasswords:allPasswords];
 }
 
-#pragma mark - CredentialListConsumerDelegate
+#pragma mark - CredentialListHandler
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
 }
