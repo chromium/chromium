@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <math.h>
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
@@ -32,6 +33,108 @@ enum SimilarityMetrics {
          // https://en.wikipedia.org/wiki/Structural_similarity
 };
 
+// Computes the SSIM of a window of 8x8 samples between two planes where each
+// sample is 16 bits. This is modeled after libyuv::Ssim8x8_C().
+double SSIM16BitPlane8x8(const uint8_t* src_a,
+                         int stride_a,
+                         const uint8_t* src_b,
+                         int stride_b) {
+  int64_t sum_a = 0;
+  int64_t sum_b = 0;
+  int64_t sum_sq_a = 0;
+  int64_t sum_sq_b = 0;
+  int64_t sum_axb = 0;
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      // Read 16 bits and store it in a 32 bits value to avoid overflow in the
+      // following calculations.
+      const uint32_t a = static_cast<uint32_t>(
+          *reinterpret_cast<const uint16_t*>(src_a + 2 * j));
+      const uint32_t b = static_cast<uint32_t>(
+          *reinterpret_cast<const uint16_t*>(src_b + 2 * j));
+      sum_a += a;
+      sum_b += b;
+      sum_sq_a += a * a;
+      sum_sq_b += b * b;
+      sum_axb += a * b;
+    }
+
+    src_a += stride_a;
+    src_b += stride_b;
+  }
+
+  constexpr int64_t count = 64;
+  constexpr int64_t cc1 = 1759164917;   // (64^2*(.01*65535)^2
+  constexpr int64_t cc2 = 15832484259;  // (64^2*(.03*65535)^2
+  constexpr int64_t c1 = (cc1 * count * count) >> 12;
+  constexpr int64_t c2 = (cc2 * count * count) >> 12;
+  const int64_t sum_a_x_sum_b = sum_a * sum_b;
+  const int64_t ssim_n =
+      (2 * sum_a_x_sum_b + c1) * (2 * count * sum_axb - 2 * sum_a_x_sum_b + c2);
+  const int64_t sum_a_sq = sum_a * sum_a;
+  const int64_t sum_b_sq = sum_b * sum_b;
+  const int64_t ssim_d =
+      (sum_a_sq + sum_b_sq + c1) *
+      (count * sum_sq_a - sum_a_sq + count * sum_sq_b - sum_b_sq + c2);
+
+  if (ssim_d == 0)
+    return std::numeric_limits<double>::max();
+  return ssim_n * 1.0 / ssim_d;
+}
+
+// Computes the SSIM between two planes where each sample is 16 bits. This is
+// modeled after libyuv::CalcFrameSsim().
+double Calc16bitPlaneSSIM(const uint8_t* src_a,
+                          int stride_a,
+                          const uint8_t* src_b,
+                          int stride_b,
+                          int width,
+                          int height) {
+  int samples = 0;
+  double ssim_total = 0;
+  for (int i = 0; i < height - 8; i += 4) {
+    for (int j = 0; j < width - 8; j += 4) {
+      // Double |j| because the color depth is 16 bits.
+      ssim_total +=
+          SSIM16BitPlane8x8(src_a + 2 * j, stride_a, src_b + 2 * j, stride_b);
+      samples++;
+    }
+    // |stride_a| and |stride_b| are bytes. No need to double them.
+    src_a += stride_a * 4;
+    src_b += stride_b * 4;
+  }
+
+  ssim_total /= samples;
+  return ssim_total;
+}
+
+// Computes the SSIM between two YUV420P010 buffers. This is modeled after
+// libyuv::I420Ssim().
+double ComputeYUV420P10SSIM(const uint8_t* src_y_a,
+                            int stride_y_a,
+                            const uint8_t* src_u_a,
+                            int stride_u_a,
+                            const uint8_t* src_v_a,
+                            int stride_v_a,
+                            const uint8_t* src_y_b,
+                            int stride_y_b,
+                            const uint8_t* src_u_b,
+                            int stride_u_b,
+                            const uint8_t* src_v_b,
+                            int stride_v_b,
+                            int width,
+                            int height) {
+  const double ssim_y = Calc16bitPlaneSSIM(src_y_a, stride_y_a, src_y_b,
+                                           stride_y_b, width, height);
+  const int width_uv = (width + 1) >> 1;
+  const int height_uv = (height + 1) >> 1;
+  const double ssim_u = Calc16bitPlaneSSIM(src_u_a, stride_u_a, src_u_b,
+                                           stride_u_b, width_uv, height_uv);
+  const double ssim_v = Calc16bitPlaneSSIM(src_v_a, stride_v_a, src_v_b,
+                                           stride_v_b, width_uv, height_uv);
+  return ssim_y * 0.8 + 0.1 * (ssim_u + ssim_v);
+}
+
 double ComputeSimilarity(const VideoFrame* frame1,
                          const VideoFrame* frame2,
                          SimilarityMetrics mode) {
@@ -40,27 +143,45 @@ double ComputeSimilarity(const VideoFrame* frame1,
   ASSERT_TRUE_OR_RETURN(
       frame1->visible_rect().size() == frame2->visible_rect().size(),
       std::numeric_limits<std::size_t>::max());
-  // These are used, only if frames are converted to I420, for keeping converted
-  // frames alive until the end of function.
+  // Ideally, frame1->BitDepth() should be the same as frame2->BitDepth()
+  // always. But in the 10 bit case, the 10 bit frame can be carried with P016LE
+  // whose bit depth is regarded to be 16. This is due to a lack of NV12 10-bit
+  // buffer format in media::VideoPixelFormat. As a workaround for this, we
+  // determine the common bit depth as the smaller one.
+  ASSERT_TRUE_OR_RETURN(
+      (frame1->BitDepth() == 8 && frame1->BitDepth() == frame2->BitDepth()) ||
+          std::min(frame1->BitDepth(), frame2->BitDepth()) == 10,
+      std::numeric_limits<std::size_t>::max());
+  const size_t bit_depth = std::min(frame1->BitDepth(), frame2->BitDepth());
+  const VideoPixelFormat common_format =
+      bit_depth == 8 ? PIXEL_FORMAT_I420 : PIXEL_FORMAT_YUV420P10;
+
+  // These are used, only if frames are converted to |common_format|, for
+  // keeping converted frames alive until the end of function.
   scoped_refptr<VideoFrame> converted_frame1;
   scoped_refptr<VideoFrame> converted_frame2;
 
-  if (frame1->format() != PIXEL_FORMAT_I420) {
-    converted_frame1 = ConvertVideoFrame(frame1, PIXEL_FORMAT_I420);
+  if (frame1->format() != common_format) {
+    converted_frame1 = ConvertVideoFrame(frame1, common_format);
     frame1 = converted_frame1.get();
   }
-  if (frame2->format() != PIXEL_FORMAT_I420) {
-    converted_frame2 = ConvertVideoFrame(frame2, PIXEL_FORMAT_I420);
+
+  if (frame2->format() != common_format) {
+    converted_frame2 = ConvertVideoFrame(frame2, common_format);
     frame2 = converted_frame2.get();
   }
 
   decltype(&libyuv::I420Psnr) metric_func = nullptr;
   switch (mode) {
     case SimilarityMetrics::PSNR:
-      metric_func = &libyuv::I420Psnr;
+      if (bit_depth == 8)
+        metric_func = &libyuv::I420Psnr;
       break;
     case SimilarityMetrics::SSIM:
-      metric_func = &libyuv::I420Ssim;
+      if (bit_depth == 8)
+        metric_func = &libyuv::I420Ssim;
+      else if (bit_depth == 10)
+        metric_func = &ComputeYUV420P10SSIM;
       break;
   }
   ASSERT_TRUE_OR_RETURN(metric_func, std::numeric_limits<double>::max());
