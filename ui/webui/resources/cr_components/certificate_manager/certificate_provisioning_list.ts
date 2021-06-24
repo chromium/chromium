@@ -6,15 +6,16 @@
  * @fileoverview 'certificate-provisioning-list' is an element that displays a
  * list of certificate provisioning processes.
  */
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import '../../cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
 
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '../../js/web_ui_listener_behavior.m.js';
 
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';

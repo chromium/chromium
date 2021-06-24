@@ -32,7 +32,7 @@
  */
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js'
+// #import {assert} from '../js/assert.m.js'
 // clang-format on
 
 /** @enum {string} */
