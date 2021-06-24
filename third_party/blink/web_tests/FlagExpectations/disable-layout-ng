@@ -91,6 +91,9 @@ crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-inflexible-in-colum
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-min-height-1.html [ Failure ]
 crbug.com/1069614 external/wpt/css/css-flexbox/overflow-top-left.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-002.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
 
 ### external/wpt/css/css-fonts/
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]

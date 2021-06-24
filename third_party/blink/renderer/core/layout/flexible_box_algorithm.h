@@ -433,7 +433,8 @@ class FlexLayoutAlgorithm {
       const ComputedStyle& style,
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
-      unsigned number_of_items);
+      unsigned number_of_items,
+      bool is_reversed = false);
   static LayoutUnit ContentDistributionSpaceBetweenChildren(
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,

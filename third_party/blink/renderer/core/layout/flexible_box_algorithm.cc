@@ -295,6 +295,16 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
     case ItemPosition::kNormal:
       NOTREACHED();
       break;
+    case ItemPosition::kSelfStart:
+    case ItemPosition::kSelfEnd:
+    case ItemPosition::kStart:
+    case ItemPosition::kEnd:
+    case ItemPosition::kLeft:
+    case ItemPosition::kRight:
+      NOTREACHED() << static_cast<int>(position)
+                   << " AlignmentForChild should have transformed this "
+                      "position value to something we handle below.";
+      break;
     case ItemPosition::kStretch:
       // Actual stretching must be handled by the caller. Since wrap-reverse
       // flips cross start and cross end, stretch children should be aligned
@@ -319,13 +329,7 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
       // https://bugs.webkit.org/show_bug.cgi?id=98076
       return max_ascent - ascent;
     case ItemPosition::kLastBaseline:
-    case ItemPosition::kSelfStart:
-    case ItemPosition::kSelfEnd:
-    case ItemPosition::kStart:
-    case ItemPosition::kEnd:
-    case ItemPosition::kLeft:
-    case ItemPosition::kRight:
-      // TODO(jfernandez): Implement these (https://crbug.com/722287).
+      // TODO(crbug.com/885175): Implement last baseline.
       break;
   }
   return LayoutUnit();
@@ -500,9 +504,12 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
   const LayoutUnit available_free_space = remaining_free_space_;
+  const bool is_reversed = style.ResolvedIsRowReverseFlexDirection() ||
+                           style.ResolvedIsColumnReverseFlexDirection();
   const LayoutUnit initial_position =
       FlexLayoutAlgorithm::InitialContentPositionOffset(
-          style, available_free_space, justify_content, line_items_.size());
+          style, available_free_space, justify_content, line_items_.size(),
+          is_reversed);
   LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
 
   bool should_flip_main_axis;
@@ -796,9 +803,10 @@ void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
   for (const FlexLine& line : flex_lines_)
     available_cross_axis_space -= line.cross_axis_extent_;
 
-  LayoutUnit line_offset =
-      InitialContentPositionOffset(StyleRef(), available_cross_axis_space,
-                                   align_content, flex_lines_.size());
+  const bool is_reversed = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
+  LayoutUnit line_offset = InitialContentPositionOffset(
+      StyleRef(), available_cross_axis_space, align_content, flex_lines_.size(),
+      is_reversed);
   for (FlexLine& line_context : flex_lines_) {
     line_context.cross_axis_offset_ += line_offset;
 
@@ -948,6 +956,34 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent(
     position =
         style.ResolvedJustifyContentPosition(ContentAlignmentNormalBehavior());
   }
+  if (position == ContentPosition::kLeft ||
+      position == ContentPosition::kRight) {
+    if (IsColumnFlow(style)) {
+      if (style.IsHorizontalWritingMode()) {
+        // Main axis is perpendicular to both the physical left<->right and
+        // inline start<->end axes, so kLeft and kRight behave as kStart.
+        position = ContentPosition::kStart;
+      } else if ((position == ContentPosition::kLeft &&
+                  style.IsFlippedBlocksWritingMode()) ||
+                 (position == ContentPosition::kRight &&
+                  style.IsFlippedLinesWritingMode())) {
+        position = ContentPosition::kEnd;
+      } else {
+        position = ContentPosition::kStart;
+      }
+    } else if ((position == ContentPosition::kLeft &&
+                !style.IsLeftToRightDirection()) ||
+               (position == ContentPosition::kRight &&
+                style.IsLeftToRightDirection())) {
+      DCHECK(!FlexLayoutAlgorithm::IsColumnFlow(style));
+      position = ContentPosition::kEnd;
+    } else {
+      position = ContentPosition::kStart;
+    }
+  }
+  DCHECK_NE(position, ContentPosition::kLeft);
+  DCHECK_NE(position, ContentPosition::kRight);
+
   ContentDistributionType distribution =
       is_webkit_box ? BoxPackToContentDistribution(style.BoxPack())
                     : style.ResolvedJustifyContentDistribution(
@@ -985,6 +1021,31 @@ ItemPosition FlexLayoutAlgorithm::AlignmentForChild(
                 .GetPosition();
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
+  DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
+  DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
+
+  if (align == ItemPosition::kStart)
+    return ItemPosition::kFlexStart;
+  if (align == ItemPosition::kEnd)
+    return ItemPosition::kFlexEnd;
+
+  if (align == ItemPosition::kSelfStart || align == ItemPosition::kSelfEnd) {
+    LogicalToPhysical<ItemPosition> physical(
+        child_style.GetWritingDirection(), ItemPosition::kFlexStart,
+        ItemPosition::kFlexEnd, ItemPosition::kFlexStart,
+        ItemPosition::kFlexEnd);
+
+    PhysicalToLogical<ItemPosition> logical(flexbox_style.GetWritingDirection(),
+                                            physical.Top(), physical.Right(),
+                                            physical.Bottom(), physical.Left());
+
+    if (flexbox_style.ResolvedIsColumnFlexDirection()) {
+      return align == ItemPosition::kSelfStart ? logical.InlineStart()
+                                               : logical.InlineEnd();
+    }
+    return align == ItemPosition::kSelfStart ? logical.BlockStart()
+                                             : logical.BlockEnd();
+  }
 
   if (align == ItemPosition::kBaseline &&
       IsHorizontalFlow(flexbox_style) != child_style.IsHorizontalWritingMode())
@@ -1005,13 +1066,22 @@ LayoutUnit FlexLayoutAlgorithm::InitialContentPositionOffset(
     const ComputedStyle& style,
     LayoutUnit available_free_space,
     const StyleContentAlignmentData& data,
-    unsigned number_of_items) {
+    unsigned number_of_items,
+    bool is_reversed) {
   if (available_free_space <= 0 && style.IsDeprecatedWebkitBox()) {
     // -webkit-box only considers |available_free_space| if > 0.
     return LayoutUnit();
   }
-  if (data.GetPosition() == ContentPosition::kFlexEnd)
+  ContentPosition position = data.GetPosition();
+  DCHECK_NE(position, ContentPosition::kLeft)
+      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
+  DCHECK_NE(position, ContentPosition::kRight)
+      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
+  if (position == ContentPosition::kFlexEnd ||
+      (position == ContentPosition::kEnd && !is_reversed) ||
+      (position == ContentPosition::kStart && is_reversed)) {
     return available_free_space;
+  }
   if (data.GetPosition() == ContentPosition::kCenter)
     return available_free_space / 2;
   if (data.Distribution() == ContentDistributionType::kSpaceAround) {

@@ -742,22 +742,7 @@ crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars.html [ Failure ]
 crbug.com/1069614 css3/flexbox/overflow-and-padding.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001a.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001b.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-003.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-005.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-006.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-align-self-vert-002.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-align-self-vert-rtl-005.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-wmvert-001.xhtml [ Failure ]
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-001.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-002.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-001.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-start-rtl.html [ Failure ]
-crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-start.html [ Failure ]
 
 # We don't support requesting flex line breaks and it is not clear that we should.
 # See https://lists.w3.org/Archives/Public/www-style/2015May/0065.html

@@ -92,6 +92,8 @@ AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
                              ? style.ResolvedIsColumnReverseFlexDirection()
                              : style.ResolvedIsRowReverseFlexDirection();
 
+  DCHECK_NE(content_position, ContentPosition::kLeft);
+  DCHECK_NE(content_position, ContentPosition::kRight);
   if (content_position == ContentPosition::kFlexEnd)
     return is_reverse_flex ? AxisEdge::kStart : AxisEdge::kEnd;
 
@@ -99,6 +101,11 @@ AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
       justify.Distribution() == ContentDistributionType::kSpaceAround ||
       justify.Distribution() == ContentDistributionType::kSpaceEvenly)
     return AxisEdge::kCenter;
+
+  if (content_position == ContentPosition::kStart)
+    return AxisEdge::kStart;
+  if (content_position == ContentPosition::kEnd)
+    return AxisEdge::kEnd;
 
   return is_reverse_flex ? AxisEdge::kEnd : AxisEdge::kStart;
 }

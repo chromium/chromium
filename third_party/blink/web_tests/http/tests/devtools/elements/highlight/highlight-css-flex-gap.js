@@ -17,7 +17,7 @@
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
-        place-content: start;
+        place-content: flex-start;
         column-gap: 10px;
         row-gap: 20px;
       }
