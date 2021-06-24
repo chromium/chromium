@@ -243,7 +243,10 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       if (!child->IsLayoutImage() ||
           To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
-        child->Destroy();
+        if (UNLIKELY(IsA<LayoutNGTextCombine>(child->Parent())))
+          child->Parent()->Destroy();
+        else
+          child->Destroy();
         child = nullptr;
       }
     }

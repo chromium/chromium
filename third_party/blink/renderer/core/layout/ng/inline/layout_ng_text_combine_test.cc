@@ -550,6 +550,46 @@ TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
             sample_fragment2.LayoutOverflow());
 }
 
+// http://crbug.com/1223015
+TEST_F(LayoutNGTextCombineTest, ListItemStyleToImage) {
+  InsertStyleElement(
+      "li { text-combine-upright: all; }"
+      "ol { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<ol id=root><li></li></ol>");
+  auto& root = *GetElementById("root");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow OL id="root"
+  +--LayoutNGListItem LI
+  |  +--LayoutNGOutsideListMarker ::marker
+  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  +--LayoutText (anonymous) "1. "
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+
+  // Change list-marker to use image
+  root.style()->setProperty(
+      GetDocument().GetExecutionContext(), "list-style-image",
+      "url(data:image/"
+      "gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/"
+      "XBs/fNwfjZ0frl3/zy7////"
+      "wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAA"
+      "BAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QA"
+      "nQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7)",
+      "", ASSERT_NO_EXCEPTION);
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7\");"
+  +--LayoutNGListItem LI
+  |  +--LayoutNGOutsideListMarker ::marker
+  |  |  +--LayoutImage (anonymous)
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
