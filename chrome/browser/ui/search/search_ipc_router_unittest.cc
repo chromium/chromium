@@ -48,6 +48,7 @@
 
 using testing::_;
 using testing::Field;
+using testing::NiceMock;
 using testing::Return;
 
 namespace {
@@ -180,7 +181,8 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
         mock_delegate());
     search_tab_helper->ipc_router_for_testing().set_policy_for_testing(
         base::WrapUnique(new MockSearchIPCRouterPolicy));
-    auto factory = std::make_unique<MockEmbeddedSearchClientFactory>();
+    auto factory =
+        std::make_unique<NiceMock<MockEmbeddedSearchClientFactory>>();
     ON_CALL(*factory, GetEmbeddedSearchClient())
         .WillByDefault(Return(&mock_embedded_search_client_));
     GetSearchIPCRouter().set_embedded_search_client_factory_for_testing(
