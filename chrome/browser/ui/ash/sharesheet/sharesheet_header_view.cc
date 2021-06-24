@@ -102,8 +102,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),
-        /* between_child_spacing */ kImagePreviewBetweenChildSpacing,
-        /* collapse_margins_spacing */ false));
+        /* between_child_spacing */ kImagePreviewBetweenChildSpacing));
     SetPreferredSize(kImagePreviewFullSize);
     SetFocusBehavior(View::FocusBehavior::NEVER);
 
@@ -189,8 +188,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     row->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         /* inside_border_insets */ gfx::Insets(),
-        /* between_child_spacing */ kImagePreviewBetweenChildSpacing,
-        /* collapse_margins_spacing */ false));
+        /* between_child_spacing */ kImagePreviewBetweenChildSpacing));
   }
 
   void AddImageViewTo(views::View* parent_view, const gfx::Size& size) {

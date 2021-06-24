@@ -172,10 +172,7 @@ void SharesheetBubbleView::ShowBubble(
   delivered_callback_ = std::move(delivered_callback);
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      /* inside_border_insets */ gfx::Insets(),
-      /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
-
+      views::BoxLayout::Orientation::kVertical));
   // When there are no targets, don't show any previews. Otherwise, show
   // previews if the flag is enabled.
   bool show_content_previews =
@@ -186,16 +183,12 @@ void SharesheetBubbleView::ShowBubble(
           intent_->Clone(), delegate_->GetProfile(), show_content_previews));
   auto* body_view = main_view_->AddChildView(std::make_unique<views::View>());
   body_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      /* inside_border_insets */ gfx::Insets(),
-      /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
+      views::BoxLayout::Orientation::kVertical));
   footer_view_ = main_view_->AddChildView(std::make_unique<views::View>());
   auto* footer_layout =
       footer_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(kFooterDefaultVerticalPadding, 0),
-          /* between_child_spacing */ 0,
-          /* collapse_margins_spacing */ false));
+          gfx::Insets(kFooterDefaultVerticalPadding, 0)));
   footer_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   footer_layout->set_cross_axis_alignment(
@@ -589,7 +582,7 @@ void SharesheetBubbleView::CreateBubble() {
 
   auto share_action_view = std::make_unique<views::View>();
   share_action_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0, true));
+      views::BoxLayout::Orientation::kVertical));
   share_action_view_ = AddChildView(std::move(share_action_view));
   share_action_view_->SetVisible(false);
 }
