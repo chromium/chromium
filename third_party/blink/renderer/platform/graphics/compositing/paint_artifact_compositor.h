@@ -282,18 +282,19 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     // after chunks of |this|, with appropriate space conversion applied to
     // both layers from their original property tree states to |merged_state|.
     // Returns whether the merge is successful.
-    bool Merge(const PendingLayer& guest);
+    bool Merge(const PendingLayer& guest) {
+      return MergeInternal(guest, guest.property_tree_state, /*dry_run*/ false);
+    }
 
-    // Returns true if |guest| can be merged into |this|, and sets the output
-    // parameters with the property tree state and bounds of the merged layer.
-    // |guest_state| is for cases that we want to check if we can merge |guest|
+    // Returns true if |guest| can be merged into |this|.
+    // |guest_state| is for cases where we want to check if we can merge |guest|
     // if it has |guest_state| in the future (which may be different from its
     // current state).
     bool CanMerge(const PendingLayer& guest,
-                  const PropertyTreeState& guest_state,
-                  PropertyTreeState* out_merged_state = nullptr,
-                  FloatRect* out_guest_bounds = nullptr,
-                  FloatRect* out_merged_bounds = nullptr) const;
+                  const PropertyTreeState& guest_state) const {
+      return const_cast<PendingLayer*>(this)->MergeInternal(guest, guest_state,
+                                                            /*dry_run*/ true);
+    }
 
     // Mutate this layer's property tree state to a more general (shallower)
     // state, thus the name "upcast". The concrete effect of this is to
@@ -304,8 +305,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
     const PaintChunk& FirstPaintChunk() const;
     const DisplayItem& FirstDisplayItem() const;
-
-    FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
 
     std::unique_ptr<JSONObject> ToJSON() const;
 
@@ -332,6 +331,12 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
         PaintPropertyChangeType::kUnchanged;
     const GraphicsLayer* graphics_layer = nullptr;
     CompositingType compositing_type;
+
+   private:
+    FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
+    bool MergeInternal(const PendingLayer& guest,
+                       const PropertyTreeState& guest_state,
+                       bool dry_run);
   };
 
   static void UpdateLayerProperties(cc::Layer&,

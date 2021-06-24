@@ -524,28 +524,6 @@ FloatRect PaintArtifactCompositor::PendingLayer::VisualRectForOverlapTesting(
   return visual_rect.Rect();
 }
 
-bool PaintArtifactCompositor::PendingLayer::Merge(const PendingLayer& guest) {
-  PropertyTreeState new_state = PropertyTreeState::Uninitialized();
-  FloatRect guest_bounds;
-  if (!CanMerge(guest, guest.property_tree_state, &new_state, &guest_bounds,
-                &bounds)) {
-    return false;
-  }
-
-  chunks.Merge(guest.chunks);
-  rect_known_to_be_opaque =
-      MaximumCoveredRect(MapRectKnownToBeOpaque(new_state),
-                         guest.MapRectKnownToBeOpaque(new_state));
-  text_known_to_be_on_opaque_background &=
-      (guest.text_known_to_be_on_opaque_background ||
-       rect_known_to_be_opaque.Contains(guest_bounds));
-  property_tree_state = new_state;
-  change_of_decomposited_transforms =
-      std::max(change_of_decomposited_transforms,
-               guest.change_of_decomposited_transforms);
-  return true;
-}
-
 void PaintArtifactCompositor::PendingLayer::Upcast(
     const PropertyTreeState& new_state) {
   DCHECK(!RequiresOwnLayer());
@@ -654,12 +632,10 @@ absl::optional<PropertyTreeState> CanUpcastWith(const PropertyTreeState& guest,
 // exceed the ratio |kMergingSparsityTolerance|:1.
 static constexpr float kMergeSparsityTolerance = 6;
 
-bool PaintArtifactCompositor::PendingLayer::CanMerge(
+bool PaintArtifactCompositor::PendingLayer::MergeInternal(
     const PendingLayer& guest,
     const PropertyTreeState& guest_state,
-    PropertyTreeState* out_merged_state,
-    FloatRect* out_guest_bounds,
-    FloatRect* out_merged_bounds) const {
+    bool dry_run) {
   if (&chunks.GetPaintArtifact() != &guest.chunks.GetPaintArtifact())
     return false;
   if (RequiresOwnLayer() || guest.RequiresOwnLayer())
@@ -695,12 +671,20 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
       return false;
   }
 
-  if (out_merged_state)
-    *out_merged_state = *merged_state;
-  if (out_guest_bounds)
-    *out_guest_bounds = new_guest_bounds.Rect();
-  if (out_merged_bounds)
-    *out_merged_bounds = merged_bounds;
+  if (!dry_run) {
+    chunks.Merge(guest.chunks);
+    bounds = merged_bounds;
+    rect_known_to_be_opaque =
+        MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
+                           guest.MapRectKnownToBeOpaque(*merged_state));
+    property_tree_state = *merged_state;
+    text_known_to_be_on_opaque_background &=
+        (guest.text_known_to_be_on_opaque_background ||
+         rect_known_to_be_opaque.Contains(new_guest_bounds.Rect()));
+    change_of_decomposited_transforms =
+        std::max(change_of_decomposited_transforms,
+                 guest.change_of_decomposited_transforms);
+  }
   return true;
 }
 
