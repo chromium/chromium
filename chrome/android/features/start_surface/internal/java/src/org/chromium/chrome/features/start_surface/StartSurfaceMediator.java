@@ -422,7 +422,9 @@ class StartSurfaceMediator
     }
 
     private void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
-        if (mLaunchOrigin == launchOrigin) return;
+        if (launchOrigin == NewTabPageLaunchOrigin.WEB_FEED) {
+            StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
+        }
         mLaunchOrigin = launchOrigin;
         // If the FeedSurfaceCoordinator is already initialized, set the TabId.
         if (mPropertyModel == null) return;

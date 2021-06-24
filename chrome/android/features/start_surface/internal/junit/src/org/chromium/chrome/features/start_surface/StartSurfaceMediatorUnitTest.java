@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -62,6 +63,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -906,6 +908,40 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(
                 mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
+    }
+
+    @Test
+    public void setOverviewState_webFeed_resetsFeedInstanceState() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+
+        String instanceState = "state";
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(instanceState);
+
+        assertEquals(StartSurfaceUserData.getInstance().restoreFeedInstanceState(), instanceState);
+
+        mediator.setOverviewState(StartSurfaceState.SHOWING_START, NewTabPageLaunchOrigin.WEB_FEED);
+        assertNull(StartSurfaceUserData.getInstance().restoreFeedInstanceState());
+    }
+
+    @Test
+    public void setOverviewState_nonWebFeed_doesNotResetFeedInstanceState() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+
+        String instanceState = "state";
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(instanceState);
+
+        assertEquals(StartSurfaceUserData.getInstance().restoreFeedInstanceState(), instanceState);
+
+        mediator.setOverviewState(StartSurfaceState.SHOWING_START, NewTabPageLaunchOrigin.UNKNOWN);
+        assertNotNull(StartSurfaceUserData.getInstance().restoreFeedInstanceState());
     }
 
     @Test
