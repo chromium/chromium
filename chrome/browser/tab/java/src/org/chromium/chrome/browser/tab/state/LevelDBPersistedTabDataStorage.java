@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.nio.ByteBuffer;
 import java.util.Locale;
 
 /**
@@ -51,8 +52,9 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void restore(int tabId, String dataId, Callback<byte[]> callback) {
-        mPersistedDataStorage.load(getKey(tabId, dataId), callback);
+    public void restore(int tabId, String dataId, Callback<ByteBuffer> callback) {
+        mPersistedDataStorage.load(getKey(tabId, dataId),
+                (res) -> { callback.onResult(res == null ? null : ByteBuffer.wrap(res)); });
     }
 
     /**
@@ -62,7 +64,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @Deprecated
     @MainThread
     @Override
-    public byte[] restore(int tabId, String dataId) {
+    public ByteBuffer restore(int tabId, String dataId) {
         assert false : "Synchronous restore is not supported for LevelDBPersistedTabDataStorage";
         return null;
     }

@@ -9,6 +9,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,9 +31,12 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
-    public void restore(int tabId, String tabDataId, Callback<byte[]> callback) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { callback.onResult(mStorage.get(getKey(tabId))); });
+    public void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback) {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            callback.onResult(mStorage.get(getKey(tabId)) == null
+                            ? null
+                            : ByteBuffer.wrap(mStorage.get(getKey(tabId))));
+        });
         if (mSemaphore != null) {
             mSemaphore.release();
         }
@@ -40,7 +44,7 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
 
     // Unused
     @Override
-    public byte[] restore(int tabId, String tabDataId) {
+    public ByteBuffer restore(int tabId, String tabDataId) {
         return null;
     }
 

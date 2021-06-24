@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -257,7 +258,8 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
                 OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
-        byte[] serialized = criticalPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized =
+                TabTestUtils.toByteBuffer(criticalPersistedTabData.getSerializeSupplier().get());
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
@@ -283,7 +285,8 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
                 THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
-        byte[] serialized = criticalPersistedTabData.getSerializeSupplier().get();
+        ByteBuffer serialized =
+                TabTestUtils.toByteBuffer(criticalPersistedTabData.getSerializeSupplier().get());
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =

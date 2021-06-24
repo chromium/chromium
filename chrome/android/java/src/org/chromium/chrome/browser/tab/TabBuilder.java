@@ -12,6 +12,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.nio.ByteBuffer;
+
 /**
  * Builds {@link Tab} using builder pattern. All Tab classes should be instantiated
  * through this builder.
@@ -31,7 +33,7 @@ public class TabBuilder {
     private TabDelegateFactory mDelegateFactory;
     private boolean mInitiallyHidden;
     private TabState mTabState;
-    private byte[] mSerializedCriticalPersistedTabData;
+    private ByteBuffer mSerializedCriticalPersistedTabData;
     private Callback<Tab> mPreInitializeAction;
 
     /**
@@ -153,7 +155,7 @@ public class TabBuilder {
      * @return {@link TabBuilder} creating the Tab
      */
     public TabBuilder setSerializedCriticalPersistedTabData(
-            @Nullable byte[] serializedCriticalPersistedTabData) {
+            @Nullable ByteBuffer serializedCriticalPersistedTabData) {
         mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
         return this;
     }

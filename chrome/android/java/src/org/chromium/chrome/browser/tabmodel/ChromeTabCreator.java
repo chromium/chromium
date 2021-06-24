@@ -45,6 +45,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.nio.ByteBuffer;
+
 /**
  * This class creates various kinds of new tabs and adds them to the right {@link TabModel}.
  */
@@ -402,8 +404,8 @@ public class ChromeTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, byte[] serializedCriticalPersistedTabData, int id,
-            boolean isIncognito, int index) {
+    public Tab createFrozenTab(TabState state, ByteBuffer serializedCriticalPersistedTabData,
+            int id, boolean isIncognito, int index) {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         TabResolver resolver = (tabId) -> {
             return selector != null ? selector.getTabById(tabId) : null;

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.StorePersistedTabData.StorePersistedTabDataProto;
 
+import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +83,7 @@ public class StorePersistedTabData extends PersistedTabData {
      * @param persistedTabDataId id for {@link StorePersistedTabData}
      */
     protected StorePersistedTabData(
-            Tab tab, byte[] data, PersistedTabDataStorage storage, String persistedTabDataId) {
+            Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, storage, persistedTabDataId);
     }
 
@@ -244,7 +245,7 @@ public class StorePersistedTabData extends PersistedTabData {
     }
 
     @Override
-    boolean deserialize(@Nullable byte[] bytes) {
+    boolean deserialize(@Nullable ByteBuffer bytes) {
         if (bytes == null) {
             return false;
         }

@@ -22,6 +22,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.nio.ByteBuffer;
+
 /** MockTabCreator for use in tests. */
 public class MockTabCreator extends TabCreator {
     public final SparseArray<TabState> created;
@@ -58,7 +60,7 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, byte[] criticalPersistedTabData, int id,
+    public Tab createFrozenTab(TabState state, ByteBuffer criticalPersistedTabData, int id,
             boolean isIncognito, int index) {
         Tab tab = new MockTab(id, state.isIncognito(), TabLaunchType.FROM_RESTORE);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));

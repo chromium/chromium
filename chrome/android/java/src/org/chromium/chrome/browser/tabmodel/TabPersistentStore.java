@@ -67,6 +67,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -646,7 +647,7 @@ public class TabPersistentStore {
         }
     }
 
-    private static byte[] maybeRestoreCriticalPersistedTabDataSynchronously(
+    private static ByteBuffer maybeRestoreCriticalPersistedTabDataSynchronously(
             TabRestoreDetails tabToRestore) {
         if (!isCriticalPersistedTabDataEnabled()) return null;
         Boolean isIncognito = isIncognitoWithCPTDFallback(tabToRestore);
@@ -666,7 +667,7 @@ public class TabPersistentStore {
      */
     @VisibleForTesting
     protected void restoreTab(TabRestoreDetails tabToRestore, TabState tabState,
-            byte[] serializedCriticalPersistedTabData, boolean setAsActive) {
+            ByteBuffer serializedCriticalPersistedTabData, boolean setAsActive) {
         // If we don't have enough information about the Tab, bail out.
         boolean isIncognito = isIncognitoTabBeingRestored(
                 tabToRestore, tabState, serializedCriticalPersistedTabData);
@@ -1613,7 +1614,7 @@ public class TabPersistentStore {
     }
 
     private void completeLoad(TabRestoreDetails tabToRestore, TabState tabState,
-            byte[] serializedCriticalPersistedTabData) {
+            ByteBuffer serializedCriticalPersistedTabData) {
         boolean isIncognito = isIncognitoTabBeingRestored(
                 tabToRestore, tabState, serializedCriticalPersistedTabData);
         if (isIncognito) {
@@ -1665,7 +1666,7 @@ public class TabPersistentStore {
      * @return True if the tab is definitely Incognito, false if it's not or if it's undecideable.
      */
     private boolean isIncognitoTabBeingRestored(TabRestoreDetails tabDetails, TabState tabState,
-            byte[] serializedCriticalPersistedTabData) {
+            ByteBuffer serializedCriticalPersistedTabData) {
         if (tabState != null) {
             Log.i(TAG, "#isIncognitoTabBeingRestored from tabState:  " + tabState.isIncognito());
             // The Tab's previous state was completely restored.
