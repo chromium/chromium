@@ -1323,6 +1323,8 @@ component("ash") {
     "system/privacy_screen/privacy_screen_toast_controller.h",
     "system/privacy_screen/privacy_screen_toast_view.cc",
     "system/privacy_screen/privacy_screen_toast_view.h",
+    "system/quick_pair/fast_pair_notification_controller.cc",
+    "system/quick_pair/fast_pair_notification_controller.h",
     "system/rotation/rotation_lock_feature_pod_controller.cc",
     "system/rotation/rotation_lock_feature_pod_controller.h",
     "system/screen_layout_observer.cc",
