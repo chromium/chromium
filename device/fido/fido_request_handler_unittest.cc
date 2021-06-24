@@ -320,7 +320,7 @@ class FidoRequestHandlerTest : public ::testing::Test {
 
 TEST_F(FidoRequestHandlerTest, TestSingleDeviceSuccess) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   auto device = std::make_unique<MockFidoDevice>();
   device->ExpectCtap2CommandAndRespondWith(
@@ -341,7 +341,7 @@ TEST_F(FidoRequestHandlerTest, TestSingleDeviceSuccess) {
 // command must be invoked to all connected authenticators.
 TEST_F(FidoRequestHandlerTest, TestAuthenticatorHandlerReset) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   auto device0 = std::make_unique<MockFidoDevice>();
   device0->ExpectCtap2CommandAndRespondWith(
@@ -368,7 +368,7 @@ TEST_F(FidoRequestHandlerTest, TestAuthenticatorHandlerReset) {
 // from only a single device(device1) and the remaining device hangs.
 TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleDevices) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   // Represents a connected device that hangs without a response.
   auto device0 = std::make_unique<MockFidoDevice>();
@@ -401,7 +401,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleDevices) {
 // party, and cancel request should be sent to the other authenticator.
 TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleSuccessResponses) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   // Represents a connected device that responds successfully after small time
   // delay.
@@ -443,7 +443,7 @@ TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleSuccessResponses) {
 // relying party and cancel command should be sent to the remaining device.
 TEST_F(FidoRequestHandlerTest, TestRequestWithMultipleFailureResponses) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   // Represents a connected device that immediately responds with a processing
   // error.
@@ -525,8 +525,8 @@ TEST_F(FidoRequestHandlerTest,
 
   discovery()->AddDevice(std::move(device0));
   platform_discovery->AddDevice(std::move(device1));
-  discovery()->WaitForCallToStart();
-  platform_discovery->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+  platform_discovery->WaitForCallToStartAndSimulateSuccess();
 
   task_environment_.FastForwardUntilNoTasksRemain();
   callback().WaitForCallback();
@@ -538,7 +538,7 @@ TEST_F(FidoRequestHandlerTest,
 TEST_F(FidoRequestHandlerTest,
        TestRequestWithOperationDeniedErrorCrossPlatform) {
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
 
   // Device will send CTAP2_ERR_OPERATION_DENIED.
   auto device0 = MockFidoDevice::MakeCtapWithGetInfoExpectation();
@@ -607,7 +607,7 @@ TEST_F(FidoRequestHandlerTest,
        TransportAvailabilityNotificationOnObserverSetLate) {
   TestObserver observer;
   auto request_handler = CreateFakeHandler();
-  discovery()->WaitForCallToStart();
+  discovery()->WaitForCallToStartAndSimulateSuccess();
   task_environment_.FastForwardUntilNoTasksRemain();
 
   request_handler->set_observer(&observer);
@@ -633,7 +633,7 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
     // If the windows API is not enabled, the request is dispatched to the USB
     // discovery. Simulate a success to fill the transport availability info.
     if (!api_available)
-      discovery()->WaitForCallToStart();
+      discovery()->WaitForCallToStartAndSimulateSuccess();
 
     task_environment_.FastForwardUntilNoTasksRemain();
 
