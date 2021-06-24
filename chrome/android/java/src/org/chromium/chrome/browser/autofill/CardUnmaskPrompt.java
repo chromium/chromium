@@ -25,14 +25,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.task.AsyncTask;
@@ -44,7 +42,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * A prompt that bugs users to enter their CVC when unmasking a Wallet instrument (credit card).
@@ -67,10 +64,7 @@ public class CardUnmaskPrompt
     private final View mExpirationContainer;
     private final TextView mNewCardLink;
     private final TextView mErrorMessage;
-    private final CheckBox mStoreLocallyCheckbox;
     private final CheckBox mUseScreenlockCheckbox;
-    private final ImageView mStoreLocallyTooltipIcon;
-    private PopupWindow mStoreLocallyTooltipPopup;
     private final ViewGroup mControlsContainer;
     private final View mVerificationOverlay;
     private final ProgressBar mVerificationProgressBar;
@@ -107,11 +101,9 @@ public class CardUnmaskPrompt
          * @param cvc The value the user entered (a CVC), or an empty string if the user canceled.
          * @param month The value the user selected for expiration month, if any.
          * @param year The value the user selected for expiration month, if any.
-         * @param shouldStoreLocally The state of the "Save locally?" checkbox at the time.
          * @param enableFidoAuth The value the user selected for the use lockscreen checkbox.
          */
-        void onUserInput(String cvc, String month, String year, boolean shouldStoreLocally,
-                boolean enableFidoAuth);
+        void onUserInput(String cvc, String month, String year, boolean enableFidoAuth);
 
         /**
          * Called when the "New card?" link has been clicked.
@@ -172,16 +164,12 @@ public class CardUnmaskPrompt
         mNewCardLink = (TextView) v.findViewById(R.id.new_card_link);
         mNewCardLink.setOnClickListener(this);
         mErrorMessage = (TextView) v.findViewById(R.id.error_message);
-        mStoreLocallyCheckbox = (CheckBox) v.findViewById(R.id.store_locally_checkbox);
         mUseScreenlockCheckbox = (CheckBox) v.findViewById(R.id.use_screenlock_checkbox);
         mUseScreenlockCheckbox.setChecked(defaultUseScreenlockChecked);
         if (!shouldOfferWebauthn) {
             mUseScreenlockCheckbox.setVisibility(View.GONE);
             mUseScreenlockCheckbox.setChecked(false);
         }
-        mStoreLocallyTooltipIcon = (ImageView) v.findViewById(R.id.store_locally_tooltip_icon);
-        mStoreLocallyTooltipIcon.setOnClickListener(this);
-        v.findViewById(R.id.store_locally_container).setVisibility(View.GONE);
         mControlsContainer = (ViewGroup) v.findViewById(R.id.controls_container);
         mVerificationOverlay = v.findViewById(R.id.verification_overlay);
         mVerificationProgressBar = (ProgressBar) v.findViewById(R.id.verification_progress_bar);
@@ -388,12 +376,8 @@ public class CardUnmaskPrompt
 
     @Override
     public void onClick(View v) {
-        if (v == mStoreLocallyTooltipIcon) {
-            onTooltipIconClicked();
-        } else {
-            assert v == mNewCardLink;
-            onNewCardLinkClicked();
-        }
+        assert v == mNewCardLink;
+        onNewCardLinkClicked();
     }
 
     private void showExpirationDateInputsInputs() {
@@ -405,38 +389,6 @@ public class CardUnmaskPrompt
         mCardUnmaskInput.setEms(3);
         mMonthInput.addTextChangedListener(this);
         mYearInput.addTextChangedListener(this);
-    }
-
-    private void onTooltipIconClicked() {
-        // Don't show the popup if there's already one showing (or one has been dismissed
-        // recently). This prevents a tap on the (?) from hiding and then immediately re-showing
-        // the popup.
-        if (mStoreLocallyTooltipPopup != null) return;
-
-        mStoreLocallyTooltipPopup = new PopupWindow(mContext);
-        Runnable dismissAction = () -> {
-            mStoreLocallyTooltipPopup = null;
-        };
-        boolean isLeftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-                == ViewCompat.LAYOUT_DIRECTION_LTR;
-        AutofillUiUtils.showTooltip(mContext, mStoreLocallyTooltipPopup,
-                R.string.autofill_card_unmask_prompt_storage_tooltip,
-                new AutofillUiUtils.OffsetProvider() {
-                    @Override
-                    public int getXOffset(TextView textView) {
-                        int xOffset =
-                                mStoreLocallyTooltipIcon.getLeft() - textView.getMeasuredWidth();
-                        return Math.max(0, xOffset);
-                    }
-
-                    @Override
-                    public int getYOffset(TextView textView) {
-                        return 0;
-                    }
-                },
-                // If the layout is right to left then anchor on the edit text field else anchor on
-                // the tooltip icon, which would be on the left.
-                isLeftToRight ? mStoreLocallyCheckbox : mStoreLocallyTooltipIcon, dismissAction);
     }
 
     private void onNewCardLinkClicked() {
@@ -544,7 +496,6 @@ public class CardUnmaskPrompt
         mCardUnmaskInput.setEnabled(enabled);
         mMonthInput.setEnabled(enabled);
         mYearInput.setEnabled(enabled);
-        mStoreLocallyCheckbox.setEnabled(enabled);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, !enabled);
     }
 
@@ -595,7 +546,6 @@ public class CardUnmaskPrompt
             mDelegate.onUserInput(mCardUnmaskInput.getText().toString(),
                     mMonthInput.getText().toString(),
                     Integer.toString(AutofillUiUtils.getFourDigitYear(mYearInput)),
-                    mStoreLocallyCheckbox != null && mStoreLocallyCheckbox.isChecked(),
                     mUseScreenlockCheckbox.isChecked());
         } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);

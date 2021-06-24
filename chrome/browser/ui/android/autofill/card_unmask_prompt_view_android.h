@@ -36,7 +36,6 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                    const base::android::JavaParamRef<jstring>& cvc,
                    const base::android::JavaParamRef<jstring>& month,
                    const base::android::JavaParamRef<jstring>& year,
-                   jboolean should_store_locally,
                    jboolean enable_fido_auth);
   void OnNewCardLinkClicked(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);

@@ -69,10 +69,9 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     }
 
     @Override
-    public void onUserInput(String cvc, String month, String year, boolean shouldStoreLocally,
-            boolean enableFidoAuth) {
+    public void onUserInput(String cvc, String month, String year, boolean enableFidoAuth) {
         CardUnmaskBridgeJni.get().onUserInput(mNativeCardUnmaskPromptViewAndroid,
-                CardUnmaskBridge.this, cvc, month, year, shouldStoreLocally, enableFidoAuth);
+                CardUnmaskBridge.this, cvc, month, year, enableFidoAuth);
     }
 
     @Override
@@ -148,8 +147,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         boolean checkUserInputValidity(long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller, String userResponse);
         void onUserInput(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller,
-                String cvc, String month, String year, boolean shouldStoreLocally,
-                boolean enableFidoAuth);
+                String cvc, String month, String year, boolean enableFidoAuth);
         void onNewCardLinkClicked(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
         int getExpectedCvcLength(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
     }

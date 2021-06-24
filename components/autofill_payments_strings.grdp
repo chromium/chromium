@@ -337,21 +337,6 @@
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph> to update your card details. Once you confirm, your card details will be shared with this site.
     </message>
   </if>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_CHECKBOX" desc="Text for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device. If checked, the dialog won't show up again for the given credit card." formatter_data="android_java">
-    Keep a copy of this card on this device
-  </message>
-  <if expr="is_android">
-    <if expr="_google_chrome">
-      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device." formatter_data="android_java">
-        If checked, Chrome will store a copy of your card on this device for faster form filling.
-      </message>
-    </if>
-    <if expr="not _google_chrome">
-      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device." formatter_data="android_java">
-        If checked, Chromium will store a copy of your card on this device for faster form filling.
-      </message>
-    </if>
-  </if>
   <if expr="is_ios">
     <if expr="_google_chrome">
       <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation on iOS for the option in the card unmasking dialog that allows user to store a Wallet card on their local device.">

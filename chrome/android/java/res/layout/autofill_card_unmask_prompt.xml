@@ -146,38 +146,6 @@
             android:textAppearance="@style/TextAppearance.AutofillCardErrorMessage"
             android:visibility="gone" />
 
-        <RelativeLayout
-            android:id="@+id/store_locally_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:id="@+id/store_locally_tooltip_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="12dp"
-                android:src="@drawable/help_outline"
-                android:contentDescription="@string/learn_more" />
-
-           <CheckBox
-                android:id="@+id/store_locally_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/store_locally_tooltip_icon"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="10dp"
-                android:textAppearance="@style/TextAppearance.AutofillCardCheckBoxText"
-                android:text="@string/autofill_card_unmask_prompt_storage_checkbox" />
-
-        </RelativeLayout>
-
         <CheckBox
             android:id="@+id/use_screenlock_checkbox"
             android:layout_width="wrap_content"
