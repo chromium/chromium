@@ -21,6 +21,8 @@
 using fuchsia::input::Key;
 using fuchsia::ui::input3::KeyEvent;
 using fuchsia::ui::input3::KeyEventType;
+using fuchsia::ui::input3::KeyMeaning;
+using fuchsia::ui::input3::NonPrintableKey;
 
 namespace {
 
@@ -29,7 +31,7 @@ const char kKeyPress[] = "keypress";
 const char kKeyUp[] = "keyup";
 const char kKeyDicts[] = "keyDicts";
 
-KeyEvent FakeKeyEvent(Key key, KeyEventType event_type) {
+KeyEvent CreateKeyEvent(Key key, KeyEventType event_type) {
   KeyEvent key_event;
   key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
   key_event.set_type(event_type);
@@ -37,15 +39,38 @@ KeyEvent FakeKeyEvent(Key key, KeyEventType event_type) {
   return key_event;
 }
 
-std::unique_ptr<base::Value> ExpectedKeyValue(base::StringPiece code,
-                                              base::StringPiece key,
-                                              base::StringPiece type) {
-  std::unique_ptr<base::Value> expected =
-      std::make_unique<base::DictionaryValue>();
-  expected->SetStringKey("code", code);
-  expected->SetStringKey("key", key);
-  expected->SetStringKey("type", type);
+KeyEvent CreateCharacterEvent(uint32_t codepoint, KeyEventType event_type) {
+  KeyEvent key_event;
+
+  fuchsia::ui::input3::KeyMeaning meaning;
+  meaning.set_codepoint(codepoint);
+  key_event.set_key_meaning(std::move(meaning));
+  key_event.set_type(event_type);
+  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
+  return key_event;
+}
+
+base::Value ExpectedKeyValue(base::StringPiece code,
+                             base::StringPiece key,
+                             base::StringPiece type) {
+  base::Value expected(base::Value::Type::DICTIONARY);
+  expected.SetStringKey("code", code);
+  expected.SetStringKey("key", key);
+  expected.SetStringKey("type", type);
   return expected;
+}
+
+// Recursive base case.
+template <typename T>
+void AppendValueList(std::vector<T>* vec) {}
+
+// Use tail recursion to emplace a sequence of Values into |vec|.
+// It is used as an alternative to initializer lists, which don't work with
+// move-only types like base::Value.
+template <typename T, typename... Args>
+void AppendValueList(std::vector<T>* vec, T&& value, Args&&... args) {
+  vec->push_back(std::move(value));
+  AppendValueList(vec, std::forward<base::Value>(args)...);
 }
 
 class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
@@ -137,6 +162,18 @@ class InputTest : public cr_fuchsia::WebEngineBrowserTest {
         context_impl()->GetFrameImplForTest(frame_ptr)->web_contents());
   }
 
+  template <typename... Args>
+  void ExpectKeyEventsEqual(Args... events) {
+    std::vector<base::Value> expected;
+    AppendValueList(&expected, std::forward<Args>(events)...);
+    frame_for_test_.navigation_listener().RunUntilTitleEquals(
+        base::NumberToString(expected.size()));
+
+    absl::optional<base::Value> actual =
+        cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
+    EXPECT_EQ(*actual, base::Value(expected));
+  }
+
   // Used to publish fake services.
   absl::optional<base::TestComponentContextForProcess> component_context_;
 
@@ -145,99 +182,139 @@ class InputTest : public cr_fuchsia::WebEngineBrowserTest {
   absl::optional<FakeKeyboard> keyboard_service_;
 };
 
-// Check that regular character keys are sent and received correctly.
-IN_PROC_BROWSER_TEST_F(InputTest, CharacterKeys) {
-  const int kExpectedCharacterEventCount = 6;
+// Check that printable keys are sent and received correctly.
+IN_PROC_BROWSER_TEST_F(InputTest, PrintableKeys) {
+  // Send key press events from the Fuchsia keyboard service.
+  // Pressing character keys will generate a JavaScript keydown event followed
+  // by a keypress event. Releasing any key generates a keyup event.
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::A, KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::KEY_8, KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::KEY_8, KeyEventType::RELEASED));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::A, KeyEventType::RELEASED));
+
+  ExpectKeyEventsEqual(ExpectedKeyValue("KeyA", "a", kKeyDown),
+                       ExpectedKeyValue("KeyA", "a", kKeyPress),
+                       ExpectedKeyValue("Digit8", "8", kKeyDown),
+                       ExpectedKeyValue("Digit8", "8", kKeyPress),
+                       ExpectedKeyValue("Digit8", "8", kKeyUp),
+                       ExpectedKeyValue("KeyA", "a", kKeyUp));
+}
+
+// Check that character virtual keys are sent and received correctly.
+IN_PROC_BROWSER_TEST_F(InputTest, Characters) {
+  // Send key press events from the Fuchsia keyboard service.
+  // Pressing character keys will generate a JavaScript keydown event followed
+  // by a keypress event. Releasing any key generates a keyup event.
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('A', KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('A', KeyEventType::RELEASED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('b', KeyEventType::PRESSED));
+
+  ExpectKeyEventsEqual(ExpectedKeyValue("", "A", kKeyPress),
+                       ExpectedKeyValue("", "b", kKeyPress));
+}
+
+// Verify that character events are not affected by active modifiers.
+IN_PROC_BROWSER_TEST_F(InputTest, ShiftCharacter) {
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('a', KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('a', KeyEventType::RELEASED));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::RELEASED));
+
+  ExpectKeyEventsEqual(
+      ExpectedKeyValue("ShiftLeft", "Shift", kKeyDown),
+      ExpectedKeyValue("", "a", kKeyPress),  // Remains lowercase.
+      ExpectedKeyValue("ShiftLeft", "Shift", kKeyUp));
+}
+
+// Verifies that codepoints outside the 16-bit Unicode BMP are rejected.
+IN_PROC_BROWSER_TEST_F(InputTest, CharacterInBmp) {
+  const wchar_t kSigma = 0x03C3;
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent(kSigma, KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent(kSigma, KeyEventType::RELEASED));
+
+  std::string expected_utf8;
+  ASSERT_TRUE(base::WideToUTF8(&kSigma, 1, &expected_utf8));
+  ExpectKeyEventsEqual(ExpectedKeyValue("", expected_utf8, kKeyPress));
+}
+
+// Verifies that codepoints beyond the range of allowable UCS-2 values
+// are rejected.
+IN_PROC_BROWSER_TEST_F(InputTest, CharacterBeyondBmp) {
+  const uint32_t kRamenEmoji = 0x1F35C;
 
   // Send key press events from the Fuchsia keyboard service.
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
-  keyboard_service_->SendKeyEvent(FakeKeyEvent(Key::A, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::KEY_8, KeyEventType::PRESSED));
+      CreateCharacterEvent(kRamenEmoji, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::KEY_8, KeyEventType::RELEASED));
-  keyboard_service_->SendKeyEvent(FakeKeyEvent(Key::A, KeyEventType::RELEASED));
-  frame_for_test_.navigation_listener().RunUntilTitleEquals(
-      base::NumberToString(kExpectedCharacterEventCount));
+      CreateCharacterEvent(kRamenEmoji, KeyEventType::RELEASED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('a', KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(
+      CreateCharacterEvent('a', KeyEventType::RELEASED));
 
-  absl::optional<base::Value> result =
-      cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
-
-  base::ListValue expected;
-  expected.Set(0, ExpectedKeyValue("KeyA", "a", kKeyDown));
-  expected.Set(1, ExpectedKeyValue("KeyA", "a", kKeyPress));
-  expected.Set(2, ExpectedKeyValue("Digit8", "8", kKeyDown));
-  expected.Set(3, ExpectedKeyValue("Digit8", "8", kKeyPress));
-  expected.Set(4, ExpectedKeyValue("Digit8", "8", kKeyUp));
-  expected.Set(5, ExpectedKeyValue("KeyA", "a", kKeyUp));
-
-  EXPECT_EQ(*result, expected);
+  ExpectKeyEventsEqual(ExpectedKeyValue("", "a", kKeyPress));
 }
 
-IN_PROC_BROWSER_TEST_F(InputTest, ShiftCharacterKeys) {
-  const int kExpectedShiftCharacterEventCount = 10;
+IN_PROC_BROWSER_TEST_F(InputTest, ShiftPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
-  keyboard_service_->SendKeyEvent(FakeKeyEvent(Key::B, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::KEY_3, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::B, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::SPACE, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::KEY_1, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::LEFT_SHIFT, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::SPACE, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::DOT, KeyEventType::PRESSED));
-  frame_for_test_.navigation_listener().RunUntilTitleEquals(
-      base::NumberToString(kExpectedShiftCharacterEventCount));
+      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::RELEASED));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::DOT, KeyEventType::PRESSED));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
-  absl::optional<base::Value> result =
-      cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
-
-  base::ListValue expected;
-  expected.Set(0, ExpectedKeyValue("ShiftLeft", "Shift", kKeyDown));
-  expected.Set(1, ExpectedKeyValue("KeyB", "B", kKeyDown));
-  expected.Set(2, ExpectedKeyValue("KeyB", "B", kKeyPress));
-  expected.Set(3, ExpectedKeyValue("Digit3", "#", kKeyDown));
-  expected.Set(4, ExpectedKeyValue("Digit3", "#", kKeyPress));
-  expected.Set(5, ExpectedKeyValue("Space", " ", kKeyDown));
-  expected.Set(6, ExpectedKeyValue("Space", " ", kKeyPress));
-  expected.Set(7, ExpectedKeyValue("ShiftLeft", "Shift", kKeyUp));
-  expected.Set(8, ExpectedKeyValue("Period", ".", kKeyDown));
-  expected.Set(9, ExpectedKeyValue("Period", ".", kKeyPress));
-
-  EXPECT_EQ(*result, expected);
+  ExpectKeyEventsEqual(ExpectedKeyValue("ShiftLeft", "Shift", kKeyDown),
+                       ExpectedKeyValue("KeyB", "B", kKeyDown),
+                       ExpectedKeyValue("KeyB", "B", kKeyPress),
+                       ExpectedKeyValue("Digit1", "!", kKeyDown),
+                       ExpectedKeyValue("Digit1", "!", kKeyPress),
+                       ExpectedKeyValue("Space", " ", kKeyDown),
+                       ExpectedKeyValue("Space", " ", kKeyPress),
+                       ExpectedKeyValue("ShiftLeft", "Shift", kKeyUp),
+                       ExpectedKeyValue("Period", ".", kKeyDown),
+                       ExpectedKeyValue("Period", ".", kKeyPress));
 }
 
-IN_PROC_BROWSER_TEST_F(InputTest, ShiftNonCharacterKeys) {
-  const int kExpectedShiftNonCharacterEventCount = 5;
-
+IN_PROC_BROWSER_TEST_F(InputTest, ShiftNonPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::RIGHT_SHIFT, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::RIGHT_SHIFT, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::ENTER, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::ENTER, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::LEFT_CTRL, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::LEFT_CTRL, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      FakeKeyEvent(Key::RIGHT_SHIFT, KeyEventType::RELEASED));
-  frame_for_test_.navigation_listener().RunUntilTitleEquals(
-      base::NumberToString(kExpectedShiftNonCharacterEventCount));
+      CreateKeyEvent(Key::RIGHT_SHIFT, KeyEventType::RELEASED));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
-  absl::optional<base::Value> result =
-      cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
-
-  base::ListValue expected;
-  expected.Set(0, ExpectedKeyValue("ShiftRight", "Shift", kKeyDown));
-  expected.Set(1, ExpectedKeyValue("Enter", "Enter", kKeyDown));
-  expected.Set(2, ExpectedKeyValue("Enter", "Enter", kKeyPress));
-  expected.Set(3, ExpectedKeyValue("ControlLeft", "Control", kKeyDown));
-  expected.Set(4, ExpectedKeyValue("ShiftRight", "Shift", kKeyUp));
-
-  EXPECT_EQ(*result, expected);
+  ExpectKeyEventsEqual(ExpectedKeyValue("ShiftRight", "Shift", kKeyDown),
+                       ExpectedKeyValue("Enter", "Enter", kKeyDown),
+                       ExpectedKeyValue("Enter", "Enter", kKeyPress),
+                       ExpectedKeyValue("ControlLeft", "Control", kKeyDown),
+                       ExpectedKeyValue("ShiftRight", "Shift", kKeyUp));
 }
 
 IN_PROC_BROWSER_TEST_F(InputTest, Disconnect) {

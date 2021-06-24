@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -34,6 +35,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
       fuchsia::ui::input3::KeyboardListener::OnKeyEventCallback callback) final;
 
  private:
+  bool IsValid(const fuchsia::ui::input3::KeyEvent& key_event);
+
+  // Returns an unset value if the |key_event| type is unsupported.
+  absl::optional<ui::KeyEvent> ConvertKeystrokeEvent(
+      const fuchsia::ui::input3::KeyEvent& key_event);
+
   // Handles converting and propagating |key_event|. Returns false if critical
   // information about |key_event| is missing, or if the key's event type is not
   // supported.
@@ -42,7 +49,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
   bool ProcessKeyEvent(const fuchsia::ui::input3::KeyEvent& key_event);
 
   // Update the value of modifiers such as shift.
-  void UpdatedCachedModifiers(const fuchsia::ui::input3::KeyEvent& key_event);
+  void UpdateCachedModifiers(const fuchsia::ui::input3::KeyEvent& key_event);
 
   // Translate state of locally tracked modifier keys (e.g. shift, alt) into
   // ui::Event flags.
