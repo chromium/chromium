@@ -59,7 +59,7 @@ class CONTENT_EXPORT Page {
 
   // The GURL for the page's web application manifest.
   // See https://w3c.github.io/manifest/#web-application-manifest
-  virtual const absl::optional<GURL>& GetManifestURL() = 0;
+  virtual const absl::optional<GURL>& GetManifestUrl() const = 0;
 
   // The callback invoked when the renderer responds to a request for the main
   // frame document's manifest. The url will be empty if the document specifies

@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.mojom.h"
@@ -226,7 +227,8 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
-  UpdateManifestURL(manifest_url);
+  // TODO(crbug.com/1222510): Add TestPage and use it.
+  GetPage().UpdateManifestUrl(manifest_url);
 }
 
 void TestRenderFrameHost::SendNavigate(int nav_entry_id,

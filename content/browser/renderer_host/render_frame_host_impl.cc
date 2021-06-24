@@ -4499,12 +4499,6 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
   std::move(callback).Run();
 }
 
-// TODO(crbug.com/1213863): Move this method to content::PageImpl.
-void RenderFrameHostImpl::UpdateManifestURL(const GURL& manifest_url) {
-  DCHECK(!GetParent());
-  GetPage().update_manifest_url(manifest_url);
-}
-
 void RenderFrameHostImpl::DownloadURL(
     blink::mojom::DownloadURLParamsPtr blink_parameters) {
   // TODO(crbug.com/1205359): We should defer the download until the

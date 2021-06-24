@@ -1950,8 +1950,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetWindowRect(const gfx::Rect& bounds,
                      SetWindowRectCallback callback) override;
 
-  void UpdateManifestURL(const GURL& manifest_url);
-
   void ReportNoBinderForInterface(const std::string& error);
 
   // Returns true if this object has any NavigationRequests matching |origin|.

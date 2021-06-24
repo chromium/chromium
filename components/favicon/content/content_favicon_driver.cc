@@ -52,7 +52,7 @@ GURL ContentFaviconDriver::GetManifestURL(content::RenderFrameHost* rfh) {
   DocumentManifestData* document_data =
       DocumentManifestData::GetOrCreateForCurrentDocument(rfh);
   return document_data->has_manifest_url
-             ? rfh->GetPage().GetManifestURL().value_or(GURL())
+             ? rfh->GetPage().GetManifestUrl().value_or(GURL())
              : GURL();
 }
 

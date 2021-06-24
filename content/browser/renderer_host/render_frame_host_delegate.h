@@ -150,6 +150,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                                const GURL& url) {}
 
+  // Notifies that the manifest URL is updated.
+  virtual void OnManifestUrlChanged(const PageImpl& page) {}
+
   // Gets the last committed URL. See WebContents::GetLastCommittedURL for a
   // description of the semantics.
   virtual const GURL& GetMainFrameLastCommittedURL();

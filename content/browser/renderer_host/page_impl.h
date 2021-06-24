@@ -22,25 +22,25 @@ class RenderFrameHostImpl;
 // and adds things only visible to content.
 
 // Please refer to content/public/browser/page.h for more details.
-class PageImpl : public Page {
+class CONTENT_EXPORT PageImpl : public Page {
  public:
   explicit PageImpl(RenderFrameHostImpl& rfh);
 
   ~PageImpl() override;
 
   // Page implementation.
-  const absl::optional<GURL>& GetManifestURL() override;
+  const absl::optional<GURL>& GetManifestUrl() const override;
   void GetManifest(GetManifestCallback callback) override;
   bool IsPrimary() override;
 
-  RenderFrameHostImpl* main_document() { return &main_document_; }
+  void UpdateManifestUrl(const GURL& manifest_url);
+
+  RenderFrameHostImpl* main_document() const { return &main_document_; }
 
   bool is_on_load_completed() const { return is_on_load_completed_; }
   void set_is_on_load_completed(bool completed) {
     is_on_load_completed_ = completed;
   }
-
-  void update_manifest_url(const GURL& url) { manifest_url_ = url; }
 
   const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls() const {
     return favicon_urls_;
