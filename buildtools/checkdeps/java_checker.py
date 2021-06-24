@@ -4,7 +4,7 @@
 
 """Checks Java files for illegal imports."""
 
-from __future__ import print_function
+
 
 import codecs
 import os

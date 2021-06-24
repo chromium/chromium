@@ -12,7 +12,7 @@ Any source file including something not permitted by the DEPS files will fail.
 See README.md for a detailed description of the DEPS format.
 """
 
-from __future__ import print_function
+
 
 import os
 import optparse
@@ -32,7 +32,7 @@ def _IsTestFile(filename):
   """Does a rudimentary check to try to skip test files; this could be
   improved but is good enough for now.
   """
-  return re.match('(test|mock|dummy)_.*|.*_[a-z]*test\.(cc|mm|java)', filename)
+  return re.match(r'(test|mock|dummy)_.*|.*_[a-z]*test\.(cc|mm|java)', filename)
 
 
 class DepsChecker(DepsBuilder):

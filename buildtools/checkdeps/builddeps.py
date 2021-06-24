@@ -9,13 +9,12 @@ a dependency rule table to be used by subclasses.
 See README.md for the format of the deps file.
 """
 
-from __future__ import print_function
+
 
 import copy
 import os.path
 import posixpath
 import subprocess
-import sys
 
 from rules import Rule, Rules
 
@@ -250,14 +249,12 @@ class DepsBuilder(object):
     if os.path.isfile(deps_file_path) and not (
         self._under_test and
         os.path.basename(dir_path_local_abs) == 'checkdeps'):
-      if sys.version_info.major == 2:
-        execfile(deps_file_path, global_scope, local_scope)
-      else:
-        try:
-          exec(open(deps_file_path).read(), global_scope, local_scope)
-        except Exception as e:
-          print(' Error reading %s: %s' % (deps_file_path, str(e)))
-          raise
+      try:
+        with open(deps_file_path) as file:
+          exec(file.read(), global_scope, local_scope)
+      except Exception as e:
+        print(' Error reading %s: %s' % (deps_file_path, str(e)))
+        raise
     elif self.verbose:
       print('  No deps file found in', dir_path_local_abs)
 
@@ -311,7 +308,6 @@ class DepsBuilder(object):
         self._git_source_directories.update(_GitSourceDirectories(repo_path))
 
     # Collect a list of all files and directories to check.
-    files_to_check = []
     if dir_name and not os.path.isabs(dir_name):
       dir_name = os.path.join(self.base_directory, dir_name)
     dirs_to_check = [dir_name or self.base_directory]

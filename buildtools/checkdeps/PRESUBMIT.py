@@ -5,6 +5,8 @@
 """Presubmit script for checkdeps tool.
 """
 
+USE_PYTHON3 = True
+
 
 def CheckChange(input_api, output_api):
   results = []

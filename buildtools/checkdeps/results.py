@@ -4,7 +4,7 @@
 
 """Results object and results formatters for checkdeps tool."""
 
-from __future__ import print_function
+
 
 import json
 
