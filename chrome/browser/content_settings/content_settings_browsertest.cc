@@ -930,8 +930,15 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_StateRestoredWhenNavigatingBack \
+  DISABLED_StateRestoredWhenNavigatingBack
+#else
+#define MAYBE_StateRestoredWhenNavigatingBack StateRestoredWhenNavigatingBack
+#endif
 IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
-                       StateRestoredWhenNavigatingBack) {
+                       MAYBE_StateRestoredWhenNavigatingBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL test_url = embedded_test_server()->GetURL("a.com", "/setcookie.html");

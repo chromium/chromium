@@ -793,7 +793,15 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenInNewWindow) {
                kDontCheckTitle);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_PopupsDisableBackForwardCache \
+  DISABLED_PopupsDisableBackForwardCache
+#else
+#define MAYBE_PopupsDisableBackForwardCache PopupsDisableBackForwardCache
+#endif
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       MAYBE_PopupsDisableBackForwardCache) {
   content::BackForwardCacheDisabledTester tester;
 
   const GURL url1(

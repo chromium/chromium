@@ -862,8 +862,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(0u, GetPermissionRequestManager()->Requests().size());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_NoPermissionBubbleShownForPagesInCache \
+  DISABLED_NoPermissionBubbleShownForPagesInCache
+#else
+#define MAYBE_NoPermissionBubbleShownForPagesInCache \
+  NoPermissionBubbleShownForPagesInCache
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
-                       NoPermissionBubbleShownForPagesInCache) {
+                       MAYBE_NoPermissionBubbleShownForPagesInCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -888,8 +896,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(a_observer.deleted());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_RequestsForPagesInCacheNotGrouped \
+  DISABLED_RequestsForPagesInCacheNotGrouped
+#else
+#define MAYBE_RequestsForPagesInCacheNotGrouped \
+  RequestsForPagesInCacheNotGrouped
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
-                       RequestsForPagesInCacheNotGrouped) {
+                       MAYBE_RequestsForPagesInCacheNotGrouped) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");

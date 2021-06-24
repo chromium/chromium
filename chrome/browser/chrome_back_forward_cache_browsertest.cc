@@ -359,8 +359,14 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 }
 #endif
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_RestoresMixedContentSettings DISABLED_RestoresMixedContentSettings
+#else
+#define MAYBE_RestoresMixedContentSettings RestoresMixedContentSettings
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
-                       RestoresMixedContentSettings) {
+                       MAYBE_RestoresMixedContentSettings) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
@@ -427,8 +433,14 @@ class MetricsChromeBackForwardCacheBrowserTest
   }
 };
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_FirstInputDelay DISABLED_FirstInputDelay
+#else
+#define MAYBE_FirstInputDelay FirstInputDelay
+#endif
 IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
-                       FirstInputDelay) {
+                       MAYBE_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));

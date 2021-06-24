@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -2457,8 +2458,16 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223445
+#define MAYBE_BackForwardPrefetchServedFromBFCache \
+  DISABLED_BackForwardPrefetchServedFromBFCache
+#else
+#define MAYBE_BackForwardPrefetchServedFromBFCache \
+  BackForwardPrefetchServedFromBFCache
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
-                       BackForwardPrefetchServedFromBFCache) {
+                       MAYBE_BackForwardPrefetchServedFromBFCache) {
   // This test prefetches and serves two SRP responses. It then navigates back
   // then forward, the back navigation should not be cached, due to cache limit
   // size of 1, the second navigation should be cached.
