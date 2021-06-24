@@ -6,6 +6,7 @@
 
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -73,6 +74,66 @@ bool ConvertPseudoType(const PseudoType pseudo_type,
   }
   return false;
 }
+
+ClientStatus MoveAutofillValueRegexpToTextFilter(
+    const UserData* user_data,
+    SelectorProto::PropertyFilter* value) {
+  if (!value->has_autofill_value_regexp()) {
+    return OkClientStatus();
+  }
+  if (user_data == nullptr) {
+    return ClientStatus(PRECONDITION_FAILED);
+  }
+  const AutofillValueRegexp& autofill_value_regexp =
+      value->autofill_value_regexp();
+  TextFilter text_filter;
+  text_filter.set_case_sensitive(
+      autofill_value_regexp.value_expression_re2().case_sensitive());
+  std::string re2;
+  ClientStatus re2_status = user_data::GetFormattedAutofillValue(
+      autofill_value_regexp, user_data, &re2);
+  text_filter.set_re2(re2);
+  // Assigning text_filter will clear autofill_value_regexp.
+  *value->mutable_text_filter() = text_filter;
+  return re2_status;
+}
+
+ClientStatus GetUserDataResolvedSelector(const Selector& selector,
+                                         const UserData* user_data,
+                                         SelectorProto* out_selector) {
+  SelectorProto copy = selector.proto;
+  for (auto& filter : *copy.mutable_filters()) {
+    switch (filter.filter_case()) {
+      case SelectorProto::Filter::kProperty: {
+        ClientStatus filter_status = MoveAutofillValueRegexpToTextFilter(
+            user_data, filter.mutable_property());
+        if (!filter_status.ok()) {
+          return filter_status;
+        }
+        break;
+      }
+      case SelectorProto::Filter::kInnerText:
+      case SelectorProto::Filter::kValue:
+      case SelectorProto::Filter::kPseudoElementContent:
+      case SelectorProto::Filter::kCssStyle:
+      case SelectorProto::Filter::kCssSelector:
+      case SelectorProto::Filter::kEnterFrame:
+      case SelectorProto::Filter::kPseudoType:
+      case SelectorProto::Filter::kBoundingBox:
+      case SelectorProto::Filter::kNthMatch:
+      case SelectorProto::Filter::kLabelled:
+      case SelectorProto::Filter::kMatchCssSelector:
+      case SelectorProto::Filter::kOnTop:
+      case SelectorProto::Filter::FILTER_NOT_SET:
+        break;
+        // Do not add default here. In case a new filter gets added (that may
+        // contain a RegexpFilter) we want this to fail at compilation here.
+    }
+  }
+  *out_selector = copy;
+  return OkClientStatus();
+}
+
 }  // namespace
 
 ElementFinder::JsFilterBuilder::JsFilterBuilder() = default;
@@ -126,6 +187,11 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
 
     case SelectorProto::Filter::kValue:
       AddRegexpFilter(filter.value(), "value");
+      return true;
+
+    case SelectorProto::Filter::kProperty:
+      AddRegexpFilter(filter.property().text_filter(),
+                      filter.property().property());
       return true;
 
     case SelectorProto::Filter::kBoundingBox:
@@ -274,10 +340,12 @@ ElementFinder::Result::Result(const Result&) = default;
 
 ElementFinder::ElementFinder(content::WebContents* web_contents,
                              DevtoolsClient* devtools_client,
+                             const UserData* user_data,
                              const Selector& selector,
                              ResultType result_type)
     : web_contents_(web_contents),
       devtools_client_(devtools_client),
+      user_data_(user_data),
       selector_(selector),
       result_type_(result_type) {}
 
@@ -296,6 +364,13 @@ void ElementFinder::StartInternal(Callback callback,
 
   if (selector_.empty()) {
     SendResult(ClientStatus(INVALID_SELECTOR));
+    return;
+  }
+
+  ClientStatus resolve_status =
+      GetUserDataResolvedSelector(selector_, user_data_, &selector_proto_);
+  if (!resolve_status.ok()) {
+    SendResult(resolve_status);
     return;
   }
 
@@ -337,7 +412,7 @@ ElementFinder::Result ElementFinder::BuildResult(const std::string& object_id) {
 }
 
 void ElementFinder::ExecuteNextTask() {
-  const auto& filters = selector_.proto.filters();
+  const auto& filters = selector_proto_.filters();
 
   if (next_filter_index_ >= filters.size()) {
     std::string object_id;
@@ -405,6 +480,7 @@ void ElementFinder::ExecuteNextTask() {
     case SelectorProto::Filter::kCssSelector:
     case SelectorProto::Filter::kInnerText:
     case SelectorProto::Filter::kValue:
+    case SelectorProto::Filter::kProperty:
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kPseudoElementContent:
     case SelectorProto::Filter::kMatchCssSelector:

@@ -1194,6 +1194,7 @@ enum PseudoType {
 }
 
 // A reference to one or more elements on the page, possibly nested in frames.
+// Next ID: 15
 message SelectorProto {
   // Filters for the element on the page. Filter are applied sequentially, using
   // the output of the previous filter as input. The root of these filters is
@@ -1305,9 +1306,25 @@ message SelectorProto {
       // overlays that cover the frame element itself, apply this filter on the
       // frame element before calling enter_frame.
       OnTopFilter on_top = 13;
+
+      // Filtering against an element property.
+      //
+      // This filter replaces |inner_text| and |value|.
+      PropertyFilter property = 14;
     }
 
     reserved 10;
+  }
+
+  // A regular expression value for filtering.
+  message PropertyFilter {
+    // The property to filter against.
+    optional string property = 1;
+
+    oneof value {
+      TextFilter text_filter = 2;
+      AutofillValueRegexp autofill_value_regexp = 3;
+    }
   }
 
   // A way of filtering elements by their pseudo-element content.

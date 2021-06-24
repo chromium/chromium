@@ -14,10 +14,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -69,8 +72,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(http_server_->Start(8080));
     ASSERT_TRUE(
         NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
-    web_controller_ =
-        WebController::CreateForWebContents(shell()->web_contents());
+    web_controller_ = WebController::CreateForWebContents(
+        shell()->web_contents(), &user_data_);
     Observe(shell()->web_contents());
   }
 
@@ -1264,6 +1267,8 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
 
  protected:
   std::unique_ptr<WebController> web_controller_;
+  UserData user_data_;
+  UserModel user_model_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
@@ -2986,6 +2991,55 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckSelectedOptionElement) {
   // Using on a non-<select> element.
   EXPECT_EQ(INVALID_TARGET,
             CheckSelectedOptionElement(input, selected_option).proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindUserDataElement) {
+  autofill::AutofillProfile shipping;
+  shipping.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_CITY, u"Zürich");
+  user_model_.SetSelectedAutofillProfile(
+      "SHIPPING", std::make_unique<autofill::AutofillProfile>(shipping),
+      &user_data_);
+
+  SelectorProto selector_proto;
+  selector_proto.add_filters()->set_css_selector("#select option");
+  auto* property = selector_proto.add_filters()->mutable_property();
+  property->set_property("innerText");
+  auto* inner_text = property->mutable_autofill_value_regexp();
+  inner_text->mutable_profile()->set_identifier("SHIPPING");
+  inner_text->mutable_value_expression_re2()->set_case_sensitive(false);
+  inner_text->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ADDRESS_HOME_CITY));
+  ClientStatus option_status;
+  ElementFinder::Result option;
+  FindElement(Selector(selector_proto), &option_status, &option);
+  ASSERT_EQ(ACTION_APPLIED, option_status.proto_status());
+
+  Selector selector({"#select"});
+
+  GetFieldsValue({selector}, {"one"});
+  EXPECT_EQ(ACTION_APPLIED,
+            SelectOptionElement(selector, option).proto_status());
+  GetFieldsValue({selector}, {"two"});
+
+  // Unknown profile.
+  SelectorProto failing_selector_proto;
+  failing_selector_proto.add_filters()->set_css_selector("#select option");
+  auto* failing_property =
+      failing_selector_proto.add_filters()->mutable_property();
+  failing_property->set_property("innerText");
+  auto* failing_inner_text = failing_property->mutable_autofill_value_regexp();
+  failing_inner_text->mutable_profile()->set_identifier("BILLING");
+  failing_inner_text->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_key(static_cast<int>(autofill::ADDRESS_HOME_CITY));
+  ClientStatus failing_option_status;
+  ElementFinder::Result failing_option;
+  FindElement(Selector(failing_selector_proto), &failing_option_status,
+              &failing_option);
+  ASSERT_EQ(PRECONDITION_FAILED, failing_option_status.proto_status());
 }
 
 }  // namespace autofill_assistant

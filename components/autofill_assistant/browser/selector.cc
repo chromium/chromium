@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 
 namespace autofill_assistant {
 
@@ -18,6 +19,41 @@ namespace autofill_assistant {
 bool operator<(const TextFilter& a, const TextFilter& b) {
   return std::make_tuple(a.re2(), a.case_sensitive()) <
          std::make_tuple(b.re2(), b.case_sensitive());
+}
+
+bool operator<(const AutofillValueRegexp& a, const AutofillValueRegexp& b) {
+  return std::make_tuple(a.profile().identifier(),
+                         field_formatter::GetHumanReadableValueExpression(
+                             a.value_expression_re2().value_expression()),
+                         a.value_expression_re2().case_sensitive()) <
+         std::make_tuple(b.profile().identifier(),
+                         field_formatter::GetHumanReadableValueExpression(
+                             b.value_expression_re2().value_expression()),
+                         b.value_expression_re2().case_sensitive());
+}
+
+bool operator<(const SelectorProto::PropertyFilter& a,
+               const SelectorProto::PropertyFilter& b) {
+  if (a.property() < b.property()) {
+    return true;
+  }
+  if (a.property() != b.property()) {
+    return false;
+  }
+  if (a.value_case() < b.value_case()) {
+    return true;
+  }
+  if (a.value_case() != b.value_case()) {
+    return false;
+  }
+  switch (a.value_case()) {
+    case SelectorProto::PropertyFilter::kTextFilter:
+      return a.text_filter() < b.text_filter();
+    case SelectorProto::PropertyFilter::kAutofillValueRegexp:
+      return a.autofill_value_regexp() < b.autofill_value_regexp();
+    case SelectorProto::PropertyFilter::VALUE_NOT_SET:
+      return false;
+  }
 }
 
 // Used by operator<(RepeatedPtrField<Filter>, RepeatedPtrField<Filter>)
@@ -83,10 +119,12 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
     case SelectorProto::Filter::kNthMatch:
       return a.nth_match().index() < b.nth_match().index();
 
+    case SelectorProto::Filter::kProperty:
+      return a.property() < b.property();
+
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }
-  return false;
 }
 
 SelectorProto ToSelectorProto(const std::string& s) {
@@ -218,6 +256,34 @@ std::ostream& operator<<(std::ostream& out, const TextFilter& c) {
   return out;
 }
 
+std::ostream& operator<<(std::ostream& out, const AutofillValueRegexp& c) {
+  out << "/"
+      << field_formatter::GetHumanReadableValueExpression(
+             c.value_expression_re2().value_expression())
+      << "/";
+  if (c.value_expression_re2().case_sensitive()) {
+    out << "i";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::PropertyFilter& c) {
+  out << c.property() << " ~= ";
+  switch (c.value_case()) {
+    case SelectorProto::PropertyFilter::kTextFilter:
+      out << c.text_filter();
+      break;
+    case SelectorProto::PropertyFilter::kAutofillValueRegexp:
+      out << c.autofill_value_regexp();
+      break;
+    case SelectorProto::PropertyFilter::VALUE_NOT_SET:
+      out << "/<unknown>/";
+      break;
+  }
+  return out;
+}
+
 std::ostream& operator<<(
     std::ostream& out,
     const google::protobuf::RepeatedPtrField<SelectorProto::Filter>& filters) {
@@ -309,6 +375,10 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
       if (f.on_top().accept_element_if_not_in_view()) {
         out << "(accept not in view)";
       }
+      return out;
+
+    case SelectorProto::Filter::kProperty:
+      out << f.property();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

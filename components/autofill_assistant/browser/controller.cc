@@ -122,7 +122,8 @@ Service* Controller::GetService() {
 
 WebController* Controller::GetWebController() {
   if (!web_controller_) {
-    web_controller_ = WebController::CreateForWebContents(web_contents());
+    web_controller_ =
+        WebController::CreateForWebContents(web_contents(), user_data_.get());
   }
   return web_controller_.get();
 }

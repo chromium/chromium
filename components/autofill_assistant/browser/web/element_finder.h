@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/js_snippets.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
@@ -78,10 +79,11 @@ class ElementFinder : public WebControllerWorker {
     }
   };
 
-  // |web_contents| and |devtools_client| must be valid for the lifetime of the
-  // instance.
+  // |web_contents|, |devtools_client| and |user_data| must be valid for the
+  // lifetime of the instance.
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
+                const UserData* user_data,
                 const Selector& selector,
                 ResultType result_type);
   ~ElementFinder() override;
@@ -317,11 +319,16 @@ class ElementFinder : public WebControllerWorker {
 
   content::WebContents* const web_contents_;
   DevtoolsClient* const devtools_client_;
+  const UserData* const user_data_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
 
-  // The index of the next filter to process, in selector_.proto.filters.
+  // The modified selector to use going forward. This is guaranteed to have
+  // resolved any filters that need a data lookup.
+  SelectorProto selector_proto_;
+
+  // The index of the next filter to process, in selector__proto_.filters.
   int next_filter_index_ = 0;
 
   // Pointer to the current frame

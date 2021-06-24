@@ -570,7 +570,8 @@ void Starter::StartTriggerScript() {
                          .value();
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
       platform_delegate_, web_contents(),
-      WebController::CreateForWebContents(web_contents()),
+      WebController::CreateForWebContents(web_contents(),
+                                          /* user_data= */ nullptr),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(

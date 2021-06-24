@@ -24,6 +24,7 @@
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/check_on_top_worker.h"
 #include "components/autofill_assistant/browser/web/click_or_tap_worker.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
@@ -61,14 +62,16 @@ namespace autofill_assistant {
 // multiple operations, whether in sequence or in parallel.
 class WebController {
  public:
-  // Create web controller for a given |web_contents|. |settings| must be valid
+  // Create web controller for a given |web_contents|. |user_data| must be valid
   // for the lifetime of the controller.
   static std::unique_ptr<WebController> CreateForWebContents(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      const UserData* user_data);
 
-  // |web_contents| and |settings| must outlive this web controller.
+  // |web_contents| and |user_data| must outlive this web controller.
   WebController(content::WebContents* web_contents,
-                std::unique_ptr<DevtoolsClient> devtools_client);
+                std::unique_ptr<DevtoolsClient> devtools_client,
+                const UserData* user_data);
   virtual ~WebController();
 
   // Load |url| in the current tab. Returns immediately, before the new page has
@@ -521,8 +524,9 @@ class WebController {
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
-  content::WebContents* web_contents_;
+  content::WebContents* const web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
+  const UserData* const user_data_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;
