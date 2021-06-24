@@ -98,7 +98,7 @@ absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
     const base::Value* action = nullptr;
 
     // DictItems is used so that unknown keys in the dictionary can be rejected.
-    for (const auto& pair : filter.DictItems()) {
+    for (auto pair : filter.DictItems()) {
       if (pair.first == "operation") {
         operation = &pair.second;
       } else if (pair.first == "rp_id") {
