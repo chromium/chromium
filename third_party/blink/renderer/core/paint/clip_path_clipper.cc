@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -53,6 +56,33 @@ LayoutSVGResourceClipper* ResolveElementReference(
 // zoomed with EffectiveZoom()?
 static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
   return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
+}
+
+static void PaintWorkletBasedClip(GraphicsContext& context,
+                                  const LayoutObject& clip_path_owner,
+                                  const FloatRect& reference_box,
+                                  bool uses_zoomed_reference_box) {
+  DCHECK(RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled());
+  DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
+            ClipPathOperation::SHAPE);
+
+  float zoom = uses_zoomed_reference_box
+                   ? clip_path_owner.StyleRef().EffectiveZoom()
+                   : 1;
+  ClipPathPaintImageGenerator* generator =
+      clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
+
+  scoped_refptr<Image> paint_worklet_image =
+      generator->Paint(zoom, reference_box, *clip_path_owner.GetNode());
+
+  absl::optional<FloatRect> bounding_box =
+      ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
+  DCHECK(bounding_box);
+  FloatRect src_rect(bounding_box.value());
+  context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode, src_rect,
+                    &src_rect,
+                    clip_path_owner.StyleRef().HasFilterInducingProperty(),
+                    SkBlendMode::kSrcOver, kRespectImageOrientation);
 }
 
 FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
@@ -177,12 +207,10 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
       layout_object.StyleRef().ClipPath()->GetType() ==
           ClipPathOperation::SHAPE) {
-    const absl::optional<Path>& path = PathBasedClipInternal(
-        layout_object, uses_zoomed_reference_box, reference_box);
-
-    PaintFlags flags;
-    flags.setAntiAlias(true);
-    context.DrawPath(path->GetSkPath(), flags);
+    if (!layout_object.GetFrame())
+      return;
+    PaintWorkletBasedClip(context, layout_object, reference_box,
+                          uses_zoomed_reference_box);
   } else {
     bool is_first = true;
     bool rest_of_the_chain_already_appled = false;

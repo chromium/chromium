@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
@@ -643,6 +644,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
+  visitor->Trace(clip_path_paint_image_generator_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -831,6 +833,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
     // was created on LocalRoot.
     if (background_color_paint_image_generator_)
       background_color_paint_image_generator_->Shutdown();
+    if (clip_path_paint_image_generator_)
+      clip_path_paint_image_generator_->Shutdown();
   }
   idleness_detector_->Shutdown();
   if (inspector_issue_reporter_)
@@ -893,6 +897,16 @@ LocalFrame::GetBackgroundColorPaintImageGenerator() {
         BackgroundColorPaintImageGenerator::Create(local_root);
   }
   return local_root.background_color_paint_image_generator_.Get();
+}
+
+ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
+  LocalFrame& local_root = LocalFrameRoot();
+  // One clip path paint worklet per root frame.
+  if (!local_root.clip_path_paint_image_generator_) {
+    local_root.clip_path_paint_image_generator_ =
+        ClipPathPaintImageGenerator::Create(local_root);
+  }
+  return local_root.clip_path_paint_image_generator_.Get();
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {
