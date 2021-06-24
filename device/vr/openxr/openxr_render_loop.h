@@ -127,6 +127,8 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
+  bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
+
   // Owned by OpenXrStatics
   XrInstance instance_;
   const OpenXrExtensionHelper& extension_helper_;

@@ -6,6 +6,9 @@
 
 namespace device {
 
+OpenXrExtensionMethods::OpenXrExtensionMethods() = default;
+OpenXrExtensionMethods::~OpenXrExtensionMethods() = default;
+
 OpenXrExtensionEnumeration::OpenXrExtensionEnumeration() {
   uint32_t extension_count;
   if (XR_SUCCEEDED(xrEnumerateInstanceExtensionProperties(
@@ -77,6 +80,55 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrCreateSpatialAnchorSpaceMSFT*>(
               &extension_methods_.xrCreateSpatialAnchorSpaceMSFT)));
+
+  (void)xrGetInstanceProcAddr(
+      instance, "xrEnumerateSceneComputeFeaturesMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrEnumerateSceneComputeFeaturesMSFT*>(
+              &extension_methods_.xrEnumerateSceneComputeFeaturesMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrCreateSceneObserverMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateSceneObserverMSFT*>(
+              &extension_methods_.xrCreateSceneObserverMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrDestroySceneObserverMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrDestroySceneObserverMSFT*>(
+              &extension_methods_.xrDestroySceneObserverMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrCreateSceneMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_xrCreateSceneMSFT*>(
+          &extension_methods_.xrCreateSceneMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrDestroySceneMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_xrDestroySceneMSFT*>(
+          &extension_methods_.xrDestroySceneMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrComputeNewSceneMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrComputeNewSceneMSFT*>(
+              &extension_methods_.xrComputeNewSceneMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrGetSceneComputeStateMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrGetSceneComputeStateMSFT*>(
+              &extension_methods_.xrGetSceneComputeStateMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrGetSceneComponentsMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrGetSceneComponentsMSFT*>(
+              &extension_methods_.xrGetSceneComponentsMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrLocateSceneComponentsMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrLocateSceneComponentsMSFT*>(
+              &extension_methods_.xrLocateSceneComponentsMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrGetSceneMeshBuffersMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrGetSceneMeshBuffersMSFT*>(
+              &extension_methods_.xrGetSceneMeshBuffersMSFT)));
 }
 
 }  // namespace device

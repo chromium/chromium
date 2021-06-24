@@ -51,6 +51,12 @@ XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
            decomposed_transform.translate[2]}};
 }
 
+bool IsPoseValid(XrSpaceLocationFlags locationFlags) {
+  XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT |
+                                        XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+  return (locationFlags & PoseValidFlags) == PoseValidFlags;
+}
+
 XrResult GetSystem(XrInstance instance, XrSystemId* system) {
   XrSystemGetInfo system_info = {XR_TYPE_SYSTEM_GET_INFO};
   system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -174,6 +180,13 @@ XrResult CreateInstance(
           XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
   if (anchorsExtensionSupported) {
     extensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+  }
+
+  const bool sceneUnderstandingExtensionSupported =
+      extension_enumeration.ExtensionSupported(
+          XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
+  if (sceneUnderstandingExtensionSupported) {
+    extensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
   }
 
   instance_create_info.enabledExtensionCount =

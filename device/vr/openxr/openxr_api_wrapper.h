@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_export.h"
@@ -88,6 +89,8 @@ class OpenXrApiWrapper {
       device::mojom::XRSessionMode session_mode);
 
   OpenXrAnchorManager* GetOrCreateAnchorManager(
+      const OpenXrExtensionHelper& extension_helper);
+  OpenXRSceneUnderstandingManager* GetOrCreateSceneUnderstandingManager(
       const OpenXrExtensionHelper& extension_helper);
 
   void CreateSharedMailboxes(viz::ContextProvider* context_provider);
@@ -201,6 +204,7 @@ class OpenXrApiWrapper {
   std::vector<XrCompositionLayerProjectionView> layer_projection_views_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
+  std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
 
   base::WeakPtrFactory<OpenXrApiWrapper> weak_ptr_factory_{this};
 

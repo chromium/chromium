@@ -44,15 +44,14 @@ OpenXrRenderLoop::~OpenXrRenderLoop() {
   Stop();
 }
 
+bool OpenXrRenderLoop::IsFeatureEnabled(
+    device::mojom::XRSessionFeature feature) const {
+  return base::Contains(enabled_features_, feature);
+}
+
 mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->frame_id = next_frame_id_;
-
-  const bool anchors_enabled = base::Contains(
-      enabled_features_, device::mojom::XRSessionFeature::ANCHORS);
-
-  const bool hand_input_enabled = base::Contains(
-      enabled_features_, device::mojom::XRSessionFeature::HAND_INPUT);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   gpu::MailboxHolder mailbox_holder;
@@ -68,7 +67,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->time_delta =
       base::TimeDelta::FromNanoseconds(openxr_->GetPredictedDisplayTime());
 
-  frame_data->input_state = openxr_->GetInputState(hand_input_enabled);
+  frame_data->input_state = openxr_->GetInputState(
+      IsFeatureEnabled(device::mojom::XRSessionFeature::HAND_INPUT));
 
   frame_data->pose = mojom::VRPose::New();
 
@@ -97,7 +97,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   }
 
   if (openxr_->HasFrameState()) {
-    if (anchors_enabled) {
+    if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
       OpenXrAnchorManager* anchor_manager =
           openxr_->GetOrCreateAnchorManager(extension_helper_);
 
@@ -107,6 +107,21 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
             frame_data->input_state.value(),
             openxr_->GetPredictedDisplayTime());
       }
+    }
+  }
+
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST) &&
+      frame_data->pose->position && frame_data->pose->orientation) {
+    OpenXRSceneUnderstandingManager* scene_understanding_manager =
+        openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+    if (scene_understanding_manager) {
+      device::Pose mojo_from_viewer(*frame_data->pose->position,
+                                    *frame_data->pose->orientation);
+      // Get results for hit test subscriptions.
+      frame_data->hit_test_subscription_results =
+          scene_understanding_manager->ProcessHitTestResultsForFrame(
+              openxr_->GetPredictedDisplayTime(),
+              mojo_from_viewer.ToTransform(), frame_data->input_state.value());
     }
   }
 
@@ -180,16 +195,22 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   const bool hand_input_supported =
       extension_helper_.ExtensionEnumeration()->ExtensionSupported(
           kMSFTHandInteractionExtensionName);
+  const bool hittest_supported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
 
   // Filter out features that are requested but not supported
   auto openxr_extension_enabled_filter =
-      [anchors_supported,
-       hand_input_supported](device::mojom::XRSessionFeature feature) {
+      [anchors_supported, hand_input_supported,
+       hittest_supported](device::mojom::XRSessionFeature feature) {
         if (feature == device::mojom::XRSessionFeature::ANCHORS &&
             !anchors_supported) {
           return false;
         } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT &&
                    !hand_input_supported) {
+          return false;
+        } else if (feature == device::mojom::XRSessionFeature::HIT_TEST &&
+                   !hittest_supported) {
           return false;
         }
         return true;
@@ -452,8 +473,25 @@ void OpenXrRenderLoop::SubscribeToHitTest(
     mojom::XRRayPtr ray,
     mojom::XREnvironmentIntegrationProvider::SubscribeToHitTestCallback
         callback) {
-  mojo::ReportBadMessage(
-      "OpenXrRenderLoop::SubscribeToHitTest not yet implemented");
+  DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
+           << ", ray direction=" << ray->direction.ToString();
+
+  OpenXRSceneUnderstandingManager* scene_understanding_manager =
+      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+
+  if (!scene_understanding_manager) {
+    std::move(callback).Run(
+        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    return;
+  }
+
+  HitTestSubscriptionId subscription_id =
+      scene_understanding_manager->SubscribeToHitTest(
+          std::move(native_origin_information), entity_types, std::move(ray));
+
+  DVLOG(2) << __func__ << ": subscription_id=" << subscription_id;
+  std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
+                          subscription_id.GetUnsafeValue());
 }
 
 void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
@@ -462,14 +500,34 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
     mojom::XRRayPtr ray,
     mojom::XREnvironmentIntegrationProvider::
         SubscribeToHitTestForTransientInputCallback callback) {
-  mojo::ReportBadMessage(
-      "OpenXrRenderLoop::SubscribeToHitTestForTransientInput not yet "
-      "implemented");
+  DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
+           << ", ray direction=" << ray->direction.ToString();
+
+  OpenXRSceneUnderstandingManager* scene_understanding_manager =
+      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+
+  if (!scene_understanding_manager) {
+    std::move(callback).Run(
+        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    return;
+  }
+
+  HitTestSubscriptionId subscription_id =
+      scene_understanding_manager->SubscribeToHitTestForTransientInput(
+          profile_name, entity_types, std::move(ray));
+
+  DVLOG(2) << __func__ << ": subscription_id=" << subscription_id;
+  std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
+                          subscription_id.GetUnsafeValue());
 }
 
 void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
-  mojo::ReportBadMessage(
-      "OpenXrRenderLoop::UnsubscribeFromHitTest not yet implemented");
+  DVLOG(2) << __func__;
+  OpenXRSceneUnderstandingManager* scene_understanding_manager =
+      openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
+  if (scene_understanding_manager)
+    scene_understanding_manager->UnsubscribeFromHitTest(
+        HitTestSubscriptionId(subscription_id));
 }
 
 void OpenXrRenderLoop::CreateAnchor(
