@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.ConfigurationErrors"
-    enum="SoftwareReporterConfigurationError" expires_after="2021-07-30">
+    enum="SoftwareReporterConfigurationError" expires_after="M95">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -208,7 +208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.FoundUwSReadError" enum="BooleanError"
-    expires_after="2021-07-21">
+    expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.LastUploadResult" enum="BooleanSuccess"
-    expires_after="2021-07-21">
+    expires_after="M95">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>The result of the most recent SRT log upload.</summary>
