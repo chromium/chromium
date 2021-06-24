@@ -14,7 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -45,6 +49,18 @@ const char kResultMessageFieldName[] = "message";
 // Period in seconds since last user activity, if job finished with
 // FAILURE_NOT_IDLE result code.
 const char kResultLastActivityFieldName[] = "lastActivitySec";
+
+ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
+    const user_manager::UserManager* user_manager) {
+  if (user_manager->IsLoggedInAsKioskApp())
+    return ash::KioskAppManager::Get();
+  if (user_manager->IsLoggedInAsArcKioskApp())
+    return chromeos::ArcKioskAppManager::Get();
+  if (user_manager->IsLoggedInAsWebKioskApp())
+    return ash::WebKioskAppManager::Get();
+
+  return nullptr;
+}
 
 }  // namespace
 
@@ -161,6 +177,30 @@ bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
   return true;
 }
 
+bool DeviceCommandStartCRDSessionJob::AreServicesReady() const {
+  return user_manager::UserManager::IsInitialized() &&
+         delegate_->AreServicesReady();
+}
+
+bool DeviceCommandStartCRDSessionJob::IsRunningAutoLaunchedKiosk() const {
+  const auto* user_manager = user_manager::UserManager::Get();
+  const auto* kiosk_app_manager =
+      GetKioskAppManagerIfKioskAppIsRunning(user_manager);
+
+  if (!kiosk_app_manager)
+    return false;
+  return kiosk_app_manager->current_app_was_auto_launched_with_zero_delay();
+}
+
+bool DeviceCommandStartCRDSessionJob::IsDeviceIdle() const {
+  return delegate_->GetIdlenessPeriod() >= idleness_cutoff_;
+}
+
+base::TimeDelta DeviceCommandStartCRDSessionJob::GetDeviceIdlenessPeriod()
+    const {
+  return delegate_->GetIdlenessPeriod();
+}
+
 void DeviceCommandStartCRDSessionJob::FinishWithError(
     const ResultCode result_code,
     const std::string& message) {
@@ -191,23 +231,21 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
   failed_callback_ = std::move(failed_callback);
   succeeded_callback_ = std::move(succeeded_callback);
 
-  if (!delegate_->AreServicesReady()) {
+  if (!AreServicesReady()) {
     FinishWithError(ResultCode::FAILURE_SERVICES_NOT_READY, "");
     return;
   }
 
-  if (!delegate_->IsRunningKiosk()) {
+  if (!IsRunningAutoLaunchedKiosk()) {
     FinishWithError(ResultCode::FAILURE_NOT_A_KIOSK, "");
     return;
   }
 
-  bool device_is_idle = delegate_->GetIdlenessPeriod() >= idleness_cutoff_;
-
-  if (!device_is_idle) {
+  if (!IsDeviceIdle()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback_),
                                   ResultPayload::CreateNonIdlePayload(
-                                      delegate_->GetIdlenessPeriod())));
+                                      GetDeviceIdlenessPeriod())));
     return;
   }
 

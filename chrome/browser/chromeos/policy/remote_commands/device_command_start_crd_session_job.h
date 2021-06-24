@@ -62,9 +62,6 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     // Check if required system services are ready.
     virtual bool AreServicesReady() const = 0;
 
-    // Check if device is running an auto-launched Kiosk.
-    virtual bool IsRunningKiosk() const = 0;
-
     // Return current user idleness period.
     virtual base::TimeDelta GetIdlenessPeriod() const = 0;
 
@@ -94,6 +91,12 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
  private:
   class ResultPayload;
+
+  // Check if all required system services (singletons) are ready.
+  bool AreServicesReady() const;
+  bool IsRunningAutoLaunchedKiosk() const;
+  bool IsDeviceIdle() const;
+  base::TimeDelta GetDeviceIdlenessPeriod() const;
 
   // Finishes command with error code and optional message.
   void FinishWithError(ResultCode result_code, const std::string& message);

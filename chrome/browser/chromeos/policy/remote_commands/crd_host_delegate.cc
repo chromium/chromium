@@ -8,13 +8,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -70,21 +66,6 @@ std::string FormatErrorMessage(const std::string& error_state,
     else
       return "Unknown Error";
   }
-}
-
-ash::KioskAppManagerBase* GetKioskAppManager(
-    const user_manager::UserManager* user_manager) {
-  DCHECK(user_manager->IsLoggedInAsAnyKioskApp());
-
-  if (user_manager->IsLoggedInAsKioskApp())
-    return ash::KioskAppManager::Get();
-  else if (user_manager->IsLoggedInAsArcKioskApp())
-    return chromeos::ArcKioskAppManager::Get();
-  else if (user_manager->IsLoggedInAsWebKioskApp())
-    return ash::WebKioskAppManager::Get();
-
-  NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace
@@ -166,18 +147,8 @@ void CRDHostDelegate::TerminateSession(base::OnceClosure callback) {
 }
 
 bool CRDHostDelegate::AreServicesReady() const {
-  return user_manager::UserManager::IsInitialized() &&
-         ui::UserActivityDetector::Get() != nullptr &&
+  return ui::UserActivityDetector::Get() != nullptr &&
          oauth_service() != nullptr;
-}
-
-bool CRDHostDelegate::IsRunningKiosk() const {
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsLoggedInAsAnyKioskApp())
-    return false;
-
-  return GetKioskAppManager(user_manager)
-      ->current_app_was_auto_launched_with_zero_delay();
 }
 
 base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
