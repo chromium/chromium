@@ -27,15 +27,19 @@ namespace content {
 namespace {
 
 bool IsSiteIsolationDisabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSiteIsolation)) {
+  static const bool site_isolation_disabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSiteIsolation);
+  if (site_isolation_disabled) {
     return true;
   }
 
 #if defined(OS_ANDROID)
   // Desktop platforms no longer support disabling Site Isolation by policy.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSiteIsolationForPolicy)) {
+  static const bool site_isolation_disabled_by_policy =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSiteIsolationForPolicy);
+  if (site_isolation_disabled_by_policy) {
     return true;
   }
 #endif
