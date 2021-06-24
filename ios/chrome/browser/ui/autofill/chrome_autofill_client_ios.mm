@@ -290,17 +290,35 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
 
-  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  bool sync_disabled_wallet_transport_enabled =
+      GetPersonalDataManager()->GetSyncSigninState() ==
+      autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
+  bool is_multiple_account_user =
+      identity_manager_->GetAccountsWithRefreshTokens().size() > 1;
+  AccountInfo account_info;
+  // AccountInfo data should be passed down only if the following conditions are
+  // satisfied:
+  // 1) Sync is off or the
+  //   kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers flag is on.
+  // 2) User has multiple accounts or the
+  //   kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers is on.
+  if ((sync_disabled_wallet_transport_enabled ||
+       base::FeatureList::IsEnabled(
+           features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
+      (is_multiple_account_user ||
+       base::FeatureList::IsEnabled(
+           features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers))) {
+    account_info = identity_manager_->FindExtendedAccountInfo(
+        identity_manager_->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
+  }
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/true, options, card, legal_message_lines,
           /*upload_save_card_callback=*/std::move(callback),
-          LocalSaveCardPromptCallback(), GetPrefs(),
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableAccountWalletStorage)
-              ? account_info
-              : AccountInfo())));
+          LocalSaveCardPromptCallback(), GetPrefs(), account_info)));
 }
 
 void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
