@@ -69,7 +69,7 @@ std::string AXFormatValue(const base::Value& value) {
     const std::string orderedkey_prefix(kOrderedKeyPrefixDictAttr);
 
     std::string output;
-    for (const auto& item : value.DictItems()) {
+    for (auto item : value.DictItems()) {
       if (!output.empty()) {
         output += ", ";
       }

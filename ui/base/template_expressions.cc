@@ -215,7 +215,7 @@ namespace ui {
 void TemplateReplacementsFromDictionaryValue(
     const base::Value& dictionary,
     TemplateReplacements* replacements) {
-  for (const auto& pair : dictionary.DictItems()) {
+  for (auto pair : dictionary.DictItems()) {
     const std::string* value = pair.second.GetIfString();
     if (value)
       (*replacements)[pair.first] = pair.second.GetString();
