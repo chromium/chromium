@@ -180,33 +180,6 @@ void FakeChromeIdentityService::IterateOverIdentities(
   }
 }
 
-bool FakeChromeIdentityService::IsValidIdentity(ChromeIdentity* identity) {
-  return [identities_ indexOfObject:identity] != NSNotFound;
-}
-
-ChromeIdentity* FakeChromeIdentityService::GetIdentityWithGaiaID(
-    const std::string& gaia_id) {
-  NSString* gaiaID = base::SysUTF8ToNSString(gaia_id);
-  NSUInteger index =
-      [identities_ indexOfObjectPassingTest:^BOOL(ChromeIdentity* obj,
-                                                  NSUInteger, BOOL* stop) {
-        return [[obj gaiaID] isEqualToString:gaiaID];
-      }];
-  if (index == NSNotFound) {
-    return nil;
-  }
-  return [identities_ objectAtIndex:index];
-}
-
-bool FakeChromeIdentityService::HasIdentities() {
-  return [identities_ count] > 0;
-}
-
-NSArray* FakeChromeIdentityService::GetAllIdentities(
-    PrefService* pref_service) {
-  return identities_;
-}
-
 void FakeChromeIdentityService::ForgetIdentity(
     ChromeIdentity* identity,
     ForgetIdentityCallback callback) {
