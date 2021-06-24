@@ -220,6 +220,10 @@ InputController::InputController(EventHandler* handler,
   DCHECK(handler_);
   DCHECK(sync_writer_);
   DCHECK(activity_monitor_);
+  if (!user_input_monitor_) {
+    handler_->OnLog(
+        "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
+  }
 }
 
 InputController::~InputController() {

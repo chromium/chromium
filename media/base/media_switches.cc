@@ -851,6 +851,12 @@ const base::Feature kKaleidoscopeForceShowFirstRunExperience{
     "KaleidoscopeForceShowFirstRunExperience",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Keypress detection which serves as input to noise suppression methods
+// in WebRTC clients. This functionality is enabled by default but it can be
+// disabled experemantally by using --disable-features=KeyPressMonitoring.
+const base::Feature kKeyPressMonitoring{"KeyPressMonitoring",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kUseFakeDeviceForMediaStream{
     "use-fake-device-for-media-stream", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -6,13 +6,17 @@
 
 #include <utility>
 
+#include "media/base/media_switches.h"
+
 namespace audio {
 
 // static
 std::unique_ptr<UserInputMonitor> UserInputMonitor::Create(
     base::ReadOnlySharedMemoryRegion memory) {
-  if (memory.IsValid())
+  if (base::FeatureList::IsEnabled(media::kKeyPressMonitoring) &&
+      memory.IsValid()) {
     return std::make_unique<UserInputMonitor>(memory.Map());
+  }
 
   return nullptr;
 }
