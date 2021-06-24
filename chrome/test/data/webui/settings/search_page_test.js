@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {SearchEnginesBrowserProxyImpl, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from '../chai_assert.js';
 
@@ -59,7 +59,7 @@ suite('SearchPageTests', function() {
   // Tests that the page is querying and displaying search engine info on
   // startup.
   test('Initialization', function() {
-    const selectElement = page.$$('select');
+    const selectElement = page.shadowRoot.querySelector('select');
 
     return browserProxy.whenCalled('getSearchEnginesList')
         .then(function() {
@@ -95,9 +95,10 @@ suite('SearchPageTests', function() {
 
   test('ControlledByExtension', function() {
     return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.$$('select');
+      const selectElement = page.shadowRoot.querySelector('select');
       assertFalse(selectElement.disabled);
-      assertFalse(!!page.$$('extension-controlled-indicator'));
+      assertFalse(
+          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
       page.set('prefs.default_search_provider_data.template_url_data', {
         controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
@@ -110,16 +111,18 @@ suite('SearchPageTests', function() {
       flush();
 
       assertTrue(selectElement.disabled);
-      assertTrue(!!page.$$('extension-controlled-indicator'));
-      assertFalse(!!page.$$('cr-policy-pref-indicator'));
+      assertTrue(
+          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+      assertFalse(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
     });
   });
 
   test('ControlledByPolicy', function() {
     return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.$$('select');
+      const selectElement = page.shadowRoot.querySelector('select');
       assertFalse(selectElement.disabled);
-      assertFalse(!!page.$$('extension-controlled-indicator'));
+      assertFalse(
+          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
       page.set('prefs.default_search_provider_data.template_url_data', {
         controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
@@ -129,8 +132,9 @@ suite('SearchPageTests', function() {
       flush();
 
       assertTrue(selectElement.disabled);
-      assertFalse(!!page.$$('extension-controlled-indicator'));
-      assertTrue(!!page.$$('cr-policy-pref-indicator'));
+      assertFalse(
+          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+      assertTrue(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
     });
   });
 });

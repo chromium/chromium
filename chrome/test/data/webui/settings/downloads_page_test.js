@@ -60,7 +60,8 @@ suite('DownloadsHandler', function() {
   });
 
   test('select downloads location', function() {
-    const button = downloadsPage.$$('#changeDownloadsPath');
+    const button =
+        downloadsPage.shadowRoot.querySelector('#changeDownloadsPath');
     assertTrue(!!button);
     button.click();
     button.fire('transitionend');
@@ -68,12 +69,13 @@ suite('DownloadsHandler', function() {
   });
 
   test('openAdvancedDownloadsettings', function() {
-    let button = downloadsPage.$$('#resetAutoOpenFileTypes');
+    let button =
+        downloadsPage.shadowRoot.querySelector('#resetAutoOpenFileTypes');
     assertTrue(!button);
 
     webUIListenerCallback('auto-open-downloads-changed', true);
     flush();
-    button = downloadsPage.$$('#resetAutoOpenFileTypes');
+    button = downloadsPage.shadowRoot.querySelector('#resetAutoOpenFileTypes');
     assertTrue(!!button);
 
     button.click();
@@ -81,7 +83,8 @@ suite('DownloadsHandler', function() {
         .then(function() {
           webUIListenerCallback('auto-open-downloads-changed', false);
           flush();
-          const button = downloadsPage.$$('#resetAutoOpenFileTypes');
+          const button =
+              downloadsPage.shadowRoot.querySelector('#resetAutoOpenFileTypes');
           assertTrue(!button);
         });
   });
@@ -107,7 +110,8 @@ suite('DownloadsHandler', function() {
     }
 
     function getDefaultDownloadPathString() {
-      const pathElement = downloadsPage.$$('#defaultDownloadPath');
+      const pathElement =
+          downloadsPage.shadowRoot.querySelector('#defaultDownloadPath');
       assertTrue(!!pathElement);
       return pathElement.textContent.trim();
     }

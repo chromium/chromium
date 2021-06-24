@@ -19,7 +19,6 @@ import '../icons.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
 import '../settings_shared_css.js';
-import '../prefs/prefs.js';
 import '../settings_vars_css.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
@@ -34,6 +33,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility, pageVisibility} from '../page_visibility.js';
+import {SettingsPrefsElement} from '../prefs/prefs.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 

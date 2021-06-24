@@ -87,10 +87,10 @@ suite('DefaultBrowserPageTest', function() {
 
     return initPage().then(function() {
       flush();
-      assertTrue(!!page.$$('#canBeDefaultBrowser'));
-      assertTrue(!page.$$('#isDefault'));
-      assertTrue(!page.$$('#isSecondaryInstall'));
-      assertTrue(!page.$$('#isUnknownError'));
+      assertTrue(!!page.shadowRoot.querySelector('#canBeDefaultBrowser'));
+      assertTrue(!page.shadowRoot.querySelector('#isDefault'));
+      assertTrue(!page.shadowRoot.querySelector('#isSecondaryInstall'));
+      assertTrue(!page.shadowRoot.querySelector('#isUnknownError'));
     });
   });
 
@@ -105,10 +105,10 @@ suite('DefaultBrowserPageTest', function() {
 
     return initPage().then(function() {
       flush();
-      assertFalse(!!page.$$('#canBeDefaultBrowser'));
-      assertFalse(page.$$('#isDefault').hidden);
-      assertTrue(page.$$('#isSecondaryInstall').hidden);
-      assertTrue(page.$$('#isUnknownError').hidden);
+      assertFalse(!!page.shadowRoot.querySelector('#canBeDefaultBrowser'));
+      assertFalse(page.shadowRoot.querySelector('#isDefault').hidden);
+      assertTrue(page.shadowRoot.querySelector('#isSecondaryInstall').hidden);
+      assertTrue(page.shadowRoot.querySelector('#isUnknownError').hidden);
     });
   });
 
@@ -122,10 +122,10 @@ suite('DefaultBrowserPageTest', function() {
 
     return initPage().then(function() {
       flush();
-      assertFalse(!!page.$$('#canBeDefaultBrowser'));
-      assertTrue(page.$$('#isDefault').hidden);
-      assertFalse(page.$$('#isSecondaryInstall').hidden);
-      assertTrue(page.$$('#isUnknownError').hidden);
+      assertFalse(!!page.shadowRoot.querySelector('#canBeDefaultBrowser'));
+      assertTrue(page.shadowRoot.querySelector('#isDefault').hidden);
+      assertFalse(page.shadowRoot.querySelector('#isSecondaryInstall').hidden);
+      assertTrue(page.shadowRoot.querySelector('#isUnknownError').hidden);
     });
   });
 
@@ -139,10 +139,10 @@ suite('DefaultBrowserPageTest', function() {
 
     return initPage().then(function() {
       flush();
-      assertFalse(!!page.$$('#canBeDefaultBrowser'));
-      assertTrue(page.$$('#isDefault').hidden);
-      assertTrue(page.$$('#isSecondaryInstall').hidden);
-      assertFalse(page.$$('#isUnknownError').hidden);
+      assertFalse(!!page.shadowRoot.querySelector('#canBeDefaultBrowser'));
+      assertTrue(page.shadowRoot.querySelector('#isDefault').hidden);
+      assertTrue(page.shadowRoot.querySelector('#isSecondaryInstall').hidden);
+      assertFalse(page.shadowRoot.querySelector('#isUnknownError').hidden);
     });
   });
 
@@ -156,10 +156,10 @@ suite('DefaultBrowserPageTest', function() {
 
     return initPage().then(function() {
       flush();
-      assertFalse(!!page.$$('#canBeDefaultBrowser'));
-      assertTrue(page.$$('#isDefault').hidden);
-      assertTrue(page.$$('#isSecondaryInstall').hidden);
-      assertFalse(page.$$('#isUnknownError').hidden);
+      assertFalse(!!page.shadowRoot.querySelector('#canBeDefaultBrowser'));
+      assertTrue(page.shadowRoot.querySelector('#isDefault').hidden);
+      assertTrue(page.shadowRoot.querySelector('#isSecondaryInstall').hidden);
+      assertFalse(page.shadowRoot.querySelector('#isUnknownError').hidden);
     });
   });
 });

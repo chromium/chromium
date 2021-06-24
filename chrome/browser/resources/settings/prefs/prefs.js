@@ -13,7 +13,7 @@
  */
 
 import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from './prefs_types.js';
 
@@ -127,53 +127,65 @@ function deepCopyObject(obj) {
   return copy;
 }
 
-Polymer({
-  is: 'settings-prefs',
 
-  _template: null,
+/** @polymer */
+export class SettingsPrefsElement extends PolymerElement {
+  static get is() {
+    return 'settings-prefs';
+  }
 
-  properties: {
-    /**
-     * Object containing all preferences, for use by Polymer controls.
-     * @type {Object|undefined}
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
-
-    /**
-     * Map of pref keys to values representing the state of the Chrome
-     * pref store as of the last update from the API.
-     * @type {Object<*>}
-     * @private
-     */
-    lastPrefValues_: {
-      type: Object,
-      value() {
-        return {};
+  static get properties() {
+    return {
+      /**
+       * Object containing all preferences, for use by Polymer controls.
+       * @type {Object|undefined}
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
-  },
 
-  observers: [
-    'prefsChanged_(prefs.*)',
-  ],
+      /**
+       * Map of pref keys to values representing the state of the Chrome
+       * pref store as of the last update from the API.
+       * @type {Object<*>}
+       * @private
+       */
+      lastPrefValues_: {
+        type: Object,
+        value() {
+          return {};
+        },
+      },
+    };
+  }
 
-  /** @type {SettingsPrivate} */
-  settingsApi_: /** @type {SettingsPrivate} */ (chrome.settingsPrivate),
+  static get observers() {
+    return [
+      'prefsChanged_(prefs.*)',
+    ];
+  }
 
-  /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {SettingsPrivate} */
+    this.settingsApi_ = /** @type {SettingsPrivate} */ (chrome.settingsPrivate);
+
+    /** @private {boolean} */
+    this.initialized_ = false;
+
     if (!CrSettingsPrefs.deferInitialization) {
       this.initialize();
     }
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     CrSettingsPrefs.resetForTesting();
-  },
+  }
 
   /**
    * @param {SettingsPrivate=} opt_settingsApi SettingsPrivate implementation
@@ -195,7 +207,7 @@ Polymer({
     this.settingsApi_.onPrefsChanged.addListener(this.boundPrefsChanged_);
     this.settingsApi_.getAllPrefs(
         this.onSettingsPrivatePrefsFetched_.bind(this));
-  },
+  }
 
   /**
    * @param {!{path: string}} e
@@ -218,9 +230,11 @@ Polymer({
     // settingsPrivate.setPref and potentially trigger an IPC loop.)
     if (!deepEqual(prefStoreValue, prefObj.value)) {
       // <if expr="chromeos">
-      this.fire(
-          'user-action-setting-change',
-          {prefKey: key, prefValue: prefObj.value});
+      this.dispatchEvent(new CustomEvent('user-action-setting-change', {
+        bubbles: true,
+        composed: true,
+        detail: {prefKey: key, prefValue: prefObj.value}
+      }));
       // </if>
 
       this.settingsApi_.setPref(
@@ -228,7 +242,7 @@ Polymer({
           /* pageId */ '',
           /* callback */ this.setPrefCallback_.bind(this, key));
     }
-  },
+  }
 
   /**
    * Called when prefs in the underlying Chrome pref store are changed.
@@ -240,7 +254,7 @@ Polymer({
     if (CrSettingsPrefs.isInitialized) {
       this.updatePrefs_(prefs);
     }
-  },
+  }
 
   /**
    * Called when prefs are fetched from settingsPrivate.
@@ -250,7 +264,7 @@ Polymer({
   onSettingsPrivatePrefsFetched_(prefs) {
     this.updatePrefs_(prefs);
     CrSettingsPrefs.setInitialized();
-  },
+  }
 
   /**
    * Checks the result of calling settingsPrivate.setPref.
@@ -262,7 +276,7 @@ Polymer({
     if (!success) {
       this.refresh(key);
     }
-  },
+  }
 
   /**
    * Get the current pref value from chrome.settingsPrivate to ensure the UI
@@ -273,7 +287,7 @@ Polymer({
     this.settingsApi_.getPref(key, pref => {
       this.updatePrefs_([pref]);
     });
-  },
+  }
 
   /**
    * Builds an object structure for the provided |path| within |prefsObject|,
@@ -298,7 +312,7 @@ Polymer({
         cur = cur[part] = {};
       }
     }
-  },
+  }
 
   /**
    * Updates the prefs model with the given prefs.
@@ -325,7 +339,7 @@ Polymer({
     if (!this.prefs) {
       this.prefs = prefs;
     }
-  },
+  }
 
   /**
    * Given a 'property-changed' path, returns the key of the preference the
@@ -349,7 +363,7 @@ Polymer({
       }
     }
     return '';
-  },
+  }
 
   /**
    * Resets the element so it can be re-initialized with a new prefs state.
@@ -365,5 +379,7 @@ Polymer({
     this.settingsApi_.onPrefsChanged.removeListener(this.boundPrefsChanged_);
     this.settingsApi_ =
         /** @type {SettingsPrivate} */ (chrome.settingsPrivate);
-  },
-});
+  }
+}
+
+customElements.define(SettingsPrefsElement.is, SettingsPrefsElement);

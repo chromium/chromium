@@ -13,49 +13,67 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../icons.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_browser_proxy.js';
 
-Polymer({
-  is: 'settings-default-browser-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsDefaultBrowserPageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [WebUIListenerBehavior],
+/** @polymer */
+class SettingsDefaultBrowserPageElement extends
+    SettingsDefaultBrowserPageElementBase {
+  static get is() {
+    return 'settings-default-browser-page';
+  }
 
-  properties: {
-    /** @private */
-    isDefault_: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    isSecondaryInstall_: Boolean,
+  static get properties() {
+    return {
+      /** @private */
+      isDefault_: Boolean,
 
-    /** @private */
-    isUnknownError_: Boolean,
+      /** @private */
+      isSecondaryInstall_: Boolean,
 
-    /** @private */
-    maySetDefaultBrowser_: Boolean,
-  },
+      /** @private */
+      isUnknownError_: Boolean,
 
-  /** @private {DefaultBrowserBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      maySetDefaultBrowser_: Boolean,
+
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!DefaultBrowserBrowserProxy} */
     this.browserProxy_ = DefaultBrowserBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'browser-default-state-changed',
         this.updateDefaultBrowserState_.bind(this));
 
     this.browserProxy_.requestDefaultBrowserState().then(
         this.updateDefaultBrowserState_.bind(this));
-  },
+  }
 
   /**
    * @param {!DefaultBrowserInfo} defaultBrowserState
@@ -78,10 +96,13 @@ Polymer({
     } else {
       this.isUnknownError_ = true;
     }
-  },
+  }
 
   /** @private */
   onSetDefaultBrowserTap_() {
     this.browserProxy_.setAsDefaultBrowser();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsDefaultBrowserPageElement.is, SettingsDefaultBrowserPageElement);

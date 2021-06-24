@@ -9,10 +9,9 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {SettingsPrefsElement} from 'chrome://settings/settings.js';
 
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {FakeChromeEvent} from '../../fake_chrome_event.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
 /**
  * Fake of the chrome.languageSettingsPrivate API.
@@ -494,7 +493,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   }
 }
 
-  // List of language-related preferences suitable for testing.
+// List of language-related preferences suitable for testing.
 export function getFakeLanguagePrefs() {
   const fakePrefs = [
     {

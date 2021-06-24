@@ -16,41 +16,49 @@ import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 
-Polymer({
-  is: 'settings-system-page',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsSystemPageElement extends PolymerElement {
+  static get is() {
+    return 'settings-system-page';
+  }
 
-  properties: {
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    isProxyEnforcedByPolicy_: {
-      type: Boolean,
-    },
+  static get properties() {
+    return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @private */
-    isProxyDefault_: {
-      type: Boolean,
-    },
-  },
+      /** @private */
+      isProxyEnforcedByPolicy_: {
+        type: Boolean,
+      },
 
-  observers: [
-    'observeProxyPrefChanged_(prefs.proxy.*)',
-  ],
+      /** @private */
+      isProxyDefault_: {
+        type: Boolean,
+      },
+    };
+  }
 
-  /**
-   * @private
-   */
+  static get observers() {
+    return [
+      'observeProxyPrefChanged_(prefs.proxy.*)',
+    ];
+  }
+
+  /** @private */
   observeProxyPrefChanged_() {
     /** @type {!chrome.settingsPrivate.PrefObject} */
     const pref = this.prefs.proxy;
@@ -59,7 +67,7 @@ Polymer({
         pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
         pref.controlledBy === chrome.settingsPrivate.ControlledBy.USER_POLICY;
     this.isProxyDefault_ = !this.isProxyEnforcedByPolicy_ && !pref.extensionId;
-  },
+  }
 
   /** @private */
   onExtensionDisable_() {
@@ -68,15 +76,16 @@ Polymer({
     // other sources (i.e. disabling/enabling an extension from
     // chrome://extensions or from the omnibox directly) will not update
     // |this.prefs.proxy| directly (nor the UI). We should fix this eventually.
-    this.fire('refresh-pref', 'proxy');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'refresh-pref', {bubbles: true, composed: true, detail: 'proxy'}));
+  }
 
   /** @private */
   onProxyTap_() {
     if (this.isProxyDefault_) {
       SystemPageBrowserProxyImpl.getInstance().showProxySettings();
     }
-  },
+  }
 
   /** @private */
   onRestartTap_(e) {
@@ -84,7 +93,7 @@ Polymer({
     e.stopPropagation();
     // TODO(dbeam): we should prompt before restarting the browser.
     LifetimeBrowserProxyImpl.getInstance().restart();
-  },
+  }
 
   /**
    * @param {boolean} enabled Whether hardware acceleration is currently
@@ -94,5 +103,7 @@ Polymer({
   shouldShowRestart_(enabled) {
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
-  },
-});
+  }
+}
+
+customElements.define(SettingsSystemPageElement.is, SettingsSystemPageElement);

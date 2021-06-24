@@ -8,17 +8,25 @@
  */
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'site-favicon',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SiteFaviconElement extends PolymerElement {
+  static get is() {
+    return 'site-favicon';
+  }
 
-  properties: {
-    faviconUrl: String,
-    url: String,
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      faviconUrl: String,
+      url: String,
+    };
+  }
 
   /** @private */
   getBackgroundImage_() {
@@ -32,7 +40,7 @@ Polymer({
       backgroundImage = getFaviconForPageURL(url || '', false);
     }
     return backgroundImage;
-  },
+  }
 
   /**
    * Removes the wildcard prefix from a pattern string.
@@ -53,7 +61,7 @@ Polymer({
       return pattern.substring(4, pattern.length);
     }
     return pattern;
-  },
+  }
 
   /**
    * Ensures the URL has a scheme (assumes http if omitted).
@@ -66,5 +74,7 @@ Polymer({
       return url;
     }
     return url.includes('://') ? url : 'http://' + url;
-  },
-});
+  }
+}
+
+customElements.define(SiteFaviconElement.is, SiteFaviconElement);

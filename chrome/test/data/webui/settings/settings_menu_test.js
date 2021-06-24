@@ -38,7 +38,8 @@ suite('SettingsMenu', function() {
   test('tapAdvanced', function() {
     assertFalse(settingsMenu.advancedOpened);
 
-    const advancedToggle = settingsMenu.$$('#advancedButton');
+    const advancedToggle =
+        settingsMenu.shadowRoot.querySelector('#advancedButton');
     assertTrue(!!advancedToggle);
 
     advancedToggle.click();
@@ -53,7 +54,8 @@ suite('SettingsMenu', function() {
   test('upAndDownIcons', function() {
     // There should be different icons for a top level menu being open
     // vs. being closed. E.g. arrow-drop-up and arrow-drop-down.
-    const ironIconElement = settingsMenu.$$('#advancedButton iron-icon');
+    const ironIconElement =
+        settingsMenu.shadowRoot.querySelector('#advancedButton iron-icon');
     assertTrue(!!ironIconElement);
 
     settingsMenu.advancedOpened = true;
@@ -71,7 +73,7 @@ suite('SettingsMenu', function() {
   test('clearsUrlSearchParam', function() {
     // As of iron-selector 2.x, need to force iron-selector to update before
     // clicking items on it, or wait for 'iron-items-changed'
-    const ironSelector = settingsMenu.$$('iron-selector');
+    const ironSelector = settingsMenu.shadowRoot.querySelector('iron-selector');
     ironSelector.forceSynchronousItemUpdate();
 
     const urlParams = new URLSearchParams('search=foo');
@@ -131,16 +133,32 @@ suite('SettingsMenuReset', function() {
 
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden) {
-      assertEquals(expectedHidden, settingsMenu.$$('#people').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#appearance').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#onStartup').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#advancedButton').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#advancedSubmenu').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#reset').hidden);
-      assertEquals(expectedHidden, settingsMenu.$$('#safetyCheck').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#people').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#appearance').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#onStartup').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#advancedButton').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#advancedSubmenu').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#reset').hidden);
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot.querySelector('#safetyCheck').hidden);
 
       if (!isChromeOS && !isLacros) {
-        assertEquals(expectedHidden, settingsMenu.$$('#defaultBrowser').hidden);
+        assertEquals(
+            expectedHidden,
+            settingsMenu.shadowRoot.querySelector('#defaultBrowser').hidden);
       }
     }
 

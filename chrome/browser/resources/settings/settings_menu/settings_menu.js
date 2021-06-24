@@ -17,37 +17,54 @@ import '../icons.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 
-Polymer({
-  is: 'settings-menu',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsMenuElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement);
 
-  behaviors: [RouteObserverBehavior],
+/** @polymer */
+export class SettingsMenuElement extends SettingsMenuElementBase {
+  static get is() {
+    return 'settings-menu';
+  }
 
-  properties: {
-    advancedOpened: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Dictionary defining page visibility.
-     * @type {!PageVisibility}
-     */
-    pageVisibility: Object,
+  static get properties() {
+    return {
+      advancedOpened: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-    /** @private */
-    enableLandingPageRedesign_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('enableLandingPageRedesign'),
-    },
-  },
+      /**
+       * Dictionary defining page visibility.
+       * @type {!PageVisibility}
+       */
+      pageVisibility: Object,
+
+      /** @private */
+      enableLandingPageRedesign_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLandingPageRedesign'),
+      },
+
+    };
+  }
+
+
 
   /** @param {!Route} newRoute */
   currentRouteChanged(newRoute) {
@@ -63,7 +80,7 @@ Polymer({
     }
 
     this.setSelectedUrl_('');  // Nothing is selected.
-  },
+  }
 
   focusFirstItem() {
     const firstFocusableItem =
@@ -71,12 +88,12 @@ Polymer({
     if (firstFocusableItem) {
       firstFocusableItem.focus();
     }
-  },
+  }
 
   /** @private */
   onAdvancedButtonToggle_() {
     this.advancedOpened = !this.advancedOpened;
-  },
+  }
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
@@ -88,7 +105,7 @@ Polymer({
     if (event.target.matches('a:not(#extensionsLink)')) {
       event.preventDefault();
     }
-  },
+  }
 
   /**
    * Keeps both menus in sync. |url| needs to come from |element.href| because
@@ -97,7 +114,7 @@ Polymer({
    */
   setSelectedUrl_(url) {
     this.$.topMenu.selected = this.$.subMenu.selected = url;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -111,7 +128,7 @@ Polymer({
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(
         route, /* dynamicParams */ null, /* removeSearch */ true);
-  },
+  }
 
   /**
    * @param {boolean} opened Whether the menu is expanded.
@@ -120,13 +137,13 @@ Polymer({
    * */
   arrowState_(opened) {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  },
+  }
 
   /** @private */
   onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
-  },
+  }
 
   /**
    * @param {boolean} bool
@@ -135,5 +152,7 @@ Polymer({
    */
   boolToString_(bool) {
     return bool.toString();
-  },
-});
+  }
+}
+
+customElements.define(SettingsMenuElement.is, SettingsMenuElement);

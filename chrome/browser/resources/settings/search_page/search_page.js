@@ -19,48 +19,56 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
 
-Polymer({
-  is: 'settings-search-page',
+/** @polymer */
+export class SettingsSearchPageElement extends PolymerElement {
+  static get is() {
+    return 'settings-search-page';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    prefs: Object,
+  static get properties() {
+    return {
+      prefs: Object,
 
-    /**
-     * List of default search engines available.
-     * @private {!Array<!SearchEngine>}
-     */
-    searchEngines_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+      /**
+       * List of default search engines available.
+       * @private {!Array<!SearchEngine>}
+       */
+      searchEngines_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /** @private Filter applied to search engines. */
-    searchEnginesFilter_: String,
+      /** @private Filter applied to search engines. */
+      searchEnginesFilter_: String,
 
-    /** @type {?Map<string, string>} */
-    focusConfig_: Object,
-  },
+      /** @type {?Map<string, string>} */
+      focusConfig_: Object,
+    };
+  }
 
-  /** @private {?SearchEnginesBrowserProxy} */
-  browserProxy_: null,
+  constructor() {
+    super();
 
-  /** @override */
-  created() {
+    /** @private {!SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     // Omnibox search engine
     const updateSearchEngines = searchEngines => {
       this.set('searchEngines_', searchEngines.defaults);
@@ -73,24 +81,29 @@ Polymer({
       this.focusConfig_.set(
           routes.SEARCH_ENGINES.path, '#enginesSubpageTrigger');
     }
-  },
+  }
 
   /** @private */
   onChange_() {
-    const select = /** @type {!HTMLSelectElement} */ (this.$$('select'));
+    const select = /** @type {!HTMLSelectElement} */ (
+        this.shadowRoot.querySelector('select'));
     const searchEngine = this.searchEngines_[select.selectedIndex];
     this.browserProxy_.setDefaultSearchEngine(searchEngine.modelIndex);
-  },
+  }
 
   /** @private */
   onDisableExtension_() {
-    this.fire('refresh-pref', 'default_search_provider.enabled');
-  },
+    this.dispatchEvent(new CustomEvent('refresh-pref', {
+      bubbles: true,
+      composed: true,
+      detail: 'default_search_provider.enabled'
+    }));
+  }
 
   /** @private */
   onManageSearchEnginesTap_() {
     Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
-  },
+  }
 
   /**
    * @param {!chrome.settingsPrivate.PrefObject} pref
@@ -100,7 +113,7 @@ Polymer({
   isDefaultSearchControlledByPolicy_(pref) {
     return pref.controlledBy ===
         chrome.settingsPrivate.ControlledBy.USER_POLICY;
-  },
+  }
 
   /**
    * @param {!chrome.settingsPrivate.PrefObject} pref
@@ -109,5 +122,7 @@ Polymer({
    */
   isDefaultSearchEngineEnforced_(pref) {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-  },
-});
+  }
+}
+
+customElements.define(SettingsSearchPageElement.is, SettingsSearchPageElement);

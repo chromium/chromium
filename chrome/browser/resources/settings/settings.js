@@ -34,6 +34,7 @@ export {ProfileInfoBrowserProxyImpl} from './people_page/profile_info_browser_pr
 export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from './prefs/pref_util.js';
+export {SettingsPrefsElement} from './prefs/prefs.js';
 export {PrefsBehavior} from './prefs/prefs_behavior.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';
@@ -51,4 +52,6 @@ export {SettingsSafetyCheckPasswordsChildElement} from './safety_check_page/safe
 export {SettingsSafetyCheckSafeBrowsingChildElement} from './safety_check_page/safety_check_safe_browsing_child.js';
 export {SettingsSafetyCheckUpdatesChildElement} from './safety_check_page/safety_check_updates_child.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_page/search_engines_browser_proxy.js';
+export {SettingsSearchPageElement} from './search_page/search_page.js';
 export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';
+export {SettingsMenuElement} from './settings_menu/settings_menu.js';
