@@ -11,7 +11,7 @@
 namespace chromeos {
 namespace assistant {
 
-// Delegate that will fetch all instances from the |AssistantClient|.
+// Delegate that will fetch all instances from the |AssistantBrowserDelegate|.
 class PlatformDelegateImpl
     : public chromeos::libassistant::mojom::PlatformDelegate {
  public:

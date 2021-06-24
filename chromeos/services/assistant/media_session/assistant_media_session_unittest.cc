@@ -8,9 +8,9 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/media_host.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,12 +51,12 @@ class AssistantMediaSessionTest : public testing::Test {
   // other class members.
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  ScopedAssistantClient client;
+  ScopedAssistantBrowserDelegate delegate_;
   testing::StrictMock<LibassistantMediaControllerMock>
       libassistant_media_controller_;
   mojo::Remote<chromeos::libassistant::mojom::MediaDelegate>
       libassistant_media_delegate_;
-  MediaHost media_host_{AssistantClient::Get(),
+  MediaHost media_host_{AssistantBrowserDelegate::Get(),
                         /*interaction_subscribers=*/nullptr};
   AssistantMediaSession assistant_media_session_{&media_host_};
 };

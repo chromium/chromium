@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
@@ -205,16 +205,16 @@ class MediaHost::LibassistantMediaDelegate
 //   MediaHost
 ////////////////////////////////////////////////////////////////////////////////
 
-MediaHost::MediaHost(AssistantClient* assistant_client,
+MediaHost::MediaHost(AssistantBrowserDelegate* delegate,
                      const base::ObserverList<AssistantInteractionSubscriber>*
                          interaction_subscribers)
     : interaction_subscribers_(interaction_subscribers),
       media_session_(std::make_unique<AssistantMediaSession>(this)) {
-  DCHECK(assistant_client);
+  DCHECK(delegate);
 
   mojo::Remote<media_session::mojom::MediaControllerManager>
       media_controller_manager;
-  assistant_client->RequestMediaControllerManager(
+  delegate->RequestMediaControllerManager(
       media_controller_manager.BindNewPipeAndPassReceiver());
   media_controller_manager->CreateActiveMediaController(
       chromeos_media_controller_.BindNewPipeAndPassReceiver());

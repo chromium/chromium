@@ -24,7 +24,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/test_support/fake_assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -49,28 +49,29 @@ const char* kGaiaId = "gaia_id_for_user_gmail.com";
 const char* kEmailAddress = "user@gmail.com";
 }  // namespace
 
-class ScopedFakeAssistantClient : public ScopedAssistantClient {
+class ScopedFakeAssistantBrowserDelegate
+    : public ScopedAssistantBrowserDelegate {
  public:
-  explicit ScopedFakeAssistantClient(ash::AssistantState* assistant_state)
+  explicit ScopedFakeAssistantBrowserDelegate(
+      ash::AssistantState* assistant_state)
       : status_(AssistantStatus::NOT_READY) {}
 
   AssistantStatus status() { return status_; }
 
  private:
-  // ScopedAssistantClient:
+  // ScopedAssistantBrowserDelegate:
   void OnAssistantStatusChanged(AssistantStatus new_status) override {
     status_ = new_status;
   }
 
   AssistantStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeAssistantClient);
 };
 
 class AssistantServiceTest : public testing::Test {
  public:
   AssistantServiceTest() = default;
-
+  AssistantServiceTest(const AssistantServiceTest&) = delete;
+  AssistantServiceTest& operator=(const AssistantServiceTest&) = delete;
   ~AssistantServiceTest() override = default;
 
   void SetUp() override {
@@ -148,7 +149,7 @@ class AssistantServiceTest : public testing::Test {
 
   ash::AssistantState* assistant_state() { return &assistant_state_; }
 
-  ScopedFakeAssistantClient* client() { return &fake_assistant_client_; }
+  ScopedFakeAssistantBrowserDelegate* client() { return &fake_delegate_; }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
@@ -162,14 +163,12 @@ class AssistantServiceTest : public testing::Test {
 
   FullyInitializedAssistantState assistant_state_;
   signin::IdentityTestEnvironment identity_test_env_;
-  ScopedFakeAssistantClient fake_assistant_client_{&assistant_state_};
+  ScopedFakeAssistantBrowserDelegate fake_delegate_{&assistant_state_};
   ScopedDeviceActions fake_device_actions_;
   testing::NiceMock<ash::MockAssistantController> mock_assistant_controller;
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantServiceTest);
 };
 
 TEST_F(AssistantServiceTest, RefreshTokenAfterExpire) {

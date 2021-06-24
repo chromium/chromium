@@ -27,7 +27,7 @@
 #include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
 #include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
@@ -120,7 +120,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
         PowerManagerClient::TabletMode::OFF, base::TimeTicks());
 
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor;
-    assistant_client_.RequestBatteryMonitor(
+    delegate_.RequestBatteryMonitor(
         battery_monitor.InitWithNewPipeAndPassReceiver());
 
     shared_url_loader_factory_ =
@@ -230,7 +230,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  ScopedAssistantClient assistant_client_;
+  ScopedAssistantBrowserDelegate delegate_;
   ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   ScopedDeviceActions device_actions_;
   FullyInitializedAssistantState assistant_state_;

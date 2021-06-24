@@ -20,7 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -283,11 +283,11 @@ void AssistantScreenContextControllerImpl::UpdateAssistantStructure(
 void AssistantScreenContextControllerImpl::RequestAssistantStructure() {
   DCHECK(AssistantState::Get()->IsScreenContextAllowed());
 
-  auto* assistant_client = chromeos::assistant::AssistantClient::Get();
-  DCHECK(assistant_client);
+  auto* delegate = chromeos::assistant::AssistantBrowserDelegate::Get();
+  DCHECK(delegate);
 
   // Request and cache Assistant structure for the active window.
-  assistant_client->RequestAssistantStructure(
+  delegate->RequestAssistantStructure(
       base::BindOnce(&AssistantScreenContextControllerImpl::
                          OnRequestAssistantStructureCompleted,
                      weak_factory_.GetWeakPtr()));

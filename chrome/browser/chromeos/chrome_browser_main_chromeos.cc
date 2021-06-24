@@ -148,7 +148,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/ui/ash/assistant/assistant_client_impl.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -785,7 +785,7 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // must be placed after UserManager initialization.
   MagnificationManager::Initialize();
 
-  // Has to be initialized before |assistant_client_|;
+  // Has to be initialized before |assistant_delegate_|;
   image_downloader_ = std::make_unique<ImageDownloaderImpl>();
 
   // Requires UserManager.
@@ -795,7 +795,7 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // ChromeBrowserMainExtraPartsAsh::session_controller_client_ to avoid race of
   // SessionChanged event and assistant_client initialization. It must come
   // after AssistantStateClient.
-  assistant_client_ = std::make_unique<AssistantClientImpl>();
+  assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -1211,7 +1211,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   // Assistant has to shut down before voice interaction controller client to
   // correctly remove the observer.
-  assistant_client_.reset();
+  assistant_delegate_.reset();
 
   assistant_state_client_.reset();
 

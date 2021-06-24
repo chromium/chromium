@@ -10,7 +10,7 @@
 #include "chromeos/assistant/buildflags.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
@@ -32,7 +32,8 @@ void LibassistantServiceHostImpl::Launch(
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (assistant::features::IsLibAssistantSandboxEnabled()) {
-    AssistantClient::Get()->RequestLibassistantService(std::move(receiver));
+    AssistantBrowserDelegate::Get()->RequestLibassistantService(
+        std::move(receiver));
   } else {
     DCHECK(!libassistant_service_);
     libassistant_service_ =

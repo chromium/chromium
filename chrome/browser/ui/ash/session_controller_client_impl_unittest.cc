@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/policy/networking/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/networking/policy_cert_service_factory.h"
-#include "chrome/browser/ui/ash/assistant/assistant_client_impl.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -111,8 +111,8 @@ class SessionControllerClientImplTest : public testing::Test {
     user_manager_ = new TestChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_));
-    // Initialize AssistantClientImpl singleton.
-    assistant_client_ = std::make_unique<AssistantClientImpl>();
+    // Initialize AssistantBrowserDelegate singleton.
+    assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -123,7 +123,7 @@ class SessionControllerClientImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    assistant_client_.reset();
+    assistant_delegate_.reset();
     user_manager_enabler_.reset();
     user_manager_ = nullptr;
     profile_manager_.reset();
@@ -190,7 +190,7 @@ class SessionControllerClientImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<AssistantClientImpl> assistant_client_;
+  std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   session_manager::SessionManager session_manager_;
   chromeos::SessionTerminationManager session_termination_manager_;
 

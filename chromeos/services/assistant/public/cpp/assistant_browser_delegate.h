@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_CLIENT_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_CLIENT_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_BROWSER_DELEGATE_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_BROWSER_DELEGATE_H_
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/component_export.h"
@@ -29,14 +29,14 @@ namespace assistant {
 
 // Main interface implemented in browser to provide dependencies to
 // |chromeos::assistant::Service|.
-class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantClient {
+class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
  public:
-  AssistantClient();
-  AssistantClient(const AssistantClient&) = delete;
-  AssistantClient& operator=(const AssistantClient&) = delete;
-  virtual ~AssistantClient();
+  AssistantBrowserDelegate();
+  AssistantBrowserDelegate(const AssistantBrowserDelegate&) = delete;
+  AssistantBrowserDelegate& operator=(const AssistantBrowserDelegate&) = delete;
+  virtual ~AssistantBrowserDelegate();
 
-  static AssistantClient* Get();
+  static AssistantBrowserDelegate* Get();
 
   using RequestAssistantStructureCallback =
       base::OnceCallback<void(ax::mojom::AssistantExtraPtr,
@@ -99,4 +99,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantClient {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_CLIENT_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_BROWSER_DELEGATE_H_

@@ -34,7 +34,7 @@
 #include "chromeos/services/assistant/platform/audio_input_host_impl.h"
 #include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/services/assistant/platform/platform_delegate_impl.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -162,7 +162,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
       context_(context),
       device_settings_host_(std::make_unique<DeviceSettingsHost>(context)),
-      media_host_(std::make_unique<MediaHost>(AssistantClient::Get(),
+      media_host_(std::make_unique<MediaHost>(AssistantBrowserDelegate::Get(),
                                               &interaction_subscribers_)),
       timer_host_(std::make_unique<TimerHost>(context)),
       audio_output_delegate_(std::make_unique<AudioOutputDelegateImpl>(

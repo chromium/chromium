@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/media_host.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/cpp/features.h"
 
@@ -192,7 +192,7 @@ void AssistantMediaSession::EnsureServiceConnection() {
 
   audio_focus_manager_.reset();
 
-  AssistantClient::Get()->RequestAudioFocusManager(
+  AssistantBrowserDelegate::Get()->RequestAudioFocusManager(
       audio_focus_manager_.BindNewPipeAndPassReceiver());
   audio_focus_manager_->SetSource(base::UnguessableToken::Create(),
                                   kAudioFocusSourceName);

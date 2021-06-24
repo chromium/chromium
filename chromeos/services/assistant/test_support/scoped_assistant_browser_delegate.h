@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_CLIENT_H_
-#define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_CLIENT_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
+#define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 
 #include "base/macros.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -15,22 +15,22 @@
 namespace chromeos {
 namespace assistant {
 
-// A base testing implementation of the AssistantClient interface which tests
-// can subclass to implement specific client mocking support. It also installs
-// itself as the singleton instance.
-class ScopedAssistantClient : AssistantClient {
+// A base testing implementation of the AssistantBrowserDelegate interface which
+// tests can subclass to implement specific client mocking support. It also
+// installs itself as the singleton instance.
+class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
  public:
-  ScopedAssistantClient();
-  ~ScopedAssistantClient() override;
+  ScopedAssistantBrowserDelegate();
+  ~ScopedAssistantBrowserDelegate() override;
 
-  AssistantClient& Get();
+  AssistantBrowserDelegate& Get();
 
   // Set the MediaControllerManager receiver that will be bound to the remote
   // passed into RequestMediaControllerManager().
   void SetMediaControllerManager(
       mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver);
 
-  // AssistantClient implementation:
+  // AssistantBrowserDelegate implementation:
   void RequestAssistantStructure(
       RequestAssistantStructureCallback callback) override;
   void OnAssistantStatusChanged(AssistantStatus status) override {}
@@ -71,4 +71,4 @@ class ScopedAssistantClient : AssistantClient {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_CLIENT_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_

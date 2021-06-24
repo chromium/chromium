@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
-#include "chrome/browser/ui/ash/assistant/assistant_client_impl.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
@@ -97,8 +97,8 @@ class ScreenLockerUnitTest : public testing::Test {
         std::make_unique<SessionControllerClientImpl>();
     session_controller_client_->Init();
 
-    // Initialize AssistantClientImpl:
-    assistant_client_ = std::make_unique<AssistantClientImpl>();
+    // Initialize AssistantBrowserDelegate:
+    assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
     // Initialize AccessibilityManager and dependencies:
     observer_ = std::make_unique<audio::TestObserver>((base::DoNothing()));
@@ -138,7 +138,7 @@ class ScreenLockerUnitTest : public testing::Test {
     audio::SoundsManager::Shutdown();
     audio::AudioStreamHandler::SetObserverForTesting(nullptr);
     observer_.reset();
-    assistant_client_.reset();
+    assistant_delegate_.reset();
     session_controller_client_.reset();
     LoginState::Shutdown();
     bluez::BluezDBusManager::Shutdown();
@@ -179,7 +179,7 @@ class ScreenLockerUnitTest : public testing::Test {
   ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   TestSessionController test_session_controller_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
-  std::unique_ptr<AssistantClientImpl> assistant_client_;
+  std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   chromeos::SessionTerminationManager session_termination_manager_;
 
   std::unique_ptr<audio::TestObserver> observer_;

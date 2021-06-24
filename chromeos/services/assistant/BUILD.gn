@@ -153,8 +153,8 @@ static_library("test_support") {
     "test_support/mock_assistant.h",
     "test_support/mock_assistant_interaction_subscriber.cc",
     "test_support/mock_assistant_interaction_subscriber.h",
-    "test_support/scoped_assistant_client.cc",
-    "test_support/scoped_assistant_client.h",
+    "test_support/scoped_assistant_browser_delegate.cc",
+    "test_support/scoped_assistant_browser_delegate.h",
   ]
   deps = [
     ":lib",

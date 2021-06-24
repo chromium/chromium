@@ -33,7 +33,7 @@
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -377,7 +377,7 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
 
  private:
   base::SimpleTestTickClock simulated_clock_;
-  chromeos::assistant::ScopedAssistantClient assistant_client_;
+  chromeos::assistant::ScopedAssistantBrowserDelegate delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithAssistant);
 };

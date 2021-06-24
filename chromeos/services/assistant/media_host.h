@@ -16,7 +16,7 @@
 namespace chromeos {
 namespace assistant {
 
-class AssistantClient;
+class AssistantBrowserDelegate;
 class AssistantInteractionSubscriber;
 class AssistantManagerServiceImpl;
 class AssistantMediaSession;
@@ -27,7 +27,7 @@ class AssistantMediaSession;
 //   1) Let Libassistant control media (start/stop/open spotify).
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
  public:
-  MediaHost(AssistantClient* assistant_client,
+  MediaHost(AssistantBrowserDelegate* delegate,
             const base::ObserverList<AssistantInteractionSubscriber>*
                 interaction_subscribers);
   MediaHost(const MediaHost&) = delete;

@@ -13,7 +13,7 @@
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -202,10 +202,9 @@ class MediaHostTest : public testing::Test {
   ~MediaHostTest() override = default;
 
   void SetUp() override {
-    assistant_client_.SetMediaControllerManager(
-        &media_controller_manager_.receiver());
+    delegate_.SetMediaControllerManager(&media_controller_manager_.receiver());
 
-    media_host_ = std::make_unique<MediaHost>(AssistantClient::Get(),
+    media_host_ = std::make_unique<MediaHost>(AssistantBrowserDelegate::Get(),
                                               &interaction_subscribers_);
     media_host().Initialize(
         &libassistant_controller_,
@@ -287,7 +286,7 @@ class MediaHostTest : public testing::Test {
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
   FakeMediaControllerManager media_controller_manager_;
-  ScopedAssistantClient assistant_client_;
+  ScopedAssistantBrowserDelegate delegate_;
   testing::StrictMock<LibassistantMediaControllerMock> libassistant_controller_;
   mojo::Remote<chromeos::libassistant::mojom::MediaDelegate>
       libassistant_media_delegate_;

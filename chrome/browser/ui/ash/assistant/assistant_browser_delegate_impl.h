@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_BROWSER_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_BROWSER_DELEGATE_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -29,14 +29,18 @@ class ConversationStartersClientImpl;
 class Profile;
 
 // Class to handle all Assistant in-browser-process functionalities.
-class AssistantClientImpl : public chromeos::assistant::AssistantClient,
-                            public content::NotificationObserver,
-                            public signin::IdentityManager::Observer,
-                            public session_manager::SessionManagerObserver,
-                            public ash::AssistantStateObserver {
+class AssistantBrowserDelegateImpl
+    : public chromeos::assistant::AssistantBrowserDelegate,
+      public content::NotificationObserver,
+      public signin::IdentityManager::Observer,
+      public session_manager::SessionManagerObserver,
+      public ash::AssistantStateObserver {
  public:
-  AssistantClientImpl();
-  ~AssistantClientImpl() override;
+  AssistantBrowserDelegateImpl();
+  AssistantBrowserDelegateImpl(const AssistantBrowserDelegateImpl&) = delete;
+  AssistantBrowserDelegateImpl& operator=(const AssistantBrowserDelegateImpl&) =
+      delete;
+  ~AssistantBrowserDelegateImpl() override;
 
   void MaybeInit(Profile* profile);
   void MaybeStartAssistantOptInFlow();
@@ -48,8 +52,8 @@ class AssistantClientImpl : public chromeos::assistant::AssistantClient,
 
   // chromeos::assistant::AssisantClient overrides:
   void RequestAssistantStructure(
-      chromeos::assistant::AssistantClient::RequestAssistantStructureCallback
-          callback) override;
+      chromeos::assistant::AssistantBrowserDelegate::
+          RequestAssistantStructureCallback callback) override;
   void OnAssistantStatusChanged(
       chromeos::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(
@@ -114,8 +118,6 @@ class AssistantClientImpl : public chromeos::assistant::AssistantClient,
 
   base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
       assistant_state_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantClientImpl);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_BROWSER_DELEGATE_IMPL_H_

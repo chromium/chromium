@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 
 namespace chromeos {
 namespace assistant {
@@ -20,20 +20,20 @@ std::unique_ptr<ui::AssistantTree> CreateTestAssistantTree() {
 
 }  // namespace
 
-ScopedAssistantClient::ScopedAssistantClient() = default;
+ScopedAssistantBrowserDelegate::ScopedAssistantBrowserDelegate() = default;
 
-ScopedAssistantClient::~ScopedAssistantClient() = default;
+ScopedAssistantBrowserDelegate::~ScopedAssistantBrowserDelegate() = default;
 
-AssistantClient& ScopedAssistantClient::Get() {
-  return *AssistantClient::Get();
+AssistantBrowserDelegate& ScopedAssistantBrowserDelegate::Get() {
+  return *AssistantBrowserDelegate::Get();
 }
 
-void ScopedAssistantClient::SetMediaControllerManager(
+void ScopedAssistantBrowserDelegate::SetMediaControllerManager(
     mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver) {
   media_controller_manager_receiver_ = receiver;
 }
 
-void ScopedAssistantClient::RequestMediaControllerManager(
+void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
     mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
         receiver) {
   if (media_controller_manager_receiver_) {
@@ -42,7 +42,7 @@ void ScopedAssistantClient::RequestMediaControllerManager(
   }
 }
 
-void ScopedAssistantClient::RequestAssistantStructure(
+void ScopedAssistantBrowserDelegate::RequestAssistantStructure(
     RequestAssistantStructureCallback callback) {
   // Pretend to fetch structure asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(

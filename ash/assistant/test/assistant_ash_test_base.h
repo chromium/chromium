@@ -21,7 +21,7 @@ class Window;
 
 namespace chromeos {
 namespace assistant {
-class ScopedAssistantClient;
+class ScopedAssistantBrowserDelegate;
 }  // namespace assistant
 }  // namespace chromeos
 
@@ -217,7 +217,8 @@ class AssistantAshTestBase : public AshTestBase {
   std::vector<std::unique_ptr<aura::Window>> windows_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;
 
-  std::unique_ptr<chromeos::assistant::ScopedAssistantClient> assistant_client_;
+  std::unique_ptr<chromeos::assistant::ScopedAssistantBrowserDelegate>
+      delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantAshTestBase);
 };

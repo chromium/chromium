@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/assistant/assistant_client_impl.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 
 #include <utility>
 
@@ -37,10 +37,10 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
-AssistantClientImpl::AssistantClientImpl() {
+AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   auto* session_manager = session_manager::SessionManager::Get();
-  // AssistantClientImpl must be created before any user session is created.
-  // Otherwise, it will not get OnUserProfileLoaded notification.
+  // AssistantBrowserDelegateImpl must be created before any user session is
+  // created. Otherwise, it will not get OnUserProfileLoaded notification.
   DCHECK(session_manager->sessions().empty());
   session_manager->AddObserver(this);
 
@@ -48,13 +48,13 @@ AssistantClientImpl::AssistantClientImpl() {
                               content::NotificationService::AllSources());
 }
 
-AssistantClientImpl::~AssistantClientImpl() {
+AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
   session_manager::SessionManager::Get()->RemoveObserver(this);
   if (identity_manager_)
     identity_manager_->RemoveObserver(this);
 }
 
-void AssistantClientImpl::MaybeInit(Profile* profile) {
+void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   if (assistant::IsAssistantAllowedForProfile(profile) !=
       chromeos::assistant::AssistantAllowedState::ALLOWED) {
     return;
@@ -91,16 +91,17 @@ void AssistantClientImpl::MaybeInit(Profile* profile) {
   }
 }
 
-void AssistantClientImpl::MaybeStartAssistantOptInFlow() {
+void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
   if (!initialized_)
     return;
 
   assistant_setup_->MaybeStartAssistantOptInFlow();
 }
 
-void AssistantClientImpl::Observe(int type,
-                                  const content::NotificationSource& source,
-                                  const content::NotificationDetails& details) {
+void AssistantBrowserDelegateImpl::Observe(
+    int type,
+    const content::NotificationSource& source,
+    const content::NotificationDetails& details) {
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
   if (!initialized_)
     return;
@@ -108,38 +109,38 @@ void AssistantClientImpl::Observe(int type,
   chromeos::assistant::AssistantService::Get()->Shutdown();
 }
 
-void AssistantClientImpl::RequestAssistantStructure(
+void AssistantBrowserDelegateImpl::RequestAssistantStructure(
     RequestAssistantStructureCallback callback) {
   RequestAssistantStructureForActiveBrowserWindow(std::move(callback));
 }
 
-void AssistantClientImpl::OnAssistantStatusChanged(
+void AssistantBrowserDelegateImpl::OnAssistantStatusChanged(
     chromeos::assistant::AssistantStatus new_status) {
   ash::AssistantState::Get()->NotifyStatusChanged(new_status);
 }
 
-void AssistantClientImpl::RequestAssistantVolumeControl(
+void AssistantBrowserDelegateImpl::RequestAssistantVolumeControl(
     mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver) {
   ash::AssistantInterfaceBinder::GetInstance()->BindVolumeControl(
       std::move(receiver));
 }
 
-void AssistantClientImpl::RequestBatteryMonitor(
+void AssistantBrowserDelegateImpl::RequestBatteryMonitor(
     mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
   content::GetDeviceService().BindBatteryMonitor(std::move(receiver));
 }
 
-void AssistantClientImpl::RequestWakeLockProvider(
+void AssistantBrowserDelegateImpl::RequestWakeLockProvider(
     mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) {
   content::GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-void AssistantClientImpl::RequestAudioStreamFactory(
+void AssistantBrowserDelegateImpl::RequestAudioStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   content::GetAudioService().BindStreamFactory(std::move(receiver));
 }
 
-void AssistantClientImpl::RequestAudioDecoderFactory(
+void AssistantBrowserDelegateImpl::RequestAudioDecoderFactory(
     mojo::PendingReceiver<
         chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
   content::ServiceProcessHost::Launch(
@@ -149,26 +150,26 @@ void AssistantClientImpl::RequestAudioDecoderFactory(
           .Pass());
 }
 
-void AssistantClientImpl::RequestAudioFocusManager(
+void AssistantBrowserDelegateImpl::RequestAudioFocusManager(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver) {
   content::GetMediaSessionService().BindAudioFocusManager(std::move(receiver));
 }
 
-void AssistantClientImpl::RequestMediaControllerManager(
+void AssistantBrowserDelegateImpl::RequestMediaControllerManager(
     mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
 }
 
-void AssistantClientImpl::RequestNetworkConfig(
+void AssistantBrowserDelegateImpl::RequestNetworkConfig(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
   ash::GetNetworkConfigService(std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-void AssistantClientImpl::RequestLibassistantService(
+void AssistantBrowserDelegateImpl::RequestLibassistantService(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         receiver) {
   content::ServiceProcessHost::Launch<
@@ -179,7 +180,7 @@ void AssistantClientImpl::RequestLibassistantService(
 }
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
-void AssistantClientImpl::OnExtendedAccountInfoUpdated(
+void AssistantBrowserDelegateImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   if (initialized_)
     return;
@@ -187,14 +188,15 @@ void AssistantClientImpl::OnExtendedAccountInfoUpdated(
   MaybeInit(profile_);
 }
 
-void AssistantClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
+void AssistantBrowserDelegateImpl::OnUserProfileLoaded(
+    const AccountId& account_id) {
   if (!assistant_state_observation_.IsObserving() && !initialized_ &&
       ash::AssistantState::Get()) {
     assistant_state_observation_.Observe(ash::AssistantState::Get());
   }
 }
 
-void AssistantClientImpl::OnUserSessionStarted(bool is_primary_user) {
+void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
   // Disable the handling for browser tests to prevent the Assistant being
   // enabled unexpectedly.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -204,7 +206,7 @@ void AssistantClientImpl::OnUserSessionStarted(bool is_primary_user) {
   }
 }
 
-void AssistantClientImpl::OnAssistantFeatureAllowedChanged(
+void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
     chromeos::assistant::AssistantAllowedState allowed_state) {
   if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED)
     return;

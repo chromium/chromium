@@ -23,7 +23,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -105,8 +105,8 @@ AssistantAshTestBase::AssistantAshTestBase(
       test_api_(AssistantTestApi::Create()),
       test_setup_(std::make_unique<TestAssistantSetup>()),
       test_web_view_factory_(std::make_unique<TestAssistantWebViewFactory>()),
-      assistant_client_(
-          std::make_unique<chromeos::assistant::ScopedAssistantClient>()) {}
+      delegate_(std::make_unique<
+                chromeos::assistant::ScopedAssistantBrowserDelegate>()) {}
 
 AssistantAshTestBase::~AssistantAshTestBase() = default;
 
