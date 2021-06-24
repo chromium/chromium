@@ -8,11 +8,8 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
-++++++++genericContainer ignored
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++staticText ignored invisible name='<newline>    '
+++++++++genericContainer ignored invisible
 ++++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible name='<newline>  '
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='details tag open'
