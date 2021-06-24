@@ -34,29 +34,42 @@ def get_parser():
   return XcodeLogParser()
 
 
-def parse_passed_tests_for_interrupted_run(output):
-  """Parses xcode runner output to get passed tests only.
+def parse_passed_failed_tests_for_interrupted_run(output):
+  """Parses xcode runner output to get passed & failed tests.
 
   Args:
     output: [str] An output of test run.
 
   Returns:
-    The list of passed tests only that will be a filter for next attempt.
+    (list, dict): (list of passed tests that will be a filter for next
+    attempt, dict of failed test names as keys and dummy log as values)
   """
   passed_tests = []
+  failed_tests = []
   # Test has format:
   # [09:04:42:INFO] Test case '-[Test_class test_method]' passed.
-  # [09:04:42:INFO] Test Case '-[Test_class test_method]' passed.
+  # [09:04:42:INFO] Test Case '-[Test_class test_method]' failed.
   passed_test_regex = re.compile(r'Test [Cc]ase \'\-\[(.+?)\s(.+?)\]\' passed')
+  failed_test_regex = re.compile(r'Test [Cc]ase \'\-\[(.+?)\s(.+?)\]\' failed')
 
-  for test_line in output:
-    m_test = passed_test_regex.search(test_line.decode("utf-8"))
-    if m_test:
-      passed_tests.append(
-          '%s/%s' %
-          (m_test.group(1).encode('utf-8'), m_test.group(2).encode('utf-8')))
+  def _find_list_of_tests(tests, regex):
+    """Adds test names matched by regex to result list."""
+    for test_line in output:
+      m_test = regex.search(test_line.decode("utf-8"))
+      if m_test:
+        tests.append(
+            '%s/%s' %
+            (m_test.group(1).encode('utf-8'), m_test.group(2).encode('utf-8')))
+
+  _find_list_of_tests(passed_tests, passed_test_regex)
+  _find_list_of_tests(failed_tests, failed_test_regex)
+  failed_tests_dict = {}
+  for failed_test in failed_tests:
+    failed_tests_dict[failed_test] = 'Test failed in interrupted(timedout) run.'
+
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
-  return passed_tests
+  LOGGER.info('%d failed tests for interrupted build.' % len(failed_tests_dict))
+  return (passed_tests, failed_tests_dict)
 
 
 def format_test_case(test_case):
@@ -270,7 +283,10 @@ class Xcode11LogParser(object):
       test_results['failed']['BUILD_INTERRUPTED'] = [
           '%s with test results does not exist.' % xcresult
       ] + output
-      test_results['passed'] = parse_passed_tests_for_interrupted_run(output)
+      passed_tests, failed_tests_dict = parse_passed_failed_tests_for_interrupted_run(
+          output)
+      test_results['passed'] = passed_tests
+      test_results['failed'].update(failed_tests_dict)
       return test_results
 
     # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
@@ -535,7 +551,10 @@ class XcodeLogParser(object):
       test_results['failed']['BUILD_INTERRUPTED'] = [
           '%s with test results does not exist.' % plist_path
       ] + output
-      test_results['passed'] = parse_passed_tests_for_interrupted_run(output)
+      passed_tests, failed_tests_dict = parse_passed_failed_tests_for_interrupted_run(
+          output)
+      test_results['passed'] = passed_tests
+      test_results['failed'].update(failed_tests_dict)
       return test_results
 
     root = plistlib.readPlist(plist_path)

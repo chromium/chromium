@@ -366,7 +366,6 @@ SINGLE_TEST_SUMMARY_REF = """
   }
 }"""
 
-
 def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
   """Side effect for _xcresulttool_get in Xcode11LogParser tested."""
   if ref_id is None:
@@ -376,6 +375,39 @@ def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
   # Other situation in use cases of xcode_log_parser is asking for single test
   # summary ref.
   return SINGLE_TEST_SUMMARY_REF
+
+
+class UtilMethodsTest(test_runner_test.TestCase):
+  """Test case for utility methods not related with Parser class."""
+
+  def testParseTestsForInterruptedRun(self):
+    test_output = """
+    Test case '-[DownloadManagerTestCase testVisibleFileNameAndOpenInDownloads]' passed on 'Clone 2 of iPhone X 15.0 test simulator - ios_chrome_ui_eg2tests_module-Runner (34498)' (20.715 seconds)
+    Test case '-[SyncFakeServerTestCase testSyncDownloadBookmark]' passed on 'Clone 1 of iPhone X 15.0 test simulator - ios_chrome_ui_eg2tests_module-Runner (34249)' (14.880 seconds)
+    Random lines
+         t =    53.90s Tear Down
+    Test Case '-[LinkToTextTestCase testGenerateLinkForSimpleText]' failed (55.316 seconds).
+     t =      nans Suite Tear Down
+    Test Suite 'LinkToTextTestCase' failed at 2021-06-15 07:13:17.406.
+      Executed 1 test, with 6 failures (6 unexpected) in 55.316 (55.338) seconds
+    Test Suite 'ios_chrome_ui_eg2tests_module.xctest' failed at 2021-06-15 07:13:17.407.
+      Executed 1 test, with 6 failures (6 unexpected) in 55.316 (55.340) seconds
+    Test Suite 'Selected tests' failed at 2021-06-15 07:13:17.408.
+      Executed 1 test, with 6 failures (6 unexpected) in 55.316 (55.342) seconds
+    """
+    test_output_list = test_output.split('\n')
+    expected_passed = [
+        'DownloadManagerTestCase/testVisibleFileNameAndOpenInDownloads',
+        'SyncFakeServerTestCase/testSyncDownloadBookmark'
+    ]
+    expected_failed = {
+        'LinkToTextTestCase/testGenerateLinkForSimpleText':
+            'Test failed in interrupted(timedout) run.'
+    }
+    results = xcode_log_parser.parse_passed_failed_tests_for_interrupted_run(
+        test_output_list)
+    self.assertEqual(results[0], expected_passed)
+    self.assertEqual(results[1], expected_failed)
 
 
 class XCode11LogParserTest(test_runner_test.TestCase):
