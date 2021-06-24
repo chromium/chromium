@@ -823,7 +823,7 @@
     Translation
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_TRANSLATION_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers translation toggle.">
-    Add your preferred website languages. The top language from the list will be used for translations.
+    Add your preferred <ph name="LINK_BEGIN">&lt;a target="_blank" href="#"&gt;</ph>website languages<ph name="LINK_END">&lt;/a&gt;</ph>. The top language from the list will be used for translations.
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_UNIT_CONVERSION_ENABLE" desc="Title for a toggle that controls the Quick Answers unit conversion feature.">
     Unit Conversion

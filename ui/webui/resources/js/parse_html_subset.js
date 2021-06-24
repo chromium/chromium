@@ -54,9 +54,11 @@
     [
       'href',
       (node, value) => {
-        // Only allow a[href] starting with chrome:// and https://
+        // Only allow a[href] starting with chrome:// or https:// or equaling
+        // to #.
         return node.tagName === 'A' &&
-            (value.startsWith('chrome://') || value.startsWith('https://'));
+            (value.startsWith('chrome://') || value.startsWith('https://') ||
+             value === '#');
       }
     ],
     [
@@ -87,6 +89,8 @@
       }
     ],
     ['tabindex', allowAttribute],
+    ['aria-hidden', allowAttribute],
+    ['aria-labelledby', allowAttribute],
   ]);
 
   /**

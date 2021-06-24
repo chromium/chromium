@@ -209,6 +209,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
       "$root_gen_dir/chrome/test/data/webui/settings/privacy_page_test.js",
+      "$root_gen_dir/chrome/test/data/webui/settings/settings_toggle_button_tests.js",
       "$root_gen_dir/chrome/test/data/webui/settings/route_tests.js",
       "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",

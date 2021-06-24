@@ -15,6 +15,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "privacy_page_test.js",
     "route_tests.js",
+    "settings_toggle_button_tests.js",
   ]
 }
 

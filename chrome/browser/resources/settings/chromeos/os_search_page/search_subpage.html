@@ -18,6 +18,7 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_vars_css.html">
+<link rel="import" href="../localized_link/localized_link.js">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="search_engine.html">
@@ -61,7 +62,8 @@
           class="hr subsection"
           pref="{{prefs.settings.quick_answers.translation.enabled}}"
           label="$i18n{quickAnswersTranslationEnable}"
-          sub-label="$i18n{quickAnswersTranslationEnableDescription}"
+          sub-label-with-link="[[getAriaLabelledTranslationSubLabel_()]]"
+          on-sub-label-link-clicked="onSettingsLinkClick_"
           deep-link-focus-id$="[[Setting.kQuickAnswersTranslation]]">
       </settings-toggle-button>
       <settings-toggle-button id="quick-answers-unit-conversion-enable"

@@ -140,6 +140,34 @@ suite('SearchSubpage', function() {
         page.getPref('settings.quick_answers.translation.enabled.value'));
   });
 
+  test('clickLanguageSettingsLink', function() {
+    let button = page.$$('#quick-answers-translation-enable');
+    assertFalse(!!button);
+    page.setPrefValue('settings.quick_answers.enabled', true);
+    page.setPrefValue('settings.quick_answers.translation.enabled', false);
+    flush();
+
+    button = page.$$('#quick-answers-translation-enable');
+    assertTrue(!!button);
+    assertFalse(button.disabled);
+    assertFalse(button.checked);
+
+    const languageSettingsLink =
+        button.shadowRoot.querySelector('#sub-label-text-with-link')
+            .querySelector('a');
+    assertTrue(!!languageSettingsLink);
+
+    languageSettingsLink.click();
+    flush();
+    assertFalse(button.checked);
+    assertFalse(
+        page.getPref('settings.quick_answers.translation.enabled.value'));
+
+    assertEquals(
+        settings.routes.OS_LANGUAGES_LANGUAGES,
+        settings.Router.getInstance().getCurrentRoute());
+  });
+
   test('toggleQuickAnswersUnitConversion', function() {
     let button = page.$$('#quick-answers-unit-conversion-enable');
     assertFalse(!!button);

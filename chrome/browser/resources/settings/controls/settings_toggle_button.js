@@ -12,7 +12,10 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// <if expr="chromeos">
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+// </if>
 
 import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.js';
 
@@ -40,6 +43,13 @@ Polymer({
       type: String,
       reflectToAttribute: true,
     },
+
+    // <if expr="chromeos">
+    subLabelWithLink: {
+      type: String,
+      reflectToAttribute: true,
+    },
+    // </if>
 
     subLabelIcon: {
       type: String,
@@ -105,10 +115,35 @@ Polymer({
    * @param {!CustomEvent<boolean>} e
    * @private
    */
-  onLearnMoreClicked_(e) {
+  onLearnMoreClick_(e) {
     e.stopPropagation();
     this.fire('learn-more-clicked');
   },
+
+  // <if expr="chromeos">
+  /**
+   * Set up the contents of sub label with link.
+   * @param {string} contents
+   * @private
+   */
+  getSubLabelWithLinkContent_(contents) {
+    return sanitizeInnerHtml(
+        contents,
+        {attrs: ['id', 'aria-hidden', 'aria-labelledby', 'tabindex']});
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onSubLabelTextWithLinkClick_(e) {
+    if (e.target.tagName === 'A') {
+      this.fire('sub-label-link-clicked');
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  },
+  // </if>
 
   /**
    * @param {!CustomEvent<boolean>} e
