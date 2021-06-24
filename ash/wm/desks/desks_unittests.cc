@@ -5493,6 +5493,57 @@ TEST_F(DesksTest, DragNewDeskWhileSnappingBack) {
   EXPECT_EQ(DesksTestApi::GetDesksBarDragView(), mini_view_1);
 }
 
+// Tests that dragging desk is ended in two cases: (1) removing a dragged desk.
+// (2) removing a desk makes the dragged desk the only one left. Then, releasing
+// mouse or exiting overview will not have UAF issues
+// (https://crbug.com/1222120).
+TEST_F(DesksTest, RemoveDeskWhileDragging) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Add two desks (Now we have three desks).
+  NewDesk();
+  NewDesk();
+
+  // Cache the mini views.
+  const std::vector<DeskMiniView*>& mini_views = desks_bar_view->mini_views();
+  DeskMiniView* mini_view_0 = mini_views[0];
+  DeskMiniView* mini_view_1 = mini_views[1];
+  DeskMiniView* mini_view_2 = mini_views[2];
+
+  // Dragging the first desk preview will trigger drag & drop.
+  StartDragDeskPreview(mini_view_0, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  // Removing the first desk will end dragging.
+  RemoveDesk(mini_view_0->desk());
+  EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
+
+  // Releasing mouse will not have any issue.
+  event_generator->ReleaseLeftButton();
+
+  // There are only two desks left.
+  EXPECT_EQ(2u, mini_views.size());
+
+  // Dragging the second desk preview.
+  StartDragDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  // Removing the third desk will end dragging (the dragged desk is the only one
+  // left).
+  RemoveDesk(mini_view_2->desk());
+  EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
+
+  // Exiting overview will not have any issue.
+  overview_controller->EndOverview();
+}
+
 // Tests that the right desk containers are visible when switching between desks
 // really fast. Regression test for https://crbug.com/1194757.
 TEST_F(DesksTest, FastDeskSwitches) {

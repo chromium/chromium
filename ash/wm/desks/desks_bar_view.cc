@@ -695,6 +695,10 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   DeskMiniView* removed_mini_view = *iter;
   auto partition_iter = mini_views_.erase(iter);
 
+  // End dragging desk if remove a dragged desk.
+  if (drag_view_ == removed_mini_view)
+    EndDragDesk(removed_mini_view, /*end_by_user=*/false);
+
   expanded_state_new_desk_button_->UpdateButtonState();
 
   for (auto* mini_view : mini_views_)
@@ -710,6 +714,14 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
     removed_mini_views.push_back(removed_mini_view);
     removed_mini_views.push_back(mini_views_[0]);
     mini_views_.clear();
+
+    // In zero state, if the only desk is being dragged, we should end dragging.
+    // Because the dragged desk's mini view is removed, the mouse released or
+    // gesture ended events cannot be received. |drag_view_| will keep the stale
+    // reference of removed mini view and |drag_proxy_| will not be reset.
+    if (drag_view_)
+      EndDragDesk(drag_view_, /*end_by_user=*/false);
+
     // Keep current layout until the animation is completed since the animation
     // for going back to zero state is based on the expanded bar's current
     // layout.
