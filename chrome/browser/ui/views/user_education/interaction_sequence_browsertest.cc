@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -43,8 +44,13 @@ views::View* ElementToView(ui::TrackedElement* element) {
 // dialog or multiple submenus.
 class InteractionSequenceBrowserTest : public InProcessBrowserTest {};
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OpenMainMenuAndViewHelpItem DISABLED_OpenMainMenuAndViewHelpItem
+#else
+#define MAYBE_OpenMainMenuAndViewHelpItem OpenMainMenuAndViewHelpItem
+#endif
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserTest,
-                       OpenMainMenuAndViewHelpItem) {
+                       MAYBE_OpenMainMenuAndViewHelpItem) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
