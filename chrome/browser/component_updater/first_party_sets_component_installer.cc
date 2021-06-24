@@ -133,6 +133,10 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty())
     return;
 
+  if (component_installed_)
+    return;
+
+  component_installed_ = true;
   VLOG(1) << "First-Party Sets Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 

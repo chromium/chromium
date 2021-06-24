@@ -77,6 +77,48 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   run_loop.Run();
 }
 
+// Test if a component has been installed, ComponentReady will be no-op when
+// newer versions are installed.
+TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
+  SEQUENCE_CHECKER(sequence_checker);
+  const std::string sets_v1 = "first party sets v1";
+  const std::string sets_v2 = "first party sets v2";
+
+  base::ScopedTempDir dir_v1;
+  CHECK(dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  base::ScopedTempDir dir_v2;
+  CHECK(dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+
+  int callback_calls = 0;
+  FirstPartySetsComponentInstallerPolicy policy(
+      // It should run only once for the first ComponentReady call.
+      base::BindLambdaForTesting([&](const std::string& got) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(got, sets_v1);
+        callback_calls++;
+      }));
+
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          dir_v1.GetPath()),
+                      sets_v1));
+  policy.ComponentReady(base::Version(), dir_v1.GetPath(),
+                        std::make_unique<base::DictionaryValue>());
+
+  // Install newer version of the component, which should not be picked up when
+  // calling ComponentReady again.
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          dir_v2.GetPath()),
+                      sets_v2));
+  policy.ComponentReady(base::Version(), dir_v2.GetPath(),
+                        std::make_unique<base::DictionaryValue>());
+
+  env_.RunUntilIdle();
+
+  EXPECT_EQ(callback_calls, 1);
+}
+
 TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
@@ -114,6 +156,56 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
 
     run_loop.Run();
   }
+}
+
+// Test ReconfigureAfterNetworkRestart calls the callback with the correct
+// version, i.e. the first installed component, even if there are newer versions
+// installed after browser startup.
+TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
+  SEQUENCE_CHECKER(sequence_checker);
+  const std::string sets_v1 = "first party sets v1";
+  const std::string sets_v2 = "first party sets v2";
+
+  base::ScopedTempDir dir_v1;
+  CHECK(dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  base::ScopedTempDir dir_v2;
+  CHECK(dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::BindLambdaForTesting([&](const std::string& got) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(got, sets_v1);
+      }));
+
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          dir_v1.GetPath()),
+                      sets_v1));
+  policy.ComponentReady(base::Version(), dir_v1.GetPath(),
+                        std::make_unique<base::DictionaryValue>());
+
+  // Install newer version of the component, which should not be picked up when
+  // calling ComponentReady again.
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          dir_v2.GetPath()),
+                      sets_v2));
+  policy.ComponentReady(base::Version(), dir_v2.GetPath(),
+                        std::make_unique<base::DictionaryValue>());
+
+  env_.RunUntilIdle();
+
+  // ReconfigureAfterNetworkRestart calls the callback with the correct version.
+  int callback_calls = 0;
+  FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
+      base::BindLambdaForTesting([&](const std::string& got) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(got, sets_v1);
+        callback_calls++;
+      }));
+
+  env_.RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
 }
 
 TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Disabled) {

@@ -49,6 +49,10 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnNetworkRestart);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           IgnoreNewSets_OnComponentReady);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           IgnoreNewSets_OnNetworkRestart);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            GetInstallerAttributes_Disabled);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            GetInstallerAttributes_NonDogfooder);
@@ -75,6 +79,13 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
   base::RepeatingCallback<void(const std::string&)> on_sets_ready_;
+
+  // `component_installed_` indicates whether ComponentReady has been called
+  // once after registration. After the first call, ComponentReady will be no-op
+  // for new versions delivered from Component Updater, i.e. new components will
+  // be installed (kept on-disk) but not propagated to the NetworkService until
+  // next browser startup.
+  bool component_installed_ = false;
 };
 
 // Call once during startup to make the component update service aware of
