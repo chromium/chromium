@@ -7269,6 +7269,15 @@
     },
 
     # Check go/lacros-on-skylab for details of Skylab configurations.
+    'lacros_skylab_arm': {
+      'lacros_skylab_poc': {
+        'variants': [
+          'CROS_KEVIN_TOT',
+        ]
+      },
+    },
+
+    # Check go/lacros-on-skylab for details of Skylab configurations.
     'lacros_skylab_x86_64': {
       'lacros_skylab_poc': {
         'variants': [

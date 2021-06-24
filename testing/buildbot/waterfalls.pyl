@@ -6405,6 +6405,22 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-arm-generic-chrome-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_arm',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chrome.tests',
+            },
+          ],
+        },
+        'os_type': 'chromeos'
+      },
     },
   },
   {

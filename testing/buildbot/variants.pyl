@@ -661,6 +661,13 @@
     },
     'identifier': 'EVE_TOT-1',
   },
+  'CROS_KEVIN_TOT': {
+    'skylab': {
+      'cros_board': 'kevin',
+      'cros_img': 'kevin-release/R93-14020.0.0',
+    },
+    'identifier': 'KEVIN_TOT',
+  },
   'LACROS_AMD64_GENERIC': {
     'args': [
       '--board=amd64-generic',

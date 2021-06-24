@@ -1240,5 +1240,23 @@
         "timeout_sec": 10800
       }
     ]
+  },
+  "lacros-arm-generic-chrome-fyi": {
+    "additional_compile_targets": [
+      "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "cros_board": "kevin",
+        "cros_img": "kevin-release/R93-14020.0.0",
+        "name": "lacros_fyi_tast_tests_KEVIN_TOT",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
+        "timeout_sec": 10800
+      }
+    ]
   }
 }
