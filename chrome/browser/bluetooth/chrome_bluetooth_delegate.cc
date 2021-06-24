@@ -21,6 +21,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/device_dialog/bluetooth_scanning_prompt_android.h"
 #include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_chooser_android_delegate.h"
+#include "chrome/browser/ui/android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/permissions/android/bluetooth_chooser_android.h"
 #else
@@ -81,7 +82,9 @@ ChromeBluetoothDelegate::ShowBluetoothScanningPrompt(
     content::RenderFrameHost* frame,
     const content::BluetoothScanningPrompt::EventHandler& event_handler) {
 #if defined(OS_ANDROID)
-  return std::make_unique<BluetoothScanningPromptAndroid>(frame, event_handler);
+  return std::make_unique<BluetoothScanningPromptAndroid>(
+      frame, event_handler,
+      std::make_unique<ChromeBluetoothScanningPromptAndroidDelegate>());
 #else
   if (extensions::AppWindowRegistry::Get(frame->GetBrowserContext())
           ->GetAppWindowForWebContents(

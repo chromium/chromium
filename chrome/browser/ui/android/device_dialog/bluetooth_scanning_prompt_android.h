@@ -10,6 +10,8 @@
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "content/public/browser/web_contents.h"
 
+class BluetoothScanningPromptAndroidDelegate;
+
 // Represents a Bluetooth scanning prompt to ask the user permission to
 // allow a site to receive Bluetooth advertisement packets from Bluetooth
 // devices. This implementation is for Android.
@@ -17,7 +19,8 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
  public:
   BluetoothScanningPromptAndroid(
       content::RenderFrameHost* frame,
-      const content::BluetoothScanningPrompt::EventHandler& event_handler);
+      const content::BluetoothScanningPrompt::EventHandler& event_handler,
+      std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate);
   ~BluetoothScanningPromptAndroid() override;
 
   // content::BluetoothScanningPrompt:
@@ -34,6 +37,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
 
   content::WebContents* web_contents_;
   content::BluetoothScanningPrompt::EventHandler event_handler_;
+  std::unique_ptr<BluetoothScanningPromptAndroidDelegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptAndroid);
 };

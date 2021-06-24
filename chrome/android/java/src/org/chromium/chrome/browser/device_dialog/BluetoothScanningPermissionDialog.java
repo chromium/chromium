@@ -28,8 +28,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
@@ -66,14 +65,17 @@ public class BluetoothScanningPermissionDialog {
     private Dialog mDialog;
 
     // Individual UI elements.
-    private ListView mListView;
+    private final ListView mListView;
 
     // The adapter containing the items to show in the dialog.
-    private DeviceItemAdapter mItemAdapter;
+    private final DeviceItemAdapter mItemAdapter;
 
     // If this variable is false, the window should be closed when it loses focus;
     // Otherwise, the window should not be closed when it loses focus.
     private boolean mIgnorePendingWindowFocusChangeForClose;
+
+    // The embedder-provided delegate.
+    private final BluetoothScanningPromptAndroidDelegate mDelegate;
 
     // A pointer back to the native part of the implementation for this dialog.
     private long mNativeBluetoothScanningPermissionDialogPtr;
@@ -91,27 +93,25 @@ public class BluetoothScanningPermissionDialog {
      */
     @VisibleForTesting
     BluetoothScanningPermissionDialog(WindowAndroid windowAndroid, String origin, int securityLevel,
+            BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         assert mActivity != null;
+        mDelegate = delegate;
         mNativeBluetoothScanningPermissionDialogPtr = nativeBluetoothScanningPermissionDialogPtr;
 
         // Emphasize the origin.
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        Profile profile = Profile.getLastUsedRegularProfile();
         SpannableString originSpannableString = new SpannableString(origin);
 
         final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
-        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
-                new ChromeAutocompleteSchemeClassifier(profile);
+        AutocompleteSchemeClassifier autocompleteSchemeClassifier =
+                mDelegate.createAutocompleteSchemeClassifier();
         OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mActivity.getResources(),
-                chromeAutocompleteSchemeClassifier, securityLevel,
+                autocompleteSchemeClassifier, securityLevel,
                 /*isInternalPage=*/false, useDarkColors,
                 /*emphasizeScheme=*/true);
-        chromeAutocompleteSchemeClassifier.destroy();
+        autocompleteSchemeClassifier.destroy();
 
         // Construct a full string and replace the |originSpannableString| text with emphasized
         // version.
@@ -191,9 +191,11 @@ public class BluetoothScanningPermissionDialog {
 
     @CalledByNative
     private static BluetoothScanningPermissionDialog create(WindowAndroid windowAndroid,
-            String origin, int securityLevel, long nativeBluetoothScanningPermissionDialogPtr) {
-        BluetoothScanningPermissionDialog dialog = new BluetoothScanningPermissionDialog(
-                windowAndroid, origin, securityLevel, nativeBluetoothScanningPermissionDialogPtr);
+            String origin, int securityLevel, BluetoothScanningPromptAndroidDelegate delegate,
+            long nativeBluetoothScanningPermissionDialogPtr) {
+        BluetoothScanningPermissionDialog dialog =
+                new BluetoothScanningPermissionDialog(windowAndroid, origin, securityLevel,
+                        delegate, nativeBluetoothScanningPermissionDialogPtr);
         return dialog;
     }
 

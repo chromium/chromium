@@ -78,6 +78,7 @@ public class BluetoothScanningPermissionDialogTest {
             mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
             BluetoothScanningPermissionDialog dialog = new BluetoothScanningPermissionDialog(
                     mWindowAndroid, "https://origin.example.com/", ConnectionSecurityLevel.SECURE,
+                    new ChromeBluetoothScanningPromptAndroidDelegate(),
                     /*nativeBluetoothScanningPermissionDialogPtr=*/42);
             return dialog;
         });
