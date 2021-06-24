@@ -77,11 +77,10 @@ preprocess_if_expr("preprocess_web_components") {
   ]
 }
 
-preprocess_if_expr("preprocess_mojo") {
+copy("copy_mojo") {
   deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "downloads.mojom-webui.js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads/downloads.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
 grit("resources") {
@@ -133,8 +132,8 @@ ts_library("build_ts") {
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   extra_deps = [
+    ":copy_mojo",
     ":preprocess",
-    ":preprocess_mojo",
     ":preprocess_web_components",
   ]
 }
