@@ -25,24 +25,6 @@
 
 namespace chromeos {
 
-namespace {
-
-void RecordStartMarker(const std::string& marker) {
-  std::string full_marker = "Cryptohome-";
-  full_marker.append(marker);
-  full_marker.append("-Start");
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(full_marker, false);
-}
-
-void RecordEndMarker(const std::string& marker) {
-  std::string full_marker = "Cryptohome-";
-  full_marker.append(marker);
-  full_marker.append("-End");
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(full_marker, false);
-}
-
-}  // namespace
-
 // static
 scoped_refptr<ExtendedAuthenticatorImpl> ExtendedAuthenticatorImpl::Create(
     AuthStatusConsumer* consumer) {
@@ -186,7 +168,8 @@ void ExtendedAuthenticatorImpl::OnSaltObtained(const std::string& system_salt) {
 void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
     base::OnceClosure success_callback,
     const UserContext& user_context) {
-  RecordStartMarker("CheckKeyEx");
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+      "Cryptohome-CheckKeyEx-Start", false);
   ::user_data_auth::CheckKeyRequest request;
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context.GetAccountId()));
@@ -197,7 +180,7 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
   chromeos::UserDataAuthClient::Get()->CheckKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::CheckKeyReply>,
-                              this, "CheckKeyEx", user_context,
+                              this, "Cryptohome-CheckKeyEx-End", user_context,
                               std::move(success_callback)));
 }
 
@@ -205,7 +188,8 @@ void ExtendedAuthenticatorImpl::DoAddKey(const cryptohome::KeyDefinition& key,
                                          bool clobber_if_exists,
                                          base::OnceClosure success_callback,
                                          const UserContext& user_context) {
-  RecordStartMarker("AddKeyEx");
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+      "Cryptohome-AddKeyEx-Start", false);
 
   ::user_data_auth::AddKeyRequest request;
   cryptohome::KeyDefinitionToKey(key, request.mutable_key());
@@ -219,14 +203,15 @@ void ExtendedAuthenticatorImpl::DoAddKey(const cryptohome::KeyDefinition& key,
   chromeos::UserDataAuthClient::Get()->AddKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::AddKeyReply>,
-                              this, "AddKeyEx", user_context,
+                              this, "Cryptohome-AddKeyEx-End", user_context,
                               std::move(success_callback)));
 }
 
 void ExtendedAuthenticatorImpl::DoRemoveKey(const std::string& key_to_remove,
                                             base::OnceClosure success_callback,
                                             const UserContext& user_context) {
-  RecordStartMarker("RemoveKeyEx");
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+      "Cryptohome-RemoveKeyEx-Start", false);
 
   ::user_data_auth::RemoveKeyRequest request;
   request.mutable_key()->mutable_data()->set_label(key_to_remove);
@@ -239,17 +224,17 @@ void ExtendedAuthenticatorImpl::DoRemoveKey(const std::string& key_to_remove,
   chromeos::UserDataAuthClient::Get()->RemoveKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::RemoveKeyReply>,
-                              this, "RemoveKeyEx", user_context,
+                              this, "Cryptohome-RemoveKeyEx-End", user_context,
                               std::move(success_callback)));
 }
 
 template <typename ReplyType>
 void ExtendedAuthenticatorImpl::OnOperationComplete(
-    const std::string& time_marker,
+    const char* time_marker,
     const UserContext& user_context,
     base::OnceClosure success_callback,
     absl::optional<ReplyType> reply) {
-  RecordEndMarker(time_marker);
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(time_marker, false);
   cryptohome::MountError return_code = cryptohome::MOUNT_ERROR_FATAL;
   if (reply.has_value()) {
     return_code = user_data_auth::CryptohomeErrorToMountError(reply->error());

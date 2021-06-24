@@ -19,6 +19,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -35,8 +36,7 @@ class BootTimesRecorder : public content::NotificationObserver,
   static BootTimesRecorder* Get();
 
   // LoginEventRecorder::Delegate override.
-  void AddLoginTimeMarker(const std::string& marker_name,
-                          bool send_to_uma) override;
+  void AddLoginTimeMarker(const char* marker_name, bool send_to_uma) override;
   void RecordAuthenticationSuccess() override;
   void RecordAuthenticationFailure() override;
 
@@ -44,7 +44,7 @@ class BootTimesRecorder : public content::NotificationObserver,
   // /tmp/logout-times-sent after logout is done. If |send_to_uma| is true
   // the time between this marker and the last will be sent to UMA with
   // the identifier ShutdownTime.|marker_name|.
-  void AddLogoutTimeMarker(const std::string& marker_name, bool send_to_uma);
+  void AddLogoutTimeMarker(const char* marker_name, bool send_to_uma);
 
   // Records current uptime and disk usage for metrics use.
   // Posts task to file thread.
@@ -95,12 +95,15 @@ class BootTimesRecorder : public content::NotificationObserver,
  private:
   class TimeMarker {
    public:
-    TimeMarker(const std::string& name, bool send_to_uma)
-        : name_(name),
-          time_(base::Time::NowFromSystemTime()),
-          send_to_uma_(send_to_uma) {}
-    std::string name() const { return name_; }
+    TimeMarker(const char* name,
+               absl::optional<std::string> url,
+               bool send_to_uma);
+    TimeMarker(const TimeMarker& other);
+    ~TimeMarker();
+
+    const char* name() const { return name_; }
     base::Time time() const { return time_; }
+    const absl::optional<std::string>& url() const { return url_; }
     bool send_to_uma() const { return send_to_uma_; }
 
     // comparitor for sorting
@@ -110,8 +113,9 @@ class BootTimesRecorder : public content::NotificationObserver,
 
    private:
     friend class std::vector<TimeMarker>;
-    std::string name_;
+    const char* name_;
     base::Time time_;
+    absl::optional<std::string> url_;
     bool send_to_uma_;
   };
 
@@ -144,6 +148,10 @@ class BootTimesRecorder : public content::NotificationObserver,
     std::string uptime_;
     std::string disk_;
   };
+
+  // Adds optional URL to the marker.
+  void AddLoginTimeMarkerWithURL(const char* marker_name,
+                                 const std::string& url);
 
   static void WriteTimes(const std::string base_name,
                          const std::string uma_name,

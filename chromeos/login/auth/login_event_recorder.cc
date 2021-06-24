@@ -26,7 +26,7 @@ void LoginEventRecorder::SetDelegate(LoginEventRecorder::Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void LoginEventRecorder::AddLoginTimeMarker(const std::string& marker_name,
+void LoginEventRecorder::AddLoginTimeMarker(const char* marker_name,
                                             bool send_to_uma) {
   if (delegate_)
     delegate_->AddLoginTimeMarker(marker_name, send_to_uma);

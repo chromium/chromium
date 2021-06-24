@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
 
   // Inner operation callbacks.
   template <typename ReplyType>
-  void OnOperationComplete(const std::string& time_marker,
+  void OnOperationComplete(const char* time_marker,
                            const UserContext& context,
                            base::OnceClosure success_callback,
                            absl::optional<ReplyType> reply);

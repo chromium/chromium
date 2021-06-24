@@ -187,7 +187,7 @@ void OnGetSanitizedUsername(
 template <typename ReplyType>
 void OnReplyMethod(const base::WeakPtr<AuthAttemptState>& attempt,
                    scoped_refptr<CryptohomeAuthenticator> resolver,
-                   const std::string& time_marker,
+                   const char* time_marker,
                    absl::optional<ReplyType> reply) {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(time_marker, false);
   attempt->RecordCryptohomeStatus(user_data_auth::ReplyToMountError(reply));

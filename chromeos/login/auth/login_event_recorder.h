@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_LOGIN_AUTH_LOGIN_EVENT_RECORDER_H_
 #define CHROMEOS_LOGIN_AUTH_LOGIN_EVENT_RECORDER_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 
@@ -22,7 +20,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
     // /tmp/login-times-sent after login is done. If |send_to_uma| is true
     // the time between this marker and the last will be sent to UMA with
     // the identifier BootTime.|marker_name|.
-    virtual void AddLoginTimeMarker(const std::string& marker_name,
+    virtual void AddLoginTimeMarker(const char* marker_name,
                                     bool send_to_uma) = 0;
 
     // Record events for successful authentication.
@@ -42,7 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
   // /tmp/login-times-sent after login is done. If |send_to_uma| is true
   // the time between this marker and the last will be sent to UMA with
   // the identifier BootTime.|marker_name|.
-  void AddLoginTimeMarker(const std::string& marker_name, bool send_to_uma);
+  void AddLoginTimeMarker(const char* marker_name, bool send_to_uma);
 
   // Record events for successful authentication.
   void RecordAuthenticationSuccess();
