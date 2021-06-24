@@ -185,16 +185,10 @@ static_library("sandbox") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":maybe_set_appcontainer_acls",
     "//base:base_static",
     "//sandbox:common",
   ]
-
-  # NACL on 32-bit builds this target twice, once for 64-bit and once for 32-bit
-  # so avoid this dep from running twice with the same output in that case.
-  # Additionally, exclude setting ACLs when build is not happening on Windows.
-  if (current_cpu == target_cpu && host_os == "win") {
-    deps += [ ":set_appcontainer_acls" ]
-  }
 }
 
 test("sbox_integration_tests") {
@@ -254,7 +248,16 @@ shared_library("sbox_integration_test_hijack_dll") {
     "tests/integration_tests/hijack_dll.def",
   ]
 
-  deps = [ ":set_appcontainer_acls" ]
+  deps = [ ":maybe_set_appcontainer_acls" ]
+}
+
+group("maybe_set_appcontainer_acls") {
+  # NACL on 32-bit builds this target twice, once for 64-bit and once for 32-bit
+  # so avoid this dep from running twice with the same output in that case.
+  # Additionally, exclude setting ACLs when build is not happening on Windows.
+  if (current_cpu == target_cpu && host_os == "win") {
+    deps = [ ":set_appcontainer_acls" ]
+  }
 }
 
 action("set_appcontainer_acls") {
