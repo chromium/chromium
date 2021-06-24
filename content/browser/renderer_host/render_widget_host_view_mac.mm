@@ -415,7 +415,7 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
 
 void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
   const display::DisplayList& displays = browser_compositor_->display_list();
-  CHECK(displays.IsValidAndHasPrimaryAndCurrentDisplays());
+  DCHECK(displays.IsValidAndHasPrimaryAndCurrentDisplays());
   const display::Display& display = displays.GetCurrentDisplay();
   DisplayUtil::DisplayToScreenInfo(screen_info, display);
   // Recalculate some ScreenInfo properties from the cached screen info, which
