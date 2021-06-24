@@ -13,11 +13,17 @@ class PrefService;
 @protocol SigninScreenConsumer;
 @protocol SigninScreenMediatorDelegate;
 
+namespace unified_consent {
+class UnifiedConsentService;
+}
+
 // Mediator that handles the sign-in operation.
 @interface SigninScreenMediator : NSObject
 
 // The designated initializer.
 - (instancetype)initWithPrefService:(PrefService*)prefService
+              unifiedConsentService:
+                  (unified_consent::UnifiedConsentService*)unifiedConsentService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

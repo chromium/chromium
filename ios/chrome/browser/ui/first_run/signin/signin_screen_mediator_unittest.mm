@@ -5,15 +5,18 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "base/test/task_environment.h"
+#include "components/prefs/pref_service.h"
+#include "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
+#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
+#import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
@@ -67,7 +70,9 @@ class SigninScreenMediatorTest : public PlatformTest {
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     browser_state_ = TestChromeBrowserState::Builder().Build();
     mediator_ = [[SigninScreenMediator alloc]
-        initWithPrefService:browser_state_->GetPrefs()];
+          initWithPrefService:browser_state_->GetPrefs()
+        unifiedConsentService:UnifiedConsentServiceFactory::GetForBrowserState(
+                                  browser_state_.get())];
     consumer_ = [[FakeSigninScreenConsumer alloc] init];
     identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"
@@ -91,7 +96,7 @@ class SigninScreenMediatorTest : public PlatformTest {
     browser_provider_->SetChromeIdentityServiceForTesting(std::move(service));
   }
 
-  base::test::TaskEnvironment task_enviroment_;
+  web::WebTaskEnvironment task_environment_;
   SigninScreenMediator* mediator_;
   ios::TestChromeBrowserProvider* browser_provider_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
@@ -259,6 +264,8 @@ TEST_F(SigninScreenMediatorTest, TestAuthenticationFlow) {
   // Simulate the signin completion being successful.
   completion(YES);
 
+  EXPECT_TRUE(browser_state_->GetPrefs()->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   EXPECT_TRUE(consumer_.UIEnabled);
   EXPECT_OCMOCK_VERIFY(mock_delegate);
 }

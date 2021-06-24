@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
+#import "components/unified_consent/unified_consent_service.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -32,15 +33,21 @@
 @property(nonatomic, strong) UserSigninLogger* logger;
 // Pref service to retrieve preference values.
 @property(nonatomic, assign) PrefService* prefService;
+// Manager for user consent.
+@property(nonatomic, assign)
+    unified_consent::UnifiedConsentService* unifiedConsentService;
 
 @end
 
 @implementation SigninScreenMediator
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+              unifiedConsentService:(unified_consent::UnifiedConsentService*)
+                                        unifiedConsentService {
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _unifiedConsentService = unifiedConsentService;
     _browserProviderObserver =
         std::make_unique<ChromeBrowserProviderObserverBridge>(self);
     _identityServiceObserver =
@@ -57,11 +64,13 @@
 
 - (void)dealloc {
   DCHECK(!self.prefService);
+  DCHECK(!self.unifiedConsentService);
 }
 
 - (void)disconnect {
   [self.logger disconnect];
   self.prefService = nullptr;
+  self.unifiedConsentService = nullptr;
 }
 
 - (void)startSignInWithAuthenticationFlow:
@@ -181,6 +190,9 @@
     [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
                                  addedAccount:self.addedAccount
                         advancedSettingsShown:NO];
+    // Allow for anonymized data collection after the user has signed in.
+    self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(
+        true);
 
     [self.delegate signinScreenMediator:self
               didFinishSigninWithResult:SigninCoordinatorResultSuccess];

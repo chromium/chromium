@@ -14,6 +14,7 @@ source_set("signin") {
   deps = [
     ":signin_ui",
     "//components/prefs",
+    "//components/unified_consent",
     "//ios/chrome/browser",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
@@ -27,6 +28,7 @@ source_set("signin") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/unified_consent",
     "//ios/chrome/browser/url_loading",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
@@ -61,12 +63,16 @@ source_set("unit_tests") {
     ":signin_ui",
     "//base",
     "//base/test:test_support",
+    "//components/prefs",
+    "//components/unified_consent",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/unified_consent",
     "//ios/public/provider/chrome/browser:test_support",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
     "//third_party/ocmock",
   ]
 }

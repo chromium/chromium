@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -103,7 +104,9 @@
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
   self.mediator = [[SigninScreenMediator alloc]
-      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
+        initWithPrefService:self.browser->GetBrowserState()->GetPrefs()
+      unifiedConsentService:UnifiedConsentServiceFactory::GetForBrowserState(
+                                self.browser->GetBrowserState())];
   NSArray* identities =
       ios::GetChromeBrowserProvider()
           ->GetChromeIdentityService()
