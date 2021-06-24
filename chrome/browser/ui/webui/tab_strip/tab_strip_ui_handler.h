@@ -108,6 +108,11 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   // Tracks whether we are currently handling a gesture scroll event sequence.
   bool handling_gesture_scroll_ = false;
 
+  // A flag that tracks whether or not a scroll begin gesture event should
+  // initiate a drag. This is used to ensure we start a drag only for event
+  // streams intended to trigger a drag (See crbug.com/1204572).
+  bool should_drag_on_gesture_scroll_ = false;
+
   // The point at which the initial gesture tap event occurred and at which the
   // drag will start.
   gfx::Point touch_drag_start_point_;

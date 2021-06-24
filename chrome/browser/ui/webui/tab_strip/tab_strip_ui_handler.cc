@@ -391,7 +391,7 @@ bool TabStripUIHandler::PreHandleGestureEvent(
 #if defined(USE_AURA)
       // If we are passed the `kTouchLongpressDelay` threshold since the initial
       // tap down initiate a drag on scroll start.
-      if (!long_press_timer_->IsRunning()) {
+      if (should_drag_on_gesture_scroll_ && !long_press_timer_->IsRunning()) {
         handling_gesture_scroll_ = true;
 
         // If we are about to start a drag ensure the context menu is closed.
@@ -422,23 +422,37 @@ bool TabStripUIHandler::PreHandleGestureEvent(
         return true;
       }
       long_press_timer_->Stop();
-      return false;
 #endif  // defined(USE_AURA)
       return false;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
+      should_drag_on_gesture_scroll_ = false;
       handling_gesture_scroll_ = false;
       return false;
     case blink::WebInputEvent::Type::kGestureTapDown:
+      // We should only trigger a drag as part of the gesture event stream if
+      // the stream begins with a tap down gesture event.
+      should_drag_on_gesture_scroll_ = true;
       touch_drag_start_point_ =
           gfx::ToRoundedPoint(event.PositionInRootFrame());
       long_press_timer_->Reset();
       return false;
     case blink::WebInputEvent::Type::kGestureLongPress:
-      // Do not block the long press if handling a scroll gesture.
-      if (handling_gesture_scroll_)
+      // Do not block the long press if handling a scroll gesture. This ensures
+      // the long press gesture event emitted during a scroll begin event
+      // reaches the WebContents and triggers a drag session.
+      if (handling_gesture_scroll_) {
+        should_drag_on_gesture_scroll_ = false;
         return false;
+      }
       FireWebUIListener("show-context-menu");
       return true;
+    case blink::WebInputEvent::Type::kGestureTap:
+    case blink::WebInputEvent::Type::kGestureLongTap:
+      // Ensure that we reset `should_drag_on_gesture_scroll_` when we encounter
+      // a gesture tap event (i.e. an event triggered after the user lifts their
+      // finger following a press or long press).
+      should_drag_on_gesture_scroll_ = false;
+      return false;
     default:
       break;
   }
