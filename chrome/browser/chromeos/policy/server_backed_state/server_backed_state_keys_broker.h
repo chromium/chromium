@@ -51,6 +51,7 @@ class ServerBackedStateKeysBroker {
   void RequestStateKeys(StateKeysCallback callback);
 
   static base::TimeDelta GetPollIntervalForTesting();
+  static base::TimeDelta GetRetryIntervalForTesting();
 
   // Get the set of current state keys. Empty if state keys are unavailable
   // or pending retrieval.

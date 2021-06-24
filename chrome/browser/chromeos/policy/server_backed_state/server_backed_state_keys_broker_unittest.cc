@@ -139,4 +139,26 @@ TEST_F(ServerBackedStateKeysBrokerTest, RequestFailure) {
   EXPECT_TRUE(callback_state_keys_.empty());
 }
 
+TEST_F(ServerBackedStateKeysBrokerTest, RetryAfterFailure) {
+  fake_session_manager_client_.set_server_backed_state_keys(
+      std::vector<std::string>());
+
+  base::CallbackListSubscription subscription = broker_.RegisterUpdateCallback(
+      base::BindRepeating(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
+                          base::Unretained(this)));
+  mocked_main_runner_->RunUntilIdle();
+  EXPECT_TRUE(updated_);
+
+  EXPECT_FALSE(broker_.available());
+  EXPECT_TRUE(broker_.state_keys().empty());
+  EXPECT_TRUE(broker_.current_state_key().empty());
+
+  fake_session_manager_client_.set_server_backed_state_keys(state_keys_);
+  updated_ = false;
+  mocked_main_runner_->FastForwardBy(
+      ServerBackedStateKeysBroker::GetRetryIntervalForTesting());
+  EXPECT_TRUE(updated_);
+  ExpectGood();
+}
+
 }  // namespace policy

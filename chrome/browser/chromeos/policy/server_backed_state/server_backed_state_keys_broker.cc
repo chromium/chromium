@@ -21,6 +21,10 @@ namespace {
 // keys once a day is good enough.
 constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromDays(1);
 
+// In case state key fetching failed, we need to try again, sooner than
+// |kPollInterval|.
+constexpr base::TimeDelta kRetryInterval = base::TimeDelta::FromMinutes(1);
+
 }  // namespace
 
 ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
@@ -53,6 +57,10 @@ base::TimeDelta ServerBackedStateKeysBroker::GetPollIntervalForTesting() {
   return kPollInterval;
 }
 
+base::TimeDelta ServerBackedStateKeysBroker::GetRetryIntervalForTesting() {
+  return kRetryInterval;
+}
+
 void ServerBackedStateKeysBroker::FetchStateKeys() {
   if (!requested_) {
     requested_ = true;
@@ -67,10 +75,13 @@ void ServerBackedStateKeysBroker::StoreStateKeys(
   bool send_notification = !available();
 
   requested_ = false;
+  auto wait_interval = kPollInterval;
   if (state_keys.empty()) {
     LOG(WARNING) << "Failed to obtain server-backed state keys.";
+    wait_interval = kRetryInterval;
   } else if (base::Contains(state_keys, std::string())) {
     LOG(WARNING) << "Bad state keys.";
+    wait_interval = kRetryInterval;
   } else {
     send_notification |= state_keys_ != state_keys;
     state_keys_ = state_keys;
@@ -85,7 +96,7 @@ void ServerBackedStateKeysBroker::StoreStateKeys(
       FROM_HERE,
       base::BindOnce(&ServerBackedStateKeysBroker::FetchStateKeys,
                      weak_factory_.GetWeakPtr()),
-      kPollInterval);
+      wait_interval);
 }
 
 }  // namespace policy
