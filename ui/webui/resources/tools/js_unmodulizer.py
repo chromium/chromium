@@ -27,7 +27,7 @@ EXPORT_LINE_REGEX = 'export '
 
 def ProcessFile(filename, out_filename):
   with io.open(filename, encoding='utf-8', mode='r') as f:
-    lines = f.readlines();
+    lines = f.readlines()
 
     for i, line in enumerate(lines):
       # Since this tool is used to generate non-module files that are expected

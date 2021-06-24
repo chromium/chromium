@@ -45,7 +45,7 @@ class JsModulizerTest(unittest.TestCase):
     actual_js = self._read_out_file(js_out_file)
     expected_js = open(
         os.path.join(_HERE_DIR, 'tests', js_file_expected), 'rb').read()
-    self.assertEquals(expected_js, actual_js)
+    self.assertEqual(expected_js, actual_js)
 
   def testSuccess_WithoutCrDefine(self):
     self._run_test_('without_cr_define.js', 'without_cr_define_expected.js')

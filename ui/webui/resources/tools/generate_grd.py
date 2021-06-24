@@ -154,7 +154,8 @@ def main(argv):
     # $root_gen_dir.
     base_dir = os.path.join('${root_src_dir}', args.input_files_base_dir)
     if args.input_files_base_dir.startswith(args.root_gen_dir + '/'):
-      base_dir = args.input_files_base_dir.replace(args.root_gen_dir + '/', '${root_gen_dir}/')
+      base_dir = args.input_files_base_dir.replace(
+          args.root_gen_dir + '/', '${root_gen_dir}/')
 
     for filename in args.input_files:
       filepath = os.path.join(base_dir, filename).replace('\\', '/')
