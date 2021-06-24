@@ -11,8 +11,10 @@ source_set("consistency_promo_signin") {
     "consistency_promo_signin_coordinator.mm",
   ]
   deps = [
+    "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",

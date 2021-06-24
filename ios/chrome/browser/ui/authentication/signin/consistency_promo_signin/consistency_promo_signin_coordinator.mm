@@ -5,12 +5,16 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -31,6 +35,18 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Metrics to record the number of times the web sign-in is displayed.
+const char* kSigninAccountConsistencyPromoActionShownCount =
+    "Signin.AccountConsistencyPromoAction.Shown.Count";
+// Metrics to record how many times the web sign-in has been displayed before
+// the user signs in.
+const char* kSigninAccountConsistencyPromoActionSignedInCount =
+    "Signin.AccountConsistencyPromoAction.SignedIn.Count";
+
+}  // namespace
 
 @interface ConsistencyPromoSigninCoordinator () <
     ConsistencyAccountChooserCoordinatorDelegate,
@@ -74,6 +90,11 @@
       _identityManagerObserverBridge;
 }
 
+// Returns the number of times the web sign-in has been displayed.
++ (int)displayCountWithPrefService:(PrefService*)prefService {
+  return prefService->GetInteger(prefs::kSigninBottomSheetShownCount);
+}
+
 #pragma mark - SigninCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
@@ -101,10 +122,11 @@
   self.defaultAccountCoordinator.delegate = self;
   [self.defaultAccountCoordinator start];
 
-  self.authenticationService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.identityManager = IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  self.identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
   _identityManagerObserverBridge.reset(
       new signin::IdentityManagerObserverBridge(self.identityManager, self));
 
@@ -124,6 +146,11 @@
                                       completion:nil];
   RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::SHOWN);
+  PrefService* prefService = browserState->GetPrefs();
+  int displayCount = [self.class displayCountWithPrefService:prefService] + 1;
+  prefService->SetInteger(prefs::kSigninBottomSheetShownCount, displayCount);
+  base::UmaHistogramExactLinear(kSigninAccountConsistencyPromoActionShownCount,
+                                displayCount, 100);
 }
 
 - (void)stop {
@@ -156,6 +183,18 @@
 // Calls the sign-in completion block.
 - (void)finishedWithResult:(SigninCoordinatorResult)signinResult
                   identity:(ChromeIdentity*)identity {
+  switch (signinResult) {
+    case SigninCoordinatorResultSuccess: {
+      PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+      int displayCount = [self.class displayCountWithPrefService:prefService];
+      base::UmaHistogramExactLinear(
+          kSigninAccountConsistencyPromoActionSignedInCount, displayCount, 100);
+      break;
+    }
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted:
+      break;
+  }
   DCHECK(!self.alertCoordinator);
   [self.defaultAccountCoordinator stop];
   self.defaultAccountCoordinator = nil;

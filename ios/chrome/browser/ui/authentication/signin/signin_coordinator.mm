@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 #include "base/notreached.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
@@ -27,6 +29,11 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @implementation SigninCoordinator
+
++ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
+  // ConsistencyPromoSigninCoordinator.
+  registry->RegisterIntegerPref(prefs::kSigninBottomSheetShownCount, 0);
+}
 
 + (instancetype)
     userSigninCoordinatorWithBaseViewController:

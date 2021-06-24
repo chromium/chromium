@@ -82,6 +82,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/content_suggestions",

@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
@@ -212,8 +213,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [BookmarkMediator registerBrowserStatePrefs:registry];
   [BookmarkPathCache registerBrowserStatePrefs:registry];
   [ContentSuggestionsMediator registerBrowserStatePrefs:registry];
-  [SigninPromoViewMediator registerBrowserStatePrefs:registry];
   [HandoffManager registerBrowserStatePrefs:registry];
+  [SigninCoordinator registerBrowserStatePrefs:registry];
+  [SigninPromoViewMediator registerBrowserStatePrefs:registry];
 
   registry->RegisterBooleanPref(prefs::kDataSaverEnabled, false);
   registry->RegisterBooleanPref(

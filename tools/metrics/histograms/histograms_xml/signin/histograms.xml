@@ -44,10 +44,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="counts" expires_after="2021-10-31">
   <owner>aliceywang@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Every time the account picker bottom sheet is shown as part of the web
     sign-in flow this histogram records the number of times bottom sheet was
-    shown (Android only).
+    shown (Android and iOS only).
   </summary>
 </histogram>
 
@@ -55,9 +56,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="counts" expires_after="2021-10-31">
   <owner>aliceywang@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the number of times the account picker bottom sheet
-    was shown before the user signed-in through the bottom sheet (Android only).
+    was shown before the user signed-in through the bottom sheet (Android and
+    iOS only).
   </summary>
 </histogram>
 
