@@ -44,6 +44,14 @@ Polymer({
     },
 
     /**
+     * Indicates whether user is minor mode user (e.g. under age of 18).
+     */
+    isMinorMode_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * The device type (e.g. "Chromebook" or "Chromebox").
      * TODO(jamescook): Delete this after M85 once we're sure UX doesn't want
      * the device type in the dialog.
@@ -67,6 +75,7 @@ Polymer({
     this.setIsChildAccount(data['isChildAccount']);
     this.setDeviceType(data['deviceType']);
     this.splitSettingsSyncEnabled_ = data['splitSettingsSyncEnabled'];
+    this.isMinorMode_ = data['isMinorMode'];
     this.setUIStep(this.defaultUIStep());
   },
 
@@ -138,18 +147,21 @@ Polymer({
    * Continue button click handler for pre-SplitSettingsSync.
    * @private
    */
-  onSettingsSaveAndContinue_(e) {
+  onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
     assert(!this.splitSettingsSyncEnabled_);
-    if (this.$.reviewSettingsBox.checked) {
-      chrome.send('login.SyncConsentScreen.continueAndReview', [
-        this.getConsentDescription_(), this.getConsentConfirmation_(e.path)
-      ]);
-    } else {
-      chrome.send('login.SyncConsentScreen.continueWithDefaults', [
-        this.getConsentDescription_(), this.getConsentConfirmation_(e.path)
-      ]);
-    }
+    chrome.send('login.SyncConsentScreen.nonSplitSettingsContinue', [
+      opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
+      this.getConsentConfirmation_(e.path)
+    ]);
+  },
+
+  onNonSplitSettingsAccepted_(e) {
+    this.onSettingsSaveAndContinue_(e, true /* opted_in */);
+  },
+
+  onNonSplitSettingsDeclined_(e) {
+    this.onSettingsSaveAndContinue_(e, false /* opted_in */);
   },
 
   /**

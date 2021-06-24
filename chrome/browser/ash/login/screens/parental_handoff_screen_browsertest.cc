@@ -138,7 +138,7 @@ void ParentalHandoffScreenBrowserTest::ExitSyncConsentScreen() {
 
   const std::string button_name = features::IsSplitSettingsSyncEnabled()
                                       ? "acceptButton"
-                                      : "settingsSaveAndContinueButton";
+                                      : "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
   test::OobeJS().TapOnPath({"sync-consent", button_name});

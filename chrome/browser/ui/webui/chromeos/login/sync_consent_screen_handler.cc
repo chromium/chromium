@@ -140,6 +140,10 @@ void SyncConsentScreenHandler::Show() {
   data.SetString("deviceType", ui::GetChromeOSDeviceName());
   data.SetBoolean("splitSettingsSyncEnabled",
                   chromeos::features::IsSplitSettingsSyncEnabled());
+  // TODO(https://crbug.com/1222010): read actual minor mode signal from account
+  // capability.
+  data.SetBoolean("isMinorMode",
+                  chromeos::features::IsMinorModeRestrictionEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -152,17 +156,17 @@ void SyncConsentScreenHandler::SetThrobberVisible(bool visible) {
 void SyncConsentScreenHandler::Initialize() {}
 
 void SyncConsentScreenHandler::RegisterMessages() {
-  AddCallback("login.SyncConsentScreen.continueAndReview",
-              &SyncConsentScreenHandler::HandleContinueAndReview);
-  AddCallback("login.SyncConsentScreen.continueWithDefaults",
-              &SyncConsentScreenHandler::HandleContinueWithDefaults);
+  AddCallback("login.SyncConsentScreen.nonSplitSettingsContinue",
+              &SyncConsentScreenHandler::HandleNonSplitSettingsContinue);
   AddCallback("login.SyncConsentScreen.acceptAndContinue",
               &SyncConsentScreenHandler::HandleAcceptAndContinue);
   AddCallback("login.SyncConsentScreen.declineAndContinue",
               &SyncConsentScreenHandler::HandleDeclineAndContinue);
 }
 
-void SyncConsentScreenHandler::HandleContinueAndReview(
+void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
+    const bool opted_in,
+    const bool review_sync,
     const login::StringList& consent_description,
     const std::string& consent_confirmation) {
   DCHECK(!chromeos::features::IsSplitSettingsSyncEnabled());
@@ -170,28 +174,8 @@ void SyncConsentScreenHandler::HandleContinueAndReview(
   int consent_confirmation_id;
   GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
                 &consent_description_ids, &consent_confirmation_id);
-  screen_->OnContinueAndReview(consent_description_ids,
-                               consent_confirmation_id);
-
-  SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
-      screen_->GetDelegateForTesting();
-  if (test_delegate) {
-    test_delegate->OnConsentRecordedStrings(consent_description,
-                                            consent_confirmation);
-  }
-}
-
-void SyncConsentScreenHandler::HandleContinueWithDefaults(
-    const login::StringList& consent_description,
-    const std::string& consent_confirmation) {
-  DCHECK(!chromeos::features::IsSplitSettingsSyncEnabled());
-  std::vector<int> consent_description_ids;
-  int consent_confirmation_id;
-  GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
-                &consent_description_ids, &consent_confirmation_id);
-  screen_->OnContinueWithDefaults(consent_description_ids,
-                                  consent_confirmation_id);
-
+  screen_->OnNonSplitSettingsContinue(
+      opted_in, review_sync, consent_description_ids, consent_confirmation_id);
   SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
       screen_->GetDelegateForTesting();
   if (test_delegate) {

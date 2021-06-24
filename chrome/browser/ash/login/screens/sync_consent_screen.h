@@ -86,13 +86,11 @@ class SyncConsentScreen : public BaseScreen,
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Reacts to "Continue and review settings after sign-in"
-  void OnContinueAndReview(const std::vector<int>& consent_description,
-                           const int consent_confirmation);
-
-  // Reacts to "Continue with default settings"
-  void OnContinueWithDefaults(const std::vector<int>& consent_description,
-                              const int consent_confirmation);
+  // Reacts to user action on non-split-settings sync.
+  void OnNonSplitSettingsContinue(const bool opted_in,
+                                  const bool review_sync,
+                                  const std::vector<int>& consent_description,
+                                  const int consent_confirmation);
 
   // Reacts to "Yes, I'm in" and "No, thanks".
   void OnContinue(const std::vector<int>& consent_description,

@@ -129,9 +129,17 @@
         </cr-checkbox>
       </div>
       <div slot="bottom-buttons">
+        <oobe-text-button id="nonSplitSettingsDeclineButton"
+            on-click="onNonSplitSettingsDeclined_" hidden="[[!isMinorMode_]]"
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenDecline')]]">
+          <div slot="text" consent-description consent-confirmation>
+            [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
+          </div>
+        </oobe-text-button>
         <oobe-text-button class="focus-on-show" inverse
-            id="settingsSaveAndContinueButton"
-            on-click="onSettingsSaveAndContinue_"
+            id="nonSplitSettingsAcceptButton"
+            on-click="onNonSplitSettingsAccepted_"
             label-for-aria="[[i18nDynamic(locale,
                                           'syncConsentAcceptAndContinue')]]">
           <div slot="text" consent-description consent-confirmation>

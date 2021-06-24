@@ -195,7 +195,7 @@ void RunSyncConsentScreenChecks() {
   const std::string button_name =
       chromeos::features::IsSplitSettingsSyncEnabled()
           ? "acceptButton"
-          : "settingsSaveAndContinueButton";
+          : "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
 

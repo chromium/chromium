@@ -166,25 +166,26 @@ void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   UpdateScreen();
 }
 
-void SyncConsentScreen::OnContinueAndReview(
+void SyncConsentScreen::OnNonSplitSettingsContinue(
+    const bool opted_in,
+    const bool review_sync,
     const std::vector<int>& consent_description,
     const int consent_confirmation) {
   if (is_hidden())
     return;
-  RecordUmaReviewFollowingSetup(true);
-  RecordConsent(CONSENT_GIVEN, consent_description, consent_confirmation);
+  RecordUmaReviewFollowingSetup(review_sync);
+  RecordConsent(opted_in ? CONSENT_GIVEN : CONSENT_NOT_GIVEN,
+                consent_description, consent_confirmation);
   profile_->GetPrefs()->SetBoolean(::prefs::kShowSyncSettingsOnSessionStart,
-                                   true);
-  Finish(Result::NEXT);
-}
+                                   review_sync);
 
-void SyncConsentScreen::OnContinueWithDefaults(
-    const std::vector<int>& consent_description,
-    const int consent_confirmation) {
-  if (is_hidden())
-    return;
-  RecordUmaReviewFollowingSetup(false);
-  RecordConsent(CONSENT_GIVEN, consent_description, consent_confirmation);
+  syncer::SyncService* sync_service = GetSyncService(profile_);
+  CHECK(sync_service);
+  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+  if (opted_in != sync_settings->IsSyncEverythingEnabled()) {
+    syncer::UserSelectableTypeSet empty_set;
+    sync_settings->SetSelectedTypes(opted_in, empty_set);
+  }
   Finish(Result::NEXT);
 }
 

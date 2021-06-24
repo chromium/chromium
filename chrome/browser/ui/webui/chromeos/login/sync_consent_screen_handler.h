@@ -67,9 +67,9 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // WebUI message handlers
-  void HandleContinueAndReview(const ::login::StringList& consent_description,
-                               const std::string& consent_confirmation);
-  void HandleContinueWithDefaults(
+  void HandleNonSplitSettingsContinue(
+      const bool opted_in,
+      const bool review_sync,
       const ::login::StringList& consent_description,
       const std::string& consent_confirmation);
 

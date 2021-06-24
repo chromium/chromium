@@ -844,6 +844,13 @@ cr.define('cr.ui.login.debug', function() {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
       defaultState: 'step-no-split',
+      states: [{
+        id: 'minor-mode',
+        data: {
+          splitSettingsSyncEnabled: false,
+          isMinorMode: true,
+        },
+      }]
     },
     {
       id: 'fingerprint-setup',
