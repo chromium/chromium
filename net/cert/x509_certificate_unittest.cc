@@ -579,26 +579,6 @@ TEST(X509CertificateTest, ExtractSPKIFromDERCert) {
   EXPECT_EQ(0, memcmp(hash, kNistSPKIHash, sizeof(hash)));
 }
 
-TEST(X509CertificateTest, HasTLSFeatureExtension) {
-  base::FilePath certs_dir = GetTestCertsDirectory();
-  scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(certs_dir, "tls_feature_extension.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), cert.get());
-
-  EXPECT_TRUE(asn1::HasTLSFeatureExtension(
-      x509_util::CryptoBufferAsStringPiece(cert->cert_buffer())));
-}
-
-TEST(X509CertificateTest, DoesNotHaveTLSFeatureExtension) {
-  base::FilePath certs_dir = GetTestCertsDirectory();
-  scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(certs_dir, "ok_cert.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), cert.get());
-
-  EXPECT_FALSE(asn1::HasTLSFeatureExtension(
-      x509_util::CryptoBufferAsStringPiece(cert->cert_buffer())));
-}
-
 TEST(X509CertificateTest, HasCanSignHttpExchangesDraftExtension) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert = ImportCertFromFile(
