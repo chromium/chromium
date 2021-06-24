@@ -26,6 +26,7 @@
     <string name="menu_print">Print</string>
     <string name="menu_about">About WebView</string>
     <string name="menu_devui">WebView DevTools</string>
+    <string name="menu_hide">Show/Hide WebView</string>
     <string name="load_url">Load URL</string>
 
     <!-- activity_webview_animation_test strings -->

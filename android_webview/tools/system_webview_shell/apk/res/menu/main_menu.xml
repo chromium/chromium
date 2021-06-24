@@ -29,4 +29,6 @@
           android:title="@string/menu_about"/>
     <item android:id="@+id/menu_devui"
           android:title="@string/menu_devui"/>
+    <item android:id="@+id/menu_hide"
+          android:title="@string/menu_hide"/>
 </menu>
