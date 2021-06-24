@@ -95,6 +95,8 @@ void LayoutNGTable::TableGridStructureChanged() {
   NOT_DESTROYED();
   // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
+  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
+    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
 }
 
 bool LayoutNGTable::HasBackgroundForPaint() const {
