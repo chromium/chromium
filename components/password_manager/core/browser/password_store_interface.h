@@ -16,6 +16,7 @@ namespace password_manager {
 struct PasswordForm;
 
 class PasswordStoreConsumer;
+class SmartBubbleStatsStore;
 
 // Interface for storing form passwords in a secure way. The usage is
 // independent of the platform.
@@ -103,9 +104,8 @@ class PasswordStoreInterface : public RefcountedKeyedService {
       base::OnceClosure completion) = 0;
 
   // Unblocklists the login with `form_digest` by deleting all the corresponding
-  // blocklisted entries. If `completion` is not null, it will be posted to the
-  // `main_task_runner_` after deletions have been completed. Should be called
-  // on the UI thread.
+  // blocklisted entries. If `completion` is not null, it will be run after
+  // deletions have been completed. Should be called on the UI thread.
   virtual void Unblocklist(const PasswordFormDigest& form_digest,
                            base::OnceClosure completion) = 0;
 
@@ -144,6 +144,9 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // Removes `observer` from the observer list.
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the store responsible for smart bubble behaviour websites stats.
+  virtual SmartBubbleStatsStore* GetSmartBubbleStatsStore() = 0;
 
  protected:
   ~PasswordStoreInterface() override = default;

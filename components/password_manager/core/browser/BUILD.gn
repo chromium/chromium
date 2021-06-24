@@ -215,6 +215,7 @@ static_library("browser") {
     "site_affiliation/asset_link_data.h",
     "site_affiliation/hash_affiliation_fetcher.cc",
     "site_affiliation/hash_affiliation_fetcher.h",
+    "smart_bubble_stats_store.h",
     "sql_table_builder.cc",
     "sql_table_builder.h",
     "statistics_table.cc",

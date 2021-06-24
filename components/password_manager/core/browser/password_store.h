@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 
 class PrefService;
 
@@ -54,7 +55,6 @@ class InsecureCredentialsConsumer;
 class PasswordStoreSigninNotifier;
 class PasswordSyncBridge;
 struct FieldInfo;
-struct InteractionsStats;
 
 using PasswordHashDataList = absl::optional<std::vector<PasswordHashData>>;
 
@@ -65,7 +65,8 @@ using PasswordHashDataList = absl::optional<std::vector<PasswordHashData>>;
 // needs to access these methods.
 // TODO(crbug.com/1217071): Move PasswordStoreSync to local backend.
 class PasswordStore : protected PasswordStoreSync,
-                      public PasswordStoreInterface {
+                      public PasswordStoreInterface,
+                      public SmartBubbleStatsStore {
  public:
   class DatabaseInsecureCredentialsObserver {
     // An interface used to notify clients (observers) of this object that the
@@ -120,7 +121,7 @@ class PasswordStore : protected PasswordStoreSync,
     return affiliated_match_helper_.get();
   }
 
-  // PasswordStoreCore:
+  // PasswordStoreInterface:
   bool IsAbleToSavePasswords() const override;
   void AddLogin(const PasswordForm& form) override;
   void UpdateLogin(const PasswordForm& form) override;
@@ -152,17 +153,18 @@ class PasswordStore : protected PasswordStoreSync,
       PasswordStoreConsumer* consumer) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
 
-  // Removes all the stats created in the given date range.
-  // If |origin_filter| is not null, only statistics for matching origins are
-  // removed. If |completion| is not null, it will be posted to the
-  // |main_task_runner_| after deletions have been completed.
-  // Should be called on the UI thread.
+  // SmartBubbleStatsStore:
+  void AddSiteStats(const InteractionsStats& stats) override;
+  void RemoveSiteStats(const GURL& origin_domain) override;
+  void GetSiteStats(const GURL& origin_domain,
+                    PasswordStoreConsumer* consumer) override;
   void RemoveStatisticsByOriginAndTime(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion);
+      base::OnceClosure completion) override;
 
   // Reports usage metrics for the database. |sync_username|, and
   // |custom_passphrase_sync_enabled|, and |is_under_advanced_protection|
@@ -170,17 +172,6 @@ class PasswordStore : protected PasswordStoreSync,
   virtual void ReportMetrics(const std::string& sync_username,
                              bool custom_passphrase_sync_enabled,
                              bool is_under_advanced_protection);
-
-  // Adds or replaces the statistics for the domain |stats.origin_domain|.
-  void AddSiteStats(const InteractionsStats& stats);
-
-  // TODO(crbug/1081389): replace GURL with Origin.
-  // Removes the statistics for |origin_domain|.
-  void RemoveSiteStats(const GURL& origin_domain);
-
-  // Retrieves the statistics for |origin_domain| and notifies |consumer| on
-  // completion. The request will be cancelled if the consumer is destroyed.
-  void GetSiteStats(const GURL& origin_domain, PasswordStoreConsumer* consumer);
 
   // Adds information about credentials issue on
   // |insecure_credential.url| for |insecure_credential.username|. The
