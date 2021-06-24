@@ -1846,29 +1846,8 @@ extern const char kMessagesForAndroidUpdatePasswordDescription[];
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 
-extern const char kOfflineIndicatorChoiceName[];
-extern const char kOfflineIndicatorChoiceDescription[];
-
 extern const char kOfflineIndicatorV2Name[];
 extern const char kOfflineIndicatorV2Description[];
-
-extern const char kOfflinePagesCtName[];
-extern const char kOfflinePagesCtDescription[];
-
-extern const char kOfflinePagesCtV2Name[];
-extern const char kOfflinePagesCtV2Description[];
-
-extern const char kOfflinePagesDescriptiveFailStatusName[];
-extern const char kOfflinePagesDescriptiveFailStatusDescription[];
-
-extern const char kOfflinePagesDescriptivePendingStatusName[];
-extern const char kOfflinePagesDescriptivePendingStatusDescription[];
-
-extern const char kOfflinePagesInDownloadHomeOpenInCctName[];
-extern const char kOfflinePagesInDownloadHomeOpenInCctDescription[];
-
-extern const char kOfflinePagesPrefetchingName[];
-extern const char kOfflinePagesPrefetchingDescription[];
 
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];

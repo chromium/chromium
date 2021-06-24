@@ -1721,15 +1721,6 @@ const FeatureEntry::FeatureVariation kFilteringPredictionFeatureVariations[] = {
      base::size(kFilteringPredictionOneEuroFilterEnabled), nullptr}};
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kBottomOfflineIndicatorEnabled[] = {
-    {"bottom_offline_indicator", "true"}};
-
-const FeatureEntry::FeatureVariation kOfflineIndicatorFeatureVariations[] = {
-    {"(bottom)", kBottomOfflineIndicatorEnabled,
-     base::size(kBottomOfflineIndicatorEnabled), nullptr}};
-#endif  // OS_ANDROID
-
-#if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kTabSwitcherOnReturn_Immediate[] = {
     {"tab_switcher_on_return_time_ms", "0"}};
 const FeatureEntry::FeatureParam kTabSwitcherOnReturn_1Minute[] = {
@@ -3661,33 +3652,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOfflinePagesLivePageSharingName,
      flag_descriptions::kOfflinePagesLivePageSharingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(offline_pages::kOfflinePagesLivePageSharingFeature)},
-    {"offline-pages-prefetching",
-     flag_descriptions::kOfflinePagesPrefetchingName,
-     flag_descriptions::kOfflinePagesPrefetchingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(offline_pages::kPrefetchingOfflinePagesFeature)},
-    {"offline-pages-failed-download",
-     flag_descriptions::kOfflinePagesDescriptiveFailStatusName,
-     flag_descriptions::kOfflinePagesDescriptiveFailStatusDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesDescriptiveFailStatusFeature)},
-    {"offline-pages-pending-download",
-     flag_descriptions::kOfflinePagesDescriptivePendingStatusName,
-     flag_descriptions::kOfflinePagesDescriptivePendingStatusDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesDescriptivePendingStatusFeature)},
-    {"offline-pages-in-downloads-home-open-in-cct",
-     flag_descriptions::kOfflinePagesInDownloadHomeOpenInCctName,
-     flag_descriptions::kOfflinePagesInDownloadHomeOpenInCctDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         offline_pages::kOfflinePagesInDownloadHomeOpenInCctFeature)},
-    {"offline-indicator-choice", flag_descriptions::kOfflineIndicatorChoiceName,
-     flag_descriptions::kOfflineIndicatorChoiceDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(offline_pages::kOfflineIndicatorFeature,
-                                    kOfflineIndicatorFeatureVariations,
-                                    "OfflineIndicator")},
     {"offline-indicator-v2", flag_descriptions::kOfflineIndicatorV2Name,
      flag_descriptions::kOfflineIndicatorV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOfflineIndicatorV2)},
@@ -3860,12 +3824,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInterestFeedNoticeCardAutoDismissName,
      flag_descriptions::kInterestFeedNoticeCardAutoDismissDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(feed::kInterestFeedNoticeCardAutoDismiss)},
-    {"offline-pages-ct", flag_descriptions::kOfflinePagesCtName,
-     flag_descriptions::kOfflinePagesCtDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(offline_pages::kOfflinePagesCTFeature)},
-    {"offline-pages-ct-v2", flag_descriptions::kOfflinePagesCtV2Name,
-     flag_descriptions::kOfflinePagesCtV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(offline_pages::kOfflinePagesCTV2Feature)},
 #endif  // OS_ANDROID
     {"PasswordImport", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,

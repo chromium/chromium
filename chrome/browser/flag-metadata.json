@@ -3885,54 +3885,14 @@
     "expiry_milestone": 96
   },
   {
-    "name": "offline-indicator-choice",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "offline-indicator-v2",
     "owners": [ "sinansahin@google.com", "twellington", "offline-dev" ],
     "expiry_milestone": 90
   },
   {
-    "name": "offline-pages-alternate-dino-page",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-ct",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-ct-v2",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-failed-download",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-in-downloads-home-open-in-cct",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "offline-pages-live-page-sharing",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 86
-  },
-  {
-    "name": "offline-pages-pending-download",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
-  },
-  {
-    "name": "offline-pages-prefetching",
-    "owners": [ "sclittle", "srsudar", "offline-dev" ],
-    "expiry_milestone": 76
   },
   {
     "name": "omnibox-active-search-engines",

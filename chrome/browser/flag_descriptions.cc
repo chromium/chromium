@@ -3211,45 +3211,9 @@ const char kNewWindowAppMenuDescription[] =
     "Show a new menu item 'New Window' on tablet-sized screen when Chrome "
     "can open a new window and create a new instance in it.";
 
-const char kOfflineIndicatorChoiceName[] = "Offline indicator choices";
-const char kOfflineIndicatorChoiceDescription[] =
-    "Show an offline indicator while offline.";
-
 const char kOfflineIndicatorV2Name[] = "Offline indicator V2";
 const char kOfflineIndicatorV2Description[] =
     "Show a persistent offline indicator when offline.";
-
-const char kOfflinePagesCtName[] = "Enable Offline Pages CT features.";
-const char kOfflinePagesCtDescription[] = "Enable Offline Pages CT features.";
-
-const char kOfflinePagesCtV2Name[] = "Enable Offline Pages CT V2 features.";
-const char kOfflinePagesCtV2Description[] =
-    "V2 features include attributing pages to the app that initiated the "
-    "custom tabs, and being able to query for pages by page attribution.";
-
-const char kOfflinePagesDescriptiveFailStatusName[] =
-    "Enables descriptive failed download status text.";
-const char kOfflinePagesDescriptiveFailStatusDescription[] =
-    "Enables failed download status text in notifications and Downloads Home "
-    "to state the reason the request failed if the failure is actionable.";
-
-const char kOfflinePagesDescriptivePendingStatusName[] =
-    "Enables descriptive pending download status text.";
-const char kOfflinePagesDescriptivePendingStatusDescription[] =
-    "Enables pending download status text in notifications and Downloads Home "
-    "to state the reason the request is pending.";
-
-const char kOfflinePagesInDownloadHomeOpenInCctName[] =
-    "Enables offline pages in the downloads home to be opened in CCT.";
-const char kOfflinePagesInDownloadHomeOpenInCctDescription[] =
-    "When enabled offline pages launched from the Downloads Home will be "
-    "opened in Chrome Custom Tabs (CCT) instead of regular tabs.";
-
-const char kOfflinePagesPrefetchingName[] =
-    "Enables suggested offline pages to be prefetched.";
-const char kOfflinePagesPrefetchingDescription[] =
-    "Enables suggested offline pages to be prefetched, so useful content is "
-    "available while offline.";
 
 const char kOfflinePagesLivePageSharingName[] =
     "Enables live page sharing of offline pages";
