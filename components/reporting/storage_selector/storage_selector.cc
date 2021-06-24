@@ -36,7 +36,7 @@ namespace {
 // Features settings for storage and uploader.
 // Use `missived` by all browsers.
 const base::Feature kUseMissiveDaemonFeature{StorageSelector::kUseMissiveDaemon,
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Receive `missived` uploads by ASH/primary browser only.
 const base::Feature kProvideUploaderFeature {
