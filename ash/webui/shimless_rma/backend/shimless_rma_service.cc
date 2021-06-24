@@ -279,6 +279,7 @@ void ShimlessRmaService::OnGetStateResponse(
     LOG(ERROR) << "rmadClient returned unknown state " << state;
     std::move(callback).Run(mojom::RmaState::kUnknown,
                             mojom::RmadErrorCode::kTransitionFailed);
+    return;
   }
   state_proto_ = response->state();
   if (response->error() != rmad::RMAD_ERROR_OK) {
