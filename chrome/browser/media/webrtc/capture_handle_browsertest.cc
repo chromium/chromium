@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
 #if defined(OS_MAC)
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
-  DISABLE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
+  DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
 #else
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
    HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
 #if defined(OS_MAC)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
-  DISABLE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
+  DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
 #else
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
    HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
@@ -695,9 +695,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
+// TODO(crbug/1219998): Disabled because of flakiness.
 #if defined(OS_WIN)
 #define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
-  DISABLE_RegularTabCannotReadIncognitoTabCaptureHandle
+  DISABLED_RegularTabCannotReadIncognitoTabCaptureHandle
 #else
 #define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
   RegularTabCannotReadIncognitoTabCaptureHandle
@@ -753,9 +754,10 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), kNoCaptureHandle);
 }
 
+// TODO(crbug/1219998): Disabled because of flakiness.
 #if defined(OS_WIN)
 #define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
-  DISABLE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
+  DISABLED_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
 #else
 #define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
   IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
