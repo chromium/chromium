@@ -38,6 +38,10 @@ enum ProbeCategoryEnum {
   kNetwork,
   kAudio,
   kBootPerformance,
+  kBus,
+
+  // TODO(b/190459636): Rename it to kSystem after migration.
+  kSystem2 = 0x10000,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -467,6 +471,7 @@ struct BluetoothAdapterInfo {
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
+// DEPRECATED(b/188508561): Use SystemResultV2 instead.
 union SystemResult {
   // Valid SystemInfo.
   SystemInfo system_info;
@@ -474,21 +479,17 @@ union SystemResult {
   ProbeError error;
 };
 
-// Structure containing information about the operating system version of the
-// device. This structure decomposes a full version string into its parts:
-// (87.13544.59.0).
-struct OsVersion {
-  // The OS version release milestone (87).
-  string release_milestone;
-  // The OS version build number (13544).
-  string build_number;
-  // The OS version patch number (59.0).
-  string patch_number;
-  // The OS release channel (stable-channel).
-  string release_channel;
+// System probe result. Can either be populated with the SystemInfoV2 or an
+// error retrieving the information.
+union SystemResultV2 {
+  // Valid SystemInfoV2.
+  SystemInfoV2 system_info_v2;
+  // The error that occurred attempting to retrieve SystemInfo.
+  ProbeError error;
 };
 
 // System Information.
+// DEPRECATED(b/188508561): Use SystemInfoV2 instead.
 struct SystemInfo {
   // The date the device was first activated.
   // Format: YYYY-WW.
@@ -518,6 +519,111 @@ struct SystemInfo {
   string? product_name;
   // The OS version of the system.
   OsVersion os_version;
+};
+
+// System Information.
+// TODO(b/190459636): Rename it to SystemInfo after migration.
+struct SystemInfoV2 {
+  // The info related to the OS.
+  OsInfo os_info;
+  // The info from the VPD cache.
+  VpdInfo? vpd_info;
+  // The info from DMI (x86 only). The info from here should only be used for
+  // logging and debugging.
+  DmiInfo? dmi_info;
+};
+
+// The OS information.
+struct OsInfo {
+  // Google code name for the given model. While it is OK to use this string for
+  // human-display purposes (such as in a debug log or help dialog), or for a
+  // searchable-key in metrics collection, it is not recommended to use this
+  // property for creating model-specific behaviors.
+  string code_name;
+  // Contents of CrosConfig in /arc/build-properties/marketing-name.
+  string? marketing_name;
+  // The OS version of the system.
+  OsVersion os_version;
+  // The boot flow used by the current boot.
+  BootMode boot_mode;
+};
+
+// Structure containing information about the operating system version of the
+// device. This structure decomposes a full version string
+// (e.g. "87.13544.59.0") into its parts:
+struct OsVersion {
+  // The OS version release milestone (e.g. "87").
+  string release_milestone;
+  // The OS version build number (e.g. "13544").
+  string build_number;
+  // The OS version patch number (e.g. "59.0").
+  string patch_number;
+  // The OS release channel (e.g. "stable-channel").
+  string release_channel;
+};
+
+// The boot mode of the current os.
+[Extensible]
+enum BootMode {
+  kUnknown = 0,
+  // Boot with Chrome OS firmware.
+  kCrosSecure,
+  // Boot with EFI
+  kCrosEfi,
+  // Boot with Legacy BIOS.
+  kCrosLegacy,
+};
+
+// The list of VPD fields are available in the ChromeOS Partner Site document
+// "VPD Field Requirements":
+//    https://chromeos.google.com/partner/dlm/docs/factory/vpd.html
+// Note that all the fields (include required fields) are not guaranteed to be
+// exist in some situation. (e.g. in a early stage device)
+struct VpdInfo {
+  // A unique identifier of the device. (Required RO VPD field)
+  string? serial_number;
+  // Defines a market region where devices share a particular configuration of
+  // keyboard layout, language, and timezone. (Required VPD field)
+  string? region;
+  // The date the device was manufactured. (Required RO VPD field)
+  // Format: YYYY-MM-DD.
+  string? mfg_date;
+  // The date the device was first activated. (Runtime RW VPD field)
+  // Format: YYYY-WW.
+  string? activate_date;
+  // The product SKU number. (Optional RO VPD field. b/35512367)
+  string? sku_number;
+  // The product model name. (Optional RO VPD field. b/35512367)
+  string? model_name;
+};
+
+// DMI (a.k.a. SMBIOS) is only supported on x86 platform. These info can be used
+// to identify the hardware.
+struct DmiInfo {
+  // The BIOS vendor.
+  string? bios_vendor;
+  // The BIOS version.
+  string? bios_version;
+  // The product name of the motherboard.
+  string? board_name;
+  // The vendor of the motherboard.
+  string? board_vender;
+  // The version of the motherboard.
+  string? board_version;
+  // The vendor of the chassis.
+  string? chassis_vendor;
+  // The chassis type of the device. The values reported by chassis type are
+  // mapped in
+  // www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.0.0.pdf.
+  NullableUint64? chassis_type;
+  // The product family name.
+  string? product_family;
+  // The product name (model) of the system.
+  string? product_name;
+  // The product version.
+  string? product_version;
+  // The system vendor name.
+  string? sys_vendor;
 };
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
@@ -582,6 +688,94 @@ struct BootPerformanceInfo {
   string shutdown_reason;
 };
 
+// Bus probe result. Can either be populated with the BusDevice or an error
+// retrieving the information.
+union BusResult {
+  // Valid BusDevice.
+  array<BusDevice> bus_devices;
+  // The error that occurred attempting to retrieve the BusDevice.
+  ProbeError error;
+};
+
+// The classes of the bus devices. Can be used to group the devices by their
+// use.
+[Extensible]
+enum BusDeviceClass {
+  // For the devices which cannot be classified.
+  kOthers = 0,
+  kDisplayController,
+  kEthernetController,
+  kWirelessController,
+  kBluetoothAdapter,
+};
+
+// The bus device info.
+struct BusDevice {
+  // The vendor / product name of the device. These are extracted from the
+  // databases on the system and should only be used for showing / logging.
+  // Don't use these to identify the devices.
+  string vendor_name;
+  string product_name;
+  // The class of the device.
+  BusDeviceClass device_class;
+  // The info related to specific bus type.
+  BusInfo bus_info;
+};
+
+// The info related to specific bus type.
+union BusInfo {
+  // The info related to pci.
+  PciBusInfo pci_bus_info;
+  // The info related to usb.
+  UsbBusInfo usb_bus_info;
+};
+
+// The info related to pci.
+struct PciBusInfo {
+  // These fields can be used to classify / identify the pci devices. See the
+  // pci.ids database for the values. (https://github.com/gentoo/hwids)
+  uint8 class_id;
+  uint8 subclass_id;
+  uint8 prog_if_id;
+  uint16 vendor_id;
+  uint16 device_id;
+  // The driver used by the device. This is the name of the matched driver which
+  // is registered in the kernel. See "{kernel root}/drivers/". for the list of
+  // the built in drivers.
+  string? driver;
+};
+
+// The info related to usb.
+struct UsbBusInfo {
+  // These fields can be used to classify / identify the usb devices. See the
+  // usb.ids database for the values. (https://github.com/gentoo/hwids)
+  uint8 class_id;
+  uint8 subclass_id;
+  uint8 protocol_id;
+  uint16 vendor_id;
+  uint16 product_id;
+  // The usb interfaces under the device. A usb device has at least one
+  // interface. Each interface may or may not work independently, based on each
+  // device. This allows a usb device to provide multiple features.
+  // The interfaces are sorted by the |interface_number| field.
+  array<UsbBusInterfaceInfo> interfaces;
+};
+
+// The info related to usb interfaces.
+struct UsbBusInterfaceInfo {
+  // The zero-based number (index) of the interface.
+  uint8 interface_number;
+  // These fields can be used to classify / identify the usb interfaces. See the
+  // usb.ids database for the values.
+  uint8 class_id;
+  uint8 subclass_id;
+  uint8 protocol_id;
+  // The driver used by the device. This is the name of the matched driver which
+  // is registered in the kernel. See "{kernel root}/drivers/". for the list of
+  // the built in drivers.
+  string? driver;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -619,8 +813,9 @@ struct TelemetryInfo {
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
   BluetoothResult? bluetooth_result;
-  // Information about the system. Only present when kSystem was included in the
-  // categories input to ProbeTelemetryInfo.
+  // Information about the system. Only present when kSystem was included in
+  // the categories input to ProbeTelemetryInfo.
+  // DEPRECATED(b/188508561): Use system_result_v2 instead.
   SystemResult? system_result;
   // Information about the networking devices and associated networks of the
   // system. Only present when kNetwork was included in the categories input to
@@ -632,4 +827,10 @@ struct TelemetryInfo {
   // Information about boot performance. Only present when kBootPerformance was
   // included in the categories input to ProbeTelemetryInfo.
   BootPerformanceResult? boot_performance_result;
+  // Information about the bus devices. Only present when kBus was included
+  // in the categories input to ProbeTelemetryInfo.
+  BusResult? bus_result;
+  // Information about the system. Only present when kSystem2 was included in
+  // the categories input to ProbeTelemetryInfo.
+  SystemResultV2? system_result_v2;
 };
