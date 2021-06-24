@@ -2694,7 +2694,6 @@ public class AutofillAssistantGenericUiTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "1172614")
     public void testElementCondition() throws Exception {
         List<InteractionProto> interactions = new ArrayList<>();
 
