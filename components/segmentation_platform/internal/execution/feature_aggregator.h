@@ -11,8 +11,8 @@
 
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -27,7 +27,7 @@ class FeatureAggregator {
   // Assumes that the all the provided samples are valid within the required
   // time frame.
   virtual std::vector<float> Process(
-      SignalType signal_type,
+      proto::SignalType signal_type,
       proto::Aggregation aggregation,
       uint64_t length,
       const base::Time& end_time,

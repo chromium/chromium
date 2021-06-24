@@ -8,9 +8,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,7 +33,7 @@ class MockHistogramSignalHandler : public HistogramSignalHandler {
  public:
   MockHistogramSignalHandler() : HistogramSignalHandler(nullptr, nullptr) {}
   using HistogramAndSignalTypeSet =
-      const std::set<std::pair<std::string, SignalType>>&;
+      const std::set<std::pair<std::string, proto::SignalType>>&;
   MOCK_METHOD(void, SetRelevantHistograms, (HistogramAndSignalTypeSet));
   MOCK_METHOD(void, EnableMetrics, (bool));
 };
@@ -91,16 +91,18 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
       OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
       kHistogramName2);
 
-  std::set<std::pair<std::string, SignalType>> histograms;
+  std::set<std::pair<std::string, proto::SignalType>> histograms;
   EXPECT_CALL(*histogram_signal_handler_, SetRelevantHistograms(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&histograms));
 
   signal_filter_processor_->OnSignalListUpdated();
-  ASSERT_THAT(histograms, Contains(std::make_pair(
-                              kHistogramName1, SignalType::HISTOGRAM_VALUE)));
-  ASSERT_THAT(histograms, Contains(std::make_pair(
-                              kHistogramName2, SignalType::HISTOGRAM_VALUE)));
+  ASSERT_THAT(histograms,
+              Contains(std::make_pair(kHistogramName1,
+                                      proto::SignalType::HISTOGRAM_VALUE)));
+  ASSERT_THAT(histograms,
+              Contains(std::make_pair(kHistogramName2,
+                                      proto::SignalType::HISTOGRAM_VALUE)));
 }
 
 TEST_F(SignalFilterProcessorTest, EnableMetrics) {

@@ -96,4 +96,60 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
   EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info));
 }
 
+TEST_F(MetadataUtilsTest, GetNameHashForFeature) {
+  proto::Feature feature;
+  proto::UserActionFeature* user_action = feature.mutable_user_action();
+  user_action->set_user_action_hash(1);
+  auto name_hash = metadata_utils::GetNameHashForFeature(feature);
+  EXPECT_EQ(1u, name_hash.value());
+  feature.clear_user_action();
+
+  proto::HistogramEnumFeature* histogram_enum =
+      feature.mutable_histogram_enum();
+  histogram_enum->set_name_hash(2);
+  name_hash = metadata_utils::GetNameHashForFeature(feature);
+  EXPECT_EQ(2u, name_hash.value());
+  feature.clear_histogram_enum();
+
+  proto::HistogramValueFeature* histogram_value =
+      feature.mutable_histogram_value();
+  histogram_value->set_name_hash(3);
+  name_hash = metadata_utils::GetNameHashForFeature(feature);
+  EXPECT_EQ(3u, name_hash.value());
+}
+
+TEST_F(MetadataUtilsTest, GetSignalTypeForFeature) {
+  proto::Feature feature;
+  proto::UserActionFeature* user_action = feature.mutable_user_action();
+  user_action->set_user_action_hash(1);
+  EXPECT_EQ(proto::SignalType::USER_ACTION,
+            metadata_utils::GetSignalTypeForFeature(feature));
+  feature.clear_user_action();
+
+  proto::HistogramEnumFeature* histogram_enum =
+      feature.mutable_histogram_enum();
+  histogram_enum->set_name_hash(2);
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_ENUM,
+            metadata_utils::GetSignalTypeForFeature(feature));
+  feature.clear_histogram_enum();
+
+  proto::HistogramValueFeature* histogram_value =
+      feature.mutable_histogram_value();
+  histogram_value->set_name_hash(3);
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE,
+            metadata_utils::GetSignalTypeForFeature(feature));
+}
+
+TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {
+  EXPECT_EQ(
+      SignalKey::Kind::USER_ACTION,
+      metadata_utils::SignalTypeToSignalKind(proto::SignalType::USER_ACTION));
+  EXPECT_EQ(SignalKey::Kind::HISTOGRAM_ENUM,
+            metadata_utils::SignalTypeToSignalKind(
+                proto::SignalType::HISTOGRAM_ENUM));
+  EXPECT_EQ(SignalKey::Kind::HISTOGRAM_VALUE,
+            metadata_utils::SignalTypeToSignalKind(
+                proto::SignalType::HISTOGRAM_VALUE));
+}
+
 }  // namespace segmentation_platform

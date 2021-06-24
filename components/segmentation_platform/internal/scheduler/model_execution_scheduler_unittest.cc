@@ -7,12 +7,14 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Return;
 using testing::SaveArg;
 
 namespace segmentation_platform {
@@ -33,6 +35,15 @@ class MockModelExecutionManager : public ModelExecutionManager {
   MOCK_METHOD(void, ExecuteModel, (OptimizationTarget, ModelExecutionCallback));
 };
 
+class MockSignalStorageConfig : public SignalStorageConfig {
+ public:
+  MockSignalStorageConfig() : SignalStorageConfig(nullptr, nullptr) {}
+  MOCK_METHOD(bool,
+              MeetsSignalCollectionRequirement,
+              (const proto::SegmentationModelMetadata&),
+              (override));
+};
+
 class ModelExecutionSchedulerTest : public testing::Test {
  public:
   ModelExecutionSchedulerTest() = default;
@@ -41,11 +52,13 @@ class ModelExecutionSchedulerTest : public testing::Test {
   void SetUp() override {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-        &observer_, segment_database_.get(), &model_execution_manager_);
+        &observer_, segment_database_.get(), &signal_storage_config_,
+        &model_execution_manager_);
   }
 
   base::test::TaskEnvironment task_environment_;
   MockModelExecutionObserver observer_;
+  MockSignalStorageConfig signal_storage_config_;
   MockModelExecutionManager model_execution_manager_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;
@@ -69,6 +82,10 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
   EXPECT_CALL(model_execution_manager_,
               ExecuteModel(kTestOptimizationTarget, _))
       .Times(1);
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
+      .WillRepeatedly(Return(true));
+  // TODO(shaktisahu): Add test when the signal collection returns false.
+
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);
 }
 

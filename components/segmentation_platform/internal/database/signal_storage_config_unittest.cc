@@ -1,0 +1,234 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+
+#include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
+#include "components/leveldb_proto/public/proto_database.h"
+#include "components/leveldb_proto/testing/fake_db.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using InitStatus = leveldb_proto::Enums::InitStatus;
+
+namespace segmentation_platform {
+
+namespace {
+const char kDatabaseKey[] = "config";
+
+}  // namespace
+
+class SignalStorageConfigTest : public testing::Test {
+ public:
+  SignalStorageConfigTest() = default;
+  ~SignalStorageConfigTest() override = default;
+
+ protected:
+  void SetUpDB() {
+    DCHECK(!db_);
+    DCHECK(!signal_storage_config_);
+
+    auto db = std::make_unique<
+        leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>(&db_entries_);
+    db_ = db.get();
+    signal_storage_config_ =
+        std::make_unique<SignalStorageConfig>(std::move(db), &test_clock_);
+    test_clock_.SetNow(base::Time::Now());
+  }
+
+  void TearDown() override {
+    db_entries_.clear();
+    db_ = nullptr;
+    signal_storage_config_.reset();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::SimpleTestClock test_clock_;
+  std::map<std::string, proto::SignalStorageConfigs> db_entries_;
+  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>* db_{nullptr};
+  std::unique_ptr<SignalStorageConfig> signal_storage_config_;
+};
+
+TEST_F(SignalStorageConfigTest,
+       CheckMeetsSignalCollectionRequirementWithMultipleModels) {
+  // Start with empty DB.
+  SetUpDB();
+  signal_storage_config_->InitAndLoad(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+  EXPECT_EQ(0u, db_entries_.size());
+
+  // Create a model metadata.
+  proto::SegmentationModelMetadata metadata;
+  metadata.set_time_unit(proto::TimeUnit::DAY);
+  metadata.set_signal_storage_length(2);
+  metadata.set_min_signal_collection_length(2);
+
+  // Create a second model metadata with longer requirement.
+  proto::SegmentationModelMetadata metadata2;
+  metadata2.set_time_unit(proto::TimeUnit::DAY);
+  metadata2.set_signal_storage_length(6);
+  metadata2.set_min_signal_collection_length(4);
+
+  // Add a user action feature to the both models.
+  proto::Feature* feature = metadata.add_features();
+  uint64_t name_hash = 234;
+  feature->mutable_user_action()->set_user_action_hash(name_hash);
+  proto::Feature* feature2 = metadata2.add_features();
+  feature2->mutable_user_action()->set_user_action_hash(name_hash);
+
+  // The DB should be empty before the model is added.
+  EXPECT_EQ(0u, db_entries_.size());
+
+  // Add the model.
+  EXPECT_FALSE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
+  signal_storage_config_->OnSignalCollectionStarted(metadata);
+  db_->UpdateCallback(true);
+
+  // Verify that the DB has now a top level entry.
+  EXPECT_EQ(1u, db_entries_.size());
+  const auto& config = db_entries_[kDatabaseKey];
+  EXPECT_EQ(1, config.signals_size());
+
+  // Verify that DB has a signal entry with correct storage and collection start
+  // time.
+  proto::SignalStorageConfig signal_config = config.signals(0);
+  EXPECT_EQ(name_hash, signal_config.name_hash());
+  EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
+  EXPECT_EQ(base::TimeDelta::FromDays(2).InSeconds(),
+            signal_config.storage_length_s());
+  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+
+  // Add the second model. It should do a overwrite of previous value.
+  signal_storage_config_->OnSignalCollectionStarted(metadata2);
+  db_->UpdateCallback(true);
+
+  // Verify DB size.
+  EXPECT_EQ(1u, db_entries_.size());
+  EXPECT_EQ(1, config.signals_size());
+
+  // Verify that DB has a signal entry with correct storage and collection start
+  // time.
+  signal_config = config.signals(0);
+  EXPECT_EQ(name_hash, signal_config.name_hash());
+  EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
+  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
+            signal_config.storage_length_s());
+  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+
+  // Signal collection shouldn't satisfy.
+  EXPECT_FALSE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
+
+  // Advance clock by 1 day. Start collection. Signal collection still won't
+  // satisfy.
+  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  EXPECT_FALSE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
+  EXPECT_FALSE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata2));
+  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+
+  // Advance clock by 2 days. Signal collection should be sufficient for the
+  // first model.
+  test_clock_.Advance(base::TimeDelta::FromDays(2));
+  EXPECT_TRUE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
+  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+
+  // The second model shouldn't satisfy yet.
+  EXPECT_FALSE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata2));
+
+  // Advance clock by 3 days. Signal collection should be sufficient for second
+  // model as well.
+  test_clock_.Advance(base::TimeDelta::FromDays(3));
+  EXPECT_TRUE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
+  EXPECT_TRUE(
+      signal_storage_config_->MeetsSignalCollectionRequirement(metadata2));
+
+  // Add the model several times. DB shouldn't change.
+  signal_storage_config_->OnSignalCollectionStarted(metadata);
+  signal_config = config.signals(0);
+  EXPECT_EQ(name_hash, signal_config.name_hash());
+  EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
+  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
+            signal_config.storage_length_s());
+  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+}
+
+TEST_F(SignalStorageConfigTest, CleanupSignals) {
+  SetUpDB();
+
+  // Set up DB with three signals. One expired, one unknown, and one valid.
+  proto::SignalStorageConfigs config;
+
+  // Expired.
+  proto::SignalStorageConfig* signal1 = config.add_signals();
+  signal1->set_name_hash(1);
+  signal1->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
+  signal1->set_collection_start_time_s(
+      (test_clock_.Now() - base::TimeDelta::FromDays(3))
+          .ToDeltaSinceWindowsEpoch()
+          .InSeconds());
+  signal1->set_storage_length_s(base::TimeDelta::FromDays(2).InSeconds());
+
+  // Unknown.
+  proto::SignalStorageConfig* signal2 = config.add_signals();
+  signal2->set_name_hash(2);
+  signal2->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
+  signal2->set_collection_start_time_s(
+      (test_clock_.Now() - base::TimeDelta::FromDays(3))
+          .ToDeltaSinceWindowsEpoch()
+          .InSeconds());
+  signal2->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+
+  // Known.
+  proto::SignalStorageConfig* signal3 = config.add_signals();
+  signal3->set_name_hash(3);
+  signal3->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
+  signal3->set_collection_start_time_s(
+      (test_clock_.Now() - base::TimeDelta::FromDays(3))
+          .ToDeltaSinceWindowsEpoch()
+          .InSeconds());
+  signal3->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+
+  // Initialize DB.
+  db_entries_.insert({kDatabaseKey, config});
+  signal_storage_config_->InitAndLoad(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+  EXPECT_EQ(1u, db_entries_.size());
+
+  // Run cleanup to find expired signals
+  std::set<std::pair<uint64_t, proto::SignalType>> known_signals;
+  std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>> result;
+  signal_storage_config_->GetSignalsForCleanup(known_signals, result);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(1u, std::get<0>(result[0]));
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[0]));
+
+  // Run cleanup to find expired and unknown signals.
+  result.clear();
+  known_signals.insert({1, proto::SignalType::HISTOGRAM_VALUE});
+  known_signals.insert({3, proto::SignalType::HISTOGRAM_VALUE});
+  signal_storage_config_->GetSignalsForCleanup(known_signals, result);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ(2u, std::get<0>(result[1]));
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[1]));
+
+  // Cleanup the signals from this DB. The collection start time should be
+  // updated.
+  signal_storage_config_->UpdateSignalsForCleanup(result);
+  db_->UpdateCallback(true);
+  auto signal = db_entries_[kDatabaseKey].signals(0);
+  EXPECT_EQ((test_clock_.Now() - base::TimeDelta::FromDays(2))
+                .ToDeltaSinceWindowsEpoch()
+                .InSeconds(),
+            signal.collection_start_time_s());
+}
+
+}  // namespace segmentation_platform

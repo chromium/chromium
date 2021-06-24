@@ -17,11 +17,11 @@ HistogramSignalHandler::HistogramSignalHandler(SignalDatabase* signal_database,
 HistogramSignalHandler::~HistogramSignalHandler() = default;
 
 void HistogramSignalHandler::SetRelevantHistograms(
-    const std::set<std::pair<std::string, SignalType>>& histograms) {
+    const std::set<std::pair<std::string, proto::SignalType>>& histograms) {
   histogram_observers_.clear();
   for (const auto& pair : histograms) {
     const auto& histogram_name = pair.first;
-    SignalType signal_type = pair.second;
+    proto::SignalType signal_type = pair.second;
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
@@ -39,7 +39,7 @@ void HistogramSignalHandler::EnableMetrics(bool enable_metrics) {
 }
 
 void HistogramSignalHandler::OnHistogramSample(
-    SignalType signal_type,
+    proto::SignalType signal_type,
     const char* histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample sample) {

@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 
 namespace base {
 class Clock;
@@ -39,13 +39,13 @@ class HistogramSignalHandler {
   // Called to notify about a set of histograms which the segmentation models
   // care about.
   virtual void SetRelevantHistograms(
-      const std::set<std::pair<std::string, SignalType>>& histograms);
+      const std::set<std::pair<std::string, proto::SignalType>>& histograms);
 
   // Called to enable or disable metrics collection for segmentation platform.
   virtual void EnableMetrics(bool enable_metrics);
 
  private:
-  void OnHistogramSample(SignalType signal_type,
+  void OnHistogramSample(proto::SignalType signal_type,
                          const char* histogram_name,
                          uint64_t name_hash,
                          base::HistogramBase::Sample sample);

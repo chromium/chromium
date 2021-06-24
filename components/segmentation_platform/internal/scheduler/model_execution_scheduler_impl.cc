@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 
 namespace segmentation_platform {
@@ -15,9 +16,11 @@ namespace segmentation_platform {
 ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     Observer* observer,
     SegmentInfoDatabase* segment_database,
+    SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager)
     : observer_(observer),
       segment_database_(segment_database),
+      signal_storage_config_(signal_storage_config),
       model_execution_manager_(model_execution_manager) {}
 
 ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
@@ -87,8 +90,12 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
         !metadata_utils::HasExpiredOrUnavailableResult(segment_info))
       continue;
 
-    // TODO(shaktisahu): Filter out segments that don't match signal collection
-    // min length.
+    // Filter out segments that don't match signal collection min length.
+    if (!signal_storage_config_->MeetsSignalCollectionRequirement(
+            segment_info.model_metadata())) {
+      continue;
+    }
+
     models_to_run.emplace_back(segment_id);
   }
 

@@ -8,7 +8,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 
 namespace segmentation_platform {
 
@@ -48,8 +48,8 @@ void UserActionSignalHandler::OnUserAction(const std::string& user_action,
   if (iter == user_actions_.end())
     return;
 
-  db_->WriteSample(SignalType::USER_ACTION, user_action_hash, absl::nullopt,
-                   clock_->Now(), base::DoNothing());
+  db_->WriteSample(proto::SignalType::USER_ACTION, user_action_hash,
+                   absl::nullopt, clock_->Now(), base::DoNothing());
 }
 
 }  // namespace segmentation_platform
