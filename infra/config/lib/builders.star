@@ -376,7 +376,6 @@ def builder(
         reclient_jobs = args.DEFAULT,
         reclient_rewrapper_env = args.DEFAULT,
         reclient_profiler_service = args.DEFAULT,
-        experiments = None,
         **kwargs):
     """Define a builder.
 
@@ -511,8 +510,6 @@ def builder(
         environment variables. All such vars must start with the "RBE_" prefix.
       * reclient_profiler_service - a string indicating service name for
         re-client's cloud profiler.
-      * experiments - a dict of experiment name to the percentage chance (0-100)
-        that it will apply to builds generated from this builder.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -596,12 +593,6 @@ def builder(
             ssd = False
     if ssd != None:
         dimensions["ssd"] = str(int(ssd))
-
-    # TODO(crbug.com/1143122): remove this.
-    experiments = experiments or {}
-    if os and os.category in (os_category.MAC, os_category.WINDOWS):
-        experiments["chromium.chromium_tests.use_rbe_cas"] = 100
-    kwargs["experiments"] = experiments
 
     configure_kitchen = defaults.get_value("configure_kitchen", configure_kitchen)
     if configure_kitchen:

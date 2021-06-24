@@ -6340,10 +6340,6 @@ ci.win_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     os = os.WINDOWS_ANY,
-    experiments = {
-        # TODO(crbug.com/1143122): remove this.
-        "chromium.chromium_tests.use_rbe_cas": 20,
-    },
 )
 
 ci.win_builder(
