@@ -1561,7 +1561,7 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   DCHECK(script_state->ContextIsValid());
   ParsedSessionDescription parsed_sdp =
       ParsedSessionDescription::Parse(session_description_init);
-  if (session_description_init->hasType() &&
+  if (!session_description_init->hasType() ||
       session_description_init->type().AsEnum() !=
           V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
