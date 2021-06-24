@@ -58,8 +58,10 @@ TEST_F(OmniboxPedalImplementationsTest,
   OmniboxPedalProvider provider(client, true);
 
   const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
-  EXPECT_EQ(OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA, pedal->id());
-
+  // Note, there is only one Pedal for clearing browser data but it behaves
+  // differently depending on incognito status. The incognito behavior does
+  // not navigate but the non-incognito behavior does navigate.
+  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
   EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 

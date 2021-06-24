@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -27,18 +28,18 @@
 
 // =============================================================================
 
-class OmniboxPedalClearBrowsingDataBase : public OmniboxPedal {
+class OmniboxPedalClearBrowsingData : public OmniboxPedal {
  public:
-  explicit OmniboxPedalClearBrowsingDataBase(OmniboxPedalId id,
-                                             const char* gurl)
+  explicit OmniboxPedalClearBrowsingData(bool incognito)
       : OmniboxPedal(
-            id,
+            OmniboxPedalId::CLEAR_BROWSING_DATA,
             LabelStrings(
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
                 IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
-            GURL(gurl)) {}
+            GURL("chrome://settings/clearBrowserData")),
+        incognito_(incognito) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() override {
     return {
@@ -57,35 +58,33 @@ class OmniboxPedalClearBrowsingDataBase : public OmniboxPedal {
     };
   }
 
- protected:
-  ~OmniboxPedalClearBrowsingDataBase() override = default;
-};
-
-class OmniboxPedalClearBrowsingData : public OmniboxPedalClearBrowsingDataBase {
- public:
-  OmniboxPedalClearBrowsingData()
-      : OmniboxPedalClearBrowsingDataBase(
-            OmniboxPedalId::CLEAR_BROWSING_DATA,
-            "chrome://settings/clearBrowserData") {}
-
- protected:
-  ~OmniboxPedalClearBrowsingData() override = default;
-};
-
-class OmniboxPedalIncognitoClearBrowsingData
-    : public OmniboxPedalClearBrowsingDataBase {
- public:
-  OmniboxPedalIncognitoClearBrowsingData()
-      : OmniboxPedalClearBrowsingDataBase(
-            OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA,
-            "") {}
-
   void Execute(ExecutionContext& context) const override {
-    context.client_.OpenIncognitoClearBrowsingDataDialog();
+    if (incognito_) {
+      context.client_.OpenIncognitoClearBrowsingDataDialog();
+    } else {
+      OmniboxPedal::Execute(context);
+    }
+  }
+
+  // This method and the below overrides enable this Pedal to spoof its ID
+  // for metrics reporting, making it possible to distinguish incognito usage.
+  OmniboxPedalId GetMetricsId() const {
+    return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA : id();
+  }
+
+  void RecordActionShown() const override {
+    base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
+                                  OmniboxPedalId::TOTAL_COUNT);
+  }
+
+  void RecordActionExecuted() const override {
+    base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
+                                  GetMetricsId(), OmniboxPedalId::TOTAL_COUNT);
   }
 
  protected:
-  ~OmniboxPedalIncognitoClearBrowsingData() override = default;
+  ~OmniboxPedalClearBrowsingData() override = default;
+  bool incognito_;
 };
 
 // =============================================================================
@@ -484,53 +483,35 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool with_branding, bool incognito) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
-  const auto add = [&](OmniboxPedalId id, OmniboxPedal* pedal) {
-    pedals.insert(std::make_pair(id, base::WrapRefCounted(pedal)));
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
   };
 
-  if (incognito) {
-    add(OmniboxPedalId::CLEAR_BROWSING_DATA,
-        new OmniboxPedalIncognitoClearBrowsingData());
-  } else {
-    add(OmniboxPedalId::CLEAR_BROWSING_DATA,
-        new OmniboxPedalClearBrowsingData());
-  }
-
-  add(OmniboxPedalId::MANAGE_PASSWORDS, new OmniboxPedalManagePasswords());
-  add(OmniboxPedalId::UPDATE_CREDIT_CARD, new OmniboxPedalUpdateCreditCard());
-  add(OmniboxPedalId::LAUNCH_INCOGNITO, new OmniboxPedalLaunchIncognito());
-  add(OmniboxPedalId::TRANSLATE, new OmniboxPedalTranslate());
-  add(OmniboxPedalId::UPDATE_CHROME, new OmniboxPedalUpdateChrome());
+  add(new OmniboxPedalClearBrowsingData(incognito));
+  add(new OmniboxPedalManagePasswords());
+  add(new OmniboxPedalUpdateCreditCard());
+  add(new OmniboxPedalLaunchIncognito());
+  add(new OmniboxPedalTranslate());
+  add(new OmniboxPedalUpdateChrome());
   if (OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
-    add(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
-        new OmniboxPedalRunChromeSafetyCheck());
-    add(OmniboxPedalId::MANAGE_SECURITY_SETTINGS,
-        new OmniboxPedalManageSecuritySettings());
-    add(OmniboxPedalId::MANAGE_COOKIES, new OmniboxPedalManageCookies());
-    add(OmniboxPedalId::MANAGE_ADDRESSES, new OmniboxPedalManageAddresses());
-    add(OmniboxPedalId::MANAGE_SYNC, new OmniboxPedalManageSync());
-    add(OmniboxPedalId::MANAGE_SITE_SETTINGS,
-        new OmniboxPedalManageSiteSettings());
-    add(OmniboxPedalId::SEE_CHROME_TIPS, new OmniboxPedalSeeChromeTips());
+    add(new OmniboxPedalRunChromeSafetyCheck());
+    add(new OmniboxPedalManageSecuritySettings());
+    add(new OmniboxPedalManageCookies());
+    add(new OmniboxPedalManageAddresses());
+    add(new OmniboxPedalManageSync());
+    add(new OmniboxPedalManageSiteSettings());
+    add(new OmniboxPedalSeeChromeTips());
 
     if (with_branding) {
-      add(OmniboxPedalId::CREATE_GOOGLE_DOC, new OmniboxPedalCreateGoogleDoc());
-      add(OmniboxPedalId::CREATE_GOOGLE_SHEET,
-          new OmniboxPedalCreateGoogleSheet());
-      add(OmniboxPedalId::CREATE_GOOGLE_SLIDE,
-          new OmniboxPedalCreateGoogleSlide());
-      add(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT,
-          new OmniboxPedalCreateGoogleCalendarEvent());
-      add(OmniboxPedalId::CREATE_GOOGLE_SITE,
-          new OmniboxPedalCreateGoogleSite());
-      add(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE,
-          new OmniboxPedalCreateGoogleKeepNote());
-      add(OmniboxPedalId::CREATE_GOOGLE_FORM,
-          new OmniboxPedalCreateGoogleForm());
-      add(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT,
-          new OmniboxPedalManageGoogleAccount());
-      add(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD,
-          new OmniboxPedalChangeGooglePassword());
+      add(new OmniboxPedalCreateGoogleDoc());
+      add(new OmniboxPedalCreateGoogleSheet());
+      add(new OmniboxPedalCreateGoogleSlide());
+      add(new OmniboxPedalCreateGoogleCalendarEvent());
+      add(new OmniboxPedalCreateGoogleSite());
+      add(new OmniboxPedalCreateGoogleKeepNote());
+      add(new OmniboxPedalCreateGoogleForm());
+      add(new OmniboxPedalManageGoogleAccount());
+      add(new OmniboxPedalChangeGooglePassword());
     }
   }
   return pedals;
