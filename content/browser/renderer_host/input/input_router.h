@@ -88,8 +88,8 @@ class InputRouter {
   virtual void SetForceEnableZoom(bool enabled) = 0;
 
   // Create and bind a new host channel.
-  virtual mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost>
-  BindNewHost() = 0;
+  virtual mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> BindNewHost(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
 
   // Used to stop an active fling if such exists.
   virtual void StopFling() = 0;

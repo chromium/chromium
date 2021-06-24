@@ -46,7 +46,7 @@ absl::optional<cc::TouchAction> MockInputRouter::ActiveTouchAction() {
 }
 
 mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost>
-MockInputRouter::BindNewHost() {
+MockInputRouter::BindNewHost(scoped_refptr<base::SequencedTaskRunner>) {
   return mojo::NullRemote();
 }
 

@@ -430,7 +430,8 @@ void CompositorImpl::CreateLayerTreeHost() {
   params.client = this;
   params.task_graph_runner =
       CompositorDependenciesAndroid::Get().GetTaskGraphRunner();
-  params.main_task_runner = base::ThreadTaskRunnerHandle::Get();
+  params.main_task_runner =
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
   params.settings = &settings;
   params.mutator_host = animation_host_.get();
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
@@ -812,7 +813,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   pending_frames_ = 0;
   gpu_capabilities_ = context_provider->ContextCapabilities();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::ThreadTaskRunnerHandle::Get();
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
 
   auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
 

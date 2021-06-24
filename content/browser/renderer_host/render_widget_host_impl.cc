@@ -427,7 +427,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 #if defined(OS_MAC)
           ui::WindowResizeHelperMac::Get()->task_runner(),
 #else
-          base::ThreadTaskRunnerHandle::Get(),
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
 #endif
           frame_token_message_queue_.get()),
       frame_sink_id_(base::checked_cast<uint32_t>(
@@ -482,6 +482,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
         base::BindRepeating(&RenderWidgetHostImpl::ClearDisplayedGraphics,
                             weak_factory_.GetWeakPtr()));
   }
+  input_event_ack_timeout_.SetTaskRunner(
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 
   delegate_->RenderWidgetCreated(this);
   render_frame_metadata_provider_.AddObserver(this);
@@ -655,15 +657,20 @@ void RenderWidgetHostImpl::BindWidgetInterfaces(
   blink_widget_host_receiver_.reset();
   blink_widget_.reset();
   widget_input_handler_.reset();
-  blink_widget_host_receiver_.Bind(std::move(widget_host));
-  blink_widget_.Bind(std::move(widget));
+  blink_widget_host_receiver_.Bind(
+      std::move(widget_host),
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+  blink_widget_.Bind(std::move(widget), content::GetUIThreadTaskRunner(
+                                            {BrowserTaskType::kUserInput}));
 }
 
 void RenderWidgetHostImpl::BindPopupWidgetInterface(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         popup_widget_host) {
   blink_popup_widget_host_receiver_.reset();
-  blink_popup_widget_host_receiver_.Bind(std::move(popup_widget_host));
+  blink_popup_widget_host_receiver_.Bind(
+      std::move(popup_widget_host),
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 }
 
 void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
@@ -678,8 +685,12 @@ void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
   frame_widget_input_handler_.reset();
   input_target_client_.reset();
   widget_compositor_.reset();
-  blink_frame_widget_host_receiver_.Bind(std::move(frame_widget_host));
-  blink_frame_widget_.Bind(std::move(frame_widget));
+  blink_frame_widget_host_receiver_.Bind(
+      std::move(frame_widget_host),
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+  blink_frame_widget_.Bind(
+      std::move(frame_widget),
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 }
 
 void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
@@ -688,13 +699,17 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   renderer_widget_created_ = true;
 
   blink_widget_->GetWidgetInputHandler(
-      widget_input_handler_.BindNewPipeAndPassReceiver(),
-      input_router_->BindNewHost());
+      widget_input_handler_.BindNewPipeAndPassReceiver(
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
+      input_router_->BindNewHost(
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
   if (for_frame_widget) {
     widget_input_handler_->GetFrameWidgetInputHandler(
-        frame_widget_input_handler_.BindNewEndpointAndPassReceiver());
+        frame_widget_input_handler_.BindNewEndpointAndPassReceiver(
+            content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
     blink_frame_widget_->BindInputTargetClient(
-        input_target_client_.BindNewPipeAndPassReceiver());
+        input_target_client_.BindNewPipeAndPassReceiver(
+            content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
   }
 
   // TODO(crbug.com/1161585): The `view_` can be null. :( Speculative
@@ -2002,7 +2017,8 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
 
   if (!widget_compositor_) {
     blink_frame_widget_->BindWidgetCompositor(
-        widget_compositor_.BindNewPipeAndPassReceiver());
+        widget_compositor_.BindNewPipeAndPassReceiver(
+            content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
   }
 
   widget_compositor_->VisualStateRequest(base::BindOnce(
@@ -3033,6 +3049,7 @@ void RenderWidgetHostImpl::IncrementInFlightEventCount() {
     power_mode_input_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
     user_input_active_handle_ = BrowserTaskExecutor::OnUserInputStart();
   }
+
   if (!is_hidden_)
     StartInputEventAckTimeout();
 }
@@ -3271,7 +3288,8 @@ bool RenderWidgetHostImpl::GotResponseToLockMouseRequest(
   }
 
   mojo::PendingRemote<blink::mojom::PointerLockContext> context =
-      mouse_lock_context_.BindNewPipeAndPassRemote();
+      mouse_lock_context_.BindNewPipeAndPassRemote(
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 
   std::move(request_mouse_callback_)
       .Run(blink::mojom::PointerLockResult::kSuccess, std::move(context));

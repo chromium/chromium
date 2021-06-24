@@ -85,6 +85,12 @@ class GestureDetector::TimeoutGestureHandler {
 
     timeout_callbacks_[TAP] = &GestureDetector::OnTapTimeout;
     timeout_delays_[TAP] = config.double_tap_timeout;
+
+    if (config.task_runner) {
+      timeout_timers_[SHOW_PRESS].SetTaskRunner(config.task_runner);
+      timeout_timers_[LONG_PRESS].SetTaskRunner(config.task_runner);
+      timeout_timers_[TAP].SetTaskRunner(config.task_runner);
+    }
   }
 
   ~TimeoutGestureHandler() {

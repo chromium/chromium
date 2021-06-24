@@ -67,6 +67,7 @@
 #include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -223,9 +224,11 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       text_suggestion_host_(nullptr),
       gesture_listener_manager_(nullptr),
       view_(ui::ViewAndroid::LayoutType::MATCH_PARENT),
-      gesture_provider_(ui::GetGestureProviderConfig(
-                            ui::GestureProviderConfigType::CURRENT_PLATFORM),
-                        this),
+      gesture_provider_(
+          ui::GetGestureProviderConfig(
+              ui::GestureProviderConfigType::CURRENT_PLATFORM,
+              content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
+          this),
       stylus_text_selector_(this),
       using_browser_compositor_(CompositorImpl::IsInitialized()),
       synchronous_compositor_client_(nullptr),
@@ -2007,7 +2010,8 @@ void RenderWidgetHostViewAndroid::SetIsInVR(bool is_in_vr) {
 
   gesture_provider_.UpdateConfig(ui::GetGestureProviderConfig(
       is_in_vr_ ? ui::GestureProviderConfigType::CURRENT_PLATFORM_VR
-                : ui::GestureProviderConfigType::CURRENT_PLATFORM));
+                : ui::GestureProviderConfigType::CURRENT_PLATFORM,
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
 }
 
 bool RenderWidgetHostViewAndroid::IsInVR() const {

@@ -28,6 +28,17 @@
 using QueueType = content::BrowserTaskQueues::QueueType;
 
 namespace content {
+namespace features {
+// When the "BrowserPrioritizeInputQueue" feature is enabled, the browser will
+// schedule tasks related to input in kHigh priority queue. This puts it under
+// bootstrap, but above regular tasks.
+//
+// The goal is to reduce jank by ensuring chromium is handling input events as
+// soon as possible.
+constexpr base::Feature kBrowserPrioritizeInputQueue{
+    "BrowserPrioritizeInputQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace features
+
 namespace {
 
 // Returns the BrowserThread::ID stored in |traits| which must be coming from a
@@ -129,6 +140,14 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
         // Note we currently ignore the priority for navigation and
         // preconnection tasks.
         return QueueType::kPreconnection;
+
+      case BrowserTaskType::kUserInput:
+        if (base::FeatureList::IsEnabled(
+                features::kBrowserPrioritizeInputQueue)) {
+          return QueueType::kUserInput;
+        }
+        // Defer to traits.priority() below.
+        break;
 
       case BrowserTaskType::kDefault:
         // Defer to traits.priority() below.
@@ -333,7 +352,8 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   options.delegate = browser_io_thread_delegate.release();
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
-  if (base::FeatureList::IsEnabled(features::kBrowserUseDisplayThreadPriority))
+  if (base::FeatureList::IsEnabled(
+          ::features::kBrowserUseDisplayThreadPriority))
     options.priority = base::ThreadPriority::DISPLAY;
   if (!io_thread->StartWithOptions(options))
     LOG(FATAL) << "Failed to start BrowserThread:IO";

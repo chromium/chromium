@@ -20,7 +20,8 @@ enum class GestureProviderConfigType {
 };
 
 GESTURE_DETECTION_EXPORT GestureProvider::Config GetGestureProviderConfig(
-    GestureProviderConfigType);
+    GestureProviderConfigType,
+    scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
 
 }  // namespace ui
 

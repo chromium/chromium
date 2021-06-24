@@ -257,9 +257,10 @@ absl::optional<cc::TouchAction> InputRouterImpl::ActiveTouchAction() {
 }
 
 mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost>
-InputRouterImpl::BindNewHost() {
+InputRouterImpl::BindNewHost(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   host_receiver_.reset();
-  return host_receiver_.BindNewPipeAndPassRemote();
+  return host_receiver_.BindNewPipeAndPassRemote(task_runner);
 }
 
 void InputRouterImpl::StopFling() {

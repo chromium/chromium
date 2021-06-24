@@ -39,6 +39,9 @@ enum class BrowserTaskType {
   // A subset of network tasks related to preconnection.
   kPreconnect,
 
+  // A subset of tasks related to user input.
+  kUserInput,
+
   // Used to validate values in Java
   kBrowserTaskType_Last
 };

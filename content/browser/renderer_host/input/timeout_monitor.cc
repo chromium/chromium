@@ -5,6 +5,8 @@
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 
 #include "base/trace_event/trace_event.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 using base::TimeDelta;
 using base::TimeTicks;
@@ -14,6 +16,8 @@ namespace content {
 TimeoutMonitor::TimeoutMonitor(const TimeoutHandler& timeout_handler)
     : timeout_handler_(timeout_handler) {
   DCHECK(!timeout_handler_.is_null());
+  timeout_timer_.SetTaskRunner(
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 }
 
 TimeoutMonitor::~TimeoutMonitor() {

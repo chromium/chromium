@@ -30,6 +30,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_widget_input_handler.h"
@@ -520,7 +521,7 @@ class InputRouterImplTestBase : public testing::Test {
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   SyntheticWebTouchEvent touch_event_;
 };
 

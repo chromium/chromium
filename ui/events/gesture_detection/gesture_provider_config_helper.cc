@@ -21,7 +21,8 @@ class GenericDesktopGestureConfiguration : public GestureConfiguration {
 };
 
 GestureDetector::Config BuildGestureDetectorConfig(
-    const GestureConfiguration& gesture_config) {
+    const GestureConfiguration& gesture_config,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GestureDetector::Config config;
   config.longpress_timeout =
       base::TimeDelta::FromMilliseconds(gesture_config.long_press_time_in_ms());
@@ -45,6 +46,7 @@ GestureDetector::Config BuildGestureDetectorConfig(
       gesture_config.max_touch_down_duration_for_click_in_ms());
   config.single_tap_repeat_interval = gesture_config.max_tap_count();
   config.velocity_tracker_strategy = gesture_config.velocity_tracker_strategy();
+  config.task_runner = task_runner;
   return config;
 }
 
@@ -60,9 +62,11 @@ ScaleGestureDetector::Config BuildScaleGestureDetectorConfig(
 }
 
 GestureProvider::Config BuildGestureProviderConfig(
-    const GestureConfiguration& gesture_config) {
+    const GestureConfiguration& gesture_config,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GestureProvider::Config config;
-  config.gesture_detector_config = BuildGestureDetectorConfig(gesture_config);
+  config.gesture_detector_config =
+      BuildGestureDetectorConfig(gesture_config, task_runner);
   config.scale_gesture_detector_config =
       BuildScaleGestureDetectorConfig(gesture_config);
   config.double_tap_support_for_platform_enabled =
@@ -81,18 +85,22 @@ void TuneGestureProviderConfigForVr(GestureProvider::Config* config) {
 }  // namespace
 
 GestureProvider::Config GetGestureProviderConfig(
-    GestureProviderConfigType type) {
+    GestureProviderConfigType type,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GestureProvider::Config config;
   switch (type) {
     case GestureProviderConfigType::CURRENT_PLATFORM:
-      config = BuildGestureProviderConfig(*GestureConfiguration::GetInstance());
+      config = BuildGestureProviderConfig(*GestureConfiguration::GetInstance(),
+                                          task_runner);
       break;
     case GestureProviderConfigType::CURRENT_PLATFORM_VR:
-      config = BuildGestureProviderConfig(*GestureConfiguration::GetInstance());
+      config = BuildGestureProviderConfig(*GestureConfiguration::GetInstance(),
+                                          task_runner);
       TuneGestureProviderConfigForVr(&config);
       break;
     case GestureProviderConfigType::GENERIC_DESKTOP:
-      config = BuildGestureProviderConfig(GenericDesktopGestureConfiguration());
+      config = BuildGestureProviderConfig(GenericDesktopGestureConfiguration(),
+                                          task_runner);
       break;
     case GestureProviderConfigType::GENERIC_MOBILE:
       // The default GestureProvider::Config embeds a mobile configuration.
