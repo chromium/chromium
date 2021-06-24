@@ -13,12 +13,12 @@ ThemeCopyingWidget::~ThemeCopyingWidget() = default;
 
 const ui::NativeTheme* ThemeCopyingWidget::GetNativeTheme() const {
   return observed_widget_.IsObserving() ? role_model_->GetNativeTheme()
-                                        : nullptr;
+                                        : Widget::GetNativeTheme();
 }
 
 const ui::ThemeProvider* ThemeCopyingWidget::GetThemeProvider() const {
   return observed_widget_.IsObserving() ? role_model_->GetThemeProvider()
-                                        : nullptr;
+                                        : Widget::GetThemeProvider();
 }
 
 void ThemeCopyingWidget::OnWidgetDestroying(Widget* widget) {
