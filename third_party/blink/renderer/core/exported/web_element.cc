@@ -176,7 +176,7 @@ SkBitmap WebElement::ImageContents() {
 
 std::vector<uint8_t> WebElement::CopyOfImageData() {
   Image* image = GetImage();
-  if (!image || !image->HasData())
+  if (!image || !image->Data())
     return std::vector<uint8_t>();
   return image->Data()->CopyAs<std::vector<uint8_t>>();
 }

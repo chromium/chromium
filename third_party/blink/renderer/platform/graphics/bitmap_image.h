@@ -145,8 +145,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void DestroyDecodedData() override;
 
   scoped_refptr<SharedBuffer> Data() override;
-  bool HasData() const override;
-  size_t DataSize() const override;
 
   // Notifies observers that the memory footprint has changed.
   void NotifyMemoryChanged();

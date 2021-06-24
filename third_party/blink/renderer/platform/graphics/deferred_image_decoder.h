@@ -68,8 +68,6 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   sk_sp<PaintImageGenerator> CreateGenerator();
 
   scoped_refptr<SharedBuffer> Data();
-  bool HasData() const;
-  size_t DataSize() const;
   void SetData(scoped_refptr<SharedBuffer> data, bool all_data_received);
 
   bool IsSizeAvailable();
