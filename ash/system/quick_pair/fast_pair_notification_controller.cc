@@ -22,9 +22,38 @@ namespace {
 const char kNotifierFastPair[] = "ash.fastpair";
 const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
+const char kFastPairDiscoveryNotificationId[] =
+    "cros_fast_pair_discovery_notification_id";
+
+// Creates an empty Fast Pair notification with the given id and uses the
+// Bluetooth icon and FastPair notifierID.
+std::unique_ptr<message_center::Notification> CreateNotification(
+    const std::string& id) {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
+          /*id=*/id,
+          /*title=*/std::u16string(),
+          /*message=*/std::u16string(),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          /*notifier_id=*/
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierFastPair),
+          /*optional_fields=*/{},
+          /*delegate=*/nullptr,
+          /*small_image=*/kNotificationBluetoothIcon,
+          /*warning_level=*/
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  notification->set_never_timeout(true);
+  notification->set_priority(
+      message_center::NotificationPriority::MAX_PRIORITY);
+
+  return notification;
+}
 
 }  // namespace
-
 // NotificationDelegate implementation for handling click and dismiss events on
 // a notification. Used by Error, Pairing, and Discovery notifications.
 class NotificationDelegate : public message_center::NotificationDelegate {
@@ -64,44 +93,49 @@ void FastPairNotificationController::ShowErrorNotification(
     gfx::Image device_image,
     base::OnceClosure launch_bluetooth_pairing,
     base::OnceCallback<void(bool)> on_close) {
-  // Add 'Settings' button to the notification that will trigger the
-  // NotificationDelegate 'Click' method which will run the on_click callback.
-  message_center::RichNotificationData optional_fields;
+  std::unique_ptr<message_center::Notification> error_notification =
+      CreateNotification(kFastPairErrorNotificationId);
+  error_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_CONNECTION_ERROR_TITLE, device_name));
+  error_notification->set_message(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE, std::u16string()));
+
   message_center::ButtonInfo settings_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_SETTINGS_BUTTON));
-  optional_fields.buttons.push_back(settings_button);
+  error_notification->set_buttons({settings_button});
 
-  std::unique_ptr<message_center::Notification> error_notification =
-      CreateSystemNotification(
-          /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-          /*id=*/kFastPairErrorNotificationId,
-          /*title=*/
-          l10n_util::GetStringFUTF16(IDS_FAST_PAIR_CONNECTION_ERROR_TITLE,
-                                     device_name),
-          /*message=*/
-          l10n_util::GetStringFUTF16(IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE,
-                                     std::u16string()),
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          /*notifier_id=*/
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierFastPair),
-          optional_fields,
-          /*delegate=*/
-          base::MakeRefCounted<NotificationDelegate>(
-              std::move(launch_bluetooth_pairing), std::move(on_close)),
-          /*small_image=*/kNotificationBluetoothIcon,
-          /*warning_level=*/
-          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-
+  error_notification->set_delegate(base::MakeRefCounted<NotificationDelegate>(
+      std::move(launch_bluetooth_pairing), std::move(on_close)));
+  error_notification->set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   error_notification->set_image(device_image);
-  error_notification->set_priority(
-      message_center::NotificationPriority::MAX_PRIORITY);
 
   MessageCenter::Get()->AddNotification(std::move(error_notification));
 }
 
-void FastPairNotificationController::ShowDiscoveryNotification() {}
+void FastPairNotificationController::ShowDiscoveryNotification(
+    const std::u16string& device_name,
+    const gfx::Image device_image,
+    base::OnceClosure on_connect_clicked,
+    base::OnceCallback<void(bool)> on_close) {
+  std::unique_ptr<message_center::Notification> discovery_notification =
+      CreateNotification(kFastPairDiscoveryNotificationId);
+  discovery_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE, device_name));
+  discovery_notification->set_message(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE, std::u16string()));
+
+  message_center::ButtonInfo connect_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECT_BUTTON));
+  discovery_notification->set_buttons({connect_button});
+
+  discovery_notification->set_delegate(
+      base::MakeRefCounted<NotificationDelegate>(std::move(on_connect_clicked),
+                                                 std::move(on_close)));
+  discovery_notification->set_image(device_image);
+
+  MessageCenter::Get()->AddNotification(std::move(discovery_notification));
+}
 
 void FastPairNotificationController::ShowPairingNotification() {}
 

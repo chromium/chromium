@@ -28,7 +28,10 @@ class ASH_EXPORT FastPairNotificationController {
                              gfx::Image device_image,
                              base::OnceClosure launch_bluetooth_pairing,
                              base::OnceCallback<void(bool)> on_close);
-  void ShowDiscoveryNotification();
+  void ShowDiscoveryNotification(const std::u16string& device_name,
+                                 gfx::Image device_image,
+                                 base::OnceClosure on_connect_clicked,
+                                 base::OnceCallback<void(bool)> on_close);
   void ShowPairingNotification();
 };
 
