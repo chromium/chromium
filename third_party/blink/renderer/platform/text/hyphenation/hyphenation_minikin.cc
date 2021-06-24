@@ -121,6 +121,7 @@ StringView HyphenationMinikin::WordToHyphenate(
 }
 
 Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
+  DCHECK(ShouldHyphenateWord(text));
   Vector<uint8_t> result;
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
@@ -141,7 +142,7 @@ wtf_size_t HyphenationMinikin::LastHyphenLocation(
     wtf_size_t before_index) const {
   unsigned num_leading_chars;
   StringView word = WordToHyphenate(text, &num_leading_chars);
-  if (before_index <= num_leading_chars)
+  if (before_index <= num_leading_chars || !ShouldHyphenateWord(word))
     return 0;
   before_index = std::min<wtf_size_t>(before_index - num_leading_chars,
                                       word.length() - kMinimumSuffixLength);
@@ -167,7 +168,8 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   StringView word = WordToHyphenate(text, &num_leading_chars);
 
   Vector<wtf_size_t, 8> hyphen_locations;
-  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength)
+  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength ||
+      !ShouldHyphenateWord(word))
     return hyphen_locations;
 
   Vector<uint8_t> result = Hyphenate(word);
@@ -284,19 +286,24 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
 
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));
-  if (hyphenation->OpenDictionary(locale.LowerASCII()))
-    return hyphenation;
-
-  return nullptr;
+  const AtomicString lower_ascii_locale = locale.LowerASCII();
+  if (!hyphenation->OpenDictionary(lower_ascii_locale))
+    return nullptr;
+  if (lower_ascii_locale.StartsWith("de"))
+    hyphenation->hyphenate_capitalized_word_ = true;
+  return hyphenation;
 }
 
 scoped_refptr<HyphenationMinikin> HyphenationMinikin::FromFileForTesting(
+    const AtomicString& locale,
     base::File file) {
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));
-  if (hyphenation->OpenDictionary(std::move(file)))
-    return hyphenation;
-  return nullptr;
+  if (!hyphenation->OpenDictionary(std::move(file)))
+    return nullptr;
+  if (locale.StartsWithIgnoringASCIICase("de"))
+    hyphenation->hyphenate_capitalized_word_ = true;
+  return hyphenation;
 }
 
 }  // namespace blink

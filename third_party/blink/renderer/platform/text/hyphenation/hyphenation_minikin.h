@@ -35,7 +35,9 @@ class PLATFORM_EXPORT HyphenationMinikin final : public Hyphenation {
 
   static AtomicString MapLocale(const AtomicString& locale);
 
-  static scoped_refptr<HyphenationMinikin> FromFileForTesting(base::File);
+  static scoped_refptr<HyphenationMinikin> FromFileForTesting(
+      const AtomicString& locale,
+      base::File);
 
  private:
   bool OpenDictionary(base::File);

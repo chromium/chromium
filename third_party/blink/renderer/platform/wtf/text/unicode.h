@@ -209,6 +209,10 @@ inline bool IsLower(UChar32 c) {
   return !!u_islower(c);
 }
 
+inline bool IsUpper(UChar32 c) {
+  return !!u_isupper(c);
+}
+
 inline uint8_t CombiningClass(UChar32 c) {
   return u_getCombiningClass(c);
 }
