@@ -172,12 +172,6 @@ void AppListMainView::CancelDragInActiveFolder() {
       ->EndDrag(true);
 }
 
-void AppListMainView::OnResultInstalled(SearchResult* result) {
-  // Clears the search to show the apps grid. The last installed app
-  // should be highlighted and made visible already.
-  search_box_view_->ClearSearch();
-}
-
 // AppListModelObserver overrides:
 void AppListMainView::OnAppListStateChanged(AppListState new_state,
                                             AppListState old_state) {

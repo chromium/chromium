@@ -213,11 +213,6 @@ void SearchResultListView::SearchResultActionActivated(SearchResultView* view,
   }
 }
 
-void SearchResultListView::OnSearchResultInstalled(SearchResultView* view) {
-  if (main_view_ && view->result())
-    main_view_->OnResultInstalled(view->result());
-}
-
 void SearchResultListView::VisibilityChanged(View* starting_from,
                                              bool is_visible) {
   SearchResultContainerView::VisibilityChanged(starting_from, is_visible);

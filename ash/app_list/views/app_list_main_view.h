@@ -69,9 +69,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   // changes, necessitating a cancel of the drag operation.
   void CancelDragInActiveFolder();
 
-  // Called when the app represented by |result| is installed.
-  void OnResultInstalled(SearchResult* result);
-
   // AppListModelObserver overrides:
   void OnAppListStateChanged(AppListState new_state,
                              AppListState old_state) override;

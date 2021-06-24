@@ -37,8 +37,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   void SearchResultActionActivated(SearchResultView* view, size_t action_index);
 
-  void OnSearchResultInstalled(SearchResultView* view);
-
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
