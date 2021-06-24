@@ -6,27 +6,37 @@ import base64
 import json
 import os
 import sys
+import time
 
 import six
 
 import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
-WEB_TESTS_DIR = os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests')
-EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
+CATAPULT_DIR = os.path.join(common.SRC_DIR, 'third_party', 'catapult')
 LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
-SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-OUT_DIR = os.path.join(SRC_DIR, "out", "{}")
+OUT_DIR = os.path.join(common.SRC_DIR, "out", "{}")
 DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
+TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
+WEB_TESTS_DIR = os.path.normpath(
+    os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests'))
+EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
+
+if TYP_DIR not in sys.path:
+    sys.path.append(TYP_DIR)
 
 from blinkpy.common.host import Host
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
 from blinkpy.web_tests.models import test_failures
+from typ.artifacts import Artifacts
+from typ.json_results import Result
+from typ.result_sink import ResultSinkReporter
+
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     """The base class for script adapters that use wptrunner to execute web
@@ -45,6 +55,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # run, parsed after this constructor. Can be overwritten by tests.
         self.wpt_output = None
         self.wptreport = None
+        self.sink = ResultSinkReporter()
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
@@ -247,6 +258,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 if artifact_subpath:
                     root_node["artifacts"]["crash_log"] = [artifact_subpath]
 
+            self._add_result_to_sink(path_so_far, root_node)
             return
 
         # We're not at a leaf node, continue traversing the trie.
@@ -257,6 +269,48 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             new_path = path_so_far + delim + key if path_so_far else key
             self._process_test_leaves(results_dir, delim, root_node[key],
                                       new_path)
+
+    def _add_result_to_sink(self, test_name, result_node):
+        """Add's test results to results sink
+
+        Args:
+          test_name: Name of the test to add to results sink.
+          result_node: Dictionary containing the actual result, expected result
+              and an artifacts dictionary.
+        """
+
+        artifacts = Artifacts(output_dir=self.wpt_output,
+                              host=self.sink.host,
+                              artifacts_base_dir=LAYOUT_TEST_RESULTS_SUBDIR)
+
+        assert len(result_node['actual'].split()) == 1, (
+            ('There should be only one result, however test %s has the '
+             'following results "%s"') % (test_name, result_node['actual']))
+        unexpected = result_node['actual'] not in result_node['expected']
+
+        for artifact_name, paths in result_node.get('artifacts', {}).items():
+            for path in paths:
+                artifacts.AddArtifact(artifact_name, path)
+
+        # Test timeouts are a special case of aborts. We must report ABORT to
+        # result sink for tests that timed out.
+        result = Result(name=test_name,
+                        actual=(result_node['actual']
+                                if result_node['actual'] != 'TIMEOUT'
+                                else 'ABORT'),
+                        started=time.time() - result_node.get('time', 0),
+                        took=result_node.get('time', 0),
+                        worker=0,
+                        expected=set(result_node['expected'].split()),
+                        unexpected=unexpected,
+                        artifacts=artifacts.artifacts)
+
+        index = test_name.find('?')
+        test_path = test_name[:index] if index != -1 else test_name
+
+        self.sink.report_individual_test_result(
+            test_name, result, LAYOUT_TEST_RESULTS_SUBDIR,
+            None, os.path.join(WEB_TESTS_DIR, test_path))
 
     def _maybe_write_expected_output(self, results_dir, test_name):
         """Attempts to create an expected output artifact for the test.
