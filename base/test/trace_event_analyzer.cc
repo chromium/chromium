@@ -175,7 +175,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
 
   // For each argument, copy the type and create a trace_analyzer::TraceValue.
   if (maybe_args) {
-    for (const auto& pair : maybe_args->DictItems()) {
+    for (auto pair : maybe_args->DictItems()) {
       switch (pair.second.type()) {
         case base::Value::Type::STRING:
           arg_strings[pair.first] = pair.second.GetString();

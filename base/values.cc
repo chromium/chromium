@@ -68,7 +68,7 @@ std::unique_ptr<Value> CopyListWithoutEmptyChildren(const Value& list) {
 std::unique_ptr<DictionaryValue> CopyDictionaryWithoutEmptyChildren(
     const DictionaryValue& dict) {
   std::unique_ptr<DictionaryValue> copy;
-  for (const auto& it : dict.DictItems()) {
+  for (auto it : dict.DictItems()) {
     std::unique_ptr<Value> child_copy = CopyWithoutEmptyChildren(it.second);
     if (child_copy) {
       if (!copy)
@@ -694,7 +694,7 @@ const Value* Value::FindPath(std::initializer_list<StringPiece> path) const {
 
 const Value* Value::FindPath(span<const StringPiece> path) const {
   const Value* cur = this;
-  for (const StringPiece component : path) {
+  for (const StringPiece& component : path) {
     if (!cur->is_dict() || (cur = cur->FindKey(component)) == nullptr)
       return nullptr;
   }
@@ -1040,7 +1040,7 @@ void Value::WriteIntoTrace(perfetto::TracedValue context) const {
       return;
     case Type::DICTIONARY: {
       perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
-      for (const auto& kv : DictItems())
+      for (auto kv : DictItems())
         dict.Add(perfetto::DynamicString{kv.first}, kv.second);
       return;
     }

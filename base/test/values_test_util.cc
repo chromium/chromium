@@ -128,7 +128,7 @@ class DictionaryHasValuesMatcher
     }
 
     bool ok = true;
-    for (const auto& template_dict_item : template_value_.DictItems()) {
+    for (auto template_dict_item : template_value_.DictItems()) {
       const base::Value* sub_value = value.FindKey(template_dict_item.first);
       if (!sub_value) {
         *listener << "\nDictionary does not have key '"

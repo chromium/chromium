@@ -154,7 +154,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
 
       bool first_value_has_been_output = false;
       bool result = true;
-      for (const auto& pair : node.DictItems()) {
+      for (auto pair : node.DictItems()) {
         const auto& key = pair.first;
         const auto& value = pair.second;
         if (omit_binary_values_ && value.type() == Value::Type::BINARY)
