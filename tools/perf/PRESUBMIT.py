@@ -10,6 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 import os
 
+USE_PYTHON3 = True
+
 
 def _CommonChecks(input_api, output_api, block_on_failure=False):
   """Performs common checks, which includes running pylint.
