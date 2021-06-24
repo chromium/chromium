@@ -89,7 +89,7 @@ std::u16string AppModalDialogManager::GetTitle(
     return base::UTF8ToUTF16(name);
 
   // Otherwise, return the formatted URL.
-  return GetTitleImpl(web_contents->GetURL(), alerting_frame_url);
+  return GetTitleImpl(web_contents->GetLastCommittedURL(), alerting_frame_url);
 }
 
 namespace {
