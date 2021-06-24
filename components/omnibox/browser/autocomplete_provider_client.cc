@@ -9,6 +9,11 @@ AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;
 }
 
+ntp_tiles::MostVisitedSites*
+AutocompleteProviderClient::GetNtpMostVisitedSites() {
+  return nullptr;
+}
+
 bool AutocompleteProviderClient::AllowDeletingBrowserHistory() const {
   return true;
 }
