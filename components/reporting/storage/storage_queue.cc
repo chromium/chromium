@@ -1222,8 +1222,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   }
 
   void CompressWrappedRecord(std::string serialized_record) {
-    // Compress the string. TODO compress record need to return compression
-    // information as well as the compressed string
+    // Compress the string.
     storage_queue_->compression_module_->CompressRecord(
         serialized_record,
         base::BindOnce(&WriteContext::OnCompressedRecordReady,

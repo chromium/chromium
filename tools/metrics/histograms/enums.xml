@@ -13153,6 +13153,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="GPU compositor"/>
 </enum>
 
+<enum name="CompressedRecordThresholdMetricEvent">
+  <summary>Whether a reporting pipeline record is compressed or not.</summary>
+  <int value="0" label="Record not compressed"/>
+  <int value="1" label="Record is compressed"/>
+</enum>
+
 <enum name="CompressibleStringCountType">
   <obsolete>
     Dprecated as of Aug 2016. CompressibleString has been reverted once at

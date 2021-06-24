@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -32,6 +33,21 @@ namespace reporting {
 namespace {
 
 constexpr char kTestString[] = "AAAAA11111";
+
+enum class CompressedRecordThresholdMetricEvent {
+  kNotCompressed = 0,
+  kCompressed = 1,
+  kMaxValue = kCompressed
+};
+
+constexpr char kCompressionThresholdCountMetricsName[] =
+    "Enterprise.CloudReportingCompressionThresholdCount";
+
+constexpr char kSnappyUncompressedRecordSizeMetricsName[] =
+    "Enterprise.CloudReportingSnappyUncompressedRecordSize";
+
+constexpr char kSnappyCompressedRecordSizeMetricsName[] =
+    "Enterprise.CloudReportingSnappyCompressedRecordSize";
 
 class CompressionModuleTest : public ::testing::Test {
  protected:
@@ -62,6 +78,20 @@ class CompressionModuleTest : public ::testing::Test {
 };
 
 TEST_F(CompressionModuleTest, CompressRecordSnappy) {
+  // Poll the task and make sure histograms are logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
+
   EnableCompression();
   scoped_refptr<CompressionModule> test_compression_module =
       CompressionModule::Create(0, CompressionInformation::COMPRESSION_SNAPPY);
@@ -93,9 +123,35 @@ TEST_F(CompressionModuleTest, CompressRecordSnappy) {
   // Expect that compression information contains COMPRESSION_SNAPPY
   EXPECT_THAT(compression_info_callback.value().compression_algorithm(),
               CompressionInformation::COMPRESSION_SNAPPY);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 1);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    1);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 1);
 }
 
 TEST_F(CompressionModuleTest, CompressRecordBelowThreshold) {
+  // Poll the task and make sure histograms are logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
+
   EnableCompression();
   scoped_refptr<CompressionModule> test_compression_module =
       CompressionModule::Create(512,
@@ -125,9 +181,35 @@ TEST_F(CompressionModuleTest, CompressRecordBelowThreshold) {
   // record was below the compression threshold.
   EXPECT_THAT(compression_info_callback.value().compression_algorithm(),
               CompressionInformation::COMPRESSION_NONE);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 1);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
 }
 
 TEST_F(CompressionModuleTest, CompressRecordCompressionDisabled) {
+  // Poll the task and make sure histograms are logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
+
   // Disable compression feature
   DisableCompression();
   scoped_refptr<CompressionModule> test_compression_module =
@@ -154,9 +236,35 @@ TEST_F(CompressionModuleTest, CompressRecordCompressionDisabled) {
 
   // Expect no compression information since compression has been disabled.
   EXPECT_FALSE(compression_info_callback.has_value());
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
 }
 
 TEST_F(CompressionModuleTest, CompressRecordCompressionNone) {
+  // Poll the task and make sure histograms are logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
+
   EnableCompression();
   scoped_refptr<CompressionModule> test_compression_module =
       CompressionModule::Create(0, CompressionInformation::COMPRESSION_NONE);
@@ -185,6 +293,18 @@ TEST_F(CompressionModuleTest, CompressRecordCompressionNone) {
   // Expect that compression information contains COMPRESSION_NONE
   EXPECT_THAT(compression_info_callback.value().compression_algorithm(),
               CompressionInformation::COMPRESSION_NONE);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kCompressed, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kCompressionThresholdCountMetricsName,
+      CompressedRecordThresholdMetricEvent::kNotCompressed, 0);
+
+  histogram_tester.ExpectTotalCount(kSnappyUncompressedRecordSizeMetricsName,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSnappyCompressedRecordSizeMetricsName, 0);
 }
 
 }  // namespace

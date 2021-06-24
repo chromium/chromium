@@ -278,7 +278,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   }
 
   void EnableCompression() {
-    // TODO(b/189130411) Remove once server side has been updated.
+    // TODO(b/189130411) Remove once compression is enabled by default.
     scoped_feature_list_.InitFromCommandLine(
         {CompressionModule::kCompressReportingFeature}, {});
   }
