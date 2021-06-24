@@ -2071,7 +2071,13 @@ TEST_F(WebMediaPlayerImplTest, OnProgressClearsStale) {
   }
 }
 
-TEST_F(WebMediaPlayerImplTest, MemDumpProvidersRegistration) {
+// Disabled due to flakiness: crbug.com/1223150
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_MemDumpProvidersRegistration DISABLED_MemDumpProvidersRegistration
+#else
+#define MAYBE_MemDumpProvidersRegistration MemDumpProvidersRegistration
+#endif
+TEST_F(WebMediaPlayerImplTest, MAYBE_MemDumpProvidersRegistration) {
   auto* dump_manager = base::trace_event::MemoryDumpManager::GetInstance();
   InitializeWebMediaPlayerImpl();
 
