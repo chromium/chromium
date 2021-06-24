@@ -288,67 +288,6 @@ TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }
 
-// Show the sign-in upgrade on version 1.0.
-// Move to version 3.0.
-// Add an account subject to minor mode restrictions.
-// Expected: should not show the sign-in upgrade.
-TEST_F(SigninUtilsTest, TestWillNotShowForMinorModeAccount) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kMinorModeSupport);
-
-  const base::Version version_1_0("1.0");
-  const base::Version version_3_0("3.0");
-  signin::RecordVersionSeen(chrome_browser_state_->GetPrefs(), version_1_0);
-
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddMinorModeIdentities(@[ @"foo1" ]);
-
-  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
-      chrome_browser_state_.get(), version_3_0));
-}
-
-// Show the sign-in upgrade on version 1.0.
-// Move to version 3.0.
-// Add a minor account to list of existing accounts.
-// Expected: should not show the sign-in upgrade.
-TEST_F(SigninUtilsTest, TestWillShowIfMinorModeAccountNotDefault) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kMinorModeSupport);
-
-  ios::FakeChromeIdentityService* service =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  service->AddIdentities(@[ @"foo", @"bar" ]);
-
-  const base::Version version_1_0("1.0");
-  const base::Version version_3_0("3.0");
-  signin::RecordVersionSeen(chrome_browser_state_->GetPrefs(), version_1_0);
-  service->AddMinorModeIdentities(@[ @"foo1" ]);
-
-  EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
-      chrome_browser_state_.get(), version_3_0));
-}
-
-// Show the sign-in upgrade on version 1.0.
-// Move to version 3.0.
-// Remove existing accounts and add a minor account.
-// Expected: should not show the sign-in upgrade.
-TEST_F(SigninUtilsTest, TestWillNotShowIfMinorModeAccountIsDefault) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kMinorModeSupport);
-
-  const base::Version version_1_0("1.0");
-  const base::Version version_3_0("3.0");
-  signin::RecordVersionSeen(chrome_browser_state_->GetPrefs(), version_1_0);
-
-  ios::FakeChromeIdentityService* service =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  service->AddMinorModeIdentities(@[ @"foo2" ]);
-  service->AddIdentities(@[ @"foo", @"bar" ]);
-
-  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
-      chrome_browser_state_.get(), version_3_0));
-}
-
 // Should not show the sign-in upgrade when extended sync promos are disabled.
 TEST_F(SigninUtilsTest, TestWillNotShowWhenPromosDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;

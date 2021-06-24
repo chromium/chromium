@@ -120,14 +120,6 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (signin::ForceDisableExtendedSyncPromos())
     return false;
 
-  // Don't show the SSO promo if the default primary account cannot display
-  // extended sync promos.
-  bool canOfferExtendedSyncPromos =
-      identity_service->CanOfferExtendedSyncPromos(identities[0]);
-  if (signin::ExtendedSyncPromosCapabilityEnabled() &&
-      !canOfferExtendedSyncPromos)
-    return false;
-
   // The sign-in promo should be shown twice, even if no account has been added.
   NSInteger display_count =
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];

@@ -66,6 +66,27 @@ typedef void (^MDMStatusCallback)(bool is_blocked);
 // |animated| the view will be dismissed with animation if the value is YES.
 typedef void (^DismissASMViewControllerBlock)(BOOL animated);
 
+// Defines account capability state based on GCRSSOCapabilityResult.
+enum class ChromeIdentityCapabilityResult {
+  // Capability is not allowed for identity.
+  kFalse,
+  // Capability is allowed for identity.
+  kTrue,
+  // Capability has not been set for identity.
+  kUnknown,
+};
+
+// Callback to retrieve account capabilities. Maps |capability_result| to the
+// corresponding state in ChromeIdentityCapabilityResult.
+typedef void (^CapabilitiesCallback)(
+    ChromeIdentityCapabilityResult capability_result);
+
+// Callback for fetching the set of supported capabilities and their
+// corresponding states as defined in ChromeIdentityCapabilityResult.
+typedef void (^ChromeIdentityCapabilitiesFetchCompletionBlock)(
+    NSDictionary* capabilities,
+    NSError* error);
+
 // Opaque type representing the MDM (Mobile Device Management) status of the
 // device. Checking for equality is guaranteed to be valid.
 typedef int MDMDeviceStatus;
@@ -231,12 +252,13 @@ class ChromeIdentityService {
   //     has a hosted domain.
   virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
 
-  // Returns the cached value of the account capability that determines whether
-  // Chrome should offer extended sync promos to |identity|.
-  // This value will have a refresh period of 24 hours, meaning that at
-  // retrieval it may be stale. If the value is not populated, as in a fresh
-  // install, this method returns false.
-  virtual bool CanOfferExtendedSyncPromos(ChromeIdentity* identity);
+  // Asynchronously returns the value of the account capability that determines
+  // whether Chrome should offer extended sync promos to |identity|. This value
+  // will have a refresh period of 24 hours, meaning that at retrieval it may be
+  // stale. If the value is not populated, as in a fresh install, the callback
+  // will evaluate to false.
+  void CanOfferExtendedSyncPromos(ChromeIdentity* identity,
+                                  CapabilitiesCallback callback);
 
   // Returns the MDM device status associated with |user_info|.
   virtual MDMDeviceStatus GetMDMDeviceStatus(NSDictionary* user_info);
@@ -262,6 +284,12 @@ class ChromeIdentityService {
   virtual bool IsInvalidGrantError(NSDictionary* user_info);
 
  protected:
+  // Asynchronously retrieves the list of supported capabilities for the given
+  // Chrome identity.
+  virtual void FetchCapabilities(
+      NSArray* capabilities,
+      ChromeIdentity* identity,
+      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
   // Fires |OnIdentityListChanged| on all observers.
   // |keychainReload| is true if the identity list is updated by reloading the
   // keychain. This means that a first party Google app had added or removed

@@ -275,14 +275,6 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
   return FakeGetHostedDomainForIdentity(identity);
 }
 
-bool FakeChromeIdentityService::CanOfferExtendedSyncPromos(
-    ChromeIdentity* identity) {
-  if (![identities_ containsObject:identity]) {
-    return false;
-  }
-  return ![identity.userEmail hasSuffix:kMinorModeIdentityEmailSuffix];
-}
-
 void FakeChromeIdentityService::SimulateForgetIdentityFromOtherApp(
     ChromeIdentity* identity) {
   [identities_ removeObject:identity];

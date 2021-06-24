@@ -52,8 +52,6 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   virtual UIImage* GetCachedAvatarForIdentity(
       ChromeIdentity* identity) override;
 
-  virtual bool CanOfferExtendedSyncPromos(ChromeIdentity* identity) override;
-
   virtual void GetHostedDomainForIdentity(
       ChromeIdentity* identity,
       GetHostedDomainCallback callback) override;

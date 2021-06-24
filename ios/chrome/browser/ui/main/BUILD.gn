@@ -122,6 +122,7 @@ source_set("scene") {
     "//components/breadcrumbs/core:feature_flags",
     "//components/infobars/core",
     "//components/previous_session_info",
+    "//components/signin/ios/browser:features",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",
     "//components/version_info",

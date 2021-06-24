@@ -81,6 +81,22 @@ struct FunctorCollectIdentities : Functor<FunctorCollectIdentities> {
 
 }  // anonymous namespace
 
+namespace {
+// Supported capabilities.
+NSString* kCanOfferExtendedChromeSyncPromos =
+    @"CanOfferExtendedChromeSyncPromos";
+
+ChromeIdentityCapabilityResult CapabilityResultFromNSNumber(NSNumber* result) {
+  int resultInt = [result intValue];
+  DCHECK_GE(resultInt,
+            static_cast<int>(ChromeIdentityCapabilityResult::kFalse));
+  DCHECK_LE(resultInt,
+            static_cast<int>(ChromeIdentityCapabilityResult::kUnknown));
+  return static_cast<ChromeIdentityCapabilityResult>(resultInt);
+}
+
+}  // namespace
+
 ChromeIdentityService::ChromeIdentityService() {}
 
 ChromeIdentityService::~ChromeIdentityService() {
@@ -193,9 +209,18 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
   return nil;
 }
 
-bool ChromeIdentityService::CanOfferExtendedSyncPromos(
-    ChromeIdentity* identity) {
-  return false;
+void ChromeIdentityService::CanOfferExtendedSyncPromos(
+    ChromeIdentity* identity,
+    CapabilitiesCallback completion) {
+  FetchCapabilities(
+      @[ kCanOfferExtendedChromeSyncPromos ], identity,
+      ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
+        if (!completion) {
+          return;
+        }
+        completion(CapabilityResultFromNSNumber(
+            [capabilities objectForKey:kCanOfferExtendedChromeSyncPromos]));
+      });
 }
 
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
@@ -224,6 +249,13 @@ void ChromeIdentityService::RemoveObserver(Observer* observer) {
 
 bool ChromeIdentityService::IsInvalidGrantError(NSDictionary* user_info) {
   return false;
+}
+
+void ChromeIdentityService::FetchCapabilities(
+    NSArray* capabilities,
+    ChromeIdentity* identity,
+    ChromeIdentityCapabilitiesFetchCompletionBlock completion) {
+  // Implementation provided by subclass.
 }
 
 void ChromeIdentityService::FireIdentityListChanged(bool keychainReload) {

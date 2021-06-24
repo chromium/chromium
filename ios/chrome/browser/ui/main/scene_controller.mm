@@ -22,6 +22,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -710,9 +711,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (level == SceneActivationLevelForegroundActive &&
       appInitStage == InitStageFinal) {
-    if (![self presentSigninUpgradePromoIfPossible]) {
-      [self presentSignInAccountsViewControllerIfNecessary];
-    }
+    [self tryPresentSigninModalUI];
 
     [self handleExternalIntents];
 
@@ -752,6 +751,45 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
     [self teardownUI];
   }
+}
+
+// Displays either the sign-in upgrade promo if it is eligible or the list
+// of signed-in accounts if the user has recently updated their accounts.
+- (void)tryPresentSigninModalUI {
+  if ([self presentSignInAccountsViewControllerIfNecessary]) {
+    // The user is already signed-in, so do not display the sign-in promo.
+    return;
+  }
+
+  // If the sign-in promo is not eligible, return immediately.
+  if (![self shouldPresentSigninUpgradePromo]) {
+    return;
+  }
+
+  if (!signin::ExtendedSyncPromosCapabilityEnabled()) {
+    // Present the sign-in promo synchronously.
+    [self presentSigninUpgradePromo];
+    return;
+  }
+
+  ios::ChromeIdentityService* identityService =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  PrefService* prefService = self.mainInterface.browserState->GetPrefs();
+
+  DCHECK(identityService->HasIdentities());
+  ChromeIdentity* defaultIdentity =
+      identityService->GetAllIdentities(prefService)[0];
+
+  // Asynchronously checks whether the default identity can display extended
+  // sync promos and displays the sign-in promo if possible.
+  __weak SceneController* weakSelf = self;
+  identityService->CanOfferExtendedSyncPromos(
+      defaultIdentity, ^(ios::ChromeIdentityCapabilityResult result) {
+        if (result != ios::ChromeIdentityCapabilityResult::kTrue) {
+          return;
+        }
+        [weakSelf presentSigninUpgradePromo];
+      });
 }
 
 - (void)initializeUI {
@@ -1187,9 +1225,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   });
 }
 
-// Presents the sign-in upgrade promo if is relevant and possible.
-// Returns YES if the promo is shown.
-- (BOOL)presentSigninUpgradePromoIfPossible {
+// Returns YES if the sign-in upgrade promo should be presented.
+- (BOOL)shouldPresentSigninUpgradePromo {
   if (self.sceneState.appState.initStage <= InitStageFirstRun) {
     return NO;
   }
@@ -1214,6 +1251,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Don't show the promo if already presented.
   if (self.sceneState.appState.signinUpgradePromoPresentedOnce)
     return NO;
+  return YES;
+}
+
+// Presents the sign-in upgrade promo.
+- (void)presentSigninUpgradePromo {
+  // It is possible during a slow asynchronous call that the user changes their
+  // state so as to no longer be eligible for sign-in promos. Return early in
+  // this case.
+  if (![self shouldPresentSigninUpgradePromo]) {
+    return;
+  }
   self.sceneState.appState.signinUpgradePromoPresentedOnce = YES;
   DCHECK(!self.signinCoordinator);
   Browser* browser = self.mainInterface.browser;
@@ -1222,7 +1270,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                                               .viewController
                                                   browser:browser];
   [self startSigninCoordinatorWithCompletion:nil];
-  return YES;
 }
 
 #pragma mark - ApplicationCommands
