@@ -213,6 +213,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput", "Main"})
+    @DisabledTest(message = "https://crbug.com/1223357")
     public void testDeleteSurroundingTextInCodePointsWithRangeSelection() throws Throwable {
         final String trophy = "\uD83C\uDFC6";
         mRule.commitText("ab" + trophy + "cdef" + trophy + "gh", 1);
