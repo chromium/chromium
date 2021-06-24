@@ -75,13 +75,13 @@ ServiceWorkerJobCoordinator::~ServiceWorkerJobCoordinator() {
 void ServiceWorkerJobCoordinator::Register(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const GlobalRenderFrameHostId& requesting_frame_id,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   auto job = std::make_unique<ServiceWorkerRegisterJob>(
-      context_, script_url, options,
-      blink::StorageKey(url::Origin::Create(options.scope)),
+      context_, script_url, options, key,
       std::move(outside_fetch_client_settings_object), requesting_frame_id);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[options.scope].Push(std::move(job)));
@@ -90,12 +90,11 @@ void ServiceWorkerJobCoordinator::Register(
 
 void ServiceWorkerJobCoordinator::Unregister(
     const GURL& scope,
+    const blink::StorageKey& key,
     bool is_immediate,
     ServiceWorkerUnregisterJob::UnregistrationCallback callback) {
   std::unique_ptr<ServiceWorkerRegisterJobBase> job(
-      new ServiceWorkerUnregisterJob(
-          context_, scope, blink::StorageKey(url::Origin::Create(scope)),
-          is_immediate));
+      new ServiceWorkerUnregisterJob(context_, scope, key, is_immediate));
   ServiceWorkerUnregisterJob* queued_job =
       static_cast<ServiceWorkerUnregisterJob*>(
           job_queues_[scope].Push(std::move(job)));

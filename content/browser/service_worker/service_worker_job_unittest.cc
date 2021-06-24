@@ -55,6 +55,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 using net::IOBuffer;
 using net::TestCompletionCallback;
@@ -188,10 +189,12 @@ class ServiceWorkerJobTest : public testing::Test {
  protected:
   scoped_refptr<ServiceWorkerRegistration> RunRegisterJob(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       blink::ServiceWorkerStatusCode expected_status =
           blink::ServiceWorkerStatusCode::kOk);
   void RunUnregisterJob(const GURL& scope,
+                        const blink::StorageKey& key,
                         blink::ServiceWorkerStatusCode expected_status =
                             blink::ServiceWorkerStatusCode::kOk);
   void WaitForVersionRunningStatus(scoped_refptr<ServiceWorkerVersion> version,
@@ -213,6 +216,7 @@ class ServiceWorkerJobTest : public testing::Test {
 
 scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
     const GURL& script_url,
+    const blink::StorageKey& key,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     blink::ServiceWorkerStatusCode expected_status) {
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -221,7 +225,7 @@ scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
       blink::mojom::FetchClientSettingsObject::New();
   outside_fetch_client_settings_object->outgoing_referrer = script_url;
   job_coordinator()->Register(
-      script_url, options, std::move(outside_fetch_client_settings_object),
+      script_url, options, key, std::move(outside_fetch_client_settings_object),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(expected_status, &registration, run_loop.QuitClosure()));
   run_loop.Run();
@@ -230,10 +234,11 @@ scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
 
 void ServiceWorkerJobTest::RunUnregisterJob(
     const GURL& scope,
+    const blink::StorageKey& key,
     blink::ServiceWorkerStatusCode expected_status) {
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
-      scope, /*is_immediate=*/false,
+      scope, key, /*is_immediate=*/false,
       SaveUnregistration(expected_status, run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -281,8 +286,8 @@ ServiceWorkerJobTest::CreateRegistrationWithControllee(const GURL& script_url,
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope_url;
 
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script_url, options);
+  scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
+      script_url, blink::StorageKey(url::Origin::Create(scope_url)), options);
 
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   registration->SetTaskRunnerForTest(runner);
@@ -305,7 +310,7 @@ TEST_F(ServiceWorkerJobTest, SameDocumentSameRegistration) {
 
   options.scope = url;
   scoped_refptr<ServiceWorkerRegistration> original_registration =
-      RunRegisterJob(GURL("https://www.example.com/service_worker.js"),
+      RunRegisterJob(GURL("https://www.example.com/service_worker.js"), key,
                      options);
   scoped_refptr<ServiceWorkerRegistration> registration1;
   base::RunLoop run_loop;
@@ -333,7 +338,7 @@ TEST_F(ServiceWorkerJobTest, SameMatchSameRegistration) {
 
   options.scope = url;
   scoped_refptr<ServiceWorkerRegistration> original_registration =
-      RunRegisterJob(GURL("https://www.example.com/service_worker.js"),
+      RunRegisterJob(GURL("https://www.example.com/service_worker.js"), key,
                      options);
   ASSERT_NE(static_cast<ServiceWorkerRegistration*>(nullptr),
             original_registration.get());
@@ -367,8 +372,8 @@ TEST_F(ServiceWorkerJobTest, DifferentMatchDifferentRegistration) {
   blink::mojom::ServiceWorkerRegistrationOptions options2;
   options2.scope = scope2;
 
-  RunRegisterJob(script_url, options1);
-  RunRegisterJob(script_url, options2);
+  RunRegisterJob(script_url, key, options1);
+  RunRegisterJob(script_url, key, options2);
 
   scoped_refptr<ServiceWorkerRegistration> registration1;
   base::RunLoop run_loop;
@@ -424,7 +429,8 @@ TEST_F(ServiceWorkerJobTest, Register) {
       helper_->AddNewPendingServiceWorker<RecordInstallActivateWorker>(
           helper_.get());
   scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"), options);
+      GURL("https://www.example.com/service_worker.js"),
+      blink::StorageKey(url::Origin::Create(options.scope)), options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   registration->SetTaskRunnerForTest(runner);
   TestServiceWorkerObserver observer(helper_->context_wrapper());
@@ -441,8 +447,9 @@ TEST_F(ServiceWorkerJobTest, Register) {
 TEST_F(ServiceWorkerJobTest, Unregister) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"), options);
+      GURL("https://www.example.com/service_worker.js"), key, options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   registration->SetTaskRunnerForTest(runner);
   TestServiceWorkerObserver observer(helper_->context_wrapper());
@@ -460,7 +467,7 @@ TEST_F(ServiceWorkerJobTest, Unregister) {
   // worker.
   EXPECT_EQ(1UL, container_host->service_worker_object_hosts_.size());
 
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   WaitForVersionRunningStatus(version, EmbeddedWorkerStatus::STOPPED);
   registry()->GetRemoteStorageControl().FlushForTesting();
@@ -475,8 +482,7 @@ TEST_F(ServiceWorkerJobTest, Unregister) {
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
 
   registration = FindRegistrationForScope(
-      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options.scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_FALSE(registration);
 }
@@ -484,7 +490,8 @@ TEST_F(ServiceWorkerJobTest, Unregister) {
 TEST_F(ServiceWorkerJobTest, Unregister_NothingRegistered) {
   GURL scope("https://www.example.com/");
 
-  RunUnregisterJob(scope, blink::ServiceWorkerStatusCode::kErrorNotFound);
+  RunUnregisterJob(scope, blink::StorageKey(url::Origin::Create(scope)),
+                   blink::ServiceWorkerStatusCode::kErrorNotFound);
 }
 
 TEST_F(ServiceWorkerJobTest, UnregisterImmediate) {
@@ -498,7 +505,8 @@ TEST_F(ServiceWorkerJobTest, UnregisterImmediate) {
 
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
-      scope, /*is_immediate=*/true,
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      /*is_immediate=*/true,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
 
@@ -517,7 +525,7 @@ TEST_F(ServiceWorkerJobTest, RegisterNewScript) {
   options.scope = GURL("https://www.example.com/");
   blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> old_registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"), options);
+      GURL("https://www.example.com/service_worker.js"), key, options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   old_registration->SetTaskRunnerForTest(runner);
   TestServiceWorkerObserver observer(helper_->context_wrapper());
@@ -530,7 +538,7 @@ TEST_F(ServiceWorkerJobTest, RegisterNewScript) {
   old_registration_by_scope = nullptr;
 
   scoped_refptr<ServiceWorkerRegistration> new_registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker_new.js"), options);
+      GURL("https://www.example.com/service_worker_new.js"), key, options);
 
   ASSERT_EQ(old_registration, new_registration);
 
@@ -549,7 +557,7 @@ TEST_F(ServiceWorkerJobTest, RegisterDuplicateScript) {
   blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> old_registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
 
@@ -575,7 +583,7 @@ TEST_F(ServiceWorkerJobTest, RegisterDuplicateScript) {
   ASSERT_TRUE(old_registration_by_scope.get());
 
   scoped_refptr<ServiceWorkerRegistration> new_registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
 
   ASSERT_EQ(old_registration, new_registration);
 
@@ -610,9 +618,10 @@ TEST_F(ServiceWorkerJobTest, Register_FailToStartWorker) {
 
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(GURL("https://www.example.com/service_worker.js"), options,
-                     blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
+  scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
+      GURL("https://www.example.com/service_worker.js"),
+      blink::StorageKey(url::Origin::Create(options.scope)), options,
+      blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(nullptr), registration);
 }
@@ -623,14 +632,14 @@ TEST_F(ServiceWorkerJobTest, ParallelRegUnreg) {
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
 
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   registration = FindRegistrationForScope(
-      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options.scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
 }
@@ -640,22 +649,24 @@ TEST_F(ServiceWorkerJobTest, ParallelRegUnreg) {
 // shutdown.
 TEST_F(ServiceWorkerJobTest, ParallelRegNewScript) {
   GURL scope("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(scope));
 
   GURL script_url1("https://www.example.com/service_worker1.js");
-  scoped_refptr<ServiceWorkerRegistration> registration1 = RunRegisterJob(
-      script_url1, blink::mojom::ServiceWorkerRegistrationOptions(
-                       scope, blink::mojom::ScriptType::kClassic,
-                       blink::mojom::ServiceWorkerUpdateViaCache::kNone));
+  scoped_refptr<ServiceWorkerRegistration> registration1 =
+      RunRegisterJob(script_url1, key,
+                     blink::mojom::ServiceWorkerRegistrationOptions(
+                         scope, blink::mojom::ScriptType::kClassic,
+                         blink::mojom::ServiceWorkerUpdateViaCache::kNone));
 
   GURL script_url2("https://www.example.com/service_worker2.js");
-  scoped_refptr<ServiceWorkerRegistration> registration2 = RunRegisterJob(
-      script_url2, blink::mojom::ServiceWorkerRegistrationOptions(
-                       scope, blink::mojom::ScriptType::kClassic,
-                       blink::mojom::ServiceWorkerUpdateViaCache::kAll));
+  scoped_refptr<ServiceWorkerRegistration> registration2 =
+      RunRegisterJob(script_url2, key,
+                     blink::mojom::ServiceWorkerRegistrationOptions(
+                         scope, blink::mojom::ScriptType::kClassic,
+                         blink::mojom::ServiceWorkerUpdateViaCache::kAll));
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      FindRegistrationForScope(scope,
-                               blink::StorageKey(url::Origin::Create(scope)));
+      FindRegistrationForScope(scope, key);
 
   ASSERT_EQ(registration2, registration);
 }
@@ -666,19 +677,19 @@ TEST_F(ServiceWorkerJobTest, ParallelRegNewScript) {
 TEST_F(ServiceWorkerJobTest, ParallelRegSameScript) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   GURL script_url("https://www.example.com/service_worker1.js");
   scoped_refptr<ServiceWorkerRegistration> registration1 =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
 
   scoped_refptr<ServiceWorkerRegistration> registration2 =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
 
   ASSERT_EQ(registration1, registration2);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      FindRegistrationForScope(
-          options.scope, blink::StorageKey(url::Origin::Create(options.scope)));
+      FindRegistrationForScope(options.scope, key);
 
   ASSERT_EQ(registration, registration1);
 }
@@ -686,18 +697,18 @@ TEST_F(ServiceWorkerJobTest, ParallelRegSameScript) {
 // Call simulataneous unregister calls.
 TEST_F(ServiceWorkerJobTest, ParallelUnreg) {
   GURL scope("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(scope));
 
   GURL script_url("https://www.example.com/service_worker.js");
-  RunUnregisterJob(scope, blink::ServiceWorkerStatusCode::kErrorNotFound);
+  RunUnregisterJob(scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
-  RunUnregisterJob(scope, blink::ServiceWorkerStatusCode::kErrorNotFound);
+  RunUnregisterJob(scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   // There isn't really a way to test that they are being coalesced,
   // but we can make sure they can exist simultaneously without
   // crashing.
   scoped_refptr<ServiceWorkerRegistration> registration =
-      FindRegistrationForScope(scope,
-                               blink::StorageKey(url::Origin::Create(scope)),
+      FindRegistrationForScope(scope, key,
                                blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
@@ -709,22 +720,26 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
 
   blink::mojom::ServiceWorkerRegistrationOptions options1;
   options1.scope = GURL("https://www1.example.com/");
+  blink::StorageKey key1(url::Origin::Create(options1.scope));
   blink::mojom::ServiceWorkerRegistrationOptions options2;
   options2.scope = GURL("https://www2.example.com/");
+  blink::StorageKey key2(url::Origin::Create(options2.scope));
 
   scoped_refptr<ServiceWorkerRegistration> registration1;
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
-      script_url1, options1, blink::mojom::FetchClientSettingsObject::New(),
+      script_url1, options1, key1,
+      blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration1, barrier_closure));
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
-      script_url2, options2, blink::mojom::FetchClientSettingsObject::New(),
+      script_url2, options2, key2,
+      blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration2, barrier_closure));
@@ -734,12 +749,10 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
   run_loop.Run();
 
   registration1 = FindRegistrationForScope(
-      options1.scope, blink::StorageKey(url::Origin::Create(options1.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options1.scope, key1, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   registration2 = FindRegistrationForScope(
-      options2.scope, blink::StorageKey(url::Origin::Create(options2.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options2.scope, key2, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration1);
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration2);
@@ -754,12 +767,14 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Unregister) {
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Unregister(
-      scope1, /*is_immediate=*/false,
+      scope1, blink::StorageKey(url::Origin::Create(scope1)),
+      /*is_immediate=*/false,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
   job_coordinator()->Unregister(
-      scope2, /*is_immediate=*/false,
+      scope2, blink::StorageKey(url::Origin::Create(scope2)),
+      /*is_immediate=*/false,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
@@ -772,19 +787,20 @@ TEST_F(ServiceWorkerJobTest, AbortAll_RegUnreg) {
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> registration;
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
-      script_url, options, blink::mojom::FetchClientSettingsObject::New(),
+      script_url, options, key, blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration, barrier_closure));
 
   job_coordinator()->Unregister(
-      options.scope, /*is_immediate=*/false,
+      options.scope, key, /*is_immediate=*/false,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
@@ -793,8 +809,7 @@ TEST_F(ServiceWorkerJobTest, AbortAll_RegUnreg) {
   run_loop.Run();
 
   registration = FindRegistrationForScope(
-      options.scope, blink::StorageKey(url::Origin::Create(options.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options.scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
 }
@@ -803,22 +818,26 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options1;
   options1.scope = GURL("https://www.example.com/1");
+  blink::StorageKey key1(url::Origin::Create(options1.scope));
   blink::mojom::ServiceWorkerRegistrationOptions options2;
   options2.scope = GURL("https://www.example.com/2");
+  blink::StorageKey key2(url::Origin::Create(options2.scope));
 
   scoped_refptr<ServiceWorkerRegistration> registration1;
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
-      script_url, options1, blink::mojom::FetchClientSettingsObject::New(),
+      script_url, options1, key1,
+      blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration1, barrier_closure));
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
-      script_url, options2, blink::mojom::FetchClientSettingsObject::New(),
+      script_url, options2, key2,
+      blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        barrier_closure));
@@ -828,13 +847,11 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
   run_loop.Run();
 
   registration1 = FindRegistrationForScope(
-      options1.scope, blink::StorageKey(url::Origin::Create(options1.scope)),
-      blink::ServiceWorkerStatusCode::kErrorNotFound);
+      options1.scope, key1, blink::ServiceWorkerStatusCode::kErrorNotFound);
   EXPECT_EQ(nullptr, registration1);
 
-  registration2 = FindRegistrationForScope(
-      options2.scope, blink::StorageKey(url::Origin::Create(options2.scope)),
-      blink::ServiceWorkerStatusCode::kOk);
+  registration2 = FindRegistrationForScope(options2.scope, key2,
+                                           blink::ServiceWorkerStatusCode::kOk);
   EXPECT_NE(nullptr, registration2);
 }
 
@@ -844,8 +861,9 @@ TEST_F(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
   GURL script_url("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
   ASSERT_TRUE(registration.get());
 
   // Manually create the waiting worker since there is no way to become a
@@ -864,7 +882,7 @@ TEST_F(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
   EXPECT_EQ(ServiceWorkerVersion::INSTALLED, version->status());
 
-  RunUnregisterJob(GURL("https://www.example.com/"));
+  RunUnregisterJob(GURL("https://www.example.com/"), key);
   WaitForVersionRunningStatus(version, EmbeddedWorkerStatus::STOPPED);
 
   // The version should be stopped since there is no controllee after
@@ -878,8 +896,9 @@ TEST_F(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
 TEST_F(ServiceWorkerJobTest, UnregisterActiveSetsRedundant) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"), options);
+      GURL("https://www.example.com/service_worker.js"), key, options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   registration->SetTaskRunnerForTest(runner);
   TestServiceWorkerObserver observer(helper_->context_wrapper());
@@ -891,7 +910,7 @@ TEST_F(ServiceWorkerJobTest, UnregisterActiveSetsRedundant) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, version->status());
 
-  RunUnregisterJob(GURL("https://www.example.com/"));
+  RunUnregisterJob(GURL("https://www.example.com/"), key);
 
   WaitForVersionRunningStatus(version, EmbeddedWorkerStatus::STOPPED);
 
@@ -907,8 +926,9 @@ TEST_F(ServiceWorkerJobTest,
        UnregisterActiveSetsRedundant_WaitForNoControllee) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"), options);
+      GURL("https://www.example.com/service_worker.js"), key, options);
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   registration->SetTaskRunnerForTest(runner);
   TestServiceWorkerObserver observer(helper_->context_wrapper());
@@ -922,7 +942,7 @@ TEST_F(ServiceWorkerJobTest,
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, version->status());
 
-  RunUnregisterJob(GURL("https://www.example.com/"));
+  RunUnregisterJob(GURL("https://www.example.com/"), key);
 
   // The version should be running since there is still a controllee.
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
@@ -942,12 +962,13 @@ TEST_F(ServiceWorkerJobTest, RegisterWhileUninstalling) {
   GURL script2("https://www.example.com/service_worker.js?new");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   auto* initial_client =
       helper_->AddNewPendingInstanceClient<FakeEmbeddedWorkerInstanceClient>(
           helper_.get());
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script1, options);
+      RunRegisterJob(script1, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -958,10 +979,10 @@ TEST_F(ServiceWorkerJobTest, RegisterWhileUninstalling) {
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
   old_version->AddControllee(container_host);
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   // Register another script.
-  EXPECT_EQ(registration, RunRegisterJob(script2, options));
+  EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
   // Wait until the worker becomes installed.
   base::RunLoop().RunUntilIdle();
 
@@ -1001,7 +1022,7 @@ TEST_F(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
   blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script1, options);
+      RunRegisterJob(script1, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
 
@@ -1010,9 +1031,9 @@ TEST_F(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
   old_version->AddControllee(container_host);
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
-  EXPECT_EQ(registration, RunRegisterJob(script2, options));
+  EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
   // Wait until the worker becomes installed.
   base::RunLoop().RunUntilIdle();
 
@@ -1022,9 +1043,9 @@ TEST_F(ServiceWorkerJobTest, RegisterAndUnregisterWhileUninstalling) {
   ASSERT_TRUE(new_version);
 
   // Unregister the registration (but it's still live).
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
   // Now it's not found in the storage.
-  RunUnregisterJob(options.scope,
+  RunUnregisterJob(options.scope, key,
                    blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   FindRegistrationForScope(options.scope, key,
@@ -1056,12 +1077,13 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   GURL script2("https://www.example.com/service_worker.js?new");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   auto* initial_client =
       helper_->AddNewPendingInstanceClient<FakeEmbeddedWorkerInstanceClient>(
           helper_.get());
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script1, options);
+      RunRegisterJob(script1, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -1072,9 +1094,9 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   scoped_refptr<ServiceWorkerVersion> old_version =
       registration->active_version();
   old_version->AddControllee(container_host);
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
-  EXPECT_EQ(registration, RunRegisterJob(script2, options));
+  EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
   // Wait until the worker becomes installed.
   base::RunLoop().RunUntilIdle();
 
@@ -1082,11 +1104,11 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
       registration->waiting_version();
   ASSERT_TRUE(new_version);
 
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   EXPECT_TRUE(registration->is_uninstalling());
 
-  EXPECT_EQ(registration, RunRegisterJob(script2, options));
+  EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
 
   EXPECT_FALSE(registration->is_uninstalling());
   EXPECT_EQ(new_version, registration->waiting_version());
@@ -1141,25 +1163,25 @@ TEST_F(ServiceWorkerJobTest, HasFetchHandler) {
       helper_->AddNewPendingInstanceClient<FetchHandlerInstanceClient>(
           helper_.get());
   fetch_handler_worker->set_has_fetch_handler(true);
-  RunRegisterJob(script, options);
+  RunRegisterJob(script, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   registration = FindRegistrationForScope(options.scope, key);
   EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::EXISTS,
             registration->active_version()->fetch_handler_existence());
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   auto* no_fetch_handler_worker =
       helper_->AddNewPendingInstanceClient<FetchHandlerInstanceClient>(
           helper_.get());
   no_fetch_handler_worker->set_has_fetch_handler(false);
-  RunRegisterJob(script, options);
+  RunRegisterJob(script, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   registration = FindRegistrationForScope(options.scope, key);
   EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST,
             registration->active_version()->fetch_handler_existence());
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 }
 
 // Test that clients are alerted of new registrations if they are
@@ -1194,8 +1216,8 @@ TEST_F(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
   GURL script("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script, options);
+  scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
+      script, blink::StorageKey(url::Origin::Create(options.scope)), options);
 
   EXPECT_EQ(registration.get(), client->MatchRegistration());
   EXPECT_EQ(registration.get(), reserved_client->MatchRegistration());
@@ -1353,6 +1375,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     base::RunLoop run_loop;
     job_coordinator()->Register(
         test_origin.Resolve(kScript), options,
+        blink::StorageKey(url::Origin::Create(options.scope)),
         blink::mojom::FetchClientSettingsObject::New(),
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),
         SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration,
@@ -1492,7 +1515,7 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterWithDifferentUpdateViaCache) {
   blink::StorageKey key(url::Origin::Create(options.scope));
 
   scoped_refptr<ServiceWorkerRegistration> old_registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
 
@@ -1520,7 +1543,7 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterWithDifferentUpdateViaCache) {
   base::HistogramTester histogram_tester;
   options.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
   scoped_refptr<ServiceWorkerRegistration> new_registration =
-      RunRegisterJob(script_url, options);
+      RunRegisterJob(script_url, key, options);
 
   // Ensure that the registration object is not copied.
   EXPECT_EQ(old_registration, new_registration);
@@ -1782,6 +1805,7 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   // Create a registration with an active version.
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
   auto* initial_client =
       helper_->AddNewPendingInstanceClient<FakeEmbeddedWorkerInstanceClient>(
           helper_.get());
@@ -1789,7 +1813,7 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   update_helper_->fake_network_.SetResponse(old_script, kHeaders, kBody,
                                             /*network_accessed=*/true, net::OK);
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(old_script, options);
+      RunRegisterJob(old_script, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -1897,7 +1921,8 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_UninstallingRegistration) {
 
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
-      scope, /*is_immediate=*/false,
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      /*is_immediate=*/false,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
 
@@ -1919,12 +1944,13 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterMultipleTimesWhileUninstalling) {
   GURL script3("https://www.example.com/service_worker.js?third");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   auto* initial_client =
       helper_->AddNewPendingInstanceClient<FakeEmbeddedWorkerInstanceClient>(
           helper_.get());
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script1, options);
+      RunRegisterJob(script1, key, options);
   // Wait until the worker becomes actvie.
   base::RunLoop().RunUntilIdle();
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -1935,9 +1961,9 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterMultipleTimesWhileUninstalling) {
   scoped_refptr<ServiceWorkerVersion> first_version =
       registration->active_version();
   first_version->AddControllee(container_host);
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
-  EXPECT_EQ(registration, RunRegisterJob(script2, options));
+  EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
   // Wait until the worker becomes installed.
   base::RunLoop().RunUntilIdle();
 
@@ -1945,11 +1971,11 @@ TEST_F(ServiceWorkerUpdateJobTest, RegisterMultipleTimesWhileUninstalling) {
       registration->waiting_version();
   ASSERT_TRUE(second_version);
 
-  RunUnregisterJob(options.scope);
+  RunUnregisterJob(options.scope, key);
 
   EXPECT_TRUE(registration->is_uninstalling());
 
-  EXPECT_EQ(registration, RunRegisterJob(script3, options));
+  EXPECT_EQ(registration, RunRegisterJob(script3, key, options));
   TestServiceWorkerObserver observer(helper_->context_wrapper());
   observer.RunUntilStatusChange(second_version.get(),
                                 ServiceWorkerVersion::REDUNDANT);
@@ -1981,12 +2007,13 @@ TEST_F(ServiceWorkerUpdateJobTest, ActivateCancelsOnShutdown) {
   GURL script("https://www.example.com/service_worker.js");
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   auto* initial_client =
       helper_->AddNewPendingInstanceClient<FakeEmbeddedWorkerInstanceClient>(
           helper_.get());
   scoped_refptr<ServiceWorkerRegistration> registration =
-      RunRegisterJob(script, options);
+      RunRegisterJob(script, key, options);
   // Wait until the worker becomes active.
   base::RunLoop().RunUntilIdle();
   auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -2162,6 +2189,7 @@ class WaitForeverInstallWorker : public FakeServiceWorker {
 TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
 
   // Make a job that gets stuck due to a worker stalled in starting.
   base::RunLoop loop1;
@@ -2169,7 +2197,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   helper_->AddPendingInstanceClient(
       std::make_unique<DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get()));
   job_coordinator()->Register(
-      GURL("https://www.example.com/service_worker1.js"), options,
+      GURL("https://www.example.com/service_worker1.js"), options, key,
       blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorTimeout,
@@ -2185,7 +2213,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       std::make_unique<WaitForeverInstallWorker>(helper_.get()));
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
-      GURL("https://www.example.com/service_worker2.js"), options,
+      GURL("https://www.example.com/service_worker2.js"), options, key,
       blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
@@ -2197,7 +2225,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   base::RunLoop loop3;
   scoped_refptr<ServiceWorkerRegistration> registration3;
   job_coordinator()->Register(
-      GURL("https://www.example.com/service_worker3.js"), options,
+      GURL("https://www.example.com/service_worker3.js"), options, key,
       blink::mojom::FetchClientSettingsObject::New(),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration3,

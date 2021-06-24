@@ -535,7 +535,7 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
   }
   was_service_worker_registered_ = true;
   job_coordinator_->Register(
-      script_url, options, std::move(outside_fetch_client_settings_object),
+      script_url, options, key, std::move(outside_fetch_client_settings_object),
       requesting_frame_id,
       base::BindOnce(&ServiceWorkerContextCore::RegistrationComplete,
                      AsWeakPtr(), options.scope, key, std::move(callback)));
@@ -570,7 +570,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
     UnregistrationCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   job_coordinator_->Unregister(
-      scope, is_immediate,
+      scope, key, is_immediate,
       base::BindOnce(&ServiceWorkerContextCore::UnregistrationComplete,
                      AsWeakPtr(), scope, key, std::move(callback)));
 }

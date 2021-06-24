@@ -17,6 +17,10 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerRegistration;
@@ -29,6 +33,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
   void Register(const GURL& script_url,
                 const blink::mojom::ServiceWorkerRegistrationOptions& options,
+                const blink::StorageKey& key,
                 blink::mojom::FetchClientSettingsObjectPtr
                     outside_fetch_client_settings_object,
                 const GlobalRenderFrameHostId& requesting_frame_id,
@@ -37,6 +42,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
   // If |is_immediate| is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
   void Unregister(const GURL& scope,
+                  const blink::StorageKey& key,
                   bool is_immediate,
                   ServiceWorkerUnregisterJob::UnregistrationCallback callback);
 
@@ -90,6 +96,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
+  // TODO(crbug.com/1199077): The job_queues_ should be split on key + scope.
   std::map<GURL, JobQueue> job_queues_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerJobCoordinator);
