@@ -326,7 +326,23 @@ void JingleThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
   }
 }
 
-void JingleThreadWrapper::RunTask(int task_id) {
+void JingleThreadWrapper::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&JingleThreadWrapper::RunTaskQueueTask,
+                                        weak_ptr_, std::move(task)));
+}
+
+void JingleThreadWrapper::PostDelayedTask(
+    std::unique_ptr<webrtc::QueuedTask> task,
+    uint32_t milliseconds) {
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&JingleThreadWrapper::RunTaskQueueTask, weak_ptr_,
+                     std::move(task)),
+      base::TimeDelta::FromMilliseconds(milliseconds));
+}
+
+absl::optional<base::TimeTicks> JingleThreadWrapper::PrepareRunTask() {
   if (!latency_sampler_ && task_latency_callback_) {
     latency_sampler_ = std::make_unique<PostTaskLatencySampler>(
         task_runner_, std::move(task_latency_callback_));
@@ -336,10 +352,35 @@ void JingleThreadWrapper::RunTask(int task_id) {
       latency_sampler_->ShouldSampleNextTaskDuration()) {
     task_start_timestamp = base::TimeTicks::Now();
   }
+  return task_start_timestamp;
+}
+
+void JingleThreadWrapper::RunTaskQueueTask(
+    std::unique_ptr<webrtc::QueuedTask> task) {
+  absl::optional<base::TimeTicks> task_start_timestamp = PrepareRunTask();
+
+  // Follow QueuedTask::Run() semantics: delete if it returns true, release
+  // otherwise.
+  if (task->Run())
+    task.reset();
+  else
+    task.release();
+
+  FinalizeRunTask(std::move(task_start_timestamp));
+}
+
+void JingleThreadWrapper::RunTask(int task_id) {
+  absl::optional<base::TimeTicks> task_start_timestamp = PrepareRunTask();
+
   RunTaskInternal(task_id);
-  if (task_start_timestamp.has_value()) {
+
+  FinalizeRunTask(std::move(task_start_timestamp));
+}
+
+void JingleThreadWrapper::FinalizeRunTask(
+    absl::optional<base::TimeTicks> task_start_timestamp) {
+  if (task_start_timestamp.has_value())
     task_duration_callback_.Run(base::TimeTicks::Now() - *task_start_timestamp);
-  }
 }
 
 void JingleThreadWrapper::RunTaskInternal(int task_id) {

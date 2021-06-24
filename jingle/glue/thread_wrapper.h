@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 
 namespace jingle_glue {
@@ -140,6 +141,22 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   void RunTask(int task_id);
   void RunTaskInternal(int task_id);
   void ProcessPendingSends();
+
+  // TaskQueueBase overrides.
+  void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override;
+  void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
+                       uint32_t milliseconds) override;
+
+  // Executes WebRTC queued tasks from TaskQueueBase overrides on
+  // |task_runner_|.
+  void RunTaskQueueTask(std::unique_ptr<webrtc::QueuedTask> task);
+
+  // Called before a task runs, returns an opaque optional timestamp which
+  // should be passed into FinalizeRunTask.
+  absl::optional<base::TimeTicks> PrepareRunTask();
+  // Called after a task has run. Move the return value of PrepareRunTask as
+  // |task_start_timestamp|.
+  void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
 
   // Task runner used to execute messages posted on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
