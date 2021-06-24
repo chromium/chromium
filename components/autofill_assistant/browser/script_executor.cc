@@ -515,7 +515,7 @@ void ScriptExecutor::ScrollToElementPosition(
   last_focused_element_selector_ = selector;
   last_focused_element_top_padding_ = top_padding;
   delegate_->GetWebController()->ScrollToElementPosition(
-      std::move(container), element, top_padding, std::move(callback));
+      std::move(container), top_padding, element, std::move(callback));
 }
 
 void ScriptExecutor::SetTouchableElementArea(

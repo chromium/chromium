@@ -181,8 +181,8 @@ class WebController {
   // scrolled instead.
   virtual void ScrollToElementPosition(
       std::unique_ptr<ElementFinder::Result> container,
-      const ElementFinder::Result& element,
       const TopPadding& top_padding,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Get the value attribute of an |element| and return the result through

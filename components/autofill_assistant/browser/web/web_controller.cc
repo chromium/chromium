@@ -1079,8 +1079,8 @@ void WebController::HighlightElement(
 
 void WebController::ScrollToElementPosition(
     std::unique_ptr<ElementFinder::Result> container,
-    const ElementFinder::Result& element,
     const TopPadding& top_padding,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
   AddRuntimeCallArgumentObjectId(element.object_id(), &arguments);
