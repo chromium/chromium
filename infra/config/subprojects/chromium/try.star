@@ -1256,7 +1256,7 @@ try_.chromium_linux_builder(
     name = "linux-rel-orchestrator",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
-    cores = 4,
+    cores = 2,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
@@ -1264,13 +1264,15 @@ try_.chromium_linux_builder(
         "compilator": "linux-rel-compilator",
     },
     service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
 )
 
 try_.chromium_linux_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
-    cores = 16,
     executable = "recipe:chromium/compilator",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
