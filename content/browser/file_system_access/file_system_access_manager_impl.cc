@@ -181,10 +181,11 @@ void HandleTransferTokenAsDefaultDirectory(
   auto token_url_type = token->url().type();
   auto token_url_mount_type = token->url().mount_type();
 
-  // Ignore sandboxed file system URLs
+  // Ignore sandboxed file system URLs.
   if (token_url_type == storage::kFileSystemTypeTemporary ||
-      token_url_type == storage::kFileSystemTypePersistent)
+      token_url_type == storage::kFileSystemTypePersistent) {
     return;
+  }
 
   if (token_url_mount_type == storage::kFileSystemTypeExternal) {
     info.type = FileSystemAccessPermissionContext::PathType::kExternal;
