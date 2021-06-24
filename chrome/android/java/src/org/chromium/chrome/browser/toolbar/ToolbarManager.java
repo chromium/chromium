@@ -588,12 +588,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                 refreshSelectedTab(tab);
                 onTabOrModelChanged();
-                maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
+                maybeTriggerCacheRefreshForZeroSuggest(tab, tab.getUrl());
             }
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                maybeTriggerCacheRefreshForZeroSuggest(url);
+                maybeTriggerCacheRefreshForZeroSuggest(tab, url);
             }
 
             /**
@@ -601,8 +601,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
              * Avoid issuing multiple concurrent server requests for the same event to
              * reduce server pressure.
              */
-            private void maybeTriggerCacheRefreshForZeroSuggest(GURL url) {
-                if (url != null && UrlUtilities.isNTPUrl(url)) {
+            private void maybeTriggerCacheRefreshForZeroSuggest(Tab tab, GURL url) {
+                if (url != null
+                        && (UrlUtilities.isNTPUrl(url)
+                                || StartSurfaceConfiguration.shouldHandleAsNtp(tab))) {
                     mLocationBarModel.notifyZeroSuggestRefresh();
                 }
             }

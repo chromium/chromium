@@ -123,7 +123,9 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
 
   // Only serve Most Visited suggestions when the current context is page visit.
   if (page_class != metrics::OmniboxEventProto::OTHER &&
-      page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET) {
+      page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
+      page_class != metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE &&
+      page_class != metrics::OmniboxEventProto::START_SURFACE_NEW_TAB) {
     return false;
   }
 

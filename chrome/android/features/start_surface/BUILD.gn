@@ -24,6 +24,7 @@ android_library("public_java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/metrics_proto:metrics_proto_java",
     "//url:gurl_java",
   ]
 }

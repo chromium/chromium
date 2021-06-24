@@ -271,6 +271,8 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   if (!profile_->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(omnibox::kOmniboxSpareRenderer) &&
       page_class != OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
+      page_class != OmniboxEventProto::START_SURFACE_HOMEPAGE &&
+      page_class != OmniboxEventProto::START_SURFACE_NEW_TAB &&
       !BaseSearchProvider::IsNTPPage(page_class)) {
     auto renderer_delay_ms = base::GetFieldTrialParamByFeatureAsInt(
         omnibox::kOmniboxSpareRenderer, "omnibox_spare_renderer_delay_ms",
