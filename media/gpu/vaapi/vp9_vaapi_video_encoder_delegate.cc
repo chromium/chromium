@@ -125,6 +125,7 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
     const VideoBitrateAllocation& bitrate_allocation,
     const size_t num_temporal_layers) {
   libvpx::VP9RateControlRtcConfig rc_cfg{};
+  rc_cfg.rc_mode = VPX_CBR;
   rc_cfg.width = encode_size.width();
   rc_cfg.height = encode_size.height();
   rc_cfg.max_quantizer = QindexToQuantizer(encode_params.max_qp);
