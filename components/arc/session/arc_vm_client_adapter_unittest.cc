@@ -4,6 +4,7 @@
 
 #include "components/arc/session/arc_vm_client_adapter.h"
 
+#include <inttypes.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -26,6 +27,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -229,11 +231,6 @@ class TestArcVmBootNotificationServer
     fd_.reset(-1);
   }
 
-  // Sets a callback to be run immediately after the next connection.
-  void SetConnectionCallback(base::OnceClosure callback) {
-    callback_ = std::move(callback);
-  }
-
   int connection_count() { return num_connections_; }
 
   std::string received_data() { return received_; }
@@ -255,9 +252,6 @@ class TestArcVmBootNotificationServer
       out.append(buf, len);
     }
     received_.append(out);
-
-    if (callback_)
-      std::move(callback_).Run();
   }
 
   void OnFileCanWriteWithoutBlocking(int fd) override {}
@@ -267,7 +261,6 @@ class TestArcVmBootNotificationServer
   std::unique_ptr<base::MessagePumpForUI::FdWatchController> controller_;
   int num_connections_ = 0;
   std::string received_;
-  base::OnceClosure callback_;
 };
 
 class FakeDemoModeDelegate : public ArcClientAdapter::DemoModeDelegate {
@@ -1669,30 +1662,23 @@ TEST_F(ArcVmClientAdapterTest, TestGetArcVmUreadaheadModeDisabled) {
 // twice: once in StartMiniArc to check that it is listening, and the second
 // time in UpgradeArc to send props.
 TEST_F(ArcVmClientAdapterTest, TestConnectToBootNotificationServer) {
-  // Stop the RunLoop after a connection to the server.
-  boot_notification_server()->SetConnectionCallback(run_loop()->QuitClosure());
   SetValidUserInfo();
-  adapter()->StartMiniArc(
-      {}, base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
-  run_loop()->Run();
-
+  StartMiniArc();
   EXPECT_EQ(boot_notification_server()->connection_count(), 1);
   EXPECT_TRUE(boot_notification_server()->received_data().empty());
 
-  RecreateRunLoop();
-  boot_notification_server()->SetConnectionCallback(run_loop()->QuitClosure());
-  adapter()->UpgradeArc(
-      GetPopulatedUpgradeParams(),
-      base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
-  run_loop()->Run();
-
+  UpgradeArcWithParams(/*expect_success=*/true, GetPopulatedUpgradeParams());
   EXPECT_EQ(boot_notification_server()->connection_count(), 2);
   EXPECT_FALSE(boot_notification_server()->received_data().empty());
+
   // Compare received data to expected output
-  std::string expected_props = base::JoinString(
-      GenerateUpgradePropsForTesting(GetPopulatedUpgradeParams(), kSerialNumber,
-                                     "ro.boot"),
-      "\n");
+  std::string expected_props = base::StringPrintf(
+      "CID=%" PRId64 "\n%s", kCid,
+      base::JoinString(
+          GenerateUpgradePropsForTesting(GetPopulatedUpgradeParams(),
+                                         kSerialNumber, "ro.boot"),
+          "\n")
+          .c_str());
   EXPECT_EQ(boot_notification_server()->received_data(), expected_props);
 }
 

@@ -4,6 +4,7 @@
 
 #include "components/arc/session/arc_vm_client_adapter.h"
 
+#include <inttypes.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <time.h>
@@ -443,10 +444,14 @@ bool IsArcVmBootNotificationServerListening() {
 // |kArcVmBootNotificationServerSocketPath|. This function can only be called
 // with base::MayBlock().
 bool SendUpgradePropsToArcVmBootNotificationServer(
+    int64_t cid,
     const UpgradeParams& params,
     const std::string& serial_number) {
-  std::string props = base::JoinString(
-      GenerateUpgradeProps(params, serial_number, "ro.boot"), "\n");
+  std::string props = base::StringPrintf(
+      "CID=%" PRId64 "\n%s", cid,
+      base::JoinString(GenerateUpgradeProps(params, serial_number, "ro.boot"),
+                       "\n")
+          .c_str());
 
   base::ScopedFD fd = ConnectToArcVmBootNotificationServer();
   if (!fd.is_valid())
@@ -928,7 +933,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&SendUpgradePropsToArcVmBootNotificationServer,
-                       std::move(params), serial_number_),
+                       current_cid_, std::move(params), serial_number_),
         base::BindOnce(&ArcVmClientAdapter::OnUpgradePropsSent,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
