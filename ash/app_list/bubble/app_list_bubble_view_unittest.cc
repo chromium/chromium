@@ -154,6 +154,27 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
+TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
+  // Simulate assistant being enabled.
+  Shell::Get()
+      ->app_list_controller()
+      ->GetSearchModel()
+      ->search_box()
+      ->SetShowAssistantButton(true);
+
+  ShowAppList();
+
+  // By default the assistant button is visible.
+  SearchBoxView* view = GetSearchBoxView();
+  EXPECT_TRUE(view->assistant_button()->GetVisible());
+  EXPECT_FALSE(view->close_button()->GetVisible());
+
+  // Typing text shows the close button instead.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_FALSE(view->assistant_button()->GetVisible());
+  EXPECT_TRUE(view->close_button()->GetVisible());
+}
+
 TEST_F(AppListBubbleViewTest, AppsPageShownByDefault) {
   ShowAppList();
 

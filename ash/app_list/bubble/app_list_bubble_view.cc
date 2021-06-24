@@ -109,7 +109,9 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 
   search_box_view_ = AddChildView(std::make_unique<SearchBoxView>(
       /*delegate=*/this, view_delegate, /*app_list_view=*/nullptr));
-  search_box_view_->Init(/*is_tablet_mode=*/false);
+  // Show the assistant button until the user types text.
+  search_box_view_->set_show_close_button_when_active(false);
+  search_box_view_->Init();
 
   apps_page_ =
       AddChildView(std::make_unique<AppListBubbleAppsPage>(view_delegate));

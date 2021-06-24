@@ -39,7 +39,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                 AppListView* app_list_view = nullptr);
   ~SearchBoxView() override;
 
-  void Init(bool is_tablet_mode);
+  void Init();
 
   // Must be called before the user interacts with the search box. Cannot be
   // part of Init() because the controller isn't available until after Init()
@@ -189,7 +189,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   ContentsView* contents_view_ = nullptr;
 
   // Whether tablet mode is active.
-  bool is_tablet_mode_ = false;
+  bool is_tablet_mode_;
 
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view.

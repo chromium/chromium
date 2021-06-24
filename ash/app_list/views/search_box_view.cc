@@ -90,17 +90,14 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              AppListView* app_list_view)
     : SearchBoxViewBase(delegate),
       view_delegate_(view_delegate),
-      app_list_view_(app_list_view) {
-  DCHECK(view_delegate_);
-}
+      app_list_view_(app_list_view),
+      is_tablet_mode_(view_delegate_->IsInTabletMode()) {}
 
 SearchBoxView::~SearchBoxView() {
   search_model_->search_box()->RemoveObserver(this);
 }
 
-void SearchBoxView::Init(bool is_tablet_mode) {
-  is_tablet_mode_ = is_tablet_mode;
-  set_show_close_button_when_active(true);
+void SearchBoxView::Init() {
   SearchBoxViewBase::Init();
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();

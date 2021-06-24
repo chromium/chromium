@@ -187,7 +187,7 @@ class SearchBoxViewBase : public views::View,
 
   // Whether the search box is active.
   bool is_search_box_active_ = false;
-  // Whether to show close button if the search box is active.
+  // Whether to show close button if the search box is active and empty.
   bool show_close_button_when_active_ = false;
   // Whether to show assistant button.
   bool show_assistant_button_ = false;

@@ -706,7 +706,8 @@ void AppListView::InitContents() {
   auto app_list_main_view = std::make_unique<AppListMainView>(delegate_, this);
   search_box_view_ =
       new SearchBoxView(app_list_main_view.get(), delegate_, this);
-  search_box_view_->Init(delegate_->IsInTabletMode());
+  search_box_view_->set_show_close_button_when_active(true);
+  search_box_view_->Init();
 
   // Assign |app_list_main_view_| here since it is accessed during Init().
   app_list_main_view_ = app_list_main_view.get();

@@ -94,7 +94,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
     auto view =
         std::make_unique<SearchBoxView>(this, &view_delegate_, app_list_view());
-    view->Init(/*is_tablet_mode=*/false);
+    view->set_show_close_button_when_active(true);
+    view->Init();
     view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 
     counter_view_ = widget_->GetContentsView()->AddChildView(
