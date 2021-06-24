@@ -31,7 +31,6 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "components/suggestions/suggestions_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -187,18 +186,13 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Returns true if custom links has been initialized and not disabled, false
   // otherwise.
   bool IsCustomLinksInitialized();
-  // Enables or disables custom links, but does not (un)initialize them. This is
-  // a Desktop-only setting and is remembered in the user prefs. Called when:
-  // 1) MV tiles are shown on any of the NTPs to override this setting based on
-  //    current default search provider selection, if applicable.
-  // 2) User switches between custom links and Most Visited sites on the 1P NTP.
+  // Enables or disables custom links, but does not (un)initialize them. Called
+  // when the user switches between custom links and Most Visited sites on the
+  // 1P Desktop NTP.
   void EnableCustomLinks(bool enable);
-  // Returns whether custom links are enabled. In addition to this setting, the
-  // user must have Google as their default search provider for custom links to
-  // be shown on the 1P and 3P local NTPs.
+  // Returns whether custom links are enabled.
   bool IsCustomLinksEnabled() const;
-  // Sets the visibility of the NTP tiles. This is a Desktop-only setting and is
-  // remembered in the user prefs.
+  // Sets the visibility of the NTP tiles.
   void SetShortcutsVisible(bool visible);
   // Returns whether NTP tiles should be shown.
   bool IsShortcutsVisible() const;
@@ -255,14 +249,6 @@ class MostVisitedSites : public history::TopSitesObserver,
                            ShouldDeduplicateDomainByRemovingMobilePrefixes);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesTest,
                            ShouldDeduplicateDomainByReplacingMobilePrefixes);
-
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  // Callback for when the value of the pref for showing custom links vs. most
-  // visited sites in the NTP tiles changes.
-  void OnCustomLinksEnabledPrefChanged();
-  // Callback for when the value of the pref for showing the NTP tiles changes.
-  void OnTilesVisibilityPrefChanged();
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 
   // This function tries to match the given |host| to a close fit in
   // |hosts_to_skip| by removing a prefix that is commonly used to redirect from
@@ -384,8 +370,6 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   base::ObserverList<Observer> observers_;
 
-  PrefChangeRegistrar pref_change_registrar_;
-
   // The maximum number of most visited sites to return.
   // Do not use directly. Use GetMaxNumSites() instead.
   size_t max_num_sites_;
@@ -393,6 +377,9 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Number of actions after custom link initialization. Set to -1 and not
   // incremented if custom links was not initialized during this session.
   int custom_links_action_count_ = -1;
+
+  bool is_custom_links_enabled_ = true;
+  bool is_shortcuts_visible_ = true;
 
   base::CallbackListSubscription suggestions_subscription_;
 
@@ -415,9 +402,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // For callbacks may be run after destruction, used exclusively for TopSites
   // (since it's used to detect whether there's a query in flight).
   base::WeakPtrFactory<MostVisitedSites> top_sites_weak_ptr_factory_{this};
-
-  // For callbacks may be run after destruction.
-  base::WeakPtrFactory<MostVisitedSites> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MostVisitedSites);
 };

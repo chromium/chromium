@@ -137,18 +137,6 @@ MostVisitedSites::MostVisitedSites(
       is_observing_(false) {
   DCHECK(prefs_);
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  pref_change_registrar_.Init(prefs_);
-  pref_change_registrar_.Add(
-      prefs::kNtpUseMostVisitedTiles,
-      base::BindRepeating(&MostVisitedSites::OnCustomLinksEnabledPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-  pref_change_registrar_.Add(
-      prefs::kNtpShortcutsVisible,
-      base::BindRepeating(&MostVisitedSites::OnTilesVisibilityPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
-
   // top_sites_ can be null in tests.
   // TODO(sfiera): have iOS use a dummy TopSites in its tests.
   DCHECK(suggestions_service_);
@@ -298,31 +286,25 @@ bool MostVisitedSites::IsCustomLinksInitialized() {
 }
 
 void MostVisitedSites::EnableCustomLinks(bool enable) {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  prefs_->SetBoolean(prefs::kNtpUseMostVisitedTiles, !enable);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+  if (is_custom_links_enabled_ != enable) {
+    is_custom_links_enabled_ = enable;
+    BuildCurrentTiles();
+  }
 }
 
 bool MostVisitedSites::IsCustomLinksEnabled() const {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  return !prefs_->GetBoolean(prefs::kNtpUseMostVisitedTiles);
-#else
-  return false;
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+  return is_custom_links_enabled_;
 }
 
 void MostVisitedSites::SetShortcutsVisible(bool visible) {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  prefs_->SetBoolean(prefs::kNtpShortcutsVisible, visible);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+  if (is_shortcuts_visible_ != visible) {
+    is_shortcuts_visible_ = visible;
+    BuildCurrentTiles();
+  }
 }
 
 bool MostVisitedSites::IsShortcutsVisible() const {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  return prefs_->GetBoolean(prefs::kNtpShortcutsVisible);
-#else
-  return true;
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+  return is_shortcuts_visible_;
 }
 
 bool MostVisitedSites::AddCustomLink(const GURL& url,
@@ -469,32 +451,12 @@ void MostVisitedSites::OnBlockedSitesChanged() {
 void MostVisitedSites::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNumPersonalTiles, 0);
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  registry->RegisterBooleanPref(prefs::kNtpUseMostVisitedTiles, false);
-  registry->RegisterBooleanPref(prefs::kNtpShortcutsVisible, true);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
 
 // static
 void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetInteger(prefs::kNumPersonalTiles, 0);
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-  prefs->SetBoolean(prefs::kNtpUseMostVisitedTiles, false);
-  prefs->SetBoolean(prefs::kNtpShortcutsVisible, true);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 }
-
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-
-void MostVisitedSites::OnCustomLinksEnabledPrefChanged() {
-  BuildCurrentTiles();
-}
-
-void MostVisitedSites::OnTilesVisibilityPrefChanged() {
-  BuildCurrentTiles();
-}
-
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 
 size_t MostVisitedSites::GetMaxNumSites() const {
   return max_num_sites_ + (custom_links_ && IsCustomLinksEnabled() ? 1 : 0);

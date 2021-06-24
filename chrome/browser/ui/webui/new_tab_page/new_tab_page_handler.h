@@ -39,10 +39,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace ntp_tiles {
-class MostVisitedSites;
-}  // namespace ntp_tiles
-
 namespace search_provider_logos {
 class LogoService;
 }  // namespace search_provider_logos
@@ -147,9 +143,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                         bool success,
                         std::unique_ptr<std::string> body);
 
+  bool IsCustomLinksEnabled() const;
+  bool IsShortcutsVisible() const;
+
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   InstantService* instant_service_;
-  std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
   NtpBackgroundService* ntp_background_service_;
   search_provider_logos::LogoService* logo_service_;
   GURL last_blocklisted_;

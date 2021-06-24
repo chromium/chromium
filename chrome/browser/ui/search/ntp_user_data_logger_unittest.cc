@@ -79,19 +79,8 @@ class TestNTPUserDataLogger : public NTPUserDataLogger {
     return is_custom_background_configured_;
   }
 
-  bool AreShortcutsCustomized() const override {
-    return are_shortcuts_customized_;
-  }
-
-  std::pair<bool, bool> GetCurrentShortcutSettings() const override {
-    return std::make_pair(using_most_visited_, is_visible_);
-  }
-
-  bool are_shortcuts_customized_ = false;
   bool is_custom_background_configured_ = false;
   bool is_google_ = true;
-  bool is_visible_ = true;
-  bool using_most_visited_ = true;
 };
 
 using NTPUserDataLoggerTest = testing::Test;
@@ -115,12 +104,14 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles) {
         i, TileSource::SUGGESTIONS_SERVICE, TileTitleSource::UNKNOWN,
         TileVisualType::ICON_REAL));
   }
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta);
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 
   // We should not log again for the same NTP.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta);
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.NumberOfTiles"),
               ElementsAre(Bucket(ntp_tiles::kMaxNumTiles, 1)));
 }
@@ -192,8 +183,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressions) {
       7, TileSource::POPULAR_BAKED_IN, TileTitleSource::META_TAG,
       TileVisualType::ICON_REAL));
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, base::TimeDelta::FromMilliseconds(73));
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+                              /*using_most_visited=*/true, /*is_visible=*/true);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.SuggestionsImpression"),
@@ -276,8 +268,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordRepeatedImpressions) {
       MakeNTPTileImpression(3, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
                             TileVisualType::ICON_REAL));
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, base::TimeDelta::FromMilliseconds(73));
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+                              /*using_most_visited=*/true, /*is_visible=*/true);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.SuggestionsImpression"),
@@ -324,8 +317,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordImpressionsForBinsBeyondMax) {
       ntp_tiles::kMaxNumTiles + 1, TileSource::TOP_SITES,
       TileTitleSource::UNKNOWN, TileVisualType::ICON_DEFAULT));
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, base::TimeDelta::FromMilliseconds(73));
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(base::TimeDelta::FromMilliseconds(73),
+                              /*using_most_visited=*/true, /*is_visible=*/true);
 
   std::vector<base::Bucket> expectedImpressions =
       FillImpressions(ntp_tiles::kMaxNumTiles, 1);
@@ -544,8 +538,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
       MakeNTPTileImpression(0, TileSource::TOP_SITES, TileTitleSource::UNKNOWN,
                             TileVisualType::ICON_REAL));
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.MostVisited"),
@@ -559,7 +554,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
                                          delta_tiles_loaded, 1);
 
   // We should not log again for the same NTP.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
   histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
                                          delta_tiles_loaded, 1);
 }
@@ -576,7 +572,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostLikelyLoadTime) {
       TileVisualType::ICON_REAL));
 
   base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(500);
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.MostVisited"),
@@ -598,8 +595,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordLoadTimeRemoteNTPOther) {
 
   base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.LocalNTP"),
@@ -634,7 +632,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressionsAge) {
       TileVisualType::ICON_REAL, favicon_base::IconType::kInvalid,
       base::Time::Now() - kSuggestionAge, GURL()));
 
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta);
+  logger.LogMostVisitedLoaded(delta, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "NewTabPage.SuggestionsImpressionAge.server"),
@@ -650,12 +649,12 @@ TEST_F(NTPUserDataLoggerTest,
 
   TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
   logger.is_google_ = false;
-  logger.are_shortcuts_customized_ = true;
 
   base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/false,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.Customized"),
               IsEmpty());
@@ -670,8 +669,9 @@ TEST_F(NTPUserDataLoggerTest,
 
   base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.CustomizedShortcuts"),
               IsEmpty());
@@ -685,8 +685,9 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
 
   base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
 
-  // Send the ALL_TILES_LOADED event, this should trigger emitting histograms.
-  logger.LogEvent(NTP_ALL_TILES_LOADED, delta_tiles_loaded);
+  // This should trigger emitting histograms.
+  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
+                              /*is_visible=*/true);
 
   // Attempt to log an event that is only supported when the default search
   // provider is Google.

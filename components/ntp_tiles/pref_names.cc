@@ -35,13 +35,5 @@ const char kPopularSitesVersionPref[] = "suggested_sites_version";
 const char kCustomLinksList[] = "custom_links.list";
 const char kCustomLinksInitialized[] = "custom_links.initialized";
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-// Tracks whether the user has chosen to hide the shortcuts tiles on the NTP.
-const char kNtpShortcutsVisible[] = "ntp.shortcust_visible";
-// Tracks whether the user has chosen to use custom links or most visited sites
-// for the shortcut tiles on the NTP.
-const char kNtpUseMostVisitedTiles[] = "ntp.use_most_visited_tiles";
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
-
 }  // namespace prefs
 }  // namespace ntp_tiles

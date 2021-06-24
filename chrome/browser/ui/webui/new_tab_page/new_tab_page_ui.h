@@ -14,8 +14,10 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom-forward.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,6 +46,7 @@ class InstantService;
 class MostVisitedHandler;
 class NewTabPageHandler;
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 class PromoBrowserCommandHandler;
 class RealboxHandler;
@@ -64,6 +67,7 @@ class NewTabPageUI
 
   static bool IsNewTabPageOrigin(const GURL& url);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void ResetProfilePrefs(PrefService* prefs);
   static bool IsDriveModuleEnabled(Profile* profile);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
@@ -158,6 +162,15 @@ class NewTabPageUI
   // prevent a potential white flicker.
   void UpdateBackgroundColor(const NtpTheme& theme);
 
+  bool IsCustomLinksEnabled() const;
+  bool IsShortcutsVisible() const;
+
+  // Callback for when the value of the pref for showing custom links vs. most
+  // visited sites in the NTP tiles changes.
+  void OnCustomLinksEnabledPrefChanged();
+  // Callback for when the value of the pref for showing the NTP tiles changes.
+  void OnTilesVisibilityPrefChanged();
+
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
@@ -183,6 +196,10 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
   std::unique_ptr<DriveHandler> drive_handler_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+
+  base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

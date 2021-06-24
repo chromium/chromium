@@ -22,6 +22,7 @@ enum NTPLoggingEventType {
   // Deleted: NTP_EXTERNAL_TILE_FALLBACK = 8,
   // Deleted: NTP_MOUSEOVER = 9
   // Deleted: NTP_TILE_LOADED = 10,
+  // Deleted: NTP_ALL_TILES_LOADED = 11,
   // Deleted: NTP_ALL_TILES_RECEIVED = 12,
   // Deleted: NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX = 13,
   // Deleted: NTP_VOICE_ACTION_ACTIVATE_KEYBOARD = 14,
@@ -41,10 +42,6 @@ enum NTPLoggingEventType {
   // Deleted: NTP_VOICE_ERROR_NO_MATCH = 28,
   // Deleted: NTP_VOICE_ERROR_OTHER = 29,
   // Deleted: NTP_MODULES_SHOWN = 83,
-
-  // All NTP tiles have finished loading (successfully or failing). Logged only
-  // by the single-iframe version of the NTP.
-  NTP_ALL_TILES_LOADED = 11,
 
   // A static Doodle was shown, coming from cache.
   NTP_STATIC_LOGO_SHOWN_FROM_CACHE = 30,

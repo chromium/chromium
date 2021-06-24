@@ -1432,6 +1432,8 @@ static_library("ui") {
       "webui/new_tab_page/new_tab_page_handler.h",
       "webui/new_tab_page/new_tab_page_ui.cc",
       "webui/new_tab_page/new_tab_page_ui.h",
+      "webui/new_tab_page/ntp_pref_names.cc",
+      "webui/new_tab_page/ntp_pref_names.h",
       "webui/new_tab_page/promo_browser_command/promo_browser_command_handler.cc",
       "webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h",
       "webui/new_tab_page/untrusted_source.cc",

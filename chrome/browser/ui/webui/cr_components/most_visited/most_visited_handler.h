@@ -40,6 +40,11 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   MostVisitedHandler& operator=(const MostVisitedHandler&) = delete;
   ~MostVisitedHandler() override;
 
+  // See MostVisitedSites::EnableCustomLinks.
+  void EnableCustomLinks(bool enable);
+  // See MostVisitedSites::SetShortcutsVisible.
+  void SetShortcutsVisible(bool visible);
+
   // most_visited::mojom::MostVisitedPageHandler:
   void AddMostVisitedTile(const GURL& url,
                           const std::string& title,
@@ -70,8 +75,6 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
       const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
-
-  bool IsCustomLinksEnabled();
 
   Profile* profile_;
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;

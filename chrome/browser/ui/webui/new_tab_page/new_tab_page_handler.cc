@@ -23,7 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -34,13 +33,13 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -320,8 +319,6 @@ NewTabPageHandler::NewTabPageHandler(
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : instant_service_(instant_service),
-      most_visited_sites_(
-          ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       logo_service_(LogoServiceFactory::GetForProfile(profile)),
@@ -359,16 +356,17 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
                                                bool visible) {
-  bool old_visible = most_visited_sites_->IsShortcutsVisible();
+  bool old_visible = IsShortcutsVisible();
   if (old_visible != visible) {
-    most_visited_sites_->SetShortcutsVisible(visible);
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, visible);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY,
                      base::TimeDelta() /* unused */);
   }
 
-  bool old_custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
+  bool old_custom_links_enabled = IsCustomLinksEnabled();
   if (old_custom_links_enabled != custom_links_enabled) {
-    most_visited_sites_->EnableCustomLinks(custom_links_enabled);
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles,
+                                     !custom_links_enabled);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
                      base::TimeDelta() /* unused */);
   }
@@ -376,8 +374,8 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
 
 void NewTabPageHandler::GetMostVisitedSettings(
     GetMostVisitedSettingsCallback callback) {
-  bool custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
-  bool visible = most_visited_sites_->IsShortcutsVisible();
+  bool custom_links_enabled = IsCustomLinksEnabled();
+  bool visible = IsShortcutsVisible();
   std::move(callback).Run(custom_links_enabled, visible);
 }
 
@@ -1028,4 +1026,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
                         ? encoded_ei_value->GetString()
                         : "";
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);
+}
+
+bool NewTabPageHandler::IsCustomLinksEnabled() const {
+  return !profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles);
+}
+
+bool NewTabPageHandler::IsShortcutsVisible() const {
+  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
 }

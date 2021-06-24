@@ -302,12 +302,13 @@ TEST_F(SearchIPCRouterTest, ProcessLogEventMsg) {
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  EXPECT_CALL(*mock_delegate(), OnLogEvent(NTP_ALL_TILES_LOADED, delta))
+  EXPECT_CALL(*mock_delegate(),
+              OnLogEvent(NTP_STATIC_LOGO_SHOWN_FROM_CACHE, delta))
       .Times(1);
   EXPECT_CALL(*policy, ShouldProcessLogEvent()).Times(1).WillOnce(Return(true));
 
-  GetSearchIPCRouter().LogEvent(GetSearchIPCRouterSeqNo(), NTP_ALL_TILES_LOADED,
-                                delta);
+  GetSearchIPCRouter().LogEvent(GetSearchIPCRouterSeqNo(),
+                                NTP_STATIC_LOGO_SHOWN_FROM_CACHE, delta);
 }
 
 TEST_F(SearchIPCRouterTest, IgnoreLogEventMsg) {
@@ -315,14 +316,15 @@ TEST_F(SearchIPCRouterTest, IgnoreLogEventMsg) {
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  EXPECT_CALL(*mock_delegate(), OnLogEvent(NTP_ALL_TILES_LOADED, delta))
+  EXPECT_CALL(*mock_delegate(),
+              OnLogEvent(NTP_STATIC_LOGO_SHOWN_FROM_CACHE, delta))
       .Times(0);
   EXPECT_CALL(*policy, ShouldProcessLogEvent())
       .Times(1)
       .WillOnce(Return(false));
 
-  GetSearchIPCRouter().LogEvent(GetSearchIPCRouterSeqNo(), NTP_ALL_TILES_LOADED,
-                                delta);
+  GetSearchIPCRouter().LogEvent(GetSearchIPCRouterSeqNo(),
+                                NTP_STATIC_LOGO_SHOWN_FROM_CACHE, delta);
 }
 
 TEST_F(SearchIPCRouterTest, ProcessLogSuggestionEventWithValueMsg) {

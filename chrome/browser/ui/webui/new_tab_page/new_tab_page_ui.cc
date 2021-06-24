@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
@@ -337,6 +338,16 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpUseMostVisitedTiles,
+      base::BindRepeating(&NewTabPageUI::OnCustomLinksEnabledPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpShortcutsVisible,
+      base::BindRepeating(&NewTabPageUI::OnTilesVisibilityPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   instant_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
 }
@@ -355,6 +366,14 @@ bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
 // static
 void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
+  registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
+  registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
+}
+
+// static
+void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
+  prefs->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
+  prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
 }
 
 // static
@@ -474,6 +493,8 @@ void NewTabPageUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_contents_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
       navigation_start_time_);
+  most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
+  most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
 void NewTabPageUI::NtpThemeChanged(const NtpTheme& theme) {
@@ -522,6 +543,26 @@ void NewTabPageUI::UpdateBackgroundColor(const NtpTheme& theme) {
                     std::string(encoded_url.data(), encoded_url.length()));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
+}
+
+bool NewTabPageUI::IsCustomLinksEnabled() const {
+  return !profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles);
+}
+
+bool NewTabPageUI::IsShortcutsVisible() const {
+  return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
+}
+
+void NewTabPageUI::OnCustomLinksEnabledPrefChanged() {
+  if (most_visited_page_handler_) {
+    most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
+  }
+}
+
+void NewTabPageUI::OnTilesVisibilityPrefChanged() {
+  if (most_visited_page_handler_) {
+    most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
+  }
 }
 
 // static
