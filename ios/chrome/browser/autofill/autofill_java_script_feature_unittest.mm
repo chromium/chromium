@@ -95,7 +95,7 @@ class AutofillJavaScriptFeatureTest : public ChromeWebTest {
     // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
-                 intValue] == int{next_available_id};
+                 intValue] == static_cast<int>(next_available_id);
     }));
   }
 

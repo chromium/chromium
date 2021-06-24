@@ -224,7 +224,7 @@ bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   });
 }
 

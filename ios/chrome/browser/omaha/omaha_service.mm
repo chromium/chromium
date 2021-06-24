@@ -57,9 +57,9 @@ namespace {
 // Number of hours to wait between successful requests.
 const int kHoursBetweenRequests = 5;
 // Minimal time to wait between retry requests.
-const CFTimeInterval kPostRetryBaseSeconds = 3600;
+const int kPostRetryBaseSeconds = 3600;
 // Maximal time to wait between retry requests.
-const CFTimeInterval kPostRetryMaxSeconds = 6 * kPostRetryBaseSeconds;
+const int64_t kPostRetryMaxSeconds = 6 * kPostRetryBaseSeconds;
 
 // Default last sent application version when none has been sent yet.
 const char kDefaultLastSentVersion[] = "0.0.0.0";

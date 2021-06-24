@@ -1657,7 +1657,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   NSDictionary* expected = @{
@@ -1885,7 +1885,7 @@ TEST_F(AutofillControllerJsTest, FillActiveFormFieldUsingRendererIDs) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   // Simulate form parsing to set renderer IDs.
