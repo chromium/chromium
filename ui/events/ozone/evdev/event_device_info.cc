@@ -607,6 +607,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
       {0x18d1, 0x5044},  // Google, Moonball PID (kakadu)
       {0x18d1, 0x504c},  // Google, Zed PID (coachz)
       {0x18d1, 0x5050},  // Google, Don PID (katsu)
+      {0x18d1, 0x5052},  // Google, Star PID (homestar)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
