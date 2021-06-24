@@ -187,15 +187,13 @@ void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
 void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
                                            uint32_t buffer_id,
                                            const gfx::Rect& bounds_rect,
-                                           int32_t surface_scale_factor,
                                            const gfx::Rect& damage_region) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   // This surface only commits one buffer per frame, use INT32_MIN to attach
   // the buffer to root_surface of wayland window.
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
-      surface_scale_factor, bounds_rect, gfx::RectF(), damage_region, false,
-      gfx::GpuFenceHandle()));
+      bounds_rect, gfx::RectF(), damage_region, false, gfx::GpuFenceHandle()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }

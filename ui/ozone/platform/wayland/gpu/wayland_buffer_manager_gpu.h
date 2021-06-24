@@ -111,7 +111,6 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void CommitBuffer(gfx::AcceleratedWidget widget,
                     uint32_t buffer_id,
                     const gfx::Rect& bounds_rect,
-                    int32_t surface_scale_factor,
                     const gfx::Rect& damage_region);
   // Send overlay configurations for a frame to a WaylandWindow identified by
   // |widget|.

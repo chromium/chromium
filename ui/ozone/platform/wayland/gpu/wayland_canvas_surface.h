@@ -76,7 +76,6 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   const gfx::AcceleratedWidget widget_;
 
   gfx::Size size_;
-  int32_t viewport_scale_ = 1;
   std::vector<std::unique_ptr<SharedMemoryBuffer>> buffers_;
 
   // Contains pending to be submitted buffers. The vector is processed as FIFO.
