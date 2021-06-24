@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Presubmit script for changes affecting //build/lacros"""
 
+USE_PYTHON3 = True
+
 
 def _CommonChecks(input_api, output_api):
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
