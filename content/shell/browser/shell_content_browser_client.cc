@@ -215,8 +215,7 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
   metadata.brand_version_list.emplace_back("content_shell",
                                            CONTENT_SHELL_MAJOR_VERSION);
   metadata.full_version = CONTENT_SHELL_VERSION;
-  metadata.platform = BuildOSCpuInfo(IncludeAndroidBuildNumber::Exclude,
-                                     IncludeAndroidModel::Exclude);
+  metadata.platform = "Unknown";
   metadata.architecture = BuildCpuInfo();
   metadata.model = BuildModelInfo();
 

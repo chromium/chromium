@@ -125,6 +125,9 @@
       name: "ClientHintUAPlatform",
       permissions_policy_name: "ch-ua-platform",
       depends_on: ["FeaturePolicyForClientHints"],
+      default_value_behind_flag: [
+        ["UACHPlatformEnabledByDefault", "EnableForAll"],
+      ],
     },
     {
       name: "ClientHintUAModel",

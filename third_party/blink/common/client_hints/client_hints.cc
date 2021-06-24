@@ -133,8 +133,20 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
 }
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
-  return (type == network::mojom::WebClientHintsType::kUA ||
-          type == network::mojom::WebClientHintsType::kUAMobile);
+  switch (type) {
+    case network::mojom::WebClientHintsType::kUA:
+    case network::mojom::WebClientHintsType::kUAMobile:
+      return true;
+      break;
+    case network::mojom::WebClientHintsType::kUAPlatform:
+      if (base::FeatureList::IsEnabled(features::kUACHPlatformEnabledByDefault))
+        return true;
+      break;
+    default:
+      return false;
+      break;
+  }
+  return false;
 }
 
 // Add a list of Client Hints headers to be removed to the output vector, based

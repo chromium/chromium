@@ -1123,5 +1123,10 @@
     "prefix": "early-hints",
     "bases": ["wpt_internal/resource-timing"],
     "args": ["--enable-features=EarlyHintsPreloadForNavigation"]
+  },
+  {
+    "prefix": "disable-ua-ch-platform-feature",
+    "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
+    "args": ["--disable-features=UACHPlatformEnabledByDefault"]
   }
 ]

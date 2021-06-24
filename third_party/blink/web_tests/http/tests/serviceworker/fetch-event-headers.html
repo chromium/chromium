@@ -31,7 +31,7 @@ promise_test(function(t) {
           header_names.sort();
           assert_array_equals(
             header_names,
-            ["accept", "sec-ch-ua", "sec-ch-ua-mobile",
+            ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform",
              "upgrade-insecure-requests", "user-agent"],
             'event.request has the expected headers.');
 

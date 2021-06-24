@@ -134,6 +134,7 @@ constexpr gfx::Size kSize(640, 480);
 
 const char kAllowedUAClientHint[] = "sec-ch-ua";
 const char kAllowedUAMobileClientHint[] = "sec-ch-ua-mobile";
+const char kAllowedUAPlatformClientHint[] = "sec-ch-ua-platform";
 
 class TestCustomProxyConfigClient
     : public network::mojom::CustomProxyConfigClient {
@@ -634,6 +635,11 @@ class PrefetchProxyBrowserTest
 
       if (std::string(blink::kClientHintsHeaderMapping[i]) ==
           std::string(kAllowedUAMobileClientHint)) {
+        continue;
+      }
+
+      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+          std::string(kAllowedUAPlatformClientHint)) {
         continue;
       }
 

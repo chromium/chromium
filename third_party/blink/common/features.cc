@@ -1021,5 +1021,9 @@ const base::Feature kClipboardCustomFormats{"ClipboardCustomFormats",
 const base::Feature kUsePageViewportInLCP{"UsePageViewportInLCP",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable `Sec-CH-UA-Platform` client hint and request header to be sent by
+// default
+const base::Feature kUACHPlatformEnabledByDefault{
+    "UACHPlatformEnabledByDefault", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
