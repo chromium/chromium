@@ -23,7 +23,9 @@ namespace ash {
 class AppListView;
 class AppListViewDelegate;
 class ContentsView;
+class ResultSelectionController;
 class SearchModel;
+class SearchResultBaseView;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
 // that controls what icon to display, what placeholder text to use for
@@ -38,6 +40,11 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   ~SearchBoxView() override;
 
   void Init(bool is_tablet_mode);
+
+  // Must be called before the user interacts with the search box. Cannot be
+  // part of Init() because the controller isn't available until after Init()
+  // is called.
+  void SetResultSelectionController(ResultSelectionController* controller);
 
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
@@ -96,7 +103,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void OnWallpaperColorsChanged();
 
   // Sets the autocomplete text if autocomplete conditions are met.
-  void ProcessAutocomplete();
+  void ProcessAutocomplete(SearchResultBaseView* first_result_view);
 
   // Updates the search box with |new_query| and starts a new search.
   void UpdateQuery(const std::u16string& new_query);
@@ -113,6 +120,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
     a11y_selection_on_search_result_ = value;
   }
 
+  ResultSelectionController* result_selection_controller_for_test() {
+    return result_selection_controller_;
+  }
   void set_highlight_range_for_test(const gfx::Range& range) {
     highlight_range_ = range;
   }
@@ -184,6 +194,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view.
   bool a11y_selection_on_search_result_ = false;
+
+  // Owned by SearchResultPageView (for fullscreen launcher) or
+  // AppListBubbleSearchPage (for bubble launcher).
+  ResultSelectionController* result_selection_controller_ = nullptr;
 
   base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
 

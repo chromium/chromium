@@ -88,6 +88,8 @@ void AppListMainView::AddContentsViews() {
   contents_view_ = AddChildView(std::move(contents_view));
 
   search_box_view_->set_contents_view(contents_view_);
+  search_box_view_->SetResultSelectionController(
+      contents_view_->search_result_page_view()->result_selection_controller());
 }
 
 void AppListMainView::ShowAppListWhenReady() {

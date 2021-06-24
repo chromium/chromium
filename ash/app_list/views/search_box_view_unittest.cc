@@ -10,23 +10,33 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
+#include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,7 +46,9 @@
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
-namespace test {
+namespace {
+
+using test::AppListTestViewDelegate;
 
 class KeyPressCounterView : public ContentsView {
  public:
@@ -90,7 +102,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
     widget_->Show();
     counter_view_->Init(view_delegate_.GetModel());
-    view_->set_contents_view(counter_view_);
+    SetContentsView(counter_view_);
   }
 
   void TearDown() override {
@@ -111,6 +123,13 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   void SetSearchBoxActive(bool active, ui::EventType type) {
     view()->SetSearchBoxActive(active, type);
+  }
+
+  void SetContentsView(ContentsView* contents_view) {
+    view()->set_contents_view(contents_view);
+    view()->SetResultSelectionController(
+        contents_view->search_result_page_view()
+            ->result_selection_controller());
   }
 
   int GetContentsViewKeyPressCountAndReset() {
@@ -641,7 +660,7 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
-  view()->set_contents_view(contents_view);
+  SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
       contents_view->search_result_page_view()
@@ -696,7 +715,7 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
-  view()->set_contents_view(contents_view);
+  SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
       contents_view->search_result_page_view()
@@ -727,7 +746,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
-  view()->set_contents_view(contents_view);
+  SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
       contents_view->search_result_page_view()
@@ -770,7 +789,7 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   auto* contents_view = widget()->GetContentsView()->AddChildView(
       std::make_unique<KeyPressCounterView>(app_list_view()));
   contents_view->Init(view_delegate()->GetModel());
-  view()->set_contents_view(contents_view);
+  SetContentsView(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
       contents_view->search_result_page_view()
@@ -842,6 +861,12 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
   SearchBoxViewAutocompleteTest() = default;
   ~SearchBoxViewAutocompleteTest() override = default;
 
+  void ProcessAutocomplete() {
+    SearchResultPageView* result_page_view =
+        view()->contents_view()->search_result_page_view();
+    view()->ProcessAutocomplete(result_page_view->first_result_view());
+  }
+
   // Expect the entire autocomplete suggestion if |should_autocomplete| is true,
   // expect only typed characters otherwise.
   void ExpectAutocompleteSuggestion(bool should_autocomplete) {
@@ -857,7 +882,7 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
                 view_delegate()->GetSearchModel()->search_box()->text());
       EXPECT_EQ(u"he", view()->search_box()->GetText());
       // ProcessAutocomplete should be a no-op.
-      view()->ProcessAutocomplete();
+      ProcessAutocomplete();
       // The autocomplete suggestion should still not be present.
       EXPECT_EQ(u"he", view()->search_box()->GetText());
     }
@@ -874,7 +899,7 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
     // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
     KeyPress(ui::VKEY_H);
     KeyPress(ui::VKEY_E);
-    view()->ProcessAutocomplete();
+    ProcessAutocomplete();
   }
 
   // Clears all existing text from search_box() and all existing SearchResults
@@ -964,7 +989,7 @@ TEST_F(SearchBoxViewAutocompleteTest,
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
 
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
@@ -985,7 +1010,7 @@ TEST_F(SearchBoxViewAutocompleteTest,
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
@@ -1006,7 +1031,7 @@ TEST_F(SearchBoxViewAutocompleteTest,
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
@@ -1026,7 +1051,7 @@ TEST_F(SearchBoxViewAutocompleteTest,
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
   EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
@@ -1042,7 +1067,7 @@ TEST_F(SearchBoxViewAutocompleteTest,
 
   // Send Z to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_Z);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
   // The text should not be autocompleted.
   EXPECT_EQ(view()->search_box()->GetText(), u"z");
 }
@@ -1058,7 +1083,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
 
   // After typing L, the highlighted text will be replaced by L.
   KeyPress(ui::VKEY_L);
@@ -1067,7 +1092,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
   EXPECT_EQ(u"", selected_text);
 
   // After handling autocomplete, the highlighted text will show again.
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
   selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
   EXPECT_EQ(u"lo world!", selected_text);
@@ -1096,7 +1121,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
 
   std::u16string selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
@@ -1108,12 +1133,85 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   composition_text.text = u"he";
   view()->search_box()->SetCompositionText(composition_text);
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
-  view()->ProcessAutocomplete();
+  ProcessAutocomplete();
 
   selected_text = view()->search_box()->GetSelectedText();
   EXPECT_EQ(view()->search_box()->GetText(), u"he");
   EXPECT_EQ(u"", selected_text);
 }
 
-}  // namespace test
+// TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase, then
+// parameterize them based on the AppListBubble flag.
+class SearchBoxViewAppListBubbleTest : public AshTestBase {
+ public:
+  SearchBoxViewAppListBubbleTest() {
+    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+  }
+  ~SearchBoxViewAppListBubbleTest() override = default;
+
+  void PressAndReleaseKey(ui::KeyboardCode key) {
+    GetEventGenerator()->PressKey(key, ui::EF_NONE);
+    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
+  }
+
+  static void AddSearchResult(const std::string& id,
+                              const std::u16string& title) {
+    SearchModel::SearchResults* search_results =
+        Shell::Get()->app_list_controller()->GetSearchModel()->results();
+    auto search_result = std::make_unique<TestSearchResult>();
+    search_result->set_result_id(id);
+    search_result->set_display_type(SearchResultDisplayType::kList);
+    search_result->set_title(title);
+    search_results->Add(std::move(search_result));
+  }
+
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_F(SearchBoxViewAppListBubbleTest, Autocomplete) {
+  GetAppListTestHelper()->ShowAppList();
+
+  // Type "he".
+  PressAndReleaseKey(ui::VKEY_H);
+  PressAndReleaseKey(ui::VKEY_E);
+
+  // Simulate "hello" being returned as a search result.
+  AddSearchResult("id", u"hello");
+  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
+
+  // The text autocompletes to "hello" and selects "llo".
+  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_EQ(view->search_box()->GetText(), u"hello");
+  EXPECT_EQ(view->search_box()->GetSelectedText(), u"llo");
+}
+
+TEST_F(SearchBoxViewAppListBubbleTest, ResultSelection) {
+  GetAppListTestHelper()->ShowAppList();
+  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  ResultSelectionController* controller =
+      view->result_selection_controller_for_test();
+
+  // Type "t".
+  PressAndReleaseKey(ui::VKEY_T);
+
+  // Simulate two results.
+  AddSearchResult("id1", u"title1");
+  AddSearchResult("id2", u"title2");
+  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
+
+  // By default the first item is selected.
+  SearchResult* result1 = controller->selected_result()->result();
+  ASSERT_TRUE(result1);
+  EXPECT_EQ(u"title1", result1->title());
+
+  // Move down one step.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  // Second item is selected.
+  SearchResult* result2 = controller->selected_result()->result();
+  ASSERT_TRUE(result2);
+  EXPECT_EQ(u"title2", result2->title());
+}
+
+}  // namespace
 }  // namespace ash

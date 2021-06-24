@@ -13,6 +13,10 @@ namespace ash {
 TestAppListClient::TestAppListClient() = default;
 TestAppListClient::~TestAppListClient() = default;
 
+void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {
+  last_search_query_ = trimmed_query;
+}
+
 void TestAppListClient::InvokeSearchResultAction(const std::string& result_id,
                                                  int action_index) {
   invoked_result_actions_.push_back(std::make_pair(result_id, action_index));

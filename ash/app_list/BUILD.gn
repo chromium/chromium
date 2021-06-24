@@ -225,6 +225,7 @@ source_set("unit_tests") {
     "app_list_presenter_unittest.cc",
     "app_list_unittest.cc",
     "bubble/app_list_bubble_event_filter_unittest.cc",
+    "bubble/app_list_bubble_search_page_unittest.cc",
     "bubble/app_list_bubble_view_unittest.cc",
     "bubble/recent_apps_view_unittest.cc",
     "bubble/scrollable_apps_grid_view_unittest.cc",

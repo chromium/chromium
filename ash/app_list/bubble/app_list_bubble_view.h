@@ -53,6 +53,7 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   AppListBubbleSearchPage* search_page_for_test() { return search_page_; }
 
  private:
+  AppListViewDelegate* const view_delegate_;
   SearchBoxView* search_box_view_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;

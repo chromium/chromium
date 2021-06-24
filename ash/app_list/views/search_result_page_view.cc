@@ -88,7 +88,7 @@ class SearchCardView : public views::View {
   }
   SearchCardView(const SearchCardView&) = delete;
   SearchCardView& operator=(const SearchCardView&) = delete;
-  ~SearchCardView() override {}
+  ~SearchCardView() override = default;
 };
 
 BEGIN_METADATA(SearchCardView, views::View)
@@ -146,7 +146,7 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
         gfx::Insets(0, kSeparatorPadding, 0, kSeparatorPadding)));
   }
 
-  ~HorizontalSeparator() override {}
+  ~HorizontalSeparator() override = default;
 
   // views::View overrides:
   const char* GetClassName() const override { return "HorizontalSeparator"; }
@@ -423,7 +423,8 @@ void SearchResultPageView::OnSearchResultContainerResultsChanged() {
                                                true /* default_selection */);
   // Update SearchBoxView search box autocomplete as necessary based on new
   // first result view.
-  AppListPage::contents_view()->GetSearchBoxView()->ProcessAutocomplete();
+  AppListPage::contents_view()->GetSearchBoxView()->ProcessAutocomplete(
+      first_result_view_);
 }
 
 void SearchResultPageView::Update() {

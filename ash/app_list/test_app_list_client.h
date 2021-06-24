@@ -17,7 +17,6 @@
 namespace ash {
 
 // A test implementation of AppListClient that records function call counts.
-// Registers itself as the presenter for the app list on construction.
 class TestAppListClient : public AppListClient {
  public:
   TestAppListClient();
@@ -25,7 +24,7 @@ class TestAppListClient : public AppListClient {
 
   // AppListClient:
   void OnAppListControllerDestroyed() override {}
-  void StartSearch(const std::u16string& trimmed_query) override {}
+  void StartSearch(const std::u16string& trimmed_query) override;
   void OpenSearchResult(int profile_id,
                         const std::string& result_id,
                         AppListSearchResultType result_type,
@@ -67,6 +66,8 @@ class TestAppListClient : public AppListClient {
       int position_index) override {}
   AppListNotifier* GetNotifier() override;
 
+  std::u16string last_search_query() { return last_search_query_; }
+
   // Returns the number of AppItems that have been activated. These items could
   // live in search, RecentAppsView, or ScrollableAppsGridView.
   int activate_item_count() const { return activate_item_count_; }
@@ -78,6 +79,7 @@ class TestAppListClient : public AppListClient {
   std::vector<SearchResultActionId> GetAndClearInvokedResultActions();
 
  private:
+  std::u16string last_search_query_;
   std::vector<SearchResultActionId> invoked_result_actions_;
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;

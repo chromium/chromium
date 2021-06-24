@@ -90,7 +90,9 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              AppListView* app_list_view)
     : SearchBoxViewBase(delegate),
       view_delegate_(view_delegate),
-      app_list_view_(app_list_view) {}
+      app_list_view_(app_list_view) {
+  DCHECK(view_delegate_);
+}
 
 SearchBoxView::~SearchBoxView() {
   search_model_->search_box()->RemoveObserver(this);
@@ -102,6 +104,12 @@ void SearchBoxView::Init(bool is_tablet_mode) {
   SearchBoxViewBase::Init();
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();
+}
+
+void SearchBoxView::SetResultSelectionController(
+    ResultSelectionController* controller) {
+  DCHECK(controller);
+  result_selection_controller_ = controller;
 }
 
 void SearchBoxView::OnTabletModeChanged(bool started) {
@@ -432,18 +440,11 @@ void SearchBoxView::OnWallpaperColorsChanged() {
   SchedulePaint();
 }
 
-void SearchBoxView::ProcessAutocomplete() {
+void SearchBoxView::ProcessAutocomplete(
+    SearchResultBaseView* first_result_view) {
   if (!ShouldProcessAutocomplete())
     return;
 
-  // TODO(crbug.com/1216082): Inject the result view.
-  if (!contents_view_) {
-    NOTIMPLEMENTED_LOG_ONCE();
-    return;
-  }
-
-  SearchResultBaseView* const first_result_view =
-      contents_view_->search_result_page_view()->first_result_view();
   if (!first_result_view || !first_result_view->selected())
     return;
 
@@ -612,12 +613,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  // TODO(crbug.com/1216082): Inject the result controller.
-  if (contents_view_) {
-    contents_view_->search_result_page_view()
-        ->result_selection_controller()
-        ->ClearSelection();
-  }
+  result_selection_controller_->ClearSelection();
   a11y_selection_on_search_result_ = false;
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
@@ -625,6 +621,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
 
 bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
                                    const ui::KeyEvent& key_event) {
+  DCHECK(result_selection_controller_);
   if (key_event.type() == ui::ET_KEY_RELEASED)
     return false;
 
@@ -643,20 +640,14 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  // TODO(crbug.com/1216082): Inject the result controller and result view.
-  if (!contents_view_) {
-    NOTIMPLEMENTED_LOG_ONCE();
-    return false;
-  }
-
   // Nothing to do if no results are available (the rest of the method handles
   // result actions and result traversal). This might happen if zero state
   // suggestions are not enabled, and search box textfield is empty.
-  if (!contents_view_->search_result_page_view()->first_result_view())
+  // TODO(crbug.com/1216082): Handle this case for bubble launcher.
+  if (contents_view_ &&
+      !contents_view_->search_result_page_view()->first_result_view()) {
     return false;
-
-  ResultSelectionController* selection_controller =
-      contents_view_->search_result_page_view()->result_selection_controller();
+  }
 
   // When search box is active, the focus cycles between close button and the
   // search_box - when close button is focused, traversal keys (arrows and
@@ -670,10 +661,10 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     }
 
     search_box()->RequestFocus();
-    if (selection_controller->MoveSelection(key_event) ==
+    if (result_selection_controller_->MoveSelection(key_event) ==
         ResultSelectionController::MoveResult::kResultChanged) {
       UpdateSearchBoxTextForSelectedResult(
-          selection_controller->selected_result()->result());
+          result_selection_controller_->selected_result()->result());
     }
     return true;
   }
@@ -683,7 +674,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     // Hitting Enter when focus is on search box opens the selected result.
     ui::KeyEvent event(key_event);
     SearchResultBaseView* selected_result =
-        selection_controller->selected_result();
+        result_selection_controller_->selected_result();
     if (selected_result && selected_result->result())
       selected_result->OnKeyEvent(&event);
     return true;
@@ -696,11 +687,12 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
        (key_event.key_code() == ui::VKEY_DELETE))) {
     ui::KeyEvent event(key_event);
     SearchResultBaseView* selected_result =
-        selection_controller->selected_result();
+        result_selection_controller_->selected_result();
     if (selected_result && selected_result->result())
       selected_result->OnKeyEvent(&event);
     // Reset the selected result to the default result.
-    selection_controller->ResetSelection(nullptr, true /* default_selection */);
+    result_selection_controller_->ResetSelection(nullptr,
+                                                 true /* default_selection */);
     search_box()->SetText(std::u16string());
     return true;
   }
@@ -717,8 +709,8 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       key_event.key_code() == ui::VKEY_TAB ||
       IsUnhandledUpDownKeyEvent(key_event) ||
       (IsUnhandledLeftRightKeyEvent(key_event) &&
-       selection_controller->selected_location_details() &&
-       selection_controller->selected_location_details()
+       result_selection_controller_->selected_location_details() &&
+       result_selection_controller_->selected_location_details()
            ->container_is_horizontal);
   if (!result_selection_traversal_key_event) {
     // Record the |last_key_pressed_| for autocomplete.
@@ -733,7 +725,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
     search_box()->ClearSelection();
 
   ResultSelectionController::MoveResult move_result =
-      selection_controller->MoveSelection(key_event);
+      result_selection_controller_->MoveSelection(key_event);
   switch (move_result) {
     case ResultSelectionController::MoveResult::kNone:
       // If the |ResultSelectionController| decided not to change selection,
@@ -747,7 +739,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       // while the search box is active).
       if (HasAutocompleteText())
         ClearAutocompleteText();
-      selection_controller->ClearSelection();
+      result_selection_controller_->ClearSelection();
 
       DCHECK(close_button()->GetVisible());
       close_button()->RequestFocus();
@@ -757,7 +749,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       break;
     case ResultSelectionController::MoveResult::kResultChanged:
       UpdateSearchBoxTextForSelectedResult(
-          selection_controller->selected_result()->result());
+          result_selection_controller_->selected_result()->result());
       break;
   }
 

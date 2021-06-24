@@ -12,14 +12,19 @@
 
 namespace ash {
 
+class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
+class SearchBoxView;
 enum class AppListViewState;
 
 class AppListTestHelper {
  public:
   AppListTestHelper();
   ~AppListTestHelper();
+
+  // Shows the app list on the default display.
+  void ShowAppList();
 
   // Show the app list in |display_id|, and wait until animation finishes.
   // Note: we usually don't care about the show source in tests.
@@ -59,7 +64,12 @@ class AppListTestHelper {
   // Run all pending in message loop to wait for animation to finish.
   void WaitUntilIdle();
 
+  // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
+
+  // Bubble launcher helpers.
+  SearchBoxView* GetBubbleSearchBoxView();
+  AppListBubbleSearchPage* GetBubbleSearchPage();
 
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
