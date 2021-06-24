@@ -671,4 +671,76 @@ IN_PROC_BROWSER_TEST_F(CommerceHintSkippAddToCartTest, AddToCartByForm) {
   WaitForCartCount(result);
 }
 
+class CommerceHintCheckoutPatternTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"checkout-pattern-mapping",
+            R"({"guitarcenter.com": "special_checkout_text"})"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintCheckoutPatternTest, VisitCheckout) {
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
+
+  NavigateToURL("https://www.guitarcenter.com/");
+  NavigateToURL("https://www.guitarcenter.com/special_checkout_text");
+  WaitForCartCount(kEmptyExpected);
+}
+
+class CommerceHintPurchaseButtonPatternTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"purchase-button-pattern-mapping",
+            R"({"guitarcenter.com": "special text"})"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintPurchaseButtonPatternTest, PurchaseByForm) {
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
+
+  NavigateToURL("https://www.guitarcenter.com/purchase.html");
+
+  std::string script = "document.getElementById('special-submit').click()";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+  content::TestNavigationObserver load_observer(web_contents());
+  load_observer.WaitForNavigationFinished();
+  WaitForCartCount(kEmptyExpected);
+}
+
+class CommerceHintPurchaseURLPatternTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"purchase-url-pattern-mapping",
+            R"({"guitarcenter.com": "special_purchase_text"})"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintPurchaseURLPatternTest, PurchaseByURL) {
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
+
+  NavigateToURL("https://www.guitarcenter.com/");
+  NavigateToURL("https://www.guitarcenter.com/special_purchase_text");
+  WaitForCartCount(kEmptyExpected);
+}
 }  // namespace
