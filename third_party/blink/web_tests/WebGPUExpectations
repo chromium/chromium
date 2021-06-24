@@ -171,14 +171,11 @@ wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:* [ Failure ]
 crbug.com/953991 wpt_internal/webgpu/000_run_me_first.html [ Slow ]
 
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=0;size=0 [ Failure ]
-crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=256;size=0 [ Failure ]
-crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=1024;size=0 [ Failure ]
-crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=1024;size="_undef_" [ Failure ]
 
-crbug.com/dawn/608 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
-crbug.com/dawn/608 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
+crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
+crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
 
-crbug.com/dawn/609 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
+crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
 
 crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
@@ -196,21 +193,11 @@ crbug.com/1192234 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 
-# Crash with validation layer.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
-
-# Timeout on Windows/NVIDIA with backend validation
-# Dawn doesn't implement these limits yet
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_pipeline_layout:* [ Failure Timeout ]
-
-# Failure in both D3D12 and Vulkan validation layers
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:* [ Skip ]
-
 # Assert in debug build
-crbug.com/dawn/614 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:* [ Crash ]
+crbug.com/dawn/614 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:binding_must_contain_resource_defined_in_layout:* [ Crash ]
 
 # Crash with validation layers (Vulkan/D3D12).
-crbug.com/dawn/615 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
+crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
 
 # Failures because 1d, 3d, stencil8 and depth16unorm aren't implemented.
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:texture_format_equality:* [ Failure Slow ]
@@ -301,8 +288,6 @@ crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canva
 # Precision. Need a better way to compare expected values
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texel_data:unorm_texel_data_in_shader:format="rgb10a2unorm";* [ Failure ]
 
-# 0x0x0 dispatch causes whole system crash on macOS 10.15.5 on Macmini7,1.
-crbug.com/dawn/640 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:* [ Skip ]
 
 ###
 ### Linux (Vulkan) specific
@@ -314,8 +299,6 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
 
-# Crash with backend validation.
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,memory_sync,buffer,ww:* [ Failure Crash Timeout ]
 
 ###
 ### Windows (D3D12) specific
@@ -323,13 +306,3 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
-
-# crashes because of an invalid enum
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="src-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="one-minus-src-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="dst-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="one-minus-dst-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="src-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="one-minus-src-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="dst-color";* [ Skip ]
-crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="one-minus-dst-color";* [ Skip ]
