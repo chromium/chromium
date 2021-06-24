@@ -55,14 +55,14 @@ export class RemoteCall {
   }
 
   /**
-   * Delivers the given message to the test code running in the File Manager.
+   * Sends a test |message| to the test code running in the File Manager.
    * @param {!Object} message
-   * @return {!Promise<!Object>} A promise which when fulfilled returns the
+   * @return {!Promise<*>} A promise which when fulfilled returns the
    *     result of executing test code with the given message.
    */
   sendMessage(message) {
-    return new Promise((onFulfilled) => {
-      chrome.runtime.sendMessage(this.origin_, message, {}, onFulfilled);
+    return new Promise((fulfill) => {
+      chrome.runtime.sendMessage(this.origin_, message, {}, fulfill);
     });
   }
 
@@ -451,24 +451,31 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Sends a test |message| to the test code running in the File Manager.
    * @param {!Object} message
-   * @return {!Promise<!Object>}
+   * @return {!Promise<*>}
    * @override
    */
   sendMessage(message) {
-    if (this.isSwaMode()) {
-      return new Promise((fulfill) => {
-        const command = {
-          name: 'callSwaTestMessageListener',
-          appId: message.appId,
-          data: JSON.stringify(message),
-        };
-        chrome.test.sendMessage(JSON.stringify(command), (response) => {
-          fulfill(/** @type {!Object} */ (JSON.parse(response)));
-        });
-      });
+    if (!this.isSwaMode()) {
+      return super.sendMessage(message);
     }
-    return super.sendMessage(message);
+
+    const command = {
+      name: 'callSwaTestMessageListener',
+      appId: message.appId,
+      data: JSON.stringify(message),
+    };
+
+    return new Promise((fulfill) => {
+      chrome.test.sendMessage(JSON.stringify(command), (response) => {
+        if (response === '"@undefined@"') {
+          fulfill(undefined);
+        } else {
+          fulfill(JSON.parse(response));
+        }
+      });
+    });
   }
 
   /**

@@ -45,6 +45,7 @@ test.util.registerRemoteTestUtils = () => {
 test.swaTestMessageListener = (request) => {
   request.contentWindow = window.contentWindow || window;
   test.util.executeTestMessage(request, (response) => {
+    response = response === undefined ? '@undefined@' : response;
     window.domAutomationController.send(JSON.stringify(response));
   });
 };
