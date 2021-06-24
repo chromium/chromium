@@ -371,8 +371,8 @@ void CastWebContentsImpl::PostMessageToMainFrame(
     target_origin_utf16 = base::UTF8ToUTF16(target_origin);
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents(), std::u16string(), target_origin_utf16, data_utf16,
-      std::move(ports));
+      web_contents()->GetPrimaryPage(), std::u16string(), target_origin_utf16,
+      data_utf16, std::move(ports));
 }
 
 void CastWebContentsImpl::ExecuteJavaScript(

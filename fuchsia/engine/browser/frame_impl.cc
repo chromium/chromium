@@ -782,7 +782,7 @@ void FrameImpl::PostMessage(std::string origin,
   }
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents_.get(), std::u16string(), origin_utf16,
+      web_contents_->GetPrimaryPage(), std::u16string(), origin_utf16,
       std::move(data_utf16), std::move(message_ports));
   result.set_response(fuchsia::web::Frame_PostMessage_Response());
   callback(std::move(result));

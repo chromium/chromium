@@ -629,7 +629,8 @@ void WebContentsAndroid::PostMessageToMainFrame(
     const JavaParamRef<jstring>& jtarget_origin,
     const JavaParamRef<jobjectArray>& jports) {
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents_, env, jsource_origin, jtarget_origin, jmessage, jports);
+      web_contents_->GetPrimaryPage(), env, jsource_origin, jtarget_origin,
+      jmessage, jports);
 }
 
 jboolean WebContentsAndroid::HasAccessedInitialDocument(

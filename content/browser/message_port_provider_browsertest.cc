@@ -39,8 +39,9 @@ IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostMessage) {
   const std::string message("success");
   DOMMessageQueue msg_queue;
   MessagePortProvider::PostMessageToFrame(
-      shell()->web_contents(), base::UTF8ToUTF16(source_origin),
-      base::UTF8ToUTF16(target_origin), base::UTF8ToUTF16(message));
+      shell()->web_contents()->GetPrimaryPage(),
+      base::UTF8ToUTF16(source_origin), base::UTF8ToUTF16(target_origin),
+      base::UTF8ToUTF16(message));
 
   // Verify that the message was received (and had the expected payload).
   std::string expected_test_reply;
