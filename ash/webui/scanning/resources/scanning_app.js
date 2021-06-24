@@ -245,6 +245,15 @@ Polymer({
     },
 
     /**
+     * Determines the arrow icon direction.
+     * @private {string}
+     */
+    arrowIconDirection_: {
+      type: String,
+      computed: 'computeArrowIconDirection_(opened_)',
+    },
+
+    /**
      * Used to track the number of times a user changes scan settings before
      * initiating a scan. This gets reset to 1 when the user selects a different
      * scanner (selecting a different scanner is treated as a setting change).
@@ -603,10 +612,10 @@ Polymer({
   },
 
   /**
-   * @return {string} Icon name.
+   * @return {string}
    * @private
    */
-  getArrowIcon_() {
+  computeArrowIconDirection_() {
     return this.opened_ ? 'cr:expand-less' : 'cr:expand-more';
   },
 
