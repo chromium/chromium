@@ -57,6 +57,15 @@ void ViewStructureBuilder_setViewStructureNodeHtmlInfo(
       env, obj, node, html_tag, css_display, html_attributes);
 }
 
+void ViewStructureBuilder_setViewStructureNodeHtmlMetadata(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobject>& node,
+    const base::android::JavaRef<jobjectArray>& metadata_strings) {
+  Java_ViewStructureBuilder_setViewStructureNodeHtmlMetadata(env, obj, node,
+                                                             metadata_strings);
+}
+
 void ViewStructureBuilder_commitViewStructureNode(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,

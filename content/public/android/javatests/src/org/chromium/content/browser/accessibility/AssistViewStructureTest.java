@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -253,6 +254,33 @@ public class AssistViewStructureTest {
         Assert.assertEquals("c", extras.getCharSequence("aria-label").toString());
         Assert.assertNull(extras.getCharSequence("disabled"));
         Assert.assertNull(extras.getCharSequence("onclick"));
+    }
+
+    /**
+     * Test that the snapshot contains HTML metadata.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testHtmlMetadata() throws Throwable {
+        TestViewStructureInterface root = getViewStructureFromHtml("<head>"
+                + "  <title>Hello World</title>"
+                + "  <script>console.log(\"Skip me!\");</script>"
+                + "  <meta charset=\"utf-8\">"
+                + "  <link ref=\"canonical\" href=\"https://abc.com\">"
+                + "  <script type=\"application/ld+json\">{}</script>"
+                + "</head>"
+                + "<body>Hello, world</body>")
+                                                  .getChild(0);
+        Bundle extras = root.getExtras();
+        ArrayList<String> metadata = extras.getStringArrayList("metadata");
+        Assert.assertNotNull(metadata);
+        Assert.assertEquals(4, metadata.size());
+        Assert.assertEquals("<title>Hello World</title>", metadata.get(0));
+        Assert.assertEquals("<meta charset=utf-8></meta>", metadata.get(1));
+        Assert.assertEquals("<link ref=canonical href=https://abc.com></link>", metadata.get(2));
+        Assert.assertEquals("<script type=application/ld+json>{}</script>", metadata.get(3));
     }
 
     /**

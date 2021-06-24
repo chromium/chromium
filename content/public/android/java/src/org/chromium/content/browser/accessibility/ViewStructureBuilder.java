@@ -14,6 +14,9 @@ import android.view.ViewStructure;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  */
 public class ViewStructureBuilder {
@@ -83,6 +86,14 @@ public class ViewStructureBuilder {
         for (String[] attr : htmlAttributes) {
             extras.putCharSequence(attr[0], attr[1]);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @CalledByNative
+    protected void setViewStructureNodeHtmlMetadata(ViewStructure node, String[] metadataStrings) {
+        Bundle extras = node.getExtras();
+        extras.putStringArrayList(
+                "metadata", new ArrayList<String>(Arrays.asList(metadataStrings)));
     }
 
     @TargetApi(Build.VERSION_CODES.M)

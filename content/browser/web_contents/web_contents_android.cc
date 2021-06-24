@@ -59,6 +59,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStringArray;
+using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
 namespace content {
@@ -150,6 +151,21 @@ void CreateJavaAXSnapshot(JNIEnv* env,
     ViewStructureBuilder_commitViewStructureNode(env, j_view_structure_builder,
                                                  j_view_structure_node);
   }
+}
+
+void AddTreeLevelDataToViewStructure(
+    JNIEnv* env,
+    const JavaRef<jobject>& view_structure_root,
+    const JavaRef<jobject>& view_structure_builder,
+    const ui::AXTreeUpdate& ax_tree_update) {
+  const auto& metadata_strings = ax_tree_update.tree_data.metadata;
+  if (metadata_strings.empty())
+    return;
+
+  ScopedJavaLocalRef<jobjectArray> j_metadata_strings =
+      ToJavaArrayOfStrings(env, metadata_strings);
+  ViewStructureBuilder_setViewStructureNodeHtmlMetadata(
+      env, view_structure_builder, view_structure_root, j_metadata_strings);
 }
 
 }  // namespace
@@ -683,6 +699,8 @@ void WebContentsAndroid::AXTreeSnapshotCallback(
   CreateJavaAXSnapshot(env, assistant_tree.get(),
                        assistant_tree->nodes.front().get(), view_structure_root,
                        view_structure_builder, true);
+  AddTreeLevelDataToViewStructure(env, view_structure_root,
+                                  view_structure_builder, result);
   RunRunnableAndroid(callback);
 }
 
@@ -709,7 +727,7 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
               &WebContentsAndroid::AXTreeSnapshotCallback,
               weak_factory_.GetWeakPtr(), std::move(j_view_structure_root),
               std::move(j_view_structure_builder), std::move(j_callback)),
-          ui::kAXModeComplete,
+          ui::AXMode(ui::kAXModeComplete.mode() | ui::AXMode::kHTMLMetadata),
           /* exclude_offscreen= */ false,
           /* max_nodes= */ 5000,
           /* timeout= */ base::TimeDelta::FromSeconds(2));
