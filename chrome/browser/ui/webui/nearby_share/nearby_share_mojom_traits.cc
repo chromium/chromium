@@ -32,6 +32,15 @@ StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::type(
 }
 
 // static
+absl::optional<GURL>
+StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::image_url(
+    const ShareTarget& share_target) {
+  return share_target.image_url && share_target.image_url->is_valid()
+             ? share_target.image_url
+             : absl::nullopt;
+}
+
+// static
 nearby_share::mojom::PayloadPreviewPtr
 StructTraits<nearby_share::mojom::ShareTargetDataView,
              ShareTarget>::payload_preview(const ShareTarget& share_target) {

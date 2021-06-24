@@ -6,6 +6,7 @@
 // So that mojo is defined.
 // #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 // #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
@@ -27,20 +28,45 @@ suite('DeviceTest', function() {
     deviceElement.remove();
   });
 
+  /** @return {!nearbyShare.mojom.ShareTarget} */
+  function getDefaultShareTarget() {
+    return /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+      id: {high: 0, low: 0},
+      name: 'Default Device Name',
+      type: nearbyShare.mojom.ShareTargetType.kPhone,
+      imageUrl: {
+        url: 'testImageURL',
+      },
+    });
+  }
+
   test('renders component', function() {
     assertEquals('NEARBY-DEVICE', deviceElement.tagName);
   });
 
   test('renders name', function() {
     const name = 'Device Name';
-    const shareTarget = /** @type {!nearbyShare.mojom.ShareTarget} */ ({
-      id: {high: 0, low: 0},
-      name,
-      type: nearbyShare.mojom.ShareTargetType.kPhone,
-    });
+    const shareTarget = getDefaultShareTarget();
+    shareTarget.name = name;
     deviceElement.shareTarget = shareTarget;
 
     const renderedName = deviceElement.$$('#name').textContent;
     assertEquals(name, renderedName);
+  });
+
+  test('renders target image', function() {
+    deviceElement.shareTarget = getDefaultShareTarget();
+
+    const renderedSource = deviceElement.$$('#share-target-image').src;
+    assertEquals('chrome://image/?testImageURL=s26', renderedSource);
+  });
+
+  test('renders blank target image', function() {
+    const shareTarget = getDefaultShareTarget();
+    shareTarget.imageUrl.url = '';
+    deviceElement.shareTarget = shareTarget;
+
+    const renderedSource = deviceElement.$$('#share-target-image').src;
+    assertEquals('', renderedSource);
   });
 });

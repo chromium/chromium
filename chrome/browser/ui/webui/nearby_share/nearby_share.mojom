@@ -7,6 +7,7 @@ module nearby_share.mojom;
 import "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom";
 import "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
 
 // Contains the minimum amount of information needed to show the user a preview
 // of their share when they are confirming a send or receive with a share
@@ -33,6 +34,8 @@ struct ShareTarget {
   string name;
   // Device type of this share target.
   ShareTargetType type;
+  // URL of the share target image.
+  url.mojom.Url? image_url;
   // Payload preview for the attachment(s).
   PayloadPreview payload_preview;
 };

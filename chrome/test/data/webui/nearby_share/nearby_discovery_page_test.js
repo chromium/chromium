@@ -198,6 +198,9 @@ suite('DiscoveryPageTest', function() {
       id: {high: BigInt(0), low: BigInt(nextId++)},
       name,
       type: nearbyShare.mojom.ShareTargetType.kPhone,
+      imageUrl: {
+        url: 'testImageURL',
+      },
       payloadPreview: {
         description: '',
         fileCount: 0,

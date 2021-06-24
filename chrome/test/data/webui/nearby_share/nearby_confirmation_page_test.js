@@ -93,6 +93,9 @@ suite('ConfirmatonPageTest', function() {
           id: {high: BigInt(0), low: BigInt(0)},
           name,
           type: nearbyShare.mojom.ShareTargetType.kPhone,
+          imageUrl: {
+            url: 'testImageURL',
+          },
           payloadPreview: null,
         });
     const renderedName = confirmationPageElement.$$('nearby-progress')

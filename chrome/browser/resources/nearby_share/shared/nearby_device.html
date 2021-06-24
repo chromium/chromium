@@ -56,8 +56,17 @@
       #icon {
         --nearby-device-icon-size: 15px;
         flex-shrink: 0;
-        height: 26px;
-        width: 26px;
+        height: var(--target-image-size);
+        width: var(--target-image-size);
+      }
+
+      #share-target-image {
+        border-radius: 20px;
+        /* Hide the image until it's downloaded. */
+        display: none;
+        flex-shrink: 0;
+        height: var(--target-image-size);
+        width: var(--target-image-size);
       }
 
       #name {
@@ -76,6 +85,8 @@
     <div id="wrapper" title="[[shareTarget.name]]">
       <nearby-device-icon id="icon" share-target="[[shareTarget]]">
       </nearby-device-icon>
+      <img id="share-target-image" src="[[getTargetImageUrl_(shareTarget)]]">
+      </img>
       <div id="name">[[shareTarget.name]]</div>
       <iron-icon id="done" icon="nearby-share:done"></iron-icon>
     </div>
