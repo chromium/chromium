@@ -599,6 +599,218 @@ TEST_F(ShimlessRmaServiceTest,
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetComponentList) {
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  // first component
+  rmad::ComponentRepairState* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  // second component
+  component = components_repair_state.mutable_state()
+                  ->mutable_components_repair()
+                  ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+  std::vector<rmad::GetStateReply> fake_states = {
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
+      [&](std::vector<mojom::ComponentPtr> components) {
+        EXPECT_EQ(2UL, components.size());
+        EXPECT_EQ(components[0]->component, mojom::ComponentType::kKeyboard);
+        EXPECT_EQ(components[0]->state, mojom::ComponentRepairState::kOriginal);
+        EXPECT_EQ(components[1]->component, mojom::ComponentType::kTrackpad);
+        EXPECT_EQ(components[1]->state, mojom::ComponentRepairState::kReplaced);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetComponentListFromWrongStateEmpty) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
+      [&](std::vector<mojom::ComponentPtr> components) {
+        EXPECT_EQ(0UL, components.size());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetComponentList) {
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  // first component
+  rmad::ComponentRepairState* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  // second component
+  component = components_repair_state.mutable_state()
+                  ->mutable_components_repair()
+                  ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  std::vector<rmad::GetStateReply> fake_states = {
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
+        EXPECT_EQ(2, state.components_repair().components_size());
+        EXPECT_EQ(state.components_repair().components(0).name(),
+                  rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
+        EXPECT_EQ(state.components_repair().components(0).repair_state(),
+                  rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+        EXPECT_EQ(state.components_repair().components(1).name(),
+                  rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
+        EXPECT_EQ(state.components_repair().components(1).repair_state(),
+                  rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  std::vector<mojom::ComponentPtr> components;
+  components.push_back(mojom::Component::New(
+      mojom::ComponentType::kKeyboard, mojom::ComponentRepairState::kReplaced));
+  components.push_back(mojom::Component::New(
+      mojom::ComponentType::kTrackpad, mojom::ComponentRepairState::kOriginal));
+
+  shimless_rma_provider_->SetComponentList(
+      std::move(components),
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetComponentListFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  std::vector<mojom::ComponentPtr> components;
+  components.push_back(mojom::Component::New(
+      mojom::ComponentType::kKeyboard, mojom::ComponentRepairState::kReplaced));
+
+  shimless_rma_provider_->SetComponentList(
+      std::move(components),
+      base::BindLambdaForTesting(
+          [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+            EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+            EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  // first component
+  rmad::ComponentRepairState* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_TRACKPAD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  // second component
+  component = components_repair_state.mutable_state()
+                  ->mutable_components_repair()
+                  ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_ORIGINAL);
+  std::vector<rmad::GetStateReply> fake_states = {
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
+        EXPECT_EQ(1, state.components_repair().components_size());
+        EXPECT_EQ(state.components_repair().components(0).name(),
+                  rmad::ComponentRepairState::RMAD_COMPONENT_MAINBOARD_REWORK);
+        EXPECT_EQ(state.components_repair().components(0).repair_state(),
+                  rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReworkMainboard(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}  // namespace shimless_rma
+
+TEST_F(ShimlessRmaServiceTest, ReworkMainboardFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReworkMainboard(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 class FakeErrorObserver : public mojom::ErrorObserver {
  public:
   void OnError(mojom::RmadErrorCode error) override {

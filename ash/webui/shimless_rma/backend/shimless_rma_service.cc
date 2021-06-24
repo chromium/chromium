@@ -18,6 +18,12 @@ using StateTraits =
 
 using ErrorTraits = mojo::EnumTraits<mojom::RmadErrorCode, rmad::RmadErrorCode>;
 
+using ComponentTraits = mojo::EnumTraits<mojom::ComponentType,
+                                         rmad::ComponentRepairState::Component>;
+
+using RepairTraits = mojo::EnumTraits<mojom::ComponentRepairState,
+                                      rmad::ComponentRepairState::RepairState>;
+
 using CalibrationTraits =
     mojo::EnumTraits<mojom::CalibrationComponent,
                      rmad::CalibrateComponentsState::CalibrationComponent>;
@@ -166,14 +172,72 @@ void ShimlessRmaService::SetRsuDisableWriteProtectCode(
 }
 
 void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
+  std::vector<mojom::ComponentPtr> components;
+  if (state_proto_.state_case() != rmad::RmadState::kComponentsRepair) {
+    LOG(ERROR) << "GetComponentList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    components.reserve(state_proto_.components_repair().components_size());
+    for (auto component : state_proto_.components_repair().components()) {
+      components.push_back(mojom::Component::New(
+          ComponentTraits::ToMojom(component.name()),
+          RepairTraits::ToMojom(component.repair_state())));
+    }
+  }
+  std::move(callback).Run(std::move(components));
 }
 
 void ShimlessRmaService::SetComponentList(
     std::vector<mojom::ComponentPtr> component_list,
     SetComponentListCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kComponentsRepair) {
+    LOG(ERROR) << "SetComponentList called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_components_repair()->clear_components();
+  state_proto_.mutable_components_repair()->mutable_components()->Reserve(
+      component_list.size());
+  for (auto& component : component_list) {
+    rmad::ComponentRepairState::Component rmad_component;
+    rmad::ComponentRepairState::RepairState rmad_repair_state;
+    ComponentTraits::FromMojom(component->component, &rmad_component);
+    RepairTraits::FromMojom(component->state, &rmad_repair_state);
+    rmad::ComponentRepairState* proto_component =
+        state_proto_.mutable_components_repair()->add_components();
+    proto_component->set_name(rmad_component);
+    proto_component->set_repair_state(rmad_repair_state);
+  }
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kComponentsRepair) {
+    LOG(ERROR) << "ReworkMainboard called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  // Create a new proto so that the full component list is retained while
+  // transitioning to the next state.
+  // This is not strictly necessary, but as the UX should never display
+  // 'mainboard' it reduces the chance of error.
+  rmad::RmadState state;
+  state.set_allocated_components_repair(new rmad::ComponentsRepairState());
+  rmad::ComponentRepairState* component =
+      state.mutable_components_repair()->add_components();
+  component->set_name(
+      rmad::ComponentRepairState::RMAD_COMPONENT_MAINBOARD_REWORK);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_REPLACED);
+
+  chromeos::RmadClient::Get()->TransitionNextState(
+      state,
+      base::BindOnce(
+          &ShimlessRmaService::OnGetStateResponse<ReworkMainboardCallback>,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShimlessRmaService::ReimageRequired(ReimageRequiredCallback callback) {
