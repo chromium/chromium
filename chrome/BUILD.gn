@@ -296,6 +296,10 @@ if (!is_android && !is_mac) {
         ldflags += [ "-Wl,--version-script=" +
                      rebase_path(version_script, root_build_dir) ]
       }
+
+      if (is_chromeos_lacros) {
+        deps += [ "//chromeos/crosapi/mojom" ]
+      }
     }
 
     if (is_chromeos_ash || is_win) {

@@ -126,63 +126,56 @@ LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
 LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     std::unique_ptr<LacrosChromeServiceDelegate> delegate)
     : delegate_(std::move(delegate)),
+      // If crosapi is disabled, use the empty params.
+      // Otherwise, read the startup data from the inherited FD.
+      init_params_(disable_crosapi_for_testing_
+                       ? crosapi::mojom::BrowserInitParams::New()
+                       : ReadStartupBrowserInitParams()),
       sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
-  if (disable_crosapi_for_testing_) {
-    // Tests don't call BrowserService::InitDeprecated(), so provide
-    // BrowserInitParams with default values.
-    init_params_ = crosapi::mojom::BrowserInitParams::New();
+  DCHECK(init_params_);
+  if (init_params_->idle_info) {
+    // Presence of initial |idle_info| indicates that ash-chrome can stream
+    // idle info updates, so instantiate under Streaming mode, using
+    // |idle_info| as initial cached values.
+    system_idle_cache_ =
+        std::make_unique<SystemIdleCache>(*init_params_->idle_info);
 
-    // To simplify testing, instantiate under Fallback mode.
-    system_idle_cache_ = std::make_unique<SystemIdleCache>();
-
+    // After construction finishes, start caching.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceImpl::StartSystemIdleCache,
+                       weak_factory_.GetWeakPtr()));
   } else {
-    // Read the startup data from the inherited FD.
-    init_params_ = ReadStartupBrowserInitParams();
-    DCHECK(init_params_);
-    if (init_params_->idle_info) {
-      // Presence of initial |idle_info| indicates that ash-chrome can stream
-      // idle info updates, so instantiate under Streaming mode, using
-      // |idle_info| as initial cached values.
-      system_idle_cache_ =
-          std::make_unique<SystemIdleCache>(*init_params_->idle_info);
+    // Ash-chrome cannot stream, so instantiate under fallback mode.
+    system_idle_cache_ = std::make_unique<SystemIdleCache>();
+  }
 
-      // After construction finishes, start caching.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LacrosChromeServiceImpl::StartSystemIdleCache,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      // Ash-chrome cannot stream, so instantiate under fallback mode.
-      system_idle_cache_ = std::make_unique<SystemIdleCache>();
-    }
+  if (init_params_->native_theme_info) {
+    // Start Lacros' native theme caching, since it is available in Ash.
+    native_theme_cache_ =
+        std::make_unique<NativeThemeCache>(*init_params_->native_theme_info);
 
-    if (init_params_->native_theme_info) {
-      // Start Lacros' native theme caching, since it is available in Ash.
-      native_theme_cache_ =
-          std::make_unique<NativeThemeCache>(*init_params_->native_theme_info);
+    // After construction finishes, start caching.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceImpl::StartNativeThemeCache,
+                       weak_factory_.GetWeakPtr()));
+  }
 
-      // After construction finishes, start caching.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LacrosChromeServiceImpl::StartNativeThemeCache,
-                         weak_factory_.GetWeakPtr()));
-    }
-
-    // Short term workaround: if --crosapi-mojo-platform-channel-handle is
-    // available, close --mojo-platform-channel-handle, and remove it
-    // from command line. It is for backward compatibility support by
-    // ash-chrome.
-    // TODO(crbug.com/1180712): Remove this, when ash-chrome stops to support
-    // legacy invitation flow.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle) &&
-        command_line->HasSwitch(mojo::PlatformChannel::kHandleSwitch)) {
-      std::ignore = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
-          *command_line);
-      command_line->RemoveSwitch(mojo::PlatformChannel::kHandleSwitch);
-    }
+  // Short term workaround: if --crosapi-mojo-platform-channel-handle is
+  // available, close --mojo-platform-channel-handle, and remove it
+  // from command line. It is for backward compatibility support by
+  // ash-chrome.
+  // TODO(crbug.com/1180712): Remove this, when ash-chrome stops to support
+  // legacy invitation flow.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle) &&
+      command_line->HasSwitch(mojo::PlatformChannel::kHandleSwitch)) {
+    std::ignore = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
+        *command_line);
+    command_line->RemoveSwitch(mojo::PlatformChannel::kHandleSwitch);
   }
 
   // The sequence on which this object was constructed, and thus affine to.
@@ -331,7 +324,6 @@ void LacrosChromeServiceImpl::BindReceiver() {
           mojo::PendingRemote<crosapi::mojom::Crosapi>(
               invitation.ExtractMessagePipe(0), /*version=*/0)));
 
-  delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;
 
   if (CrosapiVersion()) {

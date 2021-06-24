@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -32,12 +30,6 @@
 namespace {
 
 constexpr char kHistogramsFilename[] = "lacros_histograms.txt";
-
-// Default directories for the ash-side primary user.
-// TODO(https://crbug.com/1150702): Remove these after Lacros drops support for
-// Chrome OS M89.
-constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
-constexpr char kDefaultDownloadsPath[] = "/home/chronos/user/MyFiles/Downloads";
 
 std::string GetCompressedHistograms() {
   std::string histograms =
@@ -57,29 +49,6 @@ std::string GetCompressedHistograms() {
 LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
 
 LacrosChromeServiceDelegateImpl::~LacrosChromeServiceDelegateImpl() = default;
-
-void LacrosChromeServiceDelegateImpl::OnInitialized(
-    const crosapi::mojom::BrowserInitParams& init_params) {
-  if (init_params.default_paths) {
-    // Set up default paths with values provided by ash.
-    chrome::SetLacrosDefaultPaths(init_params.default_paths->documents,
-                                  init_params.default_paths->downloads);
-  } else {
-    // On older ash, provide some defaults.
-    // TODO(https://crbug.com/1150702): Remove this block after Lacros drops
-    // support for Chrome OS M89.
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      // On device, use /home/chronos/user paths.
-      chrome::SetLacrosDefaultPaths(base::FilePath(kMyFilesPath),
-                                    base::FilePath(kDefaultDownloadsPath));
-    } else {
-      // For developers on Linux desktop, just pick reasonable defaults.
-      base::FilePath home_dir = base::GetHomeDir();
-      chrome::SetLacrosDefaultPaths(home_dir.Append("Documents"),
-                                    home_dir.Append("Downloads"));
-    }
-  }
-}
 
 void LacrosChromeServiceDelegateImpl::NewWindow(bool incognito) {
   // TODO(crbug.com/1102815): Find what profile should be used.

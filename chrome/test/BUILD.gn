@@ -6003,7 +6003,6 @@ test("unit_tests") {
     assert(enable_system_notifications)
     sources += [
       "../browser/lacros/client_cert_store_lacros_unittest.cc",
-      "../browser/lacros/lacros_chrome_service_delegate_impl_unittest.cc",
       "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",
       "../browser/metrics/lacros_metrics_provider_unittest.cc",

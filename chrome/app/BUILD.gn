@@ -184,7 +184,10 @@ static_library("test_support") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 
   if (enable_plugins && enable_nacl) {

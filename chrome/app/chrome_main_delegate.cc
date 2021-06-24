@@ -179,6 +179,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_chrome_service_delegate_impl.h"
+#include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -544,6 +546,15 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // sequences later.
   lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
       std::make_unique<LacrosChromeServiceDelegateImpl>());
+  {
+    const crosapi::mojom::BrowserInitParams* init_params =
+        lacros_chrome_service_->init_params();
+    // default_paths may null on browser_tests.
+    if (init_params->default_paths) {
+      chrome::SetLacrosDefaultPaths(init_params->default_paths->documents,
+                                    init_params->default_paths->downloads);
+    }
+  }
 #endif
 
   ChromeFeatureListCreator* chrome_feature_list_creator =

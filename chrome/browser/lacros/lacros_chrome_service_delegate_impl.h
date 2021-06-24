@@ -21,8 +21,6 @@ class LacrosChromeServiceDelegateImpl
   ~LacrosChromeServiceDelegateImpl() override;
 
   // chromeos::LacrosChromeServiceDelegate:
-  void OnInitialized(
-      const crosapi::mojom::BrowserInitParams& init_params) override;
   void NewWindow(bool incognito) override;
   void NewTab() override;
   void RestoreTab() override;
