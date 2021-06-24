@@ -241,16 +241,60 @@ void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
 }
 
 void ShimlessRmaService::ReimageRequired(ReimageRequiredCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateRoFirmware) {
+    LOG(ERROR) << "ReimageRequired called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(true);
+    return;
+  }
+  std::move(callback).Run(!state_proto_.update_ro_firmware().optional());
 }
 
 void ShimlessRmaService::ReimageSkipped(ReimageSkippedCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateRoFirmware) {
+    LOG(ERROR) << "ReimageSkipped called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  // TODO(gavindodd): Is it better to just rely on rmad to enforce this?
+  if (!state_proto_.update_ro_firmware().optional()) {
+    LOG(ERROR) << "ReimageSkipped called when reimage required.";
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_ro_firmware()->set_update(
+      rmad::UpdateRoFirmwareState::RMAD_UPDATE_SKIP);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReimageFromDownload(
     ReimageFromDownloadCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateRoFirmware) {
+    LOG(ERROR) << "ReimageFromDownload called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_ro_firmware()->set_update(
+      rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_DOWNLOAD);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReimageFromUsb(ReimageFromUsbCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateRoFirmware) {
+    LOG(ERROR) << "ReimageFromUsb called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_ro_firmware()->set_update(
+      rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_RECOVERY_UTILITY);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetRegionList(GetRegionListCallback callback) {}

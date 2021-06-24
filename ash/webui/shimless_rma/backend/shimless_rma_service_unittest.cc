@@ -811,6 +811,250 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboardFromWrongStateFails) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, ReimageRequiredTrue) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageRequired(
+      base::BindLambdaForTesting([&](bool required) {
+        EXPECT_EQ(true, required);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageRequiredFalse) {
+  rmad::GetStateReply update_firmware_state =
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK);
+  update_firmware_state.mutable_state()
+      ->mutable_update_ro_firmware()
+      ->set_optional(true);
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_firmware_state,
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageRequired(
+      base::BindLambdaForTesting([&](bool required) {
+        EXPECT_EQ(false, required);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageRequiredFromWrongStateTrue) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageRequired(
+      base::BindLambdaForTesting([&](bool required) {
+        EXPECT_EQ(true, required);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageSkipped) {
+  rmad::GetStateReply update_firmware_state =
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK);
+  update_firmware_state.mutable_state()
+      ->mutable_update_ro_firmware()
+      ->set_optional(true);
+  std::vector<rmad::GetStateReply> fake_states = {
+      update_firmware_state,
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kUpdateRoFirmware);
+        EXPECT_EQ(state.update_ro_firmware().update(),
+                  rmad::UpdateRoFirmwareState::RMAD_UPDATE_SKIP);
+        EXPECT_EQ(state.update_ro_firmware().optional(), true);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageSkipped(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageSkippedWhenRequiredFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageSkipped(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageSkippedFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageRequired(
+      base::BindLambdaForTesting([&](bool required) {
+        EXPECT_EQ(true, required);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageFromDownload) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kUpdateRoFirmware);
+        EXPECT_EQ(state.update_ro_firmware().update(),
+                  rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_DOWNLOAD);
+        EXPECT_EQ(state.update_ro_firmware().optional(), false);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageFromDownload(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageFromDownloadFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageFromDownload(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageFromUsb) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kUpdateRoFirmware);
+        EXPECT_EQ(
+            state.update_ro_firmware().update(),
+            rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_RECOVERY_UTILITY);
+        EXPECT_EQ(state.update_ro_firmware().optional(), false);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageFromUsb(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ReimageFromUsbFromWrongStateFails) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ReimageFromUsb(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, mojom::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, mojom::RmadErrorCode::kRequestInvalid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 class FakeErrorObserver : public mojom::ErrorObserver {
  public:
   void OnError(mojom::RmadErrorCode error) override {
