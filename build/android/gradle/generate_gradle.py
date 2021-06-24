@@ -523,7 +523,7 @@ def _GenerateBaseVars(generator, build_vars):
   variables['compile_sdk_version'] = (
       'android-%s' % build_vars['compile_sdk_version'])
   target_sdk_version = build_vars['android_sdk_version']
-  if target_sdk_version.isalpha():
+  if str(target_sdk_version).isalpha():
     target_sdk_version = '"{}"'.format(target_sdk_version)
   variables['target_sdk_version'] = target_sdk_version
   variables['use_gradle_process_resources'] = (
