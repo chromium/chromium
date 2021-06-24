@@ -155,7 +155,6 @@ Polymer({
           !response.result.typeState.cellular.eid ||
           !response.result.typeState.cellular.iccid) {
         this.eSimNetworkState_ = null;
-        console.warn('Unable to find eSIM network with GUID: ', this.guid_);
         return;
       }
       this.eSimNetworkState_ = response.result;
