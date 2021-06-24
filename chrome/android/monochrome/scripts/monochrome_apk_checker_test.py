@@ -55,7 +55,7 @@ WEBVIEW_SPECIFIC = BuildFileMatchRegex(
 CHROME_CHANGES = BuildFileMatchRegex(
     r'AndroidManifest\.xml',
     r'resources\.arsc',
-    r'classes\d?\.dex',
+    r'classes\d*\.dex',
     r'res/.*\.xml', # Resource id isn't same
     r'assets/unwind_cfi_32', # Generated from apk's shared library
      # All pak files except chrome_100_percent.pak are different
