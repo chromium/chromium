@@ -47220,6 +47220,7 @@ from previous Chrome versions.
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
+  <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>
   <int value="-446879089" label="BluetoothSessionizedMetrics:enabled"/>
@@ -47987,6 +47988,7 @@ from previous Chrome versions.
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
+  <int value="226590039" label="OverviewButton:disabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>

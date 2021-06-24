@@ -275,6 +275,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsSettingsAppNotificationsPage;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOverviewButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPerDeskShelf;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHubCameraRoll;

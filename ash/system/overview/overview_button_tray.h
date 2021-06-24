@@ -82,8 +82,6 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
  private:
   friend class OverviewButtonTrayTest;
 
-  // Sets the icon to visible if tablet mode is enabled and
-  // OverviewController::CanSelect.
   void UpdateIconVisibility();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.

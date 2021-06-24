@@ -4,6 +4,7 @@
 
 #include "ash/system/overview/overview_button_tray.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -192,10 +193,11 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 }
 
 void OverviewButtonTray::UpdateIconVisibility() {
-  // The visibility of the OverviewButtonTray has diverged from
-  // OverviewController::CanSelect. The visibility of the button should
-  // not change during transient times in which CanSelect is false. Such as when
-  // a modal dialog is present.
+  if (base::FeatureList::IsEnabled(features::kOverviewButton)) {
+    SetVisiblePreferred(true);
+    return;
+  }
+
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   bool active_session = session_controller->GetSessionState() ==

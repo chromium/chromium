@@ -725,6 +725,9 @@ const base::Feature kOsSettingsAppNotificationsPage{
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kOverviewButton{"OverviewButton",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
 const base::Feature kPerDeskShelf{"PerDeskShelf",

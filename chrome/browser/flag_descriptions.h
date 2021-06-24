@@ -1092,6 +1092,9 @@ extern const char kOsSettingsAppNotificationsPageDescription[];
 extern const char kOsSettingsDeepLinkingName[];
 extern const char kOsSettingsDeepLinkingDescription[];
 
+extern const char kOverviewButtonName[];
+extern const char kOverviewButtonDescription[];
+
 extern const char kEnableDeJellyName[];
 extern const char kEnableDeJellyDescription[];
 
