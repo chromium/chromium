@@ -29,6 +29,8 @@ static_library("test_support") {
 
   sources = [
     "fake_bluetooth_adapter.h",
+    "fake_feature_status_tracker.cc",
+    "fake_feature_status_tracker.h",
     "mock_bluetooth_enabled_provider.cc",
     "mock_bluetooth_enabled_provider.h",
     "mock_quick_pair_feature_status_tracker.cc",
