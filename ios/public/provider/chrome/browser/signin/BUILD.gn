@@ -35,6 +35,8 @@ source_set("test_support") {
     "fake_chrome_identity_interaction_manager.mm",
     "fake_chrome_identity_service.h",
     "fake_chrome_identity_service.mm",
+    "fake_chrome_trusted_vault_service.h",
+    "fake_chrome_trusted_vault_service.mm",
     "test_signin_resources_provider.h",
     "test_signin_resources_provider.mm",
   ]

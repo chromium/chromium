@@ -140,8 +140,8 @@ using l10n_util::GetNSStringF;
   SigninCoordinatorResult result = success
                                        ? SigninCoordinatorResultSuccess
                                        : SigninCoordinatorResultCanceledByUser;
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:self.identity];
+  SigninCompletionInfo* completionInfo = [SigninCompletionInfo
+      signinCompletionInfoWithIdentity:success ? self.identity : nil];
   [self runCompletionCallbackWithSigninResult:result
                                completionInfo:completionInfo];
 }

@@ -115,7 +115,7 @@ using signin_metrics::PromoAction;
 }
 
 + (instancetype)
-    trustedVaultReAuthenticationCoordiantorWithBaseViewController:
+    trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                           browser:
                                                               (Browser*)browser

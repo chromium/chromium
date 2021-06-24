@@ -13,6 +13,7 @@
 #include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/test_omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
 #include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/spotlight/test_spotlight_provider.h"
@@ -71,6 +72,14 @@ ChromeIdentityService* TestChromeBrowserProvider::GetChromeIdentityService() {
     chrome_identity_service_.reset(new FakeChromeIdentityService());
   }
   return chrome_identity_service_.get();
+}
+
+ChromeTrustedVaultService*
+TestChromeBrowserProvider::GetChromeTrustedVaultService() {
+  if (!chrome_trusted_vault_service_) {
+    chrome_trusted_vault_service_.reset(new FakeChromeTrustedVaultService());
+  }
+  return chrome_trusted_vault_service_.get();
 }
 
 UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {

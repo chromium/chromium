@@ -104,7 +104,7 @@ enum class KeyRetrievalTriggerForUMA;
 // |retrievalTrigger| UI elements where the trusted vault reauth has been
 // triggered.
 + (instancetype)
-    trustedVaultReAuthenticationCoordiantorWithBaseViewController:
+    trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                           browser:
                                                               (Browser*)browser

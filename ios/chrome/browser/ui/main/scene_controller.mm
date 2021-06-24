@@ -1469,7 +1469,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DCHECK(!self.signinCoordinator);
   Browser* mainBrowser = self.mainInterface.browser;
   self.signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordiantorWithBaseViewController:
+      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           baseViewController
                                                             browser:mainBrowser
                                                    retrievalTrigger:

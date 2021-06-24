@@ -25,3 +25,25 @@ source_set("trusted_vault_reauthentication") {
   public_deps =
       [ "//ios/chrome/browser/ui/authentication/signin:signin_headers" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "trusted_vault_reauthentication_coordinator_unittest.mm" ]
+  deps = [
+    ":trusted_vault_reauthentication",
+    "//base/test:test_support",
+    "//components/sync/driver",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/common:uikit",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
