@@ -158,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(GetIconView()->GetVisible());
 }
 
+// Disabled due to flakiness: crbug.com/1223042
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
-                       Metrics_BubbleShownAndClosedByUser) {
+                       DISABLED_Metrics_BubbleShownAndClosedByUser) {
   base::HistogramTester histogram_tester;
 
   ShowBubble();
