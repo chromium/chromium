@@ -91,6 +91,12 @@ constexpr char kFormHTMLFile[] = "/readonly_form.html";
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 
+  // TODO(crbug.com/1223279): Re-enable this test on iOS 13 after fixing the
+  // flake.
+  if (@available(iOS 13, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test flakes on iOS 13.");
+  }
+
   // Tap the readonly field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementReadonly)];
