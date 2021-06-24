@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace {
 using password_manager::metrics_util::IsPasswordChanged;
@@ -36,7 +37,7 @@ void EditSavedPasswords(
   // make sure to call the right API. Update every entry in the equivalence
   // class.
   for (const auto& old_form : forms_to_change) {
-    scoped_refptr<password_manager::PasswordStore> store =
+    scoped_refptr<password_manager::PasswordStoreInterface> store =
         GetPasswordStore(profile, old_form->IsUsingAccountStore());
 
     if (!store) {
@@ -60,13 +61,15 @@ void EditSavedPasswords(
                                                         password_changed);
 }
 
-scoped_refptr<password_manager::PasswordStore> GetPasswordStore(
+password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store) {
   if (use_account_store) {
     return AccountPasswordStoreFactory::GetForProfile(
-        profile, ServiceAccessType::EXPLICIT_ACCESS);
+               profile, ServiceAccessType::EXPLICIT_ACCESS)
+        .get();
   }
-  return PasswordStoreFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  return PasswordStoreFactory::GetForProfile(profile,
+                                             ServiceAccessType::EXPLICIT_ACCESS)
+      .get();
 }

@@ -12,7 +12,7 @@
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -63,8 +63,8 @@ void ItemsBubbleController::OnPasswordAction(
   Profile* profile = GetProfile();
   if (!profile)
     return;
-  password_manager::PasswordStore* password_store =
-      GetPasswordStore(profile, password_form.IsUsingAccountStore()).get();
+  password_manager::PasswordStoreInterface* password_store =
+      GetPasswordStore(profile, password_form.IsUsingAccountStore());
 
   DCHECK(password_store);
   if (action == PasswordAction::kRemovePassword)

@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 struct PasswordForm;
 }
 
@@ -33,7 +33,7 @@ void EditSavedPasswords(
     const absl::optional<std::u16string>& new_password);
 
 // Returns the password store associated with the currently active profile.
-scoped_refptr<password_manager::PasswordStore> GetPasswordStore(
+password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store);
 

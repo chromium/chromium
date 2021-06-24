@@ -56,7 +56,7 @@
 #endif
 
 using base::StringPiece;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 
 namespace {
 
@@ -242,8 +242,8 @@ PasswordManagerPresenter::PasswordManagerPresenter(
 
 PasswordManagerPresenter::~PasswordManagerPresenter() {
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->RemoveObserver(this);
     }
@@ -252,8 +252,8 @@ PasswordManagerPresenter::~PasswordManagerPresenter() {
 
 void PasswordManagerPresenter::Initialize() {
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->AddObserver(this);
     }
@@ -284,8 +284,8 @@ void PasswordManagerPresenter::UpdatePasswordLists() {
   // Request an update from both stores (if they exist). This will send out two
   // updates to |password_view_| as the two result sets come in.
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
     }
@@ -457,9 +457,8 @@ void PasswordManagerPresenter::RequestPlaintextPassword(
 
 void PasswordManagerPresenter::AddLogin(
     const password_manager::PasswordForm& form) {
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
-          .get();
+  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
+                                                   form.IsUsingAccountStore());
   if (!store)
     return;
 
@@ -470,9 +469,8 @@ void PasswordManagerPresenter::AddLogin(
 
 void PasswordManagerPresenter::RemoveLogin(
     const password_manager::PasswordForm& form) {
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
-          .get();
+  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
+                                                   form.IsUsingAccountStore());
   if (!store)
     return;
 
@@ -511,8 +509,8 @@ bool PasswordManagerPresenter::TryRemovePasswordEntries(
   DCHECK(!forms.empty());
 
   bool use_account_store = forms[0]->IsUsingAccountStore();
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+  PasswordStoreInterface* store =
+      GetPasswordStore(password_view_->GetProfile(), use_account_store);
   if (!store)
     return false;
 
