@@ -242,6 +242,8 @@ static_library("browser") {
     "web/click_or_tap_worker.h",
     "web/element.cc",
     "web/element.h",
+    "web/element_action_util.cc",
+    "web/element_action_util.h",
     "web/element_finder.cc",
     "web/element_finder.h",
     "web/element_position_getter.cc",
@@ -431,6 +433,7 @@ source_set("unit_tests") {
     "user_model_unittest.cc",
     "value_util_unittest.cc",
     "wait_for_document_operation_unittest.cc",
+    "web/element_action_util_unittest.cc",
     "web/element_store_unittest.cc",
     "website_login_manager_impl_unittest.cc",
   ]

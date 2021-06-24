@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -108,7 +109,7 @@ void ShowCastAction::ScrollToElement(
     const Selector& selector,
     const TopPadding& top_padding,
     std::unique_ptr<ElementFinder::Result> container) {
-  auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
   actions->emplace_back(base::BindOnce(
       &ShowCastAction::RunAndIncreaseWaitTimer, weak_ptr_factory_.GetWeakPtr(),
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
@@ -141,7 +142,7 @@ void ShowCastAction::ScrollToElement(
 
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
+      base::BindOnce(&element_action_util::PerformAll, std::move(actions)),
       base::BindOnce(&ShowCastAction::OnScrollToElementPosition,
                      weak_ptr_factory_.GetWeakPtr()));
 }

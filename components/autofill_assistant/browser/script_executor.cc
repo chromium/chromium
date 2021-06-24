@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/wait_for_document_operation.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
@@ -1351,8 +1352,7 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
     return;
 
   if (!main_script_->last_focused_element_selector_.empty()) {
-    auto actions =
-        std::make_unique<action_delegate_util::ElementActionVector>();
+    auto actions = std::make_unique<element_action_util::ElementActionVector>();
     action_delegate_util::AddStepIgnoreTiming(
         base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
                        main_script_->GetWeakPtr(),
@@ -1365,7 +1365,7 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
         main_script_->last_focused_element_top_padding_, nullptr));
     action_delegate_util::FindElementAndPerform(
         main_script_, main_script_->last_focused_element_selector_,
-        base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
+        base::BindOnce(&element_action_util::PerformAll, std::move(actions)),
         base::DoNothing());
   }
 }

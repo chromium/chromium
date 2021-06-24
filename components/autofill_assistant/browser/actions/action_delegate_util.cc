@@ -31,59 +31,14 @@ void RetainElementAndExecuteCallback(
   std::move(callback).Run(status);
 }
 
-void PerformActionsSequentially(
-    std::unique_ptr<ElementActionVector> perform_actions,
-    std::unique_ptr<ProcessedActionStatusDetailsProto> status_details,
-    size_t action_index,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> done,
-    const ClientStatus& status) {
-  status_details->MergeFrom(status.details());
-
-  if (!status.ok()) {
-    VLOG(1) << __func__ << "Web-Action failed with status " << status;
-    std::move(done).Run(ClientStatus(status.proto_status(), *status_details));
-    return;
-  }
-
-  if (action_index >= perform_actions->size()) {
-    std::move(done).Run(ClientStatus(status.proto_status(), *status_details));
-    return;
-  }
-
-  ElementActionCallback action = std::move((*perform_actions)[action_index]);
-  std::move(action).Run(
-      element,
-      base::BindOnce(&PerformActionsSequentially, std::move(perform_actions),
-                     std::move(status_details), action_index + 1, element,
-                     std::move(done)));
-}
-
-void OnFindElement(ElementActionCallback perform,
-                   base::OnceCallback<void(const ClientStatus&)> done,
-                   const ClientStatus& element_status,
-                   std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find element.";
-    std::move(done).Run(element_status);
-    return;
-  }
-
-  const ElementFinder::Result* element_result_ptr = element_result.get();
-  std::move(perform).Run(
-      *element_result_ptr,
-      base::BindOnce(&RetainElementAndExecuteCallback,
-                     std::move(element_result), std::move(done)));
-}
-
 void FindElementAndPerformImpl(
     const ActionDelegate* delegate,
     const Selector& selector,
-    ElementActionCallback perform,
+    element_action_util::ElementActionCallback perform,
     base::OnceCallback<void(const ClientStatus&)> done) {
   delegate->FindElement(
-      selector,
-      base::BindOnce(&OnFindElement, std::move(perform), std::move(done)));
+      selector, base::BindOnce(&element_action_util::TakeElementAndPerform,
+                               std::move(perform), std::move(done)));
 }
 
 // Call |done| with the |status| while ignoring the |wait_time|.
@@ -120,7 +75,7 @@ void IgnoreErrorStatus(base::OnceCallback<void(const ClientStatus&)> done,
 // into successes.
 //
 // Note that the status details filled by the failed action are conserved.
-void SkipIfFail(ElementActionCallback action,
+void SkipIfFail(element_action_util::ElementActionCallback action,
                 const ElementFinder::Result& element,
                 base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(action).Run(element,
@@ -131,7 +86,7 @@ void SkipIfFail(ElementActionCallback action,
 void AddClickOrTapSequence(const ActionDelegate* delegate,
                            ClickType click_type,
                            OptionalStep on_top,
-                           ElementActionVector* actions) {
+                           element_action_util::ElementActionVector* actions) {
   AddStepIgnoreTiming(
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
                      delegate->GetWeakPtr(),
@@ -180,15 +135,6 @@ void OnResolveTextValue(
 
 }  // namespace
 
-void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
-                const ElementFinder::Result& element,
-                base::OnceCallback<void(const ClientStatus&)> done) {
-  PerformActionsSequentially(
-      std::move(perform_actions),
-      std::make_unique<ProcessedActionStatusDetailsProto>(), 0, element,
-      std::move(done), OkClientStatus());
-}
-
 void PerformWithTextValue(
     const ActionDelegate* delegate,
     const TextValue& text_value,
@@ -230,8 +176,8 @@ void PerformWithElementValue(
 }
 
 void AddOptionalStep(OptionalStep optional_step,
-                     ElementActionCallback step,
-                     ElementActionVector* actions) {
+                     element_action_util::ElementActionCallback step,
+                     element_action_util::ElementActionVector* actions) {
   switch (optional_step) {
     case STEP_UNSPECIFIED:
       NOTREACHED() << __func__ << " unspecified optional_step";
@@ -254,24 +200,16 @@ void AddStepIgnoreTiming(
     base::OnceCallback<void(
         const ElementFinder::Result&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
-    ElementActionVector* actions) {
+    element_action_util::ElementActionVector* actions) {
   actions->emplace_back(base::BindOnce(&RunAndIgnoreTiming, std::move(step)));
 }
 
 void FindElementAndPerform(const ActionDelegate* delegate,
                            const Selector& selector,
-                           ElementActionCallback perform,
+                           element_action_util::ElementActionCallback perform,
                            base::OnceCallback<void(const ClientStatus&)> done) {
   FindElementAndPerformImpl(delegate, selector, std::move(perform),
                             std::move(done));
-}
-
-void TakeElementAndPerform(ElementActionCallback perform,
-                           base::OnceCallback<void(const ClientStatus&)> done,
-                           const ClientStatus& element_status,
-                           std::unique_ptr<ElementFinder::Result> element) {
-  OnFindElement(std::move(perform), std::move(done), element_status,
-                std::move(element));
 }
 
 void ClickOrTapElement(const ActionDelegate* delegate,
@@ -293,9 +231,9 @@ void PerformClickOrTapElement(
     base::OnceCallback<void(const ClientStatus&)> done) {
   VLOG(3) << __func__ << " click_type=" << click_type << " on_top=" << on_top;
 
-  auto actions = std::make_unique<ElementActionVector>();
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
   AddClickOrTapSequence(delegate, click_type, on_top, actions.get());
-  PerformAll(std::move(actions), element, std::move(done));
+  element_action_util::PerformAll(std::move(actions), element, std::move(done));
 }
 
 void SendKeyboardInput(const ActionDelegate* delegate,
@@ -320,7 +258,7 @@ void PerformSendKeyboardInput(
     base::OnceCallback<void(const ClientStatus&)> done) {
   VLOG(3) << __func__ << " focus: " << use_focus;
 
-  auto actions = std::make_unique<ElementActionVector>();
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
   if (use_focus) {
     actions->emplace_back(
         base::BindOnce(&WebController::FocusField,
@@ -333,7 +271,7 @@ void PerformSendKeyboardInput(
       &WebController::SendKeyboardInput,
       delegate->GetWebController()->GetWeakPtr(), codepoints, delay_in_millis));
 
-  PerformAll(std::move(actions), element, std::move(done));
+  element_action_util::PerformAll(std::move(actions), element, std::move(done));
 }
 
 void SetFieldValue(const ActionDelegate* delegate,
@@ -361,7 +299,7 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
   DVLOG(3) << __func__ << " value=" << value << ", strategy=" << fill_strategy;
 #endif
 
-  auto actions = std::make_unique<ElementActionVector>();
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
   if (value.empty()) {
     actions->emplace_back(base::BindOnce(
         &WebController::SetValueAttribute,
@@ -418,7 +356,7 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
     }
   }
 
-  PerformAll(std::move(actions), element, std::move(done));
+  element_action_util::PerformAll(std::move(actions), element, std::move(done));
 }
 
 }  // namespace action_delegate_util

@@ -10,7 +10,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
@@ -66,7 +66,7 @@ void BatchElementChecker::Run(WebController* web_controller) {
     web_controller->FindElement(
         entry.first, /* strict= */ true,
         base::BindOnce(
-            &action_delegate_util::TakeElementAndGetProperty<std::string>,
+            &element_action_util::TakeElementAndGetProperty<std::string>,
             base::BindOnce(&WebController::GetFieldValue,
                            web_controller->GetWeakPtr()),
             base::BindOnce(&BatchElementChecker::OnFieldValueChecked,

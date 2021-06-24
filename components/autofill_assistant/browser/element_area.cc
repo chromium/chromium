@@ -12,8 +12,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -132,7 +132,7 @@ void ElementArea::Update() {
       delegate_->GetWebController()->FindElement(
           position.selector, /* strict= */ true,
           base::BindOnce(
-              &action_delegate_util::TakeElementAndGetProperty<RectF>,
+              &element_action_util::TakeElementAndGetProperty<RectF>,
               base::BindOnce(&WebController::GetElementRect,
                              delegate_->GetWebController()->GetWeakPtr()),
               base::BindOnce(&ElementArea::OnGetElementRect,
