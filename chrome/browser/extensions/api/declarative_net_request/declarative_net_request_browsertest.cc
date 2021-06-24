@@ -6196,9 +6196,17 @@ class DeclarativeNetRequestBackForwardCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223379
+#define MAYBE_BackForwardCacheClearedOnAddingDynamicRules \
+  DISABLED_BackForwardCacheClearedOnAddingDynamicRules
+#else
+#define MAYBE_BackForwardCacheClearedOnAddingDynamicRules \
+  BackForwardCacheClearedOnAddingDynamicRules
+#endif
 // Ensure that Back Forward is cleared on adding dynamic rules.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
-                       BackForwardCacheClearedOnAddingDynamicRules) {
+                       MAYBE_BackForwardCacheClearedOnAddingDynamicRules) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
   // Now block requests to script.js.
@@ -6218,9 +6226,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_rfh_delete_observer->WaitUntilDeleted();
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223379
+#define MAYBE_BackForwardCacheClearedOnUpdatingSessionRules \
+  DISABLED_BackForwardCacheClearedOnUpdatingSessionRules
+#else
+#define MAYBE_BackForwardCacheClearedOnUpdatingSessionRules \
+  BackForwardCacheClearedOnUpdatingSessionRules
+#endif
 // Ensure that Back Forward is cleared on updating session rules.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
-                       BackForwardCacheClearedOnUpdatingSessionRules) {
+                       MAYBE_BackForwardCacheClearedOnUpdatingSessionRules) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
   // Now block requests to script.js.
@@ -6240,9 +6256,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_rfh_delete_observer->WaitUntilDeleted();
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223379
+#define MAYBE_BackForwardCacheClearedOnUpdatingEnabledRulesets \
+  DISABLED_BackForwardCacheClearedOnUpdatingEnabledRulesets
+#else
+#define MAYBE_BackForwardCacheClearedOnUpdatingEnabledRulesets \
+  BackForwardCacheClearedOnUpdatingEnabledRulesets
+#endif
 // Ensure that Back Forward is cleared on updating enabled rulesets.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
-                       BackForwardCacheClearedOnUpdatingEnabledRulesets) {
+                       MAYBE_BackForwardCacheClearedOnUpdatingEnabledRulesets) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
   std::vector<TestRulesetInfo> rulesets;
@@ -6265,9 +6289,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_rfh_delete_observer->WaitUntilDeleted();
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223379
+#define MAYBE_BackForwardCacheClearedOnAddExtension \
+  DISABLED_BackForwardCacheClearedOnAddExtension
+#else
+#define MAYBE_BackForwardCacheClearedOnAddExtension \
+  BackForwardCacheClearedOnAddExtension
+#endif
 // Ensure that Back Forward is cleared on new extension.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
-                       BackForwardCacheClearedOnAddExtension) {
+                       MAYBE_BackForwardCacheClearedOnAddExtension) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
   auto bfcache_rfh_delete_observer = NavigateForBackForwardCache();

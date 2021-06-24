@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, MAYBE_CSSAllowed) {
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223240
-#define MAYBE_UnloadExtensionFlushCache DIUnloadExtensionFlushCache
+#define MAYBE_UnloadExtensionFlushCache DISABLED_UnloadExtensionFlushCache
 #else
 #define MAYBE_UnloadExtensionFlushCache UnloadExtensionFlushCache
 #endif
