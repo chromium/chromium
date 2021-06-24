@@ -40,7 +40,7 @@ MATCHER_P4(MatchingRectF,
            top,
            right,
            bottom,
-           ToString(RectF{left, top, right, bottom})) {
+           ToString(RectF(left, top, right, bottom))) {
   if (abs(left - arg.left) < 0.01 && abs(top - arg.top) < 0.01 &&
       abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01) {
     return true;

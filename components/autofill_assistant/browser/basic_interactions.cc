@@ -135,7 +135,7 @@ bool ValueToString(UserModel* user_model,
           return false;
         }
         auto date = value->dates().values(i);
-        base::Time::Exploded exploded_time = {date.year(),
+        base::Time::Exploded exploded_time = {static_cast<int>(date.year()),
                                               date.month(),
                                               /* day_of_week = */ -1,
                                               date.day(),

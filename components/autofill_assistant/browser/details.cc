@@ -37,10 +37,14 @@ std::string FormatDateTimeProto(const DateTimeProto& date_time) {
   auto date_proto = date_time.date();
   auto time_proto = date_time.time();
 
-  base::Time::Exploded exploded_time = {
-      date_proto.year(),      date_proto.month(),
-      /* day_of_week = */ -1, date_proto.day(),    time_proto.hour(),
-      time_proto.minute(),    time_proto.second(), 0};
+  base::Time::Exploded exploded_time = {static_cast<int>(date_proto.year()),
+                                        date_proto.month(),
+                                        /* day_of_week = */ -1,
+                                        date_proto.day(),
+                                        time_proto.hour(),
+                                        time_proto.minute(),
+                                        time_proto.second(),
+                                        0};
   base::Time time;
 
   if (base::Time::FromLocalExploded(exploded_time, &time)) {
