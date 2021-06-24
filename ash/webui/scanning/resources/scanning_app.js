@@ -318,7 +318,10 @@ Polymer({
     },
 
     /** {boolean} */
-    multiPageScanChecked: Boolean,
+    multiPageScanChecked: {
+      type: Boolean,
+      observer: 'onMultiPageScanCheckedChange_',
+    },
 
     /** @private {boolean} */
     showMultiPageCheckbox_: {
@@ -327,6 +330,9 @@ Polymer({
           'selectedFileType, scanAppMultiPageScanEnabled_)',
       reflectToAttribute: true,
     },
+
+    /** @private {string} */
+    scanButtonText_: String,
   },
 
   observers:
@@ -1013,6 +1019,16 @@ Polymer({
   isFlatbedSelected_() {
     return this.sourceTypeMap_.get(this.selectedSource) ===
         ash.scanning.mojom.SourceType.kFlatbed;
+  },
+
+  /** @private */
+  onMultiPageScanCheckedChange_() {
+    const nextPageNum = this.multiPageScanChecked ? 1 : 0;
+    this.browserProxy_.getPluralString('scanButtonText', nextPageNum)
+        .then(
+            /* @type {string} */ (pluralString) => {
+              this.scanButtonText_ = pluralString;
+            });
   },
 
   /**

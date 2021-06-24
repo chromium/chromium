@@ -82,7 +82,6 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"resolutionDropdownLabel", IDS_SCANNING_APP_RESOLUTION_DROPDOWN_LABEL},
       {"resolutionOptionText", IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT},
       {"retryButtonLabel", IDS_SCANNING_APP_RETRY_BUTTON_LABEL},
-      {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scanCanceledToastText", IDS_SCANNING_APP_SCAN_CANCELED_TOAST_TEXT},
       {"scanFailedDialogAdfEmptyText",
        IDS_SCANNING_APP_SCAN_FAILED_DIALOG_ADF_EMPTY_TEXT},
@@ -120,6 +119,7 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"editButtonLabel", IDS_SCANNING_APP_EDIT_BUTTON_LABEL},
       {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
+      {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scannedImagesAriaLabel", IDS_SCANNING_APP_SCANNED_IMAGES_ARIA_LABEL}};
 
   for (const auto& str : kLocalizedStrings)

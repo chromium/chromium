@@ -509,6 +509,7 @@ export function scanningAppTest() {
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+          assertEquals('Scan', scanButton.textContent.trim());
           assertFalse(
               isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertTrue(isVisible(/** @type {!HTMLElement} */ (helperText)));

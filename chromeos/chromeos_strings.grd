@@ -580,7 +580,10 @@ Try tapping the mic to ask me anything.
         Place your document on the scanner and select Scan to get started
       </message>
       <message name="IDS_SCANNING_APP_SCAN_BUTTON_TEXT" desc="The text displayed for the button that starts a scan.">
-        Scan
+        {NUMBER_OF_PAGES, plural,
+        =0 {Scan}
+        =1 {Scan page {NUMBER_OF_PAGES}}
+        other {Scan page {NUMBER_OF_PAGES}}}
       </message>
       <message name="IDS_SCANNING_APP_MY_DRIVE" desc="The text displayed in the Scan To dropdown when the user selects to save completed scans to their Google Drive 'My Drive' folder.">
         My Drive
