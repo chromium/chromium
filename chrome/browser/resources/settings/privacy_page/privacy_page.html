@@ -988,10 +988,10 @@
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/protectedContent" no-search>
-<if expr="not chromeos">
+<if expr="not chromeos and not is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}">
 </if>
-<if expr="chromeos">
+<if expr="chromeos or is_win">
         <settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
@@ -1036,26 +1036,27 @@
             </settings-toggle-button>
           </template>
 <if expr="chromeos or is_win">
-          <div class="cr-row first two-line cr-padded-text">
-            $i18n{siteSettingsProtectedContentIdentifiersExplanation}
-          </div>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-             <div class="radio-group">
-              <settings-category-default-radio-group
-                category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
-                block-option-label=
-                    "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
-                block-option-sub-label=
-                    "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
-                block-option-icon="settings:protected-content-off"
-                allow-option-label=
-                    "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
-                allow-option-icon="settings:protected-content"
-                disabled$="[[isGuest_]]">
-              </settings-category-default-radio-group>
-            </div>
+            <settings-category-default-radio-group
+              header="$i18n{siteSettingsProtectedContentIdentifiers}"
+              description=
+                  "$i18n{siteSettingsProtectedContentIdentifiersExplanation}"
+              category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
+              block-option-label=
+                  "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
+              block-option-icon="settings:protected-content-off"
+              allow-option-label=
+                  "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
+              allow-option-icon="settings:protected-content"
+              disabled$="[[isGuest_]]">
+            </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <div class="cr-row first two-line cr-padded-text">
+              $i18n{siteSettingsProtectedContentIdentifiersExplanation}
+            </div>
             <category-default-setting
                 category="[[ContentSettingsTypes.PROTECTED_CONTENT]]"
                 toggle-off-label="$i18n{siteSettingsBlocked}"

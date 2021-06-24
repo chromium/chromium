@@ -12,8 +12,10 @@ import '../controls/settings_radio_group.js';
 import '../privacy_page/collapse_radio_button.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
@@ -34,9 +36,12 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  behaviors: [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
 
   properties: {
+    header: String,
+    description: String,
+
     allowOptionLabel: String,
     allowOptionSubLabel: String,
     allowOptionIcon: String,
@@ -125,6 +130,24 @@ Polymer({
         assertNotReached('Invalid category: ' + this.category);
         return ContentSetting.ALLOW;
     }
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getHeader_() {
+    return this.header ? this.header : this.i18n('siteSettingsDefaultBehavior');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDescription_() {
+    return this.description ?
+        this.description :
+        this.i18n('siteSettingsDefaultBehaviorDescription');
   },
 
   /**
