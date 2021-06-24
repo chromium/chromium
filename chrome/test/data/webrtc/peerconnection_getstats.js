@@ -266,6 +266,8 @@ const kRTCAudioSourceStats = new RTCStats(kRTCMediaSourceStats, {
   audioLevel: 'number',
   totalAudioEnergy: 'number',
   totalSamplesDuration: 'number',
+  echoReturnLoss: 'number',
+  echoReturnLossEnhancement: 'number',
 });
 addRTCStatsToWhitelist(
     Presence.MANDATORY, 'media-source', kRTCAudioSourceStats);
