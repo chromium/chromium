@@ -40703,6 +40703,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="IMEGrammarActions">
+  <int value="0" label="UNDERLINED"/>
+  <int value="1" label="WINDOW_SHOWN"/>
+  <int value="2" label="ACCEPTED"/>
+  <int value="3" label="IGNORED"/>
+</enum>
+
 <enum name="ImeHandwritingActions">
   <int value="0" label="InsertCreatedByUnknown"/>
   <int value="1" label="InsertCreatedAfterDelete"/>

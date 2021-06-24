@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/grammar_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
 #include "chrome/test/base/testing_profile.h"
@@ -116,6 +117,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
   GrammarManager manager(profile_.get(),
                          std::make_unique<TestGrammarServiceClient>(),
                          &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
 
   manager.OnFocus(1);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
@@ -126,6 +128,8 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
   EXPECT_EQ(grammar_fragments.size(), 1);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
+                                      0 /*GrammarAction::kUnderlined*/, 1);
 }
 
 TEST_F(GrammarManagerTest, HandlesMultipleGrammarCheckResults) {
@@ -178,6 +182,7 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   GrammarManager manager(profile_.get(),
                          std::make_unique<TestGrammarServiceClient>(),
                          &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
 
   manager.OnFocus(1);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
@@ -192,6 +197,8 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
               SetAssistiveWindowProperties(1, expected_properties, _));
 
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
+                                     1 /*GrammarAction::kWindowShown*/, 1);
 
   EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
 
@@ -228,6 +235,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestion) {
   GrammarManager manager(profile_.get(),
                          std::make_unique<TestGrammarServiceClient>(),
                          &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
 
   mock_ime_input_context_handler_.Reset();
 
@@ -257,6 +265,8 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestion) {
 
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 1);
   EXPECT_EQ(mock_ime_input_context_handler_.last_commit_text(), u"correct");
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
+                                     2 /*GrammarAction::kAccepted*/, 1);
 }
 
 TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
@@ -264,6 +274,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
   GrammarManager manager(profile_.get(),
                          std::make_unique<TestGrammarServiceClient>(),
                          &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
 
   mock_ime_input_context_handler_.Reset();
 
@@ -297,6 +308,8 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
   EXPECT_EQ(
       mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 0);
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 0);
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
+                                     3 /*GrammarAction::kIngored*/, 1);
 }
 
 }  // namespace

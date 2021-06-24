@@ -16,6 +16,17 @@
 
 namespace chromeos {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Needs to match ImeGrammarActions
+// in enums.xml.
+enum class GrammarActions {
+  kUnderlined = 0,
+  kWindowShown = 1,
+  kAccepted = 2,
+  kIgnored = 3,
+  kMaxValue = kIgnored,
+};
+
 // Sends grammar check requests to ml service and upon receiving the grammar
 // suggestions, shows UI to indiciate the suggestions and allows users to
 // accept or dismiss the suggestions.

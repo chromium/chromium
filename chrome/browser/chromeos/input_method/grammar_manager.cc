@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
@@ -18,6 +19,11 @@ namespace chromeos {
 namespace {
 
 constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromMilliseconds(500);
+
+void RecordGrammarAction(GrammarActions action) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
+                                action);
+}
 
 }  // namespace
 
@@ -116,7 +122,10 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
       input_context->GetGrammarFragment(gfx::Range(cursor_pos));
 
   if (grammar_fragment_opt) {
-    current_fragment_ = grammar_fragment_opt.value();
+    if (current_fragment_ != grammar_fragment_opt.value()) {
+      current_fragment_ = grammar_fragment_opt.value();
+      RecordGrammarAction(GrammarActions::kWindowShown);
+    }
     std::string error;
     AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
@@ -162,6 +171,8 @@ void GrammarManager::OnGrammarCheckDone(
     return;
 
   input_context->AddGrammarFragments(results);
+
+  RecordGrammarAction(GrammarActions::kUnderlined);
 }
 
 void GrammarManager::DismissSuggestion() {
@@ -204,6 +215,8 @@ void GrammarManager::AcceptSuggestion() {
   input_context->CommitText(
       base::UTF8ToUTF16(current_fragment_.suggestion),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  RecordGrammarAction(GrammarActions::kAccepted);
 }
 
 void GrammarManager::IgnoreSuggestion() {
@@ -218,6 +231,8 @@ void GrammarManager::IgnoreSuggestion() {
     return;
 
   input_context->ClearGrammarFragments(current_fragment_.range);
+
+  RecordGrammarAction(GrammarActions::kIgnored);
 }
 
 void GrammarManager::SetButtonHighlighted(
