@@ -7058,3 +7058,4 @@ crbug.com/1222097 virtual/threaded-prefer-compositing/fast/scrolling/events/over
 
 # Sheriff
 crbug.com/1223276 external/wpt/layout-instability/input-timestamp.html [ Skip ]
+crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
