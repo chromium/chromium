@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>
 <translation id="1815941218935345331">പാസ്‌കോഡ്</translation>
 <translation id="1820259098641718022">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
+<translation id="1832848789136765277">സമന്വയിപ്പിക്കുന്ന ഡാറ്റ നിങ്ങൾക്ക് എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
 <translation id="1894205589103145703">സൈൻ ഇൻ ചെയ്യുമ്പോൾ എന്തോ കുഴപ്പമുണ്ടായി.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="2103075008456228677">history.google.com തുറക്കുക</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ഇനങ്ങൾ നീക്കി</translation>
+<translation id="212623074644302906">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ചേർക്കാൻ ആവശ്യപ്പെടുക</translation>
 <translation id="2139867232736819575">നിങ്ങൾ പകർത്തിയ ടെക്‌സ്‌റ്റ് തിരയുക</translation>
 <translation id="214201757571129614">സൈൻ ഇൻ ചെയ്യുക…</translation>
 <translation id="2149973817440762519">ബുക്മാര്‍ക്ക് എഡിറ്റ് ചെയ്യുക</translation>
@@ -434,6 +436,7 @@
 ക്രമീകരണത്തിന്റെ പൊതു വിഭാഗത്തിലും Handoff പ്രവർത്തനക്ഷമമായിരിക്കുകയും നിങ്ങളുടെ ഉപകരണങ്ങൾ ഒരേ iCloud അക്കൗണ്ട് തന്നെ ഉപയോഗിക്കുകയും വേണം.</translation>
 <translation id="5551897871312988470">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
+<translation id="5580834567471114021">പിന്നീട് വായിക്കുന്നതിന് വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ചേർക്കണോ?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> എന്നതിന് സമന്വയം ഓണാക്കുക</translation>
 <translation id="5614553682702429503">പാസ്‌വേഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="5626245204502895507">ഫയൽ ഇപ്പോൾ ഡൗൺലോഡുചെയ്യാൻ കഴിയില്ല.</translation>
@@ -587,6 +590,7 @@
 <translation id="681368974849482173">ഇനം സൃഷ്‌ടിച്ചു</translation>
 <translation id="6830804042318138535">കൂടുതൽ വായിക്കുക</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6842136130964845393">സംരക്ഷിച്ച നിങ്ങളുടെ പാസ്‌വേഡുകൾ എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6851516051005285358">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="6858855187367714033">സ്‌കാൻ ചെയ്‌തു</translation>
 <translation id="6859944681507688231">QR കോഡോ ക്രെഡിറ്റ് കാര്‍ഡോ സ്‌കാൻ ചെയ്യാൻ, ക്രമീകരണത്തിൽ ക്യാമറ പ്രവർത്തനക്ഷമമാക്കുക.</translation>
@@ -618,6 +622,7 @@
 <translation id="7108338896283013870">മറയ്ക്കുക</translation>
 <translation id="7133798577887235672">പൂർണ്ണമായ പേര്</translation>
 <translation id="7136892417564438900">ക്യാമറ ലഭ്യമല്ല</translation>
+<translation id="7153999225810839758">വായിക്കാനെടുക്കുന്ന സമയം <ph name="TIME" /> മിനിറ്റ്</translation>
 <translation id="7159472599653637159">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിച്ച് അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="7172852049901402487">സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കുക</translation>
@@ -667,6 +672,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="7603852183842204213">പോപ്പ്-അപ്പുകൾ തടഞ്ഞു (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> മിനിറ്റ്</translation>
 <translation id="7638584964844754484">പാസ്‌ഫ്രെയ്‌സ് തെറ്റാണ്</translation>
 <translation id="7646772052135772216">പാസ്‍വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="7649070708921625228">സഹായം</translation>

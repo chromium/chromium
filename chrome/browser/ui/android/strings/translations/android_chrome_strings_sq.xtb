@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Sigurohu që gjithmonë të mund të qasesh në të dhënat e tua të sinkronizimit</translation>
 <translation id="1100066534610197918">Hap në skedë të re në grup</translation>
 <translation id="1105960400813249514">Regjistrimi i ekranit</translation>
+<translation id="1110914759170138831">Theksimi është shkurtuar</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
 <translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
 <translation id="1118561384561215815">Merr ndihmë me detyrat në ueb</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Kurse deri në 60% të të dhënave, lexo lajmet e sotme</translation>
 <translation id="1303339473099049190">Ai fjalëkalim nuk mund të gjendet. Kontrollo drejtshkrimin dhe provo përsëri.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dërguar nga <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Zgjidh një shabllon për theksimin</translation>
 <translation id="1307205233980126133">Na vjen keq, por nuk mund t'i verifikonim kredencialet e tua</translation>
 <translation id="1310482092992808703">Grupo skedat</translation>
 <translation id="1311657260431405215">Ky kod QR nuk është URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4183868528246477015">Kërko me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
+<translation id="4206707945726604465">Për të pastruar format e tjera të historikut, vizito <ph name="BEGIN_LINK1" />Aktivitetin tim në Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Për të marrë përmbajtje të personalizuar të sugjeruar nga Google, aktivizo sinkronizimin</translation>
 <translation id="4225895483398857530">Shkurtorja e shiritit të veglave</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
@@ -581,6 +584,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4807098396393229769">Emri në kartë</translation>
 <translation id="4818017973810341238">Dështoi verifikimi i Digital Asset Links në <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Shkarko përmbajtje</translation>
+<translation id="4834007576107377210">Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme</translation>
 <translation id="4835385943915508971">Chrome nuk ka qasje te burimi i kërkuar.</translation>
 <translation id="4837753911714442426">Hap opsionet për të printuar faqen</translation>
 <translation id="4842092870884894799">Po shfaq dritaren kërcyese të krijimit të fjalëkalimit</translation>
@@ -635,6 +639,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 shkarkim pa sukses.}other{# shkarkime pa sukses.}}</translation>
 <translation id="5168824020667180049">Ndoqe <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
+<translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5188992787241350004">Kërko me zë</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
@@ -744,7 +749,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5836192821815272682">Po shkarkon përditësimin e Chrome…</translation>
 <translation id="5853623416121554550">në pauzë</translation>
 <translation id="5854512288214985237">Asnjë statistikë apo raport ndërprerjeje aksidentale nuk i dërgohet Google</translation>
-<translation id="5854790677617711513">Më të vjetra se 30 ditë</translation>
 <translation id="5855546874025048181">Detajo: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nuk mund ta aktivizojë përshtatësin e Bluetooth-it</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
@@ -1107,6 +1111,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8035133914807600019">Dosje e re...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ditë të mbetura</translation>
 <translation id="8037801708772278989">Kontrolluar pikërisht tani</translation>
+<translation id="8040831032425909005">Ikona e "Miniaplikacionit të kërkimit" të "Veprimeve të shpejta"</translation>
 <translation id="804335162455518893">Karta SD nuk u gjet</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB në dispozicion</translation>
 <translation id="8058746566562539958">Hape në një skedë të re të Chrome</translation>
@@ -1169,6 +1174,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8442258441309440798">Nuk ofrohet asnjë histori</translation>
 <translation id="8443209985646068659">Chrome s'mund të përditësohet</translation>
 <translation id="8445448999790540984">Fjalëkalimet nuk mund të eksportohen</translation>
+<translation id="8453310803815879010">Fillo lojën Dino</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466613982764129868">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të jetë lidhur me internetin</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>

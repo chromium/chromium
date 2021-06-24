@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">உலாவிய தரவை சுத்தமாக்கு</translation>
 <translation id="1815941218935345331">கடவுக்குறியீடு</translation>
 <translation id="1820259098641718022">வாசிப்புப் பட்டியலில் சேர்க்கப்பட்டது</translation>
+<translation id="1832848789136765277">நீங்கள் ஒத்திசைத்த தரவை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="1870148520156231997">கடவுச்சொல்லைக் காட்டும்</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
 <translation id="1894205589103145703">உள்நுழையும்போது ஏதோ தவறாகிவிட்டது.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
 <translation id="2103075008456228677">history.google.comஐத் திற</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நகர்த்தப்பட்டன</translation>
+<translation id="212623074644302906">வாசிப்புப் பட்டியலில் சேர்க்கும் முன் அனுமதி கேள்</translation>
 <translation id="2139867232736819575">நீங்கள் நகலெடுத்த உரையைத் தேடவும்</translation>
 <translation id="214201757571129614">உள்நுழைக…</translation>
 <translation id="2149973817440762519">புக்மார்க்கை மாற்றுக</translation>
@@ -434,6 +436,7 @@
 அமைப்புகளின் பொது பிரிவிலும் ஹேண்ட்ஆஃப் இயக்கப்பட்டிருக்க வேண்டும் மற்றும் உங்கள் சாதனங்கள் ஒரே iCloud கணக்கைப் பயன்படுத்த வேண்டும்.</translation>
 <translation id="5551897871312988470">மொழிபெயர்க்க அனுமதி</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
+<translation id="5580834567471114021">பின்னர் படிக்க, வாசிப்புப் பட்டியலில் சேர்க்கவா?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> என்பவருக்கான ஒத்திசைவை இயக்கும்</translation>
 <translation id="5614553682702429503">கடவுச்சொல்லைச் சேமிக்கவா?</translation>
 <translation id="5626245204502895507">இந்த நேரத்தில் கோப்பைப் பதிவிறக்க முடியாது.</translation>
@@ -587,6 +590,7 @@
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
 <translation id="6830804042318138535">மேலும் காட்டு</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6842136130964845393">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6851516051005285358">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
 <translation id="6858855187367714033">ஸ்கேன் செய்யப்பட்டது</translation>
 <translation id="6859944681507688231">QR குறியீட்டையோ கிரெடிட் கார்டையோ ஸ்கேன் செய்ய அமைப்புகளில் கேமராவை இயக்கவும்.</translation>
@@ -618,6 +622,7 @@
 <translation id="7108338896283013870">மறை</translation>
 <translation id="7133798577887235672">முழுப் பெயர்</translation>
 <translation id="7136892417564438900">கேமரா இல்லை</translation>
+<translation id="7153999225810839758">படிக்க <ph name="TIME" /> நிமிடம் ஆகும்</translation>
 <translation id="7159472599653637159">மொபைல் தளத்தைக் கோரு</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> மூலம் மறைநிலைத் தாவல்களைத் திறக்கும்</translation>
 <translation id="7172852049901402487">பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் கடவுச்சொற்களைப் பாதுகாத்திடுங்கள்</translation>
@@ -667,6 +672,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ஐ எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="7603852183842204213">பாப்-அப்கள் தடுக்கப்பட்டன (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">கடவுச்சொல்லை நீக்கு</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> நிமி</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>
 <translation id="7649070708921625228">உதவி</translation>

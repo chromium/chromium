@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 år sedan}other{# år sedan}}</translation>
 <translation id="2878511608894704031">Radera allt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}other{om # dgr}}</translation>
+<translation id="2922712708897119705">Kolumnen <ph name="COLUMN_NAME" /> har sorterats i fallande ordning.</translation>
 <translation id="2931838996092594335">klicka</translation>
 <translation id="2981684127883932071">Visar förslag</translation>
 <translation id="3036649622769666520">Öppna filer</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3909791450649380159">&amp;Klipp ut</translation>
 <translation id="3990502903496589789">Högerkant</translation>
+<translation id="3994749195054421561">Kolumnen <ph name="COLUMN_NAME" /> har sorterats i stigande ordning.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 oläst avisering}other{# olästa aviseringar}}</translation>
 <translation id="4202807286478387388">fortsätta</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minut kvar}other{# minuter kvar}}</translation>
 <translation id="7430878839542012341">Vill du radera den här sökningen från historiken?</translation>
+<translation id="7437971918971306061">Kolumnen <ph name="COLUMN_NAME" /> är osorterad.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Borttagen.</translation>

@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 տարի առաջ}one{# տարի առաջ}other{# տարի առաջ}}</translation>
 <translation id="2878511608894704031">Ջնջել բոլորը</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 օրից}one{# օրից}other{# օրից}}</translation>
+<translation id="2922712708897119705">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված են նվազման կարգով։</translation>
 <translation id="2931838996092594335">սեղմել</translation>
 <translation id="2981684127883932071">Ցուցադրվում են առաջարկները</translation>
 <translation id="3036649622769666520">Ֆայլերի բացում</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3909791450649380159">Կտ&amp;րել</translation>
 <translation id="3990502903496589789">Աջ եզր</translation>
+<translation id="3994749195054421561">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված են աճման կարգով։</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 չկարդացված ծանուցում}one{# չկարդացված ծանուցում}other{# չկարդացված ծանուցում}}</translation>
 <translation id="4202807286478387388">անցնել</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Մնացել է 1 րոպե}one{Մնացել է # րոպե}other{Մնացել է # րոպե}}</translation>
 <translation id="7430878839542012341">Ջնջե՞լ այս որոնման հարցումը պատմությունից</translation>
+<translation id="7437971918971306061">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված չեն։</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ՏԲ</translation>
 <translation id="7507604095951736240">Զմայլիկներ</translation>
 <translation id="7620655452534002301">Հեռացվեց։</translation>

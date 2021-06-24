@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
 <translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
 <translation id="1105960400813249514">Kuva jäädvustamine</translation>
+<translation id="1110914759170138831">Esiletõstu lühendati</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
 <translation id="1113597929977215864">Kuva lihtsustatud vaade</translation>
 <translation id="1118561384561215815">Hangi veebitoimingute puhul abi</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Säästke kuni 60% andmemahtu, lugege tänaseid uudiseid</translation>
 <translation id="1303339473099049190">Seda parooli ei leita. Kontrollige õigekirja ja proovige uuesti.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – saadetud seadmest <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Valige oma esiletõstu mall</translation>
 <translation id="1307205233980126133">Vabandust, me ei saanud teie mandaate kinnitada</translation>
 <translation id="1310482092992808703">Vahelehtede grupeerimine</translation>
 <translation id="1311657260431405215">See QR-kood ei ole URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4183868528246477015">Otsi Google Lensi abil <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
+<translation id="4206707945726604465">Muude ajalooandmete kustutamiseks külastage lehte <ph name="BEGIN_LINK1" />Minu tegevused Google’is<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Google'i soovitatud isikupärastatud sisu hankimiseks lülitage sünkroonimine sisse</translation>
 <translation id="4225895483398857530">Tööriistariba otsetee</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
@@ -581,6 +584,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4807098396393229769">Kaardil olev nimi</translation>
 <translation id="4818017973810341238">Digitaalse vara linkide kinnitamine URL-il <ph name="VIOLATED_URL" /> ebaõnnestus</translation>
 <translation id="4831037795716408498">Sisu allalaadimine</translation>
+<translation id="4834007576107377210">Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane</translation>
 <translation id="4835385943915508971">Chrome'il pole soovitud allikale juurdepääsu.</translation>
 <translation id="4837753911714442426">Valikute avamine lehe printimiseks</translation>
 <translation id="4842092870884894799">Parooli loomise hüpikakna kuvamine</translation>
@@ -635,6 +639,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus.}other{# allalaadimist ebaõnnestus.}}</translation>
 <translation id="5168824020667180049">Jälgitakse saiti <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
+<translation id="5171045022955879922">Otsige või sisestage URL</translation>
 <translation id="5184329579814168207">Ava Chrome'is</translation>
 <translation id="5188992787241350004">Otsige oma häälega</translation>
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
@@ -744,7 +749,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5836192821815272682">Chrome'i värskenduse allalaadimine …</translation>
 <translation id="5853623416121554550">peatatud</translation>
 <translation id="5854512288214985237">Statistikat ega krahhiaruandeid Google'ile ei saadeta</translation>
-<translation id="5854790677617711513">Vanemad kui 30 päeva</translation>
 <translation id="5855546874025048181">Täpsustamine: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ei saa Bluetoothi adapterit sisse lülitada</translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -1107,6 +1111,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8035133914807600019">Uus kaust …</translation>
 <translation id="8037750541064988519">Jäänud on <ph name="DAYS" /> päeva</translation>
 <translation id="8037801708772278989">Kontrolliti just praegu</translation>
+<translation id="8040831032425909005">Kiirtoimingutega otsinguvidina ikoon</translation>
 <translation id="804335162455518893">SD-kaarti ei leitud</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB on saadaval</translation>
 <translation id="8058746566562539958">Ava uuel Chrome'i vahelehel</translation>
@@ -1169,6 +1174,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8442258441309440798">Lugusid pole saadaval</translation>
 <translation id="8443209985646068659">Ei saa värskendada</translation>
 <translation id="8445448999790540984">Paroole ei saa eksportida</translation>
+<translation id="8453310803815879010">Dinosaurusemängu alustamine</translation>
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466613982764129868">Veenduge, et seadmel <ph name="TARGET_DEVICE_NAME" /> oleks internetiühendus</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>

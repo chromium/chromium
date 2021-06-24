@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Há 1 ano}other{Há # anos}}</translation>
 <translation id="2878511608894704031">Eliminar tudo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{em 1 d.}other{em # d.}}</translation>
+<translation id="2922712708897119705">Coluna <ph name="COLUMN_NAME" /> ordenada por ordem descendente.</translation>
 <translation id="2931838996092594335">clicar</translation>
 <translation id="2981684127883932071">A apresentar sugestões</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
 <translation id="3990502903496589789">Margem direita</translation>
+<translation id="3994749195054421561">Coluna <ph name="COLUMN_NAME" /> ordenada por ordem ascendente.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificação não lida}other{# notificações não lidas}}</translation>
 <translation id="4202807286478387388">ir para</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Falta 1 minuto}other{Faltam # minutos}}</translation>
 <translation id="7430878839542012341">Pretende eliminar esta pesquisa do seu histórico?</translation>
+<translation id="7437971918971306061">Coluna <ph name="COLUMN_NAME" /> não ordenada.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Removida.</translation>

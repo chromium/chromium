@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 рік тому}one{# рік тому}few{# роки тому}many{# років тому}other{# року тому}}</translation>
 <translation id="2878511608894704031">Видалити все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 дн.}one{через # дн.}few{через # дн.}many{через # дн.}other{через # дн.}}</translation>
+<translation id="2922712708897119705">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку спадання.</translation>
 <translation id="2931838996092594335">натиснути</translation>
 <translation id="2981684127883932071">Показано пропозиції</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3909791450649380159">Вирізат&amp;и</translation>
 <translation id="3990502903496589789">Правий край</translation>
+<translation id="3994749195054421561">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку зростання.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитане сповіщення}one{# непрочитане сповіщення}few{# непрочитані сповіщення}many{# непрочитаних сповіщень}other{# непрочитаного сповіщення}}</translation>
 <translation id="4202807286478387388">перейти</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Залишилась 1 хвилина}one{Залишилася # хвилина}few{Залишилося # хвилини}many{Залишилося # хвилин}other{Залишилося # хвилини}}</translation>
 <translation id="7430878839542012341">Видалити цей пошуковий запит з історії?</translation>
+<translation id="7437971918971306061">Стовпець "<ph name="COLUMN_NAME" />" не відсортовано.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Смайли</translation>
 <translation id="7620655452534002301">Видалено.</translation>

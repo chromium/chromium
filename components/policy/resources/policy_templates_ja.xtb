@@ -384,6 +384,7 @@
 <translation id="1516486219683984217">システム通知の使用を許可しない</translation>
 <translation id="152078218786467087">再起動する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="1522425503138261032">サイトに対してユーザーの物理的な現在地の追跡を許可する</translation>
+<translation id="1523587744262636189">ポート 10080（ブロックの解除は 2022 年 4 月 1 日まで可能）</translation>
 <translation id="1523774894176285446">設定したウェブサイトに対して起動する代替ブラウザ。</translation>
 <translation id="1524243669991877602">このポリシーを有効に設定した場合、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> アカウントに関連付けられているポリシーをマシンレベルのポリシーに統合できます。
 
@@ -590,6 +591,13 @@
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
+<translation id="1813672770917912317"><ph name="PRODUCT_NAME" /> で JIT（Just In Time）コンパイラを有効にした V8 JavaScript エンジンを実行するかどうかを設定できます。
+
+          JavaScript JIT を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかったり、WebAssembly を使用する JavaScript の一部が無効になったりする可能性があります。JavaScript JIT を無効にすると、<ph name="PRODUCT_NAME" /> でのウェブ コンテンツの表示をより安全な設定で行えるようになります。
+
+          特定の URL パターンに対しては、<ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーと <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーを使ってこのポリシーをオーバーライドできます。
+
+          このポリシーを未設定のままにした場合、JavaScript JIT は有効になります。</translation>
 <translation id="1815386977045680976">デバイスへのログインを許可するユーザーのリストを指定します。リストの項目は、<ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> の形式（例: <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />）で指定します。ドメイン上の任意のユーザーを許可するには、<ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> の形式で指定します。
 
       このポリシーを設定しない場合は、すべてのユーザーのログインが許可されます。ただし、新しいユーザーを作成するには、<ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> ポリシーを適切に設定する必要があります。
@@ -807,7 +815,6 @@
 <translation id="209586405398070749">Stable チャンネル</translation>
 <translation id="2098658257603918882">使用状況とクラッシュ関連データのレポートを有効にする</translation>
 <translation id="2104418465060359056">拡張機能とプラグインの情報についてレポートを作成する</translation>
-<translation id="2106166591774188922">SAML ユーザーに対して、chrome://password-change でのセッション中の SAML パスワードの変更を許可する</translation>
 <translation id="2106627642643925514">デフォルトの PIN 印刷モードをオーバーライドします。このモードを使用できない場合、このポリシーは無視されます。</translation>
 <translation id="2107563874993284076">このポリシーを有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でネットワーク ファイル共有を使用できます。このポリシーを無効に設定した場合、ユーザーはこの機能を使用できません。</translation>
 <translation id="2107601598727098402">
@@ -853,6 +860,17 @@
       このポリシーを設定した場合、ブラウザのメモリ使用量が制限を超えると、メモリを節約するためタブの破棄が開始されます。ただし、ブラウザが常にこの制限を超えずに動作する保証はありません。1,024 より小さい値は 1,024 に切り上げられます。
 
       このポリシーを設定しない場合、ブラウザでパソコンの物理メモリが少なくなったことが検出されたときにのみ、メモリの節約が試行されます。</translation>
+<translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> には制限ポートのリストが組み込まれており、これらのポートに接続することはできません。この設定を使用すると、このリストを回避することができます。値には、発信接続を許可する 0 個以上のポートのカンマ区切りのリストを指定します。
+
+      ポートは、<ph name="PRODUCT_NAME" /> を経路としてさまざまなネットワークの脆弱性が悪用されるのを防ぐために制限されています。このポリシーを設定した場合、ネットワークが攻撃にさらされる可能性があります。このポリシーは、ブロックされたポートで実行されるサービスを標準ポート（ポート 80 または 443）に移行する際に、コード「ERR_UNSAFE_PORT」のエラーを一時的に解決するためのものです。
+
+      悪意のあるウェブサイトは、このポリシーの設定の有無と対象のポートを簡単に検出して標的型攻撃に使用することができます。
+
+      ここで指定する各ポートには、ブロックを解除できる期限を示す日付ラベルが付けられています。その日を過ぎると、この設定に関係なくポートは制限されます。
+
+      空の値を設定した場合や未設定のままにした場合は、すべての制限ポートがブロックされます。有効な値と無効な値が設定されている場合は、有効な値のみが適用されます。
+
+      このポリシーは「--explicitly-allowed-ports」コマンドライン オプションをオーバーライドします。</translation>
 <translation id="2166472654199325139">アダルト コンテンツに基づくサイトの除外を行わない</translation>
 <translation id="2168060657210442816">
       このポリシーを適用するには、<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> を True に設定する必要があります。
@@ -920,6 +938,7 @@
 
       このポリシーは Mac OS X 向け <ph name="PRODUCT_NAME" /> バージョン 92 で削除される予定です（Mac OS X での従来の証明書確認機能のサポートがバージョン 92 で削除されるため）。
       </translation>
+<translation id="2223393221350938149">どのサイトにも JavaScript JIT の実行を許可しない</translation>
 <translation id="2223582957891074498">このポリシーを True に設定した場合、キーボード ショートカットまたは拡張機能 API を使用したスクリーンショットが許可されません。このポリシーを False に設定した場合、スクリーンショットが許可されます。</translation>
 <translation id="2223598546285729819">デフォルトの通知設定</translation>
 <translation id="2231817271680715693">初回実行時にデフォルトのブラウザから閲覧履歴をインポートする</translation>
@@ -1375,6 +1394,7 @@
       注: このポリシーは、内蔵マイクだけでなく、すべての音声入力に適用されます。</translation>
 <translation id="2823870601012066791">Windows レジストリでの <ph name="PRODUCT_OS_NAME" /> クライアントの場所:</translation>
 <translation id="2824715612115726353">シークレット モードを有効にする</translation>
+<translation id="282870810415075521">JavaScript での JIT の使用を許可するサイトを指定する</translation>
 <translation id="2829975392104323514">このポリシーでは、マシンを識別できる情報（マシン名、ネットワーク アドレスなど）について、レポートを作成するかどうかを管理します。
 
       ポリシー <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> を未設定のままにするか無効にすると、このポリシーは無視されます。
@@ -1724,6 +1744,11 @@
 
       このポリシーを未設定のままにした場合、<ph name="TPM_FIRMWARE_UPDATE_TPM" /> ファームウェアの更新は行われません。</translation>
 <translation id="3232691106293445015">保護されていない HTTP 接続で <ph name="BASIC_AUTH" /> 認証の使用を禁止し、HTTPS を必須とする</translation>
+<translation id="3235085623859932253"> このポリシーを無効にした場合、ユーザーは PCIe トンネリング経由で Thunderbolt/USB4 周辺機器を完全に接続することができません。
+
+      このポリシーを有効にした場合、ユーザーは PCIe トンネリング経由で Thunderbolt/USB4 周辺機器を完全に接続することができます。
+
+      このポリシーを未設定のままにした場合、デフォルトでは false に設定され、ユーザーはこの設定を true または false のどちらにも選択できます。</translation>
 <translation id="3236046242843493070">拡張機能、アプリ、ユーザー スクリプトのインストールを許可する URL パターン</translation>
 <translation id="3240609035816615922">プリンタの設定へのアクセス ポリシー</translation>
 <translation id="324062325008698789">プリンタのリストを設定します</translation>
@@ -2551,6 +2576,15 @@
 <translation id="4410236409016356088">ネットワークの帯域幅制限を有効にする</translation>
 <translation id="4411734231900934213">お子様と保護者のデバイス間で許容される時計の時間差（秒）です。</translation>
 <translation id="441217499641439905">モバイル接続時に <ph name="PRODUCT_OS_NAME" /> ファイルアプリで Google ドライブを無効にする</translation>
+<translation id="4413453659814156568">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可するサイトの URL パターンのリストを設定できます。
+
+          有効なサイトの URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。
+
+          JavaScript JIT ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
+
+          このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript JIT が有効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが使用されます（ポリシーを設定しているか、デフォルトで JavaScript JIT を有効にしている場合）。
+
+          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="4415603335307944578">このポリシーが true または未設定の場合、OS のアップグレード後に初めてブラウザを起動したときにウェルカム ページが再表示されます。
 
       このポリシーが false の場合、OS のアップグレード後に初めてブラウザを起動したときにウェルカム ページは再表示されません。</translation>
@@ -2707,6 +2741,7 @@
       このポリシーを未設定のままにした場合、どのサイトについても証明書の自動選択は行われません。</translation>
 <translation id="4615003180013429835">サイトリスト解析モード</translation>
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> でのメタ タグ チェックをスキップする</translation>
+<translation id="4624417808625504735">JavaScript での JIT の使用をブロックするサイトを指定する</translation>
 <translation id="4625915093043961294">拡張機能インストールのホワイトリストを設定する</translation>
 <translation id="4632343302005518762">リストで指定したコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="4632566332417930481">企業ポリシーによってインストールされた拡張機能でのデベロッパー ツールの使用を禁止し、その他の状況におけるデベロッパー ツールの使用を許可する</translation>
@@ -2858,7 +2893,6 @@
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> への登録は任意となります。登録できなかった場合でも、<ph name="PRODUCT_NAME" /> の起動プロセスはブロックされません。
 
       このポリシーは、デスクトップ上のマシンスコープのクラウド ポリシー登録で使用されます。詳しくは、https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 をご覧ください。</translation>
-<translation id="4887274746092315609">SAML ユーザーに対して、セッション内でのパスワード変更用のページを有効にする</translation>
 <translation id="4890453377345554695">このポリシーでは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリに書き込みアクセスすることに関して、ユーザーに許可を要求できるサイトの URL パターンリストを指定できます。
 
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
@@ -2890,6 +2924,7 @@
       このポリシーを無効に設定した場合、ログの収集とアップロードは行われません。
 
       ポリシーが未設定の場合、<ph name="PRODUCT_NAME" /> M76 まではデフォルトの設定によりログの収集とアップロードは行えません。<ph name="PRODUCT_NAME" /> M77 以降では、クラウドベースのユーザーレベル エンタープライズ ポリシーの対象となるほとんどのプロファイルから、ログの収集とアップロードをデフォルトで行うことができます。<ph name="PRODUCT_NAME" /> M77 から M80 までは、<ph name="PRODUCT_NAME" /> オンプレミス管理の対象となるプロファイルからも、ログの収集とアップロードをデフォルトで行うことができます。</translation>
+<translation id="4911334289324462969">ポート 989（ブロックの解除は 2022 年 2 年 1 日まで可能）</translation>
 <translation id="4913065710388638917">認証フローを有効にする URL のリストを指定する</translation>
 <translation id="4917385247580444890">強い</translation>
 <translation id="4919122295221518724">混合コンテンツの厳密な取り扱いを有効にする</translation>
@@ -3680,6 +3715,7 @@
 
       この必須のポリシーは、マシンスコープのクラウド ポリシーに適用されます。</translation>
 <translation id="5961137303188584693">デバイスの組み込みの NIC MAC アドレス</translation>
+<translation id="5963752574792883406">ポート 990（ブロックの解除は 2022 年 2 年 1 日まで可能）</translation>
 <translation id="5966615072639944554">Remote Attestation API の使用が許可されている拡張機能</translation>
 <translation id="596732417280023843">証明書プロファイルの名前です。</translation>
 <translation id="5975765799383881158">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは [メニュー] &gt; [ヘルプ] &gt; [問題を報告] またはキーの組み合わせを使用して、Google にフィードバックを送信できます。
@@ -3710,6 +3746,7 @@
       <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
       <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
 <translation id="6022948604095165524">起動時の操作</translation>
+<translation id="6025267044008029374">不正なファイルのダウンロードをブロックする（推奨）</translation>
 <translation id="6026722971789064331">書き込みを目的とする File System API の使用を管理する</translation>
 <translation id="602728333950205286">デフォルトの検索プロバイダのインスタント検索 URL</translation>
 <translation id="603410445099326293">POST を使用するキーワード候補による検索 URL のパラメータ</translation>
@@ -3842,6 +3879,7 @@
       この場合は、サンドボックス化されていない音声サブシステムの実行に関連して、ユーザーがセキュリティ上のリスクにさらされることになります。
       このポリシーを設定しない場合は、音声処理のサンドボックス化に関するデフォルトの設定が使用されます。デフォルトの設定はプラットフォームごとに異なる場合があります。
       このポリシーは、企業のセキュリティ ソフトウェアの設定がサンドボックス化と干渉する場合に、音声処理のサンドボックス化を無効にできるようにするためのものです。</translation>
+<translation id="624818583115864448">ポート 554（ブロックの解除は 2021 年 10 年 15 日まで可能）</translation>
 <translation id="6252773211180267325">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックしない</translation>
 <translation id="6261643884958898336">マシン識別情報に関するレポートを作成</translation>
 <translation id="6265892395051519509">センサーへのアクセスを許可するサイトを指定します</translation>
@@ -3977,6 +4015,14 @@
 <translation id="6449476513004303784">証明書の管理をユーザーに許可しない</translation>
 <translation id="6453641799812499182">新しい <ph name="CORS" /> の実装で <ph name="CORS" /> チェックの緩和措置を有効にする</translation>
 <translation id="645425387487868471"><ph name="PRODUCT_NAME" /> への強制ログインを有効にする</translation>
+<translation id="6455842857207956758">パスワード同期トークンの値を監視し、パスワードが更新されていて同期する必要がある場合にユーザーをオンラインの再認証フローに送って、複数の Chrome デバイス間で SAML パスワードを同期できるようにします。
+
+      chrome://password-change ページを有効にします。SAML ユーザーはこのページでセッション中に SAML パスワードを変更して、SAML パスワードとデバイスのロック画面のパスワードを常に同期できます。
+
+      さらに、このポリシーは、SAML パスワードの有効期限が近い SAML ユーザーへの警告通知も有効にします。これにより、ユーザーはすぐにセッション内でパスワードを変更して対応することが可能になります。
+      ただし、この通知は、パスワードの有効期限に関する情報が、SAML ログインフロー中に SAML ID プロバイダからデバイスに送信される場合にのみ表示されます。
+
+      このポリシーを無効に設定するか未設定のままにした場合、chrome://password-change で SAML パスワードを変更することはできず、SAML パスワードの有効期限が近づいても通知されません。</translation>
 <translation id="6458361632497500815">このポリシーを有効に設定するか未設定のままにした場合、<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" />、<ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> の 3 つのポリシーすべてが有効になっていれば、すべてのユーザーが <ph name="PRODUCT_CROSTINI_NAME" /> を使用できます。このポリシーを無効に設定した場合、外部のユーザーは <ph name="PRODUCT_CROSTINI_NAME" /> を使用できません。このポリシーを無効に変更すると、すでに実行されているコンテナではなく、新しい <ph name="PRODUCT_CROSTINI_NAME" /> コンテナの開始に対してポリシーが適用されます。</translation>
 <translation id="6464074037294098618">住所の自動入力を有効にします</translation>
 <translation id="6467613372414922590">ユーザーレベルのネイティブ メッセージング ホスト（管理者権限なしでインストールされたホスト）を許可する</translation>
@@ -4044,7 +4090,6 @@
 
       このポリシーを未設定のままにした場合、最大桁数は適用されません。</translation>
 <translation id="6553143066970470539">画面の明るさの割合（%）</translation>
-<translation id="6558362593755624474">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。</translation>
 <translation id="6559057113164934677">カメラやマイクへのアクセスをどのサイトにも許可しない</translation>
 <translation id="6559221564468029245">このポリシーを有効に設定するか未設定のままにした場合、音声が再生されている間は、ユーザーはアイドル状態とはみなされません。アイドル タイムアウトにはならず、アイドル処理も行われません。ただし、音声操作にかかわらず、画面を暗くするまでの時間、画面オフまでの時間、画面ロックまでの時間としてそれぞれ設定されたタイムアウト後は、対応する処理が行われます。
 
@@ -4150,6 +4195,7 @@
 
       このポリシーを無効に設定するか未設定のままにした場合、印刷コマンドを実行すると印刷プレビュー画面が表示されます。</translation>
 <translation id="6658245400435704251">最初にアップデートがサーバーにプッシュされた時刻から、デバイスによるアップデートのダウンロードをランダムに遅延できる最大時間を秒数で指定します。デバイスは、この時間の一部を実際の経過時間として、残りの時間をアップデート チェックとして待機できます。どのような場合でも、係数にはある一定の時間の上限があるため、アップデートのダウンロードを永遠に待機してデバイスが停止し続けることはありません。</translation>
+<translation id="6659537776197644458">パスワード同期の認証フローをトリガーしない</translation>
 <translation id="6662162847932043943">このポリシーでは、使用可能なすべてのシリアルポートへのアクセスを自動的に許可するサイトのリストを指定できます。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。URL のオリジン（スキーム、ホストとポート）のみが考慮されます。このポリシーは、<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />、ユーザーの設定をオーバーライドします。</translation>
 <translation id="6665670272107384733">ロックのクイック解除機能を使用するために必要なパスワード入力の頻度を設定する</translation>
 <translation id="6667586534922258705">ログイン画面とロック画面にパスワード表示ボタンを表示する</translation>
@@ -4185,6 +4231,7 @@
        このポリシーを有効にした場合、もしくは設定を行わない場合、安全でないフォームで送信が行われると、ページ全体に警告メッセージが表示されます。さらに、フォームの各項目がフォーカスされると、項目の横に警告のふきだしが表示され、フォームへの自動入力が無効になります。
        このポリシーが無効の場合、安全でないフォームでも警告は表示されず、自動入力も通常通り機能します。</translation>
 <translation id="670597451099978576">ログイン画面で特定のベンダー ID と製品 ID が指定されている USB デバイスへの接続を自動的にこれらのサイトに許可します。</translation>
+<translation id="6706330611356546885">どのサイトにも JavaScript JIT の実行を許可する</translation>
 <translation id="6720330829631914048">1 日の開始時間からの経過時間（24 時間表示）です。</translation>
 <translation id="6723472666969849951">このポリシーを設定することで、<ph name="PRODUCT_NAME" /> へのインストールを許可するアプリと拡張機能の管理、通信先ホストの管理、ランタイム アクセスの制限を行えます。
 
@@ -4796,6 +4843,7 @@
       この設定が無効な場合、ユーザーはこの機能を使用できません。PhoneHubAllowed ポリシーが無効な場合も、ユーザーはこの機能を使用できません。
 
       このポリシーが未設定の場合、デフォルトでは、企業で管理されているユーザーと管理されていないユーザーのいずれもこの機能を使用できまます。</translation>
+<translation id="7367734504783638685">第三者 SSO プロバイダと複数の Chrome デバイスとの間でパスワードを同期する</translation>
 <translation id="7372831798009983116">「自動クリック」のユーザー補助機能を有効にする</translation>
 <translation id="7373200034079131670">Android または VM が起動している場合、ユーザーのログアウト時に再起動する。</translation>
 <translation id="7373680616478819439">ログイン インターセプトを有効または無効に設定します。
@@ -5177,12 +5225,6 @@
 <translation id="7933141401888114454">監視対象ユーザーを作成できるようにする</translation>
 <translation id="793473937901685727">ARC アプリで証明書を使用できるかどうかを設定します</translation>
 <translation id="7937766917976512374">動画キャプチャを許可または拒否する</translation>
-<translation id="7940359358774136765">chrome://password-change ページを有効にします。SAML ユーザーはこのページでセッション中に SAML パスワードを変更して、SAML パスワードとデバイスのロック画面のパスワードを常に同期できます。
-
-      さらに、このポリシーは、SAML パスワードの有効期限が近い SAML ユーザーへの警告通知も有効にします。これにより、ユーザーはすぐにセッション内でパスワードを変更して対応することが可能になります。
-      ただし、この通知は、パスワードの有効期限に関する情報が、SAML ログインフロー中に SAML ID プロバイダからデバイスに送信される場合にのみ表示されます。
-
-      このポリシーを無効に設定するか未設定のままにした場合、chrome://password-change で SAML パスワードを変更することはできず、SAML パスワードの有効期限が近づいても通知されません。</translation>
 <translation id="7941975817681987555">ネットワーク接続でネットワーク動作を予測しない</translation>
 <translation id="7951605113561734721">デバイス管理プロトコルを使用した登録が必要なデバイス共通のクライアント証明書を指定します。</translation>
 <translation id="7952007677054834789"><ph name="PRODUCT_NAME" /> の起動時に読み込むページ、デフォルトのホームページ、デフォルトの新しいタブページを設定し、ユーザーがこの設定を変更できないようにします。
@@ -5204,6 +5246,7 @@
       このポリシーを無効に設定すると、リモート アクセスは無効にはなりませんが、接続できるのは同一ネットワークからのみとなります（NAT トラバーサルや中継は許可されません）。</translation>
 <translation id="7956210013490975468"><ph name="PRODUCT_OS_NAME" /> のシステム プロキシ サービスを設定します。</translation>
 <translation id="7958537754689366707">12 時間ごとにパスワードの入力を求める</translation>
+<translation id="7959035883875301444">JavaScript JIT の使用を管理する</translation>
 <translation id="7961779417826583251">リストで指定されたレガシー認証局に対して Certificate Transparency（証明書の透明性）の適用を無効にする</translation>
 <translation id="7962093600142350905">このポリシーでは、印刷プレビュー ダイアログでユーザーに利用可能な任意の Privet プリンタを表示するかどうかを管理します。
       このポリシーを有効に設定した場合、利用可能な Privet プリンタが表示されます。
@@ -5477,6 +5520,7 @@
 <translation id="8314214821702356835">デバイスのロック時にユーザーのメディア再生を許可する</translation>
 <translation id="8319678975002906774">Managed Configuration API で特定のオリジンのウェブサイトに返す値を設定します</translation>
 <translation id="8320149248919453401">バッテリー充電モード</translation>
+<translation id="8329434144708110">認証フローをトリガーしてパスワードを SSO プロバイダと同期する</translation>
 <translation id="8329984337216493753">このポリシーは小売りモードでのみアクティブになります。
 
       DeviceIdleLogoutTimeout が指定されている場合、このポリシーは、カウントダウン タイマー付き警告ボックスがユーザーに表示されてからログアウトが実行されるまでの時間を定義します。
@@ -5621,6 +5665,17 @@
 <translation id="8525526490824335042">Linux コンテナ</translation>
 <translation id="8528951285051082869">File Handling API を通じてファイル形式にアクセスすることをウェブアプリに許可しない</translation>
 <translation id="8537051350735478658">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> のアドレスバーで検索候補が有効になります。このポリシーを False に設定した場合、検索候補が無効になります。このポリシーを設定した場合、ユーザーは設定を変更できません。ポリシーを設定しない場合、検索候補は最初は有効ですが、ユーザーはいつでも無効にできます。</translation>
+<translation id="8543103455510904459">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可しないサイトの URL パターンのリストを設定できます。
+
+          JavaScript JIT を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかったり、WebAssembly を使用する JavaScript の一部が無効になったりする可能性があります。JavaScript JIT を無効にすると、<ph name="PRODUCT_NAME" /> でのウェブ コンテンツの表示をより安全な設定で行えるようになります。
+
+          有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。
+
+          JavaScript JIT ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
+
+          このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript JIT が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが使用されます（ポリシーを設定しているか、デフォルトで JavaScript JIT を有効にしている場合）。
+
+          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="8543108307976719751">このパソコンへのリモート アクセス接続を許可しない</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> のデフォルトの HTML レンダラ</translation>
 <translation id="8544465954173828789">スマートフォンから Chromebook への SMS メッセージの同期を許可する。</translation>
@@ -5786,7 +5841,6 @@
 <translation id="8800453707696044281">バッテリー充電のカスタムの充電停止設定（%）を行う</translation>
 <translation id="8801680448782904838">ブラウザまたはデバイスの再起動が推奨されるか必要であることをユーザーに通知する</translation>
 <translation id="8807313206348471682">ログアウト確認ダイアログを表示する</translation>
-<translation id="8816671955985738552">chrome://password-change でのセッション中の SAML パスワードの変更を許可しない</translation>
 <translation id="8817960019535659860">ユーザーに Chrome OS の登録特典の利用を許可しない</translation>
 <translation id="8818173863808665831">デバイスの地理的位置をレポートします。
 
@@ -6024,6 +6078,7 @@
       このポリシーを設定しない場合、どのサイトに対しても自動選択は行われません。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
+<translation id="9068629430243705879">ポート 6566（ブロックの解除は 2021 年 10 月 15 日まで可能）</translation>
 <translation id="9073405975862312795">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはユーザーがデバイス上でアクティブになっていた期間を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはアクティブな期間を記録または報告しません。</translation>

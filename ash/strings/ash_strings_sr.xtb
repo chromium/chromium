@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Унесите овај PIN кôд на том уређају: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Делимичан снимак екрана је изабран</translation>
 <translation id="1032891413405719768">Батерија писаљке је скоро празна</translation>
+<translation id="1036073649888683237">Да бисте управљали обавештењима, идите у подешавања</translation>
 <translation id="1036672894875463507">Ја сам ваш Google помоћник и ту сам да вам помогнем током целог дана!
 Ево неколико ствари које можете да пробате за почетак.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />: додато</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">Скенирање ставки</translation>
 <translation id="1056775291175587022">Нема мрежа</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Замените или напуните батерију</translation>
 <translation id="108486256082349153">Мобилни: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добар дан, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Досадно ми је</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">Превуците са десне стране да бисте се вратили</translation>
 <translation id="343571671045587506">Измени подсетник</translation>
 <translation id="3435967511775410570">Отисак је препознат</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
 <translation id="3454224730401036106">Сада сте повезани на безбеднију мрежу</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">Повезује се...</translation>
 <translation id="4379531060876907730">Ово су алатке за писаљку</translation>
 <translation id="4389184120735010762">Притиснули сте тастерску пречицу за монтирану лупу екрана. Желите ли да је укључите?</translation>
+<translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4421231901400348175">Делите контролу над екраном са особом <ph name="HELPER_NAME" /> преко Даљинске помоћи.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
@@ -726,7 +730,7 @@
 <translation id="6816797338148849397">Доступне су информације везане за ваш избор. Користите тастер са стрелицом нагоре да бисте им приступили.</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6820676911989879663">Направите паузу!</translation>
-<translation id="6837064795450991317">Сакриј траку радне површине</translation>
+<translation id="6837064795450991317">Сакриј траку за радне површине</translation>
 <translation id="6850010208275816200">Актуелна апликација се приказује преко целог екрана. Ако апликација тражи лозинку, прво изађите из приказивања преко целог екрана.</translation>
 <translation id="6852052252232534364">Активирајте</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
@@ -762,7 +766,7 @@
 <translation id="7076293881109082629">Пријављивање</translation>
 <translation id="7088960765736518739">Приступ помоћу прекидача</translation>
 <translation id="7098389117866926363">Уређај са USB прикључком типа C (леви задњи порт)</translation>
-<translation id="7106330611027933926">Прикажи траку радне површине</translation>
+<translation id="7106330611027933926">Прикажи траку за радне површине</translation>
 <translation id="7118268675952955085">снимак екрана</translation>
 <translation id="7131634465328662194">Одјавићемо вас аутоматски.</translation>
 <translation id="7143207342074048698">Повезивање</translation>
@@ -806,7 +810,7 @@
 <translation id="7466449121337984263">Додирните сензор</translation>
 <translation id="7473891865547856676">Не, хвала</translation>
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
-<translation id="7482097454533720217">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирните и задржите.</translation>
+<translation id="7482097454533720217">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите.</translation>
 <translation id="7483025031359818980">Област за избор је подешена на цео екран</translation>
 <translation id="7486227320194954040">Скупи алатке за маркер</translation>
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>

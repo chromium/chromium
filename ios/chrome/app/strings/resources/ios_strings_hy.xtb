@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Ջնջել դիտարկման տվյալները</translation>
 <translation id="1815941218935345331">Անցակոդ</translation>
 <translation id="1820259098641718022">Ավելացվել է ընթերցանության ցանկում</translation>
+<translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1894205589103145703">Սխալի պատճառով չհաջողվեց մուտք գործել։</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Հայցել աշխատասեղանի տարբերակը</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
+<translation id="212623074644302906">Առաջարկել էջեր՝ ընթերցանության ցանկում ավելացնելու համար</translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
 <translation id="214201757571129614">Մտնել…</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
@@ -435,6 +437,7 @@
 Handoff-ը պետք է միացված լինի նաև Կարգավորումների Ընդհանուր բաժնում, իսկ ձեր սարքերը պետք է օգտագործեն iCloud-ի միևնույն հաշիվը:</translation>
 <translation id="5551897871312988470">Առաջարկել թարգմանություն</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
+<translation id="5580834567471114021">Ավելացնե՞լ ընթերցանության ցանկում</translation>
 <translation id="5592679540098330836">Միացնել համաժամացումը <ph name="NAME" /> օգտատիրոջ համար</translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5626245204502895507">Այս պահին հնարավոր չէ ներբեռնել ֆայլը:</translation>
@@ -588,6 +591,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="6830804042318138535">Կարդալ ավելին</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
+<translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>
 <translation id="6851516051005285358">Համակարգչային տարբերակ</translation>
 <translation id="6858855187367714033">Սկանավորվեց</translation>
 <translation id="6859944681507688231">QR կոդ կամ վարկային քարտ սկանավորելու համար կարգավորումներում միացրեք ֆոտոխցիկը:</translation>
@@ -619,6 +623,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7108338896283013870">Թաքցնել</translation>
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
+<translation id="7153999225810839758">Կարդալու համար կպահանջվի <ph name="TIME" /> րոպե</translation>
 <translation id="7159472599653637159">Բջջային տարբերակ</translation>
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Պաշտպանեք ձեր գաղտնաբառերը անվտանգության հետ կապված խնդիրներից</translation>
@@ -668,6 +673,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> ր</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="7649070708921625228">Օգնություն</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Внесете го овој PIN-код на тој уред: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Избрана е делумна слика од екранот</translation>
 <translation id="1032891413405719768">Батеријата на пенкалото е слаба</translation>
+<translation id="1036073649888683237">За да управувате со известувањата, одете во „Поставки“</translation>
 <translation id="1036672894875463507">Јас сум вашиот „Помошник на Google“, тука сум да ви помагам во текот на денот!
 Еве неколку работи што може да ги пробате за почеток.</translation>
 <translation id="1037492556044956303">Додаден е <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">Скенирање ставки</translation>
 <translation id="1056775291175587022">Нема мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Заменете ја или наполнете ја батеријата</translation>
 <translation id="108486256082349153">Мобилен уред: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добар ден <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Досадно ми е</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">Повлечете оддесно за да се вратите назад</translation>
 <translation id="343571671045587506">Изменете го потсетникот</translation>
 <translation id="3435967511775410570">Отпечатокот е препознаен</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">USB-Ц уред</translation>
 <translation id="3454224730401036106">Врската се префрли на побезбедна мрежа</translation>
@@ -431,6 +434,7 @@
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4379531060876907730">Ова се вашите пенкала</translation>
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
+<translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
 <translation id="4421231901400348175">Споделување контрола на вашиот екран со <ph name="HELPER_NAME" /> преку далечинска помош.</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>

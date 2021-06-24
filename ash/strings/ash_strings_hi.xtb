@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है. कृपया उस डिवाइस पर यह पिन कोड डालें: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">पार्शियल स्क्रीनशॉट चुना गया</translation>
 <translation id="1032891413405719768">स्टाइलस की बैटरी कम हो गई है</translation>
+<translation id="1036073649888683237">सूचनाएं मैनेज करने के लिए, सेटिंग में जाएं</translation>
 <translation id="1036672894875463507">मैं आपकी Google Assistant हूं. मैं दिन भर के कामों में आपकी मदद करूंगी!
 आप शुरुआत करने के लिए, यहां दी गई कुछ चीज़ें आज़मा सकते हैं.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> को जोड़ा गया</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">आइटम स्कैन</translation>
 <translation id="1056775291175587022">नेटवर्क नहीं है</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
 <translation id="108486256082349153">मोबाइल (सेल्युलर): <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">गुड आफ़्टरनून <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">मुझे बोरियत हो रही है</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">वापस जाने के लिए, स्क्रीन की दाईं ओर से स्वाइप करें</translation>
 <translation id="343571671045587506">रिमाइंडर बदलें</translation>
 <translation id="3435967511775410570">फ़िंगरप्रिंट पहचाना गया</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3454224730401036106">आपका कनेक्शन ज़्यादा सुरक्षित नेटवर्क पर स्विच कर दिया गया है</translation>
@@ -431,6 +434,7 @@
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4379531060876907730">ये आपके स्टाइलस टूल हैं</translation>
 <translation id="4389184120735010762">आपने 'सामग्री को बड़ा दिखाने वाली डॉक की गई सेवा' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
+<translation id="439598569299422042">रोका गया, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
 <translation id="4421231901400348175">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायक के द्वारा <ph name="HELPER_NAME" /> से शेयर किया जा रहा है.</translation>
 <translation id="4424159417645388645">डेस्क 5</translation>

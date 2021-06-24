@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Διαγραφή δεδ. περιήγ.</translation>
 <translation id="1815941218935345331">Κωδικός πρόσβασης</translation>
 <translation id="1820259098641718022">Προστέθηκε στη λίστα ανάγνωσης</translation>
+<translation id="1832848789136765277">Για να βεβαιωθείτε ότι έχετε πάντα πρόσβαση στα δεδομένα συγχρονισμού σας, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="1870148520156231997">Αποκάλυψη κωδικού πρόσβασης</translation>
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1894205589103145703">Παρουσιάστηκε κάποιο πρόβλημα κατά τη σύνδεση.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Αίτηση ιστότ. για υπολογ.</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
+<translation id="212623074644302906">Ερώτηση για προσθήκη στη Λίστα ανάγνωσης</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
 <translation id="214201757571129614">Σύνδεση…</translation>
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
@@ -435,6 +437,7 @@
 Το Handoff θα πρέπει να ενεργοποιηθεί επίσης στην ενότητα "Γενικά" των "Ρυθμίσεων" και οι συσκευές σας θα πρέπει να χρησιμοποιούν τον ίδιο λογαριασμό iCloud.</translation>
 <translation id="5551897871312988470">Προσφορά για μετάφραση</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
+<translation id="5580834567471114021">Προσθήκη στη Λίστα ανάγνωσης για αργότερα;</translation>
 <translation id="5592679540098330836">Ενεργοποιήστε τον συγχρονισμό για το <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Αποθήκευση κωδικού πρόσβασης;</translation>
 <translation id="5626245204502895507">Δεν ήταν δυνατή η λήψη του αρχείου αυτή τη φορά.</translation>
@@ -589,6 +592,7 @@
 <translation id="681368974849482173">Δημιουργήθηκε ένα στοιχείο</translation>
 <translation id="6830804042318138535">Διαβάστε περισσότερα</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
+<translation id="6842136130964845393">Για να βεβαιωθείτε ότι έχετε πάντα πρόσβαση στους αποθηκευμένους κωδικούς πρόσβασής σας, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="6851516051005285358">Αίτημα ιστοτόπου για υπολογιστή</translation>
 <translation id="6858855187367714033">Σαρώθηκε</translation>
 <translation id="6859944681507688231">Για να σαρώσετε έναν κώδικα QR, ή μια πιστωτική κάρτα, ενεργοποιήστε την κάμερα από τις ρυθμίσεις.</translation>
@@ -620,6 +624,7 @@
 <translation id="7108338896283013870">Απόκρυψη</translation>
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> λεπτό για ανάγνωση</translation>
 <translation id="7159472599653637159">Αίτηση ιστότ. για κινητά</translation>
 <translation id="7162168282402939716">Ξεκλείδωμα Καρτελών ανώνυμης περιήγησης με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Προστατέψτε τους κωδικούς πρόσβασής σας από ζητήματα ασφαλείας.</translation>
@@ -669,6 +674,7 @@
 <translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Διαγραφή κωδικού πρόσβασης</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> λ.</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>

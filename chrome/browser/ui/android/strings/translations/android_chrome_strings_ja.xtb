@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">同期データに常にアクセスできるようにしてください</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
 <translation id="1105960400813249514">スクリーン キャプチャ</translation>
+<translation id="1110914759170138831">ハイライト表示のテキストは一部省略されています</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
 <translation id="1113597929977215864">簡易表示する</translation>
 <translation id="1118561384561215815">ウェブ上のタスクのサポート</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">最大 60% のデータを節約、今日のニュースもチェック</translation>
 <translation id="1303339473099049190">お探しのパスワードが見つかりません。誤字や脱字がないかご確認のうえ、もう一度お試しください。</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> から送信</translation>
+<translation id="130581733275749598">ハイライト表示のテンプレートを選択します</translation>
 <translation id="1307205233980126133">認証情報を確認できませんでした</translation>
 <translation id="1310482092992808703">タブをグループ化</translation>
 <translation id="1311657260431405215">この QR コードは URL ではありません: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Google レンズで検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
+<translation id="4206707945726604465">他の履歴を削除するには、<ph name="BEGIN_LINK1" />Google マイ アクティビティ<ph name="END_LINK1" />にアクセスしてください</translation>
 <translation id="4209895695669353772">ユーザーに合わせた Google からのおすすめコンテンツを表示するには、同期を有効にします</translation>
 <translation id="4225895483398857530">ツールバー ショートカット</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">カード名義人（半角英文字）</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> でデジタル アセットリンクをチェックできませんでした</translation>
 <translation id="4831037795716408498">コンテンツをダウンロードする</translation>
+<translation id="4834007576107377210">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
 <translation id="4835385943915508971">Chrome はリクエストされたリソースにアクセスできません。</translation>
 <translation id="4837753911714442426">ページの印刷オプションを開く</translation>
 <translation id="4842092870884894799">パスワード作成のポップアップを表示しています</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました。}other{# 件のダウンロードが失敗しました。}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> をフォローしました</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
+<translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5188992787241350004">音声で検索</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Chrome のアップデートをダウンロードしています…</translation>
 <translation id="5853623416121554550">一時停止中</translation>
 <translation id="5854512288214985237">統計情報と障害レポートは Google に送信されません</translation>
-<translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5855546874025048181">絞り込み: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome から Bluetooth アダプタをオンにできません</translation>
 <translation id="5860033963881614850">オフ</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">新しいフォルダ...</translation>
 <translation id="8037750541064988519">残り <ph name="DAYS" /> 日</translation>
 <translation id="8037801708772278989">前回の確認: たった今</translation>
+<translation id="8040831032425909005">クイック操作の検索ウィジェット アイコン</translation>
 <translation id="804335162455518893">SD カードが見つかりません</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 利用可</translation>
 <translation id="8058746566562539958">新しい Chrome タブで開く</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">表示できる記事はありません</translation>
 <translation id="8443209985646068659">Chrome を更新できません</translation>
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
+<translation id="8453310803815879010">Dino ゲームを開始</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>

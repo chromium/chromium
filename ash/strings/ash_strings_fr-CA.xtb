@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer. Veuillez entrer le NIP suivant sur cet appareil : <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Capture d'écran partielle sélectionnée</translation>
 <translation id="1032891413405719768">Le niveau de la pile du stylet est faible</translation>
+<translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
 <translation id="1036672894875463507">Je suis votre Assistant Google, je suis là pour vous aider durant votre journée!
 Voici quelques exemples de choses que vous pouvez essayer pour commencer.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
@@ -14,6 +15,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1052916631016577720">Numériser les éléments</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Remplacez ou rechargez la pile</translation>
 <translation id="108486256082349153">Cellulaire : <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bon après-midi <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Je m'ennuie</translation>
@@ -306,6 +308,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3430396595145920809">Balayez l'écran de droite à gauche pour revenir en arrière</translation>
 <translation id="343571671045587506">Modifier le rappel</translation>
 <translation id="3435967511775410570">Empreinte digitale reconnue</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
 <translation id="3454224730401036106">Votre connexion est passée à un réseau plus sécurisé</translation>
@@ -430,6 +433,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci-clavier de loupe en mode ancré. Voulez-vous l'activer?</translation>
+<translation id="439598569299422042">Téléchargement interrompu, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4421231901400348175">Partage du contrôle de votre écran avec <ph name="HELPER_NAME" /> au moyen de l’assistance à distance.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>

@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">全部刪除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天後}other{# 天後}}</translation>
+<translation id="2922712708897119705">「<ph name="COLUMN_NAME" />」欄已經倒序排。</translation>
 <translation id="2931838996092594335">點擊</translation>
 <translation id="2981684127883932071">顯示緊建議</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">選單</translation>
 <translation id="3909791450649380159">剪下(&amp;T)</translation>
 <translation id="3990502903496589789">右邊緣</translation>
+<translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」欄已經順序排。</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 個未睇嘅通知}other{# 個未睇嘅通知}}</translation>
 <translation id="4202807286478387388">跳轉</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{還有 1 分鐘}other{還有 # 分鐘}}</translation>
 <translation id="7430878839542012341">要從記錄中刪除此搜尋嗎？</translation>
+<translation id="7437971918971306061">「<ph name="COLUMN_NAME" />」欄未排序。</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">移除咗。</translation>

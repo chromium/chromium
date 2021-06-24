@@ -164,9 +164,11 @@
 <translation id="469379815867856270">सिग्नलको क्षमता</translation>
 <translation id="4707579418881001319">L2TP/IPsec + प्रयोगकर्ता सर्टिफिकेट</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
+<translation id="475869545581454722">Chrome OS को पासवर्ड परिवर्तन गरिएको छ</translation>
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
+<translation id="4813136279048157860">मेरा फोटो</translation>
 <translation id="4813345808229079766">जडान</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
@@ -319,6 +321,7 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">साइकल काउन्ट</translation>
+<translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>

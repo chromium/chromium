@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{rok temu}few{# lata temu}many{# lat temu}other{# roku temu}}</translation>
 <translation id="2878511608894704031">Usuń wszystko</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 dzień}few{za # dni}many{za # dni}other{za # dnia}}</translation>
+<translation id="2922712708897119705">Kolumna <ph name="COLUMN_NAME" /> została posortowana malejąco.</translation>
 <translation id="2931838996092594335">kliknij</translation>
 <translation id="2981684127883932071">Wyświetlam sugestie</translation>
 <translation id="3036649622769666520">Otwórz pliki</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Wy&amp;tnij</translation>
 <translation id="3990502903496589789">Krawędź po prawej</translation>
+<translation id="3994749195054421561">Kolumna <ph name="COLUMN_NAME" /> została posortowana rosnąco.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nieprzeczytane powiadomienie}few{# nieprzeczytane powiadomienia}many{# nieprzeczytanych powiadomień}other{# nieprzeczytanego powiadomienia}}</translation>
 <translation id="4202807286478387388">przejdź</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Pozostała 1 minuta}few{Pozostały # minuty}many{Pozostały # minut}other{Pozostało # minuty}}</translation>
 <translation id="7430878839542012341">Usunąć to hasło z historii wyszukiwania?</translation>
+<translation id="7437971918971306061">Kolumna <ph name="COLUMN_NAME" /> nie została posortowana.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emotikony</translation>
 <translation id="7620655452534002301">Usunięto.</translation>

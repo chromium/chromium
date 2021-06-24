@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 năm trước}other{# năm trước}}</translation>
 <translation id="2878511608894704031">Xóa tất cả</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{trong 1 ngày}other{trong # ngày}}</translation>
+<translation id="2922712708897119705">Cột <ph name="COLUMN_NAME" /> sắp xếp theo thứ tự giảm dần.</translation>
 <translation id="2931838996092594335">nhấp vào</translation>
 <translation id="2981684127883932071">Đang hiển thị mục đề xuất</translation>
 <translation id="3036649622769666520">Mở Tệp</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Cắ&amp;t</translation>
 <translation id="3990502903496589789">Cạnh bên Phải</translation>
+<translation id="3994749195054421561">Cột <ph name="COLUMN_NAME" /> sắp xếp theo thứ tự tăng dần.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 thông báo chưa đọc}other{# thông báo chưa đọc}}</translation>
 <translation id="4202807286478387388">chuyển</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Còn 1 phút}other{Còn # phút}}</translation>
 <translation id="7430878839542012341">Xóa nội dung tìm kiếm này khỏi lịch sử của bạn?</translation>
+<translation id="7437971918971306061">Cột <ph name="COLUMN_NAME" /> chưa sắp xếp.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Biểu tượng cảm xúc</translation>
 <translation id="7620655452534002301">Đã xóa.</translation>

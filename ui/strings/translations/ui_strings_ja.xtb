@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">すべて削除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1日}other{#日}}</translation>
+<translation id="2922712708897119705">「<ph name="COLUMN_NAME" />」列の降順で並べ替えました。</translation>
 <translation id="2931838996092594335">クリック</translation>
 <translation id="2981684127883932071">候補を表示しています</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3909791450649380159">切り取り(&amp;T)</translation>
 <translation id="3990502903496589789">右端</translation>
+<translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」列の昇順で並べ替えました。</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{未読のお知らせ 1 件}other{未読のお知らせ # 件}}</translation>
 <translation id="4202807286478387388">ジャンプ</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{残り 1 分}other{残り # 分}}</translation>
 <translation id="7430878839542012341">この検索キーワードを履歴から削除しますか？</translation>
+<translation id="7437971918971306061">「<ph name="COLUMN_NAME" />」列の並べ替えを解除しました。</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">絵文字</translation>
 <translation id="7620655452534002301">削除しました。</translation>

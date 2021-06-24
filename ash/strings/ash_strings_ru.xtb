@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Выбран режим "Снимок части экрана"</translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
+<translation id="1036073649888683237">Чтобы управлять уведомлениями, откройте настройки</translation>
 <translation id="1036672894875463507">Я ваш Google Ассистент. Я могу помогать вам в течение всего дня.
 Вот что вы можете сделать для начала.</translation>
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">Сканирование</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1059194134494239015">Разрешение экрана <ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Зарядите или замените ее.</translation>
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добрый день, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Мне скучно</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">Чтобы вернуться, проведите по экрану от правого края</translation>
 <translation id="343571671045587506">Изменить напоминание</translation>
 <translation id="3435967511775410570">Отпечаток распознан</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3454224730401036106">Вы были подключены к более безопасной сети.</translation>
@@ -313,7 +316,7 @@
 <translation id="3465356146291925647">Под управлением администратора</translation>
 <translation id="3477079411857374384">Ctrl + Shift + Пробел</translation>
 <translation id="3485319357743610354">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="3486220673238053218">описание</translation>
+<translation id="3486220673238053218">узнать определение</translation>
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3552189655002856821">Нет подключения к Wi-Fi</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
+<translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
 <translation id="4421231901400348175">Доступ к экрану для <ph name="HELPER_NAME" /> с помощью удаленного помощника</translation>
 <translation id="4424159417645388645">Рабочий стол 5</translation>

@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">സമന്വയിപ്പിക്കുന്ന ഡാറ്റ നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="1100066534610197918">ഗ്രൂപ്പിലെ പുതിയ ടാബിൽ തുറക്കൂ</translation>
 <translation id="1105960400813249514">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
+<translation id="1110914759170138831">ഹെെലെെറ്റ് ഹ്വസ്വമാക്കി</translation>
 <translation id="1111673857033749125">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ സംരക്ഷിച്ച ബുക്ക്‌മാർക്കുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="1113597929977215864">ലളിതവൽക്കരിച്ച കാഴ്‌ച കാണിക്കുക</translation>
 <translation id="1118561384561215815">വെബിലെ ടാസ്‌ക്കുകളിൽ സഹായം തേടുക</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">60% വരെ ഡാറ്റ ലാഭിക്കൂ, ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ</translation>
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
+<translation id="130581733275749598">നിങ്ങളുടെ ഹെെലെെറ്റിനുള്ള ടെംപ്ലേറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1307205233980126133">ക്ഷമിക്കണം, നിങ്ങളുടെ ക്രെഡൻഷ്യലുകൾ സാധൂകരിക്കാൻ ഞങ്ങൾക്കായില്ല</translation>
 <translation id="1310482092992808703">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Google ലെൻസ് ഉപയോഗിച്ച് തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="4198423547019359126">ലഭ്യമായ ഡൗൺലോഡ് ലൊക്കേഷനുകളൊന്നും ഇല്ല</translation>
+<translation id="4206707945726604465">ചരിത്രത്തിന്റെ മറ്റ് രൂപങ്ങൾ മായ്‌ക്കാൻ <ph name="BEGIN_LINK1" />എന്റെ Google ആക്‌റ്റിവിറ്റി<ph name="END_LINK1" /> സന്ദർശിക്കുക</translation>
 <translation id="4209895695669353772">Google നിർദ്ദേശിക്കുന്ന വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="4225895483398857530">ടൂള്‍ബാര്‍ കുറുക്കുവഴി</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">കാര്‍‌ഡിലെ നാമം</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" />-ൽ ഡിജിറ്റൽ അസറ്റ് ലിങ്കുകളുടെ പരിശോധിച്ചുറപ്പിക്കൽ നടത്താനായില്ല</translation>
 <translation id="4831037795716408498">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="4834007576107377210">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക</translation>
 <translation id="4835385943915508971">അഭ്യർത്ഥിച്ച ഉറവിടത്തിലേക്ക് Chrome-ന് ആക്‌സസ് ഇല്ല.</translation>
 <translation id="4837753911714442426">പേജ് അച്ചടിക്കുന്നതിനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുക</translation>
 <translation id="4842092870884894799">പാസ്‌വേഡ് സൃഷ്ടിക്കൽ പോപ്പ് അപ്പ് കാണിക്കുന്നു</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പരാജയപ്പെട്ടു.}other{# ഡൗൺലോഡുകൾ പരാജയപ്പെട്ടു.}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> പിന്തുടരുന്നു</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
+<translation id="5171045022955879922">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5188992787241350004">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് തിരയൂ</translation>
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Chrome അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="5853623416121554550">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="5854512288214985237">സ്ഥിതിവിവരക്കണക്കുകളോ ക്രാഷ് റിപ്പോർട്ടുകളോ Google-ന് അയയ്ക്കില്ല</translation>
-<translation id="5854790677617711513">30 ദിവസത്തിൽ കൂടുതൽ പഴക്കമുള്ളത്</translation>
 <translation id="5855546874025048181">പരിഷ്കരിക്കുക: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome-ന് Bluetooth അഡാപ്‌റ്റർ ഓണാക്കാനാവുന്നില്ല</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>

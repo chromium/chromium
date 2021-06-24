@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Gedeeltelijk screenshot geselecteerd</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
+<translation id="1036073649888683237">Ga naar Instellingen om meldingen te beheren</translation>
 <translation id="1036672894875463507">Ik ben de Google Assistent en ik ben er om je te helpen met je dag.
 Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> toegevoegd</translation>
@@ -14,6 +15,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1052916631016577720">Items scannen</translation>
 <translation id="1056775291175587022">Geen netwerken</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
 <translation id="108486256082349153">Mobiel: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Goedemiddag <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Ik verveel me</translation>
@@ -306,6 +308,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3430396595145920809">Swipe vanaf de rechterkant om terug te gaan</translation>
 <translation id="343571671045587506">Herinnering bewerken</translation>
 <translation id="3435967511775410570">Vingerafdruk herkend</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3454224730401036106">Je verbinding is overgeschakeld op een beter beveiligd netwerk</translation>
@@ -430,6 +433,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4379531060876907730">Dit zijn je stylustools</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
+<translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
 <translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe support.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>

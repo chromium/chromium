@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ierīcē ievadiet šo PIN: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Atlasīta daļēja ekrānuzņēmuma izveide</translation>
 <translation id="1032891413405719768">Skārienekrāna pildspalvas akumulatora līmenis ir zems</translation>
+<translation id="1036073649888683237">Lai pārvaldītu paziņojumus, pārejiet uz lietotni Iestatījumi.</translation>
 <translation id="1036672894875463507">Esmu jūsu Google asistents, un mans uzdevums ir padarīt jūsu ikdienu ērtāku!
 Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1037492556044956303">Ierīce <ph name="DEVICE_NAME" /> ir pievienota</translation>
@@ -14,6 +15,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1052916631016577720">Vienumu meklēšana</translation>
 <translation id="1056775291175587022">Nav tīklu</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Nomainiet vai atkārtoti uzlādējiet akumulatoru.</translation>
 <translation id="108486256082349153">Mobilais tālrunis: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Labdien, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Man ir garlaicīgi</translation>
@@ -306,6 +308,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3430396595145920809">Lai atgrieztos, velciet no labās malas</translation>
 <translation id="343571671045587506">Rediģēt atgādinājumu</translation>
 <translation id="3435967511775410570">Pirksta nospiedums tika atpazīts.</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C ierīce</translation>
 <translation id="3454224730401036106">Savienojums ir mainīts uz drošāku tīklu.</translation>
@@ -430,6 +433,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
 <translation id="4379531060876907730">Šie ir jūsu skārienekrāna pildspalvas rīki</translation>
 <translation id="4389184120735010762">Jūs nospiedāt dokotās lupas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
+<translation id="439598569299422042">Apturēta, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
 <translation id="4421231901400348175">Ekrāna pārvaldības koplietošana ar <ph name="HELPER_NAME" />, izmantojot attālo palīdzību.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>

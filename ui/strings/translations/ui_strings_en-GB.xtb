@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 year ago}other{# years ago}}</translation>
 <translation id="2878511608894704031">Delete all</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{in 1 d}other{in # d}}</translation>
+<translation id="2922712708897119705">Column <ph name="COLUMN_NAME" /> sorted in descending order.</translation>
 <translation id="2931838996092594335">click</translation>
 <translation id="2981684127883932071">Displaying suggestions</translation>
 <translation id="3036649622769666520">Open Files</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Cu&amp;t</translation>
 <translation id="3990502903496589789">Right edge</translation>
+<translation id="3994749195054421561">Column <ph name="COLUMN_NAME" /> sorted in ascending order.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 unread notification}other{# unread notifications}}</translation>
 <translation id="4202807286478387388">jump</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130"><ph name="MESSAGE" />..</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minute left}other{# minutes left}}</translation>
 <translation id="7430878839542012341">Delete this search from your history?</translation>
+<translation id="7437971918971306061">Column <ph name="COLUMN_NAME" /> unsorted.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Removed.</translation>

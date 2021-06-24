@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">সবিশেষ চাওক</translation>
 <translation id="1030706264415084469"><ph name="URL" />এ আপোনাৰ ডিভাইচত চিৰদিনৰ বাবে ডাঙৰ ডেটা সঞ্চয় কৰিব বিচাৰে</translation>
 <translation id="1032854598605920125">ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক</translation>
-<translation id="1036224116832931580">ডাইন’ছৰৰ গে’ম, জঁপিয়াবলৈ আৰু খেলিবলৈ টিপক</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1038106730571050514">পৰামৰ্শসমূহ দেখুৱাওক</translation>
 <translation id="1038842779957582377">অজ্ঞাত নাম</translation>
@@ -376,6 +375,7 @@
 <translation id="2276057643614339130">প্ৰিণ্ট বে’ছ</translation>
 <translation id="2277103315734023688">আগলৈ যাওক</translation>
 <translation id="2283340219607151381">ছেভ কৰক আৰু ঠিকনা পূৰ কৰক</translation>
+<translation id="2283447177162560884">’<ph name="PAGE_TITLE" />’ মচা হ’ল</translation>
 <translation id="2288422996159078444">আপুনি টাইপ কৰা যিকোনো পাঠ, আপুনি চোৱা যিকোনো পৃষ্ঠা অথবা ৱেবত কৰা অন্য যিকোনো কার্যকলাপ চাই থকা হৈছে। আপোনাৰ অজ্ঞাতে ছাইটসমূহত থকা সমল সলনি কৰা হ’ব পাৰে।</translation>
 <translation id="2289385804009217824">ট্ৰিম কৰক</translation>
 <translation id="2292556288342944218">আপোনাৰ ইণ্টাৰনেটৰ এক্সেছ অৱৰোধ কৰা হ’ল</translation>
@@ -502,6 +502,7 @@
 <translation id="277133753123645258">শ্বিপিঙৰ পদ্ধতি</translation>
 <translation id="277499241957683684">ডিভাইচৰ কোনো ৰেকৰ্ড নাই</translation>
 <translation id="2775884851269838147">প্ৰথম প্ৰিণ্টৰ পৃষ্ঠা</translation>
+<translation id="2778854133681684171">আপুনি পৰৱৰ্তী সময়ত এই পৰিশোধ পদ্ধতিটোৰ জৰিয়তে ক্ৰয় কৰোঁতে ক্ষিপ্ৰতাৰে নিজকে সত্যাপন কৰিবলৈ আপোনাৰ ডিভাইচটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">ইণ্টাৰনেট সংযোগ ৰিছেট কৰা হ’ল৷</translation>
 <translation id="2792012897584536778">এই ডিভাচৰ প্ৰশাসকে কিছুমান সুৰক্ষা সম্পর্কীয় প্ৰমাণপত্ৰ ছেট আপ কৰিছে, যিবোৰে তেওঁলোকক আপুনি চোৱা সমল বা ৱেবছাইটসমূহ চাবলৈ অনুমতি দিব পাৰে।</translation>
@@ -657,6 +658,7 @@
 <translation id="3377736046129930310">কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰিবলৈ স্ক্ৰীন লক ব্যৱহাৰ কৰক</translation>
 <translation id="3380365263193509176">অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="3380864720620200369">ক্লায়েণ্টৰ আইডি:</translation>
+<translation id="3381668585148405088">আপোনাৰ ক্ৰয় সত্যাপন কৰক</translation>
 <translation id="3387261909427947069">পৰিশোধ পদ্ধতি</translation>
 <translation id="3391030046425686457">ডেলিভাৰীৰ ঠিকনা</translation>
 <translation id="3395827396354264108">পিক্‌আপৰ পদ্ধতি</translation>
@@ -785,7 +787,6 @@
 <translation id="3799805948399000906">ফ’ণ্টৰ বাবে অনুৰোধ কৰা হৈছে</translation>
 <translation id="3807366285948165054">প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
 <translation id="3807873520724684969">ক্ষতিকাৰক সমল অৱৰোধ কৰা হৈছে।</translation>
-<translation id="3808375843007691220">সকীয়নি: পৰীক্ষামূলক সুবিধাসমূহ আগত আছে!</translation>
 <translation id="3816482573645936981">মান (অপসাৰণ কৰা হৈছে)</translation>
 <translation id="382518646247711829">যদি আপুনি কোনো প্ৰ’ক্সী ছাৰ্ভাৰ ব্যৱহাৰ কৰে...</translation>
 <translation id="3827112369919217609">চূডা়ন্ত</translation>
@@ -1529,7 +1530,6 @@
 <translation id="6596325263575161958">এনক্ৰিপশ্বনৰ বিকল্প</translation>
 <translation id="6604181099783169992">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="6609880536175561541">Prc7 (লেফাফা)</translation>
-<translation id="6612358246767739896">সুৰক্ষিত সমল</translation>
 <translation id="6615297766614333076">ষ্টেকাৰ ২</translation>
 <translation id="6624427990725312378">যোগাযোগৰ তথ্য</translation>
 <translation id="6626291197371920147">মান্য কার্ড নম্বৰ যোগ কৰক</translation>
@@ -2024,7 +2024,6 @@
 <translation id="8446884382197647889">অধিক জানক</translation>
 <translation id="8457125768502047971">অনিৰ্ধাৰিত</translation>
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
-<translation id="8463101686637053101">ডাইন’ছৰৰ গে’ম, জঁপিয়াবলৈ আৰু খেলিবলৈ স্পেচ টিপক</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{১খন ক্ৰেডিট কাৰ্ড}one{#খন ক্ৰেডিট কাৰ্ড}other{#খন ক্ৰেডিট কাৰ্ড}}</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8474910779563686872">বিকাশকর্তাৰ সবিশেষ দেখুৱাওক</translation>

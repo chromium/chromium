@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Βεβαιωθείτε ότι έχετε πάντα πρόσβαση σε συγχρονισμένα δεδομένα</translation>
 <translation id="1100066534610197918">Άνοιγμα σε νέα καρτ. σε ομάδα</translation>
 <translation id="1105960400813249514">Λήψη οθόνης</translation>
+<translation id="1110914759170138831">Έγινε συντόμευση της επισήμανσης</translation>
 <translation id="1111673857033749125">Οι σελιδοδείκτες που είναι αποθηκευμένοι σε άλλες συσκευές θα εμφανίζονται εδώ.</translation>
 <translation id="1113597929977215864">Εμφάνιση απλοποιημένης προβολής</translation>
 <translation id="1118561384561215815">Βοήθεια για εργασίες στον ιστό</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Εξοικονομήστε έως και το 60% των δεδομένων, διαβάστε τις σημερινές ειδήσεις</translation>
 <translation id="1303339473099049190">Δεν είναι δυνατή η εύρεση αυτού του κωδικού πρόσβασης. Ελέγξτε για τυχόν ορθογραφικά λάθη και δοκιμάστε ξανά.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Επιλέξτε ένα πρότυπο για την επισήμανσή σας</translation>
 <translation id="1307205233980126133">Δυστυχώς, δεν ήταν δυνατή η επαλήθευση των διαπιστευτηρίων σας.</translation>
 <translation id="1310482092992808703">Ομαδοποίηση καρτελών</translation>
 <translation id="1311657260431405215">Αυτός ο κωδικός QR δεν είναι URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Αναζήτηση με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
+<translation id="4206707945726604465">Για να διαγράψετε άλλες μορφές ιστορικού, επισκεφτείτε τη διεύθυνση <ph name="BEGIN_LINK1" />Η δραστηριότητά μου Google<ph name="END_LINK1" />.</translation>
 <translation id="4209895695669353772">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="4225895483398857530">Συντόμευση γραμμής εργαλείων</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">Όνομα στην κάρτα</translation>
 <translation id="4818017973810341238">Αποτυχία επαλήθευσης Συνδέσμων ψηφιακών στοιχείων στο <ph name="VIOLATED_URL" />.</translation>
 <translation id="4831037795716408498">Λήψη περιεχομένου</translation>
+<translation id="4834007576107377210">Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης για τη διαγραφή του ιστορικού αναζήτησης, εάν υπάρχουν.</translation>
 <translation id="4835385943915508971">Το Chrome δεν έχει πρόσβαση στον πόρο που ζητήθηκε</translation>
 <translation id="4837753911714442426">Άνοιγμα επιλογών για την εκτύπωση της σελίδας</translation>
 <translation id="4842092870884894799">Εμφάνιση αναδυόμενου παραθύρου δημιουργίας κωδικού πρόσβασης</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 λήψη απέτυχε.}other{# λήψεις απέτυχαν.}}</translation>
 <translation id="5168824020667180049">Ακολουθείτε τον ιστότοπο <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
+<translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
 <translation id="5184329579814168207">Άνοιγμα στο Chrome</translation>
 <translation id="5188992787241350004">Αναζήτηση με τη φωνή σας</translation>
 <translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Λήψη Ενημέρωσης Chrome…</translation>
 <translation id="5853623416121554550">σε παύση</translation>
 <translation id="5854512288214985237">Δεν αποστέλλονται στατιστικά στοιχεία ή αναφορές σφαλμάτων στην Google.</translation>
-<translation id="5854790677617711513">Παλαιότερο από 30 ημέρες</translation>
 <translation id="5855546874025048181">Συγκεκριμενοποίηση: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Το Chrome δεν είναι δυνατό να ενεργοποιήσει τον προσαρμογέα Bluetooth</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">Νέος φάκελος…</translation>
 <translation id="8037750541064988519">Απομένουν <ph name="DAYS" /> ημέρες</translation>
 <translation id="8037801708772278989">Ελέγχθηκε μόλις τώρα</translation>
+<translation id="8040831032425909005">Εικονίδιο γραφικού στοιχείου αναζήτησης Γρήγορων ενεργειών</translation>
 <translation id="804335162455518893">Δεν βρέθηκε κάρτα SD</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB διαθέσιμα</translation>
 <translation id="8058746566562539958">Άνοιγμα σε νέα καρτέλα Chrome</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">Δεν υπάρχουν διαθέσιμες ιστορίες</translation>
 <translation id="8443209985646068659">Αδύνατη ενημέρωση Chrome</translation>
 <translation id="8445448999790540984">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
+<translation id="8453310803815879010">Εκκίνηση παιχνιδιού Dino</translation>
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466613982764129868">Βεβαιωθείτε ότι η συσκευή <ph name="TARGET_DEVICE_NAME" /> είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>

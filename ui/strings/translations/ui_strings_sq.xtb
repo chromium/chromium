@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 vit më parë}other{# vite më parë}}</translation>
 <translation id="2878511608894704031">Fshi të gjitha</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{në 1 ditë}other{në # ditë}}</translation>
+<translation id="2922712708897119705">Kolona "<ph name="COLUMN_NAME" />" është renditur në rend zbritës.</translation>
 <translation id="2931838996092594335">kliko</translation>
 <translation id="2981684127883932071">Po shfaq sugjerimet</translation>
 <translation id="3036649622769666520">Hap skedarët</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3909791450649380159">Pri&amp;te</translation>
 <translation id="3990502903496589789">Cepi i djathtë</translation>
+<translation id="3994749195054421561">Kolona "<ph name="COLUMN_NAME" />" është renditur në rend ngjitës</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 njoftim i palexuar}other{# njoftime të palexuara}}</translation>
 <translation id="4202807286478387388">kërce</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minutë e mbetur}other{# minuta të mbetura}}</translation>
 <translation id="7430878839542012341">Të fshihet ky kërkim nga historiku yt?</translation>
+<translation id="7437971918971306061">Kolona "<ph name="COLUMN_NAME" />" nuk është renditur.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">U hoq.</translation>

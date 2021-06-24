@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 yıl önce}other{# yıl önce}}</translation>
 <translation id="2878511608894704031">Tümünü Sil</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 gün içinde}other{# gün içinde}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> sütunu azalan düzende sıralandı.</translation>
 <translation id="2931838996092594335">tıklama</translation>
 <translation id="2981684127883932071">Öneriler gösteriliyor</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3909791450649380159">&amp;Kes</translation>
 <translation id="3990502903496589789">Sağ Kenar</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> sütunu artan düzende sıralandı.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Okunmamış Bildirim}other{# Okunmamış Bildirim}}</translation>
 <translation id="4202807286478387388">git</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 dakika kaldı}other{# dakika kaldı}}</translation>
 <translation id="7430878839542012341">Bu arama, geçmişinizden silinsin mi?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> sütunu sıralı değil.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Kaldırıldı.</translation>

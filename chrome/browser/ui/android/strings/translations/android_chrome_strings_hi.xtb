@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">पक्का करें कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें</translation>
 <translation id="1100066534610197918">समूह में नए टैब में खोलें</translation>
 <translation id="1105960400813249514">स्‍क्रीन कैप्‍चर</translation>
+<translation id="1110914759170138831">हाइलाइट छोटी की गई</translation>
 <translation id="1111673857033749125">आपके अन्‍य डिवाइस पर सहेजे गए बुकमार्क यहां दिखाई देंगे.</translation>
 <translation id="1113597929977215864">सरल बनाया गया व्यू दिखाएं</translation>
 <translation id="1118561384561215815">वेब पर टास्क करने में मदद पाएं</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">60% तक डेटा बचाएं, आज की खबरें पढ़ें</translation>
 <translation id="1303339473099049190">वह पासवर्ड नहीं मिला. अपनी वर्तनी की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> से भेजा गया</translation>
+<translation id="130581733275749598">अपनी हाइलाइट के लिए टेंप्लेट चुनें</translation>
 <translation id="1307205233980126133">माफ़ करें, हम आपके क्रेडेंशियल की पुष्टि नहीं कर सके</translation>
 <translation id="1310482092992808703">टैब को समूह में लगाएं</translation>
 <translation id="1311657260431405215">यह क्यूआर कोड, यूआरएल नहीं है: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Google Lens से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
+<translation id="4206707945726604465">अन्य तरह के इतिहास को मिटाने के लिए, <ph name="BEGIN_LINK1" />मेरी Google गतिविधि<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="4209895695669353772">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="4225895483398857530">Toolbar का शॉर्टकट</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">कार्ड पर नाम</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> पर डिजिटल एसेट लिंक की पुष्टि नहीं हो सकी</translation>
 <translation id="4831037795716408498">कॉन्टेंट डाउनलोड करें</translation>
+<translation id="4834007576107377210">अपना खोज इतिहास मिटाने के लिए, अपने सर्च इंजन के निर्देश देखें, अगर लागू हो</translation>
 <translation id="4835385943915508971">Chrome के पास अनुरोध किए गए संसाधन का एक्सेस नहीं है.</translation>
 <translation id="4837753911714442426">पेज प्रिंट करने के विकल्प खोलें</translation>
 <translation id="4842092870884894799">पासवर्ड जेनरेशन पॉपअप दिखाया जा रहा है</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 डाउनलोड नहीं हो सका.}one{# डाउनलोड नहीं हो सके.}other{# डाउनलोड नहीं हो सके.}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> को फ़ॉलो किया गया</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
+<translation id="5171045022955879922">URL खोजें या टाइप करें</translation>
 <translation id="5184329579814168207">Chrome में खोलें</translation>
 <translation id="5188992787241350004">बोलकर खोजें</translation>
 <translation id="5191251636205085390">तीसरे पक्ष की कुकी की जगह इस्तेमाल करने के मकसद से बनाई गई नई टेक्नोलॉजी के बारे में जानें और उन्हें कंट्रोल करें</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Chrome का अपडेट डाउनलोड हो रहा है…</translation>
 <translation id="5853623416121554550">रोका गया</translation>
 <translation id="5854512288214985237">Google को आंकड़े या क्रैश रिपोर्ट नहीं भेजी जातीं</translation>
-<translation id="5854790677617711513">30 दिनों से ज़्यादा पुराना</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome, ब्लूटूथ एडाप्टर को चालू नहीं कर सका</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">नया फ़ोल्‍डर…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> दिन शेष</translation>
 <translation id="8037801708772278989">अभी-अभी जांच की गई</translation>
+<translation id="8040831032425909005">तेज़ कार्रवाई के लिए 'Search विजेट' आइकॉन</translation>
 <translation id="804335162455518893">SD कार्ड नहीं मिला</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एमबी उपलब्ध</translation>
 <translation id="8058746566562539958">नए Chrome टैब में खोलें</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">कोई भी कहानी उपलब्ध नहीं है</translation>
 <translation id="8443209985646068659">Chrome अपडेट संभव नहीं</translation>
 <translation id="8445448999790540984">पासवर्ड निर्यात नहीं कर सकते</translation>
+<translation id="8453310803815879010">डायनो गेम शुरू करें</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466613982764129868">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>

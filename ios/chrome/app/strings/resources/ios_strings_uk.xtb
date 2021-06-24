@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Очистити історію</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
+<translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1894205589103145703">Під час входу сталася помилка.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Повна версія сайту</translation>
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="2116625576999540962">Переміщено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="212623074644302906">Просити додавати в список читання</translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="214201757571129614">Увійти…</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
@@ -435,6 +437,7 @@
 Для цього потрібно ввімкнути Handoff у розділі "Загальні" в Налаштуваннях, а також увійти в той самий обліковий запис iCloud на пристроях.</translation>
 <translation id="5551897871312988470">Пропонувати переклад</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
+<translation id="5580834567471114021">Додати в список читання на пізніше?</translation>
 <translation id="5592679540098330836">Увімкнути синхронізацію для користувача <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
 <translation id="5626245204502895507">Зараз неможливо завантажити цей файл.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6830804042318138535">Показати більше</translation>
 <translation id="6831043979455480757">Перекласти</translation>
+<translation id="6842136130964845393">Щоб не втратити доступ до своїх збережених паролів, підтвердьте свою особу</translation>
 <translation id="6851516051005285358">Повна версія сайту</translation>
 <translation id="6858855187367714033">Зіскановано</translation>
 <translation id="6859944681507688231">Щоб відсканувати QR-код або кредитну картку, увімкніть камеру в налаштуваннях.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">Сховати</translation>
 <translation id="7133798577887235672">Повне ім’я</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> хв, щоб прочитати документ</translation>
 <translation id="7159472599653637159">Мобільний сайт</translation>
 <translation id="7162168282402939716">Розблокувати анонімні вкладки, використовуючи <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захистіть свої паролі</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Сплив.вікна блок. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Видалити пароль</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> хв</translation>
 <translation id="7638584964844754484">Неправильна парольна фраза</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="7649070708921625228">Довідка</translation>

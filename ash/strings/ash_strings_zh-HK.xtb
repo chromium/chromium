@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN：<ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">揀咗部分螢幕截圖</translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
+<translation id="1036073649888683237">如要管理通知，請前往「設定」應用程式</translation>
 <translation id="1036672894875463507">我是您的「Google 助理」，可協助您處理處理日常事務！
 如要開始使用，您可先嘗試以下幾種功能。</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">項目掃瞄</translation>
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">請更換電池或充電</translation>
 <translation id="108486256082349153">流動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，午安：</translation>
 <translation id="109942774857561566">我好悶</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">從螢幕右側向左滑動即可返回</translation>
 <translation id="343571671045587506">編輯提醒</translation>
 <translation id="3435967511775410570">成功識別指紋</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3454224730401036106">連線已切換至更安全的網絡</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4379531060876907730">這是您的觸控筆工具</translation>
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
+<translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
 <translation id="4424159417645388645">桌面 5</translation>

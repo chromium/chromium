@@ -394,6 +394,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1516486219683984217">Impide el uso de notificaciones del sistema</translation>
 <translation id="152078218786467087">La hora en la que debe reiniciarse el dispositivo (según su zona horaria local).</translation>
 <translation id="1522425503138261032">Permitir a los sitios que rastreen la ubicación física de los usuarios.</translation>
+<translation id="1523587744262636189">puerto 10080 (puede desbloquearse hasta el 01/04/2022)</translation>
 <translation id="1523774894176285446">Navegador alternativo que se inicia para sitios web configurados</translation>
 <translation id="1524243669991877602">Si habilitas la política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> podrán combinarse en políticas de la máquina.
 
@@ -608,6 +609,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
+<translation id="1813672770917912317">Te permite establecer si <ph name="PRODUCT_NAME" /> ejecutará el motor v8 de JavaScript con el compilador JIT (Just In Time) habilitado o inhabilitado.
+
+          Si inhabilitas JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> procese el contenido web más lentamente y, además, inhabilite partes de JavaScript, incluido WebAssembly. Si inhabilitas JavaScript con JIT, <ph name="PRODUCT_NAME" /> podría procesar el contenido web en una configuración más segura.
+
+          Esta política puede anularse para patrones de URL específicos a través de las políticas de <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> y <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />.
+
+          Si no estableces esta política, se habilitará JavaScript con JIT.</translation>
 <translation id="1815386977045680976">Define la lista de usuarios con permiso para acceder al dispositivo. Las entradas que se ingresen deben tener el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, p. ej., <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Para permitir usuarios aleatorios en un dominio, usa el formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Si no configuras esta política, no se establecerán restricciones respecto de qué usuarios pueden acceder. Ten en cuenta que, para crear nuevos usuarios, sigue siendo necesario configurar la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> de manera adecuada.
@@ -827,7 +835,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y datos relacionados con bloqueos</translation>
 <translation id="2104418465060359056">Enviar información de extensiones y complementos</translation>
-<translation id="2106166591774188922">Permite que los usuarios de SAML cambien sus contraseñas de SAML durante la sesión en chrome://password-change</translation>
 <translation id="2106627642643925514">Anula el modo de impresión con PIN predeterminado. Si el modo no está disponible, se ignorará esta política.</translation>
 <translation id="2107563874993284076">Si habilitas la política, los usuarios usarán la función Network File Shares para <ph name="PRODUCT_NAME" />. Si inhabilitas la política, los usuarios no podrán usar esta función.</translation>
 <translation id="2107601598727098402">
@@ -873,6 +880,17 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces la política, el navegador comenzará a descartar pestañas para ahorrar memoria cuando se supere el límite. Sin embargo, no hay garantía de que el navegador se ejecute siempre por debajo del límite. Se redondeará a 1024 cualquier valor por debajo de 1024.
 
       Si no estableces esta política, el navegador solo comenzará a ahorrar memoria cuando detecte que queda poca cantidad de memoria física disponible en la máquina.</translation>
+<translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> incluye una lista de puertos restringidos. Las conexiones a esos puertos no podrán completarse. Esta configuración permite omitir esa lista. El valor es una lista separada por comas que incluye cero o más puertos en los que se permiten las conexiones de salida.
+
+      Los puertos están restringidos a fin de impedir que se utilice <ph name="PRODUCT_NAME" /> como vector para aprovecharse de diversas vulnerabilidades de la red. Si estableces esta política, es posible que tu red quede expuesta a ataques. Esta política es una solución temporal para los errores con el código "ERR_UNSAFE_PORT" que se producen al migrar un servicio de un puerto bloqueado a un puerto estándar (p. ej., el puerto 80 o 443).
+
+      Los sitios web maliciosos pueden detectar fácilmente si esta política está establecida y en qué puertos, y utilizar esa información para dirigir ataques.
+
+      Los puertos pueden desbloquearse hasta una fecha específica, la cual se indica en cada uno. Después de esa fecha, el puerto estará restringido independientemente de esta configuración.
+
+      Si dejas el valor vacío o no lo estableces, se bloquearán todos los puertos restringidos. Si hay valores tanto válidos como no válidos, se aplicarán los válidos.
+
+      Esta política anula la opción de la línea de comandos "--explicitly-allowed-ports".</translation>
 <translation id="2166472654199325139">No aplicar filtros de contenido para adultos a los sitios</translation>
 <translation id="2168060657210442816">
       Para que esta política tenga efecto, debe establecerse la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> como verdadera.
@@ -944,6 +962,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Se planea quitar esta política en la versión 92 de <ph name="PRODUCT_NAME" /> para Mac OS X, cuando se quite la compatibilidad con el verificador de certificados heredado de Mac OS X.
       </translation>
+<translation id="2223393221350938149">No permitir que cualquier sitio ejecute JavaScript con JIT</translation>
 <translation id="2223582957891074498">Si estableces la política como verdadera, no se permitirá realizar capturas de pantalla con combinaciones de teclas ni API de extensiones. Si la estableces como falsa, se permitirá realizar capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="2231817271680715693">Importar historial de navegación del navegador predeterminado en la primera ejecución</translation>
@@ -1415,6 +1434,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Nota: La política afecta a todas las entradas de audio (no solo al micrófono integrado).</translation>
 <translation id="2823870601012066791">Ubicación del registro de Windows para los clientes de <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Activar el modo de incógnito</translation>
+<translation id="282870810415075521">Permitir que JavaScript utilice JIT en estos sitios</translation>
 <translation id="2829975392104323514">Esta política controla el envío de datos que permiten identificar las máquinas, como sus nombres y las direcciones de red.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -1780,6 +1800,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces la política, no estará disponible la actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
 <translation id="3232691106293445015">Las conexiones HTTP no seguras no pueden usar la autenticación <ph name="BASIC_AUTH" />; se requiere una conexión HTTPS</translation>
+<translation id="3235085623859932253"> Si inhabilitas esta política, el usuario no podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
+
+      Si la habilitas, el usuario podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
+
+      Si no la estableces, se configurará como falsa de forma predeterminada. El usuario podrá seleccionar el estado deseado (verdadero o falso) para esta configuración.</translation>
 <translation id="3236046242843493070">Patrones de URL desde los que se pueden instalar secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="3240609035816615922">Política de acceso para la configuración de las impresoras</translation>
 <translation id="324062325008698789">Configura una lista de impresoras</translation>
@@ -2622,6 +2647,15 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj del dispositivo del niño y el del padre o la madre (en segundos).</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="4413453659814156568">Te permite establecer una lista de patrones de URL de sitios donde se indiquen los que pueden ejecutar JavaScript con el compilador JIT (Just In Time) habilitado.
+
+          Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
+
+          Las excepciones de la política correspondiente a JavaScript con JIT solo se aplicarán por sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios corresponde el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como a subdomain.site.com.
+
+          Esta política se aplica por marco y no se basa solamente en la URL de origen de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco que incluye site-two.com, por ejemplo, site-one.com tendrá habilitado JavaScript con JIT, pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se establece, o bien habilitará JavaScript con JIT de forma predeterminada.
+
+          Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará JavaScript con JIT para el sitio.</translation>
 <translation id="4415603335307944578">Si esta política se configura como verdadera, o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.
 
       Si esta política se configura como falsa, el navegador no volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.</translation>
@@ -2779,6 +2813,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="4624417808625504735">Impedir que JavaScript utilice JIT en estos sitios</translation>
 <translation id="4625915093043961294">Configurar la lista blanca de instalación de extensiones</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
@@ -2932,7 +2967,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la inhabilitas o no la estableces, la inscripción en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y no se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
 
       Esta política se usa en máquinas de escritorio con inscripción en las políticas de nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
-<translation id="4887274746092315609">Habilita una página para cambiar la contraseña dentro de la sesión para usuarios de SAML</translation>
 <translation id="4890453377345554695">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -2964,6 +2998,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si inhabilitas la política, no se recopilarán ni subirán estos registros.
 
       Si no la estableces, hasta la versión M76 inclusive, <ph name="PRODUCT_NAME" /> no podrá recopilar ni subir esos registros de forma predeterminada. A partir de la versión M77, <ph name="PRODUCT_NAME" /> podrá, de forma predeterminada, recopilar y subir esos registros de la mayoría de los perfiles afectados por las políticas empresariales en la nube para los usuarios. En las versiones posteriores a M77 y hasta la M80 inclusive, <ph name="PRODUCT_NAME" /> también podrá recopilar y subir de forma predeterminada esos registros de los perfiles afectados por la administración local de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4911334289324462969">puerto 989 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="4913065710388638917">Permite el flujo de certificación para una lista de URL</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4919122295221518724">Habilita un tratamiento más estricto para contenido mixto</translation>
@@ -3795,6 +3830,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Esta política obligatoria afecta las políticas de la nube para esta máquina.</translation>
 <translation id="5961137303188584693">Dirección MAC para el NIC integrado del dispositivo</translation>
+<translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
 <translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
@@ -3825,6 +3861,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
+<translation id="6025267044008029374">Bloquear descargas maliciosas (recomendado)</translation>
 <translation id="6026722971789064331">Controla el uso de la API de File System para escritura</translation>
 <translation id="602728333950205286">URL instantánea del proveedor de búsqueda predeterminado</translation>
 <translation id="603410445099326293">Parámetros para URL de sugerencia que utiliza POST</translation>
@@ -3978,6 +4015,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta acción deja a los usuarios desprotegidos ante los riesgos de seguridad relacionados con la ejecución de los subsistemas de audio fuera de la zona de pruebas.
       Si no se establece esta política, se utilizará la configuración predeterminada para la zona de pruebas de audio, que puede diferir según la plataforma.
       Esta política permite que las empresas inhabiliten la zona de pruebas de audio si utilizan configuraciones de software de seguridad que interfieran con la zona de pruebas.</translation>
+<translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="6252773211180267325">No impide que se ejecute <ph name="BOREALIS_NAME" /> para un usuario</translation>
 <translation id="6261643884958898336">Enviar la información de identificación de la máquina</translation>
 <translation id="6265892395051519509">Permite el acceso a los sensores en estos sitios</translation>
@@ -4117,6 +4155,14 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6449476513004303784">No permitir que los usuarios administren certificados</translation>
 <translation id="6453641799812499182">Permite que <ph name="CORS" /> revise las mitigaciones en la nueva implementación de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Permitir forzar el acceso para <ph name="PRODUCT_NAME" /></translation>
+<translation id="6455842857207956758">Permite la sincronización de contraseñas de SAML entre varios dispositivos Chrome mediante la supervisión del valor del token de sincronización de contraseñas y el envío del usuario a la reautenticación en línea si se actualizó la contraseña y debe sincronizarse.
+
+      Habilita una página en chrome://password-change que permite a los usuarios de SAML cambiar sus contraseñas de SAML durante la sesión, lo que asegura que se mantengan sincronizadas la contraseña de SAML y la de bloqueo de pantalla del dispositivo.
+
+      Esta política también habilita notificaciones para advertir a los usuarios de SAML de que sus contraseñas de SAML están a punto de vencer. Esto les permite renovarlas de inmediato durante la sesión.
+      Sin embargo, solo se mostrarán estas notificaciones si el proveedor de identidad de SAML envía la información de vencimiento de contraseña al dispositivo durante el flujo de acceso de SAML.
+
+      Si inhabilitas esta política o no la estableces, no se podrán cambiar las contraseñas de SAML en chrome://password-change ni se mostrarán notificaciones cuando este tipo de contraseñas estén por vencer.</translation>
 <translation id="6458361632497500815">Si habilitas la política o no la estableces, todos los usuarios podrán utilizar <ph name="PRODUCT_CROSTINI_NAME" /> siempre que estén habilitadas las 3 políticas (<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> y <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />). Si inhabilitas la política, los usuarios no afiliados no podrán usar <ph name="PRODUCT_CROSTINI_NAME" />. En ese caso, se comenzará a aplicar la política en los contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se inicien a partir de ese momento, pero no en aquellos que ya estén en ejecución.</translation>
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
@@ -4192,7 +4238,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no estableces la política, no se aplicará de forma forzosa ninguna longitud máxima.</translation>
 <translation id="6553143066970470539">Porcentaje del brillo de pantalla</translation>
-<translation id="6558362593755624474">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara ni al micrófono</translation>
 <translation id="6559221564468029245">Si habilitas la política o no la estableces, no se considerará que el usuario está inactivo cuando se esté reproduciendo audio. Esto evitará que se alcance el tiempo de espera de inactividad y se tome la medida de inactividad. Sin embargo, la pantalla aún se atenuará, apagará y bloqueará después de los tiempos de espera configurados, independientemente de la actividad del audio.
 
@@ -4298,6 +4343,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si la inhabilitas o no la estableces, los comandos de impresión mostrarán la pantalla de vista previa de impresión.</translation>
 <translation id="6658245400435704251">Especifica la cantidad máxima de segundos que un dispositivo puede retrasar aleatoriamente la descarga de una actualización desde el momento en el que la descarga se envío al servidor por primera vez. El dispositivo puede dedicar una parte de este tiempo al proceso de actualización y el resto a realizar las comprobaciones necesarias. En cualquier caso, el límite superior de la dispersión es un período de tiempo constante, para que el dispositivo no se quede bloqueado mientras espera descargar una actualización.</translation>
+<translation id="6659537776197644458">No activar los flujos de autenticación para la sincronización de contraseñas</translation>
 <translation id="6662162847932043943">Si estableces la política, podrás crear una lista de los sitios que reciben automáticamente permiso para acceder a todos los puertos en serie disponibles.
 
       Las URL deben ser válidas; de lo contrario, se ignorará la política. Solo se considera el origen (esquema, host y puerto) de la URL.
@@ -4344,6 +4390,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
        Si habilitas la política o no la estableces, se mostrará una advertencia de página completa cuando se envíe un formulario no seguro. Además, se mostrará un cuadro de advertencia junto a los campos del formulario cuando coloques el cursor sobre ellos y se inhabilitará la función Autocompletar para esos formularios.
        Si se inhabilita la política, no se mostrarán las advertencias para los formularios no seguros, y Autocompletar funcionará con normalidad.</translation>
 <translation id="670597451099978576">Otorga permiso automáticamente a estos sitios para conectarse a dispositivos USB con los ID de producto y proveedor correspondientes en la pantalla de acceso</translation>
+<translation id="6706330611356546885">Permitir que cualquier sitio ejecute JavaScript con JIT</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
 <translation id="6723472666969849951">Si estableces la política, se controlarán las apps y extensiones que se pueden instalar en <ph name="PRODUCT_NAME" />, así como los hosts con los que estas pueden interactuar, y se limitará el acceso al entorno de ejecución.
 
@@ -4968,6 +5015,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si la inhabilitas, los usuarios no podrán usar esta función. Tampoco podrán hacerlo si inhabilitas la política PhoneHubAllowed.
 
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
+<translation id="7367734504783638685">Sincronización de contraseñas entre dispositivos Chrome y proveedores de SSO de terceros</translation>
 <translation id="7372831798009983116">Habilita la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reiniciar cuando el usuario sale de su cuenta si se inició Android o una VM</translation>
 <translation id="7373680616478819439">Esta configuración habilita o inhabilita la intercepción de acceso.
@@ -5360,12 +5408,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7933141401888114454">Habilita la creación de usuarios supervisados.</translation>
 <translation id="793473937901685727">Establecer la disponibilidad de certificados para apps de ARC</translation>
 <translation id="7937766917976512374">Permitir o rechazar la captura de video</translation>
-<translation id="7940359358774136765">Habilita una página en chrome://password-change que permite a los usuarios de SAML cambiar sus contraseñas de SAML durante la sesión, lo que asegura que se mantengan sincronizadas la contraseña de SAML y la de bloqueo de pantalla del dispositivo.
-
-      Esta política también habilita notificaciones para advertir a los usuarios de SAML de que sus contraseñas de SAML están a punto de vencer. Esto les permite renovarlas de inmediato durante la sesión.
-      Sin embargo, solo se mostrarán estas notificaciones si el proveedor de identidad de SAML envía la información de vencimiento de contraseña al dispositivo durante el flujo de acceso de SAML.
-
-      Si inhabilitas esta política o no la estableces, no se podrán cambiar las contraseñas de SAML en chrome://password-change ni se mostrarán notificaciones cuando este tipo de contraseñas estén por vencer.</translation>
 <translation id="7941975817681987555">No predecir acciones de la red en ninguna conexión de red</translation>
 <translation id="7951605113561734721">Especifica los Certificados de cliente de todo el dispositivo que deben inscribirse con el protocolo de administración de dispositivos.</translation>
 <translation id="7952007677054834789">Configura las páginas que deben cargarse en el inicio, la página principal y la página Nueva pestaña predeterminadas en <ph name="PRODUCT_NAME" />, y evita que los usuarios las cambien.
@@ -5387,6 +5429,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si inhabilitas la política, no se desactivará el acceso remoto, pero solo se permitirán conexiones de la misma red (no se permitirán retransmisiones ni NAT traversal).</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Se requiere el ingreso de la contraseña cada doce horas.</translation>
+<translation id="7959035883875301444">Controlar el uso de JavaScript con JIT</translation>
 <translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadoras heredadas</translation>
 <translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
       Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
@@ -5673,6 +5716,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8314214821702356835">Permite que los usuarios reproduzcan contenido multimedia cuando está bloqueado el dispositivo</translation>
 <translation id="8319678975002906774">Establece los valores de la configuración administrada como los sitios web de orígenes específicos</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
+<translation id="8329434144708110">Activar flujos de autenticación para sincronizar contraseñas con proveedores de SSO</translation>
 <translation id="8329984337216493753">Esta política solo se encuentra activa en el modo de venta.
 
       Cuando se especifica DeviceIdleLogoutTimeout, esta política definela duración del cuadro de advertencia con un cuenta regresiva que se mostrará al usuario antes de que este salga automáticamente del navegador.
@@ -5832,6 +5876,17 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8537051350735478658">Si estableces la política como verdadera, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si la estableces como falsa, se desactivarán estas sugerencias de búsqueda.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, las sugerencias de búsqueda estarán activadas al principio, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
+<translation id="8543103455510904459">Te permite establecer una lista de patrones de URL de sitios donde se indiquen los que no pueden ejecutar JavaScript con el compilador JIT (Just In Time) habilitado.
+
+          Si inhabilitas JavaScript con JIT, es posible que <ph name="PRODUCT_NAME" /> procese el contenido web más lentamente y, además, inhabilite partes de JavaScript, incluido WebAssembly. Si inhabilitas JavaScript con JIT, <ph name="PRODUCT_NAME" /> podría procesar el contenido web en una configuración más segura.
+
+          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
+
+          Las excepciones de la política correspondiente a JavaScript con JIT solo se aplicarán por sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios corresponde el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como a subdomain.site.com.
+
+          Esta política se aplica por marco y no se basa solamente en la URL de origen de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco que incluye site-two.com, por ejemplo, site-one.com tendrá inhabilitado JavaScript con JIT, pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, si se establece, o bien habilitará JavaScript con JIT de forma predeterminada.
+
+          Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará JavaScript con JIT para el sitio.</translation>
 <translation id="8543108307976719751">Impide las conexiones de acceso remoto a esta máquina</translation>
 <translation id="8544375438507658205">Procesador HTML predeterminado para <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los mensajes SMS se sincronicen desde el teléfono con la Chromebook</translation>
@@ -5997,7 +6052,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8800453707696044281">Establecer el porcentaje del nivel de la batería en el que se debe detener la carga</translation>
 <translation id="8801680448782904838">Notificar a un usuario que se recomienda o es obligatorio reiniciar el navegador o el dispositivo</translation>
 <translation id="8807313206348471682">Mostrar el diálogo de confirmación de salida</translation>
-<translation id="8816671955985738552">No permite cambiar las contraseñas de SAML durante la sesión en chrome://password-change</translation>
 <translation id="8817960019535659860">No permitir que los usuarios canjeen ofertas a través del Registro de Chrome OS</translation>
 <translation id="8818173863808665831">Informa la ubicación geográfica del dispositivo.
 
@@ -6236,6 +6290,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no se configura esta política, no se implementará la selección automática para ningún sitio.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9073405975862312795">Si habilitas la política o no la estableces, los dispositivos inscritos informarán los períodos cuando el usuario esté activo en el dispositivo.
 
       Si inhabilitas la política, los dispositivos inscritos no registrarán ni informarán los tiempos de actividad.</translation>

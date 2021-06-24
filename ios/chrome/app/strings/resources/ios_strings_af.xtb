@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Maak blaaidata skoon</translation>
 <translation id="1815941218935345331">Wagkode</translation>
 <translation id="1820259098641718022">By Leeslys gevoeg</translation>
+<translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1894205589103145703">Iets was fout tydens aanmelding.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Versoek werkskermwerf</translation>
 <translation id="2103075008456228677">Maak history.google.com oop</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items is geskuif</translation>
+<translation id="212623074644302906">Vra om By Leeslys te Voeg</translation>
 <translation id="2139867232736819575">Soek vir teks wat jy gekopieer het</translation>
 <translation id="214201757571129614">Meld aan …</translation>
 <translation id="2149973817440762519">Wysig boekmerk</translation>
@@ -435,6 +437,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou toestelle moet dieselfde iCloud-rekening gebruik.</translation>
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
+<translation id="5580834567471114021">Voeg by Leeslys vir later?</translation>
 <translation id="5592679540098330836">Skakel sinkronisering aan vir <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
 <translation id="5626245204502895507">Die lêer kon nie nou afgelaai word nie.</translation>
@@ -588,6 +591,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="6830804042318138535">Lees meer</translation>
 <translation id="6831043979455480757">Vertaal</translation>
+<translation id="6842136130964845393">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
 <translation id="6851516051005285358">Versoek werkskermwerf</translation>
 <translation id="6858855187367714033">Geskandeer</translation>
 <translation id="6859944681507688231">Aktiveer die kamera in die instellings om 'n QR-kode of kredietkaart te skandeer.</translation>
@@ -619,6 +623,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7108338896283013870">Versteek</translation>
 <translation id="7133798577887235672">Volle naam en van</translation>
 <translation id="7136892417564438900">Kamera is onbeskikbaar</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> minute om te lees</translation>
 <translation id="7159472599653637159">Versoek mobiele werf</translation>
 <translation id="7162168282402939716">Ontsluit Incognito-oortjies met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Hou jou wagwoorde veilig teen sekuriteitsprobleme</translation>
@@ -668,6 +673,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
 <translation id="7603852183842204213">Opspringers geblokkeer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Vee wagwoord uit</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min.</translation>
 <translation id="7638584964844754484">Verkeerde wagwoordfrase</translation>
 <translation id="7646772052135772216">Wagwoordsinkronisering werk nie</translation>
 <translation id="7649070708921625228">Hulp</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questo codice PIN sul dispositivo: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Screenshot parziale selezionato</translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
+<translation id="1036073649888683237">Per gestire le notifiche, vai alle Impostazioni</translation>
 <translation id="1036672894875463507">Sono il tuo Assistente Google e sono a tua disposizione per aiutarti durante la giornata.
 Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> aggiunto</translation>
@@ -14,6 +15,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1052916631016577720">Scansione elementi</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buon pomeriggio <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mi annoio</translation>
@@ -306,6 +308,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3430396595145920809">Scorri da destra per tornare indietro</translation>
 <translation id="343571671045587506">Modifica promemoria</translation>
 <translation id="3435967511775410570">Impronta riconosciuta</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">La tua connessione è passata a una rete più sicura</translation>
@@ -431,6 +434,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4379531060876907730">Ecco gli strumenti per il tuo stilo</translation>
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
+<translation id="439598569299422042">In pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>

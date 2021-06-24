@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">ရွေးချယ်မှု ဒေတာကို ရှင်းလင်းမည်</translation>
 <translation id="1815941218935345331">လျှို့ဝှက်ကုဒ်</translation>
 <translation id="1820259098641718022">ဖတ်ရန်စာရင်းသို့ ထည့်လိုက်ပါပြီ</translation>
+<translation id="1832848789136765277">စင့်ခ်လုပ်သောဒေတာကို အမြဲသုံးခွင့်ရကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
 <translation id="1870148520156231997">စကားဝှက်ကို ပြသရန်</translation>
 <translation id="1872096359983322073">ဓာတ်မီး</translation>
 <translation id="1894205589103145703">လက်မှတ်ထိုးဝင်နေစဉ် တစ်ခုခု မှားသွားသည်။</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ဒက်စတော့ပ် ဆိုက် တောင်းဆိုမည်</translation>
 <translation id="2103075008456228677">history.google.com ကိုဖွင့်ပါ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ရွှေ့ပြောင်းပြီးပါပြီ</translation>
+<translation id="212623074644302906">‘ဖတ်ရန် စာရင်း’ တွင် ထည့်ရန်အတွက် ခွင့်တောင်းရန်</translation>
 <translation id="2139867232736819575">သင်မိတ္တူကူးထားသည့် စာသားကို ရှာဖွေပါ</translation>
 <translation id="214201757571129614">လက်မှတ်ထိုးဝင်ရန်…</translation>
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
@@ -434,6 +436,7 @@
 Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိုင်းတွင် ဖွင့်ထားရမည်ဖြစ်ပြီး၊ သင့်ကိရိယာများသည်လည်း တူညီသော iCloud အကောင့်ကို အသုံးပြုရမည်ဖြစ်သည်။</translation>
 <translation id="5551897871312988470">ဘာသာပြန်ရန် ကမ်းလှမ်းချက်</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
+<translation id="5580834567471114021">နောင်အတွက် ‘ဖတ်ရန် စာရင်း’ တွင် ထည့်မလား။</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> အတွက် စင့်ခ်ဖွင့်ပါ</translation>
 <translation id="5614553682702429503">စကားဝှက်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="5626245204502895507">ဤဖိုင်ကို ယခုအချိန်တွင် ဒေါင်းလုဒ် လုပ်၍မရနိုင်ပါ။</translation>
@@ -587,6 +590,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="681368974849482173">အကြောင်းအရာ ဖန်တီးပြီးပါပြီ</translation>
 <translation id="6830804042318138535">နောက်ထပ်ဖတ်ရန်</translation>
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
+<translation id="6842136130964845393">သိမ်းထားသောစကားဝှက်များကို အမြဲသုံးခွင့်ရကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
 <translation id="6851516051005285358">ဒက်စ်တော့ဝဘ်ဆိုက် တောင်းဆိုရန်</translation>
 <translation id="6858855187367714033">စစ်ပြီးပါပြီ</translation>
 <translation id="6859944681507688231">QR ကုဒ် သို့မဟုတ် ခရက်ဒစ်ကတ် စကင်ဖတ်ရန် ဆက်တင်များတွင် ကင်မရာကို ဖွင့်ပါ။</translation>
@@ -618,6 +622,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7108338896283013870">ဝှက်ထားရန်</translation>
 <translation id="7133798577887235672">အမည် အပြည့်အစုံ</translation>
 <translation id="7136892417564438900">ကင်မရာအသုံးမပြုနိုင်ပါ</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> မိနစ်စာ ဖတ်စရာ</translation>
 <translation id="7159472599653637159">မိုဘိုင်းဆိုက်ကို တောင်းဆိုရန်</translation>
 <translation id="7162168282402939716">'ရုပ်ဖျက်တဘ်များ' ကို <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ဖြင့် ဖွင့်ရန်</translation>
 <translation id="7172852049901402487">လုံခြုံရေးပြဿနာများမရှိစေရန် သင့်စကားဝှက်ကို လုံခြုံအောင် ထိန်းသိမ်းပါ</translation>
@@ -667,6 +672,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">ပိတ်ဆို့ထားသည့် ပေါ့အာပ်များ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">စကားဝှက်ကို ဖျက်ရန်</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> မိနစ်</translation>
 <translation id="7638584964844754484">စကားဝှက် မမှန်</translation>
 <translation id="7646772052135772216">စကားဝှက်စင့်ခ်လုပ်ခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>

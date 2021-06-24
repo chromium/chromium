@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">మీ సింక్ డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోండి</translation>
 <translation id="1100066534610197918">సమూహంలో కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1105960400813249514">స్క్రీన్ క్యాప్చర్</translation>
+<translation id="1110914759170138831">హైలైట్ కుదించబడింది</translation>
 <translation id="1111673857033749125">మీ ఇతర పరికరాల్లో సేవ్ చేసిన బుక్‌మార్క్‌లు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="1113597929977215864">సరళీకృత వీక్షణను చూపు</translation>
 <translation id="1118561384561215815">వెబ్‌లోని టాస్క్‌లకు సాయం పొందు</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">60% వరకు డేటాను ఆదా చేయండి, ఈరోజు వార్తలను చదవండి</translation>
 <translation id="1303339473099049190">ఆ పాస్‌వర్డ్‌ను కనుగొనడం సాధ్యపడలేదు. మీ స్పెల్లింగ్ సరిచూసుకుని, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - దీనిని పంపిన పరికరం <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">మీ హైలైట్ కోసం ఒక టెంప్లేట్‌ను ఎంచుకోండి</translation>
 <translation id="1307205233980126133">క్షమించండి, మేము మీ ఆధారాలను వాలిడేట్ చేయలేకపోయాము</translation>
 <translation id="1310482092992808703">ట్యాబ్‌లను గుంపుగా చేయి</translation>
 <translation id="1311657260431405215">ఈ QR కోడ్ URL కాదు: <ph name="QRCODEVALUE" /></translation>
@@ -363,6 +365,7 @@
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
+<translation id="333367884906698540">మీరు పూర్తిచేసినప్పుడు, బ్లూటూత్ తిరిగి ఆఫ్ చేయబడుతుంది</translation>
 <translation id="3334729583274622784">ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చాలా?</translation>
 <translation id="3341058695485821946">మీరు ఎంత డేటాను సేవ్ చేసారో చూడండి</translation>
 <translation id="3341262203274374114">అనుసరణను రద్దు చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
@@ -488,6 +491,7 @@
 <translation id="4183868528246477015">Google లెన్స్‌తో శోధన <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4198423547019359126">డౌన్‌లోడ్ స్థానాలు అందుబాటులో లేవు</translation>
+<translation id="4206707945726604465">ఇతర రకాల హిస్టరీని క్లియర్ చేయడానికి, <ph name="BEGIN_LINK1" />నా Google యాక్టివిటీ<ph name="END_LINK1" />ని సందర్శించండి</translation>
 <translation id="4209895695669353772">Google ద్వారా మీ అభిరుచికి తగిన కంటెంట్‌ను సిఫార్సుల రూపంలో పొందాలనుకుంటే, సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="4225895483398857530">Toolbar షార్ట్‌కట్</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
@@ -580,6 +584,7 @@
 <translation id="4807098396393229769">కార్డ్‌పై పేరు</translation>
 <translation id="4818017973810341238">డిజిటల్ అస్సెట్ లింక్‌ల వెరిఫికేషన్ <ph name="VIOLATED_URL" /> వద్ద విఫలమైంది</translation>
 <translation id="4831037795716408498">కంటెంట్‌ను డౌన్‌లోడ్ చేయండి</translation>
+<translation id="4834007576107377210">వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి మీ సెర్చ్ ఇంజిన్ సూచనలను చూడండి</translation>
 <translation id="4835385943915508971">Chrome అభ్యర్థించిన వనరుకు యాక్సెస్ కలిగి లేదు.</translation>
 <translation id="4837753911714442426">పేజీని ముద్రించడానికి ఎంపికలను తెరవండి</translation>
 <translation id="4842092870884894799">పాస్‌వర్డ్ ఉత్పత్తి పాప్ అప్ చూపబడుతోంది</translation>
@@ -634,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ విఫలమైంది.}other{# డౌన్‌లోడ్‌లు విఫలమయ్యాయి.}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" />ను ఫాలో చేశారు</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
+<translation id="5171045022955879922">URLను వెతకండి లేదా టైప్ చేయండి</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
 <translation id="5188992787241350004">మీ వాయిస్‌తో సెర్చ్ చేయండి</translation>
 <translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
@@ -743,7 +749,6 @@
 <translation id="5836192821815272682">Chrome అప్‌డేట్‌ను డౌన్‌లోడ్ చేస్తోంది…</translation>
 <translation id="5853623416121554550">పాజ్ చేయబడింది</translation>
 <translation id="5854512288214985237">గణాంకాలు లేదా క్రాష్ రిపోర్ట్‌లు ఏవీ Googleకు పంపబడవు</translation>
-<translation id="5854790677617711513">30 రోజుల కన్నా పాతవి</translation>
 <translation id="5855546874025048181">మెరుగుపరచండి: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome బ్లూటూత్ అడాప్టర్‌ను ఆన్ చేయలేకపోయింది</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
@@ -1038,6 +1043,7 @@
 <translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయి…</translation>
 <translation id="764170292089748542">ప్రైవేట్‌గా బ్రౌజ్ చేయాలని మీరు ఎంచుకున్నప్పుడు Chrome మీ బ్రౌజింగ్ హిస్టరీని సేవ్ చేయదు. అయినప్పటికీ, మీకు ఇష్టమైన సైట్‌లను యాక్సెస్ చేయడానికి బుక్‌మార్క్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
+<translation id="7655900163790317559">బ్లూటూత్ ఆన్ అవుతోంది…</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>

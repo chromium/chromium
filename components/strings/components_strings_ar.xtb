@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">عرض التفاصيل</translation>
 <translation id="1030706264415084469">يريد <ph name="URL" /> تخزين حجم كبير من البيانات بشكل دائم على جهازك.</translation>
 <translation id="1032854598605920125">تدوير في اتجاه عقارب الساعة</translation>
-<translation id="1036224116832931580">انقر للقفز ولعب لعبة الديناصور.</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
@@ -611,6 +610,7 @@
 <translation id="3212623355668894776">عند إغلاق جميع نوافذ الضيف، سيتم حذف نشاط التصفّح من هذا الجهاز.</translation>
 <translation id="3215092763954878852">‏تعذّر استخدام WebAuthn</translation>
 <translation id="3218181027817787318">نسبي</translation>
+<translation id="3223287115535306850">رمز التحميل الخاص ببدء تشغيل التطبيق</translation>
 <translation id="3225919329040284222">قدم الخادم شهادة لا تتطابق مع التوقعات المضمّنة. تم تضمين هذه التوقعات للحصول على مواقع إلكترونية موثوقة وآمنة جدًا لتوفير الحماية لك.</translation>
 <translation id="3226128629678568754">اضغط على زر إعادة التحميل لإعادة إرسال البيانات المطلوبة لتحميل الصفحة.</translation>
 <translation id="3226387218769101247">الصور المصغرة</translation>
@@ -686,6 +686,7 @@
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">الفاصل الزمني للجلب:</translation>
 <translation id="3453962258458347894">عدد مرات إعادة المحاولة</translation>
+<translation id="3454555520521576458">يمكن تغيير حجمه</translation>
 <translation id="3456231139987291353">‏Number-11 (مغلف)</translation>
 <translation id="3461266716147554923">يريد <ph name="URL" /> الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
 <translation id="3461824795358126837">أداة تمييز</translation>
@@ -789,7 +790,6 @@
 <translation id="3799805948399000906">الخط المطلوب</translation>
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807873520724684969">تم حظر المحتوى الضار.</translation>
-<translation id="3808375843007691220">تحذير: الميزات التجريبية في انتظارك!</translation>
 <translation id="3816482573645936981">القيمة (التي تم استبدالها)</translation>
 <translation id="382518646247711829">إذا كنت تستخدم خادمًا وكيلاً...</translation>
 <translation id="3827112369919217609">صيغة مطلقة</translation>
@@ -823,6 +823,7 @@
 <translation id="3963721102035795474">وضع القارئ</translation>
 <translation id="3963837677003247395">هل تريد المتابعة يدويًا؟</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
+<translation id="3970481983430640194">يمكنك الآن سحب هذا التطبيق وتغيير حجمه.</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">‏زر تشغيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتشغيل هذه الميزة في إعدادات Chrome.</translation>
@@ -836,9 +837,6 @@
     على جميع الطلبات المقدَّمة إليه، ولكن يتعذّر تطبيق هذه السياسة حاليًا.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏مستند PDF يتألف من صفحة واحدة ({COUNT})}zero{‏مستند PDF يتألف من {COUNT} صفحة}two{‏مستند PDF يتألف من صفحتين ({COUNT})}few{‏مستند PDF يتألف من {COUNT} صفحات}many{‏مستند PDF يتألف من {COUNT} صفحة}other{‏مستند PDF يتألف من {COUNT} صفحة}}</translation>
 <translation id="4023431997072828269">ستظهر معلوماتك للآخرين لأن هذا النموذج يستخدم اتصالاً غير آمن.</translation>
-<translation id="4027177651527820006">عند تفعيل هذه الميزات، قد تفقد بيانات المتصفّح أو
-    تعرِّض أمانك أو خصوصيتك للخطر، مع العلم أنّ الميزات المفعّلة يتم تطبيقها لدى جميع
-    مستخدمي هذا المتصفّح. إذا كنت مشرفًا في مؤسسة، عليك ألّا تستخدم هذه العلامات خلال عملية الإنتاج.</translation>
 <translation id="4030383055268325496">تراجع عن الإ&amp;ضافة</translation>
 <translation id="4056223980640387499">بني داكن</translation>
 <translation id="4058922952496707368">المفتاح "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1022,6 +1020,7 @@
 <translation id="4677585247300749148">يريد <ph name="URL" /> الاستجابة لأحداث إمكانية الوصول.</translation>
 <translation id="467809019005607715">‏العروض التقديمية من Google</translation>
 <translation id="4680804919228900307">‏لقد أدخلت للتو كلمة المرور في موقع إلكتروني مريب. وللحفاظ على أمان بياناتك، ينصحك Chromium بالتحقّق من كلمات المرور المحفوظة للمواقع الإلكترونية الثلاثة <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /> وغيرها من المواقع التي تستخدم فيها الآن كلمة المرور هذه.</translation>
+<translation id="468314109939257734">عرض رقم بطاقتك الافتراضية</translation>
 <translation id="4690462567478992370">التوقف عن استخدام شهادة غير صالحة</translation>
 <translation id="4691835149146451662">‏Architecture-A (مغلف)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" />‏ <ph name="SENTENCE2" /></translation>
@@ -1398,6 +1397,7 @@
 <translation id="6032524144326295339">صندوق البريد الإلكتروني 2</translation>
 <translation id="6032955021262906325">التجليد يسارًا</translation>
 <translation id="6034000775414344507">رمادي فاتح</translation>
+<translation id="6034062182346928710">قد لا يتم تغيير حجم التطبيق <ph name="APP_NAME" /> بشكل مناسِب. استخدِم أحجام النوافذ المُعَدّة مسبقًا لمنع حدوث خلل في أداء التطبيق.</translation>
 <translation id="6034283069659657473">‏10x14 (مغلف)</translation>
 <translation id="6034514109191629503">طي أكورديوني</translation>
 <translation id="6039846035001940113">في حال استمرت المشكلة، اتصل بمالك الموقع.</translation>
@@ -1427,6 +1427,7 @@
 <translation id="6120179357481664955">هل تتذكر معرّف واجهة الدفعات الموحّدة؟</translation>
 <translation id="6123290840358279103">عرض البطاقة الافتراضية</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
+<translation id="6143538402333184781">يتوافق هذا التطبيق مع حجم "الهاتف" فقط.</translation>
 <translation id="6146055958333702838">تحقق من أي كابلات وأعد تشغيل أي أجهزة توجيه أو أجهزة مودم أو أجهزة شبكة
         أخرى ربما تستخدمها.</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
@@ -1539,7 +1540,6 @@
 <translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6604181099783169992">أجهزة استشعار الإضاءة والحركة</translation>
 <translation id="6609880536175561541">‏Prc7 (مغلف)</translation>
-<translation id="6612358246767739896">المحتوى المحمي</translation>
 <translation id="6615297766614333076">المكدِّس 2</translation>
 <translation id="6624427990725312378">معلومات الاتصال</translation>
 <translation id="6626291197371920147">إضافة رقم بطاقة صالح</translation>
@@ -1929,6 +1929,7 @@
 <translation id="8057711352706143257">لم يتم إعداد "<ph name="SOFTWARE_NAME" />" بشكل صحيح. يؤدي عادةً إلغاء تثبيت "<ph name="SOFTWARE_NAME" />" إلى إصلاح المشكلة. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">عذرًا، حدث خطأ.</translation>
 <translation id="8067872629359326442">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chromium مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
+<translation id="8070439594494267500">رمز التطبيق</translation>
 <translation id="8074253406171541171">‏10x13 (مغلف)</translation>
 <translation id="8075898834294118863">إدارة إعدادات المواقع الإلكترونية</translation>
 <translation id="8078141288243656252">لا يمكن إضافة تعليق توضيحي عند تدوير المستند</translation>
@@ -2036,7 +2037,6 @@
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8457125768502047971">غير محدَّد</translation>
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
-<translation id="8463101686637053101">اضغط على مفتاح المسافة للقفز ولعب لعبة الديناصور.</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{بطاقة ائتمان واحدة}zero{# بطاقة ائتمان}two{بطاقتا ائتمان (#)}few{# بطاقات ائتمان}many{# بطاقة ائتمان}other{# بطاقة ائتمان}}</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474910779563686872">عرض تفاصيل مطوّر البرامج</translation>

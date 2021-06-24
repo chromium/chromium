@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්නෙ</translation>
 <translation id="1815941218935345331">මුරකේතය</translation>
 <translation id="1820259098641718022">කියවීම් ලැයිස්තුවට එක් කරන ලදී</translation>
+<translation id="1832848789136765277">ඔබට සැම විටම ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="1870148520156231997">මුරපදය අනාවරණ කරන්න</translation>
 <translation id="1872096359983322073">පන්දම</translation>
 <translation id="1894205589103145703">පිරීම අතරතුර යම් දෙයක් වැරදිණි.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>
 <translation id="2103075008456228677">history.google.com විවෘත කරන්න</translation>
 <translation id="2116625576999540962">අයිතම <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් ගෙන යන ලදි</translation>
+<translation id="212623074644302906">කියවීම් ලැයිස්තුවට එක් කිරීමට ඉල්ලන්න</translation>
 <translation id="2139867232736819575">ඔබ පිටපත් කළ පාඨය සොයන්න</translation>
 <translation id="214201757571129614">පුරන්න…</translation>
 <translation id="2149973817440762519">පිටු සලකුණු සංස්කරණය කරන්න</translation>
@@ -435,6 +437,7 @@
 සැකසුම්වල පොදු අංශය තුළද Handoff සබල කළ යුතු අතර ඔබේ උපාංග එකම iCloud ගිණුම භාවිත කළ යුතුය.</translation>
 <translation id="5551897871312988470">පරිවර්තන කිරීමට පිරිනමන්න</translation>
 <translation id="5556459405103347317">නැවත</translation>
+<translation id="5580834567471114021">පසුව කියවීමට කියවීම් ලැයිස්තුවට එක් කරන්නද?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> සඳහා සමමුහූර්තය සක්‍රීය කරන්න</translation>
 <translation id="5614553682702429503">මුරපදය සුරකින්න ද?</translation>
 <translation id="5626245204502895507">ගොනුව මෙම අවස්ථාවේදී බාගැනීමට නොහැකි විය.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">අයිතමය සාදන ලදි</translation>
 <translation id="6830804042318138535">තව කියවන්න</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
+<translation id="6842136130964845393">ඔබට ඔබගේ සුරකින ලද මුරපදවලට සැම විට ප්‍රවේශ විය හැකි බවට සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6851516051005285358">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>
 <translation id="6858855187367714033">ස්කෑන් කළා</translation>
 <translation id="6859944681507688231">QR කේතයක් හෝ ණය කාඩ්පත ස්කෑන් කිරීමට සැකසීම් වෙතින් කැමරාව සබල කරන්න.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">සඟවන්න</translation>
 <translation id="7133798577887235672">සම්පූර්ණ නම</translation>
 <translation id="7136892417564438900">කැමරාව නොතිබේ</translation>
+<translation id="7153999225810839758">මිනිත්තු <ph name="TIME" /> කියවීම</translation>
 <translation id="7159472599653637159">ජංගම අඩවිය ඉල්ලන්න</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අප්‍රකට ටැබ අගුලු හරින්න</translation>
 <translation id="7172852049901402487">ඔබේ මුරපද ආරක්‍ෂක ගැටලුවලින් ආරක්ෂිතව තබා ගන්න</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">මුරපදය මකන්න</translation>
+<translation id="7616830195948464104">මිනි <ph name="TIME" /></translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
 <translation id="7646772052135772216">මුරපද සමමුහූර්තය ක්‍රියා නොකරයි</translation>
 <translation id="7649070708921625228">උදවු</translation>

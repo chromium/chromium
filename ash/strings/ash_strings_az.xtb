@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth cihazı "<ph name="DEVICE_NAME" />" cütlənmək üçün icazə istəyir. Həmin cihaza PIN kodu daxil edin: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Qismən skrinşot seçilib</translation>
 <translation id="1032891413405719768">Qramafon iynəsinin batareyası azdır</translation>
+<translation id="1036073649888683237">Bildirişləri idarə etmək üçün Ayarlara keçin</translation>
 <translation id="1036672894875463507">Mən Google Assistentinizəm və gün boyu sizə kömək etmək üçün buradayam!
 Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> əlavə edildi</translation>
@@ -14,6 +15,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1052916631016577720">Element ilə skanlama</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Batareyanı dəyişin və ya şarj edin</translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Günortanız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Darıxıram</translation>
@@ -306,6 +308,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3430396595145920809">Geri qayıtmaq üçün sağdan sürüşdürün</translation>
 <translation id="343571671045587506">Xatırlatmaya düzəliş edin</translation>
 <translation id="3435967511775410570">Barmaq izi tanındı</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="3445925074670675829">USB-C cihazı</translation>
 <translation id="3454224730401036106">Bağlantı daha təhlükəsiz şəbəkəyə keçdi</translation>
@@ -405,7 +408,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4217571870635786043">İmla</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Quraşdırılmış Tətbiq, Durdurulub</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4250229828105606438">Ani görüntü</translation>
+<translation id="4250229828105606438">Skrinşot</translation>
 <translation id="425364040945105958">SIM yoxdur</translation>
 <translation id="4261870227682513959">Bildiriş ayarlarını göstərin. Bildirişlər deaktivdir</translation>
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
@@ -430,6 +433,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4379531060876907730">Fırça alətləriniz</translation>
 <translation id="4389184120735010762">Daxili böyüdücü üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
+<translation id="439598569299422042">Durdurulub, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> deaktivdir.</translation>
 <translation id="4421231901400348175">Uzaqdan Yardım vasitəsilə <ph name="HELPER_NAME" /> ilə ekranın kontrolunu paylaşın</translation>
 <translation id="4424159417645388645">Masa 5</translation>

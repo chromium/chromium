@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 il əvvəl}other{# il əvvəl}}</translation>
 <translation id="2878511608894704031">Hamısını Silin</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 gündə}other{# gündə}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> sütunu azalan sıra ilə çeşidlənib.</translation>
 <translation id="2931838996092594335">klik</translation>
 <translation id="2981684127883932071">Təkliflərin göstərilməsi</translation>
 <translation id="3036649622769666520">Faylları Açın</translation>
@@ -115,9 +116,10 @@
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3909791450649380159">Kəsin</translation>
 <translation id="3990502903496589789">Sağ Künc</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> sütunu artan sıra ilə çeşidlənib.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Oxunmamış Bildiriş}other{# Oxunmamış Bildiriş}}</translation>
 <translation id="4202807286478387388">keçid</translation>
-<translation id="4250229828105606438">Ani görüntü</translation>
+<translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ay əvvəl}other{# ay əvvəl}}</translation>
 <translation id="4289300219472526559">Danışmağa başlayın</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> <ph name="FOLDER_NAME" /> qovluğuna köçürülüb.</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 dəqiqə qalıb}other{# dəqiqə qalıb}}</translation>
 <translation id="7430878839542012341">Bu axtarış tarixçədən silinsin?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> çeşidlənməyib.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Silindi.</translation>

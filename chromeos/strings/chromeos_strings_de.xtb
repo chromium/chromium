@@ -164,9 +164,11 @@
 <translation id="469379815867856270">Signalstärke</translation>
 <translation id="4707579418881001319">L2TP/IPSec + Nutzerzertifikat</translation>
 <translation id="4731797938093519117">Elternzugang</translation>
+<translation id="475869545581454722">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4794140124556169553">Der CPU-Test kann sich auf die Leistung Ihres Systems auswirken</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
+<translation id="4813136279048157860">Meine Bilder</translation>
 <translation id="4813345808229079766">Verbindung</translation>
 <translation id="4832079907277790330">Ordner in der Dateimanager-App auswählen...</translation>
 <translation id="4835901797422965222">Keine aktiven Netzwerke</translation>
@@ -320,6 +322,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
+<translation id="7762130827864645708">Sie haben Ihr Passwort geändert. Bitte verwenden Sie ab jetzt das neue Passwort.</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>

@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Погрижете се секогаш да имате пристап до синхронизираните податоци</translation>
 <translation id="1100066534610197918">Отвори во нова картичка во група</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
+<translation id="1110914759170138831">Клучните точки се скратени</translation>
 <translation id="1111673857033749125">Обележувачите зачувани на другите уреди ќе се појават тука.</translation>
 <translation id="1113597929977215864">Прикажи поедноставен приказ</translation>
 <translation id="1118561384561215815">Помош за задачи на интернет</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Прочитајте ги денешните вести и заштедете до 60 % мобилен интернет</translation>
 <translation id="1303339473099049190">Лозинката не може да се најде. Проверете дали ја внесувате правилно и обидете се повторно.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Испратено од <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Изберете шаблон за клучните точки</translation>
 <translation id="1307205233980126133">За жал, не можевме да ги потврдиме вашите акредитиви</translation>
 <translation id="1310482092992808703">Групирај картички</translation>
 <translation id="1311657260431405215">Овој QR-код не е URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4183868528246477015">Пребарувајте со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
+<translation id="4206707945726604465">За да избришете друг тип историја, одете на <ph name="BEGIN_LINK1" />Моја активност на Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">За да добивате персонализирани содржини предложени од Google, вклучете ја синхронизацијата</translation>
 <translation id="4225895483398857530">Кратенка за алатникот</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -581,6 +584,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4807098396393229769">Име на картичка</translation>
 <translation id="4818017973810341238">Потврдувањето на Digital Asset Links не успеа на <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Преземање содржини</translation>
+<translation id="4834007576107377210">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
 <translation id="4835385943915508971">Chrome нема пристап до бараниот ресурс.</translation>
 <translation id="4837753911714442426">Отворете опции за печатење страница</translation>
 <translation id="4842092870884894799">Се прикажува појавен прозорец за генерирање лозинки</translation>
@@ -635,6 +639,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 неуспешно преземање.}one{# неуспешно преземање.}other{# неуспешни преземања.}}</translation>
 <translation id="5168824020667180049">Се следи <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
+<translation id="5171045022955879922">Барај или впиши URL</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
 <translation id="5188992787241350004">Пребарувајте со гласот</translation>
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
@@ -744,7 +749,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5836192821815272682">Се презема ажурирање на Chrome…</translation>
 <translation id="5853623416121554550">паузирано</translation>
 <translation id="5854512288214985237">Не се испраќа ниту статистика ниту извештаи за падовите до Google</translation>
-<translation id="5854790677617711513">Постари од 30 дена</translation>
 <translation id="5855546874025048181">Рафинирајте: „<ph name="REFINE_TEXT" />“</translation>
 <translation id="5858741533101922242">Chrome не може да го вклучи Bluetooth адаптерот</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -1107,6 +1111,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8037750541064988519">Останаа <ph name="DAYS" /> дена</translation>
 <translation id="8037801708772278989">Тукушто проверено</translation>
+<translation id="8040831032425909005">Икона за виџетот за пребарување брзи дејства</translation>
 <translation id="804335162455518893">SD-картичката не е најдена</translation>
 <translation id="8051695050440594747">Достапни се <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Отвори во нова Chrome картичка</translation>
@@ -1169,6 +1174,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8442258441309440798">Нема достапни статии</translation>
 <translation id="8443209985646068659">Chrome не може да се аж.</translation>
 <translation id="8445448999790540984">Не може да се извезат лозинките</translation>
+<translation id="8453310803815879010">Стартувајте ја играта со диносаурус</translation>
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
 <translation id="8466613982764129868">Проверете дали <ph name="TARGET_DEVICE_NAME" /> е поврзан на интернет</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>

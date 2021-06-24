@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">인터넷 사용 기록 삭제</translation>
 <translation id="1815941218935345331">비밀번호</translation>
 <translation id="1820259098641718022">읽기 목록에 추가됨</translation>
+<translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
 <translation id="1894205589103145703">로그인 중에 문제가 발생했습니다.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">데스크톱 버전으로 보기</translation>
 <translation id="2103075008456228677">history.google.com 열기</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 이동함</translation>
+<translation id="212623074644302906">읽기 목록에 추가할지 묻기</translation>
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="214201757571129614">로그인…</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
@@ -435,6 +437,7 @@
 또한 Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이때 기기에서 반드시 동일한 iCloud 계정을 사용해야 합니다.</translation>
 <translation id="5551897871312988470">번역 옵션 제공</translation>
 <translation id="5556459405103347317">새로고침</translation>
+<translation id="5580834567471114021">읽기 목록에 추가하여 나중에 읽으시겠습니까?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> 동기화 사용</translation>
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5626245204502895507">현재 파일을 다운로드할 수 없습니다.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
 <translation id="6830804042318138535">자세히 보기</translation>
 <translation id="6831043979455480757">번역</translation>
+<translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="6851516051005285358">데스크톱 버전으로 보기</translation>
 <translation id="6858855187367714033">스캔됨</translation>
 <translation id="6859944681507688231">QR 코드 또는 신용카드를 스캔하려면 설정에서 카메라를 사용 설정하세요.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7133798577887235672">이름</translation>
 <translation id="7136892417564438900">카메라를 사용할 수 없음</translation>
+<translation id="7153999225810839758">읽는 데 <ph name="TIME" />분 소요</translation>
 <translation id="7159472599653637159">모바일 사이트 요청</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 시크릿 탭 잠금 해제</translation>
 <translation id="7172852049901402487">보안 문제로부터 비밀번호를 안전하게 보호합니다.</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7603852183842204213">팝업 차단(<ph name="NUMBER_OF_BLOCKED_POPUPS" />개)</translation>
 <translation id="7607521702806708809">비밀번호 삭제</translation>
+<translation id="7616830195948464104"><ph name="TIME" />분</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="7649070708921625228">도움말</translation>

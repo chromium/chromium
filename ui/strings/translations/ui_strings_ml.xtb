@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{ഒരു വർഷം മുമ്പ്}other{# വർഷം മുമ്പ്}}</translation>
 <translation id="2878511608894704031">എല്ലാം ഇല്ലാതാക്കൂ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ഒരു ദിവസത്തിൽ}other{# ദിവസത്തിൽ}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> എന്ന കോളം അവരോഹണക്രമത്തിൽ അടുക്കി.</translation>
 <translation id="2931838996092594335">ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2981684127883932071">നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3909791450649380159">&amp;മുറിക്കുക</translation>
 <translation id="3990502903496589789">വലത് അഗ്രം</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> എന്ന കോളം ആരോഹണക്രമത്തിൽ അടുക്കി.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{വായിക്കാത്ത ഒരു അറിയിപ്പ്}other{വായിക്കാത്ത # അറിയിപ്പുകൾ}}</translation>
 <translation id="4202807286478387388">jump</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
 <translation id="7430878839542012341">നിങ്ങളുടെ ചരിത്രത്തിൽ നിന്ന് ഈ തിരയൽ ഇല്ലാതാക്കണോ?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> എന്ന കോളം അടുക്കിയത് മാറ്റി.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ഇമോജി</translation>
 <translation id="7620655452534002301">നീക്കം ചെയ്തു.</translation>

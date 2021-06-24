@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar gelede}other{# jaar gelede}}</translation>
 <translation id="2878511608894704031">Vee alles uit</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{oor 1 d.}other{oor # d.}}</translation>
+<translation id="2922712708897119705">Kolom <ph name="COLUMN_NAME" /> is gesorteer in dalende volgorde.</translation>
 <translation id="2931838996092594335">klik</translation>
 <translation id="2981684127883932071">Wys tans voorstelle</translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3909791450649380159">Knip</translation>
 <translation id="3990502903496589789">Regterrand</translation>
+<translation id="3994749195054421561">Kolom <ph name="COLUMN_NAME" /> is gesorteer in stygende volgorde.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ongelese kennisgewing}other{# ongelese kennisgewings}}</translation>
 <translation id="4202807286478387388">spring</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minuut oor}other{# minute oor}}</translation>
 <translation id="7430878839542012341">Vee hierdie soektog in jou geskiedenis uit?</translation>
+<translation id="7437971918971306061">Kolom <ph name="COLUMN_NAME" /> nie gesorteer nie.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emosiekone</translation>
 <translation id="7620655452534002301">Verwyder.</translation>

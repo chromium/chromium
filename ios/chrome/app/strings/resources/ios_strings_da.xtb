@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Ryd browserdata</translation>
 <translation id="1815941218935345331">Adgangskode</translation>
 <translation id="1820259098641718022">Føjet til læseliste</translation>
+<translation id="1832848789136765277">Bekræft din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1870148520156231997">Vis adgangskode</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
 <translation id="1894205589103145703">Noget gik galt under login.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Vis computerversion</translation>
 <translation id="2103075008456228677">Åbn history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev flyttet</translation>
+<translation id="212623074644302906">Spørg, om sider skal føjes til læselisten</translation>
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
 <translation id="214201757571129614">Log ind…</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
@@ -435,6 +437,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enheder skal benytte den samme iCloud-konto.</translation>
 <translation id="5551897871312988470">Tilbyd at oversætte</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
+<translation id="5580834567471114021">Vil du føje siden til læselisten?</translation>
 <translation id="5592679540098330836">Aktivér synkronisering for <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5626245204502895507">Filen kunne ikke downloades på nuværende tidspunkt.</translation>
@@ -588,6 +591,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="6830804042318138535">Læs mere</translation>
 <translation id="6831043979455480757">Oversæt</translation>
+<translation id="6842136130964845393">Bekræft din identitet for at sikre, at du altid har adgang til dine gemte adgangskoder</translation>
 <translation id="6851516051005285358">Vis computerversion</translation>
 <translation id="6858855187367714033">Scannet</translation>
 <translation id="6859944681507688231">Aktivér kameraet i Indstillinger for at scanne en QR-kode eller et betalingskort.</translation>
@@ -619,6 +623,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7133798577887235672">Fulde navn</translation>
 <translation id="7136892417564438900">Kameraet er ikke tilgængeligt</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> min. læsning</translation>
 <translation id="7159472599653637159">Anmod om mobilversion</translation>
 <translation id="7162168282402939716">Lås inkognitofaner op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Beskyt dine adgangskoder mod sikkerhedsproblemer</translation>
@@ -668,6 +673,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7600965453749440009">Oversæt aldrig <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop op-vinduer er blokeret (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Slet adgangskode</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min.</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
 <translation id="7649070708921625228">Hjælp</translation>

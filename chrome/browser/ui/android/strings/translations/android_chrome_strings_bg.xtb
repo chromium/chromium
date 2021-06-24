@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Обезпечете си непрекъснат достъп до синхронизираните си данни</translation>
 <translation id="1100066534610197918">Отваряне в нов раздел в група</translation>
 <translation id="1105960400813249514">Заснемане на екрана</translation>
+<translation id="1110914759170138831">Откроеният текст е съкратен</translation>
 <translation id="1111673857033749125">Тук ще се показват отметките, които сте запазили на другите си устройства.</translation>
 <translation id="1113597929977215864">Показване на опростения изглед</translation>
 <translation id="1118561384561215815">Помощ за задачи в мрежата</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Спестете до 60% данни – прочетете днешните новини</translation>
 <translation id="1303339473099049190">Тази парола не бе намерена. Проверете дали е написана правилно и опитайте отново.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Изпратено от <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Изберете шаблон за открояването</translation>
 <translation id="1307205233980126133">За съжаление, не успяхме да потвърдим идентификационните ви данни</translation>
 <translation id="1310482092992808703">Групиране на раздели</translation>
 <translation id="1311657260431405215">Този QR код не е URL адрес: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4183868528246477015">Търсене с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
+<translation id="4206707945726604465">За да изчистите другите видове история, посетете <ph name="BEGIN_LINK1" />Моята активност в Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
 <translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
@@ -581,6 +584,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4807098396393229769">Име върху картата</translation>
 <translation id="4818017973810341238">Потвърждаването на връзките към дигитални активи на адрес <ph name="VIOLATED_URL" /> не бе успешно</translation>
 <translation id="4831037795716408498">Изтегляне на съдържание</translation>
+<translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
 <translation id="4835385943915508971">Chrome няма достъп до заявения ресурс.</translation>
 <translation id="4837753911714442426">Отваряне на опциите за отпечатване на страницата</translation>
 <translation id="4842092870884894799">Изскачащият прозорец за генериране на пароли е показан</translation>
@@ -635,6 +639,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно.}other{# изтегляния не бяха успешни.}}</translation>
 <translation id="5168824020667180049">Започнахте да следите <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Показване в папката</translation>
+<translation id="5171045022955879922">Търсете или въведете URL адрес</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
 <translation id="5188992787241350004">Търсене чрез гласа ви</translation>
 <translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
@@ -744,7 +749,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5836192821815272682">Актуализацията на Chrome се изтегля…</translation>
 <translation id="5853623416121554550">на пауза</translation>
 <translation id="5854512288214985237">До Google не се изпращат статистика и сигнали за сривове</translation>
-<translation id="5854790677617711513">По-стари от 30 дни</translation>
 <translation id="5855546874025048181">Прецизиране: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome не може да включи адаптера за Bluetooth</translation>
 <translation id="5860033963881614850">Изключено</translation>
@@ -1107,6 +1111,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8037750541064988519">Остават <ph name="DAYS" /> дни</translation>
 <translation id="8037801708772278989">Проверено току-що</translation>
+<translation id="8040831032425909005">Икона на приспособлението за търсене в панела за бързи действия</translation>
 <translation id="804335162455518893">SD картата не е намерена</translation>
 <translation id="8051695050440594747">Налице: <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058746566562539958">Отваряне в нов раздел в Chrome</translation>
@@ -1169,6 +1174,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8442258441309440798">Няма налични истории</translation>
 <translation id="8443209985646068659">Не може да се актуализира</translation>
 <translation id="8445448999790540984">Паролите не могат да бъдат експортирани</translation>
+<translation id="8453310803815879010">Стартиране на играта с динозавъра</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466613982764129868">Уверете се, че устройството <ph name="TARGET_DEVICE_NAME" /> е свързано с интернет</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>

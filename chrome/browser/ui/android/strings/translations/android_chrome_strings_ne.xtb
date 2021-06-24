@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">तपाईं आफूले सिंक गरेको डेटा जुनसुकै बेला प्रयोग गर्न तथा हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
+<translation id="1110914759170138831">हाइलाइट गरिएको पाठ छोट्याइएको छ</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
 <translation id="1113597929977215864">सरलीकृत दृश्य देखाउनुहोस्</translation>
 <translation id="1118561384561215815">वेबमा कार्यहरू गर्न मद्दत प्राप्त गर्नु…</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
+<translation id="130581733275749598">आफूले हाइलाइट गरेको पाठका लागि टेम्प्लेट चयन गर्नुहोस्</translation>
 <translation id="1307205233980126133">माफ गर्नुहोस्, हामीले तपाईंका युजरनेम, पासवर्ड आदि पुष्टि गर्न सकेनौँ</translation>
 <translation id="1310482092992808703">ट्याबहरू समूहबद्ध गर्नुहोस्</translation>
 <translation id="1311657260431405215">यो QR कोड कुनै URL होइन: <ph name="QRCODEVALUE" /></translation>
@@ -280,6 +282,7 @@
 <translation id="2788468313014644040">समूह नम्बर</translation>
 <translation id="2801022321632964776">Chrome को नवीनतम संस्करणमा आफ्नो भाषा प्राप्त गर्न अपडेट गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2818669890320396765">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="2827278682606527653">फिड कार्ड मेनु आधा उचाइमा खुला छ</translation>
@@ -362,6 +365,7 @@
 <translation id="3295530008794733555">अझ छिटो ब्राउज गर्नुहोस्। कम डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
+<translation id="333367884906698540">तपाईंको काम सकिएपछि ब्लुटुथ फेरि अफ हुने छ</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341058695485821946">आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
@@ -487,6 +491,7 @@
 <translation id="4183868528246477015">Google Lens प्रयोग गरी खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
+<translation id="4206707945726604465">अन्य प्रकारका इतिहास मेटाउन <ph name="BEGIN_LINK1" />My Google Activity<ph name="END_LINK1" /> मा जानुहोस्</translation>
 <translation id="4209895695669353772">Google ले सिफारिस गरेको वैयक्तीकृत सामग्री प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="4225895483398857530">टुलबारको सर्टकट</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -578,6 +583,7 @@
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> मा Digital Asset Links पुष्टि गर्न सकिएन</translation>
 <translation id="4831037795716408498">सामग्री डाउनलोड गर्ने तरिका</translation>
+<translation id="4834007576107377210">लागू हुन्छ भने आफ्नो खोजको इतिहास मेटाउन सर्च इन्जिनमा दिइएका निर्देशनहरू हेर्नुहोस्</translation>
 <translation id="4835385943915508971">Chrome सँग अनुरोध गरिएको स्रोत माथिको पहुँच छैन।</translation>
 <translation id="4837753911714442426">पृष्ठ छाप्ने सम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
 <translation id="4842092870884894799">पासवर्ड उत्पादन पपअप देखाउँदै</translation>
@@ -632,6 +638,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{१ डाउनलोड असफल भयो।}other{# डाउनलोडहरू असफल भए।}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> फलो गरियो</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
+<translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5188992787241350004">आफ्नो आवाज प्रयोग गरी खोज्नुहोस्</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
@@ -741,7 +748,6 @@
 <translation id="5836192821815272682">Chrome को अद्यावधिक डाउनलोड गर्दै…</translation>
 <translation id="5853623416121554550">पज गरियो</translation>
 <translation id="5854512288214985237">तथ्याङ्क वा क्र्यास रिपोर्टहरू Google मा पठाइँदैन</translation>
-<translation id="5854790677617711513">३० दिनभन्दा पुरानो</translation>
 <translation id="5855546874025048181">यसअनुसार परिष्कृत गर्नुहोस्: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ले ब्लुटुथ एडाप्टरलाई सक्रिय गर्न सकेन</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -1036,6 +1042,7 @@
 <translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
 <translation id="764170292089748542">तपाईंले गोप्य रूपमा ब्राउज गर्दा Chrome ले तपाईंको ब्राउजिङ इतिहास सेभ गर्दैन। तपाईं बुकमार्क प्रयोग गरी आफ्ना मन पर्ने साइटहरूमा जान भने सक्नुहुन्छ।</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
+<translation id="7655900163790317559">ब्लुटुथ अन गरिँदै छ…</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
 <translation id="766587987807204883">लेखहरू यहाँ देखिन्छन् र तपाईं ती लेखहरू अफलाइन भएका बेलामा पनि पढ्न सक्नुहुन्छ</translation>
@@ -1208,7 +1215,9 @@
 <translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>
+<translation id="867767487203716855">अर्को अपडेट</translation>
 <translation id="8683039184091909753">फोटो</translation>
+<translation id="8683081248374354009">समूह रिसेट गर्नुहोस्</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सङ्केतको क्षमता स्तर: # बार}other{सङ्केतको क्षमता स्तर: # बारहरू}}</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>

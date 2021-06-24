@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{१ वर्ष अघि}other{# वर्ष अघि}}</translation>
 <translation id="2878511608894704031">सबै वस्तु मेट्नुहोस्</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१ दिनमा}other{# दिनमा}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> नामक कोलम वर्णानुक्रमअनुसार घट्दो क्रममा क्रमबद्ध गरिएको छ।</translation>
 <translation id="2931838996092594335">क्लिक गर्नुहोस्</translation>
 <translation id="2981684127883932071">सुझावहरू देखाउँदै</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3909791450649380159">काँ&amp;ट्नुहोस्</translation>
 <translation id="3990502903496589789">दायाँ छेउ</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> नामक कोलम वर्णानुक्रमअनुसार बढ्दो क्रममा क्रमबद्ध गरिएको छ।</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{१ नपढिएको सूचना}other{# नपढिएका सूचनाहरू}}</translation>
 <translation id="4202807286478387388">फड्को</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>
 <translation id="7430878839542012341">आफ्नो इतिहासबाट यो खोज मेटाउने हो?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> नामक कोलम कुनै पनि क्रममा क्रमबद्ध गरिएको छैन।</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> टीबी</translation>
 <translation id="7507604095951736240">इमोजी</translation>
 <translation id="7620655452534002301">हटाइयो।</translation>

@@ -164,9 +164,11 @@
 <translation id="469379815867856270">信号强度</translation>
 <translation id="4707579418881001319">L2TP/IPSec + 用户证书</translation>
 <translation id="4731797938093519117">家长访问</translation>
+<translation id="475869545581454722">Chrome 操作系统密码已更新</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
+<translation id="4813136279048157860">我的图片</translation>
 <translation id="4813345808229079766">连接</translation>
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4835901797422965222">未连接到任何网络</translation>
@@ -320,6 +322,7 @@
 <translation id="7701040980221191251">无</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">循环计数</translation>
+<translation id="7762130827864645708">您已成功更改了密码。从现在开始，请改用这个新密码。</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Zadejte prosím v zařízení tento kód PIN: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Byl vybrán částečný snímek obrazovky</translation>
 <translation id="1032891413405719768">Baterie dotykového pera je slabá</translation>
+<translation id="1036073649888683237">Oznámení můžete spravovat v sekci Nastavení</translation>
 <translation id="1036672894875463507">Jsem váš Asistent Google a můžu vám celý den pomáhat!
 Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1037492556044956303">Bylo přidáno zařízení <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1052916631016577720">Hledání položek</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Vyměňte nebo znovu nabijte baterii</translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré odpoledne, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudím se</translation>
@@ -306,6 +308,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3430396595145920809">Chcete-li se vrátit, přejeďte prstem zprava</translation>
 <translation id="343571671045587506">Upravit připomenutí</translation>
 <translation id="3435967511775410570">Otisk rozpoznán</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Zařízení USB Type-C</translation>
 <translation id="3454224730401036106">Vaše připojení se přepnulo na bezpečnější síť</translation>
@@ -430,6 +433,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4379531060876907730">Toto jsou nástroje pro dotykové pero</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
+<translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>

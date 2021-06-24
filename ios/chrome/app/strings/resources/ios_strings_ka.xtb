@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">დათვალიერების მონაცემების გასუფთავება</translation>
 <translation id="1815941218935345331">საიდუმლო კოდი</translation>
 <translation id="1820259098641718022">დაემატა საკითხავ სიას</translation>
+<translation id="1832848789136765277">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს სინქრონიზებულ მონაცემებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="1870148520156231997">პაროლის გამოჩენა</translation>
 <translation id="1872096359983322073">ჩირაღდანი</translation>
 <translation id="1894205589103145703">შესვლისას წარმოიქმნა შეფერხება.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
+<translation id="212623074644302906">შეკითხვა საკითხავ სიაში დამატებისას</translation>
 <translation id="2139867232736819575">თქვენ მიერ კოპირებული ტექსტის მოძიება</translation>
 <translation id="214201757571129614">შესვლა…</translation>
 <translation id="2149973817440762519">სანიშნის რედაქტირება</translation>
@@ -435,6 +437,7 @@
 Handoff ასევე უნდა იყოს ჩართული პარამეტრების სექციაში „ძირითადი“ და მოწყობილობებში უნდა გამოიყენებოდეს ერთი და იგივე iCloud ანგარიში.</translation>
 <translation id="5551897871312988470">თარგმანის შემოთავაზება</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
+<translation id="5580834567471114021">გსურთ, დაამატოთ მოგვიანებით საკითხავთა სიას?</translation>
 <translation id="5592679540098330836">სინქრონიზაციის ჩართვა <ph name="NAME" />-ისთვის</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
 <translation id="5626245204502895507">ფაილის ჩამოტვირთვა ამჯერად ვერ მოხერხდა.</translation>
@@ -588,6 +591,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="681368974849482173">ელემენტი შექმნილია</translation>
 <translation id="6830804042318138535">მეტის წაკითხვა</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
+<translation id="6842136130964845393">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს შენახულ პაროლებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="6851516051005285358">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="6858855187367714033">სკანირებული</translation>
 <translation id="6859944681507688231">QR კოდის ან საკრედიტო ბარათის სკანირებისთვის ჩართეთ კამერა პარამეტრებიდან.</translation>
@@ -619,6 +623,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7108338896283013870">დამალვა</translation>
 <translation id="7133798577887235672">სრული სახელი</translation>
 <translation id="7136892417564438900">კამერა მიუწვდომელია</translation>
+<translation id="7153999225810839758"><ph name="TIME" />-წუთიანი საკითხავი</translation>
 <translation id="7159472599653637159">მობილური საიტის მოთხოვნა</translation>
 <translation id="7162168282402939716">ინკოგნიტო ჩანართების განსაბლოკად გამოყენებული იყოს <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">დაიცავით თქვენი პაროლები უსაფრთხოებასთან დაკავშირებული პრობლემებისგან</translation>
@@ -668,6 +673,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7600965453749440009">არასოდეს თარგმნო <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">კონტექსტური ფანჯრები დაბლოკილია (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">პაროლის წაშლა</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> წთ</translation>
 <translation id="7638584964844754484">საიდუმლო ფრაზა არასწორია</translation>
 <translation id="7646772052135772216">პაროლების სინქრონიზაცია არ მუშაობს</translation>
 <translation id="7649070708921625228">დახმარება</translation>

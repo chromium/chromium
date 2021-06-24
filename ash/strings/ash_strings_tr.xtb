@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Kısmi ekran görüntüsü seçildi</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
+<translation id="1036073649888683237">Bildirimleri yönetmek için Ayarlar'a gidin</translation>
 <translation id="1036672894875463507">Ben Google Asistanınım, gün boyunca sana yardımcı olmak için buradayım.
 Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> eklendi</translation>
@@ -14,6 +15,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1052916631016577720">Öğe Tarama</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Pili değiştirin veya şarj edin</translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">İyi günler <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Canım sıkıldı</translation>
@@ -306,6 +308,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3430396595145920809">Geri gitmek için sağdan kaydırın</translation>
 <translation id="343571671045587506">Hatırlatıcıyı düzenleyin</translation>
 <translation id="3435967511775410570">Parmak izi tanındı</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3445925074670675829">USB-C cihaz</translation>
 <translation id="3454224730401036106">Bağlantınız daha güvenli bir ağa geçti</translation>
@@ -430,6 +433,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4379531060876907730">Bunlar ekran kalemi araçlarınızdır</translation>
 <translation id="4389184120735010762">Yerleştirilmiş büyüteç klavye kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
+<translation id="439598569299422042">Duraklatıldı, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
 <translation id="4421231901400348175">Ekranınızın kontrolü, Uzaktan Yardım kullanılarak <ph name="HELPER_NAME" /> ile paylaşılıyor.</translation>
 <translation id="4424159417645388645">Masa 5</translation>

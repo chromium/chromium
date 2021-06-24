@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 tahun yang lalu}other{# tahun yang lalu}}</translation>
 <translation id="2878511608894704031">Padamkan Semua</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dalam 1h}other{dalam #h}}</translation>
+<translation id="2922712708897119705">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menurun.</translation>
 <translation id="2931838996092594335">klik</translation>
 <translation id="2981684127883932071">Memaparkan cadangan</translation>
 <translation id="3036649622769666520">Buka Fail</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Po&amp;tong</translation>
 <translation id="3990502903496589789">Tepi Kanan</translation>
+<translation id="3994749195054421561">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menaik.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Pemberitahuan Belum Dibaca}other{# Pemberitahuan Belum Dibaca}}</translation>
 <translation id="4202807286478387388">lompat</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minit lagi}other{# minit lagi}}</translation>
 <translation id="7430878839542012341">Padamkan carian ini daripada sejarah anda?</translation>
+<translation id="7437971918971306061">Lajur <ph name="COLUMN_NAME" /> dinyahisih.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Dialih keluar.</translation>

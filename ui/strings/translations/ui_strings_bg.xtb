@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Преди 1 година}other{Преди # години}}</translation>
 <translation id="2878511608894704031">Изтриване на всички</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{след 1 д}other{след # д}}</translation>
+<translation id="2922712708897119705">Колоната <ph name="COLUMN_NAME" /> е сортирана в низходящ ред.</translation>
 <translation id="2931838996092594335">кликвам</translation>
 <translation id="2981684127883932071">Показани са предложения</translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3909791450649380159">Изрязва&amp;не</translation>
 <translation id="3990502903496589789">Десн край</translation>
+<translation id="3994749195054421561">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочетено известие}other{# непрочетени известия}}</translation>
 <translation id="4202807286478387388">преминаване</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Остава 1 минута}other{Остават # минути}}</translation>
 <translation id="7430878839542012341">Да се изтрие ли това търсене от историята ви?</translation>
+<translation id="7437971918971306061">Сортирането на колоната <ph name="COLUMN_NAME" /> бе отменено.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Емоджи</translation>
 <translation id="7620655452534002301">Премахнато.</translation>

@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">ब्राउजिङ डेटा खाली गर्नुहोस</translation>
 <translation id="1815941218935345331">पासकोड</translation>
 <translation id="1820259098641718022">पाठ्य सूचीमा थपियो</translation>
+<translation id="1832848789136765277">तपाईं आफूले सिंक गरेका डेटा जुनसुकै बेला हेर्न तथा प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="1870148520156231997">पासवर्ड देखाउनुहोस्</translation>
 <translation id="1872096359983322073">टर्च</translation>
 <translation id="1894205589103145703">साइन इन गर्ने क्रममा केही चिज गडबड भयो।</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>
 <translation id="2103075008456228677">history.google.com लाई खोल्नुहोस्</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> वस्तुहरू सारियो</translation>
+<translation id="212623074644302906">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्ने हो भनी सोधियोस्</translation>
 <translation id="2139867232736819575">तपाईंले प्रतिलिपि गरेको पाठको खोजी गर्नुहोस्</translation>
 <translation id="214201757571129614">साइन इन गर्नुहोस्…</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -434,6 +436,7 @@
 ह्यान्डअफलाई सेटिङहरूको सामान्य सेक्सनमा सक्रिय गर्नुपर्छ र तपाईंको यन्त्रहरूले समान iCloud खाता प्रयोग गर्नुपर्छ।</translation>
 <translation id="5551897871312988470">अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
+<translation id="5580834567471114021">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्ने हो?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> को खातामा सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5626245204502895507">यस समयमा फाइल डाउनलोड गर्न सकिदैन।</translation>
@@ -587,6 +590,7 @@
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
 <translation id="6830804042318138535">थप पढ्नुहोस्</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
+<translation id="6842136130964845393">तपाईं आफूले सेभ गरेका पासवर्डहरू जुनसुकै बेला हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6851516051005285358">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>
 <translation id="6858855187367714033">स्क्यान गरियो</translation>
 <translation id="6859944681507688231">कुनै QR कोड वा क्रेडिट कार्ड स्क्यान गर्न सेटिङमा गई क्यामेरा सक्षम पार्नुहोस्।</translation>
@@ -618,6 +622,7 @@
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7133798577887235672">पूरा नाम</translation>
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
+<translation id="7153999225810839758">यो पेज पढ्न <ph name="TIME" /> मिनेट लाग्छ</translation>
 <translation id="7159472599653637159">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी इन्कोग्निटो ट्याबहरू अनलक गर्नुहोस्</translation>
 <translation id="7172852049901402487">आफ्ना पासवर्डलाई सुरक्षासम्बन्धी समस्याबाट जोगाउनुहोस्</translation>
@@ -667,6 +672,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> मिनेट</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7649070708921625228">मद्दत</translation>

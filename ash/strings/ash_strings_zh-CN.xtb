@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">内容扫描</translation>
 <translation id="1056775291175587022">没有网络</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">更换电池或为电池充电</translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，下午好！</translation>
 <translation id="109942774857561566">我好无聊</translation>
@@ -306,6 +307,7 @@
 <translation id="3430396595145920809">从右向左滑动手指即可返回</translation>
 <translation id="343571671045587506">修改提醒</translation>
 <translation id="3435967511775410570">已识别指纹</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3454224730401036106">您已切换到一个更安全的网络连接</translation>
@@ -430,6 +432,7 @@
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4379531060876907730">这些是您的触控笔工具</translation>
 <translation id="4389184120735010762">您按下了停靠放大镜的键盘快捷键。要开启这项功能吗？</translation>
+<translation id="439598569299422042">已暂停，<ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4421231901400348175">正在通过远程协助与<ph name="HELPER_NAME" />共享您屏幕的控制权限。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
@@ -726,6 +729,7 @@
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
 <translation id="6818242057446442178">后退一个字词</translation>
 <translation id="6820676911989879663">休息一下！</translation>
+<translation id="6837064795450991317">隐藏桌面栏</translation>
 <translation id="6850010208275816200">您当前所用的应用处于全屏模式。如果该应用要求您提供密码，请先退出全屏模式。</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -761,6 +765,7 @@
 <translation id="7076293881109082629">正在登录</translation>
 <translation id="7088960765736518739">开关控制</translation>
 <translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
+<translation id="7106330611027933926">显示桌面栏</translation>
 <translation id="7118268675952955085">屏幕截图</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
 <translation id="7143207342074048698">正在连接</translation>
@@ -804,6 +809,7 @@
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7473891865547856676">不，谢谢</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
+<translation id="7482097454533720217">在您右键点击或轻触并按住内容时获取定义、翻译或单位换算。</translation>
 <translation id="7483025031359818980">所选区域设为全屏</translation>
 <translation id="7486227320194954040">收起标记工具</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
@@ -980,6 +986,7 @@
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
+<translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8871580645200179206">开启/关闭深色主题。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未连接</translation>

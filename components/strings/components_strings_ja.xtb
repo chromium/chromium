@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">詳細を表示</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1032854598605920125">時計回りに回転</translation>
-<translation id="1036224116832931580">Dino ゲーム、プレイするにはタップしてジャンプさせます</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038842779957582377">不明な名前</translation>
@@ -125,6 +124,7 @@
 <translation id="1360955481084547712">新しいシークレット ウィンドウを開いてシークレット モードでブラウジングする</translation>
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
+<translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1374692235857187091">Index-4x6（ポストカード）</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
@@ -133,6 +133,7 @@
 <translation id="1380591466760231819">レター折り</translation>
 <translation id="138218114945450791">ライトブルー</translation>
 <translation id="1382194467192730611">管理者によって許可された USB デバイス</translation>
+<translation id="1384725838384960382">保護されたお支払い認証情報の認証シート</translation>
 <translation id="1386623374109090026">アノテーション</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
@@ -270,6 +271,7 @@
 <translation id="1875512691959384712">Google フォーム</translation>
 <translation id="187918866476621466">起動ページを開く</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
+<translation id="1890171020361705182">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、タップして障害物を飛び越えましょう。</translation>
 <translation id="1898423065542865115">フィルタ</translation>
 <translation id="1901443836186977402">{1,plural, =1{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が昨日で切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}other{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が # 日前に切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}}</translation>
 <translation id="1902576642799138955">有効期間</translation>
@@ -787,7 +789,6 @@
 <translation id="3799805948399000906">リクエストされたフォント</translation>
 <translation id="3807366285948165054">画像の X 軸移動</translation>
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
-<translation id="3808375843007691220">警告: 試験運用版の機能です。</translation>
 <translation id="3816482573645936981">値（優先）</translation>
 <translation id="382518646247711829">プロキシ サーバーを使用している場合...</translation>
 <translation id="3827112369919217609">絶対的</translation>
@@ -821,6 +822,7 @@
 <translation id="3963721102035795474">リーダーモード</translation>
 <translation id="3963837677003247395">手動で続行しますか？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{なし}=1{1 件のサイトから}other{# 件のサイトから}}</translation>
+<translation id="3970481983430640194">これで、このアプリをドラッグしてサイズ変更できます</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> はブロックされています</translation>
 <translation id="3973357910713125165">Chrome の安全確認を実行するボタンです。Enter キーを押すと Chrome の設定で安全確認を実行します</translation>
@@ -833,10 +835,6 @@
 <translation id="3996311196211510766">サイト <ph name="ORIGIN" /> では、サイトへのすべてのリクエストにオリジン ポリシーの適用を求めていますが、このポリシーは現在適用することができません。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ページの PDF ドキュメント}other{{COUNT} ページの PDF ドキュメント}}</translation>
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
-<translation id="4027177651527820006">これらの機能を有効にすると、ブラウザのデータが失われたり、
-    セキュリティやプライバシーが侵害されたりする可能性があります。有効にした機能はこのブラウザの
-    すべてのユーザーに適用されます。企業の管理者の場合は、これらのフラグを
-    本番環境で使用しないでください。</translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4058922952496707368">キー「<ph name="SUBKEY" />」: <ph name="ERROR" /></translation>
@@ -1011,6 +1009,7 @@
 <translation id="4660119392514473465">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイル、ブックマーク、リーディング リストは通常どおり保存されます。</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
+<translation id="4673460618347856347">Dino ゲーム、プレイ</translation>
 <translation id="4675657451653251260">ゲストモードでは Chrome プロファイルの情報が表示されません。<ph name="LINK_BEGIN" />ログイン<ph name="LINK_END" />すると、パスワードやお支払い方法などの Google アカウント情報にアクセスできます。</translation>
 <translation id="467662567472608290">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書にはエラーがあります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> から、ユーザー補助機能のイベントに応答する許可を求められています</translation>
@@ -1307,6 +1306,7 @@
 <translation id="5689199277474810259">JSON にエクスポート</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates の値は関連するものでないため、使用されません。ただし、DnsOverHttpsMode ポリシーが「<ph name="SECURE_DNS_MODE_AUTOMATIC" />」または「<ph name="SECURE_DNS_MODE_SECURE" />」に設定されている場合は除きます。</translation>
+<translation id="5694206146481922091">保護されたお支払い認証情報の登録シートが開いています</translation>
 <translation id="5695542892312572833">Windows Hello を使用して本人確認し、購入手続きを完了しますか？</translation>
 <translation id="5701381305118179107">中央揃え</translation>
 <translation id="570530837424789914">管理...</translation>
@@ -1393,6 +1393,7 @@
 <translation id="6032524144326295339">用紙受け 2</translation>
 <translation id="6032955021262906325">製本（左綴じ）</translation>
 <translation id="6034000775414344507">ライトグレー</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" /> は適切にサイズ変更されない可能性があります。アプリが誤動作しないようにするには、プリセットのウィンドウ サイズを使用してください。</translation>
 <translation id="6034283069659657473">10x14（封筒）</translation>
 <translation id="6034514109191629503">外折り</translation>
 <translation id="6039846035001940113">この問題が何度も発生する場合は、サイト所有者にお問い合わせください。</translation>
@@ -1422,6 +1423,7 @@
 <translation id="6120179357481664955">UPI ID を保存しますか？</translation>
 <translation id="6123290840358279103">仮想カードを表示</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
+<translation id="6143538402333184781">このアプリは「スマートフォン」サイズにのみ対応しています。</translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
     再起動してください。</translation>
 <translation id="614940544461990577">次をお試しください</translation>
@@ -1435,6 +1437,7 @@
 <translation id="6180316780098470077">再試行の間隔</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6203231073485539293">インターネット接続を確認してください</translation>
+<translation id="6211666000885129820">保護されたお支払い認証情報の登録シート</translation>
 <translation id="6218753634732582820">Chromium からアドレスを削除してもよろしいですか？</translation>
 <translation id="622039917539443112">巻き折り</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> では最近、Google セーフ ブラウジングにより、<ph name="END_LINK" />不正なソフトウェアが検出されました<ph name="SITE" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。今回の悪意のあるコンテンツは、不正なソフトウェアの既知の配布元である「<ph name="SUBRESOURCE_HOST" />」からもたらされました。</translation>
@@ -1534,7 +1537,6 @@
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6604181099783169992">モーション センサーまたは光センサー</translation>
 <translation id="6609880536175561541">Prc7（封筒）</translation>
-<translation id="6612358246767739896">保護されたコンテンツ</translation>
 <translation id="6615297766614333076">スタッカー 2</translation>
 <translation id="6624427990725312378">連絡先情報</translation>
 <translation id="6626291197371920147">有効なカード番号を追加</translation>
@@ -1593,6 +1595,7 @@
 <translation id="6865412394715372076">現在、このカードを確認できません</translation>
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
 <translation id="6881240511396774766">新しい Google ドキュメントをすばやく作成します</translation>
+<translation id="6883221904761970440">保護されたお支払い認証情報の認証シートは閉じています</translation>
 <translation id="6884662655240309489">サイズ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護されていない接続を介して行われました。</translation>
@@ -2032,7 +2035,6 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
-<translation id="8463101686637053101">Dino ゲーム、プレイするには Space キーを押してジャンプさせます</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
@@ -2116,6 +2118,7 @@
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
 <translation id="8761567432415473239"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なプログラムが検出<ph name="END_LINK" />されました。</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
+<translation id="8766943070169463815">保護されたお支払い認証情報の認証シートが開いています</translation>
 <translation id="8774457497170244317">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" /> のほか、このパスワードを使用しているサイトで、保存したパスワードを今すぐ確認することをおすすめします。</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">削除のやり直し（&amp;R）</translation>
@@ -2233,6 +2236,7 @@
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
+<translation id="9211470216863457665">保護されたお支払い認証情報の登録シートは閉じています</translation>
 <translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>
 <translation id="9219103736887031265">画像</translation>

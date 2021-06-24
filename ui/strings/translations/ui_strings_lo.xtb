@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ປີກ່ອນນີ້}other{# ປີກ່ອນນີ້}}</translation>
 <translation id="2878511608894704031">ລຶບທັງໝົດ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ໃນ 1 ມື້}other{ໃນ # ມື້}}</translation>
+<translation id="2922712708897119705">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບໃຫຍ່ຫານ້ອຍແລ້ວ.</translation>
 <translation id="2931838996092594335">ຄລິກ</translation>
 <translation id="2981684127883932071">ກຳລັງສະແດງການແນະນຳ</translation>
 <translation id="3036649622769666520">ເປີດໄຟລ໌</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3909791450649380159">ຕັດ</translation>
 <translation id="3990502903496589789">ຮີມເບື້ອງຂວາ</translation>
+<translation id="3994749195054421561">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບນ້ອຍຫາໃຫຍ່ແລ້ວ.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ 1 ລາຍການ}other{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ # ລາຍການ}}</translation>
 <translation id="4202807286478387388">ກະໂດດ​</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ຍັງ​ເຫຼືອ 1 ນາ​ທີ​}other{ຍັງ​ເຫຼືອ # ນາ​ທີ}}</translation>
 <translation id="7430878839542012341">ລຶບການຊອກຫາອອກຈາກປະຫວັດຂອງທ່ານບໍ?</translation>
+<translation id="7437971918971306061">ເຊົາຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ແລ້ວ.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ອີໂມຈິ</translation>
 <translation id="7620655452534002301">ລຶບອອກແລ້ວ.</translation>

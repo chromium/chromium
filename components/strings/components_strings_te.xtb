@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">వివరాలను చూడండి</translation>
 <translation id="1030706264415084469">డేటాను మీ పరికరంలో అధిక మొత్తంలో, శాశ్వతంగా నిల్వ చేయాలని <ph name="URL" /> అనుకుంటోంది</translation>
 <translation id="1032854598605920125">సవ్యదిశలో తిప్పు</translation>
-<translation id="1036224116832931580">డైనో గేమ్, ఎగిరేందుకు, ఆడేందుకు ట్యాప్ చేయండి</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
@@ -377,6 +376,7 @@
 <translation id="2276057643614339130">ప్రింట్ బేస్</translation>
 <translation id="2277103315734023688">ముందుకు జరుపు</translation>
 <translation id="2283340219607151381">చిరునామాలను సేవ్ చేసి, పూరించండి</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' తొలగించబడింది</translation>
 <translation id="2288422996159078444">మీరు ఏదైనా టైప్ చేసినా, ఏవైనా పేజీలు వీక్షించినా లేదా వెబ్‌లో ఇతర కార్యకలాపం ఏదైనా చూసినా. సైట్‌లలోని కంటెంట్ మీకు తెలియకుండానే మారిపోవచ్చు.</translation>
 <translation id="2289385804009217824">కత్తిరించండి</translation>
 <translation id="2292556288342944218">మీ ఇంటర్నెట్ యాక్సెస్ బ్లాక్ చేయబడింది</translation>
@@ -501,6 +501,7 @@
 <translation id="277133753123645258">రవాణా పద్ధతి</translation>
 <translation id="277499241957683684">పరికరం రికార్డ్ లేదు</translation>
 <translation id="2775884851269838147">మొదట ఈ పేజీని ప్రింట్ చేయండి</translation>
+<translation id="2778854133681684171">ఈ పేమెంట్ ఆప్షన్‌తో మీరు తర్వాతిసారి కొనుగోలు చేసినప్పుడు అది మీరేనని త్వరగా వెరిఫై చేయడానికి మీరు మీ పరికరాన్ని ఉపయోగించవచ్చు.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">కనెక్షన్ మళ్ళీ సెట్ చేయబడింది.</translation>
 <translation id="2792012897584536778">ఈ పరికర నిర్వాహకులు మీరు సందర్శించే వెబ్‌సైట్‌ల కంటెంట్‌ను చూడటానికి వారిని అనుమతించే అవకాశం ఉండే భద్రతా సర్టిఫికెట్‌లను సెటప్ చేశారు.</translation>
@@ -657,6 +658,7 @@
 <translation id="3377736046129930310">కార్డ్‌లను వేగంగా నిర్ధారించడానికి స్క్రీన్‌లాక్‌ను ఉపయోగించండి</translation>
 <translation id="3380365263193509176">తెలియని ఎర్రర్</translation>
 <translation id="3380864720620200369">క్లయింట్ ID:</translation>
+<translation id="3381668585148405088">మీ కొనుగోలును వెరిఫై చేయండి</translation>
 <translation id="3387261909427947069">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="3391030046425686457">బట్వాడా చిరునామా</translation>
 <translation id="3395827396354264108">పికప్ పద్ధతి</translation>
@@ -786,7 +788,6 @@
 <translation id="3799805948399000906">అభ్యర్థించిన ఫాంట్</translation>
 <translation id="3807366285948165054">చిత్రాన్ని X అక్షంలో జరపు</translation>
 <translation id="3807873520724684969">హానికర కంటెంట్ బ్లాక్ చేయబడింది.</translation>
-<translation id="3808375843007691220">హెచ్చరిక: ప్రయోగాత్మక ఫీచర్‌లు ముందున్నాయి!</translation>
 <translation id="3816482573645936981">విలువ (అధిగమించబడింది)</translation>
 <translation id="382518646247711829">మీరు ప్రాక్సీ సర్వర్‌ను ఉపయోగిస్తే...</translation>
 <translation id="3827112369919217609">అబ్సల్యూట్</translation>
@@ -820,6 +821,7 @@
 <translation id="3963721102035795474">పాఠకుని మోడ్</translation>
 <translation id="3963837677003247395">మాన్యువల్‌గా కొనసాగించాలా?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ఏవీ కాదు}=1{1 సైట్ నుండి }other{# సైట్‌ల నుండి }}</translation>
+<translation id="3970481983430640194">మీరు ఇప్పుడు ఈ యాప్‌ను లాగి, పరిమాణం మార్చవచ్చు</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> బ్లాక్ చేయబడింది</translation>
 <translation id="3973357910713125165">Chrome భద్రతా తనిఖీ రన్ చేసే బటన్, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Enter'ను నొక్కండి</translation>
@@ -1391,6 +1393,7 @@
 <translation id="6032524144326295339">మెయిల్‌బాక్స్ 2</translation>
 <translation id="6032955021262906325">ఎడమవైపు బైండ్</translation>
 <translation id="6034000775414344507">లేత బూడిద రంగు</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" /> సరిగ్గా పరిమాణాన్ని మార్చకపోవచ్చు. యాప్ తప్పుగా ప్రవర్తించడం నుండి నివారించడానికి ప్రీసెట్ చేసిన విండో పరిమాణాలను ఉపయోగించండి.</translation>
 <translation id="6034283069659657473">10x14 (ఎన్వలప్)</translation>
 <translation id="6034514109191629503">ఎకార్డియన్ ఫోల్డ్</translation>
 <translation id="6039846035001940113">సమస్య కొనసాగుతుంటే, సైట్ యజమానిని సంప్రదించండి.</translation>
@@ -1420,6 +1423,7 @@
 <translation id="6120179357481664955">మీ UPI ID గుర్తుందా?</translation>
 <translation id="6123290840358279103">వర్చువల్ కార్డ్‌ను చూడండి</translation>
 <translation id="6124432979022149706">Chrome Enterprise కనెక్టర్‌లు</translation>
+<translation id="6143538402333184781">ఈ యాప్ "ఫోన్" సైజ్‌ను మాత్రమే సపోర్ట్ చేస్తుంది.</translation>
 <translation id="6146055958333702838">ఏవైనా కేబుల్‌లను తనిఖీ చేయండి మరియు మీరు ఉపయోగించే ఏవైనా రూటర్‌లు, మోడెమ్‌లు
         లేదా ఇతర నెట్‌వర్క్ పరికరాలను రీబూట్ చేయండి.</translation>
 <translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
@@ -1532,7 +1536,6 @@
 <translation id="6596325263575161958">ఎన్‌క్రిప్షన్ ఎంపికలు</translation>
 <translation id="6604181099783169992">చలనం లేదా కాంతి సర్దుబాటు సెన్సార్‌లు</translation>
 <translation id="6609880536175561541">Prc7 (ఎన్వలప్)</translation>
-<translation id="6612358246767739896">రక్షిత కంటెంట్</translation>
 <translation id="6615297766614333076">స్టాకర్ 2</translation>
 <translation id="6624427990725312378">సంప్రదింపు సమాచారం</translation>
 <translation id="6626291197371920147">చెల్లుబాటయ్యే కార్డ్ నంబర్‌ను జోడించండి</translation>
@@ -2028,7 +2031,6 @@
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8457125768502047971">అనిశ్చితం</translation>
 <translation id="8461694314515752532">మీ స్వంత సమకాలీకరణ రహస్య పదబంధంతో సమకాలీకరించబడిన డేటాని ఎన్‌క్రిప్ట్ చేయండి</translation>
-<translation id="8463101686637053101">డైనో గేమ్, ఎగిరేందుకు, ఆడేందుకు స్పేస్ కీని నొక్కండి</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 క్రెడిట్ కార్డ్}other{# క్రెడిట్ కార్డ్‌లు}}</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="8474910779563686872">డెవలపర్ వివరాలను చూపు</translation>

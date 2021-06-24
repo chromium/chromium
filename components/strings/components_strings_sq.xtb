@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1032854598605920125">Rrotullo në drejtim të akrepave të orës</translation>
-<translation id="1036224116832931580">Loja me dinozaur. Trokit për të kërcyer dhe luajtur</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
@@ -125,6 +124,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1360955481084547712">Hap një dritare të re të fshehtë për të shfletuar në mënyrë private</translation>
 <translation id="1363819917331173092">Mos ofro t'i përkthesh faqet në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Kjo politikë është bllokuar, vlera do të shpërfillet.</translation>
+<translation id="1368318639262510626">Loja Dino. Një dinozaur i pikselizuar shmang kaktuset dhe pterodaktilët ndërsa vrapon përgjatë një peizazhi të shkretuar. Kur dëgjon një sinjalizim audioje, shtyp hapësirën për të kapërcyer mbi pengesa.</translation>
 <translation id="1374468813861204354">sugjerime</translation>
 <translation id="1374692235857187091">Index-4x6 (Kartolinë)</translation>
 <translation id="1375198122581997741">Rreth versionit</translation>
@@ -133,6 +133,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1380591466760231819">Palosje si letër</translation>
 <translation id="138218114945450791">Blu e çelur</translation>
 <translation id="1382194467192730611">Pajisja USB është e lejuar nga administratori</translation>
+<translation id="1384725838384960382">Fleta e vërtetimit të sigurt të kredencialeve të pagesës</translation>
 <translation id="1386623374109090026">Shënimet</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nuk dërgoi asnjë të dhënë.</translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
@@ -273,6 +274,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1875512691959384712">Formularët e Google</translation>
 <translation id="187918866476621466">Hap faqet e nisjes</translation>
 <translation id="1883255238294161206">Palos listën</translation>
+<translation id="1890171020361705182">Loja Dino. Një dinozaur i pikselizuar shmang kaktuset dhe pterodaktilët ndërsa vrapon përgjatë një peizazhi të shkretuar. Kur dëgjon një sinjalizim audioje, trokit për të kapërcyer mbi pengesa.</translation>
 <translation id="1898423065542865115">Filtrimi</translation>
 <translation id="1901443836186977402">{1,plural, =1{Ky server nuk mund të vërtetonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë ka skaduar një ditë më parë. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. Ora e kompjuterit tënd është caktuar aktualisht në <ph name="CURRENT_DATE" />. A është e saktë kjo? Nëse jo, duhet të korrigjosh orën e sistemit tënd dhe më pas ta rifreskosh këtë faqe.}other{Ky server nuk mund të vërtetonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë ka skaduar # ditë më parë. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. Ora e kompjuterit tënd është caktuar aktualisht në <ph name="CURRENT_DATE" />. A është e saktë kjo? Nëse jo, duhet të korrigjosh orën e sistemit tënd dhe më pas ta rifreskosh këtë faqe.}}</translation>
 <translation id="1902576642799138955">Periudha e vlefshmërisë</translation>
@@ -790,7 +792,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
 <translation id="3807366285948165054">Zhvendosja e imazhit në boshtin X</translation>
 <translation id="3807873520724684969">Përmbajtja e dëmshme është bllokuar.</translation>
-<translation id="3808375843007691220">Paralajmërim: Përpara ka funksione eksperimentale!</translation>
 <translation id="3816482573645936981">Vlera (e zëvendësuar)</translation>
 <translation id="382518646247711829">Nëse përdor një server përfaqësues...</translation>
 <translation id="3827112369919217609">Absolut</translation>
@@ -824,6 +825,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3963721102035795474">Modaliteti i lexuesit</translation>
 <translation id="3963837677003247395">Dëshiron të vazhdosh manualisht?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt }other{Nga # sajte }}</translation>
+<translation id="3970481983430640194">Tani mund ta zvarritësh dhe të ndryshosh përmasat e këtij aplikacioni</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
 <translation id="3973357910713125165">Ekzekuto butonin e "Kontrollit të sigurisë" të Chrome, shtyp "Enter" për të ekzekutuar "Kontrollin e sigurisë" te cilësimet e Chrome</translation>
@@ -837,7 +839,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     për të gjitha kërkesat drejtuar atij, por kjo politikë nuk mund të zbatohet aktualisht.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
-<translation id="4027177651527820006">Duke aktivizuar këto veçori mund të humbësh të dhënat e shfletuesit ose të komprometosh sigurinë, ose privatësinë tënde. Veçoritë e aktivizuara zbatohen për të gjithë përdoruesit e këtij shfletuesi. Nëse je admin i kompanisë duhet të mos i përdorësh këta flamurë në prodhim.</translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1014,6 +1015,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4660119392514473465">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do ta shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
+<translation id="4673460618347856347">Loja Dino, luaj</translation>
 <translation id="4675657451653251260">Në modalitetin e vizitorit, nuk do të shikosh informacione të profilit të Chrome. Mund <ph name="LINK_BEGIN" />të identifikohesh<ph name="LINK_END" /> për t'u qasur tek informacionet e "Llogarisë sate të Google" si fjalëkalimet dhe mënyrat e pagesës.</translation>
 <translation id="467662567472608290">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë përmban gabime. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> kërkon të reagojë ndaj ngjarjeve të qasshmërisë</translation>
@@ -1310,6 +1312,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5689199277474810259">Eksporto në JSON</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="569000877158168851">Vlera e DnsOverHttpsTemplates nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse politika DnsOverHttpsMode është caktuar te <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ose <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5694206146481922091">Fleta e regjistrimit të sigurt të kredencialeve të pagesës është e hapur</translation>
 <translation id="5695542892312572833">Dëshiron të përdorësh Windows Hello për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="5701381305118179107">Qendër</translation>
 <translation id="570530837424789914">Menaxho...</translation>
@@ -1396,6 +1399,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6032524144326295339">Kutia postare 2</translation>
 <translation id="6032955021262906325">Lidhje majtas</translation>
 <translation id="6034000775414344507">Gri e çelur</translation>
+<translation id="6034062182346928710">Përmasat e <ph name="APP_NAME" /> mund të mos ndryshohen si duhet. Përdor madhësitë e paravendosura të dritares për të parandaluar sjelljen e papërshtatshme të aplikacionit.</translation>
 <translation id="6034283069659657473">10x14 (Zarf)</translation>
 <translation id="6034514109191629503">Palosje fizarmonikë</translation>
 <translation id="6039846035001940113">Nëse problemi vazhdon, kontakto me zotëruesin e sajtit.</translation>
@@ -1425,6 +1429,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
 <translation id="6123290840358279103">Shiko kartën vrituale</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
+<translation id="6143538402333184781">Ky aplikacion mbështetet vetëm madhësinë e "Telefonit".</translation>
 <translation id="6146055958333702838">Kontrollo kabllot dhe rindiz router-it, modemët ose pajisjet e tjera të rrjetit që mund të jesh duke përdorur.</translation>
 <translation id="614940544461990577">Provo:</translation>
 <translation id="6150036310511284407">Tri shpime majtas</translation>
@@ -1437,6 +1442,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6203231073485539293">Kontrollo lidhjen e internetit.</translation>
+<translation id="6211666000885129820">Fleta e regjistrimit të sigurt të kredencialeve të pagesës</translation>
 <translation id="6218753634732582820">Të hiqet adresa nga Chromium?</translation>
 <translation id="622039917539443112">Palosje paralele</translation>
 <translation id="6221345481584921695">Kohët e fundit "Shfletimi i sigurt" i Google <ph name="BEGIN_LINK" />zbuloi softuerin keqdashës<ph name="END_LINK" /> në <ph name="SITE" />. Sajtet e uebit që normalisht janë të sigurta, ndonjëherë infektohen me softuerë keqdashës. Përmbajtja keqdashëse vjen nga <ph name="SUBRESOURCE_HOST" />, një shpërndarës i njohur softuerësh keqdashës.</translation>
@@ -1536,7 +1542,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
 <translation id="6604181099783169992">Sensorët e lëvizjes ose të dritës</translation>
 <translation id="6609880536175561541">Prc7 (Zarf)</translation>
-<translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
 <translation id="6615297766614333076">Stivuesi 2</translation>
 <translation id="6624427990725312378">Informacionet e kontaktit</translation>
 <translation id="6626291197371920147">Shto numër të vlefshëm karte</translation>
@@ -1595,6 +1600,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6865412394715372076">Kjo kartë nuk mund të verifikohet për momentin</translation>
 <translation id="6874604403660855544">&amp;Ribëje shtimin</translation>
 <translation id="6881240511396774766">Krijo shpejt një "Dokument të Google"</translation>
+<translation id="6883221904761970440">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e mbyllur</translation>
 <translation id="6884662655240309489">Madhësia 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome e ka thjeshtuar këtë faqe për ta bërë më të lehtë për t'u lexuar. Chrome e mori faqen origjinale nëpërmjet një lidhjeje të pasigurt.</translation>
@@ -2034,7 +2040,6 @@ Detaje shtesë:
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8457125768502047971">E papërcaktuar</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
-<translation id="8463101686637053101">Loja me dinozaur. Shtyp tastin e hapësirës për të kërcyer dhe luajtur</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartë krediti}other{# karta krediti}}</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474910779563686872">Shfaq detajet e zhvilluesit</translation>
@@ -2117,6 +2122,7 @@ Detaje shtesë:
 <translation id="87601671197631245">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="8761567432415473239">Shfletimi i sigurt i Google <ph name="BEGIN_LINK" />zbuloi së fundmi programe të dëmshme<ph name="END_LINK" /> në <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Pajisja USB</translation>
+<translation id="8766943070169463815">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e hapur</translation>
 <translation id="8774457497170244317">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Bëje përsëri fshirjen</translation>
@@ -2234,6 +2240,7 @@ Detaje shtesë:
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
 <translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="9207861905230894330">Dështoi në shtimin e artikullit.</translation>
+<translation id="9211470216863457665">Fleta e regjistrimit të sigurt të kredencialeve të pagesës është e mbyllur</translation>
 <translation id="9213433120051936369">Personalizo pamjen</translation>
 <translation id="9215416866750762878">Një aplikacion e pengon Chrome që të lidhet në mënyrë të sigurt me këtë sajt</translation>
 <translation id="9219103736887031265">Imazhet</translation>

@@ -28,7 +28,7 @@
 <translation id="1180526666083833456">Sinkronizacija i prilagodba na svim uređajima.</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1207113853726624428">Novo pretraživanje</translation>
-<translation id="1209206284964581585">Sakrij za sad</translation>
+<translation id="1209206284964581585">Zasad sakrij</translation>
 <translation id="1219674500290482172">Povezivanje s internetom nije moguće.</translation>
 <translation id="122699739164161391">Zatvori sve kartice</translation>
 <translation id="1229222343402087523">Pretraži ${searchPhrase} u Chromeu</translation>
@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Brisanje podataka o pregledavanju</translation>
 <translation id="1815941218935345331">Šifra</translation>
 <translation id="1820259098641718022">Dodano na popis za čitanje</translation>
+<translation id="1832848789136765277">Da biste uvijek mogli pristupati svojim podacima za sinkronizaciju, potvrdite da ste to vi</translation>
 <translation id="1870148520156231997">Otkrijte zaporku</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1894205589103145703">Došlo je do pogreške tijekom prijave.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Prikaži klasičnu stranicu</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="212623074644302906">Postavi upit o dodavanju na popis za čitanje</translation>
 <translation id="2139867232736819575">Pretraživanje teksta koji ste kopirali</translation>
 <translation id="214201757571129614">Prijavite se…</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
@@ -435,6 +437,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaji moraju upotrebljavati isti iCloud račun.</translation>
 <translation id="5551897871312988470">Ponudi prijevod</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
+<translation id="5580834567471114021">Dodati na popis za čitanje za kasnije?</translation>
 <translation id="5592679540098330836">Uključite sinkronizaciju za <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Želite li spremiti zaporku?</translation>
 <translation id="5626245204502895507">Datoteka se trenutačno ne može preuzeti.</translation>
@@ -588,6 +591,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="681368974849482173">Stavka je stvorena</translation>
 <translation id="6830804042318138535">Pročitajte više</translation>
 <translation id="6831043979455480757">Prevedi</translation>
+<translation id="6842136130964845393">Da biste uvijek mogli pristupati spremljenim zaporkama, potvrdite da ste to vi</translation>
 <translation id="6851516051005285358">Zatraži web-lokaciju za računala</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Da biste skenirali QR kôd ili kreditnu karticu, omogućite kameru u postavkama.</translation>
@@ -619,6 +623,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7108338896283013870">Sakrij preglednik</translation>
 <translation id="7133798577887235672">Ime i prezime</translation>
 <translation id="7136892417564438900">Fotoaparat nije dostupan</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> min čitanja</translation>
 <translation id="7159472599653637159">Prikaži mob. str.</translation>
 <translation id="7162168282402939716">Otključajte anonimne kartice pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Osigurajte svoje zaporke od sigurnosnih problema</translation>
@@ -668,6 +673,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokirani skočni (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši zaporku</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="7646772052135772216">Sinkronizacija zaporki ne radi</translation>
 <translation id="7649070708921625228">Pomoć</translation>

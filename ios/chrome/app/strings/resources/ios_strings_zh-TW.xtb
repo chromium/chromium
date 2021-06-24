@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">清除瀏覽資料</translation>
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1820259098641718022">已加入閱讀清單</translation>
+<translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1894205589103145703">登入時發生問題。</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
+<translation id="212623074644302906">詢問是否加入閱讀清單</translation>
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
 <translation id="214201757571129614">登入…</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
@@ -435,6 +437,7 @@
 此外，您必須在 [設定] 的「一般設定」部分中啟用 Handoff，且您的裝置必須使用同一個 iCloud 帳戶。</translation>
 <translation id="5551897871312988470">提供翻譯選項</translation>
 <translation id="5556459405103347317">重新載入</translation>
+<translation id="5580834567471114021">要加入閱讀清單以便稍後瀏覽嗎？</translation>
 <translation id="5592679540098330836">開啟「<ph name="NAME" />」的同步功能</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">項目已建立</translation>
 <translation id="6830804042318138535">瞭解詳情</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="6842136130964845393">為確保你可以隨時存取已儲存的密碼，請驗證你的身分</translation>
 <translation id="6851516051005285358">切換為電腦版網站</translation>
 <translation id="6858855187367714033">已掃描</translation>
 <translation id="6859944681507688231">如要掃描 QR 圖碼或信用卡，請在設定中啟用相機。</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7133798577887235672">完整名稱</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
+<translation id="7153999225810839758">閱讀時間：<ph name="TIME" /> 分鐘</translation>
 <translation id="7159472599653637159">切換為行動版網站</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="7172852049901402487">確保密碼安全，避免發生安全性問題</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> 分鐘</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7649070708921625228">說明</translation>

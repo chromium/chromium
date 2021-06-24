@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Избрана е частична екранна снимка</translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
+<translation id="1036073649888683237">За да управлявате известията, отворете настройките</translation>
 <translation id="1036672894875463507">Аз съм Google Асистент и съм на ваше разположение по всяко време!
 Ето някои неща, с които можете да започнете.</translation>
 <translation id="1037492556044956303">Добавихте <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">Преглеждане на елементите</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Заменете или заредете батерията</translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Добър ден, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">Прекарайте пръст отдясно, за да се върнете назад</translation>
 <translation id="343571671045587506">Редактиране на напомнянето</translation>
 <translation id="3435967511775410570">Отпечатъкът е разпознат</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
 <translation id="3454224730401036106">Връзката ви бе прехвърлена към по-сигурна мрежа</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">Свързване...</translation>
 <translation id="4379531060876907730">Това са инструментите ви за писане</translation>
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
+<translation id="439598569299422042">На пауза, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>

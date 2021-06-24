@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">ඔබට සැම විට ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගන්න</translation>
 <translation id="1100066534610197918">කණ්ඩායම තුළ නව පටිත්ත තුළ විවෘත කරන්න</translation>
 <translation id="1105960400813249514">තිර ග්‍රහණය</translation>
+<translation id="1110914759170138831">උද්දීපනය කෙටි කරන ලදි</translation>
 <translation id="1111673857033749125">ඔබගේ අනෙකුත් උපාංගවල සුරැකි පිටුසන් මෙහි දිස් වනු ඇත.</translation>
 <translation id="1113597929977215864">සරල දසුන පෙන්වන්න</translation>
 <translation id="1118561384561215815">වෙබයේ ඇති කාර්යවලට උදව් ලබා ගන්න</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">දත්ත 60%ක් දක්වා සුරකින්න, අද දවසේ පුවත් කියවන්න</translation>
 <translation id="1303339473099049190">එම මුරපදය සොයාගත නොහැක. ඔබේ අක්‍ෂර වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> වෙතින් යවන ලදි</translation>
+<translation id="130581733275749598">ඔබගේ උද්දීපනය සඳහා අච්චුවක් තෝරන්න</translation>
 <translation id="1307205233980126133">කනගාටුයි, අපට ඔබේ අක්තපත්‍ර වලංගු කළ නොහැකි විය</translation>
 <translation id="1310482092992808703">පටිති සමූහ කරන්න</translation>
 <translation id="1311657260431405215">මෙම QR කේතය URL එකක් නොවේ: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Google Lens සමඟ සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4198423547019359126">බාගැනීම් ස්ථාන කිසිවක් නැත</translation>
+<translation id="4206707945726604465">වෙනත් ආකාරයේ ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK1" />මගේ Google ක්‍රියාකාරකම්<ph name="END_LINK1" /> වෙත පිවිසෙන්න</translation>
 <translation id="4209895695669353772">Google විසින් යෝජනා කරන ලද පෞද්ගලීකරණය කළ අන්තර්ගතය ලබා ගැනීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4225895483398857530">මෙවලම් තීරු කෙටිමඟ</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">කාඩ්පතෙහි නම</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> හි ඩිජිටල් වත්කම් සත්‍යාපනය අසාර්ථක විය</translation>
 <translation id="4831037795716408498">අන්තර්ගතය බාගන්න</translation>
+<translation id="4834007576107377210">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න</translation>
 <translation id="4835385943915508971">Chrome හට ඉල්ලන ලද සම්පත් වෙත ප්‍රවේශය නැත.</translation>
 <translation id="4837753911714442426">පිටුවක් මුද්‍රණය කිරීමට විකල්ප විවෘත කරන්න</translation>
 <translation id="4842092870884894799">මුරපදය උත්පාදන උත්පතන පෙන්වමින්</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් අසමත් විය.}one{බාගැනීම් #ක් අසමත් විය.}other{බාගැනීම් #ක් අසමත් විය.}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> අනුගමනය කරන ලදි</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
+<translation id="5171045022955879922">සොයන්න හෝ ලිපිනය යොදන්න</translation>
 <translation id="5184329579814168207">Chrome තුළ විවෘත කරන්න</translation>
 <translation id="5188992787241350004">ඔබගේ කටහඬ සමඟින් සොයන්න</translation>
 <translation id="5191251636205085390">තෙවන පාර්ශ්ව කුකි ප්‍රතිස්ථාපනය කිරීම අරමුණු කර ගත් නව තාක්ෂණ ගැනදැන ගන්න සහ පාලනය කරන්න</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Chrome යාවත්කාලීනය බාගැනීම…</translation>
 <translation id="5853623416121554550">විරාම කළා</translation>
 <translation id="5854512288214985237">Google වෙත සංඛ්‍යාලේඛන හෝ බිඳ වැටීම් වාර්තා යවනු නොලැබේ</translation>
-<translation id="5854790677617711513">දින 30කට වඩා පැරණි</translation>
 <translation id="5855546874025048181">පිරිපහදු කරන්න: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome හට බ්ලූටූත් ඇඩප්ටරය ක්‍රියාත්මක කිරීමට නොහැකිය</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">නව ෆෝල්ඩරය...</translation>
 <translation id="8037750541064988519">දින <ph name="DAYS" />ක් ඉතිරියි</translation>
 <translation id="8037801708772278989">මේ දැන් පරීක්ෂා කරන ලදි</translation>
+<translation id="8040831032425909005">ඉක්මන් ක්‍රියා සෙවීම් විජට්ටු නිරූපකය</translation>
 <translation id="804335162455518893">SD පත හමු නොවිණි</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB තිබේ</translation>
 <translation id="8058746566562539958">නව Chrome පටිත්තේ විවෘත කරන්න</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">ලබා ගත හැකි කතාන්දර නැත</translation>
 <translation id="8443209985646068659">Chrome යාවත්කාලීන කළ නොහැක</translation>
 <translation id="8445448999790540984">මුරපද නිර්යාත කළ නොහැක</translation>
+<translation id="8453310803815879010">Dino ක්‍රීඩාව ආරම්භ කරන්න</translation>
 <translation id="8461694314515752532">ඔබගේම සමමුහූර්ත මුර-වැකිකඩ සමඟ සමමුහූර්ත කළ දත්ත සංකේතන කරන්න</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> අන්තර්ජාලයට සම්බන්ධ කර තිබීම තහවුරු කර ගන්න</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>

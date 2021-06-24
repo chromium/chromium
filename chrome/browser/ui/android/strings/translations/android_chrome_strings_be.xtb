@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Падбайце аб тым, каб не страціць доступ да сінхранізаваных даных</translation>
 <translation id="1100066534610197918">У новай укладцы ў групе</translation>
 <translation id="1105960400813249514">Здымак экрана</translation>
+<translation id="1110914759170138831">Вылучаны тэкст быў скарочаны</translation>
 <translation id="1111673857033749125">Тут з'явяцца закладкі, захаваныя на вашых іншых прыладах.</translation>
 <translation id="1113597929977215864">Паказаць у спрошчаным выглядзе</translation>
 <translation id="1118561384561215815">Дапамога пры выкананні задач</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
 <translation id="1303339473099049190">Не ўдалося знайсці гэты пароль. Праверце правільнасць напісання і паўтарыце спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – адпраўлена з прылады <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Выберыце шаблон для вылучанага тэксту</translation>
 <translation id="1307205233980126133">Не ўдалося праверыць вашы ўліковыя даныя</translation>
 <translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1311657260431405215">Гэты QR-код не з'яўляецца URL-адрасам: <ph name="QRCODEVALUE" /></translation>
@@ -325,6 +327,7 @@
 <translation id="305593374596241526">Вызначэнне месцазнаходжання выключана. Уключыце яго ў <ph name="BEGIN_LINK" />наладах Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
+<translation id="3066573403916685335">Перамясціць уніз</translation>
 <translation id="3070005020161560471">Аўтаматычна перакладаць з наступных моў:</translation>
 <translation id="3091010850649238832">Паказаць змесціва буфера абмену</translation>
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
@@ -454,6 +457,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3962957115499249330">Як толькі па Wi-Fi пачнецца спампоўванне, вы пабачыце апавяшчэнне.</translation>
 <translation id="3963007978381181125">Шыфраванне фразы-пароля не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay. Толькі карыстальнікі, якія ведаюць фразу-пароль, могуць чытаць вашы зашыфраваныя даныя. Google не атрымлівае і не захоўвае фразу-пароль. Калі вы не памятаеце фразу-пароль або хочаце змяніць гэту наладу, вам трэба скінуць сінхранізацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Браўзеру Chrome не ўдаецца праверыць паролі</translation>
+<translation id="3969863827134279083">Перамясціць уверх</translation>
 <translation id="3974987681202239636">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Таксама прымяняецца <ph name="BEGIN_LINK3" />Паведамленне аб прыватнасці ў дачыненні да Уліковых запісаў Google, якія кіруюцца праз Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Сінхранізацыя перастала працаваць</translation>
 <translation id="3976396876660209797">Выдаліце і яшчэ раз стварыце гэты ярлык</translation>
@@ -487,6 +491,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4183868528246477015">Пошук праз Google Аб'ектыў <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
+<translation id="4206707945726604465">Каб выдаліць гісторыю іншых дзеянняў, перайдзіце на старонку <ph name="BEGIN_LINK1" />Мае дзеянні ў Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Каб атрымліваць прапановы персаналізаванага змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -579,6 +584,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4807098396393229769">Імя на картцы</translation>
 <translation id="4818017973810341238">Памылка праверкі Digital Asset Links па адрасе <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Спампоўка змесціва</translation>
+<translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
 <translation id="4837753911714442426">Адкрыць параметры друку старонкі</translation>
 <translation id="4842092870884894799">Паказана выплыўное акно для стварэння пароля</translation>
@@ -633,6 +639,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
 <translation id="5168824020667180049">Вы падпісаліся на сайт "<ph name="SITE_NAME" />"</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
+<translation id="5171045022955879922">Знайдзіце або ўвядзіце URL-адрас</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5188992787241350004">Шукайце з дапамогай голасу</translation>
 <translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
@@ -742,7 +749,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5836192821815272682">Спампоўваецца абнаўленне Chrome…</translation>
 <translation id="5853623416121554550">прыпынена</translation>
 <translation id="5854512288214985237">Статыстыка і справаздачы аб збоях не адпраўляюцца ў Google</translation>
-<translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Браўзеру Chrome не ўдалося ўключыць Bluetooth-адаптар</translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -1105,6 +1111,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8035133914807600019">Новая папка…</translation>
 <translation id="8037750541064988519">Засталося дзён: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
+<translation id="8040831032425909005">Значок віджэта Пошуку ў Хуткіх дзеяннях</translation>
 <translation id="804335162455518893">SD-карта не знойдзена</translation>
 <translation id="8051695050440594747">Даступна <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058746566562539958">Адкрыць у новай укладцы Chrome</translation>
@@ -1167,6 +1174,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8442258441309440798">Няма новых артыкулаў</translation>
 <translation id="8443209985646068659">Немагчыма абнавіць Chrome</translation>
 <translation id="8445448999790540984">Не ўдалося экспартаваць паролі</translation>
+<translation id="8453310803815879010">Пачаць гульню з дыназаўрам</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466613982764129868">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>

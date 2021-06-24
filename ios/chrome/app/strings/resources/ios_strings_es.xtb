@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="1815941218935345331">Código</translation>
 <translation id="1820259098641718022">Añadida a Lista de lectura</translation>
+<translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1894205589103145703">No se ha podido iniciar la sesión.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
+<translation id="212623074644302906">Solicitar añadir a lista de lectura</translation>
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -435,6 +437,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 Handoff también debe estar habilitado en la sección General de Configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
+<translation id="5580834567471114021">¿Añadir a lista de lectura para más tarde?</translation>
 <translation id="5592679540098330836">Activar sincronización de <ph name="NAME" /></translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se puede descargar el archivo en este momento.</translation>
@@ -588,6 +591,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6830804042318138535">Ver más</translation>
 <translation id="6831043979455480757">Traducir</translation>
+<translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR o una tarjeta de crédito, habilita la cámara en la configuración.</translation>
@@ -619,6 +623,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
+<translation id="7153999225810839758">Tiempo de lectura: <ph name="TIME" /> minutos</translation>
 <translation id="7159472599653637159">Solicitar sitio web móvil</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Mantén tus contraseñas protegidas frente a problemas de seguridad.</translation>
@@ -668,6 +673,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7600965453749440009">No traducir nunca del <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Eliminar contraseña</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="7649070708921625228">Ayuda</translation>

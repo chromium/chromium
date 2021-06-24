@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө бул PIN кодду киргизиңиз: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Сүрөткө тартып алуу үчүн терезенин бир бөлүгү тандалды</translation>
 <translation id="1032891413405719768">Стилус батареясынын кубаты аз</translation>
+<translation id="1036073649888683237">Билдирүүлөрдү башкаруу үчүн Жөндөөлөргө өтүңүз</translation>
 <translation id="1036672894875463507">Мен Google Жардамчыңызмын. Сизге күнү бою жардам берүүгө даярмын!
 Баштоо үчүн булардын бирөөнү жасап көрүңүз.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> кошулду</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">Нерсени скандоо</translation>
 <translation id="1056775291175587022">Тармактар жок</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Батареяны алмаштырыңыз же кубаттаңыз</translation>
 <translation id="108486256082349153">Мобилдик: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Кутман күнүңүз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Зеригип жатам</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">Артка кайтуу үчүн экраныңыздын оң четинен сүрүп коюңуз</translation>
 <translation id="343571671045587506">Эстеткичти түзөтүү</translation>
 <translation id="3435967511775410570">Манжа изи таанылды</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мүн.</translation>
 <translation id="3445925074670675829">USB-C түзмөгү</translation>
 <translation id="3454224730401036106">Туташууңуз коопсузураак тармакка которулду</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">Туташууда…</translation>
 <translation id="4379531060876907730">Булар сиздин стилус куралдарыңыз</translation>
 <translation id="4389184120735010762">Жалгаштырылган лупаны колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
+<translation id="439598569299422042">Тындырылды, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
 <translation id="4421231901400348175">Алыскы жардамчы аркылуу экраныңыздын көзөмөлү <ph name="HELPER_NAME" /> менен бөлүшүүдө.</translation>
 <translation id="4424159417645388645">5-иш такта</translation>

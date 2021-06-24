@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። እባክዎ ይህን የፒን ኮድ በዚህ መሣሪያ ላይ ያስገቡ፦ <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">ከፊል ቅጽበታዊ ገጽ እይታ ተመርጧል</translation>
 <translation id="1032891413405719768">የStylus ባትሪ ዝቅተኛ ነው</translation>
+<translation id="1036073649888683237">ማሳወቂያዎችን ለማቀናበር ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="1036672894875463507">ቀኑን ሙሉ እርስዎን ለማገዝ የGoogle ረዳትዎ ነኝ!
 ለመጀመር ሊሞክሩዋቸው የሚችሏቸው አንዳንድ ነገሮች እነሆ።</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ታክሏል</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">የንጥል ቅኝት</translation>
 <translation id="1056775291175587022">ምንም አውታረ መረቦች የሉም</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />፦ <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">ባትሪውን ይተኩት ወይም ዳግም ኃይል ይሙሉ</translation>
 <translation id="108486256082349153">ሴሉላር፦ <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ደህና ዋሉ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="109942774857561566">ደብሮኛል</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">ለመመለስ ከቀኝ ጀምረው ይጥረጉ</translation>
 <translation id="343571671045587506">አስታዋሽን ያርትዑ</translation>
 <translation id="3435967511775410570">የጣት አሻራ ታውቋል</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="3445925074670675829">USB-C መሣሪያ</translation>
 <translation id="3454224730401036106">የእርስዎ ግንኙነት ደህንነቱ ይበልጥ ወደተጠበቀ አውታረ መረብ ቀይሯል</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">በመገናኘት ላይ...</translation>
 <translation id="4379531060876907730">እነዚህ የእርስዎ የስታይለስ መሣሪያዎች ናቸው</translation>
 <translation id="4389184120735010762">የተተከለ የማጉያ የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። ሊያበሩት ይፈልጋሉ?</translation>
+<translation id="439598569299422042">ባለበት ቆሟል፣ <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
 <translation id="4421231901400348175">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል ለ<ph name="HELPER_NAME" /> በማጋራት ላይ።</translation>
 <translation id="4424159417645388645">ዴስክ 5</translation>

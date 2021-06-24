@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 سال پہلے}other{# سال پہلے}}</translation>
 <translation id="2878511608894704031">سبھی کو حذف کریں</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 دن میں}other{# دنوں میں}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> کالم نزولی ترتیب میں ترتیب دیا گیا۔</translation>
 <translation id="2931838996092594335">کلک کریں</translation>
 <translation id="2981684127883932071">تجاویز پیش کی جا رہی ہیں</translation>
 <translation id="3036649622769666520">فائلیں کھولیں</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">مینو</translation>
 <translation id="3909791450649380159">ک&amp;ٹ کریں</translation>
 <translation id="3990502903496589789">دایاں سرا</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> کالم صعودی ترتیب میں ترتیب دیا گیا۔</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 بغیر پڑھی ہوئی اطلاع}other{# بغیر پڑھی ہوئی اطلاعات}}</translation>
 <translation id="4202807286478387388">جائیں</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 منٹ باقی}other{# منٹ باقی}}</translation>
 <translation id="7430878839542012341">آپ کی سرگزشت سے یہ تلاش حذف کریں؟</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> کالم ترتیب نہیں دیا گیا۔</translation>
 <translation id="7460907917090416791">‎<ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">ہٹا دیا گیا۔</translation>

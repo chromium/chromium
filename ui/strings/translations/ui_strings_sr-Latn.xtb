@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Pre godinu dana}one{Pre # godinu}few{Pre # godine}other{Pre # godina}}</translation>
 <translation id="2878511608894704031">Izbriši sve</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{za 1 d}one{za # d}few{za # d}other{za # d}}</translation>
+<translation id="2922712708897119705">Sadržaj kolone <ph name="COLUMN_NAME" /> je sortiran po opadajućem redosledu.</translation>
 <translation id="2931838996092594335">klik</translation>
 <translation id="2981684127883932071">Prikazuju se predlozi</translation>
 <translation id="3036649622769666520">Otvaranje datoteka</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3909791450649380159">Is&amp;eci</translation>
 <translation id="3990502903496589789">Desna ivica</translation>
+<translation id="3994749195054421561">Sadržaj kolone <ph name="COLUMN_NAME" /> je sortiran po rastućem redosledu.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nepročitano obaveštenje}one{# nepročitano obaveštenje}few{# nepročitana obaveštenja}other{# nepročitanih obaveštenja}}</translation>
 <translation id="4202807286478387388">preskoči</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Još 1 minut}one{Još # minut}few{Još # minuta}other{Još # minuta}}</translation>
 <translation id="7430878839542012341">Želite li da izbrišete ovu pretragu iz istorije?</translation>
+<translation id="7437971918971306061">Opozvano je sortiranje sadržaja kolone <ph name="COLUMN_NAME" />.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emodži</translation>
 <translation id="7620655452534002301">Uklonjeno je.</translation>

@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">یقینی بنائیں کہ آپ ہمیشہ اپنے مطابقت پذیر ڈیٹا تک رسائی حاصل کر سکتے ہیں</translation>
 <translation id="1100066534610197918">گروپ میں نئے ٹیب میں کھولیں</translation>
 <translation id="1105960400813249514">اسکرین کیپچر</translation>
+<translation id="1110914759170138831">ہائی لائٹ چھوٹی کی گئی</translation>
 <translation id="1111673857033749125">آپ کے دیگر آلات پر محفوظ کردہ بُک مارکس یہاں ظاہر ہوں گے۔</translation>
 <translation id="1113597929977215864">سادہ منظر دکھائیں</translation>
 <translation id="1118561384561215815">ویب پر ٹاسکس کے ساتھ مدد حاصل کریں</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">60 فیصد تک ڈیٹا محفوظ کریں، آج کی خبریں پڑھیں</translation>
 <translation id="1303339473099049190">وہ پاس ورڈ تلاش نہیں کیا جا سکا۔ اپنے ہجے چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> سے ارسال کردہ</translation>
+<translation id="130581733275749598">آپ کی ہائی لائٹ کیلئے تمثیل منتخب کریں</translation>
 <translation id="1307205233980126133">معذرت، ہم آپ کی اسناد کی توثیق نہیں کر سکے</translation>
 <translation id="1310482092992808703">گروپ ٹیبز</translation>
 <translation id="1311657260431405215">‏یہ QR کوڈ URL نہیں ہے: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">‏Google لینز سے تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
+<translation id="4206707945726604465">‏سرگزشت کی دیگر فارمز کو صاف کرنے کیلئے <ph name="BEGIN_LINK1" />Google کی میری سرگرمی<ph name="END_LINK1" /> ملاحظہ کریں</translation>
 <translation id="4209895695669353772">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
 <translation id="4225895483398857530">ٹول بار کا شارٹ کٹ</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">کارڈ پر نام</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> پر ڈیجیٹل اثاثہ لنکس کی توثیق ناکام ہوگئی</translation>
 <translation id="4831037795716408498">مواد ڈاؤن لوڈ کریں</translation>
+<translation id="4834007576107377210">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
 <translation id="4835385943915508971">‏Chrome کو درخواست کردہ وسیلہ تک رسائی حاصل نہیں ہے۔</translation>
 <translation id="4837753911714442426">صفحہ پرنٹ کرنے کیلئے اختیارات کھولیں</translation>
 <translation id="4842092870884894799">پاس ورڈ بنانے کے پاپ اپ کو دکھا رہا ہے</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہو گیا۔}other{# ڈاؤن لوڈز ناکام ہو گئے۔}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> کی پیروی کی گئی</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
+<translation id="5171045022955879922">‏تلاش کریں یا URL ٹائپ کریں</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5188992787241350004">اپنی آواز کی مدد سے تلاش کریں</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">‏Chrome اپ ڈیٹ ڈاؤن لوڈ ہو رہا ہے…</translation>
 <translation id="5853623416121554550">موقوف ہو گیا</translation>
 <translation id="5854512288214985237">‏Google کو اعداد و شمار یا کریش کی کوئی رپورٹ نہیں بھیجی گئی</translation>
-<translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
 <translation id="5855546874025048181">بہتر بنائیں: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">‏Chrome بلوٹوتھ اڈاپٹر آن کرنے سے قاصر ہے</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">نیا فولڈر…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> دن باقی</translation>
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
+<translation id="8040831032425909005">فوری کارروائی کیلئے تلاش کا ویجیٹ آئیکن</translation>
 <translation id="804335162455518893">‏SD کارڈ نہیں ملا</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
 <translation id="8058746566562539958">‏نئے Chrome ٹیب میں کھولیں</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">کوئی کہانی دستیاب نہیں ہے</translation>
 <translation id="8443209985646068659">‏Chrome اپ ڈیٹ ممکن نہیں</translation>
 <translation id="8445448999790540984">پاس ورڈز برآمد نہیں ہو سکتے</translation>
+<translation id="8453310803815879010">‏Dino گیم شروع کریں</translation>
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>

@@ -391,6 +391,7 @@
 <translation id="1516486219683984217">不允许使用系统通知</translation>
 <translation id="152078218786467087">应于何时（以设备的本地时区表示）重新启动设备。</translation>
 <translation id="1522425503138261032">允许网站跟踪用户的地理位置</translation>
+<translation id="1523587744262636189">端口 10080（可在 2022 年 4 月 1 日之前解禁）</translation>
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
 <translation id="1524243669991877602">如果此政策已启用，与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策便可被合并到计算机级政策中。
 
@@ -601,6 +602,13 @@
 <translation id="1803646570632580723">要在启动程序中显示的固定应用的列表</translation>
 <translation id="1808715480127969042">在这些网站上阻止 Cookie</translation>
 <translation id="1810261428246410396">允许使用即时网络共享功能。</translation>
+<translation id="1813672770917912317">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将运行启用了 JIT（即时）编译器的 v8 JavaScript 引擎。
+
+          停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 呈现网页内容的速度可能会更慢，且可能会停用 JavaScript 的某些部分（包括 WebAssembly）。停用 JavaScript JIT 可能会允许 <ph name="PRODUCT_NAME" /> 以更安全的配置呈现网页内容。
+
+          您可以使用 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 和 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策为特定网址格式覆盖此政策。
+
+          如果未设置此政策，系统会启用 JavaScript JIT。</translation>
 <translation id="1815386977045680976">以列表形式指定哪些用户能登录设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
 
       如果此政策未配置，任何用户都能登录设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
@@ -811,7 +819,6 @@
 <translation id="209586405398070749">稳定版</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2104418465060359056">报告扩展程序和插件信息</translation>
-<translation id="2106166591774188922">允许 SAML 用户通过 chrome://password-change 在会话期间更改 SAML 密码</translation>
 <translation id="2106627642643925514">替换默认 PIN 码打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="2107563874993284076">如果此政策已启用，用户便可在 <ph name="PRODUCT_NAME" />中使用网络文件共享功能。如果此政策已停用，用户便无法使用此功能。</translation>
 <translation id="2107601598727098402">
@@ -857,6 +864,17 @@
       如果设置了此政策，那么当超出该上限后，浏览器将开始舍弃标签页以节省内存空间。不过，我们无法保证浏览器运行时占用的内存量会始终低于该上限。任何小于 1024 的值都会被向上舍入到 1024。
 
       如果此政策未设置，那么仅当检测到所用机器的物理内存容量即将用尽时，浏览器才会开始尝试节省内存空间。</translation>
+<translation id="2166155400701622446">这是 <ph name="PRODUCT_NAME" /> 内置的受限端口列表。与这些端口的连接将失败。此设置允许绕过该列表。此政策的值应是一个逗号分隔列表，包含 0 个或多个获准进行外发连接的端口。
+
+      限制端口是为了防止不良之徒将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以协助将正在禁用端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
+
+      恶意网站可轻松地检测到此政策已设置以及其中指定了哪些端口，并会使用这类信息来确定攻击目标。
+
+      此处的每个端口都带有日期标签，此日期代表该端口可解禁的截止日期。该日期过后，无论此设置是怎样设定的，相应端口都会受到限制。
+
+      将此政策的值留空（不设置此政策）意味着所有受限端口都会被禁用。如果该列表既包含有效值也包含无效值，有效值会被付诸应用。
+
+      此政策会覆盖“--explicitly-allowed-ports”命令行选项。</translation>
 <translation id="2166472654199325139">不滤除提供成人内容的网站</translation>
 <translation id="2168060657210442816">
       仅当 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
@@ -928,6 +946,7 @@
 
       按照我们的计划，此政策将会从 Mac OS X 上的 <ph name="PRODUCT_NAME" /> 92 版中移除，该版本将不再支持在 Mac OS X 上使用旧版证书验证程序。
       </translation>
+<translation id="2223393221350938149">不允许任何网站运行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果此政策设为 True，用户无法使用键盘快捷键或扩展程序 API 截取屏幕截图。如果此政策设为 False，用户可以截取屏幕截图。</translation>
 <translation id="2223598546285729819">默认通知设置</translation>
 <translation id="2231817271680715693">首次运行时，从默认浏览器导入浏览记录</translation>
@@ -1395,6 +1414,7 @@
       注意：此政策会影响所有录音设备（而不仅仅是内置麦克风）的音频输入。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />客户端的 Windows 注册表位置：</translation>
 <translation id="2824715612115726353">启用隐身模式</translation>
+<translation id="282870810415075521">允许 JavaScript 在这些网站上使用 JIT</translation>
 <translation id="2829975392104323514">此政策旨在控制是否报告可用于识别设备身份的信息，例如设备名称和网络地址。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -1758,6 +1778,11 @@
 
       如果您未设置此政策，<ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新将不可用。</translation>
 <translation id="3232691106293445015">不安全的 HTTP 连接无法使用<ph name="BASIC_AUTH" />身份验证，只有 HTTPS 能使用该验证方案</translation>
+<translation id="3235085623859932253"> 如果此政策已停用，用户将无法通过 PCIe 隧道完全连接 Thunderbolt/USB4 外围设备。
+
+      如果此政策已启用，用户将能够通过 PCIe 隧道完全连接 Thunderbolt/USB4 外围设备。
+
+      如果此政策未设置，它将默认等同于已设为 false，而且用户将能为此设置选择任意状态 (true/false)。</translation>
 <translation id="3236046242843493070">允许的扩展程序、应用和用户脚本安装源的网址格式</translation>
 <translation id="3240609035816615922">打印机配置访问政策。</translation>
 <translation id="324062325008698789">配置打印机列表</translation>
@@ -2589,6 +2614,15 @@
 <translation id="4410236409016356088">启用网络带宽限制功能</translation>
 <translation id="4411734231900934213">孩子设备上的时钟和家长设备上的时钟可以相差多少（以秒为单位）。</translation>
 <translation id="441217499641439905">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中，不允许通过移动网络连接到 Google 云端硬盘</translation>
+<translation id="4413453659814156568">让您能够设置一系列网站网址格式，从而指定允许哪些网站运行启用了 JIT（即时）编译器的 JavaScript。
+
+          如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
+
+          系统将仅以网站 (eTLD+1) 为单位强制执行 JavaScript JIT 政策例外情况。仅为 subdomain.site.com 设置的政策将不会正确应用于 site.com 或 subdomain.site.com，因为这两者都解析为未应用任何政策的同一个 eTLD+1 (site.com)。在这种情况下，必须对 site.com 设置相应政策，才能将此政策同时正确应用于 site.com 和 subdomain.site.com。
+
+          此政策逐框架适用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将启用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
+
+          如果没有为网站设置此政策，那么 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）将应用于该网站，否则为该网站启用 JavaScript JIT。</translation>
 <translation id="4415603335307944578">如果将此政策设置为 true 或未配置，在操作系统升级后，该浏览器首次启动时将重新显示欢迎页面。
 
       如果将此政策设置为 false，在操作系统升级后，该浏览器首次启动时将不会重新显示欢迎页面。</translation>
@@ -2746,6 +2780,7 @@
       如果此政策未设置，系统将不会为任何网站自动选择证书。</translation>
 <translation id="4615003180013429835">Sitelist 解析模式</translation>
 <translation id="4617338332148204752">跳过“<ph name="PRODUCT_FRAME_NAME" />”中的元标记检查</translation>
+<translation id="4624417808625504735">禁止 JavaScript 在这些网站上使用 JIT</translation>
 <translation id="4625915093043961294">配置扩展程序安装白名单</translation>
 <translation id="4632343302005518762">允许 <ph name="PRODUCT_FRAME_NAME" />处理列出的内容类型</translation>
 <translation id="4632566332417930481">禁止在由企业政策安装的扩展程序中使用开发者工具，允许在其他情境中使用开发者工具</translation>
@@ -2899,7 +2934,6 @@
       如果此政策已停用或未设置，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />则是可选的。如果注册失败，<ph name="PRODUCT_NAME" /> 仍能正常启动。
 
       在桌面设备上进行机器范围云政策注册时会用到此政策。如需了解详情，请访问 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
-<translation id="4887274746092315609">启用一个页面，以便 SAML 用户在会话期间更改密码</translation>
 <translation id="4890453377345554695">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户向其授予对主机操作系统的文件系统中的文件或目录的写入权限。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -2931,6 +2965,7 @@
       如果此政策已停用，系统将不会收集和上传此类日志。
 
       在 M76 或更早版本中，不设置此政策意味着 <ph name="PRODUCT_NAME" /> 默认无法收集和上传这些日志。从 M77 开始，<ph name="PRODUCT_NAME" /> 默认能够从受基于云的用户级企业政策影响的大多数个人资料中收集并上传这些日志。从 M77 到 M80（含），<ph name="PRODUCT_NAME" /> 还默认能从受 <ph name="PRODUCT_NAME" /> 本地管理功能影响的个人资料中收集并上传这些日志。</translation>
+<translation id="4911334289324462969">端口 989（可在 2022 年 2 月 1 日之前解禁）</translation>
 <translation id="4913065710388638917">为一个网址列表启用认证流程</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4919122295221518724">为混合内容启用更严格的处理方式</translation>
@@ -3748,6 +3783,7 @@
 
       这项强制性政策仅会影响机器范围云政策。</translation>
 <translation id="5961137303188584693">设备的内置 NIC MAC 地址</translation>
+<translation id="5963752574792883406">端口 990（可在 2022 年 2 月 1 日之前解禁）</translation>
 <translation id="5966615072639944554">允许扩展程序使用 Remote Attestation API</translation>
 <translation id="596732417280023843">证书资料的名称。</translation>
 <translation id="5975765799383881158">如果此政策已启用或未设置，用户便可通过依次转到“菜单”&gt;“帮助”&gt;“报告问题”或按下组合键来向 Google 发送反馈。
@@ -3778,6 +3814,7 @@
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
+<translation id="6025267044008029374">拦截恶意下载内容（推荐）</translation>
 <translation id="6026722971789064331">控制 File System API 在写入方面的使用</translation>
 <translation id="602728333950205286">默认搜索服务提供商的即搜即得网址</translation>
 <translation id="603410445099326293">在使用 POST 的建议网址中所需的参数</translation>
@@ -3913,6 +3950,7 @@
       运行未采用沙盒机制的音频子系统会致使用户面临安全风险。
       如果此政策未设置，系统将使用音频沙盒的默认配置（此配置可能会因平台而异）。
       借助此政策，当企业使用的安全软件设置会干扰音频沙盒时，他们就能够灵活地停用沙盒。</translation>
+<translation id="624818583115864448">端口 554（可在 2021 年 10 月 15 日之前解禁）</translation>
 <translation id="6252773211180267325">允许用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6261643884958898336">报告机器标识信息</translation>
 <translation id="6265892395051519509">允许在这些网站上使用传感器</translation>
@@ -4127,7 +4165,6 @@
 
       如果您未设置此政策，系统将不会强制实施任何长度上限。</translation>
 <translation id="6553143066970470539">屏幕亮度百分比</translation>
-<translation id="6558362593755624474">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
 <translation id="6559221564468029245">如果此政策已启用或未设置，播放音频时设备不会被视为闲置。这样就不会导致闲置超时，系统也不会执行闲置操作。不过，在达到配置的超时值后，尽管存在音频活动，屏幕仍会变暗、关闭和锁定。
 
@@ -4279,6 +4316,7 @@
        如果您启用或不设置此政策，当用户提交不安全表单时，系统将会显示整页警告。另外，当用户点击此类表单的字段时，系统会在相应字段旁边显示一个警告气泡，并会在表单中停用自动填充功能。
        如果您停用此政策，系统将不会针对不安全表单显示警告，自动填充功能也可正常使用。</translation>
 <translation id="670597451099978576">自动授权这些网站在登录屏幕上连接到具有给定供应商 ID 和产品 ID 的 USB 设备。</translation>
+<translation id="6706330611356546885">允许任何网站运行 JavaScript JIT</translation>
 <translation id="6720330829631914048">自当天开始后已流逝的小时数（24 小时制）。</translation>
 <translation id="6723472666969849951">通过设置此政策，您可以控制可以在 <ph name="PRODUCT_NAME" /> 中安装哪些应用和扩展程序，它们可与哪些主机互动，以及限制运行时访问。
 
@@ -5297,12 +5335,6 @@
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
-<translation id="7940359358774136765">通过 chrome://password-change 启用一个页面，以便 SAML 用户能够在会话期间更改其 SAML 密码，从而确保 SAML 密码和设备屏幕锁定密码保持同步。
-
-      此政策还可在 SAML 密码即将到期时向 SAML 用户显示通知以示警告，以便他们能够通过在会话期间更改密码来立即采取应对措施。
-      但是，除非 SAML 身份提供商在 SAML 登录流程中将密码到期信息发送给设备，否则系统不会显示此类通知。
-
-      如果此政策已停用或未设置，用户将无法在 chrome://password-change 上更改 SAML 密码，而且当 SAML 密码即将到期时，系统将不会显示任何通知。</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
 <translation id="7952007677054834789">在 <ph name="PRODUCT_NAME" /> 中配置启动时加载的页面、默认主页和默认新标签页，并禁止用户更改它们。
@@ -5324,6 +5356,7 @@
       如果此政策已停用，系统将不会关闭远程访问功能，但只接受从同一网络内（而非通过 NAT 穿越或中继）发起的连接。</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
+<translation id="7959035883875301444">控制对 JavaScript JIT 的使用</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
 <translation id="7962093600142350905">此政策用于控制是否在“打印预览”对话框中向用户显示任何可用的 Privet 打印机。
       如果此政策已启用，系统将会显示可用的 Privet 打印机。
@@ -5747,6 +5780,17 @@
 <translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
+<translation id="8543103455510904459">让您能够设置一系列网站网址格式，从而指定不允许哪些网站运行启用了 JIT（即时）编译器的 JavaScript。
+
+          停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 呈现网页内容的速度可能会更慢，且可能会停用 JavaScript 的某些部分（包括 WebAssembly）。停用 JavaScript JIT 可能会允许 <ph name="PRODUCT_NAME" /> 以更安全的配置呈现网页内容。
+
+          如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
+
+          系统将仅以网站 (eTLD+1) 为单位强制执行 JavaScript JIT 政策例外情况。仅为 subdomain.site.com 设置的政策将不会正确应用于 site.com 或 subdomain.site.com，因为这两者都解析为未应用任何政策的同一个 eTLD+1 (site.com)。在这种情况下，必须对 site.com 设置相应政策，才能将此政策同时正确应用于 site.com 和 subdomain.site.com。
+
+          此政策逐框架适用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将停用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
+
+          如果没有为网站设置此政策，那么 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）将应用于该网站，否则为该网站启用 JavaScript JIT。</translation>
 <translation id="8543108307976719751">禁止与这台计算机建立远程访问连接</translation>
 <translation id="8544375438507658205">默认 HTML 呈现器为“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
@@ -5912,7 +5956,6 @@
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
-<translation id="8816671955985738552">不允许通过 chrome://password-change 在会话期间更改 SAML 密码</translation>
 <translation id="8817960019535659860">阻止用户通过注册 Chrome 操作系统来兑换优惠</translation>
 <translation id="8818173863808665831">报告设备的地理位置。
 
@@ -6148,6 +6191,7 @@
       如果此政策未设置，系统将不会为任何网站自动选择证书。
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="9068629430243705879">端口 6566（可在 2021 年 10 月 15 日之前解禁）</translation>
 <translation id="9073405975862312795">如果此政策已启用或未设置，已注册的设备将会报告用户在设备上处于活跃状态的时间段。
 
       如果此政策已停用，已注册的设备将不会记录或报告活动时间。</translation>

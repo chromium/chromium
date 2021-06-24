@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1820259098641718022">پڑھنے کی فہرست میں شامل کر دیا گیا ہے</translation>
+<translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="1870148520156231997">پاس ورڈ ظاہر کریں</translation>
 <translation id="1872096359983322073">ٹارچ</translation>
 <translation id="1894205589103145703">سائن ان کرنے کے دوران کچھ غلط ہو گیا۔</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
+<translation id="212623074644302906">پڑھنے کی فہرست میں شامل کرنے کیلئے پوچھیں</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="214201757571129614">سائن ان کریں…</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
@@ -435,6 +437,7 @@
 Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ضروری ہے اور آپ کے آلات کو وہی iCloud اکاؤنٹ استعمال کرنا چاہیے۔</translation>
 <translation id="5551897871312988470">ترجمہ کی پیشکش کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
+<translation id="5580834567471114021">بعد کیلئے پڑھنے کی فہرست میں شامل کریں؟</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> کیلئے مطابقت پذیری آن کریں</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
 <translation id="5626245204502895507">فائل اس وقت ڈاؤن لوڈ نہیں ہو سکی۔</translation>
@@ -588,6 +591,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
 <translation id="6830804042318138535">مزید پڑھیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
+<translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="6851516051005285358">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="6858855187367714033">اسکین کیا گیا</translation>
 <translation id="6859944681507688231">‏QR کوڈ یا کریڈٹ کارڈ اسکین کرنے کیلئے، ترتیبات سے کیمرا کو فعال کریں۔</translation>
@@ -619,6 +623,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7108338896283013870">چھپائیں</translation>
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> منٹ پڑھیں</translation>
 <translation id="7159472599653637159">موبائل سائٹ کی درخواست کریں</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7172852049901402487">سیکیورٹی کے معاملات سے اپنے پاس ورڈز محفوظ رکھیں</translation>
@@ -668,6 +673,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7603852183842204213">پاپ اپس کو مسدود کر دیا گیا (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">پاس ورڈ حذف کریں</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> منٹ</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="7649070708921625228">مدد</translation>

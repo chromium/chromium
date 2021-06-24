@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Tangkapan skrin separa dipilih</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
+<translation id="1036073649888683237">Untuk mengurus pemberitahuan, pergi ke Tetapan</translation>
 <translation id="1036672894875463507">Saya Google Assistant anda. Saya sedia membantu anda sepanjang hari anda!
 Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
@@ -14,6 +15,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1052916631016577720">Pengimbasan Item</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Gantikan atau cas semula bateri</translation>
 <translation id="108486256082349153">Selular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Selamat tengah hari <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Saya bosan</translation>
@@ -306,6 +308,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3430396595145920809">Leret dari kanan untuk kembali</translation>
 <translation id="343571671045587506">Edit peringatan</translation>
 <translation id="3435967511775410570">Cap jari dikenali</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3454224730401036106">Sambungan anda telah beralih kepada rangkaian yang lebih selamat</translation>
@@ -431,6 +434,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4379531060876907730">Berikut ialah alatan stilus anda</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
+<translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
 <translation id="4421231901400348175">Berkongsi kawalan skrin anda dengan <ph name="HELPER_NAME" /> melalui Bantuan Jauh.</translation>
 <translation id="4424159417645388645">Meja 5</translation>

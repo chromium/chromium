@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ਸਾਲ ਪਹਿਲਾਂ}one{# ਸਾਲ ਪਹਿਲਾਂ}other{# ਸਾਲ ਪਹਿਲਾਂ}}</translation>
 <translation id="2878511608894704031">ਸਭ ਮਿਟਾਓ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ਦਿਨ ਵਿੱਚ}one{# ਦਿਨ ਵਿੱਚ}other{# ਦਿਨ ਵਿੱਚ}}</translation>
+<translation id="2922712708897119705">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਘਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="2931838996092594335">ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2981684127883932071">ਸੁਝਾਵਾਂ ਨੂੰ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3036649622769666520">ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3909791450649380159">ਕੱ&amp;ਟੋ</translation>
 <translation id="3990502903496589789">ਸੱਜਾ ਕਿਨਾਰਾ</translation>
+<translation id="3994749195054421561">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}one{# ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}other{# ਨਾ-ਪੜ੍ਹੀਆਂ ਹੋਈਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="4202807286478387388">ਜੰਪ</translation>
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ਮਿੰਟ ਬਾਕੀ}one{# ਮਿੰਟ ਬਾਕੀ}other{# ਮਿੰਟ ਬਾਕੀ}}</translation>
 <translation id="7430878839542012341">ਕੀ ਇਸ ਖੋਜ ਨੂੰ ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਉਣਾ ਹੈ?</translation>
+<translation id="7437971918971306061">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਕ੍ਰਮ-ਬੱਧ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ਇਮੋਜੀ</translation>
 <translation id="7620655452534002301">ਹਟਾਇਆ ਗਿਆ।</translation>

@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1032854598605920125">Xirar  á dereita</translation>
-<translation id="1036224116832931580">Xogo do dinosauro; para saltar e xogar, toca a pantalla</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
@@ -790,7 +789,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
 <translation id="3807366285948165054">Desprazamento da imaxe no eixe X</translation>
 <translation id="3807873520724684969">Bloqueouse o contido daniño.</translation>
-<translation id="3808375843007691220">Advertencia: Detectáronse funcións experimentais.</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
 <translation id="382518646247711829">Se utilizas un servidor proxy...</translation>
 <translation id="3827112369919217609">Absoluto</translation>
@@ -824,6 +822,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3963721102035795474">Modo de lector</translation>
 <translation id="3963837677003247395">Queres continuar manualmente?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ningún}=1{De 1 sitio }other{De # sitios }}</translation>
+<translation id="3970481983430640194">Agora podes arrastrar esta aplicación e cambiarlle o tamaño</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3973357910713125165">Botón Executar comprobación de seguranza de Chrome. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
@@ -837,7 +836,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     a todas as solicitudes que reciba, pero actualmente non se pode aplicar esta política.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} páxina}other{Documento PDF con {COUNT} páxinas}}</translation>
 <translation id="4023431997072828269">Dado que estás a piques de enviar este formulario a través dunha conexión non segura, a túa información será visible para outras persoas.</translation>
-<translation id="4027177651527820006">Ao activar estas funcións, poderías perder os datos do navegador ou poñer en perigo a túa seguranza ou privacidade. As funcións activadas aplícanse a todos os usuarios deste navegador. Se es un administrador da empresa, non deberías utilizar estas funcións experimentais na produción.</translation>
 <translation id="4030383055268325496">&amp;Desfacer a acción de engadir</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1398,6 +1396,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6032524144326295339">Caixa de correo 2</translation>
 <translation id="6032955021262906325">Encadernación na parte esquerda</translation>
 <translation id="6034000775414344507">Gris claro</translation>
+<translation id="6034062182346928710">É posible que <ph name="APP_NAME" /> non cambie ben de tamaño. Usa os tamaños de ventá predeterminados para evitar que a aplicación funcione incorrectamente.</translation>
 <translation id="6034283069659657473">10x14 (sobre)</translation>
 <translation id="6034514109191629503">Dobrez en acordeón</translation>
 <translation id="6039846035001940113">Se o problema continúa, contacta co propietario do sitio.</translation>
@@ -1427,6 +1426,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6120179357481664955">Queres lembrar o teu código da UPI?</translation>
 <translation id="6123290840358279103">Ver tarxeta virtual</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
+<translation id="6143538402333184781">Esta aplicación só admite o tamaño adaptado a teléfonos.</translation>
 <translation id="6146055958333702838">Comproba os cables e reinicia os routers, módems e demais dispositivos
     de rede que utilices.</translation>
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
@@ -1539,7 +1539,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6596325263575161958">Opcións de cifrado</translation>
 <translation id="6604181099783169992">Sensores de movemento ou de luz</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
-<translation id="6612358246767739896">Contido protexido</translation>
 <translation id="6615297766614333076">Amontoador 2</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6626291197371920147">Engade un número da tarxeta válido</translation>
@@ -2037,7 +2036,6 @@ Detalles adicionais:
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
-<translation id="8463101686637053101">Xogo do dinosauro; para saltar e xogar, preme Espazo</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarxeta de crédito}other{# tarxetas de crédito}}</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474910779563686872">Mostrar detalles do programador</translation>

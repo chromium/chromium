@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">යුගලගත වීමට  "<ph name="DEVICE_NAME" />" අවසර ඉල්ලා සිටිනු ඇත. උපකරණයේ මෙම PIN කේතය ඇතුළු කරන්න: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">අර්ධ තිර රුව තෝරන ලදි</translation>
 <translation id="1032891413405719768">පන්හිඳ බැටරිය අඩුයි</translation>
+<translation id="1036073649888683237">දැනුම්දීම් කළමනාකරණය කිරීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="1036672894875463507">ඔබේ Google සහකරු වන මම මෙහි සිටින්නේ උබේ දවස පුරා ඔබට උදවු කිරීමටයි!
 පටන් ගැනීමට ඔබට උත්සාහ කළ හැකි දේ සමහරක් මෙන්න.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> එක් කරන ලදී</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">අයිතමය ස්කෑන් කිරීම</translation>
 <translation id="1056775291175587022">ජාල නැත</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">බැටරිය ප්‍රතිස්ථාපනය හෝ ආරෝපණය කරන්න</translation>
 <translation id="108486256082349153">සෙලියුලර්: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">සුබ අපරභාගයක් <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">මට කම්මැලියි</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">ආපසු යාමට දකුණින් ස්වයිප් කරන්න</translation>
 <translation id="343571671045587506">සිහිකැඳවීම සංස්කරණ කරන්න</translation>
 <translation id="3435967511775410570">ඇඟිලි සලකුණු හඳුනා ගෙන ඇත</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">USB-C උපාංගය</translation>
 <translation id="3454224730401036106">ඔබේ සබැඳුම වඩාත් සුරක්ෂිත ජාලයකට මාරු වී ඇත</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4379531060876907730">ඔබේ පන්හිඳ මෙවලම් මේවායි</translation>
 <translation id="4389184120735010762">ඔබ ඩොක් කළ විශාලකය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
+<translation id="439598569299422042"><ph name="SIZE_INFO" />, විරාම කරන ලදි</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ක්‍රියාවිරහිතයි.</translation>
 <translation id="4421231901400348175">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය <ph name="HELPER_NAME" /> සමඟ බෙදාගනී.</translation>
 <translation id="4424159417645388645">මේසය 5</translation>

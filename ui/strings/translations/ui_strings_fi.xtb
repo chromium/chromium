@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 vuosi sitten}other{# vuotta sitten}}</translation>
 <translation id="2878511608894704031">Poista kaikki</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 pv:n päästä}other{# pv:n päästä}}</translation>
+<translation id="2922712708897119705">Sarake (<ph name="COLUMN_NAME" />) lajiteltiin laskevaan järjestykseen.</translation>
 <translation id="2931838996092594335">klikata</translation>
 <translation id="2981684127883932071">Ehdotuksia näytetään</translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3909791450649380159">L&amp;eikkaa</translation>
 <translation id="3990502903496589789">Oikea reuna</translation>
+<translation id="3994749195054421561">Sarake (<ph name="COLUMN_NAME" />) lajiteltiin nousevaan järjestykseen.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 lukematon ilmoitus}other{# lukematonta ilmoitusta}}</translation>
 <translation id="4202807286478387388">siirry</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minuutti jäljellä}other{# minuuttia jäljellä}}</translation>
 <translation id="7430878839542012341">Poistetaanko tämä haku historiastasi?</translation>
+<translation id="7437971918971306061">Sarakkeen (<ph name="COLUMN_NAME" />) lajittelu poistettiin.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> Tt</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Poistettu</translation>

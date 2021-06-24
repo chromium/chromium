@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{for 1 år siden}other{for # år siden}}</translation>
 <translation id="2878511608894704031">Slett alle</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 d}other{om # d}}</translation>
+<translation id="2922712708897119705">Kolonnen <ph name="COLUMN_NAME" /> er sortert i synkende rekkefølge.</translation>
 <translation id="2931838996092594335">klikk</translation>
 <translation id="2981684127883932071">Viser forslag</translation>
 <translation id="3036649622769666520">Åpne filer</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3909791450649380159">Klipp u&amp;t</translation>
 <translation id="3990502903496589789">Høyre kant</translation>
+<translation id="3994749195054421561">Kolonnen <ph name="COLUMN_NAME" /> er sortert i stigende rekkefølge.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulest varsel}other{# uleste varsler}}</translation>
 <translation id="4202807286478387388">hopp</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minutt igjen}other{# minutter igjen}}</translation>
 <translation id="7430878839542012341">Vil du slette dette søket fra loggen?</translation>
+<translation id="7437971918971306061">Kolonnen <ph name="COLUMN_NAME" /> er nå usortert.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Fjernet.</translation>

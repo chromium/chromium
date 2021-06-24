@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Ștergeți datele de navigare</translation>
 <translation id="1815941218935345331">Parolă</translation>
 <translation id="1820259098641718022">S-a adăugat în lista de lectură</translation>
+<translation id="1832848789136765277">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la datele sincronizate</translation>
 <translation id="1870148520156231997">Afișează parola</translation>
 <translation id="1872096359983322073">Lanternă</translation>
 <translation id="1894205589103145703">A apărut o eroare la conectare.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Site desktop</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="212623074644302906">Solicită adăugarea la Lista de lecturi</translation>
 <translation id="2139867232736819575">Caută textul pe care l-ai copiat</translation>
 <translation id="214201757571129614">Conectează-te…</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
@@ -435,6 +437,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitivele trebuie să folosească același cont iCloud.</translation>
 <translation id="5551897871312988470">Oferă traducerea</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
+<translation id="5580834567471114021">Adaugi la Lista de lecturi pentru mai târziu?</translation>
 <translation id="5592679540098330836">Activează sincronizarea pentru <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
 <translation id="5626245204502895507">Momentan, fișierul nu a putut fi descărcat.</translation>
@@ -588,6 +591,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="681368974849482173">Element creat</translation>
 <translation id="6830804042318138535">Află mai multe</translation>
 <translation id="6831043979455480757">Tradu</translation>
+<translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
 <translation id="6851516051005285358">Solicită site desktop</translation>
 <translation id="6858855187367714033">Scanat</translation>
 <translation id="6859944681507688231">Pentru a scana un cod QR sau un card de credit, activează camera foto din setări.</translation>
@@ -619,6 +623,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7108338896283013870">Ascunde</translation>
 <translation id="7133798577887235672">Numele complet</translation>
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>
+<translation id="7153999225810839758">Lectură de <ph name="TIME" /> minute</translation>
 <translation id="7159472599653637159">Site mobil</translation>
 <translation id="7162168282402939716">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protejează-ți parolele împotriva problemelor de securitate</translation>
@@ -668,6 +673,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7600965453749440009">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-upuri blocate (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Șterge parola</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min.</translation>
 <translation id="7638584964844754484">Expresie de acces incorectă</translation>
 <translation id="7646772052135772216">Sincronizarea parolelor nu funcționează</translation>
 <translation id="7649070708921625228">Ajutor</translation>

@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Pirms 1 gada}zero{Pirms # gadiem}one{Pirms # gada}other{Pirms # gadiem}}</translation>
 <translation id="2878511608894704031">Dzēst visu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{pēc 1 d.}zero{pēc # d.}one{pēc # d.}other{pēc # d.}}</translation>
+<translation id="2922712708897119705">Vienumi slejā “<ph name="COLUMN_NAME" />” ir sakārtoti dilstošā secībā.</translation>
 <translation id="2931838996092594335">noklikšķināt</translation>
 <translation id="2981684127883932071">Tiek rādīti ieteikumi</translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Izvēlne</translation>
 <translation id="3909791450649380159">Izgrie&amp;zt</translation>
 <translation id="3990502903496589789">Labā puse</translation>
+<translation id="3994749195054421561">Vienumi slejā “<ph name="COLUMN_NAME" />” ir sakārtoti augošā secībā.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nelasīts paziņojums}zero{# nelasīti paziņojumi}one{# nelasīts paziņojums}other{# nelasīti paziņojumi}}</translation>
 <translation id="4202807286478387388">lekt</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Atlikusi 1 minūte}zero{Atlikušas # minūtes}one{Atlikusi # minūte}other{Atlikušas # minūtes}}</translation>
 <translation id="7430878839542012341">Vai dzēst šo meklēšanas vaicājumu no vēstures?</translation>
+<translation id="7437971918971306061">Atcelta vienumu kārtošana slejā “<ph name="COLUMN_NAME" />”.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emocijzīmes</translation>
 <translation id="7620655452534002301">Noņemts.</translation>

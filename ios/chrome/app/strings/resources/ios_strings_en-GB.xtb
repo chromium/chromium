@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Clear Browsing Data</translation>
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1820259098641718022">Added to Reading List</translation>
+<translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1894205589103145703">Something went wrong during sign-in.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
+<translation id="212623074644302906">Ask to add to reading list</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="214201757571129614">Sign in…</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -435,6 +437,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
@@ -588,6 +591,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="681368974849482173">Item created</translation>
 <translation id="6830804042318138535">Read more</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
 <translation id="6851516051005285358">Request Desktop Site</translation>
 <translation id="6858855187367714033">Scanned</translation>
 <translation id="6859944681507688231">To scan a QR code or credit card, enable the camera from settings.</translation>
@@ -619,6 +623,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7133798577887235672">Full Name</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
+<translation id="7153999225810839758"><ph name="TIME" /> minute read</translation>
 <translation id="7159472599653637159">Request Mobile Site</translation>
 <translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
@@ -668,6 +673,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Delete password</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7649070708921625228">Help</translation>

@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">全部删除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天后}other{# 天后}}</translation>
+<translation id="2922712708897119705">“<ph name="COLUMN_NAME" />”列目前是按降序排列。</translation>
 <translation id="2931838996092594335">点击</translation>
 <translation id="2981684127883932071">显示了建议</translation>
 <translation id="3036649622769666520">打开文件</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3909791450649380159">剪切(&amp;T)</translation>
 <translation id="3990502903496589789">右边缘</translation>
+<translation id="3994749195054421561">“<ph name="COLUMN_NAME" />”列目前是按升序排列。</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 条未读通知}other{# 条未读通知}}</translation>
 <translation id="4202807286478387388">略过</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>
 <translation id="7430878839542012341">要将这项搜索从您的历史记录中删除吗？</translation>
+<translation id="7437971918971306061">“<ph name="COLUMN_NAME" />”列已取消排序。</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">表情符号</translation>
 <translation id="7620655452534002301">已移除。</translation>

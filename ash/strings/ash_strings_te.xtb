@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">ఐటెమ్‌ను స్కాన్ చేయి</translation>
 <translation id="1056775291175587022">నెట్‌వ. లేవు</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">బ్యాటరీని రీప్లేస్ లేదా రీఛార్జ్ చేయండి</translation>
 <translation id="108486256082349153">సెల్యులార్: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">గుడ్ ఆఫ్టర్‌నూన్ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">నాకు ఏమీ తోచడం లేదు</translation>
@@ -306,6 +307,7 @@
 <translation id="3430396595145920809">వెనుకకు వెళ్లడానికి కుడి వైపు నుండి స్వైప్ చేయండి</translation>
 <translation id="343571671045587506">రిమైండర్‌ను సవరించండి</translation>
 <translation id="3435967511775410570">వేలిముద్ర గుర్తించబడింది</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> నిమి</translation>
 <translation id="3445925074670675829">USB-C పరికరం</translation>
 <translation id="3454224730401036106">మీ కనెక్షన్ మరింత సురక్షితమైన నెట్‌వర్క్‌కు మార్చబడింది</translation>
@@ -429,6 +431,7 @@
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4379531060876907730">ఇవి మీ స్టైలస్ సాధనాలు</translation>
 <translation id="4389184120735010762">మీరు డాక్ చేసిన మాగ్నిఫైయర్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
+<translation id="439598569299422042">పాజ్ చేయబడింది, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
 <translation id="4421231901400348175">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణ <ph name="HELPER_NAME" />కి భాగస్వామ్యం చేయబడుతోంది.</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
@@ -725,6 +728,7 @@
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="6818242057446442178">ఒక పదం వెనుకకు</translation>
 <translation id="6820676911989879663">విరామం తీసుకోండి!</translation>
+<translation id="6837064795450991317">డెస్క్‌బార్‌ను దాచండి</translation>
 <translation id="6850010208275816200">మీ ప్రస్తుత యాప్ ఫుల్ స్క్రీన్ మోడ్‌లో ఉంది. యాప్ మీ పాస్‌వర్డ్ కోసం అడిగితే మొదట ఫుల్ స్క్రీన్ నుండి నిష్క్రమించండి.</translation>
 <translation id="6852052252232534364">యాక్టివేట్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> సెక</translation>
@@ -760,6 +764,7 @@
 <translation id="7076293881109082629">సైన్ ఇన్ చేస్తోంది</translation>
 <translation id="7088960765736518739">స్విచ్ యాక్సెస్</translation>
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
+<translation id="7106330611027933926">డెస్క్‌బార్‌ను చూపండి</translation>
 <translation id="7118268675952955085">స్క్రీన్‌షాట్</translation>
 <translation id="7131634465328662194">మీరు ఆటోమేటిక్‌గా సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
@@ -803,6 +808,7 @@
 <translation id="7466449121337984263">దయచేసి సెన్సార్‌ను తాకండి</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
+<translation id="7482097454533720217">మీరు టెక్స్ట్‌ను కుడి క్లిక్ చేసినప్పుడు లేదా తాకి, నొక్కి ఉంచిన్నప్పుడు నిర్వచనాలు, అనువాదాలు, లేదా యూనిట్ మార్పిడులను పొందండి.</translation>
 <translation id="7483025031359818980">ఎంపిక చేసుకోవాల్సిన చోటు ఫుల్ స్క్రీన్‌కు సెట్ చేయబడింది</translation>
 <translation id="7486227320194954040">మార్కర్ టూల్స్‌ను కుదించు</translation>
 <translation id="7497767806359279797">భాషను మరియు కీబోర్డ్‌ను ఎంచుకోండి</translation>
@@ -979,6 +985,7 @@
 <translation id="8843682306134542540">భ్రమణం లాక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />", అలాగే మరిన్నింటి కోసం <ph name="INTENT" />ను పొందండి</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
 <translation id="8871580645200179206">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>

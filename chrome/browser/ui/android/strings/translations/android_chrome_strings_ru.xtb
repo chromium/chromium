@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1105960400813249514">Демонстрация экрана</translation>
+<translation id="1110914759170138831">Выделенный текст сокращен.</translation>
 <translation id="1111673857033749125">Здесь появятся закладки, сохраненные на других устройствах.</translation>
 <translation id="1113597929977215864">Упрощенный просмотр</translation>
 <translation id="1118561384561215815">Помощь при заполнении форм</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Экономьте до 60 % трафика и читайте ежедневные новости.</translation>
 <translation id="1303339473099049190">Пароль не найден. Убедитесь, что он указан правильно, и повторите попытку.</translation>
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
+<translation id="130581733275749598">Выберите шаблон для выделенного текста</translation>
 <translation id="1307205233980126133">Не удалось проверить ваши учетные данные.</translation>
 <translation id="1310482092992808703">Сгруппировать вкладки</translation>
 <translation id="1311657260431405215">В этом QR-коде нет URL: <ph name="QRCODEVALUE" />.</translation>
@@ -489,6 +491,7 @@
 <translation id="4183868528246477015">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
+<translation id="4206707945726604465">Чтобы удалить другие данные из истории, перейдите на страницу <ph name="BEGIN_LINK1" />Мои действия в Google<ph name="END_LINK1" />.</translation>
 <translation id="4209895695669353772">Чтобы мы могли рекомендовать вам интересный контент, включите синхронизацию.</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -581,6 +584,7 @@
 <translation id="4807098396393229769">Имя владельца</translation>
 <translation id="4818017973810341238">Не удалось выполнить проверку протокола связи цифровых объектов для страницы <ph name="VIOLATED_URL" />.</translation>
 <translation id="4831037795716408498">Download content</translation>
+<translation id="4834007576107377210">См. инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="4835385943915508971">Запрошенный ресурс недоступен в Chrome</translation>
 <translation id="4837753911714442426">Открыть параметры печати страницы</translation>
 <translation id="4842092870884894799">Открыто всплывающее окно создания пароля</translation>
@@ -635,6 +639,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Не удалось скачать 1 файл.}one{Не удалось скачать # файл.}few{Не удалось скачать # файла.}many{Не удалось скачать # файлов.}other{Не удалось скачать # файла.}}</translation>
 <translation id="5168824020667180049">Подписка на "<ph name="SITE_NAME" />" оформлена.</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
+<translation id="5171045022955879922">Введите запрос или URL</translation>
 <translation id="5184329579814168207">Открыть в Chrome</translation>
 <translation id="5188992787241350004">Голосовой поиск</translation>
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
@@ -744,7 +749,6 @@
 <translation id="5836192821815272682">Скачивание обновлений для Chrome…</translation>
 <translation id="5853623416121554550">пауза</translation>
 <translation id="5854512288214985237">Не отправлять статистику и отчеты о сбоях в Google</translation>
-<translation id="5854790677617711513">Сохраненные более 30 дней назад</translation>
 <translation id="5855546874025048181">Уточнить: "<ph name="REFINE_TEXT" />"</translation>
 <translation id="5858741533101922242">Не удалось включить адаптер Bluetooth</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -1107,6 +1111,7 @@
 <translation id="8035133914807600019">Создать папку…</translation>
 <translation id="8037750541064988519">Осталось <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Проверено только что.</translation>
+<translation id="8040831032425909005">Значок виджета Поиска на панели действий</translation>
 <translation id="804335162455518893">SD-карта не найдена</translation>
 <translation id="8051695050440594747">Доступно <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>
@@ -1169,6 +1174,7 @@
 <translation id="8442258441309440798">Нет рекомендаций</translation>
 <translation id="8443209985646068659">Не удалось обновить Chrome</translation>
 <translation id="8445448999790540984">Не удалось экспортировать пароли</translation>
+<translation id="8453310803815879010">Запустить игру Dino</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>

@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 वर्ष पहले}one{# वर्ष पहले}other{# वर्ष पहले}}</translation>
 <translation id="2878511608894704031">सभी आइटम मिटाएं</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 दिन में}one{# दिन में}other{# दिन में}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> कॉलम को घटते क्रम में लगाया गया.</translation>
 <translation id="2931838996092594335">क्लिक करें</translation>
 <translation id="2981684127883932071">सुझाव दिखाए जा रहे हैं</translation>
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3909791450649380159">&amp;काटें</translation>
 <translation id="3990502903496589789">दायां सिरा</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> कॉलम को बढ़ते क्रम में लगाया गया.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 न पढ़ी गई सूचना}one{# न पढ़ी गई सूचनाएं}other{# न पढ़ी गई सूचनाएं}}</translation>
 <translation id="4202807286478387388">जाएं</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 मिनट शेष}one{# मिनट शेष}other{# मिनट शेष}}</translation>
 <translation id="7430878839542012341">अपने इतिहास से यह खोज मिटाना चाहते हैं?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> कॉलम किसी क्रम में नहीं है.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">इमोजी</translation>
 <translation id="7620655452534002301">हटाया गया.</translation>

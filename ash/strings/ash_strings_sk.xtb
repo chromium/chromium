@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania. Zadajte na danom zariadení toto číslo PIN: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Bola vybraná čiastočná snímka obrazovky</translation>
 <translation id="1032891413405719768">Batéria dotykového pera je takmer vybitá</translation>
+<translation id="1036073649888683237">Ak chcete spravovať upozornenia, prejdite do Nastavení</translation>
 <translation id="1036672894875463507">Som váš Asistent Google, vždy pripravený pomôcť!
 Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1037492556044956303">Pridali ste zariadenie <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1052916631016577720">Naskenovanie položky</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Vymeňte alebo dobite batériu</translation>
 <translation id="108486256082349153">Mobilné zariadenie: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré popoludnie, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudím sa</translation>
@@ -306,6 +308,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3430396595145920809">Vrátite sa potiahnutím sprava</translation>
 <translation id="343571671045587506">Úprava pripomenutia</translation>
 <translation id="3435967511775410570">Odtlačok prsta bol rozpoznaný</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Zariadenie USB-C</translation>
 <translation id="3454224730401036106">Vaše pripojenie bolo prepnuté na bezpečnejšiu sieť</translation>
@@ -430,6 +433,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4378551569595875038">Pripája sa...</translation>
 <translation id="4379531060876907730">Toto sú vaše nástroje pre dotykové pero</translation>
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
+<translation id="439598569299422042">Pozastavené, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkcia <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládanie obrazovky sa prostredníctvom Vzdialenej pomoci zdieľa s používateľom <ph name="HELPER_NAME" />.</translation>
 <translation id="4424159417645388645">5. plocha</translation>

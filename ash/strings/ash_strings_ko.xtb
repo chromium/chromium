@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 기기에서 다음 PIN 코드를 입력하세요. <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">부분 스크린샷 선택됨</translation>
 <translation id="1032891413405719768">스타일러스 배터리 부족</translation>
+<translation id="1036073649888683237">알림을 관리하려면 설정으로 이동하세요.</translation>
 <translation id="1036672894875463507">저는 Google 어시스턴트입니다. 언제든지 도움을 드릴 수 있습니다.
 다음과 같은 작업으로 어시스턴트 사용을 시작해 보세요.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> 추가됨</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">항목 스캔</translation>
 <translation id="1056775291175587022">네트워크 없음</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">배터리를 교체하거나 충전해 주세요.</translation>
 <translation id="108486256082349153">셀룰러: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">즐거운 오후 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="109942774857561566">나 심심해</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">돌아가려면 오른쪽에서 스와이프하세요.</translation>
 <translation id="343571671045587506">알림 수정</translation>
 <translation id="3435967511775410570">지문 인식됨</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3454224730401036106">보다 안전한 네트워크로 연결이 전환되었습니다.</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4379531060876907730">스타일러스 도구입니다</translation>
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
+<translation id="439598569299422042">일시중지됨, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
 <translation id="4421231901400348175">원격 지원을 통해 <ph name="HELPER_NAME" />와(과) 화면 제어 공유</translation>
 <translation id="4424159417645388645">데스크 5</translation>

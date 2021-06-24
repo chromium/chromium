@@ -639,6 +639,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi.}other{# ta fayl yuklab olinmadi.}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" /> mavzusiga obuna qilindi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
+<translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5188992787241350004">Ovoz bilan qidiring</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
@@ -748,7 +749,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5836192821815272682">Chrome yangilanishi yuklab olinmoqda…</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
 <translation id="5854512288214985237">Googlega hech qanday statistika yoki ishdan chiqish hisoboti yuborilmagan</translation>
-<translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5855546874025048181">Aniqlashtirish: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Bluetooth adapterini yoqib bo‘lmadi</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
@@ -1111,6 +1111,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8035133914807600019">Yangi jild qo‘shish…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> kun qoldi</translation>
 <translation id="8037801708772278989">Hozirgina tekshirildi</translation>
+<translation id="8040831032425909005">Tezkor amallar panelidagi qidiruv vidjeti belgisi</translation>
 <translation id="804335162455518893">SD karta topilmadi</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>
@@ -1173,6 +1174,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8442258441309440798">Maqolalar topilmadi</translation>
 <translation id="8443209985646068659">Chrome yangilanmadi</translation>
 <translation id="8445448999790540984">Parollar eksport qilinmadi</translation>
+<translation id="8453310803815879010">Dino oʻyinini boshlash</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> internetga ulanganini tekshiring.</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>

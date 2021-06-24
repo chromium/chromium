@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Очистка истории</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1820259098641718022">Добавлено в список чтения</translation>
+<translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1894205589103145703">Не удалось войти в систему.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Версия для ПК</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="212623074644302906">Предлагать добавлять страницы в список для чтения</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="214201757571129614">Войти</translation>
 <translation id="2149973817440762519">Закладка</translation>
@@ -435,6 +437,7 @@
 Функцию Handoff нужно включить не только в Chrome, но и в настройках устройства (см. раздел "Общие"). Все ваши устройства должны синхронизироваться с одним и тем же аккаунтом iCloud.</translation>
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
+<translation id="5580834567471114021">Добавить в список для чтения?</translation>
 <translation id="5592679540098330836">Включить синхронизацию для пользователя <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6830804042318138535">Узнать больше</translation>
 <translation id="6831043979455480757">Перевести</translation>
+<translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
 <translation id="6851516051005285358">Версия для ПК</translation>
 <translation id="6858855187367714033">Просканировано</translation>
 <translation id="6859944681507688231">Чтобы сканировать QR-код или банковскую карту, разрешите приложению доступ к камере.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">Скрыть</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
+<translation id="7153999225810839758">Чтение займет около <ph name="TIME" /> мин.</translation>
 <translation id="7159472599653637159">Мобильная версия</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> мин.</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
 <translation id="7649070708921625228">Справка</translation>

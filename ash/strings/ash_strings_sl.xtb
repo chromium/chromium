@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. V napravi vnesite ta PIN: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Izbran je delni posnetek zaslona</translation>
 <translation id="1032891413405719768">Baterija pisala je skoraj izpraznjena</translation>
+<translation id="1036073649888683237">Če želite upravljati obvestila, odprite nastavitve</translation>
 <translation id="1036672894875463507">Sem vaš Pomočnik Google – ves dan na razpolago, da vam priskočim na pomoč.
 Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1037492556044956303">Dodana je bila naprava <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1052916631016577720">Optično preberi element</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Zamenjajte ali napolnite baterijo.</translation>
 <translation id="108486256082349153">Mobilna naprava: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dober dan, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Dolgočasim se</translation>
@@ -306,6 +308,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3430396595145920809">Povlecite z desne, če se želite vrniti</translation>
 <translation id="343571671045587506">Urejanje opomnika</translation>
 <translation id="3435967511775410570">Prstni odtis je prepoznan</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Naprava USB-C</translation>
 <translation id="3454224730401036106">Vaša povezava je preklopila na varnejše omrežje</translation>
@@ -430,6 +433,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4378551569595875038">Povezovanje …</translation>
 <translation id="4379531060876907730">To so vaša orodja pisala</translation>
 <translation id="4389184120735010762">Pritisnili ste bližnjično tipko za zasidrano lupo. Ali jo želite vklopiti?</translation>
+<translation id="439598569299422042">Začasno zaustavljeno, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
 <translation id="4421231901400348175">Deljenje nadzora nad zaslonom z osebo <ph name="HELPER_NAME" /> prek pomoči na daljavo.</translation>
 <translation id="4424159417645388645">Namizje 5</translation>

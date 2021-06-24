@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Выдаленне гісторыі праглядаў</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
+<translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
 <translation id="1894205589103145703">Нешта пайшло не так падчас уваходу.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="2103075008456228677">Адкрыць history.google.com</translation>
 <translation id="2116625576999540962">Перамешчана элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="212623074644302906">Запытваць дазвол пры дадаванні старонкі ў спіс на прагляд</translation>
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="214201757571129614">Увайсці…</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
@@ -435,6 +437,7 @@
 Гэту функцыю таксама трэба ўключыць у раздзеле налад "Агульныя", і прылады павінны выкарыстоўваць аднолькавы ўліковы запіс iCloud.</translation>
 <translation id="5551897871312988470">Прапаноўваць перакласці з мовы</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
+<translation id="5580834567471114021">Дадаць старонку ў спіс на прагляд?</translation>
 <translation id="5592679540098330836">Уключыць сінхранізацыю для ўліковага запісу <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6830804042318138535">Чытаць далей</translation>
 <translation id="6831043979455480757">Перакласці</translation>
+<translation id="6842136130964845393">Каб не страціць доступ да сваіх захаваных пароляў, пацвердзіце сваю асобу</translation>
 <translation id="6851516051005285358">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="6858855187367714033">Сканіраваны</translation>
 <translation id="6859944681507688231">Каб сканіраваць QR-код ці крэдытную картку, уключыце ў наладах камеру.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
+<translation id="7153999225810839758">Час чытання: <ph name="TIME" /> хв</translation>
 <translation id="7159472599653637159">Запытаць мабільную версію сайта</translation>
 <translation id="7162168282402939716">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку праблем з бяспекай</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> хв</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="7649070708921625228">Даведка</translation>

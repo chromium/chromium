@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Zadbaj o to, by nigdy nie stracić dostępu do synchronizowanych danych</translation>
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
 <translation id="1105960400813249514">Zrzut ekranu</translation>
+<translation id="1110914759170138831">Podświetlenie zostało skrócone</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
 <translation id="1118561384561215815">Pomoc dotycząca zadań w sieci</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Oszczędź do 60% danych, przeczytaj dzisiejsze wiadomości</translation>
 <translation id="1303339473099049190">Nie udało się znaleźć tego hasła. Sprawdź pisownię i spróbuj jeszcze raz.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – wysłane z: <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Wybierz szablon notatki</translation>
 <translation id="1307205233980126133">Nie udało się zweryfikować Twoich danych logowania</translation>
 <translation id="1310482092992808703">Grupuj karty</translation>
 <translation id="1311657260431405215">Ten kod QR nie jest adresem URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
+<translation id="4206707945726604465">Aby wyczyścić inne rodzaje historii, otwórz <ph name="BEGIN_LINK1" />Moją aktywność w Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, włącz synchronizację</translation>
 <translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -581,6 +584,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
 <translation id="4818017973810341238">Weryfikacja Digital Asset Links na <ph name="VIOLATED_URL" /> nie udała się</translation>
 <translation id="4831037795716408498">Pobieranie treści</translation>
+<translation id="4834007576107377210">W razie potrzeby zapoznaj się z instrukcjami usuwania historii wyszukiwania w danej przeglądarce</translation>
 <translation id="4835385943915508971">Chrome nie ma dostępu do żądanego zasobu.</translation>
 <translation id="4837753911714442426">Otwórz opcje drukowania strony</translation>
 <translation id="4842092870884894799">Pokazuję wyskakujące okienko generowania hasła</translation>
@@ -635,6 +639,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nie udało się pobrać 1 pliku.}few{Nie udało się pobrać # plików.}many{Nie udało się pobrać # plików.}other{Nie udało się pobrać # pliku.}}</translation>
 <translation id="5168824020667180049">Dodano do obserwowanych: <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
+<translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>
 <translation id="5188992787241350004">Szukaj przy użyciu głosu</translation>
 <translation id="5191251636205085390">Poznaj nowe technologie, które będą używane zamiast plików cookie innych firm, i naucz się je kontrolować</translation>
@@ -744,7 +749,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5836192821815272682">Pobieram aktualizację Chrome…</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
 <translation id="5854512288214985237">Statystyki ani raporty o awariach nie są przesyłane do Google</translation>
-<translation id="5854790677617711513">Sprzed ponad 30 dni</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nie może włączyć adaptera Bluetooth</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
@@ -1107,6 +1111,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8035133914807600019">Nowy folder…</translation>
 <translation id="8037750541064988519">Pozostało: <ph name="DAYS" /> dni</translation>
 <translation id="8037801708772278989">Sprawdzano przed chwilą</translation>
+<translation id="8040831032425909005">Ikona widżetu skrótów i wyszukiwania</translation>
 <translation id="804335162455518893">Nie znaleziono karty SD</translation>
 <translation id="8051695050440594747">Dostępne: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Otwórz w nowej karcie Chrome</translation>
@@ -1169,6 +1174,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8442258441309440798">Brak artykułów</translation>
 <translation id="8443209985646068659">Nie można zaktualizować</translation>
 <translation id="8445448999790540984">Nie można wyeksportować haseł</translation>
+<translation id="8453310803815879010">Rozpocznij grę z dinozaurem</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>

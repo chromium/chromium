@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{לפני שנה אחת}two{לפני שנתיים}many{לפני # שנים}other{לפני # שנים}}</translation>
 <translation id="2878511608894704031">מחיקת הכול</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{עוד יום אחד}two{עוד 2 ימים}many{עוד # ימים}other{עוד # ימים}}</translation>
+<translation id="2922712708897119705">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר יורד.</translation>
 <translation id="2931838996092594335">לחיצה</translation>
 <translation id="2981684127883932071">מוצגות הצעות</translation>
 <translation id="3036649622769666520">פתיחת קבצים</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3909791450649380159">גז&amp;ירה</translation>
 <translation id="3990502903496589789">קצה ימני</translation>
+<translation id="3994749195054421561">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר עולה.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}two{2 הודעות שלא נקראו}many{# הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
 <translation id="4202807286478387388">קפיצה</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{נותרה דקה אחת}two{נותרו # דקות}many{נותרו # דקות}other{נותרו # דקות}}</translation>
 <translation id="7430878839542012341">למחוק את החיפוש הזה מההיסטוריה?</translation>
+<translation id="7437971918971306061">העמודה <ph name="COLUMN_NAME" /> לא ממוינת.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">אמוג'י</translation>
 <translation id="7620655452534002301">הרשומה הוסר.</translation>

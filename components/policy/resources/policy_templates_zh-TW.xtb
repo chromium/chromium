@@ -392,6 +392,7 @@
 <translation id="1516486219683984217">不允許使用系統通知</translation>
 <translation id="152078218786467087">應重新啟動的時間 (根據裝置當地時區)。</translation>
 <translation id="1522425503138261032">允許網站追蹤使用者的實際位置</translation>
+<translation id="1523587744262636189">通訊埠 10080 (2022 年 4 月 1 日前可解除封鎖)</translation>
 <translation id="1523774894176285446">要啟動的替代瀏覽器 (適用於已設定的網站)。</translation>
 <translation id="1524243669991877602">如果將這項政策設為 Enabled，與 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帳戶相關的政策就會合併至裝置層級政策。
 
@@ -606,6 +607,13 @@
 <translation id="1803646570632580723">要顯示在啟動器中的固定應用程式清單</translation>
 <translation id="1808715480127969042">封鎖這些網站的 Cookie</translation>
 <translation id="1810261428246410396">允許使用即時網路共用功能。</translation>
+<translation id="1813672770917912317">你可以設定 <ph name="PRODUCT_NAME" /> 是否會在啟用 JIT (Just In Time) 編譯器的情況下執行 v8 JavaScript 引擎。
+
+          停用 JavaScript JIT 可能會減慢 <ph name="PRODUCT_NAME" /> 顯示網站內容的速度，也可能一併停用 JavaScript 中的 WebAssembly 等程式語言，但可讓 <ph name="PRODUCT_NAME" /> 以更安全的設定顯示網站內容。
+
+          你可以將特定網址模式列於 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 和 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，藉此覆寫這項政策。
+
+          如果未設定這項政策，系統會啟用 JavaScript JIT。</translation>
 <translation id="1815386977045680976">定義可登入裝置的使用者清單。項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
 
       如果不設定這項政策，所有使用者均可登入裝置。請注意，如要建立新使用者，仍然需要妥善設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
@@ -814,7 +822,6 @@
 <translation id="209586405398070749">穩定版</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
 <translation id="2104418465060359056">回報擴充功能和外掛程式資訊</translation>
-<translation id="2106166591774188922">允許 SAML 使用者在工作階段中透過 chrome://password-change 變更 SAML 密碼</translation>
 <translation id="2106627642643925514">覆寫預設的 PIN 碼列印模式。如果設定的模式不適用，系統會忽略這項政策。</translation>
 <translation id="2107563874993284076">如果將這項政策設為啟用，使用者將可在 <ph name="PRODUCT_NAME" />使用網路檔案共用功能。如果設為停用，使用者就無法使用這項功能</translation>
 <translation id="2107601598727098402">
@@ -860,6 +867,17 @@
       設定這項政策後，如果超過記憶體使用限制，瀏覽器會開始捨棄分頁以節省記憶體。不過，我們無法保證瀏覽器運作時，記憶體使用量會一律在限制值以下。1024 以下的值會進位到 1024。
 
       如果不設定這項政策，瀏覽器只會在偵測到電腦上的實體記憶體即將用盡時，才會開始嘗試節省記憶體。</translation>
+<translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> 內建一份受限通訊埠的清單，使用者將無法連上這些通訊埠。你可以透過這項設定略過該清單。設定值為一份逗號分隔的清單，其中可能包含零或多個對外連線能使用的通訊埠。
+
+      限制通訊埠的目的是防止有人將 <ph name="PRODUCT_NAME" /> 做為媒介來利用各種網路安全漏洞。設定這項政策可能會導致你的網路遭受攻擊。這項政策是用來處理「ERR_UNSAFE_PORT」錯誤的暫時性解決方案，可協助將服務從受封鎖的通訊埠遷移至標準通訊埠 (即通訊埠 80 或 443)。
+
+      惡意網站可以輕易偵測到這項政策設定與否和適用的通訊埠，並根據這項資訊鎖定攻擊目標。
+
+      Chrome 中的每個通訊埠都會標示可解除封鎖的期限，該日期過後，無論這項設定的值為何，通訊埠都會受到限制。
+
+      如果留下空白值或不設定，系統就會封鎖所有受限制的通訊埠。假如同時輸入有效和無效的值，系統只會採用有效的值。
+
+      這項政策會覆寫「--explicitly-allowed-ports」指令列選項。</translation>
 <translation id="2166472654199325139">不要針對成人內容篩選網站。</translation>
 <translation id="2168060657210442816">
       如要使用這項政策，必須將 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 設為 True，政策才會生效。
@@ -931,6 +949,7 @@
 
       我們計劃將這項政策從 Mac OS X 適用的 <ph name="PRODUCT_NAME" /> 92 版中移除，屆時也將停止支援 Mac OS X 的舊版憑證驗證器。
       </translation>
+<translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
 <translation id="2231817271680715693">第一次執行時從預設瀏覽器匯入瀏覽記錄</translation>
@@ -1400,6 +1419,7 @@
       注意：這項政策不只影響內建麥克風，也會影響所有音訊輸出裝置。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />用戶端的 Windows 登錄檔位置：</translation>
 <translation id="2824715612115726353">啟用無痕模式</translation>
+<translation id="282870810415075521">允許 JavaScript 在這些網站上使用 JIT</translation>
 <translation id="2829975392104323514">這項政策可控管系統是否要回報能用於辨識裝置的資訊，例如裝置名稱和網路位址。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。
@@ -1760,6 +1780,11 @@
 
       如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
 <translation id="3232691106293445015">不安全的 HTTP 連線無法使用<ph name="BASIC_AUTH" />驗證；必須採用 HTTPS 連線</translation>
+<translation id="3235085623859932253"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
+
+      如果啟用這項政策，使用者便可透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
+
+      如未設定，這項政策會預設為 False，使用者可任意將此設定設為 True 或 False 狀態。</translation>
 <translation id="3236046242843493070">允許安裝擴充功能、應用程式和使用者指令碼的來源網址模式清單</translation>
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
@@ -2589,6 +2614,15 @@
 <translation id="4410236409016356088">允許節流網路頻寬</translation>
 <translation id="4411734231900934213">兒童和家長的裝置之間容許的時間差 (以秒為單位)。</translation>
 <translation id="441217499641439905">連上行動網路時，禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
+<translation id="4413453659814156568">你可以設定網站網址模式清單，指定哪些網站能夠在啟用 JIT (Just In Time) 編譯器的情況下執行 JavaScript。
+
+          如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。
+
+          系統僅會對網站細分層級 (eTLD+1) 強制執行 JavaScript JIT 政策的例外狀況。僅針對 subdomain.site.com 設定的政策不會正確套用至 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址未設定任何政策。在此情況下，如要將政策正確套用至 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
+
+          這項政策是按照個別頁框逐一套用，而不是完全以頂層來源網址為依據。因此，若 site-one.com 列於 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 載入的頁框含有 site-two.com，那麼 site-one.com 就會啟用 JavaScript JIT；不過如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中已設定政策，site-two.com 將採用該政策，若未設定政策，則 site-two.com 會預設啟用 JavaScript JIT。
+
+          如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中已設定政策，未設定這項政策的網站就會套用該政策；若否，則網站會啟用 JavaScript JIT。</translation>
 <translation id="4415603335307944578">如果將這項政策設為 True 或不設定，當裝置升級 OS 後，瀏覽器將在首次啟動時重新顯示歡迎頁面。
 
       如果將這項政策設為 False，當裝置升級 OS 後，瀏覽器不會在首次啟動時重新顯示歡迎頁面。</translation>
@@ -2744,6 +2778,7 @@
       如果未設定這項政策，Chrome 不會自動選取任何網站的用戶端憑證。</translation>
 <translation id="4615003180013429835">網站清單剖析模式</translation>
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
+<translation id="4624417808625504735">禁止 JavaScript 在這些網站上使用 JIT</translation>
 <translation id="4625915093043961294">設定擴充功能安裝許可清單</translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
 <translation id="4632566332417930481">禁止在由企業政策安裝的擴充功能中使用開發人員工具，允許在其他情況下使用開發人員工具</translation>
@@ -2897,7 +2932,6 @@
       如果將這項政策設為停用或不設定，使用者可選擇是否要註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。如果註冊失敗，系統不會封鎖 <ph name="PRODUCT_NAME" /> 啟動程序。
 
       在電腦上註冊裝置範圍內的雲端政策時會使用這項政策。詳情請參閱 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
-<translation id="4887274746092315609">為 SAML 使用者啟用可在工作階段中變更密碼的頁面</translation>
 <translation id="4890453377345554695">你可以透過這項政策建立網址模式清單，指定哪些網站可以要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -2928,6 +2962,7 @@
       如果將這項政策設為停用，則系統不會收集或上傳這類記錄。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> M76 以下版本預設將無法收集與上傳這類記錄。自 M77 版起，針對大多數適用雲端式使用者層級企業政策的設定檔，<ph name="PRODUCT_NAME" /> 預設可收集與上傳這類記錄。從 M77 版到 M80 版，針對適用 <ph name="PRODUCT_NAME" /> 內部部署管理設定的設定檔，<ph name="PRODUCT_NAME" /> 預設也可收集與上傳這類記錄。</translation>
+<translation id="4911334289324462969">通訊埠 989 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="4913065710388638917">針對清單中的網址啟用認證流程</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4919122295221518724">使用較嚴格的混合內容處理方式</translation>
@@ -3734,6 +3769,7 @@
 
       這項強制政策會影響裝置範圍內的雲端政策。</translation>
 <translation id="5961137303188584693">裝置內建的 NIC MAC 位址</translation>
+<translation id="5963752574792883406">通訊埠 990 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
 <translation id="596732417280023843">憑證設定檔的名稱。</translation>
 <translation id="5975765799383881158">如果將這項政策設為啟用或不設定，使用者可以將意見回饋傳送給 Google，方法是依序按一下「選單」圖示 &gt; [說明] &gt; [回報問題]，或是按下按鍵組合。
@@ -3764,6 +3800,7 @@
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="6022948604095165524">起始動作</translation>
+<translation id="6025267044008029374">封鎖惡意的下載內容 (建議)</translation>
 <translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
@@ -3899,6 +3936,7 @@
       如果不採用沙箱機制執行音訊子系統，可能會讓使用者面臨安全性風險。
       如果不設定這項政策，系統會使用音訊沙箱的預設設定 (視不同平台而定)。
      這項政策的用途是讓企業能彈性停用音訊沙箱，避免安全性軟體的設定干擾沙箱運作。</translation>
+<translation id="624818583115864448">通訊埠 554 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="6252773211180267325">允許使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
@@ -4037,6 +4075,14 @@
 <translation id="6449476513004303784">不允許使用者管理憑證</translation>
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 模式中啟用 <ph name="CORS" /> 檢查安全防護措施</translation>
 <translation id="645425387487868471">啟用 <ph name="PRODUCT_NAME" /> 的強制登入功能</translation>
+<translation id="6455842857207956758">在密碼更新完成且需要同步時，監控密碼同步權杖的值，並讓使用者在線上進行重新驗證，以啟用多部 Chrome 之間的 SAML 密碼同步功能。
+
+      在 chrome://password-change 中啟用一個頁面，讓 SAML 使用者能在工作階段中變更 SAML 密碼。這可以確保 SAML 密碼和裝置的螢幕鎖定密碼保持同步。
+
+      這項政策也會啟用通知功能，在 SAML 密碼即將到期時提醒 SAML 使用者，方便使用者立即在工作階段中變更密碼。
+      不過，只有當 SAML 識別資訊提供者在 SAML 登入流程中將密碼到期資訊傳送至裝置時，系統才會顯示這些通知。
+
+      如果將這項政策設為「停用」或不設定，則無法在 chrome://password-change 變更 SAML 密碼；當 SAML 密碼即將到期時，系統也不會顯示通知。</translation>
 <translation id="6458361632497500815">如果將這項政策設為啟用或不設定，只要 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 和 <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> 這 3 項政策都設為啟用，所有使用者將可使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，無關聯的使用者將無法使用 <ph name="PRODUCT_CROSTINI_NAME" />。變更為停用後，系統會開始將這項政策套用到新的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，不會套用到已經在執行的這類容器。</translation>
 <translation id="6464074037294098618">啟用地址的自動填入功能</translation>
 <translation id="6467613372414922590">允許使用者層級的內建訊息傳遞主機 (在無管理員權限的情況下安裝)。</translation>
@@ -4112,7 +4158,6 @@
 
       如果不設定這項政策，系統將不會強制執行 PIN 碼長度上限。</translation>
 <translation id="6553143066970470539">螢幕亮度百分比</translation>
-<translation id="6558362593755624474">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
 <translation id="6559221564468029245">如果將這項政策設為啟用或不設定，系統在音訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置逾時限制，而採取閒置因應動作。不過，即使有音訊活動，系統在達到螢幕調暗、螢幕關閉和螢幕鎖定的逾時限制後，仍會觸發這些動作。
 
@@ -4217,6 +4262,7 @@
 
       如果將這項政策設為停用或不設定，則列印指令會觸發列印預覽畫面。</translation>
 <translation id="6658245400435704251">指定裝置可以任意延遲下載某項更新的秒數上限 (以該項更新初次被推送到伺服器的時間為準)。你可以將這項裝置等待時間的其中一部分設定為等待的時間長度，剩下的部分則設定為檢查更新的次數。不論採取哪種方式，分散時間皆不得超過固定時間長度，這樣就可以避免裝置由於持續等待下載某項更新而停止回應。</translation>
+<translation id="6659537776197644458">不觸發驗證流程，也不同步處理密碼</translation>
 <translation id="6662162847932043943">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
 
       網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
@@ -4263,6 +4309,7 @@
        如果啟用或不設定這項政策，瀏覽器會在使用者提交不安全表單時顯示整頁的警告訊息。此外，當使用者點選表單欄位時，瀏覽器會在欄位旁邊顯示警告訊息泡泡，並停用這類表單的自動填入功能。
        如果停用這項政策，瀏覽器不會針對不安全表單顯示警告訊息，且自動填入功能將可正常運作。</translation>
 <translation id="670597451099978576">自動授予權限給這些網站，讓這些網站能在登入畫面上連結具有指定廠商和產品 ID 的 USB 裝置。</translation>
+<translation id="6706330611356546885">允許所有網站執行 JavaScript JIT</translation>
 <translation id="6720330829631914048">一天開始後經過的小時數 (24 小時制)。</translation>
 <translation id="6723472666969849951">你可以透過這項政策控管可在 <ph name="PRODUCT_NAME" /> 中安裝的應用程式和擴充功能，以及這些應用程式和擴充功能可互動的主機，並限制執行階段存取權。
 
@@ -4890,6 +4937,7 @@
       如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者和其他一般使用者皆可使用這項功能。</translation>
+<translation id="7367734504783638685">第三方單一登入 (SSO) 服務供應商和 Chrome 裝置之間的密碼同步功能</translation>
 <translation id="7372831798009983116">啟用自動點擊無障礙功能</translation>
 <translation id="7373200034079131670">在 Android 或 VM 已啟動的前提下，於使用者登出時重新啟動。</translation>
 <translation id="7373680616478819439">你可以透過這項政策啟用或停用登入攔截功能。
@@ -5276,12 +5324,6 @@
 <translation id="7933141401888114454">啟用建立受監管使用者的功能</translation>
 <translation id="793473937901685727">設定 ARC 應用程式的憑證可用性</translation>
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
-<translation id="7940359358774136765">在 chrome://password-change 中啟用一個頁面，讓 SAML 使用者能在工作階段中變更 SAML 密碼。這可以確保 SAML 密碼和裝置的螢幕鎖定密碼保持同步。
-
-      這項政策也會啟用通知功能，在 SAML 密碼即將到期時提醒 SAML 使用者，方便使用者立即在工作階段中變更密碼。
-      但是，只有當 SAML 識別資訊提供者在 SAML 登入流程中將密碼到期資訊傳送至裝置時，系統才會顯示這些通知。
-
-      如果將這項政策設為「停用」或不設定，則無法在 chrome://password-change 變更 SAML 密碼；當 SAML 密碼即將過期時，系統也不會顯示通知。</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
 <translation id="7951605113561734721">指定應使用裝置管理通訊協定註冊的裝置通用用戶端憑證。</translation>
 <translation id="7952007677054834789">設定 <ph name="PRODUCT_NAME" /> 的起始載入頁面、預設首頁和預設新分頁，並禁止使用者變更這些設定。
@@ -5303,6 +5345,7 @@
       如果將這項政策設為停用，系統不會停用遠端存取權，但只會允許來自相同網路的連線，禁止網路位址轉譯 (NAT) 穿越或轉送而來的連線。</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
+<translation id="7959035883875301444">控管 JavaScript JIT 的使用情形</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
 <translation id="7962093600142350905">這項政策可控管是否要在列印預覽對話方塊中向使用者顯示任何可用的 Privet 印表機。
       如果將這項政策設為啟用，列印預覽就會顯示可用的 Privet 印表機。
@@ -5581,6 +5624,7 @@
 <translation id="8314214821702356835">允許使用者在裝置鎖定時播放媒體</translation>
 <translation id="8319678975002906774">設定要傳回指定來源網站的控管型設定值</translation>
 <translation id="8320149248919453401">充電模式</translation>
+<translation id="8329434144708110">觸發驗證流程，藉此與單一登入 (SSO) 服務供應商同步處理密碼</translation>
 <translation id="8329984337216493753">這項政策只會在零售模式下啟用。
 
       指定 DeviceIdleLogoutTimeout 後，這項政策會使用倒數計時器定義警告方塊的時間，計時器會在使用者登出前顯示。
@@ -5727,6 +5771,17 @@
 <translation id="8537051350735478658">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>
+<translation id="8543103455510904459">你可以設定網站網址模式清單，指定哪些網站不得在啟用 JIT (Just In Time) 編譯器的情況下執行 JavaScript。
+
+          停用 JavaScript JIT 可能會減慢 <ph name="PRODUCT_NAME" /> 顯示網站內容的速度，也可能一併停用 JavaScript 中的 WebAssembly 等程式語言，但可讓 <ph name="PRODUCT_NAME" /> 以更安全的設定顯示網站內容。
+
+          如要進一步瞭解有效的網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。
+
+          系統僅會對網站細分層級 (eTLD+1) 強制執行 JavaScript JIT 政策的例外狀況。僅針對 subdomain.site.com 設定的政策不會正確套用至 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址未設定任何政策。在此情況下，如要將政策正確套用至 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
+
+          這項政策是按照個別頁框逐一套用，而不是完全以頂層來源網址為依據。因此，若 site-one.com 列於 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 載入的頁框含有 site-two.com，那麼 site-one.com 就會停用 JavaScript JIT；不過如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中已設定政策，site-two.com 將採用該政策，若未設定政策，則 site-two.com 會預設啟用 JavaScript JIT。
+
+          如果 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中已設定政策，未設定這項政策的網站就會套用該政策；若否，則網站會啟用 JavaScript JIT。</translation>
 <translation id="8543108307976719751">禁止與這部裝置建立遠端存取連線</translation>
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
@@ -5890,7 +5945,6 @@
 <translation id="8800453707696044281">自訂電池停止充電值 (以百分比表示)</translation>
 <translation id="8801680448782904838">透過通知建議或要求使用者重新啟動瀏覽器或裝置</translation>
 <translation id="8807313206348471682">顯示登出確認對話方塊</translation>
-<translation id="8816671955985738552">禁止在工作階段中透過 chrome://password-change 變更 SAML 密碼</translation>
 <translation id="8817960019535659860">禁止使用者透過 Chrome 作業系統註冊機制兌換優惠</translation>
 <translation id="8818173863808665831">回報裝置的地理位置。
 
@@ -6127,6 +6181,7 @@
       如果不設定這項政策，系統不會為任何網站自動選取憑證。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="9068629430243705879">通訊埠 6566 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="9073405975862312795">如果將這項政策設為啟用或不設定，已註冊的裝置會回報使用者的裝置使用時間範圍。
 
       如果將這項政策設為停用，已註冊的裝置不會記錄或回報活動時間。</translation>

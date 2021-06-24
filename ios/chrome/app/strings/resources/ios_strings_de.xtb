@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">Browserdaten löschen</translation>
 <translation id="1815941218935345331">Sicherheitscode</translation>
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
+<translation id="1832848789136765277">Bestätigen Sie Ihre Identität, damit Sie jederzeit auf Ihre synchronisierten Daten zugreifen können</translation>
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1894205589103145703">Bei der Anmeldung ist ein Fehler aufgetreten.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">Desktop-Version</translation>
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> Lesezeichen verschoben</translation>
+<translation id="212623074644302906">Fragen, ob Seiten der Leseliste hinzugefügt werden sollen</translation>
 <translation id="2139867232736819575">Nach von Ihnen kopiertem Text suchen</translation>
 <translation id="214201757571129614">Anmelden…</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
@@ -435,6 +437,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein und Ihre Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
 <translation id="5551897871312988470">Übersetzung anbieten</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="5580834567471114021">Der Leseliste für später hinzufügen?</translation>
 <translation id="5592679540098330836">Synchronisierung für <ph name="NAME" /> aktivieren</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
@@ -588,6 +591,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6830804042318138535">Mehr anzeigen</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
+<translation id="6842136130964845393">Bestätigen Sie Ihre Identität, damit Sie jederzeit auf Ihre gespeicherten Passwörter zugreifen können</translation>
 <translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6858855187367714033">Gescannt</translation>
 <translation id="6859944681507688231">Wenn Sie einen QR-Code oder eine Kreditkarte scannen möchten, aktivieren Sie zuerst in den Einstellungen die Kamera.</translation>
@@ -619,6 +623,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7133798577887235672">Voller Name</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
+<translation id="7153999225810839758">Lesezeit: <ph name="TIME" /> Minute(n)</translation>
 <translation id="7159472599653637159">Mobile Version anfordern</translation>
 <translation id="7162168282402939716">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="7172852049901402487">Schützen Sie Ihre Passwörter vor Sicherheitsproblemen</translation>
@@ -668,6 +673,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> Min.</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="7649070708921625228">Hilfe</translation>

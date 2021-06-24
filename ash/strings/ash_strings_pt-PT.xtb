@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza este código PIN nesse dispositivo: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Captura de ecrã parcial selecionada</translation>
 <translation id="1032891413405719768">A pilha da caneta stylus está fraca</translation>
+<translation id="1036073649888683237">Para gerir as notificações, aceda a Definições</translation>
 <translation id="1036672894875463507">Sou a sua Assistente Google e estou aqui para ajudar ao longo do seu dia!
 Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
@@ -14,6 +15,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1052916631016577720">Análise de itens</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Boa tarde, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
@@ -306,6 +308,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3430396595145920809">Deslize rapidamente a partir da direita para retroceder.</translation>
 <translation id="343571671045587506">Editar lembrete</translation>
 <translation id="3435967511775410570">Impressão digital reconhecida</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">A sua ligação mudou para uma rede mais segura.</translation>
@@ -430,6 +433,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4379531060876907730">Estas são as suas ferramentas da caneta stylus</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
+<translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4421231901400348175">A partilhar o controlo do seu ecrã com <ph name="HELPER_NAME" /> através da Assistência remota.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>

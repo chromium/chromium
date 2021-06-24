@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ឆ្នាំមុន}other{# ឆ្នាំមុន}}</translation>
 <translation id="2878511608894704031">លុបទាំងអស់</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ថ្ងៃទៀត}other{# ថ្ងៃទៀត}}</translation>
+<translation id="2922712708897119705">បាន​តម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> តាម​លំដាប់ចុះ។</translation>
 <translation id="2931838996092594335">ចុច</translation>
 <translation id="2981684127883932071">កំពុងបង្ហាញ​ការណែនាំ</translation>
 <translation id="3036649622769666520">បើកឯកសារ</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ម៉ឺនុយ</translation>
 <translation id="3909791450649380159">កាត់</translation>
 <translation id="3990502903496589789">ចុងខាងស្តាំ</translation>
+<translation id="3994749195054421561">បានតម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> តាមលំដាប់​ឡើង។</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ការជូន​ដំណឹងមិន​ទាន់អាន 1}other{ការជូន​ដំណឹងមិន​ទាន់អាន #}}</translation>
 <translation id="4202807286478387388">លោត</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{នៅសល់ 1 នាទីទៀត}other{នៅសល់ # នាទីទៀត}}</translation>
 <translation id="7430878839542012341">លុប​ការស្វែងរក​នេះពីប្រវត្តិ​របស់អ្នក?</translation>
+<translation id="7437971918971306061">មិនបាន​តម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> ទេ។</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">រូប​អារម្មណ៍</translation>
 <translation id="7620655452534002301">បានលុបចេញ។</translation>

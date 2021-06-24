@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
 <translation id="1105960400813249514">Chụp ảnh màn hình</translation>
+<translation id="1110914759170138831">Nội dung nổi bật đã được rút gọn</translation>
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
 <translation id="1113597929977215864">Hiển thị chế độ xem đơn giản</translation>
 <translation id="1118561384561215815">Yêu cầu trợ giúp về các việc cần làm trên web</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Tiết kiệm tới 60% dữ liệu, đọc tin tức hôm nay</translation>
 <translation id="1303339473099049190">Không tìm thấy mật khẩu đó. Hãy kiểm tra chính tả rồi thử lại.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Gửi từ <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Hãy chọn một mẫu cho nội dung nổi bật của bạn</translation>
 <translation id="1307205233980126133">Rất tiếc, chúng tôi không thể xác thực thông tin đăng nhập của bạn</translation>
 <translation id="1310482092992808703">Nhóm các thẻ</translation>
 <translation id="1311657260431405215">Mã QR này không phải là URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4183868528246477015">Tìm bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
+<translation id="4206707945726604465">Để xóa các dạng nhật ký khác, hãy truy cập trang <ph name="BEGIN_LINK1" />Hoạt động của tôi trên Google<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
@@ -581,6 +584,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4807098396393229769">Tên trên thẻ</translation>
 <translation id="4818017973810341238">Không xác minh được Digital asset links (Đường liên kết đến tài sản kỹ thuật số) trên <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Tải nội dung xuống</translation>
+<translation id="4834007576107377210">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn của công cụ tìm kiếm của bạn (nếu có)</translation>
 <translation id="4835385943915508971">Chrome không có quyền truy cập vào tài nguyên đã yêu cầu.</translation>
 <translation id="4837753911714442426">Mở tùy chọn để in trang</translation>
 <translation id="4842092870884894799">Hiển thị cửa sổ bật lên tạo mật khẩu</translation>
@@ -635,6 +639,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Không tải được 1 tệp xuống.}other{Không tải được # tệp xuống.}}</translation>
 <translation id="5168824020667180049">Đã theo dõi <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
+<translation id="5171045022955879922">Tìm kiếm hoặc nhập URL</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5188992787241350004">Tìm kiếm bằng giọng nói</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
@@ -744,7 +749,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5836192821815272682">Đang tải Bản cập nhật Chrome…</translation>
 <translation id="5853623416121554550">đã tạm dừng</translation>
 <translation id="5854512288214985237">Không có số liệu thống kê hoặc báo cáo sự cố nào được gửi cho Google</translation>
-<translation id="5854790677617711513">Đã tồn tại hơn 30 ngày</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome không thể bật bộ điều hợp Bluetooth</translation>
 <translation id="5860033963881614850">Tắt</translation>
@@ -1107,6 +1111,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8035133914807600019">Thư mục mới...</translation>
 <translation id="8037750541064988519">Còn <ph name="DAYS" /> ngày</translation>
 <translation id="8037801708772278989">Vừa kiểm tra xong</translation>
+<translation id="8040831032425909005">Biểu tượng Tiện ích Tìm kiếm Thao tác nhanh</translation>
 <translation id="804335162455518893">Không tìm thấy thẻ SD</translation>
 <translation id="8051695050440594747">Còn <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Mở trong thẻ Chrome mới</translation>
@@ -1169,6 +1174,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8442258441309440798">Không có tin bài nào</translation>
 <translation id="8443209985646068659">Chrome không thể cập nhật</translation>
 <translation id="8445448999790540984">Không xuất được mật khẩu</translation>
+<translation id="8453310803815879010">Bắt đầu Trò chơi Khủng long</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8473863474539038330">Địa chỉ và các tùy chọn khác</translation>

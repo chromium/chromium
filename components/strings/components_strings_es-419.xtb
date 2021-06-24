@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1032854598605920125">Girar a la derecha</translation>
-<translation id="1036224116832931580">Juego del dinosaurio, presiona para saltar y jugar</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
@@ -125,6 +124,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1360955481084547712">Abre una nueva ventana de incógnito para navegar de forma privada</translation>
 <translation id="1363819917331173092">No ofrecer la traducción de las páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Como esta política está bloqueada, se omitirá su valor.</translation>
+<translation id="1368318639262510626">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desolado. Cuando escuches la señal, presiona la barra espaciadora para saltar los obstáculos.</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">Acerca de la versión</translation>
@@ -133,6 +133,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1380591466760231819">Plegado de carta</translation>
 <translation id="138218114945450791">Celeste</translation>
 <translation id="1382194467192730611">El dispositivo USB que permite tu administrador</translation>
+<translation id="1384725838384960382">Hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="1386623374109090026">Anotaciones</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> no envió ningún dato.</translation>
 <translation id="1405567553485452995">Verde claro</translation>
@@ -270,6 +271,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1875512691959384712">Formularios de Google</translation>
 <translation id="187918866476621466">Abrir páginas de inicio</translation>
 <translation id="1883255238294161206">Ocultar lista</translation>
+<translation id="1890171020361705182">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desolado. Cuando escuches la señal, presiona para saltar los obstáculos.</translation>
 <translation id="1898423065542865115">Filtrado</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; su certificado de seguridad venció en el último día. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. El reloj de la computadora actualmente está configurado en la siguiente fecha: <ph name="CURRENT_DATE" />. ¿Es correcto? De no ser así, corrige el reloj del sistema y, luego, actualiza esta página.}other{Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad venció hace # días. Es posible que esto se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. El reloj de la computadora actualmente está configurado en la siguiente fecha: <ph name="CURRENT_DATE" />. ¿Es correcto? De no ser así, corrige el reloj del sistema y, luego, actualiza la página.}}</translation>
 <translation id="1902576642799138955">Período de validez</translation>
@@ -788,7 +790,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3799805948399000906">Se necesita la fuente</translation>
 <translation id="3807366285948165054">Cambio en el eje X de la imagen</translation>
 <translation id="3807873520724684969">Se bloqueó el contenido dañino</translation>
-<translation id="3808375843007691220">Advertencia: Se detectaron funciones experimentales</translation>
 <translation id="3816482573645936981">Valor (sustituido)</translation>
 <translation id="382518646247711829">Si utilizas un servidor proxy...</translation>
 <translation id="3827112369919217609">Absoluto</translation>
@@ -822,6 +823,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3963837677003247395">¿Quieres continuar de forma manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
+<translation id="3970481983430640194">Ahora puedes arrastrar esta app y cambiarle el tamaño</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">Botón Realizar Verificación de seguridad de Chrome: presiona Intro para realizar la Verificación de seguridad en la configuración de Chrome</translation>
@@ -834,10 +836,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3996311196211510766">El sitio <ph name="ORIGIN" /> solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no es posible en este momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
-<translation id="4027177651527820006">Si habilitas estas funciones, podrías perder los datos de navegación o
-    poner en riesgo la seguridad o la privacidad. Las funciones habilitadas se aplican a todos
-    los usuarios de este navegador. Si eres un administrador empresarial, no debes
-    usar estas funciones experimentales en producción.</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1012,6 +1010,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4660119392514473465">Ahora puedes navegar de forma privada; las demás personas que usan este dispositivo no verán tu actividad. Sin embargo, se guardarán las descargas, los favoritos y los elementos de la lista de lectura.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
+<translation id="4673460618347856347">Juego del dinosaurio, jugar</translation>
 <translation id="4675657451653251260">En el modo de invitado, no verás información de perfil de Chrome. Puedes <ph name="LINK_BEGIN" />acceder<ph name="LINK_END" /> para ingresar a la información de tu Cuenta de Google, como contraseñas y formas de pago.</translation>
 <translation id="467662567472608290">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad contiene errores. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> desea responder a los eventos de accesibilidad</translation>
@@ -1308,6 +1307,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="569000877158168851">El valor de la política DnsOverHttpsTemplates no es relevante y no se usará, a menos que se establezca la política DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5694206146481922091">Está abierta la hoja de inscripción de credenciales de pago seguro</translation>
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
@@ -1394,6 +1394,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6032524144326295339">Buzón 2</translation>
 <translation id="6032955021262906325">Encuadernado a la izquierda</translation>
 <translation id="6034000775414344507">Gris claro</translation>
+<translation id="6034062182346928710">Es posible que el cambio de tamaño de <ph name="APP_NAME" /> no funcione correctamente. Utiliza los tamaños predeterminados de ventana para que la app responda de modo previsible.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Plegado en acordeón</translation>
 <translation id="6039846035001940113">Si el problema persiste, comunícate con el propietario del sitio.</translation>
@@ -1423,6 +1424,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6120179357481664955">¿Recuerdas tu ID de IUP?</translation>
 <translation id="6123290840358279103">Ver la tarjeta virtual</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
+<translation id="6143538402333184781">Esta app solo es compatible con el tamaño "Teléfono".</translation>
 <translation id="6146055958333702838">Revisa los cables y reinicia los routers, módems u otros dispositivos
         de red que estés usando.</translation>
 <translation id="614940544461990577">Intenta:</translation>
@@ -1436,6 +1438,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6180316780098470077">Intervalo entre reintentos</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
+<translation id="6211666000885129820">Hoja de inscripción de credenciales de pago seguro</translation>
 <translation id="6218753634732582820">¿Confirmas que quieres quitar la dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
 <translation id="6221345481584921695">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso. El contenido malicioso proviene de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de software malicioso.</translation>
@@ -1535,7 +1538,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6596325263575161958">Opciones de encriptación</translation>
 <translation id="6604181099783169992">Sensores de luz o movimiento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
-<translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="6615297766614333076">Apilador 2</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6626291197371920147">Agregar un número de tarjeta válido</translation>
@@ -1594,6 +1596,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6865412394715372076">No se puede verificar la tarjeta en este momento</translation>
 <translation id="6874604403660855544">&amp;Rehacer Agregar</translation>
 <translation id="6881240511396774766">Crea un nuevo documento de Google rápidamente</translation>
+<translation id="6883221904761970440">Está cerrada la hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original a través de una conexión no segura.</translation>
@@ -2033,7 +2036,6 @@ Detalles adicionales:
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
-<translation id="8463101686637053101">Juego del dinosaurio, presiona la barra espaciadora para saltar y jugar</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarjeta de crédito}other{# tarjetas de crédito}}</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
@@ -2117,6 +2119,7 @@ Detalles adicionales:
 <translation id="87601671197631245">Este sitio usa una configuración de seguridad obsoleta. Si envías información (p. ej., contraseñas, mensajes o tarjetas de crédito) a este sitio, es posible que quede expuesta.</translation>
 <translation id="8761567432415473239">La navegación segura de Google <ph name="BEGIN_LINK" />encontró programas peligrosos<ph name="END_LINK" /> recientemente en <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766943070169463815">Está abierta la hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="8774457497170244317">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Rehacer Eliminar</translation>
@@ -2234,6 +2237,7 @@ Detalles adicionales:
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="9207861905230894330">Error al agregar artículo</translation>
+<translation id="9211470216863457665">Está cerrada la hoja de inscripción de credenciales de pago seguro</translation>
 <translation id="9213433120051936369">Personalizar el aspecto</translation>
 <translation id="9215416866750762878">Una aplicación impide que Chrome se conecte de forma segura a este sitio</translation>
 <translation id="9219103736887031265">Imágenes</translation>

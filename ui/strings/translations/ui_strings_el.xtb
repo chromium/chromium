@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Πριν από 1 χρόνο}other{Πριν από # χρόνια}}</translation>
 <translation id="2878511608894704031">Διαγραφή όλων</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{σε 1 η.}other{σε # η.}}</translation>
+<translation id="2922712708897119705">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε με φθίνουσα σειρά.</translation>
 <translation id="2931838996092594335">κάνω κλικ</translation>
 <translation id="2981684127883932071">Προβολή προτάσεων</translation>
 <translation id="3036649622769666520">Άνοιγμα Αρχείων</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Μενού</translation>
 <translation id="3909791450649380159">Απο&amp;κοπή</translation>
 <translation id="3990502903496589789">Δεξιά άκρη</translation>
+<translation id="3994749195054421561">Η στήλη <ph name="COLUMN_NAME" /> ταξινομήθηκε σε αύξουσα σειρά.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 μη αναγνωσμένη ειδοποίηση}other{# μη αναγνωσμένες ειδοποιήσεις}}</translation>
 <translation id="4202807286478387388">μεταπήδηση</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Απομένει 1 λεπτό}other{Απομένουν # λεπτά}}</translation>
 <translation id="7430878839542012341">Να διαγραφεί αυτή η αναζήτηση από το ιστορικό σας;</translation>
+<translation id="7437971918971306061">Η ταξινόμηση της στήλης <ph name="COLUMN_NAME" /> καταργήθηκε.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Καταργήθηκε.</translation>

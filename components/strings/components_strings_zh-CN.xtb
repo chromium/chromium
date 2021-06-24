@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">查看详情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1032854598605920125">顺时针旋转</translation>
-<translation id="1036224116832931580">恐龙游戏，您只需点按屏幕让恐龙跳跃即可开始玩这个游戏</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1038106730571050514">显示搜索建议</translation>
 <translation id="1038842779957582377">未知名称</translation>
@@ -372,6 +371,7 @@
 <translation id="2276057643614339130">打印基底</translation>
 <translation id="2277103315734023688">快进</translation>
 <translation id="2283340219607151381">保存并填写地址</translation>
+<translation id="2283447177162560884">已删除“<ph name="PAGE_TITLE" />”页面</translation>
 <translation id="2288422996159078444">您输入的任何内容、查看的任何网页或从事的任何其他网络活动都在被监视。网站上的内容可能会在您不知情的情况下遭到改动。</translation>
 <translation id="2289385804009217824">裁切</translation>
 <translation id="2292556288342944218">您被禁止访问互联网</translation>
@@ -498,6 +498,7 @@
 <translation id="277133753123645258">送货方式</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
+<translation id="2778854133681684171">下次通过这种付款方式进行购买时，您可以使用您的设备快速验证是您本人在操作。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">连接已重置。</translation>
 <translation id="2792012897584536778">此设备的管理员设置了安全证书，这些证书可能会允许管理员查看您所访问的网站的内容。</translation>
@@ -653,6 +654,7 @@
 <translation id="3377736046129930310">使用“屏幕锁定”功能更快地确认银行卡</translation>
 <translation id="3380365263193509176">未知错误</translation>
 <translation id="3380864720620200369">客户端 ID：</translation>
+<translation id="3381668585148405088">验证您的购买交易</translation>
 <translation id="3387261909427947069">付款方式</translation>
 <translation id="3391030046425686457">递送地址</translation>
 <translation id="3395827396354264108">取货方式</translation>
@@ -780,7 +782,6 @@
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3807366285948165054">图片沿 X 轴位移</translation>
 <translation id="3807873520724684969">有害内容已被拦截。</translation>
-<translation id="3808375843007691220">警告：您所要使用的是实验性功能！</translation>
 <translation id="3816482573645936981">值（已被取代）</translation>
 <translation id="382518646247711829">如果您使用代理服务器…</translation>
 <translation id="3827112369919217609">绝对</translation>
@@ -814,6 +815,7 @@
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3963837677003247395">以手动方式继续？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
+<translation id="3970481983430640194">现在，您可以拖动此应用并调整它的大小了</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3973357910713125165">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
@@ -1382,6 +1384,7 @@
 <translation id="6032524144326295339">信箱 2</translation>
 <translation id="6032955021262906325">装订（左侧）</translation>
 <translation id="6034000775414344507">浅灰色</translation>
+<translation id="6034062182346928710">“<ph name="APP_NAME" />”可能无法妥当地调整大小。请使用预设窗口大小，以防止该应用出现失常行为。</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">风琴折</translation>
 <translation id="6039846035001940113">如果问题仍然存在，请与网站所有者联系。</translation>
@@ -1411,6 +1414,7 @@
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6123290840358279103">查看虚拟卡</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
+<translation id="6143538402333184781">此应用仅支持“手机”尺寸。</translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150036310511284407">三孔（左侧）</translation>
@@ -1522,7 +1526,6 @@
 <translation id="6596325263575161958">加密选项</translation>
 <translation id="6604181099783169992">动态传感器或光传感器</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
-<translation id="6612358246767739896">受保护的内容</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
 <translation id="6624427990725312378">联系信息</translation>
 <translation id="6626291197371920147">添加有效的卡号</translation>
@@ -2020,7 +2023,6 @@
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
-<translation id="8463101686637053101">恐龙游戏，您只需按空格键让恐龙跳跃即可开始玩这个游戏</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474910779563686872">显示开发者详细信息</translation>

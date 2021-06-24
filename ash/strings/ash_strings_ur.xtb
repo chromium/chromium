@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">‏بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس PIN کوڈ کو اس آلہ پر درج کریں: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">جزوی اسکرین شاٹ کا انتخاب کیا گیا</translation>
 <translation id="1032891413405719768">اسٹائلس کی بیٹری کم ہے</translation>
+<translation id="1036073649888683237">اطلاعات کا نظم کرنے کیلئے ترتیبات پر جائیں</translation>
 <translation id="1036672894875463507">‏آپ کی پورے دن مدد کرنے کے لیے میں آپ کی Google اسسٹنٹ ہوں!
 یہاں کچھ چیزیں ہیں جنہیں آپ شروع کرنے کے لیے آزما سکتے ہیں۔</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> کو شامل کیا گیا</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">آئٹم اسکین کریں</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">بیٹری کو تبدیل یا ریچارج کریں</translation>
 <translation id="108486256082349153">سیلولر: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">سہ پہر بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">پیچھے جانے کیلئے دائیں سے سوائپ کریں</translation>
 <translation id="343571671045587506">یاد دہانی میں ترمیم کریں</translation>
 <translation id="3435967511775410570">فنگر پرنٹ کی شناخت ہوگئی</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
 <translation id="3445925074670675829">‏USB-C آلہ</translation>
 <translation id="3454224730401036106">آپ کا کنکشن ایک مزید محفوظ نیٹ ورک پر سوئچ ہو گیا ہے</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4379531060876907730">یہ آپ کے اسٹائلس ٹولز ہیں</translation>
 <translation id="4389184120735010762">آپ نے ڈاک کردہ مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
+<translation id="439598569299422042">موقوف ہو گیا، <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>

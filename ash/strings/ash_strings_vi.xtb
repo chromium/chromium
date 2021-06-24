@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã PIN này trên thiết bị đó: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Đã chọn chụp một phần màn hình</translation>
 <translation id="1032891413405719768">Pin của bút cảm ứng ở mức thấp</translation>
+<translation id="1036073649888683237">Để quản lý thông báo, hãy chuyển đến phần Cài đặt</translation>
 <translation id="1036672894875463507">Tôi là Trợ lý Google của bạn. Tôi có thể giúp bạn bất cứ lúc nào!
 Dưới đây là một số việc bạn có thể thử để bắt đầu.</translation>
 <translation id="1037492556044956303">Đã thêm <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1052916631016577720">Quét mục</translation>
 <translation id="1056775291175587022">Không có mạng</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Hãy thay hoặc sạc lại pin</translation>
 <translation id="108486256082349153">Thiết bị di động: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Tôi chán quá</translation>
@@ -306,6 +308,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3430396595145920809">Vuốt từ phải sang để quay lại</translation>
 <translation id="343571671045587506">Chỉnh sửa lời nhắc</translation>
 <translation id="3435967511775410570">Đã nhận dạng được vân tay</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="3445925074670675829">Thiết bị USB-C</translation>
 <translation id="3454224730401036106">Kết nối của bạn đã chuyển sang một mạng an toàn hơn</translation>
@@ -430,6 +433,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4379531060876907730">Đây là các công cụ bút dành cho bút cảm ứng</translation>
 <translation id="4389184120735010762">Bạn đã nhấn phím tắt của tính năng phóng to ở vị trí cố định. Bạn có muốn bật tính năng này không?</translation>
+<translation id="439598569299422042">Đã tạm dừng, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
 <translation id="4421231901400348175">Chia sẻ quyền kiểm soát màn hình của bạn với <ph name="HELPER_NAME" /> qua Trợ giúp từ xa.</translation>
 <translation id="4424159417645388645">Không gian làm việc 5</translation>

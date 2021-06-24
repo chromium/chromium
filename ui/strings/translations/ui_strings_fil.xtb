@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 taon ang nakalipas}one{# taon ang nakalipas}other{# na taon ang nakalipas}}</translation>
 <translation id="2878511608894704031">I-delete Lahat</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{sa loob ng 1 araw}one{sa loob ng # araw}other{sa loob ng # na araw}}</translation>
+<translation id="2922712708897119705">Pinagbukod-bukod sa pababang ayos ang column na <ph name="COLUMN_NAME" />.</translation>
 <translation id="2931838996092594335">i-click</translation>
 <translation id="2981684127883932071">Ipinapakita ang mga suhestyon</translation>
 <translation id="3036649622769666520">Buksan ang Mga File</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Al&amp;isin</translation>
 <translation id="3990502903496589789">Tamang Lamang</translation>
+<translation id="3994749195054421561">Pinagbukod-bukod sa pataas na ayos ang column na <ph name="COLUMN_NAME" />.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Hindi Pa Nababasang Notification}one{# Hindi Pa Nababasang Notification}other{# na Hindi Pa Nababasang Notification}}</translation>
 <translation id="4202807286478387388">tumalon</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minuto na lang ang natitira}one{# minuto na lang ang natitira}other{# na minuto na lang ang natitira}}</translation>
 <translation id="7430878839542012341">I-delete ang paghahanap na ito mula sa iyong history?</translation>
+<translation id="7437971918971306061">Nawala sa pagkakabukod-bukod ang column na <ph name="COLUMN_NAME" />.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> (na) TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Inalis.</translation>

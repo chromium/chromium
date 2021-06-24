@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">查看詳情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
 <translation id="1032854598605920125">順時針方向旋轉</translation>
-<translation id="1036224116832931580">㩒一下就可以令恐龍跳起，輕鬆玩恐龍遊戲</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1038106730571050514">顯示建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
@@ -125,6 +124,7 @@
 <translation id="1360955481084547712">開啟新的無痕式視窗以私下瀏覽內容</translation>
 <translation id="1363819917331173092">不要詢問是否翻譯<ph name="SOURCE_LANGUAGE" />的網頁</translation>
 <translation id="1364822246244961190">此政策被封鎖，系統會忽略其設定值。</translation>
+<translation id="1368318639262510626">喺呢款恐龍遊戲入面，你要協助喺荒野入面奔馳嘅像素化恐龍避開仙人掌同翼手龍。當您聽到音效提示嘅時候，㩒空格鍵就可以跳過障礙物。</translation>
 <translation id="1374468813861204354">建議</translation>
 <translation id="1374692235857187091">Index-4x6 (明信片)</translation>
 <translation id="1375198122581997741">關於版本</translation>
@@ -133,6 +133,7 @@
 <translation id="1380591466760231819">三折頁</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1382194467192730611">系統管理員允許使用的 USB 裝置</translation>
+<translation id="1384725838384960382">安全付款憑證驗證工作表</translation>
 <translation id="1386623374109090026">註解</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 沒有傳送任何資料。</translation>
 <translation id="1405567553485452995">淺綠色</translation>
@@ -270,6 +271,7 @@
 <translation id="1875512691959384712">Google 表格</translation>
 <translation id="187918866476621466">開啟起始網頁</translation>
 <translation id="1883255238294161206">收合清單</translation>
+<translation id="1890171020361705182">喺呢款恐龍遊戲入面，你要協助喺荒野入面奔馳嘅像素化恐龍避開仙人掌同翼手龍。聽到提示音效嘅時候，㩒一下就可以跳過障礙物。</translation>
 <translation id="1898423065542865115">篩選</translation>
 <translation id="1901443836186977402">{1,plural, =1{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已在昨天到期。這可能是由於設定錯誤，或有攻擊者攔截您的連線。您的電腦時鐘目前設定為 <ph name="CURRENT_DATE" />，請問是否正確？如果設定錯誤，請將系統時鐘調校至正確時間，然後重新整理此網頁。}other{伺服器無法證明屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已在 # 天前到期。這可能是由於設定錯誤，或有攻擊者攔截您的連線。您的電腦時鐘目前設定為 <ph name="CURRENT_DATE" />，請問是否正確？如果設定錯誤，請將系統時鐘調校至正確時間，然後重新整理此網頁。}}</translation>
 <translation id="1902576642799138955">有效期間</translation>
@@ -786,7 +788,6 @@
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
 <translation id="3807873520724684969">有害內容已被封鎖。</translation>
-<translation id="3808375843007691220">警告：您要使用的是實驗性功能！</translation>
 <translation id="3816482573645936981">值 (已被取代)</translation>
 <translation id="382518646247711829">如果您使用 Proxy 伺服器…</translation>
 <translation id="3827112369919217609">絕對</translation>
@@ -820,6 +821,7 @@
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3963837677003247395">要以手動方式繼續操作嗎？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
+<translation id="3970481983430640194">您現在可拖曳此應用程式來調整大小</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
 <translation id="3973357910713125165">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
@@ -832,7 +834,6 @@
 <translation id="3996311196211510766">網站 <ph name="ORIGIN" /> 指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
-<translation id="4027177651527820006">啟用這些功能有可能令您失去瀏覽資料，或導致您的安全或私隱受到威脅，並將套用至此瀏覽器的所有使用者。如果您是企業管理員，請勿在正式版本中使用這些標記。</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4058922952496707368">金鑰「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>
@@ -1007,6 +1008,7 @@
 <translation id="4660119392514473465">現在您可私下瀏覽內容，而使用這部電腦的其他使用者將無法看到您的活動。不過，您的下載檔案、書籤和閱讀清單項目仍會保留在裝置上。</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4673460618347856347">恐龍遊戲，開始玩</translation>
 <translation id="4675657451653251260">在訪客模式中，您將不會看到任何 Chrome 設定檔的資料。您可<ph name="LINK_BEGIN" />登入<ph name="LINK_END" />以存取 Google 帳戶資料，例如密碼和付款方法。</translation>
 <translation id="467662567472608290">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；伺服器的安全性憑證含有錯誤。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 希望回應無障礙功能事件</translation>
@@ -1303,6 +1305,7 @@
 <translation id="5689199277474810259">匯出為 JSON 格式</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設定為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不相關，系統也不會使用該值。</translation>
+<translation id="5694206146481922091">開咗安全付款憑證註冊工作表</translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購買嗎？</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="570530837424789914">管理…</translation>
@@ -1389,6 +1392,7 @@
 <translation id="6032524144326295339">出紙槽 2</translation>
 <translation id="6032955021262906325">釘裝 (左側)</translation>
 <translation id="6034000775414344507">淺灰色</translation>
+<translation id="6034062182346928710">「<ph name="APP_NAME" />」可能未妥善調整。請使用預設視窗大小，以免應用程式運作異常。</translation>
 <translation id="6034283069659657473">10x14 (信封)</translation>
 <translation id="6034514109191629503">彈弓摺</translation>
 <translation id="6039846035001940113">如果問題持續，請聯絡網站擁有者。</translation>
@@ -1418,6 +1422,7 @@
 <translation id="6120179357481664955">要記住您的 UPI ID 嗎？</translation>
 <translation id="6123290840358279103">查看虛擬卡</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
+<translation id="6143538402333184781">此應用程式只支援「手機」大小。</translation>
 <translation id="6146055958333702838">檢查連接線，或重新啟動路由器、數據機或其他使用中的
     網絡裝置。</translation>
 <translation id="614940544461990577">建議做法：</translation>
@@ -1431,6 +1436,7 @@
 <translation id="6180316780098470077">重試間隔</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6203231073485539293">檢查互聯網連線</translation>
+<translation id="6211666000885129820">安全付款憑證註冊工作表</translation>
 <translation id="6218753634732582820">要從 Chromium 移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>
 <translation id="6221345481584921695">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟件<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會被惡意軟件感染。這些惡意內容來自已知的惡意軟件散佈網站 <ph name="SUBRESOURCE_HOST" />。</translation>
@@ -1530,7 +1536,6 @@
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6604181099783169992">動態或光線感應器</translation>
 <translation id="6609880536175561541">Prc7 (信封)</translation>
-<translation id="6612358246767739896">受保護內容</translation>
 <translation id="6615297766614333076">堆疊器 2</translation>
 <translation id="6624427990725312378">聯絡人資料</translation>
 <translation id="6626291197371920147">新增有效的信用卡號碼</translation>
@@ -1589,6 +1594,7 @@
 <translation id="6865412394715372076">目前無法驗證此信用卡</translation>
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
+<translation id="6883221904761970440">閂咗安全付款憑證驗證工作表</translation>
 <translation id="6884662655240309489">粗幼：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過不安全連線擷取原始網頁。</translation>
@@ -2028,7 +2034,6 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
-<translation id="8463101686637053101">㩒空格鍵就可以令恐龍跳起，輕鬆玩恐龍遊戲</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8474910779563686872">顯示開發人員詳情</translation>
@@ -2111,6 +2116,7 @@
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>
 <translation id="8761567432415473239">Google 安全瀏覽最近在「<ph name="SITE" />」<ph name="BEGIN_LINK" />發現有害程式<ph name="END_LINK" />。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
+<translation id="8766943070169463815">開咗安全付款憑證驗證工作表</translation>
 <translation id="8774457497170244317">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即檢查已儲存在 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">重做刪除(&amp;R)</translation>
@@ -2228,6 +2234,7 @@
 <translation id="9199905725844810519">已封鎖列印功能</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
+<translation id="9211470216863457665">閂咗安全付款憑證註冊工作表</translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式令 Chrome 無法安全地連接至此網站</translation>
 <translation id="9219103736887031265">圖片</translation>

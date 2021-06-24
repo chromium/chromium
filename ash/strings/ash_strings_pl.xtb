@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten kod PIN: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Wybrano zrzut części ekranu</translation>
 <translation id="1032891413405719768">Niski poziom baterii rysika</translation>
+<translation id="1036073649888683237">Aby zarządzać powiadomieniami, otwórz Ustawienia</translation>
 <translation id="1036672894875463507">To ja, Twój Asystent Google. Chętnie Ci pomogę.
 Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1037492556044956303">Dodano urządzenie <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1052916631016577720">Skanowanie elementu</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Wymień lub naładuj baterię</translation>
 <translation id="108486256082349153">Sieć komórkowa: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
@@ -306,6 +308,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3430396595145920809">Aby wrócić, przesuń palcem od prawej strony</translation>
 <translation id="343571671045587506">Edytuj przypomnienie</translation>
 <translation id="3435967511775410570">Rozpoznano odcisk palca</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
 <translation id="3454224730401036106">Połączenie zostało przełączone na bezpieczniejszą sieć</translation>
@@ -430,6 +433,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4379531060876907730">To są Twoje narzędzia rysika</translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
+<translation id="439598569299422042">Wstrzymano, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">画面の一部のスクリーンショットを選択しました</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
+<translation id="1036073649888683237">通知の管理は設定アプリで行うことができす</translation>
 <translation id="1036672894875463507">私は Google アシスタント、あなたの 1 日をサポートします。
 使用できるフレーズをいくつか紹介します。</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> が追加されました</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">アイテムのスキャン</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">バッテリーを交換または充電してください</translation>
 <translation id="108486256082349153">携帯電話: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">こんにちは、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="109942774857561566">退屈だな</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
 <translation id="343571671045587506">リマインダーの編集</translation>
 <translation id="3435967511775410570">指紋を認識しました</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3454224730401036106">より安全なネットワークに接続が切り替えられました</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4379531060876907730">タッチペン ツール</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
+<translation id="439598569299422042">一時停止中、<ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
 <translation id="4421231901400348175">リモート サポート経由で <ph name="HELPER_NAME" /> と画面の制御を共有しています。</translation>
 <translation id="4424159417645388645">デスク 5</translation>

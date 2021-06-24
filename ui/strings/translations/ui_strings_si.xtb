@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{වසර 1කට පෙර}one{වසර #කට පෙර}other{වසර #කට පෙර}}</translation>
 <translation id="2878511608894704031">සියල්ල මකන්න</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 දිනකින්}one{දින #කින්}other{දින #කින්}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> තීරුව අඩු වන අනුපිළිවෙළට සකසන ලදි.</translation>
 <translation id="2931838996092594335">ක්ලික් කරන්න</translation>
 <translation id="2981684127883932071">යෝජනා දැක්වීම</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3909791450649380159">ක&amp;පන්න</translation>
 <translation id="3990502903496589789">දකුණු කෙළවර</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> තීරුව වැඩි වන අනුපිළිවෙළට සකසන ලදි.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 නොකියවූ දැනුම්දීමක්}one{නොකියවූ දැනුම්දීම් # ක්}other{නොකියවූ දැනුම්දීම් # ක්}}</translation>
 <translation id="4202807286478387388">පනින්න</translation>
 <translation id="4250229828105606438">තිරරූපය</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{මිනිත්තු 1 ක් ඉතිරියි}one{මිනිත්තු # ක් ඉතිරියි}other{මිනිත්තු # ක් ඉතිරියි}}</translation>
 <translation id="7430878839542012341">ඔබේ ඉතිහාසයෙන් මෙම සෙවීම මකන්නද?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> තීරුව අනුපිළිවෙළට සැකසීම් ඉවත් කරන ලදි.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ඉමොජි</translation>
 <translation id="7620655452534002301">ඉවත් කරන ලදි.</translation>

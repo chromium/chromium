@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ವರ್ಷದ ಹಿಂದೆ}one{# ವರ್ಷಗಳ ಹಿಂದೆ}other{# ವರ್ಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="2878511608894704031">ಎಲ್ಲವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1ದಿ. ದಲ್ಲಿ}one{#ದಿ. ಗಳಲ್ಲಿ}other{#ದಿ. ಗಳಲ್ಲಿ}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> ಕಾಲಮ್ ಅನ್ನು ಇಳಿಕೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="2931838996092594335">ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="2981684127883932071">ಸಲಹೆಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3036649622769666520">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3909791450649380159">ಕತ್ತರಿ&amp;ಸು</translation>
 <translation id="3990502903496589789">ಬಲ ತುದಿ</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> ಕಾಲಮ್ ಅನ್ನು ಏರಿಕೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ಓದದಿರುವ ಅಧಿಸೂಚನೆ}one{# ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು}other{# ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="4202807286478387388">ಹಾರು</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130"><ph name="MESSAGE" /> -</translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ನಿಮಿಷ ಉಳಿದಿದೆ}one{# ನಿಮಿಷಗಳು ಉಳಿದಿವೆ}other{# ನಿಮಿಷಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="7430878839542012341">ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಈ ಹುಡುಕಾಟವನ್ನು ಅಳಿಸುವುದೇ?</translation>
+<translation id="7437971918971306061">ಕಾಲಮ್ <ph name="COLUMN_NAME" /> ಅನ್ನು ವಿಂಗಡಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ಎಮೋಜಿ</translation>
 <translation id="7620655452534002301">ತೆಗೆದುಹಾಕಲಾಗಿದೆ.</translation>

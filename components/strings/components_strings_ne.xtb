@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">विवरणहरू हेर्नुहोस्</translation>
 <translation id="1030706264415084469"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा ठुलो परिमाणको डेटा भण्डारण गर्न चाहन्छ</translation>
 <translation id="1032854598605920125">घडीको दिशामा घुमाउनुहोस्</translation>
-<translation id="1036224116832931580">Dino गेम, उफ्रन र खेल्न ट्याप गर्नुहोस्</translation>
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
 <translation id="1038106730571050514">सुझावहरू देखाइयोस्</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
@@ -375,6 +374,7 @@
 <translation id="2276057643614339130">मुद्रणको आधार</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
 <translation id="2283340219607151381">ठेगाना सुरक्षित गरी फारम भर्नुहोस्</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मेटाइएको छ</translation>
 <translation id="2288422996159078444">तपाईंले टाइप गर्ने हरेक कुरा, तपाईंले हेर्ने हरेक पृष्ठ वा तपाईंले वेबमा गर्ने अन्य कुनै पनि गतिविधिमाथि निगरानी राखिन्छ र यी साइटका सामग्री तपाईंले थाहै नपाई परिवर्तन गर्न सकिन्छ।</translation>
 <translation id="2289385804009217824">छाँटकाँट गर्नुहोस्</translation>
 <translation id="2292556288342944218">तपाईंको इन्टरनेट पहुँचमाथि रोक लगाइएको छ</translation>
@@ -499,6 +499,7 @@
 <translation id="277133753123645258">ढुवानीको विधि</translation>
 <translation id="277499241957683684">हराइएको यन्त्रको रेकर्ड</translation>
 <translation id="2775884851269838147">प्रिन्ट गरिनु पर्ने पहिलो पृष्ठ</translation>
+<translation id="2778854133681684171">तपाईंले अर्को पटक यो भुक्तानी विधि प्रयोग गरी किनमेल गर्दा किनमेल गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा तुरुन्तै पुष्टि गर्न आफ्नो डिभाइस प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">जडान पुनः कायम भयो ।</translation>
 <translation id="2792012897584536778">यस डिभाइसका प्रशासकहरूले सुरक्षासम्बन्धी प्रमाणपत्रहरू सेटअप गरिसकेका हुँदा यसले उनीहरूलाई तपाईंले भ्रमण गर्नुहुने वेबसाटइका सामग्री हेर्न दिन सक्छ।</translation>
@@ -652,6 +653,7 @@
 <translation id="3377736046129930310">कार्डहरू अझ छिटो पुष्टि गर्न स्क्रिन लक सुविधा प्रयोग गर्नुहोस्</translation>
 <translation id="3380365263193509176">अज्ञात त्रुटि</translation>
 <translation id="3380864720620200369">ग्राहक आइडी:</translation>
+<translation id="3381668585148405088">आफ्नो खरिद पुष्टि गर्नुहोस्</translation>
 <translation id="3387261909427947069">भुक्तानी विधिहरू</translation>
 <translation id="3391030046425686457">डेलिभरीको ठेगाना</translation>
 <translation id="3395827396354264108">पिकअप विधि</translation>
@@ -780,7 +782,6 @@
 <translation id="3799805948399000906">मागिएको फन्ट</translation>
 <translation id="3807366285948165054">छविको X सिफ्ट</translation>
 <translation id="3807873520724684969">हानिकारक सामग्रीमाथि रोक लगाइयो।</translation>
-<translation id="3808375843007691220">चेतावनी: अगाडि परीक्षणको चरणमा रहेका सुविधाहरू छन्!</translation>
 <translation id="3816482573645936981">मान (यो मानको साटो लागू गरिएको)</translation>
 <translation id="382518646247711829">यदि तपाईंले कुनै एउटा प्रोक्सी सर्भर प्रयोग गर्नुभयो भने ...</translation>
 <translation id="3827112369919217609">निरपेक्ष</translation>
@@ -814,6 +815,7 @@
 <translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3963837677003247395">म्यानुअल रूपमा जारी राख्ने हो?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट }other{# साइटहरूबाट }}</translation>
+<translation id="3970481983430640194">तपाईं अब यो एप ड्रयाग गर्न र यसको आकार बदल्न सक्नुहुन्छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> माथि रोक लगाइएको छ।</translation>
 <translation id="3973357910713125165">Chrome को सुरक्षा जाँच गर्नुहोस् नामक बटन, Chrome को सेटिङमा गई सुरक्षा जाँच गर्न Enter थिच्नुहोस्</translation>
@@ -913,7 +915,7 @@
 <translation id="4275830172053184480">आफ्नो यन्त्रलाई फेरि सुरु गर्नुहोस्</translation>
 <translation id="4277028893293644418">पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यो कार्डलाई तपाईंको Google खातामा सुरक्षित गरिएको छ।}other{यी कार्डहरूलाई तपाईंको Google खातामा सुरक्षित गरिएको छ}}</translation>
-<translation id="4287885627794386150">परीक्षण प्रयोग गर्न सकिन्छ तर सक्रिय भने छैन</translation>
+<translation id="4287885627794386150">ट्रायल प्रयोग गर्न सकिन्छ तर यो सक्रिय छैन</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
@@ -1384,6 +1386,7 @@
 <translation id="6032524144326295339">मेलबक्स २</translation>
 <translation id="6032955021262906325">बायाँ बाइन्ड</translation>
 <translation id="6034000775414344507">हल्का खैरो</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" /> को आकार सही तरिकाले परिवर्तन नहुन सक्छ। एपले असामान्य व्यवहार नदेखाओस् भन्नाका खातिर विन्डोको पूर्वनिर्धारित आकार प्रयोग गर्नुहोस्।</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">एकर्डियन फोल्ड</translation>
 <translation id="6039846035001940113">समस्या जारी रहेको खण्डमा साइटको मालिकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -1413,6 +1416,7 @@
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
 <translation id="6123290840358279103">भर्चुअल कार्ड हेर्नुहोस्</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
+<translation id="6143538402333184781">यो एप "फोन" जत्रै आकारको विन्डोमा मात्र चलाउन मिल्छ।</translation>
 <translation id="6146055958333702838">तपाइँले प्रयोग गरिेहेको कुनै पनि केबुलहरू जाँच्नुहोस् र कुनै पनि राउटरहरू, मोडेमहरू, वा अन्य 
         नेटवर्क यन्त्रहरू रिबुट गर्नुहोस्।</translation>
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
@@ -1525,7 +1529,6 @@
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
 <translation id="6604181099783169992">चाल वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
-<translation id="6612358246767739896">संरक्षित सामग्री</translation>
 <translation id="6615297766614333076">स्ट्याकर २</translation>
 <translation id="6624427990725312378">सम्पर्कसम्बन्धी जानकारी</translation>
 <translation id="6626291197371920147">कार्डको मान्य नम्बर थप्नुहोस्</translation>
@@ -1695,7 +1698,7 @@
 <translation id="7298195798382681320">सिफारिस गरिएको</translation>
 <translation id="7300012071106347854">कोबाल्ट निलो</translation>
 <translation id="7304030187361489308">उच्च</translation>
-<translation id="7305756307268530424">सुस्त गतिमा सुरु गर्नुहोस्</translation>
+<translation id="7305756307268530424">अझ सुस्त गतिमा सुरु गरियोस्</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाइयोस्</translation>
@@ -1870,7 +1873,7 @@
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">अज्ञात</translation>
-<translation id="793209273132572360">ठेगाना परिवर्तन गर्ने हो?</translation>
+<translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
 <translation id="7934052535022478634">भुक्तानी गर्ने कार्य पूरा भयो</translation>
@@ -2021,7 +2024,6 @@
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8457125768502047971">अनिश्चितकालीन</translation>
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
-<translation id="8463101686637053101">Dino गेम, उफ्रिन र खेल्न स्पेस की थिच्नुहोस्</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{१ क्रेडिट कार्ड}other{# क्रेडिट कार्डहरू}}</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
 <translation id="8474910779563686872">विकासकर्ताका विवरणहरू देखाउनुहोस्</translation>

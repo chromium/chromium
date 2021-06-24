@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
+<translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1894205589103145703">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું.</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ડેસ્કટોપ સાઇટની વિનંતી કરો</translation>
 <translation id="2103075008456228677">history.google.com ખોલો</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> આઇટમ ખસેડી</translation>
+<translation id="212623074644302906">વાંચન સૂચિમાં ઉમેરવા માટે કહો</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="214201757571129614">સાઇન ઇન કરો…</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -435,6 +437,7 @@
 સેટિંગના સામાન્ય વિભાગમાં હેન્ડઓફ ચાલુ હોવું પણ જરૂરી છે અને તમારા ડિવાઇસ, સમાન iCloud એકાઉન્ટનો ઉપયોગ કરતાં હોવા જરૂરી છે.</translation>
 <translation id="5551897871312988470">અનુવાદ કરવાની ઑફર કરો</translation>
 <translation id="5556459405103347317">ફરિથી લોડ કરો</translation>
+<translation id="5580834567471114021">પછીથી વાંચવા માટેની વાંચન સૂચિમાં ઉમેરીએ?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> માટે સિંક ચાલુ કરો</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
 <translation id="5626245204502895507">ફાઇલ આ સમયે ડાઉનલોડ કરી શકાઈ નથી.</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6830804042318138535">વધુ વાંચો</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6851516051005285358">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="6858855187367714033">સ્કૅન કર્યો</translation>
 <translation id="6859944681507688231">QR કોડ અથવા ક્રેડિટ કાર્ડ સ્કૅન કરવા માટે, સેટિંગમાં કૅમેરા ચાલુ કરો.</translation>
@@ -619,6 +623,7 @@
 <translation id="7108338896283013870">છુપાવો</translation>
 <translation id="7133798577887235672">આખું નામ</translation>
 <translation id="7136892417564438900">કૅમેરો અનુપલબ્ધ છે</translation>
+<translation id="7153999225810839758">વાંચવા માટે <ph name="TIME" /> મિનિટ લાગશે</translation>
 <translation id="7159472599653637159">મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
 <translation id="7172852049901402487">સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
@@ -668,6 +673,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> નું ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
 <translation id="7607521702806708809">પાસવર્ડ ડિલીટ કરો</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> મિનિટ</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="7649070708921625228">સહાય</translation>

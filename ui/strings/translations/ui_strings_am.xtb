@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{ከ1 ዓመት በፊት}one{ከ# ዓመቶች በፊት}other{ከ# ዓመቶች በፊት}}</translation>
 <translation id="2878511608894704031">ሁሉንም ሰርዝ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{በ 1ቀ ውስጥ}one{በ #ቀ ውስጥ}other{በ #ቀ ውስጥ}}</translation>
+<translation id="2922712708897119705">አምድ <ph name="COLUMN_NAME" /> በቁልቁለት ቅደም-ተከተል ተደርድሯል።</translation>
 <translation id="2931838996092594335">ጠቅ ያድርጉ</translation>
 <translation id="2981684127883932071">ጥቆማ ሐሳቦችን በማሳየት ላይ</translation>
 <translation id="3036649622769666520">ፋይሎች ክፈት</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3909791450649380159">&amp;ቁረጥ</translation>
 <translation id="3990502903496589789">የቀኝ ጠርዝ</translation>
+<translation id="3994749195054421561">አምድ <ph name="COLUMN_NAME" /> በሽቅብታ ቅደም-ተከተል ተደርድሯል።</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ያልተነበበ ማሳወቂያ}one{# ያልተነበቡ ማሳወቂያዎች}other{# ያልተነበቡ ማሳወቂያዎች}}</translation>
 <translation id="4202807286478387388">ዝለል</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ደቂቃ ቀርቷል}one{# ደቂቃዎች ቀርቷል}other{# ደቂቃዎች ቀርተዋል}}</translation>
 <translation id="7430878839542012341">ይሄ ፍለጋ ከታሪክዎ ይሰረዝ?</translation>
+<translation id="7437971918971306061">አምድ <ph name="COLUMN_NAME" /> አልተደረደረም።</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ቴባ</translation>
 <translation id="7507604095951736240">ስሜት ገላጭ ምስል</translation>
 <translation id="7620655452534002301">ተወግዷል።</translation>

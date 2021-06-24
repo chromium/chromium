@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Համոզվեք, որ ձեր համաժամացված տվյալները միշտ հասանելի են ձեզ</translation>
 <translation id="1100066534610197918">Բացել նոր խմբի նոր ներդիրում</translation>
 <translation id="1105960400813249514">Էկրանի լուսանկարում</translation>
+<translation id="1110914759170138831">Ընդգծված տեքստը կրճատվել է</translation>
 <translation id="1111673857033749125">Ձեր մյուս սարքերում պահված էջանիշները կտեսնեք այստեղ:</translation>
 <translation id="1113597929977215864">Ցուցադրել պարզեցված դիտակերպը</translation>
 <translation id="1118561384561215815">Օգնություն ձևաթղթեր լրացնելիս</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
 <translation id="1303339473099049190">Չհաջողվեց գտնել այդ գաղտնաբառը։ Ստուգեք ուղղագրությունը և նորից փորձեք։</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Ուղարկվել է <ph name="DEVICE_NAME" />-ից</translation>
+<translation id="130581733275749598">Ընտրեք ձևանմուշ ընդգծված տեքստի համար</translation>
 <translation id="1307205233980126133">Չհաջողվեց ստուգել ձեր տվյալները</translation>
 <translation id="1310482092992808703">Խմբավորել ներդիրները</translation>
 <translation id="1311657260431405215">Այս QR կոդը URL չէ՝ <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4183868528246477015">Որոնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
+<translation id="4206707945726604465">Պատմությունից այլ տվյալներ ջնջելու համար այցելեք <ph name="BEGIN_LINK1" />Իմ գործողությունները Google-ում<ph name="END_LINK1" /> էջ</translation>
 <translation id="4209895695669353772">Google-ից անհատականացված բովանդակություն ստանալու համար միացրեք համաժամացումը</translation>
 <translation id="4225895483398857530">Գործիքագոտու դյուրանցում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -581,6 +584,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
 <translation id="4818017973810341238">Չհաջողվեց հաստատել թվային օբյեկտների հղումները <ph name="VIOLATED_URL" /> էջում</translation>
 <translation id="4831037795716408498">Բովանդակության ներբեռնում</translation>
+<translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
 <translation id="4837753911714442426">Բացել էջը տպելու տարբերակները</translation>
 <translation id="4842092870884894799">Ցուցադրվում է գաղտնաբառի ստեղծման ելնող պատուհանը</translation>
@@ -635,6 +639,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ։}one{Չհաջողվեց ներբեռնել # ֆայլ։}other{Չհաջողվեց ներբեռնել # ֆայլ։}}</translation>
 <translation id="5168824020667180049">Դուք բաժանորդագրվեցիք «<ph name="SITE_NAME" />» կայքին</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
+<translation id="5171045022955879922">Որոնեք կամ մուտքագրեք URL-ը</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5188992787241350004">Որոնեք ձայնային հրահանգների միջոցով</translation>
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
@@ -744,7 +749,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5836192821815272682">Ներբեռնվում է Chrome-ի նոր տարբերակը…</translation>
 <translation id="5853623416121554550">դադարեցված է</translation>
 <translation id="5854512288214985237">Google-ին վիճակագրություն կամ խափանման մասին հաշվետվություններ չեն ուղարկվում</translation>
-<translation id="5854790677617711513">30 օր և ավելի</translation>
 <translation id="5855546874025048181">Ճշտել՝ <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Չհաջողվեց միացնել Bluetooth ադապտերը</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
@@ -1107,6 +1111,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8035133914807600019">Նոր պանակ...</translation>
 <translation id="8037750541064988519">Մնացել է <ph name="DAYS" /> օր</translation>
 <translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
+<translation id="8040831032425909005">Արագ գործողությունների վահանակում որոնման վիջեթի պատկերակ</translation>
 <translation id="804335162455518893">SD քարտը չհաջողվեց գտնել</translation>
 <translation id="8051695050440594747">Հասանելի է <ph name="MEGABYTES" /> ՄԲ</translation>
 <translation id="8058746566562539958">Բացել Chrome-ի նոր ներդիրում</translation>
@@ -1169,6 +1174,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8442258441309440798">Պատմություններ չկան</translation>
 <translation id="8443209985646068659">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="8445448999790540984">Չհաջողվեց արտահանել գաղտնաբառերը</translation>
+<translation id="8453310803815879010">Սկսել Dino խաղը</translation>
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>

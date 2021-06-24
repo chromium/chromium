@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Idatzi PIN kode hau gailuan: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Pantaila-argazki partziala hautatu da</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
+<translation id="1036073649888683237">Jakinarazpenak kudeatzeko, joan ezarpenetara</translation>
 <translation id="1036672894875463507">Google-ren Laguntzailea naiz eta egunean zehar gauzak egiteko laguntza eskainiko dizut.
 Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> gehitu da</translation>
@@ -14,6 +15,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1052916631016577720">Elementuak fokuratzea</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Aldatu edo kargatu bateria</translation>
 <translation id="108486256082349153">Gailu mugikorra: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
@@ -306,6 +308,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3430396595145920809">Atzera egiteko, pasatu hatza eskuinetik ezkerrera</translation>
 <translation id="343571671045587506">Editatu abisua</translation>
 <translation id="3435967511775410570">Ezagutu da hatz-marka</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C gailua</translation>
 <translation id="3454224730401036106">Sare seguruago batera konektatu zaude orain</translation>
@@ -431,6 +434,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4378551569595875038">Konektatzen…</translation>
 <translation id="4379531060876907730">Hauek dira arkatzaren tresnak</translation>
 <translation id="4389184120735010762">Lupa ainguratuaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
+<translation id="439598569299422042">Pausatuta, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175">Urruneko laguntzaren bidez <ph name="HELPER_NAME" /> laguntzailearekin pantailaren kontrola partekatzen.</translation>
 <translation id="4424159417645388645">5. lan-eremua</translation>
@@ -727,7 +731,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
-<translation id="6837064795450991317">Ezkutatu lan-eremuko barra</translation>
+<translation id="6837064795450991317">Ezkutatu lan-eremuen barra</translation>
 <translation id="6850010208275816200">Pantaila osoko moduan dago oraingo aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
 <translation id="6852052252232534364">Sakatu aktibatzeko</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -763,7 +767,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7076293881109082629">Saioa hasten</translation>
 <translation id="7088960765736518739">Etengailu bidezko sarbidea</translation>
 <translation id="7098389117866926363">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
-<translation id="7106330611027933926">Erakutsi lan-eremuko barra</translation>
+<translation id="7106330611027933926">Erakutsi lan-eremuen barra</translation>
 <translation id="7118268675952955085">pantaila-argazkia</translation>
 <translation id="7131634465328662194">Automatikoki amaituko da saioa.</translation>
 <translation id="7143207342074048698">Konektatzen</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu aquest codi PIN al dispositiu: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">S'ha seleccionat la captura de pantalla parcial</translation>
 <translation id="1032891413405719768">El llapis òptic té poca bateria</translation>
+<translation id="1036073649888683237">Per gestionar les notificacions, ves a Configuració</translation>
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar al llarg del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1052916631016577720">Escaneig d'elements</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Substitueix o recarrega la bateria</translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bona tarda, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">M'avorreixo</translation>
@@ -306,6 +308,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3430396595145920809">Llisca des de la dreta per tornar enrere</translation>
 <translation id="343571671045587506">Edita el recordatori</translation>
 <translation id="3435967511775410570">S'ha reconegut l'empremta digital</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3454224730401036106">La connexió ha canviat a una xarxa més segura</translation>
@@ -430,6 +433,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4378551569595875038">Connectant...</translation>
 <translation id="4379531060876907730">Aquestes són les eines del llapis òptic</translation>
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
+<translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>

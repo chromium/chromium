@@ -13,7 +13,6 @@
 <translation id="1028781062521375153">Ver detalhes</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quer armazenar permanentemente um grande volume de dados no seu dispositivo</translation>
 <translation id="1032854598605920125">Girar no sentido horário</translation>
-<translation id="1036224116832931580">Jogo do dinossauro. Toque para pular e jogar</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1038106730571050514">Exibir sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
@@ -125,6 +124,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1360955481084547712">Abra uma nova janela anônima para navegar com privacidade</translation>
 <translation id="1363819917331173092">Não oferecer a opção de traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>
+<translation id="1368318639262510626">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, pressione a barra de espaço para pular os obstáculos.</translation>
 <translation id="1374468813861204354">sugestões</translation>
 <translation id="1374692235857187091">10 mm x 15 mm (Postal)</translation>
 <translation id="1375198122581997741">Sobre a versão</translation>
@@ -133,6 +133,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1380591466760231819">Dobra carteira</translation>
 <translation id="138218114945450791">Azul-claro</translation>
 <translation id="1382194467192730611">Dispositivo USB permitido pelo administrador</translation>
+<translation id="1384725838384960382">Página de autenticação de credenciais para pagamento seguro</translation>
 <translation id="1386623374109090026">Anotações</translation>
 <translation id="139305205187523129">Nenhum dado foi enviado por <ph name="HOST_NAME" /></translation>
 <translation id="1405567553485452995">Verde-claro</translation>
@@ -270,6 +271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1875512691959384712">Formulários Google</translation>
 <translation id="187918866476621466">Abrir páginas de inicialização</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
+<translation id="1890171020361705182">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, toque para pular os obstáculos.</translation>
 <translation id="1898423065542865115">Filtragem</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou no último dia. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}one{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou # dia atrás. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou # dias atrás. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}}</translation>
 <translation id="1902576642799138955">Período de validade</translation>
@@ -787,7 +789,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3799805948399000906">Fonte solicitada</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
-<translation id="3808375843007691220">Aviso: recursos experimentais à vista!</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
 <translation id="382518646247711829">Se você usa um servidor proxy...</translation>
 <translation id="3827112369919217609">Absoluto</translation>
@@ -821,6 +822,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3963721102035795474">Modo leitor</translation>
 <translation id="3963837677003247395">Continuar manualmente?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
+<translation id="3970481983430640194">Agora você pode arrastar e redimensionar este app</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3973357910713125165">Botão "Executar a confirmação de segurança do Chrome". Pressione "Enter" para executar a confirmação de segurança nas configurações do Chrome</translation>
@@ -833,10 +835,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele, mas não é possível aplicá-la no momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
-<translation id="4027177651527820006">Ao ativar esses recursos, você pode perder dados do navegador ou
-    comprometer sua segurança ou privacidade. Os recursos ativados se aplicam a todos
-    os usuários deste navegador. Caso você seja um administrador de empresa, não
-    use essas sinalizações na fase de produção.</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1011,6 +1009,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4660119392514473465">Agora você pode navegar com privacidade, e as outras pessoas que usarem este dispositivo não verão suas atividades. No entanto, os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4673460618347856347">Jogo do dinossauro, jogar</translation>
 <translation id="4675657451653251260">Você não verá informações de perfis do Chrome no modo visitante. <ph name="LINK_BEGIN" />Faça login<ph name="LINK_END" /> para acessar informações da sua Conta do Google, como senhas e formas de pagamento.</translation>
 <translation id="467662567472608290">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança contém erros. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> quer responder a eventos de acessibilidade</translation>
@@ -1307,6 +1306,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5689199277474810259">Exportar para JSON</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="569000877158168851">O valor da DnsOverHttpsTemplates não é relevante e não será usado, a menos que a política DnsOverHttpsMode esteja configurada como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5694206146481922091">A página inscrição de credenciais para pagamento seguro está aberta</translation>
 <translation id="5695542892312572833">Usar o Windows Hello para verificar e concluir a compra?</translation>
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="570530837424789914">Gerenciar…</translation>
@@ -1393,6 +1393,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6032524144326295339">Caixa de e-mails 2</translation>
 <translation id="6032955021262906325">Encadernação no lado esquerdo</translation>
 <translation id="6034000775414344507">Cinza-claro</translation>
+<translation id="6034062182346928710">O <ph name="APP_NAME" /> pode não ser redimensionado corretamente. Use os tamanhos de janela predefinidos para evitar problemas.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Dobra sanfona</translation>
 <translation id="6039846035001940113">Se o problema continuar, entre em contato com o proprietário do site.</translation>
@@ -1422,6 +1423,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6120179357481664955">Lembrar código da UPI?</translation>
 <translation id="6123290840358279103">Ver cartão virtual</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
+<translation id="6143538402333184781">Este app é compatível apenas com o tamanho "Smartphone".</translation>
 <translation id="6146055958333702838">Verifique todos os cabos e reinicie todos os roteadores, modens ou outros
     dispositivos de rede que você estiver usando.</translation>
 <translation id="614940544461990577">Tente:</translation>
@@ -1435,6 +1437,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6180316780098470077">Intervalo entre novas tentativas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6203231073485539293">Verifique sua conexão com a Internet</translation>
+<translation id="6211666000885129820">Página de inscrição de credenciais para pagamento seguro</translation>
 <translation id="6218753634732582820">Remover endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221345481584921695">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros estão, algumas vezes, infectados com malware. O conteúdo malicioso vem de <ph name="SUBRESOURCE_HOST" />, um distribuidor de malware conhecido.</translation>
@@ -1534,7 +1537,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6596325263575161958">Opções de criptografia</translation>
 <translation id="6604181099783169992">Sensores de luz ou movimento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
-<translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
 <translation id="6624427990725312378">Informações de Contato</translation>
 <translation id="6626291197371920147">Adicionar número de cartão de crédito válido</translation>
@@ -1593,6 +1595,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6865412394715372076">Não é possível verificar este cartão no momento</translation>
 <translation id="6874604403660855544">&amp;Refazer adicionar</translation>
 <translation id="6881240511396774766">Criar um novo arquivo do Documentos Google rapidamente</translation>
+<translation id="6883221904761970440">A página de autenticação de credenciais para pagamento seguro está fechada</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão não segura.</translation>
@@ -2032,7 +2035,6 @@ Mais detalhes:
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
-<translation id="8463101686637053101">Jogo do dinossauro. Pressione a barra de espaço para pular e jogar</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474910779563686872">Mostrar detalhes do desenvolvedor</translation>
@@ -2116,6 +2118,7 @@ Mais detalhes:
 <translation id="87601671197631245">Este site usa uma configuração de segurança desatualizada que pode expor suas informações (como senhas, mensagens ou números de cartão de crédito) quando elas forem enviadas para o site.</translation>
 <translation id="8761567432415473239">Recentemente, a Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas nocivos<ph name="END_LINK" /> no site <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766943070169463815">A página de autenticação de credenciais para pagamento seguro está aberta</translation>
 <translation id="8774457497170244317">Você acabou de digitar sua senha em um site suspeito. O Chrome recomenda que você verifique agora suas senhas salvas para <ph name="WEBSITE_1" /> e outros sites em que você usa essa senha.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refazer excluir</translation>
@@ -2234,6 +2237,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
+<translation id="9211470216863457665">A página de inscrição de credenciais para pagamento seguro está fechada</translation>
 <translation id="9213433120051936369">Personalizar aparência</translation>
 <translation id="9215416866750762878">Um aplicativo está impedindo que o Chrome se conecte com segurança a este site</translation>
 <translation id="9219103736887031265">Imagens</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovaj PIN kôd na tom uređaju: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Delimičan snimak ekrana je izabran</translation>
 <translation id="1032891413405719768">Baterija pisaljke je skoro prazna</translation>
+<translation id="1036073649888683237">Da biste upravljali obaveštenjima, idite u podešavanja</translation>
 <translation id="1036672894875463507">Ja sam vaš Google pomoćnik i tu sam da vam pomognem tokom celog dana!
 Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />: dodato</translation>
@@ -14,6 +15,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1052916631016577720">Skeniranje stavki</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Zamenite ili napunite bateriju</translation>
 <translation id="108486256082349153">Mobilni: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobar dan, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
@@ -306,6 +308,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3430396595145920809">Prevucite sa desne strane da biste se vratili</translation>
 <translation id="343571671045587506">Izmeni podsetnik</translation>
 <translation id="3435967511775410570">Otisak je prepoznat</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Uređaj sa USB priključkom tipa C</translation>
 <translation id="3454224730401036106">Sada ste povezani na bezbedniju mrežu</translation>
@@ -430,6 +433,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4379531060876907730">Ovo su alatke za pisaljku</translation>
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
+<translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
@@ -726,7 +730,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6816797338148849397">Dostupne su informacije vezane za vaš izbor. Koristite taster sa strelicom nagore da biste im pristupili.</translation>
 <translation id="6818242057446442178">Reč unazad</translation>
 <translation id="6820676911989879663">Napravite pauzu!</translation>
-<translation id="6837064795450991317">Sakrij traku radne površine</translation>
+<translation id="6837064795450991317">Sakrij traku za radne površine</translation>
 <translation id="6850010208275816200">Aktuelna aplikacija se prikazuje preko celog ekrana. Ako aplikacija traži lozinku, prvo izađite iz prikazivanja preko celog ekrana.</translation>
 <translation id="6852052252232534364">Aktivirajte</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
@@ -762,7 +766,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7098389117866926363">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
-<translation id="7106330611027933926">Prikaži traku radne površine</translation>
+<translation id="7106330611027933926">Prikaži traku za radne površine</translation>
 <translation id="7118268675952955085">snimak ekrana</translation>
 <translation id="7131634465328662194">Odjavićemo vas automatski.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
@@ -806,7 +810,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Kontrolišite muziku, video snimke i drugo</translation>
-<translation id="7482097454533720217">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnite i zadržite.</translation>
+<translation id="7482097454533720217">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite.</translation>
 <translation id="7483025031359818980">Oblast za izbor je podešena na ceo ekran</translation>
 <translation id="7486227320194954040">Skupi alatke za marker</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>

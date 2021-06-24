@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Acum 1 an}few{Acum # ani}other{Acum # de ani}}</translation>
 <translation id="2878511608894704031">Șterge tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{în o zi}few{în # zile}other{în # zile}}</translation>
+<translation id="2922712708897119705">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine descrescătoare.</translation>
 <translation id="2931838996092594335">dă clic</translation>
 <translation id="2981684127883932071">Se afișează sugestiile</translation>
 <translation id="3036649622769666520">Deschide fișierele</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3909791450649380159">&amp;Taie</translation>
 <translation id="3990502903496589789">Marginea dreaptă</translation>
+<translation id="3994749195054421561">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
 <translation id="4202807286478387388">accesează</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Un minut rămas}few{# minute rămase}other{# de minute rămase}}</translation>
 <translation id="7430878839542012341">Ștergi această căutare din istoric?</translation>
+<translation id="7437971918971306061">Coloana <ph name="COLUMN_NAME" /> nu este sortată.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">S-a eliminat.</translation>

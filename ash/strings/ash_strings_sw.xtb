@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Tafadhali weka nambari hii ya PIN kwenye kifaa hicho: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Umechagua picha ya sehemu ya skrini</translation>
 <translation id="1032891413405719768">Chaji ya betri ya Stylus imepungua</translation>
+<translation id="1036073649888683237">Ili udhibiti arifa, nenda kwenye Mipangilio</translation>
 <translation id="1036672894875463507">Mimi ni programu yako ya Mratibu wa Google, niko tayari kukusaidia siku nzima!
 Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1037492556044956303">Imeongeza <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1052916631016577720">Kuchanganua Vipengee</translation>
 <translation id="1056775291175587022">Hamna mitandao</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Badilisha betri au uichaji</translation>
 <translation id="108486256082349153">Simu ya Mkononi: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Habari za mchana <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nahitaji kuchangamshwa</translation>
@@ -306,6 +308,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3430396595145920809">Telezesha kidole kutoka kulia ili urudi nyuma</translation>
 <translation id="343571671045587506">Badilisha kikumbusho</translation>
 <translation id="3435967511775410570">Alama ya kidole imetambuliwa</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" /> kati ya <ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833">Dakika <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">Kifaa cha USB-C</translation>
 <translation id="3454224730401036106">Muunganisho wako unatumia mtandao salama zaidi</translation>
@@ -430,6 +433,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4379531060876907730">Hizi ni zana zako za stylus</translation>
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
+<translation id="439598569299422042">Umesitishwa, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
 <translation id="4421231901400348175">Kushiriki udhibiti wa skrini yako na <ph name="HELPER_NAME" /> kupitia Usaidizi wa Mbali.</translation>
 <translation id="4424159417645388645">Eneokazi la tano</translation>

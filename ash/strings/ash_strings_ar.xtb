@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">المسح الضوئي لعنصر</translation>
 <translation id="1056775291175587022">ما من شبكات</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">استبدِل البطارية أو أعِد شحنها.</translation>
 <translation id="108486256082349153">خلوي: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="109942774857561566">أشعر بالملل</translation>
@@ -80,6 +81,7 @@
 <translation id="1516740043221086139">وضع "عدم الإزعاج" مُفعَّل.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1525508553941733066">إغلاق</translation>
+<translation id="1536604384701784949">لاستخدام <ph name="USER_EMAIL_ADDRESS" />، عليك تسجيل الخروج من جميع الحسابات أولاً. لتسجيل الخروج، انقر على "إلغاء" للرجوع. بعد ذلك، اختَر الوقت لفتح منطقة الحالة ثم اختَر تسجيل الخروج. ثم سجِّل الدخول إلى <ph name="USER_EMAIL_ADDRESS_2" /> مرة أخرى.</translation>
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
 <translation id="1546492247443594934">مكتب 2</translation>
 <translation id="1550523713251050646">انقر للحصول على المزيد من الخيارات</translation>
@@ -305,6 +307,7 @@
 <translation id="3430396595145920809">يُرجى التمرير السريع من اليمين للرجوع.</translation>
 <translation id="343571671045587506">تعديل التذكير</translation>
 <translation id="3435967511775410570">تمّ التعرّف على البصمة.</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="3445925074670675829">‏جهاز USB-C</translation>
 <translation id="3454224730401036106">تم تبديل الاتصال إلى شبكة أكثر أمانًا.</translation>
@@ -429,6 +432,7 @@
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4379531060876907730">هذه هي أدوات قلم الشاشة</translation>
 <translation id="4389184120735010762">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر الذي تم إرساؤه. هل ترغب في تفعيله؟</translation>
+<translation id="439598569299422042">التنزيل متوقّف مؤقتًا، <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
 <translation id="4421231901400348175">مشاركة التحكم في شاشتك مع <ph name="HELPER_NAME" /> عن طريق المساعدة عن بُعد.</translation>
 <translation id="4424159417645388645">سطح المكتب 5</translation>

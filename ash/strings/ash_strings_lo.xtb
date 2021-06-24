@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກຂໍອະນຸຍາດຈັບຄູ່. ກະລຸນາປ້ອນລະຫັດ PIN ນີ້ເຂົ້າໄປໃນອຸປະກອນນັ້ນ: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">ເລືອກຮູບໜ້າຈໍບາງສ່ວນແລ້ວ</translation>
 <translation id="1032891413405719768">ແບັດເຕີຣີປາຍປາກກາເຫຼືອໜ້ອຍ</translation>
+<translation id="1036073649888683237">ກະລຸນາເຂົ້າໄປການຕັ້ງຄ່າເພື່ອຈັດການການແຈ້ງເຕືອນ</translation>
 <translation id="1036672894875463507">ຂ້ອຍເປັນຜູ້ຊ່ວຍ Google ຂອງທ່ານ, ພ້ອມຊ່ວຍທ່ານຕະຫຼອດມື້ຂອງທ່ານ!
 ນີ້ແມ່ນບາງຢ່າງທີ່ທ່ານສາມາດລອງເພື່ອເລີ່ມຕົ້ນ.</translation>
 <translation id="1037492556044956303">ເພີ່ມ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">ສະແກນລາຍການ</translation>
 <translation id="1056775291175587022">ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">ປ່ຽນ ຫຼື ສາກໄຟແບັດເຕີຣີ</translation>
 <translation id="108486256082349153">ເຊວລູລາ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">ສະບາຍດີຕອນບ່າຍ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">ຂ້ອຍເບື່ອຫຼາຍ</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">ປັດຈາກຂວາເພື່ອກັບຄືນ</translation>
 <translation id="343571671045587506">ແກ້ໄຂການແຈ້ງເຕືອນ</translation>
 <translation id="3435967511775410570">ຮັບຮູ້ລາຍນິ້ວມືແລ້ວ</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3445925074670675829">ອຸ​ປະ​ກອນ USB-C</translation>
 <translation id="3454224730401036106">ການເຊື່ອມຕໍ່ຂອງທ່ານໄດ້ປ່ຽນເປັນເຄືອຂ່າຍທີ່ປອດໄພກວ່າແລ້ວ</translation>
@@ -430,6 +433,7 @@
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4379531060876907730">ສິ່ງເຫຼົ່ານີ້ແມ່ນເຄື່ອງມືປາກກາຂອງທ່ານ</translation>
 <translation id="4389184120735010762">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
+<translation id="439598569299422042">ຢຸດຊົ່ວຄາວແລ້ວ, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ປິດຢູ່.</translation>
 <translation id="4421231901400348175">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານ​ກັບ <ph name="HELPER_NAME" /> ຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="4424159417645388645">ໂຕະ 5</translation>

@@ -14,6 +14,7 @@
 <translation id="1095761715416917775">Zajistěte, abyste k synchronizovaným datům měli vždy přístup</translation>
 <translation id="1100066534610197918">Otevřít na nové kartě ve skup.</translation>
 <translation id="1105960400813249514">Snímky obrazovky</translation>
+<translation id="1110914759170138831">Zvýraznění bylo zkráceno</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
 <translation id="1113597929977215864">Zapnout zjednodušené zobrazení</translation>
 <translation id="1118561384561215815">Nechte si pomoci s úkony na webu</translation>
@@ -51,6 +52,7 @@
 <translation id="1298077576058087471">Přečtěte si dnešní zprávy a ušetřete až 60 % dat</translation>
 <translation id="1303339473099049190">Dané heslo nebylo nalezeno. Zkontrolujte ho a zkuste to znovu.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – odesláno ze zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="130581733275749598">Vyberte šablonu zvýraznění</translation>
 <translation id="1307205233980126133">Omlouváme se, identifikační údaje se nepodařilo ověřit</translation>
 <translation id="1310482092992808703">Seskupit karty</translation>
 <translation id="1311657260431405215">Tento QR kód není adresa URL: <ph name="QRCODEVALUE" /></translation>
@@ -489,6 +491,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4183868528246477015">Hledat pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
+<translation id="4206707945726604465">Pokud chcete vymazat jiné formy historie, navštivte <ph name="BEGIN_LINK1" />Moji aktivitu na Googlu<ph name="END_LINK1" /></translation>
 <translation id="4209895695669353772">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -581,6 +584,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4807098396393229769">Jméno na kartě</translation>
 <translation id="4818017973810341238">Ověření protokolu Digital Asset Links na adrese <ph name="VIOLATED_URL" /> se nezdařilo</translation>
 <translation id="4831037795716408498">Stáhnout obsah</translation>
+<translation id="4834007576107377210">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
 <translation id="4837753911714442426">Otevřít možnosti tisku stránky</translation>
 <translation id="4842092870884894799">Je zobrazeno vyskakovací okno generování hesla</translation>
@@ -635,6 +639,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo.}few{Stažení # souborů se nezdařilo.}many{Stažení # souboru se nezdařilo.}other{Stažení # souborů se nezdařilo.}}</translation>
 <translation id="5168824020667180049">Začali jste sledovat web <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
+<translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
 <translation id="5184329579814168207">Otevřít v Chromu</translation>
 <translation id="5188992787241350004">Vyhledávání pomocí hlasu</translation>
 <translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
@@ -744,7 +749,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5836192821815272682">Stahování aktualizace Chromu…</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
 <translation id="5854512288214985237">Do Googlu nejsou odsílány žádné statistiky ani zprávy o selhání</translation>
-<translation id="5854790677617711513">Starší než 30 dnů</translation>
 <translation id="5855546874025048181">Zpřesnit: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome nemůže zapnout adaptér Bluetooth</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
@@ -1107,6 +1111,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8035133914807600019">Nová složka…</translation>
 <translation id="8037750541064988519">Zbývá: <ph name="DAYS" /> d</translation>
 <translation id="8037801708772278989">Zkontrolováno právě teď</translation>
+<translation id="8040831032425909005">Ikona widgetu Vyhledávání v sekci Rychlé akce</translation>
 <translation id="804335162455518893">SD karta nenalezena</translation>
 <translation id="8051695050440594747">K dispozici: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Otevřít na nové kartě v Chromu</translation>
@@ -1169,6 +1174,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8442258441309440798">Nejsou k dispozici žádné příběhy</translation>
 <translation id="8443209985646068659">Chrome nelze aktualizovat</translation>
 <translation id="8445448999790540984">Hesla se nepodařilo exportovat</translation>
+<translation id="8453310803815879010">Spustit dinosauří hru</translation>
 <translation id="8461694314515752532">Šifrovat synchronizovaná data pomocí vlastní heslové fráze pro synchronizaci</translation>
 <translation id="8466613982764129868">Zkontrolujte, zda je zařízení <ph name="TARGET_DEVICE_NAME" /> připojené k internetu</translation>
 <translation id="8473863474539038330">Adresy a další</translation>

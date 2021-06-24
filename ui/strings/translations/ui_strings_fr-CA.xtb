@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Il y a un an}one{Il y a # an}other{Il y a # ans}}</translation>
 <translation id="2878511608894704031">Tout supprimer</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dans 1 j}one{dans # j}other{dans # j}}</translation>
+<translation id="2922712708897119705">Le contenu de la colonne <ph name="COLUMN_NAME" /> est trié en ordre décroissant.</translation>
 <translation id="2931838996092594335">cliquer</translation>
 <translation id="2981684127883932071">Affichage des suggestions</translation>
 <translation id="3036649622769666520">Ouvrir des fichiers</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Cou&amp;per</translation>
 <translation id="3990502903496589789">Bord droit</translation>
+<translation id="3994749195054421561">Le contenu de colonne <ph name="COLUMN_NAME" /> est trié en ordre croissant.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notification non lue}one{# notification non lue}other{# notifications non lues}}</translation>
 <translation id="4202807286478387388">Suivre le lien</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minute restante}one{# minute restante}other{# minutes restantes}}</translation>
 <translation id="7430878839542012341">Supprimer cette recherche de votre historique?</translation>
+<translation id="7437971918971306061">Le contenu de la colonne <ph name="COLUMN_NAME" /> n'est pas trié.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> To</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Retiré.</translation>

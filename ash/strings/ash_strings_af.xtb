@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Gedeeltelike skermkiekie gekies</translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
+<translation id="1036073649888683237">Gaan na Instellings om kennisgewings te bestuur</translation>
 <translation id="1036672894875463507">Ek is jou Google Assistent en ek is hier om jou deur die loop van jou dag te help!
 Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> is bygevoeg</translation>
@@ -14,6 +15,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1052916631016577720">Itemskandering</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Vervang of herlaai die battery</translation>
 <translation id="108486256082349153">Sellulêr: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Goeiemiddag <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Ek is verveeld</translation>
@@ -306,6 +308,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3430396595145920809">Swiep van regs af om terug te gaan</translation>
 <translation id="343571671045587506">Wysig herinnering</translation>
 <translation id="3435967511775410570">Vingerafdruk is herken</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
 <translation id="3454224730401036106">Jou verbinding het na 'n veiliger netwerk gewissel</translation>
@@ -431,6 +434,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
 <translation id="4379531060876907730">Dit is jou stilusnutsgoed</translation>
 <translation id="4389184120735010762">Jy het die sleutelbordkortpad vir die gedokte vergrootglas gedruk. Wil jy dit aanskakel?</translation>
+<translation id="439598569299422042">Onderbreek, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4421231901400348175">Deel tans beheer oor jou skerm met <ph name="HELPER_NAME" /> deur afstandbystand.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>

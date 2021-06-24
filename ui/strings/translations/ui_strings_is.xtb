@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{Fyrir einu ári}one{Fyrir # ári}other{Fyrir # árum}}</translation>
 <translation id="2878511608894704031">Eyða öllu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{eftir einn dag}one{eftir # dag}other{eftir # daga}}</translation>
+<translation id="2922712708897119705">Dálknum <ph name="COLUMN_NAME" /> raðað í lækkandi röð.</translation>
 <translation id="2931838996092594335">smella</translation>
 <translation id="2981684127883932071">Birtir tillögur</translation>
 <translation id="3036649622769666520">Opna skrár</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3909791450649380159">Klippa</translation>
 <translation id="3990502903496589789">Hægri brún</translation>
+<translation id="3994749195054421561">Dálknum <ph name="COLUMN_NAME" /> raðað í hækkandi röð.</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Ein ólesin tilkynning}one{# ólesin tilkynning}other{# ólesnar tilkynningar}}</translation>
 <translation id="4202807286478387388">stökk</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 mínúta eftir}one{# mínúta eftir}other{# mínútur eftir}}</translation>
 <translation id="7430878839542012341">Eyða þessari leit úr ferlinum?</translation>
+<translation id="7437971918971306061">Dálknum <ph name="COLUMN_NAME" /> óraðað.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Fjarlægt.</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Se seleccionó la captura de pantalla parcial</translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
+<translation id="1036073649888683237">Para administrar las notificaciones, ve a Configuración.</translation>
 <translation id="1036672894875463507">Soy tu Asistente de Google. Estoy aquí para ayudarte en tu día.
 Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1037492556044956303">Se agregó <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1052916631016577720">Escanear elemento</translation>
 <translation id="1056775291175587022">No hay redes</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Recargar la batería o reemplazarla</translation>
 <translation id="108486256082349153">Celular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Buenas tardes, <ph name="GIVEN_NAME" />:</translation>
 <translation id="109942774857561566">Me aburro</translation>
@@ -306,6 +308,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3430396595145920809">Para volver, desliza el dedo desde la derecha</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
 <translation id="3435967511775410570">Se reconoció la huella dactilar</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Tu conexión se cambió a una red más segura</translation>
@@ -431,6 +434,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4379531060876907730">Estas son las herramientas de la pluma stylus</translation>
 <translation id="4389184120735010762">Presionaste la combinación de teclas para activar la lupa con vista acoplada. ¿Quieres activarla?</translation>
+<translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4421231901400348175">Se está compartiendo el control de la pantalla con <ph name="HELPER_NAME" /> mediante la Asistencia remota.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
@@ -1012,7 +1016,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="9056839673611986238">Se restablecerá el dispositivo</translation>
 <translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9070640332319875144">Configuración del Asistente</translation>
+<translation id="9070640332319875144">Configuración de Asistente</translation>
 <translation id="9072519059834302790">Tiempo restante hasta que se agote la batería: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controles multimedia, se está reproduciendo <ph name="MEDIA_TITLE" /></translation>

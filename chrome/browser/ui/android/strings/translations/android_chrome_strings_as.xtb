@@ -362,6 +362,7 @@
 <translation id="3295530008794733555">ক্ষিপ্ৰভাৱে ব্ৰাউজ কৰক। কম ডেটা খৰচ কৰক।</translation>
 <translation id="3297344142967351106">ধ্বনিৰ সহায়ত ডিভাইচৰ ব্যৱহাৰ</translation>
 <translation id="3303414029551471755">সমলখিনি ডাউনল’ড কৰিবলৈ আগবাঢ়িবনে?</translation>
+<translation id="333367884906698540">আপোনাৰ কাৰ্যটো কৰি শেষ হ’লে ব্লুটুথটো অফ হ’ব</translation>
 <translation id="3334729583274622784">ফাইলটোৰ এক্সটেনশ্বন সলনি কৰিবনে?</translation>
 <translation id="3341058695485821946">আপুনি কিমান ডেটা ছেভ কৰিছে চাওক</translation>
 <translation id="3341262203274374114">আনফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
@@ -632,6 +633,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{১টা ডাউনল’ড কৰিব পৰা নগ’ল।}one{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}other{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}}</translation>
 <translation id="5168824020667180049"><ph name="SITE_NAME" />ক ফ’ল’ কৰিলে</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
+<translation id="5171045022955879922">সন্ধান কৰক বা URL টাইপ কৰক</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5188992787241350004">আপোনাৰ কণ্ঠধ্বনিৰে সন্ধান কৰক</translation>
 <translation id="5191251636205085390">তৃতীয় পক্ষৰ কুকিৰ স্থান ল'বলৈ বিচৰা নতুন প্ৰযুক্তিৰ বিষয়ে জানক আৰু সেইবোৰ নিয়ন্ত্ৰণ কৰক</translation>
@@ -741,7 +743,6 @@
 <translation id="5836192821815272682">Chromeৰ আপডে’ট ডাউনল’ড কৰি থকা হৈছে…</translation>
 <translation id="5853623416121554550">পজ কৰা হ’ল</translation>
 <translation id="5854512288214985237">কোনো পৰিসংখ্যা অথবা ক্ৰেশ্ব ৰিপ’ৰ্ট Googleলৈ পঠিওৱা নহয়</translation>
-<translation id="5854790677617711513">৩০ দিনতকৈ পুৰণি</translation>
 <translation id="5855546874025048181">পৰিষ্কৰণ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chromeএ ব্লুটুথ এডাপ্টৰটো অন কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
@@ -1035,6 +1036,7 @@
 <translation id="7641339528570811325">ব্ৰাউজ কৰা ডেটা মচক…</translation>
 <translation id="764170292089748542">আপুনি ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ সিদ্ধান্ত ল'লে Chromeএ আপোনাৰ ব্ৰাউজ কৰাৰ ইতিহাস ছেভ নকৰে। আপুনি তথাপি নিজৰ প্ৰিয় ছাইটসমূহ এক্সেছ কৰিবলৈ বুকমাৰ্কসমূহ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7646772052135772216">পাছৱৰ্ড ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
+<translation id="7655900163790317559">ব্লুটুথ অন কৰি থকা হৈছে…</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7665369617277396874">একাউণ্ট যোগ কৰক</translation>
 <translation id="766587987807204883">প্ৰৱন্ধসমূহ ইয়াত প্ৰদর্শিত হয়, যিবোৰ আপুনি অফলাইন হৈ থকা অৱস্থাটো পঢ়িব পাৰে</translation>

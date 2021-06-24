@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares. Pakilagay ang PIN na ito sa device na iyon: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Pinili ang screenshot ng isang bahagi ng screen</translation>
 <translation id="1032891413405719768">Mahina na ang baterya ng stylus</translation>
+<translation id="1036073649888683237">Para pamahalaan ang mga notification, pumunta sa Mga Setting</translation>
 <translation id="1036672894875463507">Ako ang iyong Google Assistant, narito ako para tulungan ka sa buong araw mo!
 Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1037492556044956303">Idinagdag ang <ph name="DEVICE_NAME" /></translation>
@@ -14,6 +15,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1052916631016577720">Pag-scan ng Item</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
 <translation id="108486256082349153">Cellular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Magandang hapon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
@@ -306,6 +308,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3430396595145920809">Mag-swipe mula sa kanan para bumalik</translation>
 <translation id="343571671045587506">I-edit ang paalala</translation>
 <translation id="3435967511775410570">Nakilala ang fingerprint</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> (na) min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3454224730401036106">Lumipat ang iyong koneksyon sa mas secure na network</translation>
@@ -430,6 +433,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
 <translation id="4379531060876907730">Ito ang iyong mga stylus tool</translation>
 <translation id="4389184120735010762">Napindot mo ang keyboard shortcut para sa naka-dock na magnifier. Gusto mo ba itong i-on?</translation>
+<translation id="439598569299422042">Naka-pause, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4421231901400348175">Pagbabahagi ng kontrol sa iyong screen gamit ang <ph name="HELPER_NAME" /> sa pamamagitan ng Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>

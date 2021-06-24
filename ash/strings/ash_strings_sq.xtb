@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Fut këtë kod PIN në atë pajisje: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">U zgjodh pamja e pjesshme e ekranit</translation>
 <translation id="1032891413405719768">Bateria e stilolapsit është e ulët</translation>
+<translation id="1036073649888683237">Për të menaxhuar njoftimet, shko te "Cilësimet"</translation>
 <translation id="1036672894875463507">Jam "Asistenti yt i Google" dhe jam këtu që të të ndihmoj gjatë gjithë ditës!
 Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> u shtua</translation>
@@ -14,6 +15,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1052916631016577720">Skanimi i artikullit</translation>
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Zëvendëso ose kariko baterinë</translation>
 <translation id="108486256082349153">Celulare: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Mirëdita <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
@@ -306,6 +308,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3430396595145920809">Rrëshqit nga e djathta për t'u kthyer prapa</translation>
 <translation id="343571671045587506">Modifiko alarmin rikujtues</translation>
 <translation id="3435967511775410570">Gjurma e gishtit u njoh</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Pajisja USB-C</translation>
 <translation id="3454224730401036106">Lidhja jote ka kaluar te një rrjet më i sigurt</translation>
@@ -430,6 +433,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4379531060876907730">Këto janë veglat e tua të stilolapsit</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
+<translation id="439598569299422042">Në pauzë, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
 <translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
