@@ -2876,11 +2876,13 @@ void NavigationRequest::OnResponseStarted(
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 
   if (!commit_params_->is_browser_initiated && render_frame_host_ &&
-      render_frame_host_ != frame_tree_node_->current_frame_host()) {
+      render_frame_host_->GetProcess() !=
+          frame_tree_node_->current_frame_host()->GetProcess()) {
     // Allow the embedder to cancel the cross-process commit if needed.
-    // TODO(clamy): Rename ShouldTransferNavigation.
-    if (!frame_tree_node_->navigator().GetDelegate()->ShouldTransferNavigation(
-            frame_tree_node_->IsMainFrame())) {
+    if (!frame_tree_node_->navigator()
+             .GetDelegate()
+             ->ShouldAllowRendererInitiatedCrossProcessNavigation(
+                 frame_tree_node_->IsMainFrame())) {
       net_error_ = net::ERR_ABORTED;
       frame_tree_node_->ResetNavigationRequest(false);
       return;

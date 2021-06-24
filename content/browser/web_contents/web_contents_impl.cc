@@ -5546,12 +5546,16 @@ void WebContentsImpl::NotifyChangedNavigationState(
   NotifyNavigationStateChanged(changed_flags);
 }
 
-bool WebContentsImpl::ShouldTransferNavigation(bool is_main_frame_navigation) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShouldTransferNavigation",
-                        "is_main_frame_navigation", is_main_frame_navigation);
+bool WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation(
+    bool is_main_frame_navigation) {
+  OPTIONAL_TRACE_EVENT1(
+      "content",
+      "WebContentsImpl::ShouldAllowRendererInitiatedCrossProcessNavigation",
+      "is_main_frame_navigation", is_main_frame_navigation);
   if (!delegate_)
     return true;
-  return delegate_->ShouldTransferNavigation(is_main_frame_navigation);
+  return delegate_->ShouldAllowRendererInitiatedCrossProcessNavigation(
+      is_main_frame_navigation);
 }
 
 bool WebContentsImpl::ShouldPreserveAbortedURLs() {

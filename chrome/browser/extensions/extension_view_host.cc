@@ -179,7 +179,7 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
   }
 }
 
-bool ExtensionViewHost::ShouldTransferNavigation(
+bool ExtensionViewHost::ShouldAllowRendererInitiatedCrossProcessNavigation(
     bool is_main_frame_navigation) {
   // Block navigations that cause main frame of an extension pop-up (or
   // background page) to navigate to non-extension content (i.e. to web

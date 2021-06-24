@@ -85,7 +85,8 @@ class CONTENT_EXPORT NavigatorDelegate {
 
   // Returns whether to continue a navigation that needs to transfer to a
   // different process between the load start and commit.
-  virtual bool ShouldTransferNavigation(bool is_main_frame_navigation) = 0;
+  virtual bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_main_frame_navigation) = 0;
 
   // Returns the overridden user agent string if it's set.
   virtual const blink::UserAgentOverride& GetUserAgentOverride() = 0;
