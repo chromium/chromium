@@ -91,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason"
-    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2021-07-01">
+    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2022-06-23">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1361,8 +1361,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.RequestDestinations.Checked"
-    enum="RequestDestination" expires_after="2021-08-05">
-  <owner>vakh@chromium.org</owner>
+    enum="RequestDestination" expires_after="2022-06-23">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs the request destination that was checked by Safe Browsing real time URL
@@ -1371,8 +1371,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.RequestDestinations.Requested"
-    enum="RequestDestination" expires_after="2021-08-05">
-  <owner>vakh@chromium.org</owner>
+    enum="RequestDestination" expires_after="2022-06-23">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs the request destination that was requested to be checked by Safe
