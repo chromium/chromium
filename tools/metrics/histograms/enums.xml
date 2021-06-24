@@ -83536,6 +83536,33 @@ others/histograms.xml -->
   <int value="1" label="WebApk infobar shown from the add to homescreen menu"/>
 </enum>
 
+<enum name="WebAPKInstallResultChromeOS">
+  <int value="0" label="Success">Installed successfully.</int>
+  <int value="1" label="App invalid">
+    Installation failed because the app was in an invalid state (e.g., it had no
+    suitable icon).
+  </int>
+  <int value="2" label="ARC unavailable">
+    Installation failed because the ARC system was not available.
+  </int>
+  <int value="3" label="Update cancelled">
+    Update was cancelled because the existing WebAPK was found to be up-to-date.
+  </int>
+  <int value="4" label="Update failed during GetWebApkInfo">
+    Updating failed because there was an error while fetching information about
+    the existing WebAPK from ARC.
+  </int>
+  <int value="5" label="Network error">
+    The network request to the WebAPK server failed with an error.
+  </int>
+  <int value="6" label="Network timeout">
+    The network request to the WebAPK server timed out.
+  </int>
+  <int value="7" label="Google Play error">
+    Installing the WebAPK through Google Play failed with an error.
+  </int>
+</enum>
+
 <enum name="WebApkInstallSource">
   <obsolete>
     Deprecated as of 3/2018

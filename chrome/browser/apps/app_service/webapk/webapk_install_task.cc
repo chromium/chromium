@@ -236,6 +236,8 @@ WebApkInstallTask::WebApkInstallTask(Profile* profile,
     : profile_(profile),
       web_app_provider_(web_app::WebAppProviderBase::GetProviderBase(profile_)),
       app_id_(app_id),
+      package_name_to_update_(
+          webapk_prefs::GetWebApkPackageName(profile_, app_id_)),
       minter_timeout_(kMinterResponseTimeout) {
   DCHECK(web_app_provider_);
 }
@@ -252,7 +254,7 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   // changed while the install request was queued.
   if (!registrar.IsInstalled(app_id_) ||
       !registrar.GetAppShareTarget(app_id_)) {
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
   }
 
@@ -265,12 +267,7 @@ void WebApkInstallTask::Start(ResultCallback callback) {
 }
 
 void WebApkInstallTask::LoadWebApkInfo(std::unique_ptr<webapk::WebApk> webapk) {
-  // If a package_name exists in webapk_prefs, this WebAPK is already installed,
-  // so we need to perform an update.
-  absl::optional<std::string> package_name =
-      webapk_prefs::GetWebApkPackageName(profile_, app_id_);
-
-  if (!package_name && !package_name.has_value()) {
+  if (!package_name_to_update_.has_value()) {
     // This is a new install, continue with the installation process.
     webapk->add_update_reasons(webapk::WebApk::NONE);
     arc::ArcFeaturesParser::GetArcFeatures(
@@ -279,10 +276,11 @@ void WebApkInstallTask::LoadWebApkInfo(std::unique_ptr<webapk::WebApk> webapk) {
     return;
   }
 
-  webapk->set_package_name(package_name.value());
+  // If a package_name exists in webapk_prefs, this WebAPK is already installed,
+  // so we need to perform an update.
+  webapk->set_package_name(package_name_to_update_.value());
 
-  // This is an update request, so get details of the existing WebAPK from
-  // ARC++.
+  // Fetch details of the existing WebAPK from ARC++.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   DCHECK(arc_service_manager);
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -290,12 +288,12 @@ void WebApkInstallTask::LoadWebApkInfo(std::unique_ptr<webapk::WebApk> webapk) {
 
   if (!instance) {
     LOG(ERROR) << "WebApkInstance is not ready";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kArcUnavailable);
     return;
   }
 
   instance->GetWebApkInfo(
-      package_name.value(),
+      package_name_to_update_.value(),
       base::BindOnce(&WebApkInstallTask::OnWebApkInfoLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(webapk)));
 }
@@ -305,7 +303,7 @@ void WebApkInstallTask::OnWebApkInfoLoaded(
     arc::mojom::WebApkInfoPtr result) {
   if (!result) {
     LOG(ERROR) << "Could not load WebApkInfo";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kUpdateGetWebApkInfoError);
     return;
   }
 
@@ -321,7 +319,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
     absl::optional<arc::ArcFeatures> arc_features) {
   if (!arc_features) {
     LOG(ERROR) << "Could not load ArcFeatures";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kArcUnavailable);
     return;
   }
   webapk->set_android_abi(GetArcAbi(arc_features.value()));
@@ -333,7 +331,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
 
   if (!icon_size_and_purpose) {
     LOG(ERROR) << "Could not find suitable icon";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
   }
 
@@ -351,7 +349,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
 
   if (it == icon_infos.end()) {
     LOG(ERROR) << "Could not find URL for icon";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
   }
   std::string icon_url = it->url.spec();
@@ -417,7 +415,9 @@ void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
 void WebApkInstallTask::OnProtoSerialized(
     absl::optional<std::string> serialized_proto) {
   if (!serialized_proto && !serialized_proto.has_value()) {
-    DeliverResult(/* success= */ false);
+    // We don't need to continue the install, because the existing WebAPK is up
+    // to date.
+    DeliverResult(WebApkInstallStatus::kUpdateCancelledWebApkUpToDate);
     return;
   }
   GURL server_url = GetServerUrl();
@@ -425,7 +425,7 @@ void WebApkInstallTask::OnProtoSerialized(
   timer_.Start(FROM_HERE, minter_timeout_,
                base::BindOnce(&WebApkInstallTask::DeliverResult,
                               weak_ptr_factory_.GetWeakPtr(),
-                              /* success= */ false));
+                              WebApkInstallStatus::kNetworkTimeout));
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = server_url;
@@ -456,14 +456,14 @@ void WebApkInstallTask::OnUrlLoaderComplete(
 
   if (!response_body || response_code != net::HTTP_OK) {
     LOG(WARNING) << "WebAPK server returned response code " << response_code;
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kNetworkError);
     return;
   }
 
   auto response = std::make_unique<webapk::WebApkResponse>();
   if (!response->ParseFromString(*response_body)) {
     LOG(WARNING) << "Failed to parse WebApkResponse proto";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kNetworkError);
     return;
   }
 
@@ -476,7 +476,7 @@ void WebApkInstallTask::OnUrlLoaderComplete(
 
   if (!instance) {
     LOG(ERROR) << "WebApkInstance is not ready";
-    DeliverResult(/* success= */ false);
+    DeliverResult(WebApkInstallStatus::kArcUnavailable);
     return;
   }
 
@@ -501,16 +501,19 @@ void WebApkInstallTask::OnInstallComplete(
     webapk_prefs::AddWebApk(profile_, app_id_, package_name);
   }
 
-  DeliverResult(success);
+  DeliverResult(success ? WebApkInstallStatus::kSuccess
+                        : WebApkInstallStatus::kGooglePlayError);
 }
 
-void WebApkInstallTask::DeliverResult(bool success) {
+void WebApkInstallTask::DeliverResult(WebApkInstallStatus result) {
   // Invalidate weak pointers so that in-flight tasks cannot attempt to deliver
   // a second result.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  RecordWebApkInstallResult(package_name_to_update_.has_value(), result);
+
   DCHECK(result_callback_);
-  std::move(result_callback_).Run(success);
+  std::move(result_callback_).Run(result == WebApkInstallStatus::kSuccess);
 }
 
 }  // namespace apps

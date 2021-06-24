@@ -1808,6 +1808,22 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.WebAPK.{InstallType}.Result"
+    enum="WebAPKInstallResultChromeOS" expires_after="2022-01-14">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the overall final state of a WebAPK {InstallType} operation on
+    ChromeOS. A WebAPK is generated and installed when a PWA which supports Web
+    Share Target is installed in the browser, and updated when the PWA's
+    manifest updates.
+  </summary>
+  <token key="InstallType">
+    <variant name="Install"/>
+    <variant name="Update"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

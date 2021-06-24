@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/arc/arc_features_parser.h"
 #include "components/arc/mojom/webapk.mojom.h"
@@ -34,6 +35,7 @@ class WebAppProviderBase;
 
 namespace apps {
 
+// Installs or updates (as appropriate) the WebAPK for a specific app.
 class WebApkInstallTask {
   using ResultCallback = base::OnceCallback<void(bool success)>;
 
@@ -68,13 +70,17 @@ class WebApkInstallTask {
 
   // Delivers a result to the callback. The callback can delete this task, so no
   // further work should be done after calling this method.
-  void DeliverResult(bool success);
+  void DeliverResult(WebApkInstallStatus status);
 
   Profile* const profile_;
   web_app::WebAppProviderBase* web_app_provider_;
 
   arc::mojom::WebApkInfoPtr web_apk_info_;
   const std::string app_id_;
+
+  // If we are updating an existing WebAPK, contains the package name of the
+  // existing WebAPK. Empty if this is an installation for a new WebAPK.
+  absl::optional<std::string> package_name_to_update_;
 
   // Timeout for a response to arrive from the WebAPK minter.
   base::TimeDelta minter_timeout_;

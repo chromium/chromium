@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -227,6 +229,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
 
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
+  base::HistogramTester histograms;
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -248,6 +251,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   ASSERT_TRUE(installed_webapks.contains(app_id));
   ASSERT_EQ(*apps::webapk_prefs::GetWebApkPackageName(profile(), app_id),
             "org.chromium.webapk.some_package");
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kSuccess, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, ShareTarget) {
@@ -294,9 +299,12 @@ TEST_F(WebApkInstallTaskTest, NoIconInManifest) {
   app_info->title = kTestAppTitle;
   app_info->manifest_url = GURL(kTestManifestUrl);
   auto app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  base::HistogramTester histograms;
 
   ASSERT_FALSE(InstallWebApk(app_id));
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kAppInvalid, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedServerCall) {
@@ -304,11 +312,14 @@ TEST_F(WebApkInstallTaskTest, FailedServerCall) {
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
   SetWebApkResponse(base::BindRepeating(&BuildFailedResponse));
+  base::HistogramTester histograms;
 
   ASSERT_FALSE(InstallWebApk(app_id));
 
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 0);
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kNetworkError, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
@@ -319,12 +330,15 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
                                         "org.chromium.webapk.some_package"));
   fake_webapk_instance()->set_install_result(
       arc::mojom::WebApkInstallResult::kErrorResolveNetworkError);
+  base::HistogramTester histograms;
 
   ASSERT_FALSE(InstallWebApk(app_id));
   ASSERT_EQ(fake_webapk_instance()->handled_packages().count(
                 "org.chromium.webapk.some_package"),
             1);
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kGooglePlayError, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, MinterTimeout) {
@@ -332,6 +346,7 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWebApkServerUrl, test_server()->GetURL("/slow?1000").spec());
+  base::HistogramTester histograms;
 
   bool install_success;
   apps::WebApkInstallTask install_task(profile(), app_id);
@@ -344,6 +359,8 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
   run_loop.Run();
 
   ASSERT_FALSE(install_success);
+  histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
+                               apps::WebApkInstallStatus::kNetworkTimeout, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
@@ -511,6 +528,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
   web_app_info->share_target->action =
       GURL("https://www.differentexample.com/");
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  base::HistogramTester histograms;
   EXPECT_TRUE(InstallWebApk(app_id));
 
   ASSERT_THAT(last_webapk_request()->update_reasons(),
@@ -528,14 +546,15 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
       apps::webapk_prefs::GetWebApkAppIds(profile());
   ASSERT_EQ(installed_webapks.size(), 1);
   ASSERT_TRUE(installed_webapks.contains(app_id));
+  histograms.ExpectBucketCount(apps::kWebApkUpdateResultHistogram,
+                               apps::WebApkInstallStatus::kSuccess, 1);
 }
 
-TEST_F(WebApkInstallTaskTest, FailedUpdateNoChanges) {
+TEST_F(WebApkInstallTaskTest, AbandonedUpdateNoChanges) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
-
   EXPECT_TRUE(InstallWebApk(app_id));
   fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
       "org.chromium.webapk.some_package",
@@ -544,7 +563,11 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNoChanges) {
   // Install the same app with no changes. This should fail.
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
+  base::HistogramTester histograms;
   EXPECT_FALSE(InstallWebApk(app_id));
+  histograms.ExpectBucketCount(
+      apps::kWebApkUpdateResultHistogram,
+      apps::WebApkInstallStatus::kUpdateCancelledWebApkUpToDate, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
@@ -557,5 +580,9 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
   EXPECT_TRUE(InstallWebApk(app_id));
 
   // Install the same app without setting web apk info. Install should fail.
+  base::HistogramTester histograms;
   EXPECT_FALSE(InstallWebApk(app_id));
+  histograms.ExpectBucketCount(
+      apps::kWebApkUpdateResultHistogram,
+      apps::WebApkInstallStatus::kUpdateGetWebApkInfoError, 1);
 }
