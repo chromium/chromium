@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -136,12 +137,14 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
     const base::Value& value,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
-  const char* const property_blocked[] = {
-      // Must only be changed by policy/owner through.
+  const char* const blocked_properties[] = {
+      // Must only be changed by policy/owner through
+      // NetworkConfigurationUpdater.
+      shill::kCellularPolicyAllowRoamingProperty,
       shill::kCellularAllowRoamingProperty};
 
-  for (size_t i = 0; i < base::size(property_blocked); ++i) {
-    if (property_name == property_blocked[i]) {
+  for (size_t i = 0; i < base::size(blocked_properties); ++i) {
+    if (property_name == blocked_properties[i]) {
       InvokeErrorCallback(
           device_path, std::move(error_callback),
           "SetDeviceProperty called on blocked property " + property_name);
@@ -299,10 +302,14 @@ void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {
     if (new_device_value == current_allow_roaming)
       continue;
 
-    SetDevicePropertyInternal(device_state->path(),
-                              shill::kCellularAllowRoamingProperty,
-                              base::Value(new_device_value), base::DoNothing(),
-                              network_handler::ErrorCallback());
+    SetDevicePropertyInternal(
+        device_state->path(),
+        base::FeatureList::IsEnabled(
+            ash::features::kCellularAllowPerNetworkRoaming)
+            ? shill::kCellularPolicyAllowRoamingProperty
+            : shill::kCellularAllowRoamingProperty,
+        base::Value(new_device_value), base::DoNothing(),
+        network_handler::ErrorCallback());
   }
 }
 

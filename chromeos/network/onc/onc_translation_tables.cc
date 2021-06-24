@@ -6,6 +6,8 @@
 
 #include <cstddef>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/tether_constants.h"
@@ -420,7 +422,11 @@ const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[] = {
 const FieldTranslationEntry kCellularDeviceTable[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kAPNList, shill::kCellularApnListProperty},
-    {::onc::cellular::kAllowRoaming, shill::kCellularAllowRoamingProperty},
+    {::onc::cellular::kAllowRoaming,
+     base::FeatureList::IsEnabled(
+         ash::features::kCellularAllowPerNetworkRoaming)
+         ? shill::kCellularPolicyAllowRoamingProperty
+         : shill::kCellularAllowRoamingProperty},
     {::onc::cellular::kESN, shill::kEsnProperty},
     {::onc::cellular::kFamily, shill::kTechnologyFamilyProperty},
     {::onc::cellular::kFirmwareRevision, shill::kFirmwareRevisionProperty},

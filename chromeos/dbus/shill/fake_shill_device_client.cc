@@ -8,8 +8,10 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -334,6 +336,8 @@ void FakeShillDeviceClient::AddDevice(const std::string& device_path,
                      base::Value(modemmanager::kModemManager1ServiceName));
   if (type == shill::kTypeCellular) {
     properties->SetKey(shill::kCellularAllowRoamingProperty,
+                       base::Value(false));
+    properties->SetKey(shill::kCellularPolicyAllowRoamingProperty,
                        base::Value(false));
   }
 }

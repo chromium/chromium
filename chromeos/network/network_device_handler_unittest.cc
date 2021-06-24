@@ -4,11 +4,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -218,11 +221,49 @@ TEST_F(NetworkDeviceHandlerTest, CellularAllowRoaming) {
   network_device_handler_->SetCellularAllowRoaming(false);
   base::RunLoop().RunUntilIdle();
 
-  // Roaming should be disable again.
+  // Roaming should be disabled again.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
   allow_roaming =
       properties_->FindBoolKey(shill::kCellularAllowRoamingProperty);
+  EXPECT_TRUE(allow_roaming.has_value());
+  EXPECT_FALSE(allow_roaming.value());
+}
+
+// This test is nearly identical to
+// NetworkDeviceHandlerTest.CellularAllowRoaming except that it enables a
+// feature flag that allows it to test using the property that will eventually
+// replace shill::kCellularAllowRoamingProperty for devices.
+TEST_F(NetworkDeviceHandlerTest, CellularPolicyAllowRoaming) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::features::kCellularAllowPerNetworkRoaming);
+
+  // Start with disabled data roaming.
+  ShillDeviceClient::TestInterface* device_test =
+      fake_device_client_->GetTestInterface();
+  device_test->SetDeviceProperty(kDefaultCellularDevicePath,
+                                 shill::kCellularPolicyAllowRoamingProperty,
+                                 base::Value(false), /*notify_changed=*/true);
+
+  network_device_handler_->SetCellularAllowRoaming(true);
+  base::RunLoop().RunUntilIdle();
+
+  // Roaming should be enabled now.
+  GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
+
+  absl::optional<bool> allow_roaming =
+      properties_->FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
+  EXPECT_TRUE(allow_roaming.has_value());
+  EXPECT_TRUE(allow_roaming.value());
+
+  network_device_handler_->SetCellularAllowRoaming(false);
+  base::RunLoop().RunUntilIdle();
+
+  // Roaming should be disabled again.
+  GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
+
+  allow_roaming =
+      properties_->FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
   EXPECT_TRUE(allow_roaming.has_value());
   EXPECT_FALSE(allow_roaming.value());
 }
