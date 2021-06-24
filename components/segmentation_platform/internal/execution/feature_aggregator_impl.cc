@@ -21,7 +21,7 @@ using Sample = SignalDatabase::Sample;
 
 namespace {
 std::vector<float> SumCountAggregation(const std::vector<Sample>& samples) {
-  return std::vector<float>{samples.size()};
+  return std::vector<float>{static_cast<float>(samples.size())};
 }
 
 std::vector<float> SumValuesAggregation(proto::SignalType signal_type,
