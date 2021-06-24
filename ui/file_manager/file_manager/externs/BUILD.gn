@@ -53,13 +53,13 @@ js_library("drive_dialog_controller") {
 }
 
 js_library("entries_changed_event") {
-  deps = [ "//ui/file_manager/file_manager/common/js:util.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
 js_library("entry_location") {
   deps = [
     ":volume_info",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 
@@ -69,14 +69,14 @@ js_library("exif_entry") {
 }
 
 js_library("files_app_entry_interfaces") {
-  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
 js_library("metadata_worker_window") {
 }
 
 js_library("progress_center_panel") {
-  deps = [ "//ui/file_manager/file_manager/common/js:progress_center_common.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:progress_center_common" ]
 }
 
 js_library("volume_manager") {
@@ -85,14 +85,14 @@ js_library("volume_manager") {
     ":files_app_entry_interfaces",
     ":volume_info",
     ":volume_info_list",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 
 js_library("volume_info") {
   deps = [
     ":files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 

@@ -8,10 +8,10 @@
 // #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {util, str, strf} from '../../common/js/util.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on

@@ -73,8 +73,8 @@ js_library("files_format_dialog") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -125,7 +125,7 @@ js_unittest("files_password_dialog_unittest.m") {
   deps = [
     ":files_password_dialog",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -200,7 +200,7 @@ js_unittest("files_tooltip_unittest.m") {
   deps = [
     ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -221,7 +221,7 @@ js_unittest("files_xf_elements_unittest.m") {
   deps = [
     ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -243,7 +243,7 @@ js_library("xf_circular_progress") {
 js_library("xf_display_panel") {
   deps = [
     ":xf_panel_item",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -271,7 +271,7 @@ js_library("xf_panel_item") {
   deps = [
     ":xf_button",
     ":xf_circular_progress",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
   ]
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // clang-format on

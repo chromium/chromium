@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-import {str, strf, util} from '../../common/js/util.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 

@@ -5,9 +5,9 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome} from '../../common/js/mock_chrome.m.js';
-import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
+import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';

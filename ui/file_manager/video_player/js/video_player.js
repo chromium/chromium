@@ -6,8 +6,8 @@ import './error_util.js';
 
 import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.js';
 import {FilteredVolumeManager} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/filtered_volume_manager.js';
-import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
-import {AllowedPaths} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.m.js';
+import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.js';
+import {AllowedPaths} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

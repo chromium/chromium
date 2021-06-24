@@ -4,7 +4,7 @@
 
 import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 
 /**
  * Alert dialog.

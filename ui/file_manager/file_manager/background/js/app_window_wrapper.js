@@ -8,7 +8,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
 import {appUtil} from '../../common/js/app_util.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
-import {xfm} from '../../common/js/xfm.m.js';
+import {xfm} from '../../common/js/xfm.js';
 
 /**
  * Wrapper for an app window.

@@ -4,8 +4,8 @@
 
 import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';

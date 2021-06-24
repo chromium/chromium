@@ -25,7 +25,7 @@ js_library("remote_call") {
   deps = [
     ":test_util",
     "//ui/file_manager/file_manager/background/js:runtime_loaded_test_util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
   externs_list = [ "$externs_path/command_line_private.js" ]
 }

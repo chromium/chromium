@@ -6,8 +6,8 @@ import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeop
 import {LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {reportPromise} from '../../common/js/test_error_reporting.js';
 
 import {ThumbnailLoader} from './thumbnail_loader.m.js';
 

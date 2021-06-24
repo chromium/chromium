@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {str} from '../../../common/js/util.m.js';
+import {str} from '../../../common/js/util.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 

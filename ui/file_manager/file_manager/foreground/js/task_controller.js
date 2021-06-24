@@ -13,7 +13,7 @@
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {DialogType} from './dialog_type.m.js';
-// #import {strf, util, str} from '../../common/js/util.m.js';
+// #import {strf, util, str} from '../../common/js/util.js';
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';

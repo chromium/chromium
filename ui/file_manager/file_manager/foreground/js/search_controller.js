@@ -9,8 +9,8 @@
 // #import {TaskController} from './task_controller.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.js';
-// #import {str, strf} from '../../common/js/util.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {str, strf} from '../../common/js/util.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {SearchBox} from './ui/search_box.js';
 // clang-format on
 

@@ -4,8 +4,8 @@
 
 // clang-format off
 // #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {util, str} from '../../common/js/util.js';
 // clang-format on
 
 /**

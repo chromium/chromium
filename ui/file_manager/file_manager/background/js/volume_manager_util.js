@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str, util} from '../../common/js/util.m.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {VolumeInfoImpl} from './volume_info_impl.js';

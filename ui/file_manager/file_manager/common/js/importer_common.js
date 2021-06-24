@@ -6,8 +6,8 @@ import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FileType} from './file_type.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
-import {xfm} from './xfm.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
+import {xfm} from './xfm.js';
 
 // Namespace
 // eslint-disable-next-line no-var

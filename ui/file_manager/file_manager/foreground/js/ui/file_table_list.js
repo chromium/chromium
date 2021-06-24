@@ -10,7 +10,7 @@ import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selectio
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
-import {str, strf, util} from '../../../common/js/util.m.js';
+import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {MetadataModel} from '../metadata/metadata_model.js';

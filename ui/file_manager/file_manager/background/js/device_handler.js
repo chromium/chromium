@@ -6,10 +6,10 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {importer} from '../../common/js/importer_common.js';
-import {metrics} from '../../common/js/metrics.m.js';
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-import {str, strf, util} from '../../common/js/util.m.js';
-import {xfm} from '../../common/js/xfm.m.js';
+import {metrics} from '../../common/js/metrics.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {xfm} from '../../common/js/xfm.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';

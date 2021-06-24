@@ -16,7 +16,7 @@
 // #import {ListContainer} from './ui/list_container.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
 // #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 // #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
@@ -24,7 +24,7 @@
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {constants} from './constants.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
+// #import {util, str} from '../../common/js/util.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {QuickViewUma} from './quick_view_uma.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';

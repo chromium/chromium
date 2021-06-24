@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {importer} from './importer_common.js';
-import {TestCallRecorder} from './unittest_util.m.js';
+import {TestCallRecorder} from './unittest_util.js';
 
 // Namespace
 export const importerTest = {};

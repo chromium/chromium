@@ -59,8 +59,8 @@ js_library("audio_player") {
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:mediasession_types",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
@@ -78,7 +78,7 @@ js_library("background") {
     "//ui/file_manager/file_manager/background/js:app_window_wrapper",
     "//ui/file_manager/file_manager/background/js:background_base",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 

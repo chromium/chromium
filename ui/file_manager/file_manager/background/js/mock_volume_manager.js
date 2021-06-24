@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {str, util} from '../../common/js/util.m.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';

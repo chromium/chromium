@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {power} from './power.m.js';
-// #import {notifications} from './notifications_browser_proxy.js';
-// #import {storage} from './storage_adapter.m.js';
+import {notifications} from './notifications_browser_proxy.js';
+import {power} from './power.js';
+import {storage} from './storage_adapter.js';
 
 // namespace
-/* #export */ const xfm = {
+export const xfm = {
   notifications,
   power,
   storage,

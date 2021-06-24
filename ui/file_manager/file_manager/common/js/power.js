@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // namespace
-/* #export */ const power = {};
+export const power = {};
 
 if (window.isSWA && 'wakeLock' in navigator) {
   power.lock_ = null;

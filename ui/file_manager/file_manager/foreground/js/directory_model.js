@@ -17,12 +17,12 @@
 // #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
 // #import {constants} from './constants.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {util} from '../../common/js/util.js';
 // #import {AsyncUtil} from '../../common/js/async_util.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // clang-format on
 
 // If directory files changes too often, don't rescan directory more than once

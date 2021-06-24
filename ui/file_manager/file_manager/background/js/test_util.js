@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-import {util} from '../../common/js/util.m.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {util} from '../../common/js/util.js';
 
 import {background} from './background.js';
 import {launcher} from './launcher.js';

@@ -89,7 +89,7 @@ js_library("content_metadata_provider") {
     ":metadata_item",
     ":metadata_provider",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader.m",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/file_manager/image_loader:load_image_request",
@@ -102,7 +102,7 @@ js_unittest("content_metadata_provider_unittest.m") {
     ":content_metadata_provider",
     ":metadata_request",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -145,8 +145,8 @@ js_unittest("external_metadata_provider_unittest.m") {
     ":external_metadata_provider",
     ":metadata_request",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -162,7 +162,7 @@ js_unittest("file_system_metadata_provider_unittest.m") {
     ":file_system_metadata_provider",
     ":metadata_request",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -222,7 +222,7 @@ js_library("metadata_cache_set") {
     ":metadata_cache_item",
     ":metadata_item",
     ":metadata_request",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -258,7 +258,7 @@ js_library("metadata_model") {
     ":metadata_item",
     ":metadata_provider",
     ":multi_metadata_provider",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -268,7 +268,7 @@ js_unittest("metadata_model_unittest.m") {
     ":metadata_model",
     ":metadata_provider",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -310,7 +310,7 @@ js_library("multi_metadata_provider") {
     ":metadata_item",
     ":metadata_provider",
     ":metadata_request",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -324,8 +324,8 @@ js_unittest("multi_metadata_provider_unittest.m") {
     ":metadata_request",
     ":multi_metadata_provider",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -343,7 +343,7 @@ js_unittest("thumbnail_model_unittest.m") {
     ":metadata_model",
     ":thumbnail_model",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 

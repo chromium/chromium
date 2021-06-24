@@ -5,7 +5,7 @@
 import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.js';
 import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.js';
 import {FileType} from '../../file_manager/common/js/file_type.js';
-import {util} from '../../file_manager/common/js/util.m.js';
+import {util} from '../../file_manager/common/js/util.js';
 
 /**
  * Icon of the audio player.

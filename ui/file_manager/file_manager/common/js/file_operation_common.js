@@ -4,7 +4,7 @@
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {util} from './util.m.js';
+import {util} from './util.js';
 
 export class FileOperationProgressEvent extends Event {
   /** @param {string} eventName */

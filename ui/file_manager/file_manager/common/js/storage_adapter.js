@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // namespace
-/* #export */ const storage = {};
+export const storage = {};
 
 /**
  * If localStorage hasn't been loaded, read it and populate the storage

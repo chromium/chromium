@@ -13,7 +13,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
-import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.m.js';
+import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.

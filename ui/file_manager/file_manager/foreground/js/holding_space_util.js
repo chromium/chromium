@@ -7,9 +7,9 @@
  */
 
 // clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {metrics} from '../../common/js/metrics.js';
+// #import {xfm} from '../../common/js/xfm.js';
 // clang-format on
 
 /* #export */ class HoldingSpaceUtil {

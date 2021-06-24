@@ -4,7 +4,7 @@
 
 import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 
-import {str, util} from '../../../common/js/util.m.js';
+import {str, util} from '../../../common/js/util.js';
 
 
 /**

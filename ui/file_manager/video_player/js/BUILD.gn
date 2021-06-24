@@ -57,7 +57,7 @@ js_library("background") {
   deps = [
     "//ui/file_manager/file_manager/background/js:app_window_wrapper",
     "//ui/file_manager/file_manager/background/js:background_base",
-    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs/background:background_base",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -89,7 +89,7 @@ js_unittest("video_player_native_controls_unittest.m") {
   deps = [
     ":video_player_native_controls",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
   ]
 }
 
@@ -100,15 +100,15 @@ js_library("video_player") {
     ":video_player_native_controls",
     "//ui/file_manager/file_manager/common/js:app_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("video_player_metrics") {
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics_base.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:metrics_base" ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {

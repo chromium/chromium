@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 import {ProvidersModel} from '../providers_model.m.js';
 
 import {FilesMenuItem} from './files_menu.js';

@@ -5,12 +5,12 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {importer} from '../../common/js/importer_common.js';
-import {MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
-import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {importerTest} from '../../common/js/test_importer_common.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {xfm} from '../../common/js/xfm.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';

@@ -13,7 +13,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.m.js';
+import {util} from '../../common/js/util.js';
 
 import {metadataProxy} from './metadata_proxy.js';
 

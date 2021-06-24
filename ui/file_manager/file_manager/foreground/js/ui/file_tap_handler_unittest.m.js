@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.js';
 import {FileTapHandler} from './file_tap_handler.js';
 
 /** @type {!FileTapHandler} handler the handler. */

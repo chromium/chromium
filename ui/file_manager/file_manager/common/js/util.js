@@ -6,21 +6,20 @@
  * @fileoverview This file should contain utility functions used only by the
  * files app. Other shared utility functions can be found in base/*_util.js,
  * which allows finer-grained control over introducing dependencies.
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {EntryList} from './files_app_entry_types.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {EntryLocation} from '../../externs/entry_location.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {EntryList} from './files_app_entry_types.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Namespace for utility functions.
@@ -366,7 +365,7 @@ util.createChild = (parent, opt_className, opt_tag) => {
  */
 util.queryDecoratedElement = (query, type) => {
   const element = queryRequiredElement(query);
-  cr.ui.decorate(element, type);
+  decorate(element, type);
   return element;
 };
 
@@ -379,7 +378,7 @@ util.queryDecoratedElement = (query, type) => {
  * @param {string} id The id of the string to return.
  * @return {string} The translated string.
  */
-/* #export */ function str(id) {
+export function str(id) {
   try {
     return loadTimeData.getString(id);
   } catch (e) {
@@ -398,7 +397,7 @@ util.queryDecoratedElement = (query, type) => {
  * @param {...*} var_args The values to replace into the string.
  * @return {string} The translated string with replaced values.
  */
-/* #export */ function strf(id, var_args) {
+export function strf(id, var_args) {
   return loadTimeData.getStringF.apply(loadTimeData, arguments);
 }
 
@@ -1820,5 +1819,4 @@ util.isDriveDssPinEnabled = () => {
       loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {util};
+export {util};

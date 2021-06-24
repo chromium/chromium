@@ -4,8 +4,8 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.m.js';
-import {str, strf} from '../../../common/js/util.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
+import {str, strf} from '../../../common/js/util.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 
 /**

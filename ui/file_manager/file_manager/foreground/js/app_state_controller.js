@@ -5,11 +5,11 @@
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogType} from './dialog_type.m.js';
-// #import {util} from '../../common/js/util.m.js';
+// #import {util} from '../../common/js/util.js';
 // #import {appUtil} from '../../common/js/app_util.js';
 // #import {ListContainer} from './ui/list_container.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
+// #import {xfm} from '../../common/js/xfm.js';
 
 /* #export */ class AppStateController {
   /**

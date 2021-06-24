@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {ProgressCenterPanelInterface} from '../progress_center_panel.js';
 
 /**

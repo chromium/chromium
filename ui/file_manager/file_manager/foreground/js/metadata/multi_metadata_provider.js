@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {util} from '../../../common/js/util.m.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
+import {util} from '../../../common/js/util.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';

@@ -4,7 +4,7 @@
 
 import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 
 /**
  * This class is an extended class, to manage the status of the dialogs.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {AllowedPaths} from '../../common/js/volume_manager_types.m.js';
+// #import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 // #import {DialogType} from './dialog_type.m.js';
 // clang-format on
 

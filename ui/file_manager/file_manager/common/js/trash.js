@@ -25,8 +25,8 @@ import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {CombinedReaders, FakeEntryImpl} from './files_app_entry_types.js';
-import {str, util} from './util.m.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {str, util} from './util.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Configuration for where Trash is stored in a volume.

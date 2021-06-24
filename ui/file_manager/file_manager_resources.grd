@@ -33,7 +33,6 @@
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_XF_ELEMENTS_HTML" file="file_manager/foreground/elements/files_xf_elements.html" type="BINDATA" />
 
       <!-- Scripts required by the metadata parser worker. -->
-      <include name="IDR_FILE_MANAGER_UTIL" file="file_manager/common/js/util.js" type="BINDATA" />
 
       <!-- Images referenced from the manifest or the code -->
       <include name="IDR_FILE_MANAGER_ICON_16" file="file_manager/common/images/icon16.png" type="BINDATA" />

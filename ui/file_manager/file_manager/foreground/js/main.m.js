@@ -9,7 +9,7 @@
 import '../../common/js/error_counter.js';
 import './metrics_start.m.js';
 
-import {util} from '../../common/js/util.m.js';
+import {util} from '../../common/js/util.js';
 import {FileManager} from './file_manager.m.js';
 
 

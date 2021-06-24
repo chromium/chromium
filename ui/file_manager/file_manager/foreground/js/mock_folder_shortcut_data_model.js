@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {MockEntry} from '../../common/js/mock_entry.m.js';
+// #import {MockEntry} from '../../common/js/mock_entry.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 // clang-format on

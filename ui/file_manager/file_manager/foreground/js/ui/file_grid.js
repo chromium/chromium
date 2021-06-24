@@ -13,7 +13,7 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 import {AsyncUtil} from '../../../common/js/async_util.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {importer} from '../../../common/js/importer_common.js';
-import {str, util} from '../../../common/js/util.m.js';
+import {str, util} from '../../../common/js/util.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';

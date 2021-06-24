@@ -6,7 +6,7 @@
  * Installs a mock object to replace window.chrome in a unit test.
  * @param {Object} mockChrome
  */
-/* #export */ function installMockChrome(mockChrome) {
+export function installMockChrome(mockChrome) {
   /** @suppress {const|checkTypes} */
   chrome = mockChrome;
 }
@@ -14,7 +14,7 @@
 /**
  * Mocks chrome.commandLinePrivate.
  */
-/* #export */ class MockCommandLinePrivate {
+export class MockCommandLinePrivate {
   constructor() {
     this.flags_ = {};
     if (!chrome) {
@@ -44,7 +44,7 @@
 /**
  * Stubs the chrome.storage API.
  */
-/* #export */ class MockChromeStorageAPI {
+export class MockChromeStorageAPI {
   constructor() {
     /** @type {Object<?>} */
     this.state = {};

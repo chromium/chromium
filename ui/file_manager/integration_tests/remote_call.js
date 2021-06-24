@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ElementObject, KeyModifiers} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/runtime_loaded_test_util.js';
-import {VolumeManagerCommon} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.m.js';
+import {VolumeManagerCommon} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.js';
 
 import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
 

@@ -5,7 +5,7 @@
 // clang-format off
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.js';
 
 import {FilesTooltip} from './files_tooltip.js';
 

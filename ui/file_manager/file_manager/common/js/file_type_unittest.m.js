@@ -5,8 +5,8 @@
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
 import {FileType} from './file_type.js';
-import {MockFileSystem} from './mock_entry.m.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {MockFileSystem} from './mock_entry.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /*
  * Tests that Downloads icon is customized within Downloads root, but not in

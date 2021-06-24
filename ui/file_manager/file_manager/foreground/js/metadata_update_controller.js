@@ -6,7 +6,7 @@
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {ListContainer} from './ui/list_container.js';
-// #import {util} from '../../common/js/util.m.js';
+// #import {util} from '../../common/js/util.js';
 
 /**
  * Controller for list contents update.

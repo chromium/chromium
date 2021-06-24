@@ -10,8 +10,8 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.js';
 // #import {ListContainer} from './ui/list_container.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {util, str, strf} from '../../common/js/util.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';

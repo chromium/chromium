@@ -24,7 +24,7 @@
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * A reader compatible with DirectoryEntry.createReader (from Web Standards)

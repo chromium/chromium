@@ -10,7 +10,7 @@ import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
 import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 
 import {MultiMenu} from './multi_menu.js';
 

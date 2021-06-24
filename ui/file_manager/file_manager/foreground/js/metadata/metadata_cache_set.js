@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
 import {MetadataItem} from './metadata_item.js';

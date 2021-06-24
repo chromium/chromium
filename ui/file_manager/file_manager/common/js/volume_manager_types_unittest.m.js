@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {assertTrue} from 'chrome://test/chai_assert.js';
-import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
-const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 // Test that every volumeType has a rootType, and that it maps back to the same
 // volumeType.

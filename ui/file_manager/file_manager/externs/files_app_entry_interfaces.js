@@ -6,7 +6,7 @@
  * @fileoverview Interfaces for the Files app Entry Types.
  */
 
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 
 /**
  * FilesAppEntry represents a single Entry (file, folder or root) in the Files

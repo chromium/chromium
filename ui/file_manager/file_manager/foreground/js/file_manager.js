@@ -18,8 +18,8 @@
 // #import {Crostini} from '../../externs/background/crostini.js';
 // #import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
+// #import {ProgressItemState} from '../../common/js/progress_center_common.js';
+// #import {xfm} from '../../common/js/xfm.js';
 // #import {crossoverSearchUtils} from './crossover_search_utils.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {CrostiniController} from './crostini_controller.m.js';
@@ -68,19 +68,19 @@
 // #import {EmptyFolderController} from './empty_folder_controller.m.js';
 // #import {ToolbarController} from './toolbar_controller.m.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {util, str} from '../../common/js/util.m.js';
+// #import {util, str} from '../../common/js/util.js';
 // #import {SelectionMenuController} from './selection_menu_controller.m.js';
 // #import {GearMenuController} from './gear_menu_controller.m.js';
 // #import {SortMenuController} from './sort_menu_controller.m.js';
 // #import {ScanController} from './scan_controller.m.js';
 // #import {DriveDialogController} from './drive_dialog_controller.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.js';
 // #import {AppStateController} from './app_state_controller.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {importer} from './import_controller.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {importElements} from './elements_importer.m.js';
 // clang-format on

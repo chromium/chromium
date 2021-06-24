@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {strf, util} from '../../../common/js/util.m.js';
+import {strf, util} from '../../../common/js/util.js';
 
 /**
  * Formatter class for file metadatas.

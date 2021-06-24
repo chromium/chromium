@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str} from '../../common/js/util.m.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {str} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 

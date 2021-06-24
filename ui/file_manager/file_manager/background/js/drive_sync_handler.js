@@ -5,9 +5,9 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-import {str, strf} from '../../common/js/util.m.js';
-import {xfm} from '../../common/js/xfm.m.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str, strf} from '../../common/js/util.js';
+import {xfm} from '../../common/js/xfm.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';

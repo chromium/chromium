@@ -4,7 +4,7 @@
 
 // #import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {str, util} from '../../common/js/util.m.js';
+// #import {str, util} from '../../common/js/util.js';
 
 /**
  * This class controls wires file-type filter UI and the filter settings in

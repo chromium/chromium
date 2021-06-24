@@ -8,11 +8,11 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {importer} from './importer_common.js';
-import {MockChromeStorageAPI, MockCommandLinePrivate} from './mock_chrome.m.js';
-import {MockDirectoryEntry, MockFileEntry} from './mock_entry.m.js';
-import {reportPromise} from './test_error_reporting.m.js';
+import {MockChromeStorageAPI, MockCommandLinePrivate} from './mock_chrome.js';
+import {MockDirectoryEntry, MockFileEntry} from './mock_entry.js';
+import {reportPromise} from './test_error_reporting.js';
 import {importerTest} from './test_importer_common.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

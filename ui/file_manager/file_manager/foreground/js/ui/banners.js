@@ -7,9 +7,9 @@ import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {str, strf, util} from '../../../common/js/util.m.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
-import {xfm} from '../../../common/js/xfm.m.js';
+import {str, strf, util} from '../../../common/js/util.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {xfm} from '../../../common/js/xfm.js';
 import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {constants} from '../constants.m.js';

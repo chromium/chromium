@@ -7,9 +7,9 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
-import {MockFileSystem} from './mock_entry.m.js';
-import {util} from './util.m.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {MockFileSystem} from './mock_entry.js';
+import {util} from './util.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 let fileSystem;
 

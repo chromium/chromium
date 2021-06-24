@@ -11,8 +11,8 @@ import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
 import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {str, strf, util} from '../../../common/js/util.m.js';
-import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
+import {str, strf, util} from '../../../common/js/util.js';
+import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';

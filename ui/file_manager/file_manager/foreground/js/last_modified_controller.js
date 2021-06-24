@@ -4,7 +4,7 @@
 
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FileTable} from './ui/file_table.js';
-// #import {util} from '../../common/js/util.m.js';
+// #import {util} from '../../common/js/util.js';
 
 /**
  * Controls last modified column in the file table.

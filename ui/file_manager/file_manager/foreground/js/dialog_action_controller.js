@@ -10,12 +10,12 @@
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogFooter} from './ui/dialog_footer.js';
-// #import {util, str} from '../../common/js/util.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
+// #import {util, str} from '../../common/js/util.js';
+// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // #import {$} from 'chrome://resources/js/util.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // clang-format on

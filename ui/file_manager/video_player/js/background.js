@@ -4,7 +4,7 @@
 
 import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.js';
 import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.js';
-import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
+import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.js';
 import {BackgroundBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/externs/background/background_base.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 

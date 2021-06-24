@@ -86,6 +86,18 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/test_util.js",
 
     # Externs:
+    "file_manager/common/js/volume_manager_types.js",
+    "file_manager/common/js/util.js",
+    "file_manager/common/js/unittest_util.js",
+    "file_manager/common/js/xfm.js",
+    "file_manager/common/js/test_error_reporting.js",
+    "file_manager/common/js/storage_adapter.js",
+    "file_manager/common/js/power.js",
+    "file_manager/common/js/progress_center_common.js",
+    "file_manager/common/js/mock_entry.js",
+    "file_manager/common/js/mock_chrome.js",
+    "file_manager/common/js/metrics_base.js",
+    "file_manager/common/js/metrics.js",
     "file_manager/common/js/mediasession_types.js",
     "file_manager/common/js/lru_cache.js",
     "file_manager/common/js/test_importer_common.js",
@@ -297,16 +309,6 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/elements/repeat_button.js",
 
     # Common:
-    "file_manager/common/js/metrics.m.js",
-    "file_manager/common/js/metrics_base.m.js",
-    "file_manager/common/js/mock_chrome.m.js",
-    "file_manager/common/js/power.m.js",
-    "file_manager/common/js/progress_center_common.m.js",
-    "file_manager/common/js/storage_adapter.m.js",
-    "file_manager/common/js/test_error_reporting.m.js",
-    "file_manager/common/js/util.m.js",
-    "file_manager/common/js/volume_manager_types.m.js",
-    "file_manager/common/js/xfm.m.js",
 
     # Files app Foreground:
     "file_manager/foreground/js/actions_controller.m.js",
@@ -379,7 +381,6 @@ preprocess_if_expr("preprocess_generated") {
 
   deps = [
     "//ui/file_manager/audio_player/elements:web_components",
-    "//ui/file_manager/file_manager/common/js:modulize",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:modulize",
@@ -429,14 +430,6 @@ generate_grd("build_grd") {
 
   if (optimize_webui) {
     input_files += [
-      # Fix unittestxs: These files are imported via chrome-extension:// URLs:
-      "file_manager/common/js/mock_chrome.m.js",
-      "file_manager/common/js/power.m.js",
-      "file_manager/common/js/storage_adapter.m.js",
-      "file_manager/common/js/test_error_reporting.m.js",
-      "file_manager/common/js/volume_manager_types.m.js",
-      "file_manager/common/js/xfm.m.js",
-
       "file_manager/background/js/main_background.m.rollup.js",
       "file_manager/background/js/runtime_loaded_test_util.rollup.js",
       "file_manager/background/js/shared.m.rollup.js",

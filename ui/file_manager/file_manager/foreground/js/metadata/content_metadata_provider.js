@@ -7,7 +7,7 @@ import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfj
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 import {ThumbnailLoader} from '../thumbnail_loader.m.js';
 
 import {MetadataItem} from './metadata_item.js';

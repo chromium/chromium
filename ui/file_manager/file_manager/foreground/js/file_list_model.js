@@ -7,7 +7,7 @@
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileType} from '../../common/js/file_type.js';
-// #import {strf, str, util} from '../../common/js/util.m.js';
+// #import {strf, str, util} from '../../common/js/util.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 // clang-format on
 

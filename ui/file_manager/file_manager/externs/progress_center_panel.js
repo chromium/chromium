@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem, ProgressItemState} from '../common/js/progress_center_common.m.js';
+import {ProgressCenterItem, ProgressItemState} from '../common/js/progress_center_common.js';
 
 /**
  * Interface implemented in foreground page that the background page uses to

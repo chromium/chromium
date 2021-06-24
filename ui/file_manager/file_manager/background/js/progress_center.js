@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {AsyncUtil} from '../../common/js/async_util.js';
-import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
-import {str} from '../../common/js/util.m.js';
-import {xfm} from '../../common/js/xfm.m.js';
+import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
+import {str} from '../../common/js/util.js';
+import {xfm} from '../../common/js/xfm.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
 

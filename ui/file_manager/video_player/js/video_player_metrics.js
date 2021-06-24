@@ -9,7 +9,7 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-import {metricsBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/metrics_base.m.js';
+import {metricsBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/metrics_base.js';
 
 /**
  * @extends {metricsBase}

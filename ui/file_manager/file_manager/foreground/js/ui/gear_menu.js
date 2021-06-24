@@ -6,7 +6,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {str, strf, util} from '../../../common/js/util.m.js';
+import {str, strf, util} from '../../../common/js/util.js';
 
 export class GearMenu {
   /**

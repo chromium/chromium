@@ -82,7 +82,7 @@ js_library("media_scanner") {
 js_library("progress_center") {
   deps = [
     "..:progress_center_panel",
-    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common",
   ]
 }
 

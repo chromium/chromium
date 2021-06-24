@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {VolumeEntry} from './files_app_entry_types.js';
-import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Namespace object for file type utility functions.

@@ -10,9 +10,9 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {str, util} from '../../common/js/util.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {str, util} from '../../common/js/util.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileTapHandler} from './ui/file_tap_handler.js';
 // #import {ListContainer} from './ui/list_container.js';

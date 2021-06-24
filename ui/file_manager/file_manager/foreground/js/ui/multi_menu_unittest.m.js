@@ -9,7 +9,7 @@ import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 
 import {MultiMenuButton} from './multi_menu_button.js';
 

@@ -5,7 +5,7 @@
 // clang-format off
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {xfm} from '../../common/js/xfm.m.js';
+// #import {xfm} from '../../common/js/xfm.js';
 // clang-format on
 
 /**

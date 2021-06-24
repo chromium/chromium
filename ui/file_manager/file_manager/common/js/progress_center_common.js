@@ -6,7 +6,7 @@
  * State of progress items.
  * @const @enum {string}
  */
-/* #export */ const ProgressItemState = {
+export const ProgressItemState = {
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',
@@ -18,7 +18,7 @@ Object.freeze(ProgressItemState);
  * Type of progress items.
  * @const @enum {string}
  */
-/* #export */ const ProgressItemType = {
+export const ProgressItemType = {
   // The item is file copy operation.
   COPY: 'copy',
   // The item is file move operation.
@@ -44,7 +44,7 @@ Object.freeze(ProgressItemType);
 /**
  * Item of the progress center.
  */
-/* #export */ class ProgressCenterItem {
+export class ProgressCenterItem {
   constructor() {
     /**
      * Item ID.

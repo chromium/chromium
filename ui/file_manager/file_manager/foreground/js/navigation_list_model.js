@@ -10,10 +10,10 @@
 // #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {VolumeInfo} from '../../externs/volume_info.js';
 // #import {TrashRootEntry} from '../../common/js/trash.js';
-// #import {util, str} from '../../common/js/util.m.js';
+// #import {util, str} from '../../common/js/util.js';
 // #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.js';
 // #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on

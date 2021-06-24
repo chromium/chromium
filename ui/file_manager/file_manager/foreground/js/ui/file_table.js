@@ -11,7 +11,7 @@ import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_mod
 import {AsyncUtil} from '../../../common/js/async_util.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {importer} from '../../../common/js/importer_common.js';
-import {str, strf, util} from '../../../common/js/util.m.js';
+import {str, strf, util} from '../../../common/js/util.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';

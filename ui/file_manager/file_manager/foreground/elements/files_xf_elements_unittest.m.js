@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {util} from '../../common/js/util.m.js';
+import {util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
 // clang-format on

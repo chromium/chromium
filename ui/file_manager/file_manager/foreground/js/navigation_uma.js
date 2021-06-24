@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // clang-format on
 
 /**

@@ -7,7 +7,7 @@ import './xf_circular_progress.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {util} from '../../common/js/util.m.js';
+import {util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
 

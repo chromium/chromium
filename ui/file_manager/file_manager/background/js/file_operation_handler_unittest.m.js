@@ -6,8 +6,8 @@
 import { assertArrayEquals,assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
-import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
-import {util} from '../../common/js/util.m.js';
+import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {util} from '../../common/js/util.js';
 
 import {FileOperationHandler} from './file_operation_handler.js';
 import {fileOperationUtil} from './file_operation_util.js';

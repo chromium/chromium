@@ -17,15 +17,15 @@
 // #import {FilesMenuItem} from './ui/files_menu.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
-// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.js';
 // #import {FileTransferController} from './file_transfer_controller.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {FileType} from '../../common/js/file_type.js';
 // #import {constants} from './constants.m.js';
-// #import {util, strf, str} from '../../common/js/util.m.js';
+// #import {util, strf, str} from '../../common/js/util.js';
 // #import {AsyncUtil} from '../../common/js/async_util.js'
-// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {metrics} from '../../common/js/metrics.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {DefaultTaskDialog} from './ui/default_task_dialog.js';

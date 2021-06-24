@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assertTrue, assertEquals} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 /**
  * Asserts that two lists contain the same set of Entries.  Entries are deemed
@@ -11,7 +11,7 @@
  * @param {!Array<!FileEntry>} expected
  * @param {!Array<!FileEntry>} actual
  */
-/* #export */ function assertFileEntryListEquals(expected, actual) {
+export function assertFileEntryListEquals(expected, actual) {
   const entryToPath = entry => {
     assertTrue(entry.isFile);
     return entry.fullPath;
@@ -26,7 +26,7 @@
  * @param {!Array<string>} expectedPaths
  * @param {!Array<!FileEntry>} fileEntries
  */
-/* #export */ function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
+export function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
   assertEquals(expectedPaths.length, fileEntries.length);
 
   const entryToPath = entry => {
@@ -55,7 +55,7 @@
  *   assertEquals(recorder.getListCall()[0], 'hammy');
  * </pre>
  */
-/* #export */ class TestCallRecorder {
+export class TestCallRecorder {
   constructor() {
     /** @private {!Array<!Arguments>} */
     this.calls_ = [];

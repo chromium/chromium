@@ -10,7 +10,7 @@ import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_mod
 import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {util} from '../../../common/js/util.m.js';
+import {util} from '../../../common/js/util.js';
 import {DialogType} from '../dialog_type.m.js';
 import {FileListModel} from '../file_list_model.m.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
