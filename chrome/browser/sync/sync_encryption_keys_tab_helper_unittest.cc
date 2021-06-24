@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -43,6 +44,11 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
   content::WebContentsReceiverSet* frame_receiver_set() {
     return content::WebContentsReceiverSet::GetForWebContents<
         chrome::mojom::SyncEncryptionKeysExtension>(web_contents());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{SyncServiceFactory::GetInstance(),
+             SyncServiceFactory::GetDefaultFactory()}};
   }
 
  private:

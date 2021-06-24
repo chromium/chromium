@@ -1083,6 +1083,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
           return std::unique_ptr<KeyedService>(
               new SpellcheckService(static_cast<Profile*>(profile)));
         }));
+    profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                      SyncServiceFactory::GetDefaultFactory());
 
     profile_ = profile_builder.Build();
 

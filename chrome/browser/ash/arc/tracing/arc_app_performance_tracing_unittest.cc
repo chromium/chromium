@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -105,6 +106,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
   ArcAppPerformanceTracingTestHelper& tracing_helper() {
     return tracing_helper_;
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{SyncServiceFactory::GetInstance(),
+             SyncServiceFactory::GetDefaultFactory()}};
   }
 
  private:

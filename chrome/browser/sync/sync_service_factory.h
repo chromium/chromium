@@ -47,6 +47,9 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // SyncService if present. Returned pointers are guaranteed to be not null.
   static std::vector<const syncer::SyncService*> GetAllSyncServices();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend struct base::DefaultSingletonTraits<SyncServiceFactory>;
 
@@ -58,6 +61,7 @@ class SyncServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 
   DISALLOW_COPY_AND_ASSIGN(SyncServiceFactory);
 };

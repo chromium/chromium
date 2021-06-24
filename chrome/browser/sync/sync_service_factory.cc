@@ -100,92 +100,8 @@ void UpdateNetworkTime(const base::Time& network_time,
                                 resolution, latency, base::TimeTicks::Now()));
 }
 
-}  // anonymous namespace
-
-// static
-SyncServiceFactory* SyncServiceFactory::GetInstance() {
-  return base::Singleton<SyncServiceFactory>::get();
-}
-
-// static
-syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
-  if (!switches::IsSyncAllowedByFlag()) {
-    return nullptr;
-  }
-
-  return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-// static
-syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
-    Profile* profile) {
-  return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
-}
-
-content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  if (context->IsOffTheRecord())
-    return nullptr;
-  if (Profile::FromBrowserContext(context)->IsEphemeralGuestProfile())
-    return nullptr;
-  return context;
-}
-
-SyncServiceFactory::SyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SyncService",
-          BrowserContextDependencyManager::GetInstance()) {
-  // The SyncServiceImpl depends on various SyncableServices being around
-  // when it is shut down.  Specify those dependencies here to build the proper
-  // destruction order. Note that some of the dependencies are listed here but
-  // actually plumbed in ChromeSyncClient, which this factory constructs.
-  DependsOn(AboutSigninInternalsFactory::GetInstance());
-  DependsOn(AccountPasswordStoreFactory::GetInstance());
-  DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
-  DependsOn(BookmarkModelFactory::GetInstance());
-  DependsOn(BookmarkSyncServiceFactory::GetInstance());
-  DependsOn(BookmarkUndoServiceFactory::GetInstance());
-  DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
-  DependsOn(ConsentAuditorFactory::GetInstance());
-  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(FaviconServiceFactory::GetInstance());
-  DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
-  DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncInvalidationsServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
-  DependsOn(SecurityEventRecorderFactory::GetInstance());
-  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
-  DependsOn(SharingMessageBridgeFactory::GetInstance());
-  DependsOn(SpellcheckServiceFactory::GetInstance());
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  DependsOn(SessionSyncServiceFactory::GetInstance());
-  DependsOn(TemplateURLServiceFactory::GetInstance());
-#if !defined(OS_ANDROID)
-  DependsOn(ThemeServiceFactory::GetInstance());
-#endif  // !defined(OS_ANDROID)
-  DependsOn(WebDataServiceFactory::GetInstance());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  DependsOn(
-      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  DependsOn(extensions::StorageFrontend::GetFactoryInstance());
-  DependsOn(web_app::WebAppProviderFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
-  DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-SyncServiceFactory::~SyncServiceFactory() = default;
-
-KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> BuildSyncService(
+    content::BrowserContext* context) {
   syncer::SyncServiceImpl::InitParams init_params;
 
   Profile* profile = Profile::FromBrowserContext(context);
@@ -281,7 +197,100 @@ KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
   pdm->OnSyncServiceInitialized(sync_service.get());
 
-  return sync_service.release();
+  return sync_service;
+}
+
+}  // anonymous namespace
+
+// static
+SyncServiceFactory* SyncServiceFactory::GetInstance() {
+  return base::Singleton<SyncServiceFactory>::get();
+}
+
+// static
+syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
+  if (!switches::IsSyncAllowedByFlag()) {
+    return nullptr;
+  }
+
+  return static_cast<syncer::SyncService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
+    Profile* profile) {
+  return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
+}
+
+content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  if (context->IsOffTheRecord())
+    return nullptr;
+  if (Profile::FromBrowserContext(context)->IsEphemeralGuestProfile())
+    return nullptr;
+  return context;
+}
+
+SyncServiceFactory::SyncServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "SyncService",
+          BrowserContextDependencyManager::GetInstance()) {
+  // The SyncServiceImpl depends on various SyncableServices being around
+  // when it is shut down.  Specify those dependencies here to build the proper
+  // destruction order. Note that some of the dependencies are listed here but
+  // actually plumbed in ChromeSyncClient, which this factory constructs.
+  DependsOn(AboutSigninInternalsFactory::GetInstance());
+  DependsOn(AccountPasswordStoreFactory::GetInstance());
+  DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
+  DependsOn(BookmarkModelFactory::GetInstance());
+  DependsOn(BookmarkSyncServiceFactory::GetInstance());
+  DependsOn(BookmarkUndoServiceFactory::GetInstance());
+  DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
+  DependsOn(ConsentAuditorFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(FaviconServiceFactory::GetInstance());
+  DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(SyncInvalidationsServiceFactory::GetInstance());
+  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(SecurityEventRecorderFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
+  DependsOn(SharingMessageBridgeFactory::GetInstance());
+  DependsOn(SpellcheckServiceFactory::GetInstance());
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  DependsOn(SessionSyncServiceFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+#if !defined(OS_ANDROID)
+  DependsOn(ThemeServiceFactory::GetInstance());
+#endif  // !defined(OS_ANDROID)
+  DependsOn(WebDataServiceFactory::GetInstance());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  DependsOn(
+      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  DependsOn(extensions::StorageFrontend::GetFactoryInstance());
+  DependsOn(web_app::WebAppProviderFactory::GetInstance());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+SyncServiceFactory::~SyncServiceFactory() = default;
+
+KeyedService* SyncServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return BuildSyncService(context).release();
+}
+
+bool SyncServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 // static
@@ -318,4 +327,10 @@ SyncServiceFactory::GetAllSyncServices() {
     }
   }
   return sync_services;
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+SyncServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildSyncService);
 }

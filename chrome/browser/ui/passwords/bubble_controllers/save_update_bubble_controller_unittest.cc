@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
@@ -82,6 +83,8 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), SyncServiceFactory::GetDefaultFactory());
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(
