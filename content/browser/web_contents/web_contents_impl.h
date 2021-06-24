@@ -910,7 +910,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                               bool width_changed) override;
   void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
                              const gfx::Size& new_size) override;
-  RenderFrameHostImpl* GetFocusedFrameFromFocusedDelegate() override;
   void OnVerticalScrollDirectionChanged(
       viz::VerticalScrollDirection scroll_direction) override;
 

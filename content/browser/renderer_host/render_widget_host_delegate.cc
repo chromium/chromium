@@ -137,11 +137,6 @@ bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {
   return false;
 }
 
-RenderFrameHostImpl*
-RenderWidgetHostDelegate::GetFocusedFrameFromFocusedDelegate() {
-  return nullptr;
-}
-
 bool RenderWidgetHostDelegate::IsPortal() {
   return false;
 }

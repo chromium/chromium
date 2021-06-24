@@ -2145,12 +2145,6 @@ void WebContentsImpl::NotifyNavigationStateChanged(
     GetOuterWebContents()->NotifyNavigationStateChanged(changed_flags);
 }
 
-RenderFrameHostImpl* WebContentsImpl::GetFocusedFrameFromFocusedDelegate() {
-  FrameTreeNode* focused_node =
-      GetFocusedWebContents()->frame_tree_.GetFocusedFrame();
-  return focused_node ? focused_node->current_frame_host() : nullptr;
-}
-
 void WebContentsImpl::OnVerticalScrollDirectionChanged(
     viz::VerticalScrollDirection scroll_direction) {
   OPTIONAL_TRACE_EVENT1("content",

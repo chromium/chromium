@@ -39,7 +39,6 @@ namespace content {
 
 class BrowserAccessibilityManager;
 class FrameTree;
-class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
@@ -290,9 +289,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Returns true if there is context menu shown on page.
   virtual bool IsShowingContextMenuOnPage() const;
-
-  // Returns the focused frame across all delegates, or nullptr if none.
-  virtual RenderFrameHostImpl* GetFocusedFrameFromFocusedDelegate();
 
   // Invoked when the vertical scroll direction of the root layer changes. Note
   // that if a scroll in a given direction occurs, the scroll is completed, and
