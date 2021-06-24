@@ -15,11 +15,12 @@
 namespace updater {
 
 class ProxyConfiguration;
+class PolicyService;
 
 // Network fetcher factory for WinHTTP.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  NetworkFetcherFactory();
+  explicit NetworkFetcherFactory(scoped_refptr<PolicyService> policy_service);
   NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
   NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 

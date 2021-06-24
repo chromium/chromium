@@ -19,6 +19,7 @@ class NetworkFetcher;
 namespace updater {
 
 class DMStorage;
+class PolicyService;
 struct PolicyValidationResult;
 
 class DMClient {
@@ -128,7 +129,8 @@ class DMClient {
       const PolicyValidationResult& validation_result,
       PolicyValidationReportCallback callback);
 
-  static std::unique_ptr<Configurator> CreateDefaultConfigurator();
+  static std::unique_ptr<Configurator> CreateDefaultConfigurator(
+      scoped_refptr<PolicyService> policy_service);
 };
 
 }  // namespace updater

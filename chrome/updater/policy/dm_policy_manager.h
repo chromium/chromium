@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 
@@ -58,6 +59,9 @@ class DMPolicyManager : public PolicyManagerInterface {
   const ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings_;
 };
+
+// A factory method to create a DM policy manager.
+std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager();
 
 }  // namespace updater
 

@@ -25,6 +25,7 @@
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
@@ -71,7 +72,7 @@ constexpr int kHTTPStatusGone = 410;
 
 class DefaultConfigurator : public DMClient::Configurator {
  public:
-  DefaultConfigurator();
+  explicit DefaultConfigurator(scoped_refptr<PolicyService> policy_service);
   ~DefaultConfigurator() override = default;
 
   std::string GetDMServerUrl() const override {
@@ -93,8 +94,10 @@ class DefaultConfigurator : public DMClient::Configurator {
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
 };
 
-DefaultConfigurator::DefaultConfigurator()
-    : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>()) {}
+DefaultConfigurator::DefaultConfigurator(
+    scoped_refptr<PolicyService> policy_service)
+    : network_fetcher_factory_(
+          base::MakeRefCounted<NetworkFetcherFactory>(policy_service)) {}
 
 std::string DefaultConfigurator::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();
@@ -386,8 +389,9 @@ void DMClient::ReportPolicyValidationErrors(
                      std::move(callback)));
 }
 
-std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator() {
-  return std::make_unique<DefaultConfigurator>();
+std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator(
+    scoped_refptr<PolicyService> policy_service) {
+  return std::make_unique<DefaultConfigurator>(policy_service);
 }
 
 }  // namespace updater

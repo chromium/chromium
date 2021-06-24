@@ -7,14 +7,17 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/network.h"
 
 namespace updater {
 
+class PolicyService;
+
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  NetworkFetcherFactory();
+  explicit NetworkFetcherFactory(scoped_refptr<PolicyService> policy_service);
   NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
   NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 

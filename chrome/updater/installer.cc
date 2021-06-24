@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/policy/service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/crx_file/crx_verifier.h"
@@ -49,9 +48,11 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
 }  // namespace
 
 Installer::Installer(const std::string& app_id,
+                     const std::string& target_channel,
                      scoped_refptr<PersistedData> persisted_data)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
+      target_channel_(target_channel),
       persisted_data_(persisted_data) {}
 
 Installer::~Installer() {
@@ -84,15 +85,8 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.name = app_id_;
   component.version = pv_;
   component.fingerprint = fingerprint_;
+  component.channel = target_channel_;
 
-  // In case we fail at getting the target channel, make sure that
-  // |component.channel| is an empty string. Possible failure cases are if the
-  // machine is not managed, the policy was not set or any other unexpected
-  // error.
-  if (!GetUpdaterPolicyService()->GetTargetChannel(app_id_, nullptr,
-                                                   &component.channel)) {
-    component.channel.clear();
-  }
   return component;
 }
 

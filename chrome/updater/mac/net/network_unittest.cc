@@ -15,6 +15,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/mac/net/network_fetcher.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -33,6 +35,13 @@ using PostRequestCompleteCallback =
     ::update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
     ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+
+// Test policy service with default values only.
+scoped_refptr<PolicyService> CreateTestPolicyService() {
+  PolicyService::PolicyManagerVector managers;
+  managers.push_back(GetPolicyManager());
+  return base::MakeRefCounted<PolicyService>(std::move(managers));
+}
 
 }  // namespace
 
@@ -118,7 +127,9 @@ TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacPostRequest) {
 
   const std::string kPostData = "\x01\x00\x55\x33\xda\x10\x44";
 
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
+  auto fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(CreateTestPolicyService())
+          ->Create();
   fetcher->PostRequest(
       test_server.GetURL("/echo"), kPostData, {}, {},
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,
@@ -148,7 +159,9 @@ TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacDownloadToFile) {
   const base::FilePath test_file_path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("downloaded_file"));
 
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
+  auto fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(CreateTestPolicyService())
+          ->Create();
   fetcher->DownloadToFile(
       test_server.GetURL("/echo"), test_file_path,
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,

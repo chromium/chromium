@@ -26,6 +26,9 @@ class GroupPolicyManager : public PolicyManagerInterface {
 
   bool IsManaged() const override;
 
+  // TODO(crbug.com/1221348): preload all policy values in memory to avoid
+  // calling EnterCriticalPolicySection.
+
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
       UpdatesSuppressedTimes* suppressed_times) const override;

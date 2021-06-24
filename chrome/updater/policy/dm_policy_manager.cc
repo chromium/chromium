@@ -4,6 +4,8 @@
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 
+#include <memory>
+
 #include "base/enterprise_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -223,6 +225,16 @@ bool DMPolicyManager::IsRollbackToTargetVersionAllowed(
                        ::wireless_android_enterprise_devicemanagement::
                            ROLLBACK_TO_TARGET_VERSION_ENABLED);
   return true;
+}
+
+std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager() {
+  std::unique_ptr<
+      ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
+      omaha_settings = GetDefaultDMStorage()->GetOmahaPolicySettings();
+  if (!omaha_settings)
+    return nullptr;
+
+  return std::make_unique<DMPolicyManager>(*omaha_settings);
 }
 
 }  // namespace updater

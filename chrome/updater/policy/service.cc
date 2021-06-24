@@ -9,9 +9,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
+#include "chrome/updater/policy/dm_policy_manager.h"
 #if defined(OS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
 #elif defined(OS_MAC)
@@ -20,48 +22,19 @@
 
 namespace updater {
 
-// Only policy managers that are enterprise managed are used by the policy
-// service.
-PolicyService::PolicyService() {
-#if defined(OS_WIN)
-  InsertPolicyManager(std::make_unique<GroupPolicyManager>());
-#endif
-  // TODO(crbug/1122118): Inject the DMPolicyManager here.
-#if defined(OS_MAC)
-  InsertPolicyManager(CreateManagedPreferencePolicyManager());
-#endif
-  InsertPolicyManager(GetPolicyManager());
-}
+PolicyService::PolicyService(PolicyManagerVector managers)
+    : policy_managers_([](auto managers) {
+        // Make sure managed policy managers are ahead of non-managed ones.
+        std::stable_sort(
+            managers.begin(), managers.end(),
+            [](const std::unique_ptr<PolicyManagerInterface>& lhs,
+               const std::unique_ptr<PolicyManagerInterface>& rhs) {
+              return lhs->IsManaged() && !rhs->IsManaged();
+            });
+        return managers;
+      }(std::move(managers))) {}
 
 PolicyService::~PolicyService() = default;
-
-void PolicyService::InsertPolicyManager(
-    std::unique_ptr<PolicyManagerInterface> manager) {
-  if (manager->IsManaged()) {
-    for (auto it = policy_managers_.begin(); it != policy_managers_.end();
-         ++it) {
-      if (!(*it)->IsManaged()) {
-        policy_managers_.insert(it, std::move(manager));
-        return;
-      }
-    }
-  }
-
-  policy_managers_.push_back(std::move(manager));
-}
-
-void PolicyService::SetPolicyManagersForTesting(
-    std::vector<std::unique_ptr<PolicyManagerInterface>> managers) {
-  // Testing managers are not inserted via InsertPolicyManager(). Do a
-  // quick sanity check that all managed providers are ahead of non-managed
-  // providers: there should be no adjacent pair with the reversed order.
-  DCHECK(std::adjacent_find(managers.begin(), managers.end(),
-                            [](const auto& fst, const auto& snd) {
-                              return !fst->IsManaged() && snd->IsManaged();
-                            }) == managers.end());
-
-  policy_managers_ = std::move(managers);
-}
 
 std::string PolicyService::source() const {
   // Returns the source combination of all active policy providers, separated
@@ -235,8 +208,21 @@ bool PolicyService::QueryAppPolicy(
   return true;
 }
 
-std::unique_ptr<PolicyService> GetUpdaterPolicyService() {
-  return std::make_unique<PolicyService>();
+scoped_refptr<PolicyService> PolicyService::Create() {
+  PolicyManagerVector managers;
+#if defined(OS_WIN)
+  managers.push_back(std::make_unique<GroupPolicyManager>());
+#endif
+  std::unique_ptr<PolicyManagerInterface> dm_policy_manager =
+      CreateDMPolicyManager();
+  if (dm_policy_manager)
+    managers.push_back(std::move(dm_policy_manager));
+#if defined(OS_MAC)
+  managers.push_back(CreateManagedPreferencePolicyManager());
+#endif
+  managers.push_back(GetPolicyManager());  // For default values.
+
+  return base::MakeRefCounted<PolicyService>(std::move(managers));
 }
 
 }  // namespace updater

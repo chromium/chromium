@@ -24,6 +24,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
@@ -137,20 +138,30 @@ MakeUpdateClientCrxStateChangeCallback(
 }
 
 std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
+    scoped_refptr<Configurator> config,
     scoped_refptr<PersistedData> persisted_data,
     const std::vector<std::string>& ids) {
   std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids) {
-    components.push_back(base::MakeRefCounted<Installer>(id, persisted_data)
-                             ->MakeCrxComponent());
+    components.push_back(
+        base::MakeRefCounted<Installer>(
+            id,
+            [&config, &id]() {
+              std::string component_channel;
+              return config->GetPolicyService()->GetTargetChannel(
+                         id, nullptr, &component_channel)
+                         ? component_channel
+                         : std::string();
+            }(),
+            persisted_data)
+            ->MakeCrxComponent());
   }
   return components;
 }
 
 }  // namespace
 
-UpdateServiceImpl::UpdateServiceImpl(
-    scoped_refptr<update_client::Configurator> config)
+UpdateServiceImpl::UpdateServiceImpl(scoped_refptr<Configurator> config)
     : config_(config),
       persisted_data_(
           base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
@@ -230,7 +241,7 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   DCHECK(base::Contains(app_ids, kUpdaterAppId));
 
   update_client_->Update(
-      app_ids, base::BindOnce(&GetComponents, persisted_data_),
+      app_ids, base::BindOnce(&GetComponents, config_, persisted_data_),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update), false,
       MakeUpdateClientCallback(std::move(callback)));
 }
@@ -242,7 +253,7 @@ void UpdateServiceImpl::Update(const std::string& app_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   update_client_->Update(
-      {app_id}, base::BindOnce(&GetComponents, persisted_data_),
+      {app_id}, base::BindOnce(&GetComponents, config_, persisted_data_),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update),
       priority == Priority::kForeground,
       MakeUpdateClientCallback(std::move(callback)));

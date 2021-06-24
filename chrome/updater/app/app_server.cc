@@ -102,7 +102,7 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   server_starts_ = global_prefs->CountServerStarts();
-  config_ = base::MakeRefCounted<Configurator>(std::move(global_prefs));
+  config_ = base::MakeRefCounted<Configurator>(global_prefs);
   return base::BindOnce(&AppServer::ActiveDuty, this,
                         base::MakeRefCounted<UpdateServiceImpl>(config_));
 }

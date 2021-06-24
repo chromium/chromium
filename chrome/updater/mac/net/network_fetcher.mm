@@ -15,11 +15,13 @@
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/net/network.h"
+#include "chrome/updater/policy/service.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
@@ -356,7 +358,7 @@ void NetworkFetcher::DownloadToFile(
   [downloadTask resume];
 }
 
-NetworkFetcherFactory::NetworkFetcherFactory() = default;
+NetworkFetcherFactory::NetworkFetcherFactory(scoped_refptr<PolicyService>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

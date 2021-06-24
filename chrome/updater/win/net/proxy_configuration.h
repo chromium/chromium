@@ -17,6 +17,8 @@ class GURL;
 
 namespace updater {
 
+class PolicyService;
+
 // Classes in this module represent sources of system proxy configuration.
 // On Windows 8.1 and above, we can use Auto Proxy mode in WinHTTP and let
 // the OS configure the proxy.
@@ -75,7 +77,8 @@ void SetProxyForRequest(
     const absl::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
 
 // Factory method for the proxy configuration strategy.
-scoped_refptr<ProxyConfiguration> GetProxyConfiguration();
+scoped_refptr<ProxyConfiguration> GetProxyConfiguration(
+    scoped_refptr<PolicyService> policy_service);
 
 }  // namespace updater
 

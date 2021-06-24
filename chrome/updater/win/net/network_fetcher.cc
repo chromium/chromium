@@ -12,8 +12,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/win/net/network.h"
 #include "chrome/updater/win/net/network_winhttp.h"
 #include "chrome/updater/win/net/proxy_configuration.h"
@@ -79,8 +81,9 @@ void NetworkFetcher::DownloadToFileComplete() {
       .Run(network_fetcher_->GetNetError(), network_fetcher_->GetContentSize());
 }
 
-NetworkFetcherFactory::NetworkFetcherFactory()
-    : proxy_configuration_(GetProxyConfiguration()),
+NetworkFetcherFactory::NetworkFetcherFactory(
+    scoped_refptr<PolicyService> policy_service)
+    : proxy_configuration_(GetProxyConfiguration(policy_service)),
       session_handle_(
           CreateSessionHandle(proxy_configuration_->access_type())) {}
 

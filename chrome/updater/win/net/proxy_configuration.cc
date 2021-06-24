@@ -5,6 +5,7 @@
 #include "chrome/updater/win/net/proxy_configuration.h"
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -163,9 +164,8 @@ void SetProxyForRequest(
   }
 }
 
-scoped_refptr<ProxyConfiguration> GetProxyConfiguration() {
-  std::unique_ptr<PolicyService> policy_service = GetUpdaterPolicyService();
-
+scoped_refptr<ProxyConfiguration> GetProxyConfiguration(
+    scoped_refptr<PolicyService> policy_service) {
   std::string policy_proxy_mode;
   if (policy_service->GetProxyMode(nullptr, &policy_proxy_mode) &&
       policy_proxy_mode.compare(kProxyModeSystem) != 0) {

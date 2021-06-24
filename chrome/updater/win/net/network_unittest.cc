@@ -7,6 +7,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -14,7 +16,14 @@ namespace updater {
 TEST(UpdaterTestNetwork, NetworkFetcherWinHTTPFactory) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
+
+  PolicyService::PolicyManagerVector managers;
+  managers.push_back(GetPolicyManager());
+  auto policy_service =
+      base::MakeRefCounted<PolicyService>(std::move(managers));
+
+  auto fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(policy_service)->Create();
   EXPECT_NE(nullptr, fetcher.get());
 }
 

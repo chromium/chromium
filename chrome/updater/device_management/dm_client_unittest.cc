@@ -25,6 +25,8 @@
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/unittest_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -100,8 +102,16 @@ class TestConfigurator : public DMClient::Configurator {
   const std::string server_url_;
 };
 
+// A policy service with default values.
+scoped_refptr<PolicyService> CreateTestPolicyService() {
+  PolicyService::PolicyManagerVector managers;
+  managers.push_back(GetPolicyManager());
+  return base::MakeRefCounted<PolicyService>(std::move(managers));
+}
+
 TestConfigurator::TestConfigurator(const GURL& url)
-    : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>()),
+    : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
+          CreateTestPolicyService())),
       server_url_(url.spec()) {}
 
 class DMRequestCallbackHandler

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,10 +107,10 @@ class FakePolicyManager : public PolicyManagerInterface {
 };
 
 TEST(PolicyService, DefaultPolicyValue) {
-  std::unique_ptr<PolicyService> policy_service(GetUpdaterPolicyService());
-  std::vector<std::unique_ptr<PolicyManagerInterface>> managers;
+  PolicyService::PolicyManagerVector managers;
   managers.push_back(GetPolicyManager());
-  policy_service->SetPolicyManagersForTesting(std::move(managers));
+  auto policy_service =
+      base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "default");
 
   std::string version_prefix;
@@ -120,13 +121,13 @@ TEST(PolicyService, DefaultPolicyValue) {
 }
 
 TEST(PolicyService, SinglePolicyManager) {
-  std::unique_ptr<PolicyService> policy_service(GetUpdaterPolicyService());
   auto manager = std::make_unique<FakePolicyManager>(true, "test_source");
   manager->SetChannel("app1", "test_channel");
   manager->SetUpdatePolicy("app2", 3);
-  std::vector<std::unique_ptr<PolicyManagerInterface>> managers;
+  PolicyService::PolicyManagerVector managers;
   managers.push_back(std::move(manager));
-  policy_service->SetPolicyManagersForTesting(std::move(managers));
+  auto policy_service =
+      base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "test_source");
 
   PolicyStatus<std::string> app1_channel_status;
@@ -162,8 +163,7 @@ TEST(PolicyService, SinglePolicyManager) {
 }
 
 TEST(PolicyService, MultiplePolicyManagers) {
-  std::unique_ptr<PolicyService> policy_service(GetUpdaterPolicyService());
-  std::vector<std::unique_ptr<PolicyManagerInterface>> managers;
+  PolicyService::PolicyManagerVector managers;
 
   auto manager = std::make_unique<FakePolicyManager>(true, "group_policy");
   UpdatesSuppressedTimes updates_suppressed_times = {5, 10, 30};
@@ -189,7 +189,8 @@ TEST(PolicyService, MultiplePolicyManagers) {
   // The default policy manager.
   managers.push_back(GetPolicyManager());
 
-  policy_service->SetPolicyManagersForTesting(std::move(managers));
+  auto policy_service =
+      base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(),
             "group_policy;device_management;imaginary;default");
 
@@ -264,8 +265,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
-  std::unique_ptr<PolicyService> policy_service(GetUpdaterPolicyService());
-  std::vector<std::unique_ptr<PolicyManagerInterface>> managers;
+  PolicyService::PolicyManagerVector managers;
 
   auto manager = std::make_unique<FakePolicyManager>(true, "device_management");
   UpdatesSuppressedTimes updates_suppressed_times = {5, 10, 30};
@@ -292,7 +292,8 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetUpdatePolicy("app2", 1);
   managers.push_back(std::move(manager));
 
-  policy_service->SetPolicyManagersForTesting(std::move(managers));
+  auto policy_service =
+      base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "device_management;imaginary;default");
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status;

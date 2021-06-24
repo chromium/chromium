@@ -12,6 +12,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/prefs/pref_service.h"
@@ -44,6 +45,7 @@ namespace updater {
 
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs)
     : prefs_(prefs),
+      policy_service_(PolicyService::Create()),
       external_constants_(CreateExternalConstants()),
       activity_data_service_(
           std::make_unique<ActivityDataService>(GetUpdaterScope())),
@@ -118,7 +120,8 @@ std::string Configurator::GetDownloadPreference() const {
 scoped_refptr<update_client::NetworkFetcherFactory>
 Configurator::GetNetworkFetcherFactory() {
   if (!network_fetcher_factory_)
-    network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>();
+    network_fetcher_factory_ =
+        base::MakeRefCounted<NetworkFetcherFactory>(GetPolicyService());
   return network_fetcher_factory_;
 }
 
@@ -172,6 +175,10 @@ bool Configurator::IsPerUserInstall() const {
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 Configurator::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
+}
+
+scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
+  return policy_service_;
 }
 
 }  // namespace updater

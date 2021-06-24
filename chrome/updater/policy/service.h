@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -57,12 +58,14 @@ class PolicyStatus {
 
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
-class PolicyService {
+class PolicyService : public base::RefCounted<PolicyService> {
  public:
-  PolicyService();
+  using PolicyManagerVector =
+      std::vector<std::unique_ptr<PolicyManagerInterface>>;
+
+  explicit PolicyService(PolicyManagerVector managers);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
-  ~PolicyService();
 
   std::string source() const;
 
@@ -101,17 +104,18 @@ class PolicyService {
   bool GetProxyServer(PolicyStatus<std::string>* policy_status,
                       std::string* proxy_server) const;
 
-  void SetPolicyManagersForTesting(
-      std::vector<std::unique_ptr<PolicyManagerInterface>> managers);
+  // Creates an instance that takes a snapshot of policies from all providers.
+  static scoped_refptr<PolicyService> Create();
+
+ protected:
+  virtual ~PolicyService();
 
  private:
+  friend class base::RefCounted<PolicyService>;
+
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
-  std::vector<std::unique_ptr<PolicyManagerInterface>> policy_managers_;
-
-  // Helper function to insert the policy manager and make sure that
-  // managed providers are ahead of non-managed providers.
-  void InsertPolicyManager(std::unique_ptr<PolicyManagerInterface> manager);
+  PolicyManagerVector policy_managers_;
 
   // Helper function to query the policy from the managed policy providers and
   // determines the policy status.
@@ -133,8 +137,6 @@ class PolicyService {
       PolicyStatus<T>* policy_status,
       T* value) const;
 };
-
-std::unique_ptr<PolicyService> GetUpdaterPolicyService();
 
 }  // namespace updater
 

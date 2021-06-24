@@ -38,6 +38,7 @@ namespace updater {
 class Installer final : public update_client::CrxInstaller {
  public:
   Installer(const std::string& app_id,
+            const std::string& target_channel,
             scoped_refptr<PersistedData> persisted_data);
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
@@ -102,6 +103,7 @@ class Installer final : public update_client::CrxInstaller {
   UpdaterScope updater_scope_;
 
   const std::string app_id_;
+  const std::string target_channel_;
   scoped_refptr<PersistedData> persisted_data_;
 
   // These members are not updated when the installer succeeds.
