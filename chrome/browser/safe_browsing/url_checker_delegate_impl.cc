@@ -17,7 +17,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/triggers/suspicious_site_trigger.h"
+#include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 
 #include "base/macros.h"
-#include "components/safe_browsing/content/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,4 +52,4 @@ class MockTriggerManager : public TriggerManager {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_

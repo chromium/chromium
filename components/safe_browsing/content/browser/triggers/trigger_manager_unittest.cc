@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
-#include "components/safe_browsing/content/triggers/trigger_throttler.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"

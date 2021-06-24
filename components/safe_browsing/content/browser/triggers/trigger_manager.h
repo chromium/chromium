@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_TRIGGER_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_TRIGGER_MANAGER_H_
 
 #include <unordered_map>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/content/triggers/trigger_throttler.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -87,8 +87,7 @@ enum class TriggerManagerReason {
 // tracking how often triggers fire and throttling them when necessary.
 class TriggerManager {
  public:
-  TriggerManager(BaseUIManager* ui_manager,
-                 PrefService* local_state_prefs);
+  TriggerManager(BaseUIManager* ui_manager, PrefService* local_state_prefs);
   virtual ~TriggerManager();
 
   // Returns a SBErrorDisplayOptions struct containing user state that is
@@ -217,4 +216,4 @@ class TriggerManagerWebContentsHelper
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_TRIGGER_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_TRIGGER_MANAGER_H_

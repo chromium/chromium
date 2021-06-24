@@ -5,7 +5,7 @@
 // This file contains some useful utilities for the safe_browsing/triggers
 // classes
 
-#include "components/safe_browsing/content/triggers/trigger_util.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_util.h"
 
 #include <string>
 

@@ -17,7 +17,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
-#include "components/safe_browsing/content/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/log/net_log.h"
 #include "services/network/network_service.h"

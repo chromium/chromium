@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/triggers/suspicious_site_trigger.h"
+#include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -10,8 +10,8 @@
 #include "base/single_thread_task_runner.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/triggers/trigger_manager.h"
-#include "components/safe_browsing/content/triggers/trigger_throttler.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"

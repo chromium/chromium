@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_AD_SAMPLER_TRIGGER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_AD_SAMPLER_TRIGGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_AD_SAMPLER_TRIGGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_AD_SAMPLER_TRIGGER_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -124,4 +124,4 @@ class AdSamplerTrigger : public content::WebContentsObserver,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_TRIGGERS_AD_SAMPLER_TRIGGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_AD_SAMPLER_TRIGGER_H_

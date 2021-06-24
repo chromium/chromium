@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/triggers/ad_sampler_trigger.h"
+#include "components/safe_browsing/content/browser/triggers/ad_sampler_trigger.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/content/triggers/mock_trigger_manager.h"
+#include "components/safe_browsing/content/browser/triggers/mock_trigger_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
