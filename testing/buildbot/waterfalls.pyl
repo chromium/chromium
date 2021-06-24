@@ -1791,6 +1791,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'gtest_tests': 'chromium_gtests',
+        },
       },
       'ToTLinuxTSan': {
         'mixins': [
@@ -1942,6 +1945,9 @@
         'additional_compile_targets': [
           'all',
         ],
+        'test_suites': {
+          'gtest_tests': 'chromium_gtests',
+        },
       },
       'ToTWinASanLibfuzzer': {
         'additional_compile_targets': [
