@@ -20,12 +20,12 @@ constexpr base::TimeDelta kMaxExpiry = base::TimeDelta::FromDays(30);
 
 // Check if `url` can be used as an interest group's ad render URL. Ad URLs can
 // be cross origin, unlike other interest group URLs, but are still restricted
-// to HTTPS with no reference or embedded credentials.
+// to HTTPS with no embedded credentials.
 bool IsUrlAllowedForRenderUrls(const GURL& url) {
   if (url.scheme() != url::kHttpsScheme)
     return false;
 
-  return !url.has_ref() && !url.has_username() && !url.has_password();
+  return !url.has_username() && !url.has_password();
 }
 
 // Check if `url` can be used with the specified interest group for any of
@@ -36,7 +36,10 @@ bool IsUrlAllowed(const GURL& url, const blink::mojom::InterestGroup& group) {
   if (url::Origin::Create(url) != group.owner)
     return false;
 
-  return IsUrlAllowedForRenderUrls(url);
+  // References are allowed in render URLs, since they're loaded in an iframe,
+  // but not in other URLs, which are requested directly. References aren't sent
+  // in HTTP requests.
+  return !url.has_ref() && IsUrlAllowedForRenderUrls(url);
 }
 
 }  // namespace

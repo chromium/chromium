@@ -53,15 +53,15 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
 
 }  // namespace
 
-class InterestGroupServiceTest : public RenderViewHostTestHarness {
+class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
  public:
-  InterestGroupServiceTest() {
+  RestrictedInterestGroupStoreImplTest() {
     feature_list_.InitAndEnableFeature(blink::features::kFledgeInterestGroups);
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }
 
-  ~InterestGroupServiceTest() override {
+  ~RestrictedInterestGroupStoreImplTest() override {
     SetBrowserClientForTesting(old_content_browser_client_);
   }
 
@@ -159,7 +159,7 @@ class InterestGroupServiceTest : public RenderViewHostTestHarness {
 };
 
 // Check basic success case.
-TEST_F(InterestGroupServiceTest, JoinInterestGroupBasic) {
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupBasic) {
   blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
   JoinInterestGroupAndFlush(std::move(interest_group));
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -174,7 +174,7 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupBasic) {
 }
 
 // Non-HTTPS interest groups should be rejected.
-TEST_F(InterestGroupServiceTest, JoinInterestGroupOriginNotHttps) {
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupOriginNotHttps) {
   // Note that the ContentBrowserClient allows URLs based on hosts, not origins,
   // so it should not block this URL. Instead, it should run into the HTTPS
   // check.
@@ -188,7 +188,8 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupOriginNotHttps) {
 }
 
 // Test one origin trying to add an interest group for another.
-TEST_F(InterestGroupServiceTest, JoinInterestGroupWrongOwnerOrigin) {
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       JoinInterestGroupWrongOwnerOrigin) {
   blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
   interest_group->owner = kOriginB;
   JoinInterestGroupAndFlush(std::move(interest_group));
@@ -202,7 +203,7 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupWrongOwnerOrigin) {
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
 // test.
-TEST_F(InterestGroupServiceTest, JoinInterestGroupUrlValidation) {
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupUrlValidation) {
   // Nested URL schemes, like filesystem URLs, are the only cases where a URL
   // being same origin with an HTTPS origin does not imply the URL itself is
   // also HTTPS.
@@ -280,13 +281,13 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupUrlValidation) {
   EXPECT_EQ(3, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
-TEST_F(InterestGroupServiceTest, JoinInterestGroupAdUrlValidation) {
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupAdUrlValidation) {
   const struct {
     bool expect_allowed;
     GURL url;
   } kTestCases[] = {
       // Same origin URLs are allowed.
-      {true, GURL("https://a.test:1234/foo")},
+      {true, GURL("https://a.test:1234/foo?bar")},
 
       // Cross origin URLs are allowed, as long as they're HTTPS.
       {true, GURL("https://b.test/")},
@@ -300,8 +301,9 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupAdUrlValidation) {
       // URLs with user/ports are rejected.
       {false, GURL("https://user:pass@a.test/")},
 
-      // References also aren't allowed, as they aren't sent over HTTP.
-      {false, GURL("https://a.test/#foopy")},
+      // References are allowed for ads, though not other requests, since they
+      // only have an effect when loading a page in a renderer.
+      {true, GURL("https://a.test/#foopy")},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -340,7 +342,8 @@ TEST_F(InterestGroupServiceTest, JoinInterestGroupAdUrlValidation) {
 }
 
 // Check that cross-origin leave interest group operations don't work.
-TEST_F(InterestGroupServiceTest, LeaveInterestGroupWrongOwnerOrigin) {
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       LeaveInterestGroupWrongOwnerOrigin) {
   // https://a.test/ joins an interest group.
   JoinInterestGroupAndFlush(CreateInterestGroup());
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
