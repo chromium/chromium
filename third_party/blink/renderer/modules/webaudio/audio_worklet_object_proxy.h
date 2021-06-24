@@ -12,8 +12,7 @@ namespace blink {
 class AudioWorkletGlobalScope;
 class AudioWorkletMessagingProxy;
 
-class AudioWorkletObjectProxy final
-    : public ThreadedWorkletObjectProxy {
+class AudioWorkletObjectProxy final : public ThreadedWorkletObjectProxy {
  public:
   AudioWorkletObjectProxy(AudioWorkletMessagingProxy*,
                           ParentExecutionContextTaskRunners*,
@@ -21,12 +20,13 @@ class AudioWorkletObjectProxy final
 
   // Implements WorkerReportingProxy.
   void DidCreateWorkerGlobalScope(WorkerOrWorkletGlobalScope*) override;
-  void DidEvaluateTopLevelScript(bool success) override;
   void WillDestroyWorkerGlobalScope() override;
+
+  void SynchronizeProcessorInfoList();
 
  private:
   CrossThreadWeakPersistent<AudioWorkletMessagingProxy>
-      GetAudioWorkletMessagingProxyWeakPtr();
+  GetAudioWorkletMessagingProxyWeakPtr();
 
   CrossThreadPersistent<AudioWorkletGlobalScope> global_scope_;
 

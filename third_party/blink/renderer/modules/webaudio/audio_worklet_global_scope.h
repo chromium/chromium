@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class AudioWorkletObjectProxy;
 class AudioWorkletProcessor;
 class AudioWorkletProcessorDefinition;
 class CrossThreadAudioWorkletProcessorInfo;
@@ -39,7 +40,7 @@ class MODULES_EXPORT ProcessorCreationParams final {
   ~ProcessorCreationParams() = default;
 
   const String& Name() const { return name_; }
-  MessagePortChannel PortChannel() {  return message_port_channel_; }
+  MessagePortChannel PortChannel() { return message_port_channel_; }
 
  private:
   const String name_;
@@ -82,7 +83,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   unsigned NumberOfRegisteredDefinitions();
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
-      WorkletProcessorInfoListForSynchronization();
+  WorkletProcessorInfoListForSynchronization();
 
   // Gets |processor_creation_params_| for the processor construction. If there
   // is no on-going processor construction, this MUST return nullptr.
@@ -105,6 +106,8 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
     return token_;
   }
 
+  void SetObjectProxy(AudioWorkletObjectProxy&);
+
  private:
   bool is_closing_ = false;
 
@@ -125,6 +128,11 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
 
   // Default initialized to generate a distinct token for this worklet.
   const AudioWorkletToken token_;
+
+  // AudioWorkletObjectProxy manages the cross-thread messaging to
+  // AudioWorkletMessagingProxy on the main thread. AudioWorkletObjectProxy
+  // outlives AudioWorkletGlobalScope, this raw pointer is safe.
+  AudioWorkletObjectProxy* object_proxy_ = nullptr;
 };
 
 template <>

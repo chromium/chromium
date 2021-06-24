@@ -28,12 +28,13 @@ void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(
     WorkerOrWorkletGlobalScope* global_scope) {
   global_scope_ = To<AudioWorkletGlobalScope>(global_scope);
   global_scope_->SetSampleRate(context_sample_rate_);
+  global_scope_->SetObjectProxy(*this);
 }
 
-void AudioWorkletObjectProxy::DidEvaluateTopLevelScript(bool success) {
+void AudioWorkletObjectProxy::SynchronizeProcessorInfoList() {
   DCHECK(global_scope_);
 
-  if (!success || global_scope_->NumberOfRegisteredDefinitions() == 0)
+  if (global_scope_->NumberOfRegisteredDefinitions() == 0)
     return;
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
@@ -43,10 +44,6 @@ void AudioWorkletObjectProxy::DidEvaluateTopLevelScript(bool success) {
   if (processor_info_list->size() == 0)
     return;
 
-  // This method is called by a loading task which calls
-  // WorkletModuleTreeClient::NotifyModuleTreeLoadFinished and
-  // SynchronizeWorkletProcessorInfoList needs to run in FIFO order with other
-  // loading tasks.
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalLoading),
       FROM_HERE,
