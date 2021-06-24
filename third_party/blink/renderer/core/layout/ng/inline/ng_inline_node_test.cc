@@ -331,6 +331,28 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 2u, 3u);
 }
 
+// http://crbug.com/1222633
+TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  InsertStyleElement(
+      "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetupHtml("t", u"<li id=t>ab</li>");
+  // LayoutNGListItem {LI}
+  //   LayoutNGOutsideListMarker {::marker}
+  //      LayoutNGTextCombine (anonymous)
+  //        LayoutText (anonymous) "\x{2022} "
+  //   LayoutNGTextCombine (anonymous)
+  //     LayoutText {#text} "a"
+  NGInlineNodeForTest node = CreateInlineNode(
+      To<LayoutNGTextCombine>(layout_object_->SlowFirstChild()));
+  node.CollectInlines();
+  EXPECT_EQ(u8"\u2022", node.Text());
+  Vector<NGInlineItem>& items = node.Items();
+  ASSERT_EQ(1u, items.size());
+  TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
+  EXPECT_TRUE(items[0].IsSymbolMarker());
+}
+
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
   ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
   InsertStyleElement(

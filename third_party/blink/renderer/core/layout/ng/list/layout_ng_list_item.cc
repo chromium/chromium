@@ -133,6 +133,9 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
   if (object->IsAnonymousBlock())
     return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
 
+  if (object->IsLayoutNGTextCombine())
+    return FindSymbolMarkerLayoutText(object->Parent());
+
   return nullptr;
 }
 
