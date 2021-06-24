@@ -1290,9 +1290,6 @@ void RenderWidgetHostImpl::LostCapture() {
     touch_emulator->CancelTouch();
 
   GetWidgetInputHandler()->MouseCaptureLost();
-
-  if (delegate_)
-    delegate_->LostCapture(this);
 }
 
 void RenderWidgetHostImpl::SetActive(bool active) {

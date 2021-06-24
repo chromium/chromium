@@ -260,9 +260,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool TakeFocus(WebContents* source,
                          bool reverse);
 
-  // Invoked when the page loses mouse capture.
-  virtual void LostCapture() {}
-
   // Asks the delegate if the given tab can download.
   // Invoking the |callback| synchronously is OK.
   virtual void CanDownload(const GURL& url,

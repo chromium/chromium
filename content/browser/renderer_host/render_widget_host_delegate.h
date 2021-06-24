@@ -215,9 +215,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // outermost main frame's widget. Other widgets always returns an empty rect.
   virtual gfx::Rect GetWindowsControlsOverlayRect() const;
 
-  // Notification that the widget has lost capture.
-  virtual void LostCapture(RenderWidgetHostImpl* render_widget_host) {}
-
   // Notification that the widget has lost the mouse lock.
   virtual void LostMouseLock(RenderWidgetHostImpl* render_widget_host) {}
 

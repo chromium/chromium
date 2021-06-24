@@ -3076,16 +3076,6 @@ void WebContentsImpl::Activate() {
     delegate_->ActivateContents(this);
 }
 
-void WebContentsImpl::LostCapture(RenderWidgetHostImpl* render_widget_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostCapture",
-                        "render_widget_host", render_widget_host);
-  if (!RenderViewHostImpl::From(render_widget_host))
-    return;
-
-  if (delegate_)
-    delegate_->LostCapture();
-}
-
 ukm::SourceId
 WebContentsImpl::GetUkmSourceIdForLastCommittedSourceIncludingSameDocument()
     const {
