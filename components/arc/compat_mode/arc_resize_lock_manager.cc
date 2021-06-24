@@ -141,8 +141,12 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 
   // Because we use the compat mode button as the "anchor" in the splash, we
   // need to show it after the setup of the compat mode button.
-  if (is_first_launch)
-    MayShowSplashScreen(window);
+  if (is_first_launch && ShouldShowSplashScreenDialog(pref_delegate_)) {
+    const bool is_for_unresizable =
+        window->GetProperty(ash::kArcResizeLockTypeKey) ==
+        ash::ArcResizeLockType::FULLY_LOCKED;
+    ArcSplashScreenDialogView::Show(window, is_for_unresizable);
+  }
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
@@ -234,12 +238,6 @@ void ArcResizeLockManager::ToggleResizeToggleMenu(views::Widget* widget) {
   resize_toggle_menu_.reset();
   resize_toggle_menu_ =
       std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
-}
-
-void ArcResizeLockManager::MayShowSplashScreen(aura::Window* window) {
-  if (ShouldShowSplashScreenDialog(pref_delegate_)) {
-    ArcSplashScreenDialogView::Show(window);
-  }
 }
 
 }  // namespace arc

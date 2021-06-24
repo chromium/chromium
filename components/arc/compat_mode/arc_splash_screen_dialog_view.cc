@@ -88,7 +88,8 @@ class HighlightBorder : public views::View {
 ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     base::OnceClosure close_callback,
     aura::Window* parent,
-    views::View* anchor)
+    views::View* anchor,
+    bool is_for_unresizable)
     : anchor_(anchor), close_callback_(std::move(close_callback)) {
   const auto background_color = GetDialogBackgroundBaseColor();
 
@@ -135,8 +136,12 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                    .Build());
   AddChildView(
       views::Builder<views::Label>()  // Body
-          .SetText(l10n_util::GetStringFUTF16(
-              IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY, parent->GetTitle()))
+          .SetText(is_for_unresizable
+                       ? l10n_util::GetStringUTF16(
+                             IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY_UNRESIZABLE)
+                       : l10n_util::GetStringFUTF16(
+                             IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY,
+                             parent->GetTitle()))
           .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
@@ -174,7 +179,7 @@ gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
     size.set_width(
         std::min(widget->parent()->GetWindowBoundsInScreen().width() -
                      kHorizontalMarginDp * 2,
-                 size.width()));
+                 max_width));
   } else {
     size.set_width(max_width);
   }
@@ -199,7 +204,8 @@ void ArcSplashScreenDialogView::OnCloseButtonClicked() {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void ArcSplashScreenDialogView::Show(aura::Window* parent) {
+void ArcSplashScreenDialogView::Show(aura::Window* parent,
+                                     bool is_for_unresizable) {
   auto* const frame_view = ash::NonClientFrameViewAsh::Get(parent);
   DCHECK(frame_view);
   auto* const anchor_view =
@@ -213,7 +219,7 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent) {
 
   auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
       base::BindOnce(&OverlayDialog::CloseIfAny, base::Unretained(parent)),
-      parent, anchor_view);
+      parent, anchor_view, is_for_unresizable);
 
   OverlayDialog::Show(
       parent,

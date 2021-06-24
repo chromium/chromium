@@ -41,14 +41,15 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
 
   ArcSplashScreenDialogView(base::OnceClosure close_callback,
                             aura::Window* parent,
-                            views::View* anchor);
+                            views::View* anchor,
+                            bool is_for_unresizable);
   ArcSplashScreenDialogView(const ArcSplashScreenDialogView&) = delete;
   ArcSplashScreenDialogView& operator=(const ArcSplashScreenDialogView&) =
       delete;
   ~ArcSplashScreenDialogView() override;
 
   // Show a splash screen dialog to advertise resize lock feature
-  static void Show(aura::Window* parent);
+  static void Show(aura::Window* parent, bool is_for_unresizable);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -44,15 +46,6 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
 
     anchor_ = parent_widget_->GetRootView()->AddChildView(
         std::make_unique<views::View>());
-
-    auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
-        base::BindRepeating(&ArcSplashScreenDialogViewTest::OnCloseCallback,
-                            base::Unretained(this)),
-        parent_widget_->GetNativeView(), anchor_);
-    dialog_view_ = dialog_view.get();
-    bubble_widget_ =
-        views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view));
-    bubble_widget_->Show();
   }
 
   void TearDown() override {
@@ -62,32 +55,44 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  ArcSplashScreenDialogView* dialog_view() { return dialog_view_; }
+  void ShowAsBubble(std::unique_ptr<ArcSplashScreenDialogView> dialog_view) {
+    views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))
+        ->Show();
+  }
+
   views::View* anchor() { return anchor_; }
-
-  void OnCloseCallback() { on_close_callback_called = true; }
-
-  bool on_close_callback_called = false;
+  aura::Window* parent_window() { return parent_widget_->GetNativeView(); }
 
  private:
-  ArcSplashScreenDialogView* dialog_view_;
   std::unique_ptr<views::Widget> parent_widget_;
-  views::Widget* bubble_widget_;
   views::View* anchor_;
 };
 
 TEST_F(ArcSplashScreenDialogViewTest, TestCloseButton) {
-  ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view());
-  EXPECT_TRUE(dialog_view_test.close_button()->GetVisible());
-  ClickOnView(dialog_view_test.close_button());
-  EXPECT_TRUE(on_close_callback_called);
+  for (const bool is_for_unresizable : {true, false}) {
+    bool on_close_callback_called = false;
+    auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
+        base::BindLambdaForTesting([&]() { on_close_callback_called = true; }),
+        parent_window(), anchor(), is_for_unresizable);
+    ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
+    ShowAsBubble(std::move(dialog_view));
+    EXPECT_TRUE(dialog_view_test.close_button()->GetVisible());
+    EXPECT_FALSE(on_close_callback_called);
+    ClickOnView(dialog_view_test.close_button());
+    EXPECT_TRUE(on_close_callback_called);
+  }
 }
 
 TEST_F(ArcSplashScreenDialogViewTest, TestAnchorHighlight) {
-  ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view());
-  EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
-  ClickOnView(dialog_view_test.close_button());
-  EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+  for (const bool is_for_unresizable : {true, false}) {
+    auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
+        base::DoNothing(), parent_window(), anchor(), is_for_unresizable);
+    ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
+    ShowAsBubble(std::move(dialog_view));
+    EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+    ClickOnView(dialog_view_test.close_button());
+    EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+  }
 }
 
 }  // namespace arc
