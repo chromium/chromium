@@ -60,7 +60,6 @@ struct TestScenario {
   // Attributes of the HTTP Request.
   const char* target_url;
   const char* initiator_origin;
-  const char* initiator_site_lock;
 
   // Attributes of the HTTP response.
   const char* response_headers;
@@ -172,7 +171,6 @@ struct TestScenario {
   return os << "\n  description           = " << scenario.description
             << "\n  target_url            = " << scenario.target_url
             << "\n  initiator_origin      = " << scenario.initiator_origin
-            << "\n  initiator_site_lock   = " << scenario.initiator_site_lock
             << "\n  response_headers      = " << response_headers_formatted
             << "\n  response_content_type = " << scenario.response_content_type
             << "\n  canonical_mime_type   = " << scenario.canonical_mime_type
@@ -217,7 +215,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",           // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -234,7 +231,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -251,7 +247,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/json",                       // response_content_type
         MimeType::kJson,                   // canonical_mime_type
@@ -268,7 +263,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "application/javascript",          // response_content_type
         MimeType::kOthers,                 // canonical_mime_type
@@ -285,7 +279,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
         "text/html",                                // response_content_type
@@ -303,7 +296,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: *",  // response_headers
         "application/rss+xml",             // response_content_type
@@ -320,7 +312,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: null",    // response_headers
         "text/json",                            // response_content_type
@@ -337,7 +328,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "ftp://www.b.com/resource.html",            // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -353,7 +343,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "file:///foo/resource.html",                // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -373,7 +362,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/plugin.html",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",          // response_headers
         "text/html",                                // response_content_type
@@ -390,7 +378,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/plugin.html",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -408,7 +395,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Access-Control-Allow-Origin: *",       // response_headers
@@ -426,7 +412,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",      // response_headers
         "application/javascript",               // response_content_type
@@ -443,7 +428,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "image/png",                       // response_content_type
         MimeType::kOthers,                 // canonical_mime_type
@@ -460,7 +444,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",  // response_headers
         "image/png",                        // response_content_type
@@ -480,7 +463,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -497,7 +479,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
@@ -514,7 +495,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
@@ -532,7 +512,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/json",                       // response_content_type
         MimeType::kJson,                   // canonical_mime_type
@@ -549,7 +528,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",      // target_url
         "http://www.a.com/",                   // initiator_origin
-        "http://www.a.com/",                   // initiator_site_lock
         "HTTP/1.1 200 OK",                     // response_headers
         "text/plain",                          // response_content_type
         MimeType::kPlain,                      // canonical_mime_type
@@ -566,7 +544,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
@@ -584,7 +561,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "application/xml",                 // response_content_type
         MimeType::kXml,                    // canonical_mime_type
@@ -601,7 +577,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/json",                       // response_content_type
         MimeType::kJson,                   // canonical_mime_type
@@ -618,7 +593,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -635,7 +609,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -652,7 +625,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -669,7 +641,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "filesystem:http://www.a.com/file.html",    // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -685,7 +656,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "blob:http://www.a.com/guid-goes-here",     // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -703,7 +673,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",          // response_headers
         "text/html",                                // response_content_type
@@ -720,7 +689,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",          // response_headers
         "text/html; charset=utf-8",                 // response_content_type
@@ -737,7 +705,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",      // response_headers
         "text/html",                            // response_content_type
@@ -754,7 +721,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "https://foo.site.com/resource.html",  // target_url
         "https://bar.site.com/",               // initiator_origin
-        "https://bar.site.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",          // response_headers
         "text/html",                                // response_content_type
@@ -771,7 +737,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://c.com/",               // initiator_origin
-        "http://c.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",  // response_headers
         "text/html",                        // response_content_type
@@ -791,7 +756,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",      // response_headers
         "text/html",                            // response_content_type
@@ -812,7 +776,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://foo.example.com/",         // initiator_origin
-        "http://foo.example.com/",         // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: http://example.com",  // response_headers
         "text/html",                                // response_content_type
@@ -830,7 +793,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",           // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -847,7 +809,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "application/xml",                 // response_content_type
         MimeType::kXml,                    // canonical_mime_type
@@ -864,7 +825,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "application/json",                // response_content_type
         MimeType::kJson,                   // canonical_mime_type
@@ -881,7 +841,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",             // target_url
         "http://www.a.com/",                          // initiator_origin
-        "http://www.a.com/",                          // initiator_site_lock
         "HTTP/1.1 200 OK",                            // response_headers
         "text/plain",                                 // response_content_type
         MimeType::kPlain,                             // canonical_mime_type
@@ -898,7 +857,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",              // target_url
         "http://www.a.com/",                           // initiator_origin
-        "http://www.a.com/",                           // initiator_site_lock
         "HTTP/1.1 200 OK",                             // response_headers
         "text/plain",                                  // response_content_type
         MimeType::kPlain,                              // canonical_mime_type
@@ -915,7 +873,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
@@ -933,7 +890,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
@@ -950,7 +906,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",           // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/plain",                               // response_content_type
         MimeType::kPlain,                           // canonical_mime_type
@@ -967,7 +922,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",                 // response_headers
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
@@ -986,7 +940,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: http://example.com",  // response_headers
         "text/html",                                // response_content_type
@@ -1004,7 +957,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/plugin.html",             // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -1021,7 +973,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://c.com/",               // initiator_origin
-        "http://c.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",             // response_headers
         "text/json",                   // response_content_type
         MimeType::kJson,               // canonical_mime_type
@@ -1038,7 +989,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://c.com/",               // initiator_origin
-        "http://c.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff",  // response_headers
         "audio/x-wav",                      // response_content_type
@@ -1056,7 +1006,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://c.com/",               // initiator_origin
-        "http://c.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK",             // response_headers
         "application/javascript",      // response_content_type
         MimeType::kOthers,             // canonical_mime_type
@@ -1074,7 +1023,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: http://example.com\n"
         "X-Content-Type-Options: nosniff",  // response_headers
@@ -1093,7 +1041,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "filesystem:http://www.b.com/file.html",    // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -1110,7 +1057,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "blob:http://www.b.com/guid-goes-here",     // target_url
         "http://www.a.com/",                        // initiator_origin
-        "http://www.a.com/",                        // initiator_site_lock
         "HTTP/1.1 200 OK",                          // response_headers
         "text/html",                                // response_content_type
         MimeType::kHtml,                            // canonical_mime_type
@@ -1130,7 +1076,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/script.js",  // target_url
         "http://www.a.com/",           // initiator_origin
-        "http://www.a.com/",           // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Content-Range: bytes 200-1000/67589",  // response_headers
         "application/javascript",               // response_content_type
@@ -1150,7 +1095,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/movie.html",  // target_url
         "http://www.a.com/",            // initiator_origin
-        "http://www.a.com/",            // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Content-Range: bytes 200-1000/67589\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1168,7 +1112,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/movie.txt",  // target_url
         "http://www.a.com/",           // initiator_origin
-        "http://www.a.com/",           // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Content-Range: bytes 200-1000/67589",  // response_headers
         "text/plain",                           // response_content_type
@@ -1185,7 +1128,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.b.com/movie.html",  // target_url
         "http://www.a.com/",            // initiator_origin
-        "http://www.a.com/",            // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Content-Range: bytes 200-1000/67589",   // response_headers
         "text/html",                             // response_content_type
@@ -1203,7 +1145,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",              // target_url
         "http://a.com/",                           // initiator_origin
-        "http://a.com/",                           // initiator_site_lock
         "HTTP/1.1 204 NO CONTENT",                 // response_headers
         "text/html",                               // response_content_type
         MimeType::kHtml,                           // canonical_mime_type
@@ -1220,7 +1161,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",              // target_url
         "http://b.com/",                           // initiator_origin
-        "http://b.com/",                           // initiator_site_lock
         "HTTP/1.1 204 NO CONTENT",                 // response_headers
         "text/html",                               // response_content_type
         MimeType::kHtml,                           // canonical_mime_type
@@ -1233,49 +1173,12 @@ const TestScenario kScenarios[] = {
         0,                                // verdict_packet
     },
 
-    // Tests where the |initiator_site_lock| != |initiator_origin|.
-    {
-        "Empty site lock so request is allowed based on the initator_origin",
-        __LINE__,
-        "http://www.a.com/resource.html",           // target_url
-        "http://www.a.com/",                        // initiator_origin
-        "",                                         // initiator_site_lock
-        "HTTP/1.1 200 OK",                          // response_headers
-        "text/html",                                // response_content_type
-        MimeType::kHtml,                            // canonical_mime_type
-        MimeTypeBucket::kProtected,                 // mime_type_bucket
-        {"<html><head>this should sniff as HTML"},  // packets
-        false,                                      // resource_is_sensitive
-        CrossOriginProtectionDecision::
-            kBlockedAfterSniffing,             // protection_decision
-        Verdict::kAllow,                       // verdict
-        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
-    },
-    {
-        "Incorrect site lock so request should be blocked",
-        __LINE__,
-        "http://www.a.com/resource.html",           // target_url
-        "http://www.a.com/",                        // initiator_origin
-        "http://www.b.com/",                        // initiator_site_lock
-        "HTTP/1.1 200 OK",                          // response_headers
-        "text/html",                                // response_content_type
-        MimeType::kHtml,                            // canonical_mime_type
-        MimeTypeBucket::kProtected,                 // mime_type_bucket
-        {"<html><head>this should sniff as HTML"},  // packets
-        false,                                      // resource_is_sensitive
-        CrossOriginProtectionDecision::
-            kBlockedAfterSniffing,  // protection_decision
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
-    },
-
     // Testing the CORB protection logging.
     {
         "Not Sensitive: script without CORS or Cache heuristic",
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin",                         // response_headers
         "application/javascript",               // response_content_type
@@ -1292,7 +1195,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin, User-Agent",             // response_headers
         "application/javascript",               // response_content_type
@@ -1309,7 +1211,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Cache-Control: No-Store",              // response_headers
@@ -1328,7 +1229,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Vary: Origin\n"
         "Access-Control-Allow-Origin: http://www.a.com/\n"
@@ -1347,7 +1247,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "X-Content-Type-Options: nosniff\n"
@@ -1366,7 +1265,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1385,7 +1283,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1405,7 +1302,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
         "text/json",                                  // response_content_type
@@ -1425,7 +1321,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Vary: Origin\n"
         "Cache-Control: Private\n"
@@ -1446,7 +1341,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Vary: Origin, User-Agent\n"
         "Cache-Control: Private, No-Store\n"
@@ -1465,7 +1359,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Vary: Origin\n"
@@ -1484,7 +1377,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Cache-Control: Private",                   // response_headers
@@ -1503,7 +1395,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Cache-Control: Private",  // response_headers
@@ -1523,7 +1414,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Cache-Control: Private",                     // response_headers
@@ -1552,7 +1442,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.b.com/",               // initiator_origin
-        "http://www.b.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Vary: Origin\n"
@@ -1573,7 +1462,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.b.com/",               // initiator_origin
-        "http://www.b.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
         "Cache-Control: Private",                   // response_headers
@@ -1599,7 +1487,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.foo.a.com/",           // initiator_origin
-        "http://www.foo.a.com/",           // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Cross-Origin-Resource-Policy: same-site\n"
         "Vary: Origin\n"
@@ -1621,7 +1508,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "Vary: Origin\n"
         "Content-Range: bytes 200-1000/67589\n"
@@ -1642,7 +1528,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: bytes\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1661,7 +1546,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: none\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1680,7 +1564,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: bytes",                     // response_headers
         "text/html",                                // response_content_type
@@ -1700,7 +1583,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Accept-Ranges: bytes\n"
@@ -1719,7 +1601,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Accept-Ranges: bytes\n"
@@ -1739,7 +1620,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Accept-Ranges: none\n"
@@ -1763,7 +1643,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: bytes\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1782,7 +1661,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: bytes\n"
         "Cache-Control: private\n"
@@ -1802,7 +1680,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
-        "http://www.a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Accept-Ranges: none\n"
         "Cache-Control: private\n"
@@ -1826,7 +1703,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
-        "http://www.a.com/",             // initiator_site_lock
         "HTTP/1.1 206 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Accept-Ranges: bytes\n"
@@ -1847,7 +1723,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
-        "http://a.com/",               // initiator_site_lock
         "HTTP/1.1 204 NO CONTENT\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
         "text/html",                               // response_content_type
@@ -1872,7 +1747,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
-        "http://a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "Cache-Control: private\n"
         "Vary: origin",                             // response_headers
@@ -1893,7 +1767,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.js",  // target_url
         "http://a.com/",             // initiator_origin
-        "http://a.com/",             // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Cache-Control: private\n"
@@ -1913,7 +1786,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
-        "http://a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Access-Control-Allow-Origin: *\n"
@@ -1935,7 +1807,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
-        "http://a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
@@ -1953,7 +1824,6 @@ const TestScenario kScenarios[] = {
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
-        "http://a.com/",               // initiator_site_lock
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
         "Cache-Control: private\n"
@@ -2024,17 +1894,9 @@ class ResponseAnalyzerTest : public testing::Test,
                             ? network::mojom::RequestMode::kNoCors
                             : network::mojom::RequestMode::kCors;
 
-    // Create the site lock, which may differ from the initiator origin or be
-    // empty.
-    absl::optional<url::Origin> request_initiator_origin_lock;
-    if (strlen(scenario.initiator_site_lock) > 0)
-      request_initiator_origin_lock =
-          url::Origin::Create(GURL(scenario.initiator_site_lock));
-
     // Create a ResponseAnalyzer to test.
     analyzer_ = std::make_unique<ResponseAnalyzer>(
-        request->url(), request->initiator(), response,
-        request_initiator_origin_lock, request_mode);
+        request->url(), request->initiator(), response, request_mode);
 
     // Verify MIME type was classified correctly.
     EXPECT_EQ(scenario.canonical_mime_type,

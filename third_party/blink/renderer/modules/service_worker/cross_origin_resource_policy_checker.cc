@@ -41,8 +41,7 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
   return network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              response.InternalURLList().back(),
              response.InternalURLList().front(), initiator_origin,
-             corp_header_value, request_mode, initiator_origin,
-             request_destination,
+             corp_header_value, request_mode, request_destination,
              response.GetResponse()->RequestIncludeCredentials(), policy_,
              reporter_ ? reporter_.get() : nullptr)
       .has_value();

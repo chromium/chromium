@@ -139,20 +139,12 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
-    absl::optional<url::Origin> request_initiator_origin_lock,
     bool request_include_credentials,
     mojom::CrossOriginEmbedderPolicyValue embedder_policy) {
   // Browser-initiated requests are not subject to Cross-Origin-Resource-Policy.
-  if (!request_initiator.has_value()) {
-    // The DCHECK further confirm that this is a browser-initiated request.
-    // Note also CorsURLLoaderFactory::IsValidRequest which rejects
-    // renderer-initiated requests without a |request_initiator| and/or without
-    // a |request_initiator_origin_lock| via
-    // InitiatorLockCompatibility::kNoInitiator and
-    // InitiatorLockCompatibility::kNoLock cases.
-    DCHECK(!request_initiator_origin_lock.has_value());
+  if (!request_initiator.has_value())
     return absl::nullopt;
-  }
+  const url::Origin& initiator = request_initiator.value();
 
   bool require_corp;
   switch (embedder_policy) {
@@ -195,8 +187,6 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   // > 2. If request’s origin is same origin with request’s current URL’s
   //      origin, then return allowed.
   url::Origin target_origin = url::Origin::Create(request_url);
-  url::Origin initiator =
-      GetTrustworthyInitiator(request_initiator_origin_lock, request_initiator);
   if (initiator == target_origin)
     return absl::nullopt;
 
@@ -231,7 +221,6 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
     const GURL& original_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
-    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
@@ -246,8 +235,7 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
       reporter) {
     const auto result = IsBlockedInternal(
         policy, request_url, request_initiator, request_mode,
-        request_initiator_origin_lock, request_include_credentials,
-        embedder_policy.report_only_value);
+        request_include_credentials, embedder_policy.report_only_value);
     UMA_HISTOGRAM_ENUMERATION(
         "NetworkService.CrossOriginResourcePolicy.ReportOnlyResult",
         ToCorpResult(result));
@@ -265,7 +253,6 @@ absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
 
   const auto result =
       IsBlockedInternal(policy, request_url, request_initiator, request_mode,
-                        request_initiator_origin_lock,
                         request_include_credentials, embedder_policy.value);
   UMA_HISTOGRAM_ENUMERATION("NetworkService.CrossOriginResourcePolicy.Result",
                             ToCorpResult(result));
@@ -292,7 +279,6 @@ CrossOriginResourcePolicy::IsBlocked(
     const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
     mojom::RequestMode request_mode,
-    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
@@ -313,8 +299,8 @@ CrossOriginResourcePolicy::IsBlocked(
 
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
-      request_initiator_origin_lock, request_destination,
-      response.request_include_credentials, embedder_policy, reporter);
+      request_destination, response.request_include_credentials,
+      embedder_policy, reporter);
 }
 
 // static
@@ -325,7 +311,6 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
     const absl::optional<url::Origin>& request_initiator,
     absl::optional<std::string> corp_header_value,
     mojom::RequestMode request_mode,
-    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     bool request_include_credentials,
     const CrossOriginEmbedderPolicy& embedder_policy,
@@ -339,8 +324,8 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
 
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator, request_mode,
-      request_initiator_origin_lock, request_destination,
-      request_include_credentials, embedder_policy, reporter);
+      request_destination, request_include_credentials, embedder_policy,
+      reporter);
 }
 
 // static
@@ -350,7 +335,6 @@ CrossOriginResourcePolicy::IsNavigationBlocked(
     const GURL& original_url,
     const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
@@ -359,9 +343,8 @@ CrossOriginResourcePolicy::IsNavigationBlocked(
 
   return IsBlockedInternalWithReporting(
       policy, request_url, original_url, request_initiator,
-      mojom::RequestMode::kNavigate, request_initiator_origin_lock,
-      request_destination, response.request_include_credentials,
-      embedder_policy, reporter);
+      mojom::RequestMode::kNavigate, request_destination,
+      response.request_include_credentials, embedder_policy, reporter);
 }
 
 // static

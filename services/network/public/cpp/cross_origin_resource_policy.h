@@ -39,13 +39,18 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
   // For kNoCors fetches, the IsBlocked method checks whether the response has
   // a Cross-Origin-Resource-Policy header which says the response should not be
   // delivered to a cross-origin or cross-site context.
+  //
+  // Caller should ensure that |request_initiator| is trustworthy (e.g. can't be
+  // spoofed by a compromised renderer). This is generally true within
+  // NetworkService (see how CorsURLLoaderFactory::IsValidRequest checks
+  // InitiatorLockCompatibility), but may need extra care in the browser
+  // process.
   static absl::optional<mojom::BlockedByResponseReason> IsBlocked(
       const GURL& request_url,
       const GURL& original_url,
       const absl::optional<url::Origin>& request_initiator,
       const network::mojom::URLResponseHead& response,
       mojom::RequestMode request_mode,
-      absl::optional<url::Origin> request_initiator_origin_lock,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* reporter) WARN_UNUSED_RESULT;
@@ -58,7 +63,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       const absl::optional<url::Origin>& request_initiator,
       absl::optional<std::string> corp_header_value,
       mojom::RequestMode request_mode,
-      absl::optional<url::Origin> request_initiator_origin_lock,
       mojom::RequestDestination request_destination,
       bool request_include_credentials,
       const CrossOriginEmbedderPolicy& embedder_policy,
@@ -66,12 +70,17 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
 
   // The CORP check for navigation requests. This is expected to be called
   // from the navigation algorithm.
+  //
+  // Caller should ensure that |request_initiator| is trustworthy (e.g. can't be
+  // spoofed by a compromised renderer). This is generally true within the
+  // navigation stack which should ensure that IPCs from renderer processes
+  // are verified via VerifyBeginNavigationCommonParams, VerifyOpenURLParams,
+  // etc.
   static absl::optional<mojom::BlockedByResponseReason> IsNavigationBlocked(
       const GURL& request_url,
       const GURL& original_url,
       const absl::optional<url::Origin>& request_initiator,
       const network::mojom::URLResponseHead& response,
-      absl::optional<url::Origin> request_initiator_origin_lock,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* reporter);

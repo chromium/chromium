@@ -53,8 +53,9 @@ const char* GetSecFetchSiteHeaderString(const SecFetchSiteValue& value) {
   }
 }
 
-SecFetchSiteValue SecFetchSiteHeaderValue(const GURL& target_url,
-                                          const url::Origin& initiator) {
+SecFetchSiteValue GetHeaderValueForTargetAndInitiator(
+    const GURL& target_url,
+    const url::Origin& initiator) {
   url::Origin target_origin = url::Origin::Create(target_url);
 
   if (target_origin == initiator)
@@ -72,42 +73,56 @@ SecFetchSiteValue SecFetchSiteHeaderValue(const GURL& target_url,
   return SecFetchSiteValue::kCrossSite;
 }
 
+SecFetchSiteValue GetHeaderValueForRequest(
+    net::URLRequest* request,
+    const GURL* pending_redirect_url,
+    const mojom::URLLoaderFactoryParams& factory_params,
+    const cors::OriginAccessList& origin_access_list) {
+  // Browser-initiated requests with no initiator origin will send
+  // `Sec-Fetch-Site: None`.
+  if (!request->initiator().has_value()) {
+    // CorsURLLoaderFactory::IsValidRequest verifies that only the browser
+    // process may initiate requests with no request initiator.
+    DCHECK_EQ(factory_params.process_id, mojom::kBrowserProcessId);
+
+    return SecFetchSiteValue::kNoOrigin;
+  }
+  const url::Origin& initiator = request->initiator().value();
+
+  // Privileged requests initiated from a "non-webby" context will send
+  // `Sec-Fetch-Site: None` while unprivileged ones will send
+  // `Sec-Fetch-Site: cross-site`.
+  if (factory_params.unsafe_non_webby_initiator) {
+    cors::OriginAccessList::AccessState access_state =
+        origin_access_list.CheckAccessState(initiator, request->url());
+    bool is_privileged =
+        (access_state == cors::OriginAccessList::AccessState::kAllowed);
+    return is_privileged ? SecFetchSiteValue::kNoOrigin
+                         : SecFetchSiteValue::kCrossSite;
+  }
+
+  // Other requests default to `kSameOrigin`, and walk through the request's URL
+  // chain to calculate the correct value.
+  auto header_value = SecFetchSiteValue::kSameOrigin;
+  for (const GURL& target_url : request->url_chain()) {
+    header_value = std::max(header_value, GetHeaderValueForTargetAndInitiator(
+                                              target_url, initiator));
+  }
+  if (pending_redirect_url) {
+    header_value = std::max(
+        header_value,
+        GetHeaderValueForTargetAndInitiator(*pending_redirect_url, initiator));
+  }
+  return header_value;
+}
+
+// Sec-Fetch-Site
 void SetSecFetchSiteHeader(net::URLRequest* request,
                            const GURL* pending_redirect_url,
                            const mojom::URLLoaderFactoryParams& factory_params,
                            const cors::OriginAccessList& origin_access_list) {
-  SecFetchSiteValue header_value;
-  url::Origin initiator = GetTrustworthyInitiator(
-      factory_params.request_initiator_origin_lock, request->initiator());
-
-  // Browser-initiated requests with no initiator origin, and
-  // privileged requests initiated from a "non-webby" context will send
-  // `Sec-Fetch-Site: None` while unprivileged ones will send
-  // `Sec-Fetch-Site: cross-site`. Other requests default to `kSameOrigin`,
-  // and walk through the request's URL chain to calculate the
-  // correct value.
-  if (factory_params.unsafe_non_webby_initiator) {
-    if (origin_access_list.CheckAccessState(initiator, request->url()) ==
-        cors::OriginAccessList::AccessState::kAllowed) {
-      header_value = SecFetchSiteValue::kNoOrigin;
-    } else {
-      header_value = SecFetchSiteValue::kCrossSite;
-    }
-  } else if (factory_params.process_id == mojom::kBrowserProcessId &&
-             !request->initiator().has_value()) {
-    header_value = SecFetchSiteValue::kNoOrigin;
-  } else {
-    header_value = SecFetchSiteValue::kSameOrigin;
-    for (const GURL& target_url : request->url_chain()) {
-      header_value = std::max(header_value,
-                              SecFetchSiteHeaderValue(target_url, initiator));
-    }
-    if (pending_redirect_url) {
-      header_value =
-          std::max(header_value,
-                   SecFetchSiteHeaderValue(*pending_redirect_url, initiator));
-    }
-  }
+  SecFetchSiteValue header_value = GetHeaderValueForRequest(
+      request, pending_redirect_url, factory_params, origin_access_list);
 
   request->SetExtraRequestHeaderByName(
       kSecFetchSite, GetSecFetchSiteHeaderString(header_value),

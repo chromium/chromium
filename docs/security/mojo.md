@@ -208,11 +208,6 @@ the previous section), then such data should be verified before being used.
       may be terminated by calling the `ReceivedBadMessage` function (separate
       implementations exist for `//content`, `//chrome` and other layers).
 
-* NetworkService process:
-    - Do not trust `network::ResourceRequest::request_initiator` - verify it
-      using `VerifyRequestInitiatorLock` and fall back to a fail-safe origin
-      (e.g. an opaque origin) when verification fails.
-
 
 ### Do not define unused or unimplemented things
 

@@ -96,7 +96,6 @@ class CrossOriginReadBlockingChecker::BlobIOState {
 CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     const network::ResourceRequest& request,
     const network::mojom::URLResponseHead& response,
-    const url::Origin& request_initiator_origin_lock,
     const storage::BlobDataHandle& blob_data_handle,
     base::OnceCallback<void(Result)> callback)
     : callback_(std::move(callback)) {
@@ -106,8 +105,7 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
 
   corb_analyzer_ =
       std::make_unique<network::CrossOriginReadBlocking::ResponseAnalyzer>(
-          request.url, request.request_initiator, response,
-          request_initiator_origin_lock, request.mode);
+          request.url, request.request_initiator, response, request.mode);
   if (corb_analyzer_->ShouldBlock()) {
     OnBlocked();
     return;

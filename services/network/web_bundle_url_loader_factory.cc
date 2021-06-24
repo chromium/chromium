@@ -160,12 +160,10 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   URLLoader(mojo::PendingReceiver<mojom::URLLoader> loader,
             const ResourceRequest& request,
             mojo::PendingRemote<mojom::URLLoaderClient> client,
-            const absl::optional<url::Origin>& request_initiator_origin_lock,
             mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client)
       : url_(request.url),
         request_mode_(request.mode),
         request_initiator_(request.request_initiator),
-        request_initiator_origin_lock_(request_initiator_origin_lock),
         devtools_request_id_(request.devtools_request_id),
         receiver_(this, std::move(loader)),
         client_(std::move(client)),
@@ -188,10 +186,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
 
   const absl::optional<url::Origin>& request_initiator() const {
     return request_initiator_;
-  }
-
-  const absl::optional<url::Origin>& request_initiator_origin_lock() const {
-    return request_initiator_origin_lock_;
   }
 
   base::WeakPtr<URLLoader> GetWeakPtr() {
@@ -278,13 +272,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   const GURL url_;
   mojom::RequestMode request_mode_;
   absl::optional<url::Origin> request_initiator_;
-  // It is safe to hold |request_initiator_origin_lock_| in this factory because
-  // 1). |request_initiator_origin_lock| is a property of |URLLoaderFactory|
-  // (or, more accurately a property of |URLLoaderFactoryParams|), and
-  // 2) |WebURLLoader| is always associated with the same URLLoaderFactory
-  // (via URLLoaderFactory -> WebBundleManager -> WebBundleURLLoaderFactory
-  // -> WebBundleURLLoader).
-  const absl::optional<url::Origin> request_initiator_origin_lock_;
   absl::optional<std::string> devtools_request_id_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
@@ -461,14 +448,12 @@ class WebBundleURLLoaderFactory::BundleDataSource
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
     mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     absl::optional<std::string> devtools_request_id)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
-      request_initiator_origin_lock_(request_initiator_origin_lock),
       web_bundle_memory_quota_consumer_(
           std::move(web_bundle_memory_quota_consumer)),
       devtools_observer_(std::move(devtools_observer)),
@@ -529,9 +514,9 @@ void WebBundleURLLoaderFactory::StartSubresourceRequest(
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::StartSubresourceRequest");
-  URLLoader* loader = new URLLoader(
-      std::move(receiver), url_request, std::move(client),
-      request_initiator_origin_lock_, std::move(trusted_header_client));
+  URLLoader* loader =
+      new URLLoader(std::move(receiver), url_request, std::move(client),
+                    std::move(trusted_header_client));
 
   // Verify that WebBundle URL associated with the request is correct.
   DCHECK(url_request.web_bundle_token_params.has_value());
@@ -737,7 +722,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   auto corb_analyzer =
       std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
           loader->url(), loader->request_initiator(), *response_head,
-          loader->request_initiator_origin_lock(), loader->request_mode());
+          loader->request_mode());
 
   if (corb_analyzer->ShouldBlock()) {
     loader->BlockResponseForCorb(std::move(response_head));

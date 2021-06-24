@@ -78,7 +78,6 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     int32_t process_id,
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     absl::optional<std::string> devtools_request_id) {
   DCHECK(factories_.find({process_id, web_bundle_token_params.token}) ==
@@ -96,7 +95,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       base::Unretained(this), web_bundle_token_params.token, process_id));
 
   auto factory = std::make_unique<WebBundleURLLoaderFactory>(
-      bundle_url, std::move(remote), request_initiator_origin_lock,
+      bundle_url, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
       std::move(devtools_observer), std::move(devtools_request_id));

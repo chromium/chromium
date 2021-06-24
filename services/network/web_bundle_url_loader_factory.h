@@ -33,7 +33,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
-      const absl::optional<url::Origin>& request_initiator_origin_lock,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,

@@ -6116,8 +6116,8 @@ NavigationRequest::EnforceCOEP() {
   }
   return network::CrossOriginResourcePolicy::IsNavigationBlocked(
       url, redirect_chain_[0], parent_frame->GetLastCommittedOrigin(),
-      *response_head_, parent_frame->GetLastCommittedOrigin(),
-      request_destination(), parent_frame->cross_origin_embedder_policy(),
+      *response_head_, request_destination(),
+      parent_frame->cross_origin_embedder_policy(),
       parent_frame->coep_reporter());
 }
 

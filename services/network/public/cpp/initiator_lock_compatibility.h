@@ -11,10 +11,6 @@
 
 namespace network {
 
-namespace mojom {
-class URLLoaderFactoryParams;
-}  // namespace mojom
-
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "RequestInitiatorOriginLockCompatibility" in
@@ -57,27 +53,6 @@ enum class InitiatorLockCompatibility {
 // (ones that are not coverd by the kExcludedPlugin exception).
 COMPONENT_EXPORT(NETWORK_CPP)
 InitiatorLockCompatibility VerifyRequestInitiatorLock(
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
-    const absl::optional<url::Origin>& request_initiator);
-
-// Gets initiator of request, falling back to a unique origin if
-// 1) |request_initiator| is missing or
-// 2) |request_initiator| is incompatible with |request_initiator_origin_lock|.
-//
-// |request_initiator_origin_lock| is the origin to which the URLLoaderFactory
-// of the request is locked in a trustworthy way.
-//   Example:
-//     URLLoaderFactoryParams::request_initiator_origin_lock
-//     SubresourceSignedExchangeURLLoaderFactory::request_initiator_origin_lock
-// |request_initiator| should come from net::URLRequest::initiator() or
-// network::ResourceRequest::request_initiator which may be initially set in an
-// untrustworthy process (eg: renderer process).
-//
-// TODO(https://crbug.com/920634): Remove this function, because
-// ResourceRequest::request_initator should now be trustworthy *within the
-// NetworkService* (see r888724).
-COMPONENT_EXPORT(NETWORK_CPP)
-url::Origin GetTrustworthyInitiator(
     const absl::optional<url::Origin>& request_initiator_origin_lock,
     const absl::optional<url::Origin>& request_initiator);
 

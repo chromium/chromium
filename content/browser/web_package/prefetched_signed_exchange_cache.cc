@@ -176,7 +176,6 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
   InnerResponseURLLoader(
       const network::ResourceRequest& request,
       network::mojom::URLResponseHeadPtr inner_response,
-      const url::Origin& request_initiator_origin_lock,
       std::unique_ptr<const storage::BlobDataHandle> blob_data_handle,
       const network::URLLoaderCompletionStatus& completion_status,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
@@ -229,13 +228,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       }
     }
 
-    // TODO(https://crbug.com/1217825): Stop passing
-    // `request_initiator_origin_lock` below (it is only required for the
-    // deprecated GetTrustworthyInitiator function used by
-    // CrossOriginReadBlockingChecker + the request_initiator is already
-    // trustworthy as documented in a comment above).
     corb_checker_ = std::make_unique<CrossOriginReadBlockingChecker>(
-        request, *response_, request_initiator_origin_lock, *blob_data_handle_,
+        request, *response_, *blob_data_handle_,
         base::BindOnce(
             &InnerResponseURLLoader::OnCrossOriginReadBlockingCheckComplete,
             base::Unretained(this)));
@@ -432,7 +426,6 @@ class SubresourceSignedExchangeURLLoaderFactory
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<InnerResponseURLLoader>(
             request, entry_->inner_response().Clone(),
-            request_initiator_origin_lock_,
             std::make_unique<const storage::BlobDataHandle>(
                 *entry_->blob_data_handle()),
             *entry_->completion_status(), std::move(client),
@@ -543,13 +536,10 @@ class PrefetchedNavigationLoaderInterceptor
     // renderer-initiated navigations - therefore `request_initiator` is
     // guaranteed to have a value here.
     CHECK(resource_request.request_initiator.has_value());
-    url::Origin request_initiator_origin_lock =
-        resource_request.request_initiator.value();
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<InnerResponseURLLoader>(
             resource_request, exchange_->inner_response().Clone(),
-            request_initiator_origin_lock,
             std::make_unique<const storage::BlobDataHandle>(
                 *exchange_->blob_data_handle()),
             *exchange_->completion_status(), std::move(client),

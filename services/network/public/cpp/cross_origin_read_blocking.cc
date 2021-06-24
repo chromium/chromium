@@ -673,7 +673,6 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
     mojom::RequestMode request_mode)
     : seems_sensitive_from_cors_heuristic_(
           SeemsSensitiveFromCORSHeuristic(response)),
@@ -704,9 +703,9 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
   canonical_mime_type_ =
       network::CrossOriginReadBlocking::GetCanonicalMimeType(mime_type);
 
-  should_block_based_on_headers_ = ShouldBlockBasedOnHeaders(
-      request_mode, request_url, request_initiator, response,
-      request_initiator_origin_lock, canonical_mime_type_);
+  should_block_based_on_headers_ =
+      ShouldBlockBasedOnHeaders(request_mode, request_url, request_initiator,
+                                response, canonical_mime_type_);
 
   // Check if the response seems sensitive and if so include in our CORB
   // protection logging. We have not sniffed yet, so the answer might be
@@ -718,7 +717,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     url::Origin cross_origin_request_initiator = url::Origin();
     BlockingDecision would_protect_based_on_headers = ShouldBlockBasedOnHeaders(
         request_mode, request_url, cross_origin_request_initiator, response,
-        cross_origin_request_initiator, canonical_mime_type_);
+        canonical_mime_type_);
     corb_protection_logging_needs_sniffing_ =
         (would_protect_based_on_headers ==
          BlockingDecision::kNeedToSniffMore) &&
@@ -752,19 +751,19 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
     MimeType canonical_mime_type) {
   // The checks in this method are ordered to rule out blocking in most cases as
   // quickly as possible.  Checks that are likely to lead to returning false or
   // that are inexpensive should be near the top.
   url::Origin target_origin = url::Origin::Create(request_url);
 
-  // Compute the |initiator| of the request, falling back to a unique origin if
-  // there was no initiator or if it was incompatible with the lock. Using a
-  // unique origin makes CORB treat the response as cross-origin and thus
-  // considers it eligible for blocking (based on content-type, sniffing, etc.).
-  url::Origin initiator =
-      GetTrustworthyInitiator(request_initiator_origin_lock, request_initiator);
+  // Extract the `initiator` of the request, allowing requests with no
+  // initiator.  (Such requests are browser-initiated and therefore trustworthy;
+  // CorsURLLoaderFactory::IsValidRequest enforces that renderer-initiated
+  // requests specify a non-null `request_initiator`.)
+  if (!request_initiator.has_value())
+    return kAllow;
+  const url::Origin& initiator = request_initiator.value();
 
   // Don't block same-origin documents.
   if (initiator.IsSameOriginWith(target_origin))
@@ -778,6 +777,12 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
 
   // Allow the response through if this is a CORS request and the response has
   // valid CORS headers.
+  //
+  // TODO(https://crbug.com/920634): Once OOR-CORS uses only trustworthy inputs
+  // (in particular `request_initiator` and `isolated_world_origin`), CORB
+  // should only apply to `no-cors` requests (and therefore the following
+  // `switch` statement can be replaced with returning `kAllow` is the mode is
+  // different from `kNoCors`).
   switch (request_mode) {
     case mojom::RequestMode::kNavigate:
     case mojom::RequestMode::kNoCors:
@@ -844,18 +849,18 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // this case and not just "no-cors", we pass kNoCors as a hard-coded value.
   // This does not affect the usual enforcement of CORP headers.
   //
-  // TODO(lukasza): Once OOR-CORS launches (https://crbug.com/736308), this code
-  // block will no longer be necessary since all failed CORS requests will be
-  // blocked before reaching the renderer process (even without CORB's help).
-  // Of course this assumes that OOR-CORS will use trustworthy
-  // |request_initiator| (i.e. vetted against |request_initiator_origin_lock|).
+  // TODO(https://crbug.com/920634): Once OOR-CORS uses only trustworthy inputs
+  // (in particular `request_initiator` and `isolated_world_origin`), CORB
+  // should only apply to `no-cors` requests (and therefore there will be no
+  // need to consult CORP below, because the check below only helps with CORS
+  // modes / because CORP already independently applies-to/blocks `no-cors`
+  // requests).
   constexpr mojom::RequestMode kOverreachingRequestMode =
       mojom::RequestMode::kNoCors;
   // COEP is not supported when OOR-CORS is disabled.
   if (CrossOriginResourcePolicy::IsBlocked(
           request_url, request_url, request_initiator, response,
-          kOverreachingRequestMode, request_initiator_origin_lock,
-          network::mojom::RequestDestination::kEmpty,
+          kOverreachingRequestMode, network::mojom::RequestDestination::kEmpty,
           CrossOriginEmbedderPolicy(),
           /*reporter=*/nullptr)) {
     // Ignore mime types and/or sniffing and have CORB block all responses with

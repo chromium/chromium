@@ -1171,7 +1171,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
-              factory_params_->request_initiator_origin_lock,
               request_destination_, cross_origin_embedder_policy,
               coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
@@ -1395,7 +1394,6 @@ void URLLoader::ContinueOnResponseStarted() {
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
-              factory_params_->request_initiator_origin_lock,
               request_destination_, cross_origin_embedder_policy,
               coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
@@ -1419,7 +1417,7 @@ void URLLoader::ContinueOnResponseStarted() {
     corb_analyzer_ =
         std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
             url_request_->url(), url_request_->initiator(), *response_,
-            factory_params_->request_initiator_origin_lock, request_mode_);
+            request_mode_);
     is_more_corb_sniffing_needed_ = corb_analyzer_->needs_sniffing();
     if (corb_analyzer_->ShouldBlock()) {
       DCHECK(!is_more_corb_sniffing_needed_);
@@ -2384,8 +2382,7 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   url::Origin request_origin = url::Origin::Create(url);
   url::Origin request_initiator =
-      GetTrustworthyInitiator(url_request_->initiator(),
-                              factory_params_->request_initiator_origin_lock);
+      url_request_->initiator().value_or(url::Origin());
   if (request_origin.IsSameOriginWith(request_initiator))
     return true;
 

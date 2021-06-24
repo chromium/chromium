@@ -261,8 +261,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
             resource_request.url, *resource_request.web_bundle_token_params,
-            process_id_, request_initiator_origin_lock_,
-            std::move(devtools_observer), resource_request.devtools_request_id);
+            process_id_, std::move(devtools_observer),
+            resource_request.devtools_request_id);
     client =
         web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
   }

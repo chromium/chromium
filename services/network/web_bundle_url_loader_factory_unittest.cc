@@ -171,7 +171,6 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     devtools_observer_ = std::make_unique<MockDevToolsObserver>();
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), std::move(handle),
-        /*request_initiator_origin_lock=*/absl::nullopt,
         std::make_unique<MockMemoryQuotaConsumer>(), devtools_observer_->Bind(),
         kBundleRequestId);
     factory_->SetBundleStream(std::move(consumer));

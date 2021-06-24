@@ -107,11 +107,15 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // Creates a ResponseAnalyzer for the request (|request_url| and
     // |request_initiator|), |response| pair.  The ResponseAnalyzer will decide
     // whether |response| needs to be blocked.
+    //
+    // The constructor here assumes that |request_initiator| is trustworthy
+    // (e.g. can't be spoofed by a compromised renderer). This is generally true
+    // for network::ResourceRequest::request_initiator within NetworkService
+    // (see the enforcement in CorsURLLoaderFactory::IsValidRequest).
     ResponseAnalyzer(
         const GURL& request_url,
         const absl::optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
-        const absl::optional<url::Origin>& request_initiator_origin_lock,
         mojom::RequestMode request_mode);
 
     ~ResponseAnalyzer();
@@ -188,7 +192,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         const GURL& request_url,
         const absl::optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
-        const absl::optional<url::Origin>& request_initiator_origin_lock,
         MimeType canonical_mime_type);
 
     // Checks if the response seems sensitive for CORB protection logging.

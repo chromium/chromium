@@ -89,10 +89,6 @@ Protection techniques:
   `network::mojom::URLLoaderFactoryParams` of such factories (such as
   `request_initiator_origin_lock`, `is_corb_enabled`, `disable_web_security` or
   `isolation_info`).
-  This also lets the CORB implementation in the NetworkService process
-  prevent spoofing of `network::ResourceRequest::request_initiator`
-  by using `network::GetTrustworthyInitiator` for comparison with
-  the trustworthy `request_initiator_origin_lock`.
 
 **Known gaps in protection**:
 - Content types for which CORB does not apply
@@ -100,10 +96,6 @@ Protection techniques:
   default.  We recommend that HTTP servers protect such resources by
   either serving a `Cross-Origin-Resource-Policy: same-origin` response header
   or validating the `Sec-Fetch-Site` request header.
-- CORB protection is relaxed in presence of
-    - Adobe Flash plugin (see https://crbug.com/874515)
-    - A relatively small number of allowlisted Chrome Extensions
-      (see https://crbug.com/846346)
 
 
 ## Contents of cross-site frames
@@ -262,8 +254,8 @@ Protection techniques:
 - Enforcing Cross-Origin-Resource-Policy in the NetworkService process
   (i.e. before the HTTP response is handed out to the renderer process).
 - Preventing spoofing of `network::ResourceRequest::request_initiator`
-  by using `network::GetTrustworthyInitiator` which enforces
-  browser-controlled `request_initiator_origin_lock`.
+  by comparing against `request_initiator_origin_lock` in
+  `network::CorsURLLoaderFactory::IsValidRequest`.
 
 
 ## Frame-ancestors CSP and X-Frame-Options response headers
@@ -294,16 +286,12 @@ request headers like `Host` or `Sec-Fetch-Site`.
 Protection techniques:
 - Using `AreRequestHeadersSafe` to reject `Host` and other headers that
   should only be generated internally within the NetworkService.
-- `Sec-Fetch-Site` is robust against spoofing of
-  `network::ResourceRequest::request_initiator` by using
-  `network::GetTrustworthyInitiator` which enforces browser-controlled
-  `request_initiator_origin_lock`.
+- Preventing spoofing of `network::ResourceRequest::request_initiator`
+  by comparing against `request_initiator_origin_lock` in
+  `network::CorsURLLoaderFactory::IsValidRequest`.
 
 **Known gaps in protection**:
 - `Origin` header.  Tracked by
-  https://crbug.com/920634 (making
-  `network::ResourceRequest::request_initiator` unspoofable without
-  having to go through `GetTrustworthyInitiator`) and
   https://crbug.com/1098410 (removing
   `network::ResourceRequest::isolated_world_origin` which is used
   in some security decisions instead of `request_initiator` to support
