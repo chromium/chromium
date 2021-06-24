@@ -355,7 +355,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     const GrBackendTexture plane_backend_texture(
         plane_size.width(), plane_size.height(), GrMipMapped::kNo,
         GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES, resource->texture,
-                        is_nv12_chroma_plane ? GL_RG8_EXT : GL_R8_EXT});
+                        static_cast<GrGLenum>(
+                            is_nv12_chroma_plane ? GL_RG8_EXT : GL_R8_EXT)});
     plane_sk_images[plane] = SkImage::MakeFromTexture(
         shared_context_state->gr_context(), plane_backend_texture,
         kTopLeft_GrSurfaceOrigin,

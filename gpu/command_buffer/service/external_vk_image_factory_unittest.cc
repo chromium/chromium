@@ -297,10 +297,12 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
     SkCanvas* dest_canvas = dest_surface->getCanvas();
 
     // Color the top half blue, and the bottom half green
-    dest_canvas->drawRect(SkRect{0, 0, size.width(), size.height() / 2},
-                          SkPaint(SkColors::kBlue));
     dest_canvas->drawRect(
-        SkRect{0, size.height() / 2, size.width(), size.height()},
+        SkRect{0, 0, static_cast<SkScalar>(size.width()), size.height() / 2.0f},
+        SkPaint(SkColors::kBlue));
+    dest_canvas->drawRect(
+        SkRect{0, size.height() / 2.0f, static_cast<SkScalar>(size.width()),
+               static_cast<SkScalar>(size.height())},
         SkPaint(SkColors::kGreen));
     skia_representation->SetCleared();
 
@@ -355,7 +357,8 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
       dst_copy_view.layout.offset = 0;
       dst_copy_view.layout.rowsPerImage = 0;
 
-      wgpu::Extent3D copy_extent = {size.width(), size.height(), 1};
+      wgpu::Extent3D copy_extent = {static_cast<uint32_t>(size.width()),
+                                    static_cast<uint32_t>(size.height()), 1};
 
       encoder.CopyTextureToBuffer(&src_copy_view, &dst_copy_view, &copy_extent);
     }

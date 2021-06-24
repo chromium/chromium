@@ -29,7 +29,8 @@ VkSemaphore ImportVkSemaphoreHandle(VkDevice vk_device,
   const VkImportSemaphoreFdInfoKHR import = {
       .sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR,
       .semaphore = semaphore,
-      .flags = is_sync_fd ? VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR : 0,
+      .flags = is_sync_fd ? VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR
+                          : VkSemaphoreImportFlags{0},
       .handleType = handle_type,
       .fd = fd.release(),
   };

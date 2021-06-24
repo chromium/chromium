@@ -154,7 +154,7 @@ bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
 
   VkImageDrmFormatModifierListCreateInfoEXT modifier_list = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT,
-      .drmFormatModifierCount = modifiers.size(),
+      .drmFormatModifierCount = static_cast<uint32_t>(modifiers.size()),
       .pDrmFormatModifiers = modifiers.data(),
   };
 
@@ -192,7 +192,8 @@ bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
     // TODO(penghuang): use VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT when the mesa
     // can handle VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT.
     const VkImageSubresource image_subresource = {
-        .aspectMask = VK_IMAGE_ASPECT_PLANE_0_BIT << i,
+        .aspectMask =
+            static_cast<VkImageAspectFlags>(VK_IMAGE_ASPECT_PLANE_0_BIT << i),
         .mipLevel = 0,
         .arrayLayer = 0,
     };

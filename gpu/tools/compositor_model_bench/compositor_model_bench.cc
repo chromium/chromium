@@ -163,8 +163,8 @@ class Simulator {
         .parent = connection_->default_root(),
         .x = 1,
         .y = 1,
-        .width = window_width_,
-        .height = window_height_,
+        .width = static_cast<uint16_t>(window_width_),
+        .height = static_cast<uint16_t>(window_height_),
         .background_pixel = black_pixel,
         .border_pixel = black_pixel,
         .event_mask = x11::EventMask::Exposure | x11::EventMask::KeyPress |

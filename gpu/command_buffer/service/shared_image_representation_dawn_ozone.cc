@@ -64,7 +64,8 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   texture_descriptor.format = format_;
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
-  texture_descriptor.size = {pixmap_size.width(), pixmap_size.height(), 1};
+  texture_descriptor.size = {static_cast<uint32_t>(pixmap_size.width()),
+                             static_cast<uint32_t>(pixmap_size.height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
