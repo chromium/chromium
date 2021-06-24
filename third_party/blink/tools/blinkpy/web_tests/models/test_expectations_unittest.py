@@ -873,7 +873,7 @@ class AddExpectationsTest(Base):
                                    'test [ failure ]\n'
                                    '\n'
                                    'test1 [ Pass ]\n'
-                                   '[ Release Mac ] test2 [ Failure Crash ]\n'
+                                   '[ Mac Release ] test2 [ Crash Failure ]\n'
                                    'test3 [ Failure ]\n'))
 
     def test_add_after_remove(self):

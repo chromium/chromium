@@ -144,7 +144,7 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
             '\n'
             '# Add untriaged failures in this block\n'
             'crbug.com/1050754 external/wpt/bar.html [ Failure ]\n'
-            'crbug.com/1050754 external/wpt/new3.html [ Failure Crash ]\n'
+            'crbug.com/1050754 external/wpt/new3.html [ Crash Failure ]\n'
             '\n'
             '# This comment will not be deleted\n')
         self.assertEqual(content, _new_expectations)
