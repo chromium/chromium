@@ -12,8 +12,8 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.5.0/kotlinx-coroutines-core-jvm-1.5.0.jar'
-_FILE_NAME = 'kotlinx-coroutines-core-jvm-1.5.0.jar'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.0/kotlin-stdlib-jdk7-1.5.0.jar'
+_FILE_NAME = 'kotlin-stdlib-jdk7-1.5.0.jar'
 _FILE_VERSION = '1.5.0'
 
 
