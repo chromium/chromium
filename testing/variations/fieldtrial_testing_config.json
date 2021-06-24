@@ -2084,6 +2084,25 @@
             ]
         }
     ],
+    "CloudPolicyUniqueOwnerName": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InvalidatorUniqueOwnerName"
+                    ]
+                }
+            ]
+        }
+    ],
     "CnameAliasDetectionInSubresourceFilter": [
         {
             "platforms": [
