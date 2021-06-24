@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
@@ -163,9 +162,7 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     : shelf_(shelf),
       container_(container),
       item_(item),
-      progress_ring_(HoldingSpaceProgressRing::CreateForItem(
-          item_,
-          /*use_light_mode_by_default=*/true)),
+      progress_ring_(HoldingSpaceProgressRing::CreateForItem(item_)),
       use_small_previews_(ShouldUseSmallPreviews()) {
   // Initialize the `contents_image_`.
   OnHoldingSpaceItemImageChanged();
@@ -443,13 +440,9 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   // pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
+  flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kOpaque));
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
-  {
-    // Holding space tray icon previews use light mode by default.
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kOpaque));
-  }
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),
       std::min(contents_bounds.width(), contents_bounds.height()) / 2.f - 0.5f,
@@ -492,13 +485,10 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
 
 void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
   if (item_) {
-    // NOTE: The preview's background is white when the dark/light mode feature
-    // is disabled. Otherwise, the preview's background depends on theming.
     const gfx::Size size(GetPreviewSize());
     contents_image_ = gfx::ImageSkia(
         std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(
-            size, /*dark_background=*/features::IsDarkLightModeEnabled() &&
-                      AshColorProvider::Get()->IsDarkModeEnabled())),
+            size, AshColorProvider::Get()->IsDarkModeEnabled())),
         size);
   } else {
     contents_image_ = gfx::ImageSkia();

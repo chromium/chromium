@@ -122,8 +122,7 @@ class ProgressRingView : public views::View {
   // NOTE: This method should be invoked only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* item) {
     DCHECK(!progress_ring_);
-    progress_ring_ = HoldingSpaceProgressRing::CreateForItem(
-        item, /*use_light_mode_as_default=*/false);
+    progress_ring_ = HoldingSpaceProgressRing::CreateForItem(item);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);

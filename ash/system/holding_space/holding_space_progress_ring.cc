@@ -10,7 +10,6 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -46,10 +45,9 @@ class HoldingSpaceControllerProgressRing
       public HoldingSpaceControllerObserver,
       public HoldingSpaceModelObserver {
  public:
-  HoldingSpaceControllerProgressRing(HoldingSpaceController* controller,
-                                     bool use_light_mode_as_default)
-      : HoldingSpaceProgressRing(use_light_mode_as_default),
-        controller_(controller) {
+  explicit HoldingSpaceControllerProgressRing(
+      HoldingSpaceController* controller)
+      : controller_(controller) {
     controller_observation_.Observe(controller_);
     if (controller_->model())
       OnHoldingSpaceModelAttached(controller_->model());
@@ -160,9 +158,8 @@ class HoldingSpaceControllerProgressRing
 class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
                                      public HoldingSpaceModelObserver {
  public:
-  HoldingSpaceItemProgressRing(const HoldingSpaceItem* item,
-                               bool use_light_mode_as_default)
-      : HoldingSpaceProgressRing(use_light_mode_as_default), item_(item) {
+  explicit HoldingSpaceItemProgressRing(const HoldingSpaceItem* item)
+      : item_(item) {
     model_observation_.Observe(HoldingSpaceController::Get()->model());
   }
 
@@ -202,10 +199,8 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 
 // HoldingSpaceProgressRing ----------------------------------------------------
 
-HoldingSpaceProgressRing::HoldingSpaceProgressRing(
-    bool use_light_mode_as_default)
-    : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
-      use_light_mode_as_default_(use_light_mode_as_default) {
+HoldingSpaceProgressRing::HoldingSpaceProgressRing()
+    : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(false);
 }
@@ -215,18 +210,14 @@ HoldingSpaceProgressRing::~HoldingSpaceProgressRing() = default;
 // static
 std::unique_ptr<HoldingSpaceProgressRing>
 HoldingSpaceProgressRing::CreateForController(
-    HoldingSpaceController* controller,
-    bool use_light_mode_as_default) {
-  return std::make_unique<HoldingSpaceControllerProgressRing>(
-      controller, use_light_mode_as_default);
+    HoldingSpaceController* controller) {
+  return std::make_unique<HoldingSpaceControllerProgressRing>(controller);
 }
 
 // static
 std::unique_ptr<HoldingSpaceProgressRing>
-HoldingSpaceProgressRing::CreateForItem(const HoldingSpaceItem* item,
-                                        bool use_light_mode_as_default) {
-  return std::make_unique<HoldingSpaceItemProgressRing>(
-      item, use_light_mode_as_default);
+HoldingSpaceProgressRing::CreateForItem(const HoldingSpaceItem* item) {
+  return std::make_unique<HoldingSpaceItemProgressRing>(item);
 }
 
 void HoldingSpaceProgressRing::InvalidateLayer() {
@@ -262,10 +253,6 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
   flags.setStrokeWidth(kStrokeWidth);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-
-  std::unique_ptr<ScopedLightModeAsDefault> scoped_light_mode_as_default =
-      use_light_mode_as_default_ ? std::make_unique<ScopedLightModeAsDefault>()
-                                 : nullptr;
 
   const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);

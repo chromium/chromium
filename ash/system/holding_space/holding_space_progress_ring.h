@@ -29,20 +29,18 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
   // Returns an instance which paints a ring to indicate progress of all holding
   // space items in the model attached to the specified `controller`.
   static std::unique_ptr<HoldingSpaceProgressRing> CreateForController(
-      HoldingSpaceController* controller,
-      bool use_light_mode_as_default);
+      HoldingSpaceController* controller);
 
   // Returns an instance which paints a ring to indicate progress of the
   // specified holding space `item`.
   static std::unique_ptr<HoldingSpaceProgressRing> CreateForItem(
-      const HoldingSpaceItem* item,
-      bool use_light_mode_as_default);
+      const HoldingSpaceItem* item);
 
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
 
  protected:
-  explicit HoldingSpaceProgressRing(bool use_light_mode_as_default);
+  HoldingSpaceProgressRing();
 
   // Returns the progress to paint to the owned `layer()`.
   // NOTE: If absent, progress is indeterminate.
@@ -54,11 +52,6 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_scale, float new_scale) override;
   void OnPaintLayer(const ui::PaintContext& context) override;
-
-  // If `true`, the progress ring should be painted with light mode as the
-  // default color mode. NOTE: This will have no effect if the dark/light mode
-  // feature is enabled.
-  const bool use_light_mode_as_default_;
 };
 
 }  // namespace ash

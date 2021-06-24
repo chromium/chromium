@@ -272,7 +272,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   //   * there is at least one in-progress item in the attached model, and
   //   * previews are hidden.
   progress_ring_ = HoldingSpaceProgressRing::CreateForController(
-      HoldingSpaceController::Get(), /*use_light_mode_as_default=*/false);
+      HoldingSpaceController::Get());
   layer()->Add(progress_ring_->layer());
 
   // Enable context menu, which supports an action to toggle item previews.
