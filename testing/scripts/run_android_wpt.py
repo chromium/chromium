@@ -119,6 +119,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
   def rest_args(self):
     rest_args = super(WPTAndroidAdapter, self).rest_args
 
+    # Update the output directory to the default if it's not set.
+    self.maybe_set_default_isolated_script_test_output()
+
     # Here we add all of the arguments required to run WPT tests on Android.
     rest_args.extend([self.options.wpt_path])
 
@@ -167,6 +170,13 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     if self.options.verbose >= 4:
       rest_args.extend(['--webdriver-arg=--verbose',
                         '--webdriver-arg="--log-path=-"'])
+
+    if self.options.log_wptreport:
+      wpt_output = self.options.isolated_script_test_output
+      self.wptreport = os.path.join(os.path.dirname(wpt_output),
+                                       'reports.json')
+      rest_args.extend(['--log-wptreport',
+                        self.wptreport])
 
     rest_args.extend(self.pass_through_wpt_args)
 
@@ -276,9 +286,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                         ' tests that would be run.')
     parser.add_argument('--webdriver-arg', action=WPTPassThroughArgs,
                         help='WebDriver args.')
-    parser.add_argument('--log-wptreport', metavar='WPT_REPORT_FILE',
-                        action=WPTPassThroughArgs,
-                        help="Log wptreport with subtest details.")
+    parser.add_argument('--log-wptreport',
+                        action='store_true', default=False,
+                        help="Generates a test report in JSON format.")
     parser.add_argument('--log-raw', metavar='RAW_REPORT_FILE',
                         action=WPTPassThroughArgs,
                         help="Log raw report.")

@@ -522,6 +522,38 @@ class DirMerger(Merger):
 # ------------------------------------------------------------------------
 
 
+class JSONWptReportsMerger(JSONMerger):
+    """Merger for the 'wpt report' format.
+
+    The JSON format is described at
+    https://github.com/web-platform-tests/wpt.fyi/tree/main/api#apiresultsupload
+
+    """
+
+    def __init__(self):
+        JSONMerger.__init__(self)
+
+        # results is a list, and we want to add them together.
+        self.add_helper(
+            NameRegexMatch(':results$'),
+            self.merge_listlike)
+
+        # pick run_info from shard 0.
+        self.add_helper(
+            NameRegexMatch(':run_info$'),
+            lambda o, name=None: o[0])
+
+        # We just take the earliest for time_start.
+        self.add_helper(
+            NameRegexMatch(':time_start$'),
+            lambda o, name=None: min(*o))
+
+        # and the last for time_end.
+        self.add_helper(
+            NameRegexMatch(':time_end$'),
+            lambda o, name=None: max(*o))
+
+
 class JSONTestResultsMerger(JSONMerger):
     """Merger for the 'json test result' format.
 
@@ -635,6 +667,15 @@ class WebTestDirMerger(DirMerger):
         # keep system log for tests on fuchsia platform. See ./port/fuchsia.py
         self.add_helper(FilenameRegexMatch(r'system_log$'),
                         MergeFilesKeepFiles(self.filesystem))
+
+        # Merge WPT report JSON files
+        # https://github.com/web-platform-tests/wpt.fyi/tree/main/api#apiresultsupload
+        wpt_reports_json_merger = MergeFilesJSONP(
+            self.filesystem,
+            JSONWptReportsMerger())
+        self.add_helper(
+            FilenameRegexMatch(r'reports\.json$'),
+            wpt_reports_json_merger)
 
         # These JSON files have "result style" JSON in them.
         results_json_file_merger = MergeFilesJSONP(

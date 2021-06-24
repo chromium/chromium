@@ -805,6 +805,79 @@ f1({
         }, ('/output/outff4', ['/s/filea', '/s/filef1a']))
 
 
+class JSONWptReportsMerger(unittest.TestCase):
+    def test_time_start(self):
+        merger = merge_results.JSONWptReportsMerger()
+        self.assertEqual({
+            'time_start': 2
+        },
+                         merger.merge([{
+                             'time_start': 3
+                         }, {
+                             'time_start': 2
+                         }]))
+        self.assertEqual({
+            'time_start': 2
+        },
+                         merger.merge([{
+                             'time_start': 2
+                         }, {
+                             'time_start': 3
+                         }]))
+        self.assertEqual({
+            'time_start': 12
+        }, merger.merge([{
+            'time_start': 12
+        }, {}]))
+
+    def test_time_end(self):
+        merger = merge_results.JSONWptReportsMerger()
+        self.assertEqual({
+            'time_end': 3
+        },
+                         merger.merge([{
+                             'time_end': 3
+                         }, {
+                             'time_end': 2
+                         }]))
+        self.assertEqual({
+            'time_end': 3
+        },
+                         merger.merge([{
+                             'time_end': 2
+                         }, {
+                             'time_end': 3
+                         }]))
+        self.assertEqual({
+            'time_end': 12
+        }, merger.merge([{
+            'time_end': 12
+        }, {}]))
+
+    def test_run_info(self):
+        merger = merge_results.JSONWptReportsMerger()
+        self.assertEqual({
+            'run_info': {"os": "linux"}
+        },
+                         merger.merge([{
+                             'run_info': {"os": "linux"}
+                         }, {
+                             'run_info': {"os": "win"}
+                         }]))
+
+    def test_results(self):
+        merger = merge_results.JSONWptReportsMerger()
+        self.assertEqual({
+            'results': [{"test": "/foo/foo.html"},
+                        {"test": "/bar/bar.html"}]
+        },
+                         merger.merge([{
+                             "results": [{"test": "/foo/foo.html"}]
+                         }, {
+                             "results": [{"test": "/bar/bar.html"}]
+                         }]))
+
+
 class JSONTestResultsMerger(unittest.TestCase):
     def test_allow_unknown_if_matching(self):
         merger = merge_results.JSONTestResultsMerger(

@@ -44,7 +44,6 @@ CHROME_BINARY_MAC = os.path.join(
     OUT_DIR, "Chromium.app", "Contents", "MacOS", "Chromium")
 CHROMEDRIVER_BINARY = os.path.join(OUT_DIR, "chromedriver")
 
-DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
 MOJO_JS_PATH = os.path.join(OUT_DIR, "gen")
 
 TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, "external", "wpt")
@@ -127,15 +126,6 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
                             default="1", help=child_processes_help)
         parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
-
-    def maybe_set_default_isolated_script_test_output(self):
-        if self.options.isolated_script_test_output:
-            return
-        default_value = DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT.format(
-            self.options.target)
-        print("--isolated-script-test-output not set, defaulting to %s" %
-              default_value)
-        self.options.isolated_script_test_output = default_value
 
     def do_pre_test_run_tasks(self):
         # Copy the checked-in manifest to the temporary working directory
