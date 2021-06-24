@@ -314,7 +314,8 @@ Status StorageQueue::ScanLastFile() {
   for (;;) {
     // Read the header
     auto read_result =
-        last_file->Read(pos, sizeof(RecordHeader), max_buffer_size);
+        last_file->Read(pos, sizeof(RecordHeader), max_buffer_size,
+                        /*expect_readonly=*/false);
     if (read_result.status().error_code() == error::OUT_OF_RANGE) {
       // End of file detected.
       break;
@@ -336,7 +337,8 @@ Status StorageQueue::ScanLastFile() {
         *reinterpret_cast<const RecordHeader*>(read_result.ValueOrDie().data());
     // Read the data (rounded to frame size).
     const size_t data_size = RoundUpToFrameSize(header.record_size);
-    read_result = last_file->Read(pos, data_size, max_buffer_size);
+    read_result = last_file->Read(pos, data_size, max_buffer_size,
+                                  /*expect_readonly=*/false);
     if (!read_result.ok()) {
       // Error detected.
       LOG(ERROR) << "Error reading file " << last_file->name()
@@ -1531,7 +1533,6 @@ StorageQueue::SingleFile::SingleFile(const base::FilePath& filename,
 StorageQueue::SingleFile::~SingleFile() {
   GetDiskResource()->Discard(size_);
   Close();
-  handle_.reset();
 }
 
 Status StorageQueue::SingleFile::Open(bool read_only) {
@@ -1545,6 +1546,7 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
                            : (base::File::FLAG_OPEN_ALWAYS |
                               base::File::FLAG_APPEND | base::File::FLAG_READ));
   if (!handle_ || !handle_->IsValid()) {
+    handle_.reset();
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot open file=", name(), " for ",
                                 read_only ? "read" : "append"}));
@@ -1588,9 +1590,16 @@ Status StorageQueue::SingleFile::Delete() {
 StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
     uint32_t pos,
     uint32_t size,
-    size_t max_buffer_size) {
+    size_t max_buffer_size,
+    bool expect_readonly) {
   if (!handle_) {
     return Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()}));
+  }
+  if (expect_readonly != is_readonly()) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"Attempt to read ",
+                                is_readonly() ? "readonly" : "writeable",
+                                " File ", name()}));
   }
   if (size > max_buffer_size) {
     return Status(error::RESOURCE_EXHAUSTED, "Too much data to read");
@@ -1668,9 +1677,13 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
 }
 
 StatusOr<uint32_t> StorageQueue::SingleFile::Append(base::StringPiece data) {
-  DCHECK(!is_readonly());
   if (!handle_) {
     return Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()}));
+  }
+  if (is_readonly()) {
+    return Status(
+        error::INTERNAL,
+        base::StrCat({"Attempt to append to read-only File ", name()}));
   }
   size_t actual_size = 0;
   while (data.size() > 0) {

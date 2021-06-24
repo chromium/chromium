@@ -145,9 +145,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     // |max_buffer_size| specifies the largest allowed buffer, which
     // must accommodate the largest possible data block plus header and
     // overhead.
+    // |expect_readonly| must match to is_readonly() (when set to false,
+    // the file is expected to be writeable; this only happens when scanning
+    // files restarting the queue).
     StatusOr<base::StringPiece> Read(uint32_t pos,
                                      uint32_t size,
-                                     size_t max_buffer_size);
+                                     size_t max_buffer_size,
+                                     bool expect_readonly = true);
 
     // Appends data to the file.
     StatusOr<uint32_t> Append(base::StringPiece data);

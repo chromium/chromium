@@ -585,9 +585,12 @@ TEST_P(StorageQueueTest,
           .WillRepeatedly(Invoke(&DoNotUpload));
       break;
     case 256:  // two records in file - deletion killed the first two records.
+               // Can bring gap of 2 records or 2 gaps 1 record each.
       EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
           .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(mock_upload_client, &waiter)
+                .PossibleGap(0, 1)
+                .PossibleGap(1, 1)
                 .PossibleGap(0, 2)
                 .Failure(
                     2, Status(error::DATA_LOSS, "Last record digest mismatch"))
@@ -597,11 +600,17 @@ TEST_P(StorageQueueTest,
           }))
           .WillRepeatedly(Invoke(&DoNotUpload));
       break;
-    default:  // UNlimited file size - deletion above killed all the data.
+    default:  // Unlimited file size - deletion above killed all the data. Can
+              // bring gap of 1-6 records.
       EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
           .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(mock_upload_client, &waiter)
-                .PossibleGap(0, 1);
+                .PossibleGap(0, 1)
+                .PossibleGap(0, 2)
+                .PossibleGap(0, 3)
+                .PossibleGap(0, 4)
+                .PossibleGap(0, 5)
+                .PossibleGap(0, 6);
           }))
           .WillRepeatedly(Invoke(&DoNotUpload));
   }
