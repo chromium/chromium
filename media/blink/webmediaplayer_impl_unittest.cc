@@ -621,6 +621,7 @@ class WebMediaPlayerImplTest
   void Pause() { wmpi_->Pause(); }
 
   void ScheduleIdlePauseTimer() { wmpi_->ScheduleIdlePauseTimer(); }
+  void FireIdlePauseTimer() { wmpi_->background_pause_timer_.FireNow(); }
 
   bool IsIdlePauseTimerRunning() {
     return wmpi_->background_pause_timer_.IsRunning();
@@ -1939,6 +1940,10 @@ TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
   SetMetadata(true, true);
   ScheduleIdlePauseTimer();
   EXPECT_TRUE(IsIdlePauseTimerRunning());
+
+  EXPECT_CALL(client_, PausePlayback());
+  FireIdlePauseTimer();
+  base::RunLoop().RunUntilIdle();
 }
 
 // Verifies that an infinite duration doesn't muck up GetCurrentTimeInternal.

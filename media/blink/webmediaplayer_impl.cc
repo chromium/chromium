@@ -3307,7 +3307,7 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5),
                                 client_,
-                                &blink::WebMediaPlayerClient::ResumePlayback);
+                                &blink::WebMediaPlayerClient::PausePlayback);
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
