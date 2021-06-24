@@ -38,3 +38,21 @@ async function open_window(url) {
     win.onload = e => resolve('LOADED');
   });
 }
+
+// Navigates a subframe.
+function navigate_iframe(old_url, new_url) {
+  const frame = document.querySelector(`iframe[src='${old_url}']`);
+  if (!frame)
+    return "IFRAME NOT FOUND";
+  frame.src = new_url;
+  return new Promise(resolve => {
+    frame.onload = () => resolve('IFRAME NAVIGATED');
+  });
+}
+
+// Navigates a subframe asynchronously.
+function navigate_iframe_async(old_url, new_url) {
+  if (iframe_promises[new_url])
+    throw "URL ALREADY USED";
+  iframe_promises[new_url] = navigate_iframe(old_url, new_url);
+}
