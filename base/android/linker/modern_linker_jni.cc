@@ -29,26 +29,6 @@
 #include <android/dlext.h>
 #include "base/android/linker/linker_jni.h"
 
-// Not defined on all platforms. As this linker is only supported on ARM32/64,
-// x86/x86_64 and MIPS, page size is always 4k.
-#if !defined(PAGE_SIZE)
-#define PAGE_SIZE (1 << 12)
-#define PAGE_MASK (~(PAGE_SIZE - 1))
-#endif
-
-#define PAGE_START(x) ((x)&PAGE_MASK)
-#define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
-
-// Copied from //base/posix/eintr_wrapper.h to avoid depending on //base.
-#define HANDLE_EINTR(x)                                     \
-  ({                                                        \
-    decltype(x) eintr_wrapper_result;                       \
-    do {                                                    \
-      eintr_wrapper_result = (x);                           \
-    } while (eintr_wrapper_result == -1 && errno == EINTR); \
-    eintr_wrapper_result;                                   \
-  })
-
 extern "C" {
 // <android/dlext.h> does not declare android_dlopen_ext() if __ANDROID_API__
 // is smaller than 21, so declare it here as a weak function. This will allow
@@ -250,8 +230,8 @@ int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
         // As of 2020-11 in libmonochrome.so RELRO is covered by a LOAD segment.
         // It is not clear whether this property is going to be guaranteed in
         // the future. Include the RELRO segment as part of the 'load size'.
-        // This way a potential future change change in layout of LOAD segments
-        // would not open address space for racy mmap(MAP_FIXED).
+        // This way a potential future change in layout of LOAD segments would
+        // not open address space for racy mmap(MAP_FIXED).
         if (min_relro_vaddr < min_vaddr)
           min_vaddr = min_relro_vaddr;
         if (max_vaddr < max_relro_vaddr)

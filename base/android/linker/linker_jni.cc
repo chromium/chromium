@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is the Android-specific Chromium linker, a tiny shared library
-// implementing a custom dynamic linker that can be used to load the
-// real Chromium libraries.
-
-// The main point of this linker is to be able to share the RELRO
-// section of libchrome.so (or equivalent) between renderer processes.
-
-// This source code *cannot* depend on anything from base/ or the C++
-// STL, to keep the final library small, and avoid ugly dependency issues.
+// This is a part of the Android-specific Chromium dynamic linker.
+//
+// See linker_jni.h for more details and the dependency rules.
 
 #include "base/android/linker/linker_jni.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <memory>
 
 namespace chromium_android_linker {
 
@@ -48,6 +47,14 @@ String::String(JNIEnv* env, jstring str) {
   ptr_[size_] = '\0';
 
   env->ReleaseStringUTFChars(str, bytes);
+}
+
+bool IsValidAddress(jlong address) {
+  bool result = static_cast<jlong>(static_cast<uintptr_t>(address)) == address;
+  if (!result) {
+    LOG_ERROR("Invalid address 0x%" PRIx64, static_cast<uint64_t>(address));
+  }
+  return result;
 }
 
 // Finds the jclass JNI reference corresponding to a given |class_name|.
@@ -114,7 +121,117 @@ void ReserveAddressWithHint(uintptr_t hint, uintptr_t* address, size_t* size) {
   }
 }
 
+bool ScanRegionInBuffer(const char* buf,
+                        size_t length,
+                        uintptr_t* out_address,
+                        size_t* out_size) {
+  const char* position = strstr(buf, "[anon:libwebview reservation]");
+  if (!position)
+    return false;
+
+  const char* line_start = position;
+  while (line_start > buf) {
+    line_start--;
+    if (*line_start == '\n') {
+      line_start++;
+      break;
+    }
+  }
+
+  // Extract the region start and end. The failures below should not happen as
+  // long as the reservation is made the same way in
+  // frameworks/base/native/webview/loader/loader.cpp.
+  uintptr_t vma_start, vma_end;
+  char permissions[5] = {'\0'};  // Ensure a null-terminated string.
+  // Example line from proc(5):
+  // address           perms offset  dev   inode   pathname
+  // 00400000-00452000 r-xp 00000000 08:02 173521  /usr/bin/dbus-daemon
+  if (sscanf(line_start, "%" SCNxPTR "-%" SCNxPTR " %4c", &vma_start, &vma_end,
+             permissions) < 3) {
+    return false;
+  }
+
+  if (strcmp(permissions, "---p"))
+    return false;
+
+  if (vma_start % PAGE_SIZE || vma_end % PAGE_SIZE)
+    return false;
+
+  *out_address = static_cast<uintptr_t>(vma_start);
+  *out_size = vma_end - vma_start;
+
+  return true;
+}
+
+bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
+  constexpr size_t kMaxLineLength = 256;
+  constexpr size_t kReadSize = PAGE_SIZE;
+
+  // Loop until no bytes left to scan. On every iteration except the last, fill
+  // the buffer till the end. On every iteration except the first, the buffer
+  // begins with kMaxLineLength bytes from the end of the previous fill.
+  char buf[kReadSize + kMaxLineLength];
+  size_t pos = 0;
+  size_t bytes_requested = kReadSize + kMaxLineLength;
+  bool reached_end = false;
+  while (true) {
+    // Fill the |buf| to the maximum and determine whether reading reached the
+    // end.
+    size_t bytes_read = 0;
+    do {
+      ssize_t rv = HANDLE_EINTR(
+          read(fd, buf + pos + bytes_read, bytes_requested - bytes_read));
+      if (rv == 0) {
+        reached_end = true;
+      } else if (rv < 0) {
+        PLOG_ERROR("read to find webview reservation");
+        return false;
+      }
+      bytes_read += rv;
+    } while (!reached_end && (bytes_read < bytes_requested));
+
+    // Return results if the buffer contains the pattern.
+    if (ScanRegionInBuffer(buf, pos + bytes_read, out_address, out_size))
+      return true;
+
+    // Did not find the pattern.
+    if (reached_end)
+      return false;
+
+    // The buffer is filled to the end. Copy the end bytes to the beginning,
+    // allowing to scan these bytes on the next iteration.
+    memcpy(buf, buf + kReadSize, kMaxLineLength);
+    pos = kMaxLineLength;
+    bytes_requested = kReadSize;
+  }
+  return false;
+}
+
 }  // namespace
+
+bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
+  // Note: reading /proc/PID/maps or /proc/PID/smaps is inherently racy. Among
+  // other things, the kernel provides these guarantees:
+  // * Each region record (line) is well formed
+  // * If there is something at a given vaddr during the entirety of the life of
+  //   the smaps/maps walk, there will be some output for it.
+  //
+  // In order for the address/size extraction to be safe, these precausions are
+  // made in base/android/linker:
+  // * Modification of the range is done only after this function exits
+  // * The use of the range is avoided if it is not sufficient in size, which
+  //   might happen if it gets split
+  const char kFileName[] = "/proc/self/maps";
+  int fd = HANDLE_EINTR(open(kFileName, O_RDONLY));
+  if (fd == -1) {
+    PLOG_ERROR("open %s", kFileName);
+    return false;
+  }
+
+  bool result = FindRegionInOpenFile(fd, out_address, out_size);
+  close(fd);
+  return result;
+}
 
 // Performs as described in Linker.java.
 JNI_GENERATOR_EXPORT void

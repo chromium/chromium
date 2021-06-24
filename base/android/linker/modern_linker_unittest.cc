@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include <sys/mman.h>
+#include <sys/prctl.h>
 #include <sys/utsname.h>
 
+#include "base/android/linker/linker_jni.h"
 #include "base/android/linker/modern_linker_jni.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromium_android_linker {
@@ -22,8 +25,8 @@ class ModernLinkerTest : public testing::Test {
 };
 
 // Checks that NativeLibInfo::CreateSharedRelroFd() creates a shared memory
-// region that is 'sealed' as read-only. Uses ashmem for creating the region.
-TEST_F(ModernLinkerTest, CreatedRegionIsSealedAshmem) {
+// region that is 'sealed' as read-only.
+TEST_F(ModernLinkerTest, CreatedRegionIsSealed) {
   if (!NativeLibInfo::SharedMemoryFunctionsSupportedForTesting()) {
     // The ModernLinker uses functions from libandroid.so that are not available
     // on old Android releases. TODO(pasko): Add a fallback to ashmem for L-M,
@@ -66,6 +69,47 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealedAshmem) {
             mmap(nullptr, kRelroSize, PROT_WRITE, MAP_SHARED, relro_fd, 0));
   EXPECT_EQ(MAP_FAILED,
             mmap(nullptr, kRelroSize, PROT_WRITE, MAP_PRIVATE, relro_fd, 0));
+}
+
+TEST_F(ModernLinkerTest, FindReservedMemoryRegion) {
+  size_t address, size;
+
+  // Find the existing reservation in the current process. The unittest runner
+  // is forked from the system zygote. The reservation should be found when
+  // running on recent Android releases, where it is made by the
+  // reserveAddressSpaceInZygote().
+  bool found_reservation = FindWebViewReservation(&address, &size);
+
+  if (found_reservation) {
+    // Check that the size is at least the minimum reserved by Android, as of
+    // 2021-04.
+    EXPECT_GE(130U * 1024 * 1024, size);
+    return;
+  }
+
+  // Check whether running on an old system with no reservation. Skip the check
+  // on low memory devices because they do not need the reservation in the
+  // System Zygote.
+  if (!base::SysInfo::IsLowEndDevice()) {
+    int32_t major, minor, patch;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &patch);
+    EXPECT_GT(10, major) << "System Zygote should have the reservation on Q+";
+  }
+
+  // Create a properly named synthetic region with a size smaller than a real
+  // library would need, but still aligned well.
+  static const size_t kSize = 19U * 1024 * 1024;
+  void* synthetic_region_start =
+      mmap(nullptr, kSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  ASSERT_NE(MAP_FAILED, synthetic_region_start);
+  prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, synthetic_region_start, kSize,
+        "[anon:libwebview reservation]");
+
+  // Now the region must be found.
+  EXPECT_TRUE(FindWebViewReservation(&address, &size));
+  EXPECT_EQ(kSize, size);
+  EXPECT_EQ(reinterpret_cast<void*>(address), synthetic_region_start);
+  munmap(synthetic_region_start, kSize);
 }
 
 }  // namespace chromium_android_linker
