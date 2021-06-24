@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,7 +34,8 @@ namespace content {
 
 class ClipboardHostImplTest;
 
-class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
+class CONTENT_EXPORT ClipboardHostImpl
+    : public DocumentServiceBase<blink::mojom::ClipboardHost> {
  public:
   ~ClipboardHostImpl() override;
 
@@ -93,7 +95,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   // A paste allowed request is obsolete if it is older than this time.
   static const base::TimeDelta kIsPasteContentAllowedRequestTooOld;
 
-  explicit ClipboardHostImpl(RenderFrameHost* render_frame_host);
+  explicit ClipboardHostImpl(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes PasteIfPolicyAllowedCallback upon completion.
@@ -213,7 +217,6 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
   ui::Clipboard* const clipboard_;  // Not owned
-  GlobalRenderFrameHostId render_frame_host_id_;
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
   // Outstanding is allowed requests per clipboard contents.  Maps a clipboard

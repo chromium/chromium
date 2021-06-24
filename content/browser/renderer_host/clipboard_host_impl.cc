@@ -49,14 +49,9 @@
 namespace content {
 
 namespace {
-bool IsRendererPasteAllowed(
-    const GlobalRenderFrameHostId& render_frame_host_id) {
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_host_id);
-  if (!render_frame_host)
-    return false;
+bool IsRendererPasteAllowed(RenderFrameHost& render_frame_host) {
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  return browser_client->IsClipboardPasteAllowed(render_frame_host);
+  return browser_client->IsClipboardPasteAllowed(&render_frame_host);
 }
 }  // namespace
 
@@ -114,30 +109,23 @@ void ClipboardHostImpl::IsPasteContentAllowedRequest::InvokeCallbacks() {
   }
 }
 
-ClipboardHostImpl::ClipboardHostImpl(RenderFrameHost* render_frame_host)
-    : clipboard_(ui::Clipboard::GetForCurrentThread()) {
-  // |render_frame_host| may be null in unit tests.
-  if (render_frame_host) {
-    render_frame_host_id_ = render_frame_host->GetGlobalId();
-    clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-        ui::ClipboardBuffer::kCopyPaste,
-        std::make_unique<ui::DataTransferEndpoint>(
-            render_frame_host->GetLastCommittedOrigin()));
-  } else {
-    render_frame_host_id_ = GlobalRenderFrameHostId(
-        ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
-    clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-        ui::ClipboardBuffer::kCopyPaste);
-  }
+ClipboardHostImpl::ClipboardHostImpl(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+      clipboard_(ui::Clipboard::GetForCurrentThread()) {
+  clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste,
+      std::make_unique<ui::DataTransferEndpoint>(
+          render_frame_host->GetLastCommittedOrigin()));
 }
 
 void ClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new ClipboardHostImpl(
-          static_cast<RenderFrameHostImpl*>(render_frame_host))),
-      std::move(receiver));
+  // The object is bound to the lifetime of |render_frame_host| and the mojo
+  // connection. See DocumentServiceBase for details.
+  new ClipboardHostImpl(render_frame_host, std::move(receiver));
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {
@@ -210,7 +198,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
 
 void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -247,7 +235,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
                                  ReadHtmlCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::u16string(), GURL(), 0, 0);
     return;
   }
@@ -277,7 +265,7 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
                                 ReadSvgCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -299,7 +287,7 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::string());
     return;
   }
@@ -322,7 +310,7 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
                                 ReadPngCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
@@ -354,7 +342,7 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
 }
 void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(SkBitmap());
     return;
   }
@@ -387,7 +375,7 @@ void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::move(result));
     return;
   }
@@ -397,22 +385,19 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   clipboard_->ReadFilenames(clipboard_buffer, data_dst.get(), &filenames);
   std::string data = ui::FileInfosToURIList(filenames);
 
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_host_id_);
-  DCHECK(render_frame_host);
   // This code matches the drag-and-drop DataTransfer code in
   // RenderWidgetHostImpl::DragTargetDrop().
 
   // Call PrepareDataTransferFilenamesForChildProcess() to register files so
   // they can be accessed by the renderer.
-  RenderProcessHost* process = render_frame_host->GetProcess();
+  RenderProcessHost* process = render_frame_host()->GetProcess();
   result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
       filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
       process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
 
   // Convert to DataTransferFiles which creates the access token for each file.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
-      render_frame_host->GetProcess()->GetStoragePartition());
+      render_frame_host()->GetProcess()->GetStoragePartition());
   std::vector<blink::mojom::DataTransferFilePtr> files =
       FileInfosToDataTransferFiles(
           filenames, storage_partition->GetFileSystemAccessManager(),
@@ -437,7 +422,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const std::u16string& type,
                                        ReadCustomDataCallback callback) {
-  if (!IsRendererPasteAllowed(render_frame_host_id_)) {
+  if (!IsRendererPasteAllowed(*render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -515,12 +500,9 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
 
   if (ui::DataTransferPolicyController::HasInstance()) {
     WebContents* web_contents = nullptr;
-    RenderFrameHostImpl* render_frame_host =
-        RenderFrameHostImpl::FromID(render_frame_host_id_);
-    if (render_frame_host) {
-      auto* delegate = render_frame_host->delegate();
-      web_contents = delegate ? delegate->GetAsWebContents() : nullptr;
-    }
+    auto* delegate =
+        static_cast<RenderFrameHostImpl*>(render_frame_host())->delegate();
+    web_contents = delegate ? delegate->GetAsWebContents() : nullptr;
 
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
         clipboard_->GetSource(clipboard_buffer), CreateDataEndpoint().get(),
@@ -563,17 +545,11 @@ void ClipboardHostImpl::StartIsPasteContentAllowedRequest(
     uint64_t seqno,
     const ui::ClipboardFormatType& data_type,
     std::string data) {
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (!render_frame_host) {
-    FinishPasteIfContentAllowed(seqno, ClipboardPasteContentAllowed(false));
-    return;
-  }
-
-  render_frame_host->IsClipboardPasteContentAllowed(
-      data_type, data,
-      base::BindOnce(&ClipboardHostImpl::FinishPasteIfContentAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), seqno));
+  static_cast<RenderFrameHostImpl*>(render_frame_host())
+      ->IsClipboardPasteContentAllowed(
+          data_type, data,
+          base::BindOnce(&ClipboardHostImpl::FinishPasteIfContentAllowed,
+                         weak_ptr_factory_.GetWeakPtr(), seqno));
 }
 
 void ClipboardHostImpl::FinishPasteIfContentAllowed(
@@ -597,13 +573,8 @@ void ClipboardHostImpl::CleanupObsoleteRequests() {
 
 std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (render_frame_host) {
-    return std::make_unique<ui::DataTransferEndpoint>(
-        render_frame_host->GetLastCommittedOrigin(),
-        render_frame_host->HasTransientUserActivation());
-  }
-  return nullptr;
+  return std::make_unique<ui::DataTransferEndpoint>(
+      render_frame_host()->GetLastCommittedOrigin(),
+      render_frame_host()->HasTransientUserActivation());
 }
 }  // namespace content
