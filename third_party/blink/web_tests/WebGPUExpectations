@@ -88,9 +88,6 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rg11b10ufloat";* [ Failure ]
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
 
-# Many cases failing on Windows.
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToTexture";* [ Failure ]
-
 # Dawn validation requires that aspects of attachments is "all", which the tests don't do.
 # See also crbug.com/dawn/603 for missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE that happens on the same tests.
 # The [ Crash Timeout ] annotations can be removed after dawn:812 is fixed.
@@ -98,19 +95,11 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="StencilTest";format="depth24plus-stencil8";* [ Failure Crash Timeout ]
 
 # Only on Mac Intel
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";mipLevelCount=5;layerCount=7;* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="depth32float";mipLevelCount=5;layerCount=7;* [ Failure ]
-
-# Only on Mac Intel
-# Note: On some hardware, "Sample" fails _all_ cases for numerous formats (getting values with a single bit set?).
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="r8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rg8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="r8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="r8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rg8unorm";mipLevelCount=5;layerCount=1;nonPowerOfTwo=false;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="depth32float";mipLevelCount=5;uninitializeMethod="StoreOpClear";* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="depth32float";mipLevelCount=5;uninitializeMethod="StoreOpClear";* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="Creation";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true;* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="depth32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;canaryOnCreation=false;* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="r8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
+[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
 
 
 ###
