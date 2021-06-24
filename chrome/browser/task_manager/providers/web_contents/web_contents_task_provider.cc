@@ -278,7 +278,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     return;
 
   // Exclude frames in the same SiteInstance or same process as their parent;
-  // |site_instance_by_frames_| only contains local roots.
+  // |site_instance_infos_| only contains local roots.
   content::SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   auto* parent = render_frame_host->GetParent();
   if (parent && (site_instance == parent->GetSiteInstance() ||
