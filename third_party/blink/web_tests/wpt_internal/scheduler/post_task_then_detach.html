@@ -1,19 +1,28 @@
 <!doctype html>
-<title>Scheduling API: postTask</title>
+<title>Scheduler: postTask in Detached Scheduler</title>
 <link rel="author" title="Nate Chapin" href="mailto:japhet@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<link rel="help" href="https://github.com/WICG/scheduling-apis">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<iframe id="i" src="support/post_task_then_detach_iframe.html"></iframe>
 <script>
 'use strict';
 
-onmessage = () => { assert_unreached("task should not have run"); };
-
 async_test(t => {
-  // Give the task time to run if it hadn't been detached.
-  scheduler.postTask(t.step_func_done(() => {}), { priority: "background" });
+  onload = () => {
+    let didRun = false;
+    const frame = document.body.appendChild(document.createElement('iframe'));
+    frame.contentWindow.scheduler.postTask(() => { didRun = true; });
+    document.body.removeChild(frame);
+
+    // We cannot assume anything about ordering between postTask tasks and
+    // non-postTask or postTask tasks from different schedulers, so the best we
+    // can do is give the task time to run.
+    t.step_timeout(() => {
+      assert_false(didRun, 'The task should not have run.');
+      t.done();
+    }, 10);
+  }
 }, 'Test scheduler.postTask() from an iframe that is removed before the task runs');
 
 </script>

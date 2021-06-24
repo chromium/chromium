@@ -1,28 +1,32 @@
 <!doctype html>
-<title>Scheduling API: postTask</title>
+<title>Scheduler: postTask with Detached Frame's Signal</title>
 <link rel="author" title="Nate Chapin" href="mailto:japhet@chromium.org">
-<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<link rel="help" href="https://github.com/WICG/scheduling-apis">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<iframe id="i" src="support/create_and_pass_signal.html"></iframe>
 <script>
 'use strict';
 
-var iframe_controller;
-function passController(controller) {
-  iframe_controller = controller;
-  i.remove();
-}
+promise_test(async t => {
+  await new Promise((resolve) => {
+    window.addEventListener('load', resolve);
+  });
 
-async_test(t => {
-  window.onload = function() {
-    setTimeout(() => {
-      scheduler.postTask(() => {}, { signal: iframe_controller.signal }).then(
-          t.step_func_done(),
-          () => assert_unreached("Promise should not be rejected"));
-    }, 0);
-  };
+  const frame = document.createElement('iframe');
+  frame.srcdoc = `
+    <script>
+      const controller = new TaskController();
+      window.childFrameSignal = controller.signal;
+    <\/script>`
+  await new Promise((resolve) => {
+    frame.addEventListener('load', resolve)
+    document.body.appendChild(frame);
+  });
+
+  const signal = frame.contentWindow.childFrameSignal;
+  document.body.removeChild(frame);
+  return scheduler.postTask(() => {}, {signal});
 }, 'Test scheduler.postTask() with a signal from a detached iframe');
 
 </script>

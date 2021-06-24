@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
-class DOMScheduler;
 class DOMTaskSignal;
 class ScriptState;
 class V8SchedulerPostTaskCallback;
@@ -22,8 +21,7 @@ class V8SchedulerPostTaskCallback;
 // callback's v8 context is invalid, in which case, the task will not be run.
 class DOMTask final : public GarbageCollected<DOMTask> {
  public:
-  DOMTask(DOMScheduler*,
-          ScriptPromiseResolver*,
+  DOMTask(ScriptPromiseResolver*,
           V8SchedulerPostTaskCallback*,
           DOMTaskSignal*,
           base::SingleThreadTaskRunner*,
@@ -41,7 +39,6 @@ class DOMTask final : public GarbageCollected<DOMTask> {
 
   void RecordTaskStartMetrics();
 
-  Member<DOMScheduler> scheduler_;
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;

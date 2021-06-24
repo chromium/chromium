@@ -107,7 +107,7 @@ ScriptPromise DOMScheduler::postTask(
                           .get();
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   MakeGarbageCollected<DOMTask>(
-      this, resolver, callback_function, task_signal, task_runner,
+      resolver, callback_function, task_signal, task_runner,
       base::TimeDelta::FromMilliseconds(options->delay()));
   return resolver->Promise();
 }
