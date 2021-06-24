@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
+
+source_set("scanning") {
+  sources = [
+    "scanner_broker.h",
+    "scanner_broker_impl.cc",
+    "scanner_broker_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/quick_pair/common",
+  ]
+}
