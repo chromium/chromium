@@ -85,9 +85,11 @@ generate_jni("jni_headers") {
 
 android_resources("minimal_java_resources") {
   sources = [
-    "//components/payments/content/android/google_pay_res/drawable/google_pay.xml",
-    "//components/payments/content/android/google_pay_res/values-night/colors.xml",
-    "//components/payments/content/android/google_pay_res/values/colors.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/save_card.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/save_card_dark.xml",
+    "//components/payments/content/android/minimal_java_res/values-night/colors.xml",
+    "//components/payments/content/android/minimal_java_res/values/colors.xml",
   ]
 }
 
