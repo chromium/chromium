@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_record_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_ndefmessageinit_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

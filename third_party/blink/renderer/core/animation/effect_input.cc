@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_iterator.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_base_keyframe.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_base_property_indexed_keyframe.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_compositeoperationorauto_compositeoperationorautosequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleornullsequence_null.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"

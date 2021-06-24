@@ -6,6 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -173,7 +175,6 @@ TEST_F(ScrollTimelineTest,
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
-  bool current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 5),
                                    mojom::blink::ScrollType::kProgrammatic);
   // Simulate a new animation frame  which allows the timeline to compute new
@@ -182,21 +183,18 @@ TEST_F(ScrollTimelineTest,
   EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(), 0);
   EXPECT_EQ("before", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 10),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(), 0);
   EXPECT_EQ("active", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 50),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   EXPECT_EQ(scroll_timeline->CurrentTimeMilliseconds(), 50);
   EXPECT_EQ("active", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 90),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
@@ -204,7 +202,6 @@ TEST_F(ScrollTimelineTest,
             time_range->GetAsDouble());
   EXPECT_EQ("after", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
@@ -242,7 +239,6 @@ TEST_F(ScrollTimelineTest,
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
-  bool current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   // Simulate a new animation frame  which allows the timeline to compute new
@@ -251,14 +247,12 @@ TEST_F(ScrollTimelineTest,
   EXPECT_EQ(0, scroll_timeline->CurrentTimeMilliseconds());
   EXPECT_EQ("before", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 60),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   EXPECT_EQ(0, scroll_timeline->CurrentTimeMilliseconds());
   EXPECT_EQ("before", scroll_timeline->phase());
 
-  current_time_is_null = true;
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();

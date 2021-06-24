@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan.h"
 
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 
 namespace blink {
 
