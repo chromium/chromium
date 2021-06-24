@@ -598,6 +598,14 @@ const char kQuickAnswersConsented[] = "settings.quick_answers.user_consented";
 // Deprecated 06/2021.
 const char kWasPhishedCredentialsUploadedToSync[] =
     "profile.was_phished_credentials_uploaded_to_sync";
+const char kHintsFetcherTopHostBlocklist[] =
+    "optimization_guide.hintsfetcher.top_host_blacklist";
+const char kHintsFetcherTopHostBlocklistState[] =
+    "optimization_guide.hintsfetcher.top_host_blacklist_state";
+const char kTimeHintsFetcherTopHostBlocklistLastInitialized[] =
+    "optimization_guide.hintsfetcher.time_blacklist_last_initialized";
+const char kHintsFetcherTopHostBlocklistMinimumEngagementScore[] =
+    "optimization_guide.hintsfetcher.top_host_blacklist_min_engagement_score";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -751,6 +759,16 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kWasPhishedCredentialsUploadedToSync, true);
+
+  registry->RegisterDictionaryPref(kHintsFetcherTopHostBlocklist,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(kHintsFetcherTopHostBlocklistState, 0,
+                                PrefRegistry::LOSSY_PREF);
+  registry->RegisterDoublePref(kTimeHintsFetcherTopHostBlocklistLastInitialized,
+                               0, PrefRegistry::LOSSY_PREF);
+  registry->RegisterDoublePref(
+      kHintsFetcherTopHostBlocklistMinimumEngagementScore, 0,
+      PrefRegistry::LOSSY_PREF);
 }
 
 }  // namespace
@@ -1500,6 +1518,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 06/2021
   profile_prefs->ClearPref(kWasPhishedCredentialsUploadedToSync);
+  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklist);
+  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistState);
+  profile_prefs->ClearPref(kHintsFetcherTopHostBlocklistMinimumEngagementScore);
+  profile_prefs->ClearPref(kTimeHintsFetcherTopHostBlocklistLastInitialized);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

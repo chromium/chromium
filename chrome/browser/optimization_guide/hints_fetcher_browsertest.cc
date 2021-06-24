@@ -230,40 +230,6 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     response_type_ = response_type;
   }
 
-  // Seeds the Site Engagement Service with two HTTP and two HTTPS sites for the
-  // current profile.
-  void SeedSiteEngagementService() {
-    auto* service = site_engagement::SiteEngagementService::Get(
-        Profile::FromBrowserContext(browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetBrowserContext()));
-    GURL https_url1("https://images.google.com/");
-    service->AddPointsForTesting(https_url1, 15);
-
-    GURL https_url2("https://news.google.com/");
-    service->AddPointsForTesting(https_url2, 3);
-
-    GURL http_url1("http://photos.google.com/");
-    service->AddPointsForTesting(http_url1, 21);
-
-    GURL http_url2("http://maps.google.com/");
-    service->AddPointsForTesting(http_url2, 2);
-  }
-
-  void SetTopHostBlocklistState(
-      optimization_guide::prefs::HintsFetcherTopHostBlocklistState
-          blocklist_state) {
-    Profile::FromBrowserContext(browser()
-                                    ->tab_strip_model()
-                                    ->GetActiveWebContents()
-                                    ->GetBrowserContext())
-        ->GetPrefs()
-        ->SetInteger(
-            optimization_guide::prefs::kHintsFetcherTopHostBlocklistState,
-            static_cast<int>(blocklist_state));
-  }
-
   void LoadHintsForUrl(const GURL& url) {
     base::HistogramTester histogram_tester;
 
@@ -275,41 +241,6 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
-  }
-
-  // Returns the count of top hosts that are blocklisted by reading the relevant
-  // pref.
-  size_t GetTopHostBlocklistSize() const {
-    PrefService* pref_service = browser()->profile()->GetPrefs();
-    const base::DictionaryValue* top_host_blocklist =
-        pref_service->GetDictionary(
-            optimization_guide::prefs::kHintsFetcherTopHostBlocklist);
-    return top_host_blocklist->DictSize();
-  }
-
-  // Adds |host_count| HTTPS origins to site engagement service.
-  void AddHostsToSiteEngagementService(size_t host_count) {
-    auto* service = site_engagement::SiteEngagementService::Get(
-        Profile::FromBrowserContext(browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetBrowserContext()));
-    for (size_t i = 0; i < host_count; ++i) {
-      GURL https_url("https://myfavoritesite" + base::NumberToString(i) +
-                     ".com/");
-      service->AddPointsForTesting(https_url, 15);
-    }
-  }
-
-  // Returns the number of hosts known to the site engagement service. The value
-  // is obtained by querying the site engagement service.
-  size_t GetCountHostsKnownToSiteEngagementService() const {
-    auto* service = site_engagement::SiteEngagementService::Get(
-        Profile::FromBrowserContext(browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetBrowserContext()));
-    return service->GetAllDetails().size();
   }
 
   const GURL& https_url() const { return https_url_; }
@@ -579,37 +510,6 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherDisabledBrowserTest, HintsFetcherDisabled) {
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
 }
 
-// This test creates a new browser and seeds the Site Engagement Service with
-// both HTTP and HTTPS sites. The test confirms that top host provider
-// is called to provide a list of hosts to HintsFetcher only returns hosts with
-// a HTTPS scheme. We verify this with the UMA histogram logged when the
-// GetHintsRequest is made to the remote Optimization Guide Service.
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, TopHostProviderHTTPSOnly) {
-  const base::HistogramTester* histogram_tester = GetHistogramTester();
-
-  // Adds two HTTP and two HTTPS sites into the Site Engagement Service.
-  SeedSiteEngagementService();
-
-  // This forces the hint cache to be initialized and hints to be fetched.
-  // Whitelist NoScript for https_url()'s' host.
-  SetUpComponentUpdateHints(https_url());
-
-  // Expect that the browser initialization will record at least one sample as
-  // Hints Fetching is enabled. This also ensures that the histograms have been
-  // updated to verify the correct number of hosts that hints will be requested
-  // for.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
-                histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
-            1);
-
-  // Only the 2 HTTPS hosts should be requested hints for.
-  histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
-
-  EXPECT_EQ(0u, GetTopHostBlocklistSize());
-}
-
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        HintsFetcherFetchedHintsLoaded) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
@@ -834,17 +734,10 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      optimization_guide::switches::kFetchHintsOverride);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      optimization_guide::switches::kFetchHintsOverride, "whatever.com");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kFetchHintsOverrideTimer);
-
-  SeedSiteEngagementService();
-
-  // Set the blocklist state to initialized so the sites in the engagement
-  // service will be used and not blocklisted on the first GetTopHosts request.
-  SetTopHostBlocklistState(optimization_guide::prefs::
-                               HintsFetcherTopHostBlocklistState::kInitialized);
 
   // Whitelist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
@@ -882,23 +775,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                        DISABLED_HintsFetcherNetworkOffline) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      optimization_guide::switches::kFetchHintsOverride);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      optimization_guide::switches::kFetchHintsOverride, "whatever.com");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kFetchHintsOverrideTimer);
 
   // Set the network to be offline.
   SetNetworkConnectionOffline();
-
-  // Set the blocklist state to initialized so the sites in the engagement
-  // service will be used and not blocklisted on the first GetTopHosts
-  // request.
-  SeedSiteEngagementService();
-
-  // Set the blocklist state to initialized so the sites in the engagement
-  // service will be used and not blocklisted on the first GetTopHosts request.
-  SetTopHostBlocklistState(optimization_guide::prefs::
-                               HintsFetcherTopHostBlocklistState::kInitialized);
 
   // Whitelist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
@@ -1452,82 +1335,6 @@ IN_PROC_BROWSER_TEST_F(
             kRaceNavigationFetchNotAttempted,
         1);
   }
-}
-
-class HintsFetcherChangeDefaultBlocklistSizeBrowserTest
-    : public HintsFetcherBrowserTest {
- public:
-  HintsFetcherChangeDefaultBlocklistSizeBrowserTest() = default;
-
-  ~HintsFetcherChangeDefaultBlocklistSizeBrowserTest() override = default;
-
-  void SetUp() override {
-    base::FieldTrialParams optimization_hints_fetching_params;
-    optimization_hints_fetching_params["top_host_blacklist_size_multiplier"] =
-        "5";
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            /* vector of enabled features along with params */
-            {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {optimization_hints_fetching_params}},
-            {optimization_guide::features::kOptimizationHints, {}},
-        },
-        {/* disabled_features */});
-
-    // Call to inherited class to match same set up with feature flags added.
-    HintsFetcherDisabledBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch("enable-spdy-proxy-auth");
-
-    cmd->AppendSwitch("purge_hint_cache_store");
-
-    // Set up OptimizationGuideServiceURL, this does not enable HintsFetching,
-    // only provides the URL.
-    cmd->AppendSwitchASCII(
-        optimization_guide::switches::kOptimizationGuideServiceGetHintsURL,
-        hints_server_->base_url().spec());
-
-    cmd->AppendSwitch(optimization_guide::switches::
-                          kDisableCheckingUserPermissionsForTesting);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcherChangeDefaultBlocklistSizeBrowserTest);
-};
-
-// Changes the default size of the top host blocklist using finch. Also, sets
-// the count of hosts previously engaged to a large number and verifies that the
-// top host blocklist is correctly populated.
-IN_PROC_BROWSER_TEST_F(HintsFetcherChangeDefaultBlocklistSizeBrowserTest,
-                       ChangeDefaultBlocklistSize) {
-  AddHostsToSiteEngagementService(120u);
-  const size_t engaged_hosts = GetCountHostsKnownToSiteEngagementService();
-  EXPECT_EQ(120u, engaged_hosts);
-
-  // Ensure everything within the site engagement service fits within the top
-  // host blocklist size.
-  ASSERT_LE(
-      engaged_hosts,
-      optimization_guide::features::MaxHintsFetcherTopHostBlocklistSize());
-
-  SetTopHostBlocklistState(
-      optimization_guide::prefs::HintsFetcherTopHostBlocklistState::
-          kNotInitialized);
-
-  ASSERT_TRUE(top_host_provider());
-
-  std::vector<std::string> top_hosts = top_host_provider()->GetTopHosts();
-  EXPECT_EQ(0u, top_hosts.size());
-
-  top_hosts = top_host_provider()->GetTopHosts();
-  EXPECT_EQ(0u, top_hosts.size());
-
-  // Everything HTTPS origin within the site engagement service should now be
-  // in the blocklist.
-  EXPECT_EQ(engaged_hosts, GetTopHostBlocklistSize());
 }
 
 class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {

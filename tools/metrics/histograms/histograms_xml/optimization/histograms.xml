@@ -229,6 +229,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize.OnInitialize"
     units="total host count" expires_after="M94">
+  <obsolete>
+    Deprecated as of 2021/06.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -240,6 +243,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlocklistSize.OnRequest"
     units="total host count" expires_after="M94">
+  <obsolete>
+    Deprecated as of 2021/06.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

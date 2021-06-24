@@ -7,7 +7,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -71,9 +70,6 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
-
-  OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlocklist(
-      navigation_handle);
 
   if (!optimization_guide_keyed_service_)
     return;

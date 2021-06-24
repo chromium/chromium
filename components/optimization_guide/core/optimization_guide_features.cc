@@ -99,18 +99,6 @@ bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
   return false;
 }
 
-size_t MaxHintsFetcherTopHostBlocklistSize() {
-  // The blocklist will be limited to the most engaged hosts and will hold twice
-  // (2*N) as many hosts that the HintsFetcher request hints for. The extra N
-  // hosts on the blocklist are meant to cover the case that the engagement
-  // scores on some of the top N host engagement scores decay and they fall out
-  // of the top N.
-  return GetFieldTrialParamByFeatureAsInt(kRemoteOptimizationGuideFetching,
-                                          "top_host_blacklist_size_multiplier",
-                                          3) *
-         MaxHostsForOptimizationGuideServiceHintsFetch();
-}
-
 size_t MaxHostsForOptimizationGuideServiceHintsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
@@ -129,25 +117,10 @@ size_t MaxHostsForRecordingSuccessfullyCovered() {
       "max_hosts_for_recording_successfully_covered", 200);
 }
 
-double MinTopHostEngagementScoreThreshold() {
-  // The default initial site engagement score for a navigation is 3.0, 1.5
-  // points for a navigation from the omnibox and 1.5 points for the first
-  // navigation of the day.
-  return GetFieldTrialParamByFeatureAsDouble(
-      kRemoteOptimizationGuideFetching,
-      "min_top_host_engagement_score_threshold", 2.0);
-}
-
 base::TimeDelta StoredFetchedHintsFreshnessDuration() {
   return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
       "max_store_duration_for_featured_hints_in_days", 7));
-}
-
-base::TimeDelta DurationApplyLowEngagementScoreThreshold() {
-  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
-      kRemoteOptimizationGuideFetching,
-      "duration_apply_low_engagement_score_threshold_in_days", 30));
 }
 
 std::string GetOptimizationGuideServiceAPIKey() {

@@ -39,13 +39,6 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 // Whether hints for active tabs and top hosts should be batch updated.
 bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts();
 
-// The maximum number of hosts that can be stored in the
-// |kHintsFetcherTopHostBlocklist| dictionary pref when initialized. The top
-// hosts will also be returned in order of most engaged. This prevents the most
-// engaged hosts in a user's history before DataSaver being enabled from being
-// requested until the user navigates to the host again.
-size_t MaxHintsFetcherTopHostBlocklistSize();
-
 // The maximum number of hosts allowed to be requested by the client to the
 // remote Optimzation Guide Service.
 size_t MaxHostsForOptimizationGuideServiceHintsFetch();
@@ -58,19 +51,9 @@ size_t MaxUrlsForOptimizationGuideServiceHintsFetch();
 // fetcher.
 size_t MaxHostsForRecordingSuccessfullyCovered();
 
-// The minimum score required to be considered a top host and be included in a
-// hints fetch request.
-double MinTopHostEngagementScoreThreshold();
-
 // The amount of time a fetched hint will be considered fresh enough
 // to be used and remain in the OptimizationGuideStore.
 base::TimeDelta StoredFetchedHintsFreshnessDuration();
-
-// The duration of time after the blocklist initialization for which the low
-// engagement score threshold needs to be applied. If the blocklist was
-// initialized more than DurationApplyLowEngagementScoreThreshold() ago, then
-// the low engagement score threshold need not be applied.
-base::TimeDelta DurationApplyLowEngagementScoreThreshold();
 
 // The API key for the One Platform Optimization Guide Service.
 std::string GetOptimizationGuideServiceAPIKey();
