@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 #define CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_CHROME_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 
-#include "chrome/browser/ui/android/device_dialog/bluetooth_scanning_prompt_android_delegate.h"
+#include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
 
 #include "base/android/scoped_java_ref.h"
 
 // The implementation of BluetoothScanningPromptAndroidDelegate for Chrome.
 class ChromeBluetoothScanningPromptAndroidDelegate
-    : public BluetoothScanningPromptAndroidDelegate {
+    : public permissions::BluetoothScanningPromptAndroidDelegate {
  public:
   ChromeBluetoothScanningPromptAndroidDelegate();
 
@@ -22,7 +22,7 @@ class ChromeBluetoothScanningPromptAndroidDelegate
 
   ~ChromeBluetoothScanningPromptAndroidDelegate() override;
 
-  // BluetoothScanningPromptAndroidDelegate implementation:
+  // permissions::BluetoothScanningPromptAndroidDelegate implementation:
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents) override;

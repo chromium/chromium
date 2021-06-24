@@ -158,6 +158,18 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Scanning for Bluetooth devices...
     </message>
   </if>
+
+  <!-- Bluetooth Scanning Prompt -->
+  <message name="IDS_BLUETOOTH_SCANNING_PROMPT_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no nearby Bluetooth devices were found using the requirements that the application provided." formatter_data="android_java">
+    No nearby devices found.
+  </message>
+  <message name="IDS_BLUETOOTH_SCANNING_PROMPT_ALLOW_BUTTON_TEXT" desc="Label on the button that allows Bluetooth scanning." formatter_data="android_java">
+    Allow
+  </message>
+  <message name="IDS_BLUETOOTH_SCANNING_PROMPT_BLOCK_BUTTON_TEXT" desc="Label on the button that blocks Bluetooth scanning." formatter_data="android_java">
+    Block
+  </message>
+
   <message name="IDS_DEVICE_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
     Cancel
   </message>

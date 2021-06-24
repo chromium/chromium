@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/device_dialog/bluetooth_scanning_prompt_android.h"
+#include "components/permissions/android/bluetooth_scanning_prompt_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/BluetoothScanningPermissionDialog_jni.h"
-#include "chrome/browser/ui/android/device_dialog/bluetooth_scanning_prompt_android_delegate.h"
-#include "chrome/common/url_constants.h"
+#include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
+#include "components/permissions/android/jni_headers/BluetoothScanningPermissionDialog_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/android/window_android.h"
@@ -19,8 +18,9 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+
+namespace permissions {
 
 BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
     content::RenderFrameHost* frame,
@@ -32,14 +32,13 @@ BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
   const url::Origin origin = frame->GetLastCommittedOrigin();
   DCHECK(!origin.opaque());
 
-  base::android::ScopedJavaLocalRef<jobject> window_android =
+  ScopedJavaLocalRef<jobject> window_android =
       web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject();
 
   // Create (and show) the BluetoothScanningPermission dialog.
   JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> origin_string =
-      base::android::ConvertUTF16ToJavaString(
-          env, url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()));
+  ScopedJavaLocalRef<jstring> origin_string = ConvertUTF16ToJavaString(
+      env, url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()));
   java_dialog_.Reset(Java_BluetoothScanningPermissionDialog_create(
       env, window_android, origin_string,
       delegate_->GetSecurityLevel(web_contents_), delegate_->GetJavaObject(),
@@ -66,9 +65,8 @@ void BluetoothScanningPromptAndroid::AddOrUpdateDevice(
       env, java_dialog_, java_device_id, java_device_name);
 }
 
-void BluetoothScanningPromptAndroid::OnDialogFinished(
-    JNIEnv* env,
-    jint event_type) {
+void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
+                                                      jint event_type) {
   // Values are defined in BluetoothScanningPromptDialog as DIALOG_FINISHED
   // constants.
   switch (event_type) {
@@ -84,3 +82,5 @@ void BluetoothScanningPromptAndroid::OnDialogFinished(
   }
   NOTREACHED();
 }
+
+}  // namespace permissions

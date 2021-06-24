@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.device_dialog;
+package org.chromium.components.permissions;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -26,11 +26,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
-import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -44,6 +43,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  *
  * The dialog is shown by create(), and always runs finishDialog() as it's closing.
  */
+@JNINamespace("permissions")
 public class BluetoothScanningPermissionDialog {
     // How much of the height of the screen should be taken up by the listview.
     private static final float LISTVIEW_HEIGHT_PERCENT = 0.30f;
@@ -91,9 +91,9 @@ public class BluetoothScanningPermissionDialog {
      * @param nativeBluetoothScanningPermissionDialogPtr A pointer back to the native part of the
      *                                                   implementation for this dialog.
      */
-    @VisibleForTesting
-    BluetoothScanningPermissionDialog(WindowAndroid windowAndroid, String origin, int securityLevel,
-            BluetoothScanningPromptAndroidDelegate delegate,
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public BluetoothScanningPermissionDialog(WindowAndroid windowAndroid, String origin,
+            int securityLevel, BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
@@ -199,9 +199,9 @@ public class BluetoothScanningPermissionDialog {
         return dialog;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    void addOrUpdateDevice(String deviceId, String deviceName) {
+    public void addOrUpdateDevice(String deviceId, String deviceName) {
         if (TextUtils.isEmpty(deviceName)) {
             deviceName = mActivity.getString(R.string.bluetooth_scanning_device_unknown, deviceId);
         }
@@ -277,8 +277,9 @@ public class BluetoothScanningPermissionDialog {
         return mItemAdapter;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onDialogFinished(long nativeBluetoothScanningPromptAndroid, int eventType);
     }
 }

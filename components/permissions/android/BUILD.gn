@@ -10,6 +10,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
     "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
@@ -82,6 +83,8 @@ android_resources("java_resources") {
     "res/drawable/ic_signal_cellular_3_bar.xml",
     "res/drawable/ic_signal_cellular_4_bar.xml",
     "res/drawable/item_chooser_row_background.xml",
+    "res/layout/bluetooth_scanning_permission_dialog.xml",
+    "res/layout/bluetooth_scanning_permission_dialog_row.xml",
     "res/layout/device_item_list.xml",
     "res/layout/item_chooser_dialog.xml",
     "res/layout/item_chooser_dialog_row.xml",
@@ -93,6 +96,7 @@ android_resources("java_resources") {
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/strings:components_strings_grd",
   ]
 }
 
@@ -110,6 +114,8 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
     "java/src/org/chromium/components/permissions/BluetoothChooserAndroidDelegate.java",
     "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPromptAndroidDelegate.java",
     "java/src/org/chromium/components/permissions/DeviceItemAdapter.java",
     "java/src/org/chromium/components/permissions/DeviceItemRow.java",
     "java/src/org/chromium/components/permissions/ItemChooserDialog.java",
