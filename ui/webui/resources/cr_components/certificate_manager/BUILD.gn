@@ -12,8 +12,6 @@ assert(use_nss_certs)
 
 preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager_tmp"
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
 
 ts_library("build_ts") {
   root_dir = preprocess_folder_tmp
@@ -81,7 +79,6 @@ html_to_js("web_components") {
 preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = preprocess_folder_tmp
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "certificate_manager_types.ts",
     "certificates_browser_proxy.ts",
@@ -96,7 +93,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder_tmp
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "ca_trust_edit_dialog.ts",
     "certificate_delete_confirmation_dialog.ts",

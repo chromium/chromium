@@ -12,8 +12,6 @@ import("../tools/optimize_webui.gni")
 
 preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -52,7 +50,6 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "actions.ts",
     "api_listener.ts",
@@ -75,7 +72,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "app.ts",
     "command_manager.ts",
