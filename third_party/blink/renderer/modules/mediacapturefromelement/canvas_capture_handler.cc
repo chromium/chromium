@@ -216,7 +216,7 @@ void CanvasCaptureHandler::SendNewFrame(
   }
 
   // Try async reading if image is texture backed.
-  if (image->CurrentFrameKnownToBeOpaque()) {
+  if (image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_) {
     ReadYUVPixelsAsync(image, context_provider);
   } else {
     ReadARGBPixelsAsync(image, context_provider->ContextProvider());
