@@ -103,6 +103,7 @@ js_library("onboarding_network_page_test") {
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:onboarding_network_page",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",

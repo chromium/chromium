@@ -10,23 +10,34 @@ import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
-import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNetworkConfigService} from './mojo_interface_provider.js';
-import {NetworkConfigServiceRemote} from './shimless_rma_types.js';
+import {NetworkConfigServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
  * 'onboarding-network-page' is the page where the user can choose to join a
  * network.
  */
-export class OnboardingNetworkPage extends mixinBehaviors
-([I18nBehavior, NetworkListenerBehavior], PolymerElement) {
+
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {NetworkListenerBehaviorInterface}
+ */
+const OnboardingNetworkPageBase =
+    mixinBehaviors([I18nBehavior, NetworkListenerBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   static get is() {
     return 'onboarding-network-page';
   }
@@ -37,7 +48,7 @@ export class OnboardingNetworkPage extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @private {?NetworkConfigServiceRemote} */
+      /** @private {?NetworkConfigServiceInterface} */
       networkConfig_: {
         type: Object,
         value: null,
@@ -46,7 +57,7 @@ export class OnboardingNetworkPage extends mixinBehaviors
       /**
        * Array of available networks
        * @protected
-       * @type {!Array<string>}
+       * @type {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
        */
       networks_: {
         type: Array,
@@ -101,6 +112,7 @@ export class OnboardingNetworkPage extends mixinBehaviors
        */
       networkShowConnect_: {
         type: Boolean,
+        value: true,
       },
 
       /**
@@ -132,8 +144,13 @@ export class OnboardingNetworkPage extends mixinBehaviors
       networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
       limit: chromeos.networkConfig.mojom.NO_LIMIT,
     };
+
     this.networkConfig_.getNetworkStateList(networkFilter).then(res => {
-      this.networks_ = res.result;
+      // Filter again since networkFilter above doesn't take two network types.
+      this.networks_ = res.result.filter(
+          (network) => [chromeos.networkConfig.mojom.NetworkType.kWiFi,
+                        chromeos.networkConfig.mojom.NetworkType.kEthernet,
+      ].includes(network.type));
     });
   }
 
@@ -183,15 +200,6 @@ export class OnboardingNetworkPage extends mixinBehaviors
       return false;
     }
 
-    // VPNs can only be connected if there is an existing network connection to
-    // use with the VPN.
-    if (state.type === chromeos.networkConfig.mojom.NetworkType.kVPN &&
-        (!this.defaultNetwork ||
-         !OncMojo.connectionStateIsConnected(
-             this.defaultNetwork.connectionState))) {
-      return false;
-    }
-
     return true;
   }
 
@@ -211,10 +219,12 @@ export class OnboardingNetworkPage extends mixinBehaviors
     this.guid_ = guid || '';
 
     const networkConfig =
-        /** @type {!NetworkConfigElement} */ (this.$$('#networkConfig'));
+        /** @type {!NetworkConfigElement} */ (
+            this.shadowRoot.querySelector('#networkConfig'));
     networkConfig.init();
 
-    const dialog = /** @type {!CrDialogElement} */ (this.$$('#dialog'));
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#dialog'));
     if (!dialog.open) {
       dialog.showModal();
     }
@@ -222,7 +232,8 @@ export class OnboardingNetworkPage extends mixinBehaviors
 
   /** @protected */
   closeConfig_() {
-    const dialog = /** @type {!CrDialogElement} */ (this.$$('#dialog'));
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#dialog'));
     if (dialog.open) {
       dialog.close();
     }
@@ -231,7 +242,8 @@ export class OnboardingNetworkPage extends mixinBehaviors
   /** @protected */
   connectNetwork_() {
     const networkConfig =
-        /** @type {!NetworkConfigElement} */ (this.$$('#networkConfig'));
+        /** @type {!NetworkConfigElement} */ (
+            this.shadowRoot.querySelector('#networkConfig'));
     networkConfig.connect();
   }
 
@@ -264,8 +276,9 @@ export class OnboardingNetworkPage extends mixinBehaviors
    * @protected
    */
   getDialogTitle_() {
-    if (this.networkName_ && !this.showConnect) {
+    if (this.networkName_ && !this.networkShowConnect_) {
       return this.networkName_;
+      // TODO(joonbug): Move these strings to //ui and uncomment this.
       // return this.i18n('internetConfigName', this.networkName_);
     }
     const type = this.i18n('OncType' + this.networkType_);

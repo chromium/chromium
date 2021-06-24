@@ -62,6 +62,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
+    ":onboarding_network_page",
     ":onboarding_select_components_page",
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
@@ -162,6 +163,9 @@ js_library("onboarding_network_page") {
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
