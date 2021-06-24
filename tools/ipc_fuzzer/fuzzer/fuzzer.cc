@@ -543,7 +543,7 @@ struct FuzzTraits<base::ListValue> {
         }
         case base::Value::Type::LIST: {
           base::ListValue* list_weak = nullptr;
-          if (p->GetList(index, &list_weak)) {
+          if (p->GetList()[index].GetAsList(&list_weak)) {
             FuzzParam(list_weak, fuzzer);
           } else {
             auto list = std::make_unique<base::ListValue>();
