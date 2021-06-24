@@ -10,9 +10,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -20,8 +18,6 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel_mojo.h"
-#include "ipc/ipc_sync_message.h"
-#include "ipc/trace_ipc_message.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "url/gurl.h"
 
@@ -68,55 +64,6 @@ GpuChannelHost::GpuChannelHost(
 
 mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
   return *gpu_channel_.get();
-}
-
-bool GpuChannelHost::Send(IPC::Message* msg) {
-  TRACE_IPC_MESSAGE_SEND("ipc", "GpuChannelHost::Send", msg);
-
-  auto message = base::WrapUnique(msg);
-
-  DCHECK(!io_thread_->BelongsToCurrentThread());
-
-  // The GPU process never sends synchronous IPCs so clear the unblock flag to
-  // preserve order.
-  message->set_unblock(false);
-
-  if (!message->is_sync()) {
-    io_thread_->PostTask(FROM_HERE,
-                         base::BindOnce(&Listener::SendMessage,
-                                        base::Unretained(listener_.get()),
-                                        std::move(message), nullptr));
-    return true;
-  }
-
-  base::WaitableEvent done_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto deserializer = base::WrapUnique(
-      static_cast<IPC::SyncMessage*>(message.get())->GetReplyDeserializer());
-
-  IPC::PendingSyncMsg pending_sync(IPC::SyncMessage::GetMessageId(*message),
-                                   deserializer.get(), &done_event);
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Listener::SendMessage, base::Unretained(listener_.get()),
-                     std::move(message), &pending_sync));
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  // http://crbug.com/125264
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-
-  pending_sync.done_event->Wait();
-
-  // Histogram to measure how long the browser UI thread spends blocked.
-  // Recorded only for users with high-resolution clocks.
-  base::TimeDelta wait_duration = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("GPU.GPUChannelHostWaitTime3",
-                                          wait_duration,
-                                          base::TimeDelta::FromMicroseconds(5),
-                                          base::TimeDelta::FromSeconds(1), 50);
-
-  return pending_sync.send_result;
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(
@@ -212,28 +159,6 @@ void GpuChannelHost::DestroyChannel() {
       base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
 }
 
-void GpuChannelHost::AddRoute(int route_id,
-                              base::WeakPtr<IPC::Listener> listener) {
-  AddRouteWithTaskRunner(route_id, listener,
-                         base::ThreadTaskRunnerHandle::Get());
-}
-
-void GpuChannelHost::AddRouteWithTaskRunner(
-    int route_id,
-    base::WeakPtr<IPC::Listener> listener,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  io_thread_->PostTask(
-      FROM_HERE, base::BindOnce(&GpuChannelHost::Listener::AddRoute,
-                                base::Unretained(listener_.get()), route_id,
-                                listener, task_runner));
-}
-
-void GpuChannelHost::RemoveRoute(int route_id) {
-  io_thread_->PostTask(
-      FROM_HERE, base::BindOnce(&GpuChannelHost::Listener::RemoveRoute,
-                                base::Unretained(listener_.get()), route_id));
-}
-
 int32_t GpuChannelHost::ReserveImageId() {
   return next_image_id_.GetNext();
 }
@@ -257,19 +182,6 @@ GpuChannelHost::CreateClientSharedImageInterface() {
 
 GpuChannelHost::~GpuChannelHost() = default;
 
-GpuChannelHost::Listener::RouteInfo::RouteInfo() = default;
-
-GpuChannelHost::Listener::RouteInfo::RouteInfo(const RouteInfo& other) =
-    default;
-GpuChannelHost::Listener::RouteInfo::RouteInfo(RouteInfo&& other) = default;
-GpuChannelHost::Listener::RouteInfo::~RouteInfo() = default;
-
-GpuChannelHost::Listener::RouteInfo& GpuChannelHost::Listener::RouteInfo::
-operator=(const RouteInfo& other) = default;
-
-GpuChannelHost::Listener::RouteInfo& GpuChannelHost::Listener::RouteInfo::
-operator=(RouteInfo&& other) = default;
-
 GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo() = default;
 
 GpuChannelHost::OrderingBarrierInfo::~OrderingBarrierInfo() = default;
@@ -286,6 +198,7 @@ void GpuChannelHost::Listener::Initialize(
     mojo::ScopedMessagePipeHandle handle,
     mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  base::AutoLock lock(lock_);
   channel_ = IPC::ChannelMojo::Create(
       std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
       io_task_runner, mojo::internal::MessageQuotaChecker::MaybeCreate());
@@ -296,110 +209,20 @@ void GpuChannelHost::Listener::Initialize(
       std::move(receiver));
 }
 
-GpuChannelHost::Listener::~Listener() {
-  DCHECK(pending_syncs_.empty());
-}
+GpuChannelHost::Listener::~Listener() = default;
 
 void GpuChannelHost::Listener::Close() {
   OnChannelError();
 }
 
-void GpuChannelHost::Listener::AddRoute(
-    int32_t route_id,
-    base::WeakPtr<IPC::Listener> listener,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(routes_.find(route_id) == routes_.end());
-  DCHECK(task_runner);
-  RouteInfo info;
-  info.listener = listener;
-  info.task_runner = std::move(task_runner);
-  routes_[route_id] = info;
-
-  if (lost_) {
-    info.task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IPC::Listener::OnChannelError, info.listener));
-  }
-}
-
-void GpuChannelHost::Listener::RemoveRoute(int32_t route_id) {
-  routes_.erase(route_id);
-}
-
 bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
-  if (message.is_reply()) {
-    int id = IPC::SyncMessage::GetMessageId(message);
-    auto it = pending_syncs_.find(id);
-    if (it == pending_syncs_.end())
-      return false;
-    auto* pending_sync = it->second;
-    pending_syncs_.erase(it);
-    if (!message.is_reply_error()) {
-      pending_sync->send_result =
-          pending_sync->deserializer->SerializeOutputParameters(message);
-    }
-    pending_sync->done_event->Signal();
-    return true;
-  }
-
-  auto it = routes_.find(message.routing_id());
-  if (it == routes_.end())
-    return false;
-
-  const RouteInfo& info = it->second;
-  info.task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&IPC::Listener::OnMessageReceived),
-                     info.listener, message));
-  return true;
+  return false;
 }
 
 void GpuChannelHost::Listener::OnChannelError() {
+  AutoLock lock(lock_);
   channel_ = nullptr;
-  // Set the lost state before signalling the proxies. That way, if they
-  // themselves post a task to recreate the context, they will not try to re-use
-  // this channel host.
-  {
-    AutoLock lock(lock_);
-    lost_ = true;
-  }
-
-  for (auto& kv : pending_syncs_) {
-    IPC::PendingSyncMsg* pending_sync = kv.second;
-    pending_sync->done_event->Signal();
-  }
-  pending_syncs_.clear();
-
-  // Inform all the proxies that an error has occurred. This will be reported
-  // via OpenGL as a lost context.
-  for (const auto& kv : routes_) {
-    const RouteInfo& info = kv.second;
-    info.task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IPC::Listener::OnChannelError, info.listener));
-  }
-
-  routes_.clear();
-}
-
-void GpuChannelHost::Listener::SendMessage(std::unique_ptr<IPC::Message> msg,
-                                           IPC::PendingSyncMsg* pending_sync) {
-  // Note: lost_ is only written on this thread, so it is safe to read here
-  // without lock.
-  if (pending_sync) {
-    DCHECK(msg->is_sync());
-    if (lost_) {
-      pending_sync->done_event->Signal();
-      return;
-    }
-    pending_syncs_.emplace(pending_sync->id, pending_sync);
-  } else {
-    if (lost_)
-      return;
-    DCHECK(!msg->is_sync());
-  }
-  DCHECK(!lost_);
-  channel_->Send(msg.release());
+  lost_ = true;
 }
 
 bool GpuChannelHost::Listener::IsLost() const {

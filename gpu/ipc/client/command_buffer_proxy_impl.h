@@ -38,7 +38,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "ui/gfx/swap_result.h"
@@ -184,11 +183,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   }
 
   void OrderingBarrierHelper(int32_t put_offset);
-
-  // Send an IPC message over the GPU channel. This is private to fully
-  // encapsulate the channel; all callers of this function must explicitly
-  // verify that the context has not been lost.
-  bool Send(IPC::Message* msg) EXCLUSIVE_LOCKS_REQUIRED(last_state_lock_);
 
   std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
   AllocateAndMapSharedMemory(size_t size);

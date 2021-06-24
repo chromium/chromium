@@ -122,7 +122,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
   if (!sent) {
     command_buffer_.reset();
     client_receiver_.reset();
-    channel->RemoveRoute(route_id_);
     LOG(ERROR) << "ContextResult::kTransientFailure: "
                   "Failed to send GpuControl.CreateCommandBuffer.";
     return ContextResult::kTransientFailure;
@@ -131,7 +130,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
     command_buffer_.reset();
     client_receiver_.reset();
     DLOG(ERROR) << "Failure processing GpuControl.CreateCommandBuffer.";
-    channel->RemoveRoute(route_id_);
     return result;
   }
 
@@ -645,42 +643,6 @@ void CommandBufferProxyImpl::ReturnFrontBuffer(const gpu::Mailbox& mailbox,
       {sync_token});
 }
 
-bool CommandBufferProxyImpl::Send(IPC::Message* msg) {
-  DCHECK(channel_);
-  DCHECK_EQ(gpu::error::kNoError, last_state_.error);
-
-  last_state_lock_.Release();
-
-  // Call is_sync() before sending message.
-  bool is_sync = msg->is_sync();
-  bool result = channel_->Send(msg);
-  // Send() should always return true for async messages.
-  DCHECK(is_sync || result);
-
-  last_state_lock_.Acquire();
-
-  if (last_state_.error != gpu::error::kNoError) {
-    // Error needs to be checked in case the state was updated on another thread
-    // while we were waiting on Send. We need to make sure that the reentrant
-    // context loss callback is called so that the share group is also lost
-    // before we return any error up the stack.
-    if (gpu_control_client_)
-      gpu_control_client_->OnGpuControlLostContextMaybeReentrant();
-    return false;
-  }
-
-  if (!result) {
-    // Flag the command buffer as lost. Defer deleting the channel until
-    // OnChannelError is called after returning to the message loop in case it
-    // is referenced elsewhere.
-    DVLOG(1) << "CommandBufferProxyImpl::Send failed. Losing context.";
-    OnClientError(gpu::error::kLostContext);
-    return false;
-  }
-
-  return true;
-}
-
 std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
 CommandBufferProxyImpl::AllocateAndMapSharedMemory(size_t size) {
   base::UnsafeSharedMemoryRegion region =
@@ -895,7 +857,6 @@ void CommandBufferProxyImpl::DisconnectChannel() {
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
   channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
 
-  channel_->RemoveRoute(route_id_);
   if (gpu_control_client_)
     gpu_control_client_->OnGpuControlLostContext();
 }

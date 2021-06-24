@@ -758,6 +758,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GPU.GPUChannelHostWaitTime3" units="microseconds"
     expires_after="2021-12-01">
+  <obsolete>
+    No longer used as of Jun 2021.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

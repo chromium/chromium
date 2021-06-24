@@ -202,9 +202,6 @@ class ExecScriptScopedAllowBaseSyncPrimitives;
 namespace history_report {
 class HistoryReportJniBridge;
 }
-namespace gpu {
-class GpuChannelHost;
-}
 namespace leveldb_env {
 class DBTracker;
 }
@@ -577,7 +574,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class dbus::Bus;                           // http://crbug.com/125222
   friend class disk_cache::BackendImpl;             // http://crbug.com/74623
   friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class gpu::GpuChannelHost;                 // http://crbug.com/125264
   friend class remoting::protocol::
       ScopedAllowThreadJoinForWebRtcTransport;      // http://crbug.com/660081
   friend class midi::TaskService;                   // https://crbug.com/796830
