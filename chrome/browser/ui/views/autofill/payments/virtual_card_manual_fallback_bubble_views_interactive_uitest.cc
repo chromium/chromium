@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -199,9 +200,16 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   EXPECT_EQ(clipboard_text, u"5454545454545454");
 }
 
-// Disabled due to flakiness: crbug.com/1223042
+// Disabled on Mac due to flakiness: crbug.com/1223042
+#if defined(OS_MAC)
+#define MAYBE_Metrics_BubbleShownAndClosedByUser \
+  DISABLED_Metrics_BubbleShownAndClosedByUser
+#else
+#define MAYBE_Metrics_BubbleShownAndClosedByUser \
+  Metrics_BubbleShownAndClosedByUser
+#endif
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
-                       DISABLED_Metrics_BubbleShownAndClosedByUser) {
+                       MAYBE_Metrics_BubbleShownAndClosedByUser) {
   base::HistogramTester histogram_tester;
 
   ShowBubble();
