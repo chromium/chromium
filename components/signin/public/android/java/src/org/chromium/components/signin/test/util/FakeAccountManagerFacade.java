@@ -19,7 +19,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ProfileDataSource;
 
@@ -80,11 +79,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             }
         }
         return Promise.fulfilled(accounts);
-    }
-
-    @Override
-    public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
-        callback.onResult(AccountUtils.getAccountsIfFulfilledOrEmpty(getAccounts()));
     }
 
     @Override

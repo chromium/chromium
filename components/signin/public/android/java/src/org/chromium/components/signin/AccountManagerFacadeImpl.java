@@ -28,14 +28,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -68,8 +66,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
 
-    private final Queue<Callback<List<Account>>> mCallbacksWaitingForAccountsFetch =
-            new ArrayDeque<>();
     // The map stores the boolean for whether an account can offer extended chrome sync promos
     private final AtomicReference<Map<String, Boolean>> mCanOfferExtendedSyncPromos =
             new AtomicReference<>(new HashMap<>());
@@ -86,7 +82,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mAccountRestrictionPatternReceiver =
                 new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
-        tryGetGoogleAccounts(accounts -> {
+        getAccounts().then(accounts -> {
             RecordHistogram.recordExactLinearHistogram(
                     "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
         });
@@ -119,19 +115,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public Promise<List<Account>> getAccounts() {
         ThreadUtils.assertOnUiThread();
         return mAccountsPromise;
-    }
-
-    /**
-     * This method is deprecated, use {@link #getAccounts()} instead.
-     */
-    @Override
-    public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
-        ThreadUtils.assertOnUiThread();
-        if (mAccountsPromise.isFulfilled()) {
-            ThreadUtils.postOnUiThread(callback.bind(mAccountsPromise.getResult()));
-        } else {
-            mCallbacksWaitingForAccountsFetch.add(callback);
-        }
     }
 
     /**
@@ -277,10 +260,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             mAccountsPromise = Promise.fulfilled(newAccounts);
         } else {
             mAccountsPromise.fulfill(newAccounts);
-        }
-        while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
-            final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
-            callback.onResult(newAccounts);
         }
         for (AccountsChangeObserver observer : mObservers) {
             observer.onAccountsChanged();
