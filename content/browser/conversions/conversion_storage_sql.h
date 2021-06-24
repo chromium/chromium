@@ -55,8 +55,6 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   };
 
  private:
-  friend class ConversionStorageSqlMigrations;
-
   enum class DbStatus {
     // The database has never been created, i.e. there is no database file at
     // all.

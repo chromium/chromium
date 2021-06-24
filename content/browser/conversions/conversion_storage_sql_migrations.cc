@@ -336,7 +336,36 @@ bool ConversionStorageSqlMigrations::MigrateToVersion4(
   if (!transaction.Begin())
     return false;
 
-  if (!conversion_storage->rate_limit_table_.CreateTable(db))
+  const char kRateLimitTableSql[] =
+      "CREATE TABLE IF NOT EXISTS rate_limits"
+      "(rate_limit_id INTEGER PRIMARY KEY,"
+      "attribution_type INTEGER NOT NULL,"
+      "impression_id INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL,"
+      "impression_origin TEXT NOT NULL,"
+      "conversion_destination TEXT NOT NULL,"
+      "conversion_origin TEXT NOT NULL,"
+      "conversion_time INTEGER NOT NULL)";
+  if (!db->Execute(kRateLimitTableSql))
+    return false;
+
+  const char kRateLimitImpressionSiteTypeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
+      "ON rate_limits(attribution_type, conversion_destination, "
+      "impression_site, conversion_time)";
+  if (!db->Execute(kRateLimitImpressionSiteTypeIndexSql))
+    return false;
+
+  const char kRateLimitConversionTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_conversion_time_idx "
+      "ON rate_limits(conversion_time)";
+  if (!db->Execute(kRateLimitConversionTimeIndexSql))
+    return false;
+
+  const char kRateLimitImpressionIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS rate_limit_impression_id_idx "
+      "ON rate_limits(impression_id)";
+  if (!db->Execute(kRateLimitImpressionIndexSql))
     return false;
 
   meta_table->SetVersionNumber(4);

@@ -43,7 +43,7 @@ class ConversionStorageSql;
 // `ConversionStorageSqlMigrationsTest::GetCurrentSchema()` to use the sql file
 // generated above.
 
-// Friended helper class which updates the an existing sql database of
+// Helper class which updates the existing sql database of
 // `ConversionStorageSql` to the most current schema.
 class ConversionStorageSqlMigrations {
  public:
