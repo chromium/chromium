@@ -45,6 +45,7 @@ enum class AppType {
   kArc,
   kPWA,
   kExtension,
+  kChromeApp,
 };
 
 namespace internal {

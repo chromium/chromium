@@ -14,6 +14,10 @@
 
 class GURL;
 
+namespace apps {
+class AppPlatformMetrics;
+}
+
 namespace app_list {
 class AppLaunchEventLogger;
 }  // namespace app_list
@@ -28,16 +32,34 @@ const base::Feature kUkmAppLogging{"UkmAppLogging",
 
 class AppSourceUrlRecorder {
  private:
+  friend class apps::AppPlatformMetrics;
+
   friend class AppSourceUrlRecorderTest;
 
   friend class app_list::AppLaunchEventLogger;
 
   friend class badging::BadgeManager;
 
-  // Get a UKM SourceId for a Chrome extension.
+  // Get a UKM SourceId with the prefix "app://" for a Chrome app with `app_id`,
+  // a unique hash string to identify the app. For example,
+  // "mgndgikekgjfcpckkfioiadnlibdjbkf" is the `app_id` for Chrome browser, and
+  // the output SourceId is "app://mgndgikekgjfcpckkfioiadnlibdjbkf".
+  static SourceId GetSourceIdForChromeApp(const std::string& app_id);
+
+  // Get a UKM SourceId with the prefix "chrome-extension://" for a Chrome
+  // extension. For example, for `id`, "mhjfbmdgcfjbbpaeojofohoefgiehjai", the
+  // output SourceId is "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai".
   static SourceId GetSourceIdForChromeExtension(const std::string& id);
 
-  // Get a UKM SourceId for an Arc app.
+  // Get a UKM SourceId with the prefix "app://" for an Arc app with
+  // `package_name`. For example, for `package_name`, "com.google.play", the
+  // output SourceId is "app://com.google.play".
+  static SourceId GetSourceIdForArcPackageName(const std::string& package_name);
+
+  // Get a UKM SourceId with the prefix "app://" for an Arc app with a hash
+  // string for `package_name`. For example, for `package_name`,
+  // "com.google.play", the output SourceId is
+  // "app://play/pjhgmeephkiehhlkfcoginnkbphkdang".
   static SourceId GetSourceIdForArc(const std::string& package_name);
 
   // Get a UKM SourceId for a PWA or bookmark app.

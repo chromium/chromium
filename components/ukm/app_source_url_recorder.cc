@@ -17,10 +17,24 @@ SourceId AssignNewAppId() {
   return ConvertToSourceId(seq.GetNext() + 1, SourceIdType::APP_ID);
 }
 
+SourceId AppSourceUrlRecorder::GetSourceIdForChromeApp(
+    const std::string& app_id) {
+  DCHECK(!app_id.empty());
+  GURL url("app://" + app_id);
+  return GetSourceIdForUrl(url, AppType::kChromeApp);
+}
+
 SourceId AppSourceUrlRecorder::GetSourceIdForChromeExtension(
     const std::string& id) {
   GURL url("chrome-extension://" + id);
   return GetSourceIdForUrl(url, AppType::kExtension);
+}
+
+SourceId AppSourceUrlRecorder::GetSourceIdForArcPackageName(
+    const std::string& package_name) {
+  DCHECK(!package_name.empty());
+  GURL url("app://" + package_name);
+  return GetSourceIdForUrl(url, AppType::kArc);
 }
 
 SourceId AppSourceUrlRecorder::GetSourceIdForArc(
