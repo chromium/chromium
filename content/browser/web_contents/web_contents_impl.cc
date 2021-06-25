@@ -8909,6 +8909,12 @@ WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
   return render_view_hosts;
 }
 
+void WebContentsImpl::NotifyPageChanged() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::PrimaryPageChanged");
+
+  observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged);
+}
+
 void WebContentsImpl::RenderFrameHostStateChanged(
     RenderFrameHost* render_frame_host,
     LifecycleState old_state,

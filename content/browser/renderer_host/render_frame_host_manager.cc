@@ -273,6 +273,10 @@ void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
       renderer_initiated_creation));
+
+  // Creating a main RenderFrameHost also creates a new Page, so notify the
+  // delegate about this.
+  frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged();
 }
 
 void RenderFrameHostManager::InitChild(
@@ -3253,7 +3257,7 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
-  // For top-level frames, the RenderWidgetHost will not be destroyed when the
+  // For all main frames, the RenderWidgetHost will not be destroyed when the
   // local frame is detached. https://crbug.com/419087
   //
   // The RenderWidget in the renderer process is destroyed, but the

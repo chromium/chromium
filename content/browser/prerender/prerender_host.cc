@@ -124,6 +124,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   void DidChangeLoadProgress() override {}
   bool IsHidden() override { return true; }
+  void NotifyPageChanged() override {}
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}

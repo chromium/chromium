@@ -3020,17 +3020,26 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   render_frame_state_ = RenderFrameState::kCreated;
 
   // Clear all the document-associated data for this RenderFrameHost when its
-  // RenderFrame is recreated after a crash. Checking
-  // |was_render_frame_ever_created_| guarantees that the user data isn't
-  // cleared for the initial RenderFrame creation.  Note that the user data is
+  // RenderFrame is recreated after a crash. Note that the user data is
   // intentionally not cleared at the time of crash. Please refer to
   // https://crbug.com/1099237 for more details.
   //
   // Clearing of user data should be called before RenderFrameCreated to ensure:
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
-  if (old_render_frame_state == RenderFrameState::kDeleted)
+  if (old_render_frame_state == RenderFrameState::kDeleted) {
     document_associated_data_ = std::make_unique<DocumentAssociatedData>(*this);
+
+    // Dispatch update notification when a Page is recreated after a crash.
+    if (is_main_frame()) {
+      // Only a current RenderFrameHost should be recreating its RenderFrame
+      // here, since speculative and pending deletion RenderFrameHosts get
+      // deleted immediately after crash, whereas prerender gets cancelled and
+      // bfcache entry gets evicted.
+      DCHECK_EQ(frame_tree_node_->current_frame_host(), this);
+      frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged();
+    }
+  }
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
@@ -9792,6 +9801,15 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   if (!is_same_document_navigation) {
+    // Dispatch update notification when a new Page is created for navigations
+    // which results in creation of new document.
+    if (navigation_request->frame_tree_node()->IsMainFrame()) {
+      navigation_request->frame_tree_node()
+          ->frame_tree()
+          ->delegate()
+          ->NotifyPageChanged();
+    }
+
     DCHECK_EQ(navigation_request->is_overriding_user_agent() &&
                   frame_tree_node_->IsMainFrame(),
               params->is_overriding_user_agent);

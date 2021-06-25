@@ -105,6 +105,33 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void RenderFrameHostChanged(RenderFrameHost* old_host,
                                       RenderFrameHost* new_host) {}
 
+  // This method is invoked whenever primary page of a WebContents is
+  // changed with another one. This happens in one of the following cases:
+  // 1) when the current RenderFrameHost in the primary main frame changes after
+  //    a navigation.
+  // 2) when the current RenderFrameHost in the primary main frame is
+  //    reinitialized after a crash.
+  // 3) when a cross-document navigation commits in the current RenderFrameHost
+  //    of the primary main frame.
+
+  // The new primary page might either be a brand new one (if the committed
+  // navigation created a new document in the primary main frame) or an existing
+  // one (back-forward cache restore or prerendering activation).
+
+  // This notification is not dispatched for changes of pages in the non-primary
+  // frame trees (prerendering, fenced frames) and when the primary page is
+  // destroyed (e.g., when closing a tab).
+
+  // This method is useful for updating the tab-related UI which depends on the
+  // primary page's state (e.g. theme colour, such state should typically be
+  // available as a method on a Page or stored in PageUserData). Prefer
+  // listening to this method to listening to DidFinishNavigation and checking
+  // NavigationHandle::IsInPrimaryMainFrame && !NavigationHandle::IsSameDocument
+  // && NavigationHandle::HasCommitted (unless your code has to listen to
+  // DidFinishNavigation for some other reason, in which case listening only to
+  // DidFinishNavigation is recommended).
+  virtual void PrimaryPageChanged() {}
+
   // This method is invoked when a frame is destroyed. A subframe is destroyed
   // when its parent detaches it or navigates to a different document. A main
   // frame is destroyed when the whole WebContents is going away, or, with
@@ -258,11 +285,18 @@ class CONTENT_EXPORT WebContentsObserver {
   // so do not keep a reference to it afterward.
   //
   // Note that using DidFinishNavigation to detect changes in the currently
-  // active document and reset per-document state is strongly discouraged.
-  // Please use RenderDocumentHostUserData to store such data instead.
-  // (In particular, the page might be stored in back-forward cache instead
-  // of being deleted. See the comment in RenderDocumentHostUserData for more
-  // details).
+  // active document / page and reset per-document state is strongly
+  // discouraged.
+  //
+  // Listening to PrimaryPageChanged should be preferred to listening to
+  // DidFinishNavigation and checking IsInPrimaryMainFrame, !IsSameDocument, and
+  // HasCommitted.
+  //
+  // The per-document / per-page data should be stored in
+  // RenderDocumentHostUserData / PageUserData instead of resetting it in
+  // DidFinishNavigation. (In particular, the page might be stored in the
+  // back-forward cache instead of being deleted. See comments in PageUserData /
+  // RenderDocumentHostUserData for more details).
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) {}
 
   // Called after the contents replaces the |predecessor_contents| in its

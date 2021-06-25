@@ -161,15 +161,7 @@ void SiteEngagementService::Helper::MediaTracker::TrackingStarted() {
   Pause();
 }
 
-void SiteEngagementService::Helper::MediaTracker::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  // Ignore subframe navigation to avoid clearing main frame active media
-  // players when they navigate.
-  if (!handle->HasCommitted() || !handle->IsInPrimaryMainFrame() ||
-      handle->IsSameDocument()) {
-    return;
-  }
-
+void SiteEngagementService::Helper::MediaTracker::PrimaryPageChanged() {
   // Media stops playing on navigation, so clear our state.
   active_media_players_.clear();
 }

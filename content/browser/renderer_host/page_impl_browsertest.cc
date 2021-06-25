@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -191,6 +192,25 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   EXPECT_TRUE(rfh_b_page.IsPrimary());
 }
 
+// Test that WebContentsObserver::PrimaryPageChanged is invoked on page
+// changes.
+IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b, c))"));
+  GURL url_b(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?d(e(f))"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 2) Navigate to B, PrimaryPageChanged should be triggered.
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+}
+
 // Test that a new Page object is created for a same-site same-RFH navigation.
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
 #if defined(OS_ANDROID)
@@ -210,8 +230,12 @@ IN_PROC_BROWSER_TEST_F(PageImplTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   RenderFrameHostImpl* main_rfh_a1 = primary_main_frame_host();
   PageImpl& page_a1 = main_rfh_a1->GetPage();
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
 
-  // 2) Navigate to A2, both A1 and A2 should reuse RenderFrameHost.
+  // 2) Navigate to A2, both A1 and A2 should reuse RenderFrameHost. This will
+  // result in invoking PrimaryPageChanged callback.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
   RenderFrameHostImpl* main_rfh_a2 = primary_main_frame_host();
   EXPECT_EQ(main_rfh_a1, main_rfh_a2);
@@ -231,6 +255,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, NewPageObjectCreatedOnFrameCrash) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = primary_main_frame_host();
   PageImpl& page_a = rfh_a->GetPage();
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
 
   // 2) Make the renderer crash.
   RenderProcessHost* renderer_process = rfh_a->GetProcess();
@@ -240,7 +266,9 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, NewPageObjectCreatedOnFrameCrash) {
   crash_observer.Wait();
   EXPECT_TRUE(&(rfh_a->GetPage()));
 
-  // 3) Re-initialize RenderFrame.
+  // 3) Re-initialize RenderFrame, this should result in invoking
+  // PrimaryPageChanged callback.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   root->render_manager()->InitializeMainRenderFrameForImmediateUse();
   RenderFrameHostImpl* new_rfh_a = primary_main_frame_host();
@@ -261,6 +289,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteNavigationAfterFrameCrash) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
   RenderFrameHostImpl* rfh_a1 = primary_main_frame_host();
   PageImpl& page_a1 = rfh_a1->GetPage();
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
 
   // 2) Crash the renderer hosting current RFH.
   RenderProcessHost* renderer_process = rfh_a1->GetProcess();
@@ -270,7 +300,9 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteNavigationAfterFrameCrash) {
   crash_observer.Wait();
   EXPECT_TRUE(&(web_contents()->GetMainFrame()->GetPage()));
 
-  // 3) Navigate same-site to A2.
+  // 3) Navigate same-site to A2. This will result in invoking
+  // PrimaryPageChanged callback after new Page creation.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
   RenderFrameHostImpl* rfh_a2 = primary_main_frame_host();
   PageImpl& page_a2 = rfh_a2->GetPage();
@@ -311,12 +343,16 @@ IN_PROC_BROWSER_TEST_F(PageImplWithBackForwardCacheTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = primary_main_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
 
   // 2) Get the PageImpl object associated with A and B RenderFrameHost.
   PageImpl& page_a = rfh_a->GetPage();
   PageImpl& page_b = rfh_b->GetPage();
 
-  // 3) Navigate to C. A(B) should be stored in back-forward cache.
+  // 3) Navigate to C. PrimaryPageChanged should be triggered as A(B) is stored
+  // in BackForwardCache.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
@@ -329,7 +365,10 @@ IN_PROC_BROWSER_TEST_F(PageImplWithBackForwardCacheTest,
   EXPECT_EQ(&page_b, &(rfh_b->GetPage()));
 
   // 5) Go back to A(B) and the Page object before and after restore should
-  // point to the same object.
+  // point to the same object. PrimaryPageChanged should still be triggered when
+  // primary page changes to the existing page restored from the
+  // BackForwardCache.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(&page_a, &(rfh_a->GetPage()));
@@ -347,6 +386,8 @@ IN_PROC_BROWSER_TEST_F(PageImplPrerenderBrowserTest, IsPrimary) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = primary_main_frame_host();
   EXPECT_TRUE(rfh_a->GetPage().IsPrimary());
+  testing::NiceMock<MockWebContentsObserver> page_changed_observer(
+      web_contents());
 
   // Prerender to another site.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -358,7 +399,9 @@ IN_PROC_BROWSER_TEST_F(PageImplPrerenderBrowserTest, IsPrimary) {
   Page& prerender_page = prerender_frame->GetPage();
   EXPECT_FALSE(prerender_page.IsPrimary());
 
-  // Navigate to the prerendered site.
+  // Navigate to the prerendered site. PrimaryPageChanged should only be
+  // triggered on activation.
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged()).Times(1);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(&prerender_page, &(primary_main_frame_host()->GetPage()));

@@ -128,6 +128,9 @@ class CONTENT_EXPORT FrameTree {
 
     // Returns true when the active RenderWidgetHostView should be hidden.
     virtual bool IsHidden() = 0;
+
+    // Called when current Page of this frame tree changes.
+    virtual void NotifyPageChanged() = 0;
   };
 
   // Type of FrameTree instance.

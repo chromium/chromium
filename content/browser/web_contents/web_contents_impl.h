@@ -1014,6 +1014,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidStopLoading() override;
   void DidChangeLoadProgress() override;
   bool IsHidden() override;
+  void NotifyPageChanged() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

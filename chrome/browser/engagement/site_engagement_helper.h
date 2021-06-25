@@ -140,7 +140,7 @@ class SiteEngagementService::Helper
     void TrackingStarted() override;
 
     // content::WebContentsObserver overrides.
-    void DidFinishNavigation(content::NavigationHandle* handle) override;
+    void PrimaryPageChanged() override;
     void MediaStartedPlaying(const MediaPlayerInfo& media_info,
                              const content::MediaPlayerId& id) override;
     void MediaStoppedPlaying(
