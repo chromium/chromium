@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -53,6 +54,9 @@ class COMPONENT_EXPORT(EVDEV) HeuristicStylusPalmDetectionFilter
 
   base::TimeDelta HoldTime() const;
   base::TimeDelta CancelTime() const;
+
+  static bool CompatibleWithHeuristicStylusPalmDetectionFilter(
+      const EventDeviceInfo& device_info);
 
  private:
   const int hold_stroke_count_;

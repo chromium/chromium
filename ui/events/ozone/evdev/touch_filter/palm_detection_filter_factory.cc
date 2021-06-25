@@ -105,7 +105,9 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
         devinfo, std::move(model), shared_palm_state);
   }
 
-  if (base::FeatureList::IsEnabled(kEnableHeuristicPalmDetectionFilter)) {
+  if (base::FeatureList::IsEnabled(kEnableHeuristicPalmDetectionFilter) &&
+      HeuristicStylusPalmDetectionFilter::
+          CompatibleWithHeuristicStylusPalmDetectionFilter(devinfo)) {
     const base::TimeDelta hold_time =
         base::TimeDelta::FromSecondsD(kHeuristicHoldThresholdSeconds.Get());
     const base::TimeDelta cancel_time =
