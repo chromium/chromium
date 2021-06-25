@@ -844,6 +844,8 @@ component("platform") {
     "graphics/compositing/paint_artifact_compositor.h",
     "graphics/compositing/paint_chunks_to_cc_layer.cc",
     "graphics/compositing/paint_chunks_to_cc_layer.h",
+    "graphics/compositing/pending_layer.cc",
+    "graphics/compositing/pending_layer.h",
     "graphics/compositing/property_tree_manager.cc",
     "graphics/compositing/property_tree_manager.h",
     "graphics/compositing_reasons.cc",
