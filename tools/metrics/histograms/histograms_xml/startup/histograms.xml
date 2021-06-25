@@ -467,9 +467,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.ColdStartFromProcessCreationTimeV2" units="ms"
-    expires_after="2022-03-24">
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The duration of all initializations from process creation time to UI ready
     to receive input. iOS specific, from M91+
@@ -491,6 +494,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     to the user action MobileWillEnterForeground. The former reports the number
     of cold starts. The latter is only recorded when Chrome comes to the
     foreground on non-cold starts.
+
+    Do not modify this metric in any way without contacting
+    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
@@ -587,6 +593,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     code starts. On Windows, application start is when chrome.exe:main starts,
     before chrome.dll is loaded. On other platforms, it is when
     ChromeMainDelegate is constructed.
+
+    Do not modify this metric in any way without contacting
+    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
