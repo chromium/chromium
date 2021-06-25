@@ -8,7 +8,7 @@ import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 
 import {DirectoryModel} from './directory_model.m.js';
 import {CommandHandler} from './file_manager_commands.m.js';
-import {ProvidersModel} from './providers_model.js';
+import {ProvidersModel} from './providers_model.m.js';
 import {GearMenu} from './ui/gear_menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 import {ProvidersMenu} from './ui/providers_menu.js';

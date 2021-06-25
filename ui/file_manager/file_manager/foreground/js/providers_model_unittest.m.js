@@ -12,7 +12,7 @@ import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {ProvidersModel} from './providers_model.js';
+import {ProvidersModel} from './providers_model.m.js';
 
 /**
  * Providing extension which has a mounted file system and doesn't support

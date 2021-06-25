@@ -20,7 +20,7 @@ import {DirectoryModel} from './directory_model.m.js';
 import {createFakeAndroidAppListModel} from './fake_android_app_list_model.m.js';
 import {createFakeDirectoryModel} from './mock_directory_model.m.js';
 import {MockFolderShortcutDataModel} from './mock_folder_shortcut_data_model.m.js';
-import { NavigationListModel, NavigationModelAndroidAppItem,NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.js';
+import { NavigationListModel, NavigationModelAndroidAppItem,NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.m.js';
 // clang-format on
 
 /**

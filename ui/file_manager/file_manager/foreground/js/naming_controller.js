@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-
-import {strf, util} from '../../common/js/util.js';
-
-import {FileFilter} from './directory_contents.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
-import {ListContainer} from './ui/list_container.js';
+// clang-format off
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {FileFilter} from './directory_contents.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+// #import {ListContainer} from './ui/list_container.js';
+// #import {util, strf} from '../../common/js/util.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format off
 
 /**
  * Controller to handle naming.
  */
-export class NamingController {
+/* #export */ class NamingController {
   /**
    * @param {!ListContainer} listContainer
-   * @param {!AlertDialog} alertDialog
-   * @param {!ConfirmDialog} confirmDialog
+   * @param {!cr.ui.dialogs.AlertDialog} alertDialog
+   * @param {!cr.ui.dialogs.ConfirmDialog} confirmDialog
    * @param {!DirectoryModel} directoryModel
    * @param {!FileFilter} fileFilter
    * @param {!FileSelectionHandler} selectionHandler
@@ -30,10 +30,10 @@ export class NamingController {
     /** @private @const {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!AlertDialog} */
+    /** @private @const {!cr.ui.dialogs.AlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private @const {!ConfirmDialog} */
+    /** @private @const {!cr.ui.dialogs.ConfirmDialog} */
     this.confirmDialog_ = confirmDialog;
 
     /** @private @const {!DirectoryModel} */

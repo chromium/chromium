@@ -203,6 +203,7 @@
     "background/js/media_scanner.js",
     "background/js/media_import_handler.js",
     "background/js/metadata_proxy.js",
+    "background/js/metrics_start.js",
     "background/js/mount_metrics.js",
     "background/js/progress_center.js",
     "background/js/runtime_loaded_test_util.js",

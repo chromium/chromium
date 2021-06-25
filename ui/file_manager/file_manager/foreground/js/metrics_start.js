@@ -8,7 +8,7 @@
  * define the metrics namespace).
  */
 
-import {metrics} from '../../common/js/metrics.js';
+// #import {metrics} from '../../common/js/metrics.js';
 
 metrics.startInterval('Load.Total');
 metrics.startInterval('Load.Script');

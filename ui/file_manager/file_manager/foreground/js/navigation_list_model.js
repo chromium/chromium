@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {TrashRootEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
-
-import {AndroidAppListModel} from './android_app_list_model.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+// clang-format off
+// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {AndroidAppListModel} from './android_app_list_model.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
+// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+// #import {VolumeInfo} from '../../externs/volume_info.js';
+// #import {TrashRootEntry} from '../../common/js/trash.js';
+// #import {util, str} from '../../common/js/util.js';
+// #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.js';
+// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
 
 /**
  * @enum {string}
  */
-export const NavigationModelItemType = {
+/* #export */ const NavigationModelItemType = {
   SHORTCUT: 'shortcut',
   VOLUME: 'volume',
   RECENT: 'recent',
@@ -44,7 +44,7 @@ export const NavigationModelItemType = {
  *      - ANDROID_APPS: ANDROID picker apps.
  * @enum {string}
  */
-export const NavigationSection = {
+/* #export */ const NavigationSection = {
   TOP: 'top',
   MY_FILES: 'my_files',
   REMOVABLE: 'removable',
@@ -55,7 +55,7 @@ export const NavigationSection = {
 /**
  * Base item of NavigationListModel. Should not be created directly.
  */
-export class NavigationModelItem {
+/* #export */ class NavigationModelItem {
   /**
    * @param {string} label
    * @param {NavigationModelItemType} type
@@ -104,7 +104,7 @@ export class NavigationModelItem {
 /**
  * Item of NavigationListModel for shortcuts.
  */
-export class NavigationModelShortcutItem extends NavigationModelItem {
+/* #export */ class NavigationModelShortcutItem extends NavigationModelItem {
   /**
    * @param {string} label Label.
    * @param {!DirectoryEntry} entry Entry. Cannot be null.
@@ -122,7 +122,7 @@ export class NavigationModelShortcutItem extends NavigationModelItem {
 /**
  * Item of NavigationListModel for Android apps.
  */
-export class NavigationModelAndroidAppItem extends NavigationModelItem {
+/* #export */ class NavigationModelAndroidAppItem extends NavigationModelItem {
   /**
    * @param {!chrome.fileManagerPrivate.AndroidApp} androidApp Android app.
    *     Cannot be null.
@@ -143,7 +143,7 @@ export class NavigationModelAndroidAppItem extends NavigationModelItem {
 /**
  * Item of NavigationListModel for volumes.
  */
-export class NavigationModelVolumeItem extends NavigationModelItem {
+/* #export */ class NavigationModelVolumeItem extends NavigationModelItem {
   /**
    * @param {string} label Label.
    * @param {!VolumeInfo} volumeInfo Volume info for the volume. Cannot be null.
@@ -164,7 +164,7 @@ export class NavigationModelVolumeItem extends NavigationModelItem {
 /**
  * Item of NavigationListModel for a fake item such as Recent or Linux files.
  */
-export class NavigationModelFakeItem extends NavigationModelItem {
+/* #export */ class NavigationModelFakeItem extends NavigationModelItem {
   /**
    * @param {string} label Label on the menu button.
    * @param {NavigationModelItemType} type
@@ -183,7 +183,7 @@ export class NavigationModelFakeItem extends NavigationModelItem {
 /**
  * A navigation list model. This model combines multiple models.
  */
-export class NavigationListModel extends EventTarget {
+/* #export */ class NavigationListModel extends cr.EventTarget {
   /**
    * @param {!VolumeManager} volumeManager VolumeManager instance.
    * @param {!FolderShortcutsDataModel} shortcutListModel The list of folder

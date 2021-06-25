@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str, util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+// clang-format off
+// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {util, str} from '../../common/js/util.js';
+// clang-format on
 
 /**
  * File path component.
@@ -15,7 +17,7 @@ import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces
  * PathComponent.computeComponentsFromEntry computes an array of PathComponent
  * of the given entry.
  */
-export class PathComponent {
+/* #export */ class PathComponent {
   /**
    * @param {string} name Name.
    * @param {string} url Url.

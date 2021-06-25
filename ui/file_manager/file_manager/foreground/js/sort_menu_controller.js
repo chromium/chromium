@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../elements/files_toggle_ripple.js';
+// #import {FileListModel} from './file_list_model.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
+// #import '../elements/files_toggle_ripple.js';
 
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-
-import {FileListModel} from './file_list_model.m.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
-
-export class SortMenuController {
+/* #export */ class SortMenuController {
   /**
-   * @param {!MultiMenuButton} sortButton
+   * @param {!cr.ui.MultiMenuButton} sortButton
    * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!FileListModel} fileListModel
    */

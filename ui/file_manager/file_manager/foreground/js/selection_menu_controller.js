@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../elements/files_toggle_ripple.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {FilesTooltip} from '../elements/files_tooltip.js';
+// #import '../elements/files_toggle_ripple.js';
 
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-
-import {FilesTooltip} from '../elements/files_tooltip.js';
-
-import {MultiMenuButton} from './ui/multi_menu_button.js';
-
-export class SelectionMenuController {
+/* #export */ class SelectionMenuController {
   /**
-   * @param {!MultiMenuButton} selectionMenuButton
-   * @param {!Menu} menu
+   * @param {!cr.ui.MultiMenuButton} selectionMenuButton
+   * @param {!cr.ui.Menu} menu
    */
   constructor(selectionMenuButton, menu) {
     /**
@@ -27,7 +24,7 @@ export class SelectionMenuController {
             queryRequiredElement('files-toggle-ripple', selectionMenuButton));
 
     /**
-     * @type {!Menu}
+     * @type {!cr.ui.Menu}
      * @const
      */
     this.menu_ = menu;

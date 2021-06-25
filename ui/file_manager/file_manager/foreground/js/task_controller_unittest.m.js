@@ -23,8 +23,8 @@ import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
 import {FileSelectionHandler} from './file_selection.m.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
-import {NamingController} from './naming_controller.js';
-import {TaskController} from './task_controller.js';
+import {NamingController} from './naming_controller.m.js';
+import {TaskController} from './task_controller.m.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
