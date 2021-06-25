@@ -69,6 +69,11 @@ class OpenXrController {
 
   XrResult SuggestBindings(
       std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const;
+  XrResult SuggestBindingsForButtonMaps(
+      std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings,
+      const std::vector<OpenXrButtonPathMap>& button_maps,
+      XrPath interaction_profile_path,
+      const std::string& binding_prefix) const;
 
   XrResult CreateActionsForButton(OpenXrButtonType button_type);
   XrResult CreateAction(XrActionType type,

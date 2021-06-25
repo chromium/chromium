@@ -7,7 +7,7 @@
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
-#include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_interaction_profile_type.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 
 // Browser test equivalent of

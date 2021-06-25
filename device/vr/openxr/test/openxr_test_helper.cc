@@ -7,7 +7,7 @@
 #include <cmath>
 #include <limits>
 
-#include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"

@@ -236,22 +236,37 @@ XrResult OpenXrController::InitializeControllerActions() {
   return XR_SUCCESS;
 }
 
+XrResult OpenXrController::SuggestBindingsForButtonMaps(
+    std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings,
+    const std::vector<OpenXrButtonPathMap>& button_maps,
+    XrPath interaction_profile_path,
+    const std::string& binding_prefix) const {
+  for (const auto& cur_button_map : button_maps) {
+    OpenXrButtonType button_type = cur_button_map.type;
+
+    for (const auto& cur_action_map : cur_button_map.action_maps) {
+      RETURN_IF_XR_FAILED(SuggestActionBinding(
+          bindings, interaction_profile_path,
+          button_action_map_.at(button_type).at(cur_action_map.type),
+          binding_prefix + cur_action_map.path));
+    }
+  }
+
+  return XR_SUCCESS;
+}
+
 XrResult OpenXrController::SuggestBindings(
     std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const {
   const std::string binding_prefix = GetTopLevelUserPath(type_);
 
-  for (const auto& interaction_profile : kOpenXrControllerInteractionProfiles) {
+  for (const auto& interaction_profile :
+       GetOpenXrControllerInteractionProfiles()) {
     // If the interaction profile is defined by an extension, check it here,
     // otherwise continue
-    const bool extension_required =
-        interaction_profile.required_extension != nullptr;
-    if (extension_required) {
-      const bool extension_enabled =
-          extension_helper_->ExtensionEnumeration()->ExtensionSupported(
-              interaction_profile.required_extension);
-      if (!extension_enabled) {
-        continue;
-      }
+    if (!interaction_profile.required_extension.empty() &&
+        !extension_helper_->ExtensionEnumeration()->ExtensionSupported(
+            interaction_profile.required_extension.c_str())) {
+      continue;
     }
 
     XrPath interaction_profile_path =
@@ -263,42 +278,27 @@ XrResult OpenXrController::SuggestBindings(
         bindings, interaction_profile_path, pointer_pose_action_,
         binding_prefix + "/input/aim/pose"));
 
-    const OpenXrButtonPathMap* button_maps;
-    size_t button_map_size;
+    RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+        bindings, interaction_profile.common_button_maps,
+        interaction_profile_path, binding_prefix));
+
     switch (type_) {
       case OpenXrHandednessType::kLeft:
-        button_maps = interaction_profile.left_button_maps;
-        button_map_size = interaction_profile.left_button_map_size;
+        RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+            bindings, interaction_profile.left_button_maps,
+            interaction_profile_path, binding_prefix));
         break;
       case OpenXrHandednessType::kRight:
-        button_maps = interaction_profile.right_button_maps;
-        button_map_size = interaction_profile.right_button_map_size;
+        RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+            bindings, interaction_profile.right_button_maps,
+            interaction_profile_path, binding_prefix));
         break;
       case OpenXrHandednessType::kCount:
         NOTREACHED() << "Controller can only be left or right";
         return XR_ERROR_VALIDATION_FAILURE;
     }
 
-    for (size_t button_map_index = 0; button_map_index < button_map_size;
-         button_map_index++) {
-      const OpenXrButtonPathMap& cur_button_map = button_maps[button_map_index];
-      OpenXrButtonType button_type = cur_button_map.type;
-      for (size_t action_map_index = 0;
-           action_map_index < cur_button_map.action_map_size;
-           action_map_index++) {
-        const OpenXrButtonActionPathMap& cur_action_map =
-            cur_button_map.action_maps[action_map_index];
-        RETURN_IF_XR_FAILED(SuggestActionBinding(
-            bindings, interaction_profile_path,
-            button_action_map_.at(button_type).at(cur_action_map.type),
-            binding_prefix + cur_action_map.path));
-      }
-    }
-
-    for (size_t axis_map_index = 0;
-         axis_map_index < interaction_profile.axis_map_size; axis_map_index++) {
-      const OpenXrAxisPathMap& cur_axis_map =
-          interaction_profile.axis_maps[axis_map_index];
+    for (const auto& cur_axis_map : interaction_profile.axis_maps) {
       RETURN_IF_XR_FAILED(
           SuggestActionBinding(bindings, interaction_profile_path,
                                axis_action_map_.at(cur_axis_map.type),

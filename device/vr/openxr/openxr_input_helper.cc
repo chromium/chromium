@@ -244,7 +244,7 @@ XrResult OpenXRInputHelper::OnInteractionProfileChanged() {
 absl::optional<Gamepad> OpenXRInputHelper ::GetWebXRGamepad(
     const OpenXrController& controller) {
   OpenXrInteractionProfileType cur_type = controller.interaction_profile();
-  for (auto& it : kOpenXrControllerInteractionProfiles) {
+  for (auto& it : GetOpenXrControllerInteractionProfiles()) {
     if (it.type == cur_type) {
       if (it.mapping == GamepadMapping::kXrStandard) {
         return GetXrStandardGamepad(controller);

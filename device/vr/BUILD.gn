@@ -105,7 +105,7 @@ if (enable_vr) {
     source_set("openxr_data") {
       sources = [
         "openxr/openxr_defs.h",
-        "openxr/openxr_interaction_profiles.h",
+        "openxr/openxr_interaction_profile_type.h",
       ]
 
       deps = [
@@ -201,6 +201,8 @@ if (enable_vr) {
         "openxr/openxr_extension_helper.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
+        "openxr/openxr_interaction_profiles.cc",
+        "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
         "openxr/openxr_render_loop.cc",
