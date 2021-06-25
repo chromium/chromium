@@ -81,7 +81,6 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 
 # 3D not implemented (crbug.com/dawn/547)
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="Sample";* [ Crash ]
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="CopyToTexture";* [ Crash ]
 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="Sample";* [ Crash ]
 
 # Likely precision-related
