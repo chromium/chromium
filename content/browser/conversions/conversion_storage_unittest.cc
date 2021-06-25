@@ -1148,4 +1148,23 @@ TEST_F(ConversionStorageTest,
   EXPECT_EQ(5u, actual_reports[0].impression.impression_data());
 }
 
+TEST_F(ConversionStorageTest, MultipleImpressions_CorrectDeactivation) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).SetPriority(0).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).SetPriority(1).Build());
+  EXPECT_EQ(2u, storage()->GetActiveImpressions().size());
+
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  // Because the impression with data 5 has the highest priority, it is selected
+  // for attribution. The unselected impression with data 3 should be
+  // deactivated, but the one with data 5 should remain active.
+  std::vector<StorableImpression> active_impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, active_impressions.size());
+  EXPECT_EQ(5u, active_impressions[0].impression_data());
+}
+
 }  // namespace content

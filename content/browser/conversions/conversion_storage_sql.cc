@@ -289,6 +289,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     if (ShouldReplaceImpressionToAttribute(impression_to_attribute,
                                            attribution_source_priority,
                                            impression_time)) {
+      if (impression_to_attribute.has_value()) {
+        impression_ids_to_delete.push_back(
+            *impression_to_attribute->impression_id());
+      }
       impression_to_attribute = StorableImpression(
           impression_data, std::move(impression_origin),
           std::move(conversion_origin), reporting_origin, impression_time,
