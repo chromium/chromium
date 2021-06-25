@@ -117,8 +117,9 @@
         display$="[[groupSvgDisplay_(data)]]">
       <circle id= "groupDot" cx="0" cy="0" r="4">
     </svg>
-    <div id="groupTitle" hidden="[[!data.tabGroup]]">[[data.tabGroup.title]]</div>
-    <div class="separator" hidden="[[!data.tabGroup]]">•</div>
+    <div id="groupTitle"
+        hidden="[[!hasTabGroupWithTitle_(data)]]">[[data.tabGroup.title]]</div>
+    <div class="separator" hidden="[[!hasTabGroupWithTitle_(data)]]">•</div>
     <div id="secondaryText"></div>
     <div class="separator" hidden="[[!data.hostname]]">•</div>
     <div id="secondaryTimestamp">

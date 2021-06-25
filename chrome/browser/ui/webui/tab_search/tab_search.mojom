@@ -73,9 +73,6 @@ struct RecentlyClosedTab {
   // The unique identifier of the tab.
   int32 tab_id;
 
-  // The session identifier of the tab's group.
-  int32 session_id;
-
   // The group identifier of the tab.
   mojo_base.mojom.Token? group_id;
 
@@ -88,7 +85,7 @@ struct RecentlyClosedTab {
 
   // Elapsed time since the tab was last closed. This value is used to order
   // closed tabs by recency.
-  mojo_base.mojom.Time last_active_time_ticks;
+  mojo_base.mojom.Time last_active_time;
 
   // String representing the elapsed time since the tab was closed.
   string last_active_elapsed_text;
@@ -111,6 +108,9 @@ struct RecentlyClosedTabGroup {
   // The unique identifier of the tab group that is only valid for the duration
   // of the session.
   int32 session_id;
+
+  // The unique identifier of the tab group.
+  mojo_base.mojom.Token id;
 
   // The color of the tab group.
   tab_groups.mojom.Color color;

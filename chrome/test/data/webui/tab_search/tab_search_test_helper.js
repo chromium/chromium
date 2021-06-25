@@ -76,3 +76,13 @@ export function initLoadTimeDataWithDefaults(loadTimeOverriddenData) {
 
   loadTimeData.overrideValues(loadTimeOverriddenData);
 }
+
+/**
+ * @param {Object} object
+ * @param {Object} Type
+ * @returns {Object}
+ */
+export function typed(object, Type) {
+  Object.setPrototypeOf(object, Type.prototype);
+  return object;
+}

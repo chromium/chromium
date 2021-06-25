@@ -8,6 +8,7 @@ import {assertDeepEquals, assertEquals, assertNotEquals} from '../../chai_assert
 import {flushTasks} from '../../test_util.m.js';
 
 import {sampleToken} from './tab_search_test_data.js';
+import {typed} from './tab_search_test_helper.js';
 
 suite('TabSearchItemTest', () => {
   /** @type {!TabSearchItem} */
@@ -17,7 +18,7 @@ suite('TabSearchItemTest', () => {
   async function setupTest(data) {
     tabSearchItem = /** @type {!TabSearchItem} */ (
         document.createElement('tab-search-item'));
-    tabSearchItem.data = data;
+    tabSearchItem.data = typed(data, TabData);
     document.body.innerHTML = '';
     document.body.appendChild(tabSearchItem);
     await flushTasks();
@@ -98,7 +99,7 @@ suite('TabSearchItemTest', () => {
     await setupTest(/** @type {!TabData} */ ({
       hostname: 'example',
       tab,
-      type: TabItemType.OPEN,
+      type: TabItemType.OPEN_TAB,
       highlightRanges: {},
     }));
 
@@ -107,7 +108,7 @@ suite('TabSearchItemTest', () => {
     assertNotEquals(null, tabSearchItemCloseButton);
 
     await setupTest(/** @type {!TabData} */ (
-        {hostname: 'example', tab, type: TabItemType.RECENTLY_CLOSED}));
+        {hostname: 'example', tab, type: TabItemType.RECENTLY_CLOSED_TAB}));
 
     tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
         tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
@@ -138,10 +139,11 @@ suite('TabSearchItemTest', () => {
     await setupTest(/** @type {!TabData} */ ({
       hostname: 'example',
       tab,
-      type: TabItemType.OPEN,
+      type: TabItemType.OPEN_TAB,
       tabGroup,
       highlightRanges: {},
     }));
+
     const groupDotElement = tabSearchItem.shadowRoot.querySelector('#groupDot');
     assertNotEquals(null, groupDotElement);
     const groupDotComputedStyle = getComputedStyle(groupDotElement);

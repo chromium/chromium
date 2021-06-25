@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {quoteString} from 'chrome://resources/js/util.m.js';
+import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import Fuse from './fuse.js';
-import {getPathValue, TabData} from './tab_data.js';
+import {TabData} from './tab_data.js';
 
 /**
  * @param {string} input
@@ -61,7 +62,7 @@ export function fuzzySearch(input, records, options) {
 function cloneTabDataObj(tabData) {
   const clone = Object.assign({}, tabData);
   clone.highlightRanges = {};
-  Object.setPrototypeOf(clone, TabData.prototype);
+  Object.setPrototypeOf(clone, Object.getPrototypeOf(tabData));
 
   return /** @type {!TabData} */ (clone);
 }
@@ -84,7 +85,7 @@ function convertToRanges(matches) {
 /**
  * The exact match algorithm returns records ranked according to the following
  * priorities (highest to lowest priority):
- * 1. All items with a search key matching the searchText at the  beginning of
+ * 1. All items with a search key matching the searchText at the beginning of
  *    the string.
  * 2. All items with a search key matching the searchText at the beginning of a
  *    word in the string.
@@ -119,7 +120,8 @@ function exactSearch(searchText, records, options) {
     const matchedRecord = cloneTabDataObj(tabDataRecord);
     // Searches for fields or nested fields in the record.
     for (const fieldPath in searchFieldWeights) {
-      const text = getPathValue(tabDataRecord, fieldPath.split('.'));
+      const text =
+          /** @type {string} */ (deepGet(tabDataRecord, fieldPath));
       if (text) {
         const ranges = getRanges(text, searchText);
         if (ranges.length !== 0) {
@@ -183,7 +185,7 @@ function hasMatchStringStart(tab, keys) {
 function hasRegexMatch(tab, regexp, keys) {
   return keys.some(
       (key) => tab.highlightRanges[key] !== undefined &&
-          getPathValue(tab, key.split('.')).search(regexp) !== -1);
+          deepGet(tab, key).search(regexp) !== -1);
 }
 
 /**

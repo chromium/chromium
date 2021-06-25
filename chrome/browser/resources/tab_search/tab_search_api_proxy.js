@@ -76,8 +76,8 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  openRecentlyClosedEntry(tabId) {
-    this.handler.openRecentlyClosedEntry(tabId);
+  openRecentlyClosedEntry(id) {
+    this.handler.openRecentlyClosedEntry(id);
   }
 
   /** @override */

@@ -2,29 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import {RecentlyClosedTab, Tab, TabGroup} from './tab_search.mojom-webui.js';
+import {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
 
 /** @enum {number} */
 export const TabItemType = {
-  OPEN: 1,
-  RECENTLY_CLOSED: 2,
+  OPEN_TAB: 1,
+  RECENTLY_CLOSED_TAB: 2,
+  RECENTLY_CLOSED_TAB_GROUP: 3,
 };
 
-/**
- * TabData contains tabSearch.mojom.Tab and data derived from it.
- * It makes tabSearch.mojom.Tab immutable and works well for closure compiler
- * type checking.
- */
-export class TabData {
+export class ItemData {
   constructor() {
-    /** @type {!Tab|!RecentlyClosedTab} */
-    this.tab;
-
-    /** @type {string} */
-    this.hostname;
-
     /** @type {boolean} */
     this.inActiveWindow;
 
@@ -34,7 +25,7 @@ export class TabData {
     /** @type {string} */
     this.a11yTypeText;
 
-    /** @type {?TabGroup} */
+    /** @type {?TabGroup|?RecentlyClosedTabGroup} */
     this.tabGroup;
 
     /** @type {!Object} */
@@ -42,23 +33,35 @@ export class TabData {
   }
 }
 
-// TODO(romanarora): Replace with Polymer's path get function when available.
-// See crbug.com/1221602
 /**
- * @param {!Object} obj
- * @param {!Array<string>} path
- * @return The value present at the path specified or undefined if no such path
- *     exists.
+ * TabData contains tabSearch.mojom.Tab and data derived from it.
+ * It makes tabSearch.mojom.Tab immutable and works well for closure compiler
+ * type checking.
  */
-export function getPathValue(obj, path) {
-  for (let i = 0; i < path.length; i++) {
-    if (obj === undefined) {
-      return undefined;
-    }
-    obj = obj[path[i]];
-  }
+export class TabData extends ItemData {
+  /**
+   * @param {!Tab|!RecentlyClosedTab} tab
+   * @param {!TabItemType} type
+   */
+  constructor(tab, type) {
+    super();
+    /** @type {!Tab|!RecentlyClosedTab} */
+    this.tab = tab;
 
-  return obj;
+    this.type = type;
+
+    /** @type {string} */
+    this.hostname;
+  }
+}
+
+export class TabGroupData extends ItemData {
+  /** @param {!TabGroup|!RecentlyClosedTabGroup} tabGroup */
+  constructor(tabGroup) {
+    super();
+    this.tabGroup = tabGroup;
+    this.type = TabItemType.RECENTLY_CLOSED_TAB_GROUP;
+  }
 }
 
 /**
@@ -72,11 +75,36 @@ export function tokenToString(token) {
 }
 
 /**
- * @param {!TabData} tabData
- * @return {string}
+ * @param {!Token} a
+ * @param {!Token} b
+ * @returns {boolean}
  */
-export function ariaLabel(tabData) {
-  const groupTitleOrEmpty = tabData.tabGroup ? tabData.tabGroup.title : '';
-  return `${tabData.tab.title} ${groupTitleOrEmpty} ${tabData.hostname} ${
-      tabData.tab.lastActiveElapsedText} ${tabData.a11yTypeText}`;
+export function tokenEquals(a, b) {
+  return a.high === b.high && a.low === b.low;
+}
+
+/**
+ * @param {!ItemData} itemData
+ * @return {string}
+ * @throws {Error}
+ */
+export function ariaLabel(itemData) {
+  if (itemData instanceof TabGroupData &&
+      itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
+    const tabGroup =
+        /** @type {!RecentlyClosedTabGroup} */ (itemData.tabGroup);
+    const tabCountText = loadTimeData.getStringF(
+        tabGroup.tabCount == 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
+    return `${tabGroup.title} ${tabCountText} ${
+        tabGroup.lastActiveElapsedText} ${itemData.a11yTypeText}`;
+  }
+
+  if (itemData instanceof TabData) {
+    const tabData = /** @type {TabData} */ (itemData);
+    const groupTitleOrEmpty = tabData.tabGroup ? tabData.tabGroup.title : '';
+    return `${tabData.tab.title} ${groupTitleOrEmpty} ${tabData.hostname} ${
+        tabData.tab.lastActiveElapsedText} ${tabData.a11yTypeText}`;
+  }
+
+  throw new Error('Invalid data provided.');
 }

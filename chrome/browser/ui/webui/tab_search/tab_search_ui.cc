@@ -45,11 +45,12 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"a11yFoundTabsFor", IDS_TAB_SEARCH_A11Y_FOUND_TABS_FOR},
       {"a11yOpenTab", IDS_TAB_SEARCH_A11Y_OPEN_TAB},
       {"a11yRecentlyClosedTab", IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB},
+      {"a11yRecentlyClosedTabGroup",
+       IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB_GROUP},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
-      {"recentlyClosedTabs", IDS_TAB_SEARCH_RECENTLY_CLOSED_TABS},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);

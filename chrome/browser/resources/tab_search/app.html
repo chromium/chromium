@@ -57,9 +57,9 @@
     on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
-<div hidden="[[!filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+<div hidden="[[!filteredItems_.length]]">
   <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
-      items="[[listItems_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+      items="[[filteredItems_]]">
     <template data-type="TitleItem">
       <div class="list-section-title">[[item.title]]</div>
     </template>
@@ -71,8 +71,15 @@
           tabindex="0">
       </tab-search-item>
     </template>
+    <template data-type="TabGroupData" data-selectable>
+      <tab-search-group-item class="mwb-list-item" index="[[index]]"
+          data="[[item]]" aria-label="[[ariaLabel_(item)]]"
+          on-click="onItemClick_" on-focus="onItemFocus_"
+          on-keydown="onItemKeyDown_" role="option" tabindex="0">
+      </tab-search-group-item>
+    </template>
   </infinite-list>
 </div>
-<div id="no-results" hidden="[[filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+<div id="no-results" hidden="[[filteredItems_.length]]">
   $i18n{noResultsFound}
 </div>

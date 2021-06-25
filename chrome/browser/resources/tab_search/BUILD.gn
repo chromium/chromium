@@ -92,6 +92,7 @@ preprocess_if_expr("preprocess") {
     "tab_group_color_helper.js",
     "tab_search.js",
     "tab_search_api_proxy.js",
+    "tab_search_utils.js",
     "title_item.js",
   ]
 }
@@ -106,6 +107,7 @@ preprocess_if_expr("preprocess_web_components") {
     "infinite_list.js",
     "tab_group_shared_vars.js",
     "tab_search_item.js",
+    "tab_search_group_item.js",
     "tab_search_search_field.js",
   ]
 }
@@ -170,6 +172,7 @@ js_type_check("closure_compile") {
     ":tab_data",
     ":tab_search",
     ":tab_search_api_proxy",
+    ":tab_search_group_item",
     ":tab_search_item",
     ":tab_search_search_field",
     ":title_item",
@@ -182,6 +185,7 @@ js_library("app") {
     ":infinite_list",
     ":tab_data",
     ":tab_search_api_proxy",
+    ":tab_search_group_item",
     ":tab_search_item",
     ":tab_search_search_field",
     ":title_item",
@@ -245,6 +249,17 @@ js_library("tab_search_item") {
   ]
 }
 
+js_library("tab_search_group_item") {
+  deps = [
+    ":tab_group_color_helper",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 js_library("tab_search_search_field") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -262,6 +277,7 @@ html_to_js("web_components") {
     "infinite_list.js",
     "tab_group_shared_vars.js",
     "tab_search_item.js",
+    "tab_search_group_item.js",
     "tab_search_search_field.js",
   ]
 }

@@ -396,7 +396,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
             ASSERT_TRUE(window1->active);
             ASSERT_EQ(1u, window1->tabs.size());
 
-            ASSERT_EQ(0u, profile_tabs->tab_groups.size());
+            ASSERT_EQ(1u, profile_tabs->tab_groups.size());
 
             auto& recently_closed_tab_groups =
                 profile_tabs->recently_closed_tab_groups;
@@ -412,11 +412,64 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
                 recently_closed_tabs[0].get();
             ExpectRecentlyClosedTab(tab, kTabUrl2, kTabName2);
             ASSERT_TRUE(tab->group_id);
-            ASSERT_EQ(tab_group->session_id, tab->session_id);
+            ASSERT_EQ(tab_group->id, tab->group_id);
           });
   handler()->GetProfileData(std::move(callback));
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
+TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+
+  // Add tabs to browser windows.
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+  AddTabWithTitle(browser2(), GURL(kTabUrl3), kTabName3);
+  AddTabWithTitle(browser2(), GURL(kTabUrl4), kTabName4);
+
+  // Associate a tab to a given tab group.
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+
+  std::u16string sample_title = u"Sample title";
+  const tab_groups::TabGroupColorId sample_color =
+      tab_groups::TabGroupColorId::kGrey;
+  tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+
+  // Close the tabs associated with a browser.
+  browser1()->tab_strip_model()->CloseAllTabs();
+
+  // Assert that the tabs that were in groups in the closed window contain the
+  // associated group data necessary to render properly.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window2 = profile_tabs->windows[1].get();
+            ASSERT_EQ(2u, window2->tabs.size());
+
+            auto& tab_groups = profile_tabs->tab_groups;
+            ASSERT_EQ(1u, tab_groups.size());
+            tab_search::mojom::TabGroup* tab_group = tab_groups[0].get();
+            ASSERT_EQ(sample_color, tab_group->color);
+            ASSERT_EQ(base::UTF16ToUTF8(sample_title), tab_group->title);
+
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(2u, recently_closed_tabs.size());
+            tab_search::mojom::RecentlyClosedTab* tab =
+                recently_closed_tabs[0].get();
+            ExpectRecentlyClosedTab(tab, kTabUrl2, kTabName2);
+            ASSERT_TRUE(tab->group_id);
+          });
+  handler()->GetProfileData(std::move(callback));
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
 }
 
@@ -588,6 +641,48 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
                                     kTabName1);
           });
   handler()->GetProfileData(std::move(callback1));
+}
+
+TEST_F(TabSearchPageHandlerTest,
+       RecentlyClosedTabGroupsHaveNoRepeatedURLEntries) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+
+  // Add tabs to a browser.
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser2(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser2(), GURL(kTabUrl1), kTabName1);
+
+  // Associate tabs to a given tab group.
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0, 1});
+
+  std::u16string sample_title = u"Sample title";
+  const tab_groups::TabGroupColorId sample_color =
+      tab_groups::TabGroupColorId::kGrey;
+  tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+
+  browser1()->tab_strip_model()->CloseAllTabs();
+  browser2()->tab_strip_model()->CloseAllTabs();
+
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(2u, recently_closed_tabs.size());
+            ExpectRecentlyClosedTab(recently_closed_tabs[0].get(), kTabUrl1,
+                                    kTabName1);
+            ExpectRecentlyClosedTab(recently_closed_tabs[1].get(), kTabUrl1,
+                                    kTabName1);
+          });
+  handler()->GetProfileData(std::move(callback1));
+
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(2);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {

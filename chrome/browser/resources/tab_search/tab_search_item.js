@@ -12,11 +12,12 @@ import './strings.m.js';
 import {MouseHoverableMixin, MouseHoverableMixinInterface} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ariaLabel, getPathValue, TabData, TabItemType} from './tab_data.js';
+import {get as deepGet, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
-import {Tab} from './tab_search.mojom-webui.js';
+import {Tab, TabGroup} from './tab_search.mojom-webui.js';
+import {highlightText} from './tab_search_utils.js';
 
 /**
  * @constructor
@@ -60,7 +61,7 @@ export class TabSearchItem extends TabSearchItemBase {
    * @return {boolean} Whether a close action can be performed on the item.
    */
   isCloseable_(type) {
-    return type === TabItemType.OPEN;
+    return type === TabItemType.OPEN_TAB;
   }
 
   /**
@@ -95,6 +96,15 @@ export class TabSearchItem extends TabSearchItemBase {
   }
 
   /**
+   * @param {!TabData} tabData
+   * @returns {boolean}
+   * @private
+   */
+  hasTabGroupWithTitle_(tabData) {
+    return !!(tabData.tabGroup && tabData.tabGroup.title);
+  }
+
+  /**
    * @param {!TabData} data
    * @private
    */
@@ -105,9 +115,9 @@ export class TabSearchItem extends TabSearchItemBase {
           if (element) {
             const highlightRanges =
                 data.highlightRanges ? data.highlightRanges[path] : undefined;
-            this.highlightText_(
-                /** @type {!HTMLElement} */ (element),
-                getPathValue(data, path.split('.')), highlightRanges);
+            highlightText(
+                /** @type {!HTMLElement} */ (element), deepGet(data, path),
+                highlightRanges);
           }
         });
 
@@ -130,21 +140,6 @@ export class TabSearchItem extends TabSearchItemBase {
       this.style.setProperty(
           '--group-dot-color',
           `var(--tab-group-color-${colorName(data.tabGroup.color)})`);
-    }
-  }
-
-  /**
-   * @param {!HTMLElement} container
-   * @param {string} text
-   * @param {!Array<!{start:number, length:number}>|undefined} ranges
-   * @private
-   */
-  highlightText_(container, text, ranges) {
-    container.textContent = '';
-    const node = document.createTextNode(text);
-    container.appendChild(node);
-    if (ranges) {
-      highlight(node, ranges);
     }
   }
 

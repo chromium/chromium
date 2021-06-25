@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+import {RecentlyClosedTab, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 /** @type {number} */
 export const SAMPLE_WINDOW_HEIGHT = 448;
@@ -71,22 +72,22 @@ export const SAMPLE_WINDOW_DATA = [
   }
 ];
 
-/** @type {!Array} */
+/** @type {!Array<RecentlyClosedTab>} */
 export const SAMPLE_RECENTLY_CLOSED_DATA = [
   {
     tabId: 100,
     title: 'PayPal',
     url: 'https://www.paypal.com',
-    lastActiveTimeTicks: {internalValue: BigInt(11)},
+    lastActiveTime: {internalValue: BigInt(11)},
     lastActiveElapsedText: '',
   },
   {
     tabId: 101,
     title: 'Stripe',
     url: 'https://www.stripe.com',
-    lastActiveTimeTicks: {internalValue: BigInt(12)},
+    lastActiveTime: {internalValue: BigInt(12)},
     lastActiveElapsedText: '',
-  }
+  },
 ];
 
 /** @return {!Array} */
@@ -115,7 +116,7 @@ export function sampleSiteNames(count) {
  */
 export function generateSampleTabsFromSiteNames(siteNames, hasIndex = true) {
   return siteNames.map((siteName, i) => {
-    const tab = /** @type {Tab} */ ({
+    const tab = /** @type {!Tab} */ ({
       tabId: i + 1,
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
@@ -125,6 +126,32 @@ export function generateSampleTabsFromSiteNames(siteNames, hasIndex = true) {
 
     if (hasIndex) {
       tab.index = i;
+    }
+
+    return tab;
+  });
+}
+
+/**
+ * @param {string} titlePrefix
+ * @param {number} count
+ * @param {Token} groupId
+ * @return {!Array<!RecentlyClosedTab>}
+ */
+export function generateSampleRecentlyClosedTabs(
+    titlePrefix, count, groupId = undefined) {
+  return Array.from({length: count}, (_, i) => {
+    const tabId = i + 1;
+    const tab = /** @type {RecentlyClosedTab} */ ({
+      tabId,
+      title: `${titlePrefix} ${tabId}`,
+      url: `https://www.sampletab.com?q=${tabId}`,
+      lastActiveTime: {internalValue: BigInt(count - i)},
+      lastActiveElapsedText: '',
+    });
+
+    if (groupId !== undefined) {
+      tab.groupId = groupId;
     }
 
     return tab;

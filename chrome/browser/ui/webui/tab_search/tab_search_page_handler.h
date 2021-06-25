@@ -75,6 +75,12 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
  private:
+  // Used to determine if a specific tab should be included or not in the
+  // results of GetProfileData. Tab url/group combinations that have been
+  // previously added to the ProfileData will not be added more than once by
+  // leveraging DedupKey comparisons.
+  typedef std::tuple<std::string, absl::optional<base::Token>> DedupKey;
+
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
     TabDetails(Browser* browser, TabStripModel* tab_strip_model, int index)
@@ -95,16 +101,17 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
           recently_closed_tab_groups,
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
-      std::set<std::string>& tab_urls);
+      std::set<DedupKey>& tab_dedup_keys);
 
-  // Tries to add a single recently closed tab to a flattened list. Returns true
-  // if a recently closed tab was added to `recently_closed_tabs`.
+  // Tries to add a recently closed tab to the profile data.
+  // Returns true if a recently closed tab was added to `recently_closed_tabs`
   bool AddRecentlyClosedTab(
       sessions::TabRestoreService::Tab* tab,
-      int32_t session_id,
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
           recently_closed_tabs,
-      std::set<std::string>& tab_urls);
+      std::set<DedupKey>& tab_dedup_keys,
+      std::set<tab_groups::TabGroupId>& tab_group_ids,
+      std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
   tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
                                    content::WebContents* contents,
