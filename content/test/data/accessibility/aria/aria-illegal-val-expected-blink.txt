@@ -4,11 +4,11 @@ rootWebArea
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='polite' name='Atomic illegal' liveRelevant='additions text' liveStatus='polite' containerLiveAtomic=true containerLiveBusy=false liveAtomic=true
 ++++++textField autoComplete='x-illegal' name='Autocomplete illegal'
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='polite' name='Busy illegal' liveRelevant='additions text' liveStatus='polite' busy=true containerLiveAtomic=false containerLiveBusy=true liveAtomic=false
-++++++treeItem name='Checked illegal' checkedState=true
+++++++treeItem name='Checked illegal' checkedState=true selected=false
 ++++++group name='Current illegal' ariaCurrentState=true
 ++++++group name='Disabled illegal' restriction=disabled
 ++++++group name='Dropeffect illegal' dropeffect=none
-++++++treeItem expanded name='Expanded illegal'
+++++++treeItem expanded name='Expanded illegal' selected=false
 ++++++group name='Grabbed illegal'
 ++++++button name='Haspopup illegal'
 ++++++group ariaInvalidValue='X-ILLEGAL' name='Invalid illegal' invalidState=other

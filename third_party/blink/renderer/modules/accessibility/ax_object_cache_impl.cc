@@ -2653,6 +2653,11 @@ void AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout(Node* node) {
                "AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout", "id",
                obj->AXObjectID());
   PostNotification(obj, ax::mojom::Event::kBlur);
+
+  if (AXObject* active_descendant = obj->ActiveDescendant()) {
+    if (active_descendant->IsSelectedFromFocusSupported())
+      HandleAriaSelectedChangedWithCleanLayout(active_descendant->GetNode());
+  }
 }
 
 void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
@@ -2676,6 +2681,11 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
                "AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout", "id",
                obj->AXObjectID());
   PostNotification(obj, ax::mojom::Event::kFocus);
+
+  if (AXObject* active_descendant = obj->ActiveDescendant()) {
+    if (active_descendant->IsSelectedFromFocusSupported())
+      HandleAriaSelectedChangedWithCleanLayout(active_descendant->GetNode());
+  }
 }
 
 // This might be the new target of a relation. Handle all possible cases.

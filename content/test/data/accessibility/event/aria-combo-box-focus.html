@@ -2,8 +2,14 @@
 This line is to unflake the test, but may not be necessary (crbug.com/c/791268):
 @WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
 @WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:EVENT_OBJECT_HIDE*
 @UIA-WIN-DENY:StructureChanged/*
 @UIA-WIN-DENY:Text_TextSelectionChanged*
+@MAC-RUN-UNTIL-EVENT:AXSelectedTextChanged
+@MAC-RUN-UNTIL-EVENT:AXSelectedChildrenChanged
+@UIA-WIN-RUN-UNTIL-EVENT:SelectionItemIsSelected
+@WIN-RUN-UNTIL-EVENT:EVENT_OBJECT_STATECHANGE
+@AURALINUX-RUN-UNTIL-EVENT:SELECTION-CHANGED
 -->
 <!DOCTYPE html>
 <html>
@@ -15,9 +21,17 @@ This line is to unflake the test, but may not be necessary (crbug.com/c/791268):
 <li id="option2" role="option">Orange</li>
 <li id="option3" role="option">Banana</li>
 </ul>
+<button></button>
 <script>
+  var go_passes = [
+    () => document.querySelector('input').focus(),
+    () => document.querySelector('button').focus(),
+  ];
+
+  var current_pass = 0;
   function go() {
-    document.querySelector('input').focus();
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
   }
 </script>
 </body>

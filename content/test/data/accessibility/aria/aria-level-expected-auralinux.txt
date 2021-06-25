@@ -14,12 +14,12 @@
 ++[heading] name='Level 5' level:5
 ++++[static] name='Level 5'
 ++[tree]
-++++[tree item] name='Tree item at level 1' expandable expanded level:1
+++++[tree item] name='Tree item at level 1' expandable expanded selectable level:1
 ++++++[static] name='Tree item at level 1'
 ++++++[panel]
-++++++++[tree item] name='Tree item at level 2' level:2
+++++++++[tree item] name='Tree item at level 2' selectable level:2
 ++++++++++[static] name='Tree item at level 2'
-++++[tree item] name='Tree item at level 3' level:3
+++++[tree item] name='Tree item at level 3' selectable level:3
 ++++++[static] name='Tree item at level 3'
 ++[tree table] cols=1 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
 ++++[table row] level:1

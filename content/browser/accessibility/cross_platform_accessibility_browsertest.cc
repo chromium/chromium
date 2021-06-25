@@ -157,6 +157,26 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
     return nullptr;
   }
 
+  BrowserAccessibility* FindFirstNodeWithRole(ax::mojom::Role role_value) {
+    return FindFirstNodeWithRoleInSubtree(*GetManager()->GetRoot(), role_value);
+  }
+
+  BrowserAccessibility* FindFirstNodeWithRoleInSubtree(
+      BrowserAccessibility& node,
+      ax::mojom::Role role_value) {
+    if (node.GetRole() == role_value)
+      return &node;
+
+    for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
+      BrowserAccessibility* result =
+          FindFirstNodeWithRoleInSubtree(*node.PlatformGetChild(i), role_value);
+      if (result)
+        return result;
+    }
+
+    return nullptr;
+  }
+
   std::string GetAttr(const ui::AXNode* node,
                       const ax::mojom::StringAttribute attr);
   int GetIntAttr(const ui::AXNode* node, const ax::mojom::IntAttribute attr);
@@ -1737,6 +1757,240 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   while (GetNameOfFocusedNode() != "Bottom of Inner 2") {
     PressTabAndWaitForFocusChange();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrossPlatformAccessibilityBrowserTest,
+    SingleSelectionContainerSelectionFollowsFocusWithoutActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <body>
+        <input role="combobox" type="search" aria-expanded="true"
+               aria-haspopup="true" aria-autocomplete="list" aria-owns="list">
+        <ul id="list" role="listbox">
+        <li id="option1" role="option" tabindex="-1">Apple</li>
+        <li id="option2" role="option" tabindex="-1">Orange</li>
+        </ul>
+      </body></html>)HTML");
+
+  BrowserAccessibilityManager* browser_accessibility_manager = GetManager();
+  BrowserAccessibility* root_browser_accessibility =
+      browser_accessibility_manager->GetRoot();
+  ASSERT_NE(root_browser_accessibility, nullptr);
+
+  BrowserAccessibility* input_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kTextFieldWithComboBox);
+  ASSERT_NE(input_browser_accessibility, nullptr);
+  BrowserAccessibility* list_box_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kListBox);
+  ASSERT_NE(list_box_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_1_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(0);
+  ASSERT_NE(list_option_1_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_2_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(1);
+  ASSERT_NE(list_option_2_browser_accessibility, nullptr);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::SELECTED_CHANGED);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = list_option_1_browser_accessibility->GetId();
+    list_option_1_browser_accessibility->AccessibilityPerformAction(
+        action_data);
+    waiter.WaitForNotification();
+  }
+
+  EXPECT_TRUE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::SELECTED_CHANGED);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = list_option_2_browser_accessibility->GetId();
+    list_option_2_browser_accessibility->AccessibilityPerformAction(
+        action_data);
+    waiter.WaitForNotification();
+  }
+
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_TRUE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SingleSelectionContainerFocusSelectsActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <body>
+        <input role="combobox" type="search" aria-expanded="true"
+               aria-haspopup="true" aria-autocomplete="list"
+               aria-activedescendant="option1" aria-owns="list">
+        <ul id="list" role="listbox">
+        <li id="option1" role="option">Apple</li>
+        <li id="option2" role="option">Orange</li>
+        </ul>
+        <button></button>
+      </body></html>)HTML");
+
+  BrowserAccessibilityManager* browser_accessibility_manager = GetManager();
+  BrowserAccessibility* root_browser_accessibility =
+      browser_accessibility_manager->GetRoot();
+  ASSERT_NE(root_browser_accessibility, nullptr);
+
+  BrowserAccessibility* input_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kTextFieldWithComboBox);
+  ASSERT_NE(input_browser_accessibility, nullptr);
+  BrowserAccessibility* list_box_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kListBox);
+  ASSERT_NE(list_box_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_1_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(0);
+  ASSERT_NE(list_option_1_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_2_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(1);
+  ASSERT_NE(list_option_2_browser_accessibility, nullptr);
+  BrowserAccessibility* button_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kButton);
+  ASSERT_NE(button_browser_accessibility, nullptr);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::SELECTED_CHANGED);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = input_browser_accessibility->GetId();
+    input_browser_accessibility->AccessibilityPerformAction(action_data);
+    waiter.WaitForNotification();
+  }
+
+  ui::AXNodeID active_descendant_id = ui::kInvalidAXNodeID;
+  EXPECT_TRUE(input_browser_accessibility->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, list_option_1_browser_accessibility->GetId());
+  EXPECT_TRUE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::SELECTED_CHANGED);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = button_browser_accessibility->GetId();
+    button_browser_accessibility->AccessibilityPerformAction(action_data);
+    waiter.WaitForNotification();
+  }
+
+  active_descendant_id = ui::kInvalidAXNodeID;
+  EXPECT_TRUE(input_browser_accessibility->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, list_option_1_browser_accessibility->GetId());
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrossPlatformAccessibilityBrowserTest,
+    SingleSelectionContainerSelectionFollowsFocusNotSupported) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <body>
+        <input role="combobox" type="search" aria-expanded="true"
+               aria-haspopup="true" aria-autocomplete="list"
+               aria-activedescendant="option1" aria-owns="list">
+        <ul id="list" role="listbox">
+        <li id="option1" role="row" tabindex="-1">Apple</li>
+        <li id="option2" role="row" tabindex="-1">Orange</li>
+        </ul>
+      </body></html>)HTML");
+
+  BrowserAccessibilityManager* browser_accessibility_manager = GetManager();
+  BrowserAccessibility* root_browser_accessibility =
+      browser_accessibility_manager->GetRoot();
+  ASSERT_NE(root_browser_accessibility, nullptr);
+
+  BrowserAccessibility* input_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kTextFieldWithComboBox);
+  ASSERT_NE(input_browser_accessibility, nullptr);
+  BrowserAccessibility* list_box_browser_accessibility =
+      FindFirstNodeWithRole(ax::mojom::Role::kListBox);
+  ASSERT_NE(list_box_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_1_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(0);
+  ASSERT_NE(list_option_1_browser_accessibility, nullptr);
+  BrowserAccessibility* list_option_2_browser_accessibility =
+      list_box_browser_accessibility->PlatformGetChild(1);
+  ASSERT_NE(list_option_2_browser_accessibility, nullptr);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = list_option_1_browser_accessibility->GetId();
+    list_option_1_browser_accessibility->AccessibilityPerformAction(
+        action_data);
+    waiter.WaitForNotification();
+  }
+
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    action_data.target_node_id = list_option_2_browser_accessibility->GetId();
+    list_option_2_browser_accessibility->AccessibilityPerformAction(
+        action_data);
+    waiter.WaitForNotification();
+  }
+
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(list_option_2_browser_accessibility->GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelectedFromFocus));
 }
 
 }  // namespace content

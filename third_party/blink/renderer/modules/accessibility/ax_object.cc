@@ -1996,6 +1996,10 @@ AccessibilitySelectedState AXObject::IsSelected() const {
   return kSelectedStateUndefined;
 }
 
+bool AXObject::IsSelectedFromFocusSupported() const {
+  return false;
+}
+
 bool AXObject::IsSelectedFromFocus() const {
   return false;
 }

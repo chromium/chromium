@@ -116,6 +116,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AccessibilityGrabbedState IsGrabbed() const override;
   AccessibilityExpanded IsExpanded() const override;
   AccessibilitySelectedState IsSelected() const override;
+  bool IsSelectedFromFocusSupported() const override;
   bool IsSelectedFromFocus() const override;
   bool IsRequired() const final;
   bool IsControl() const override;
@@ -293,7 +294,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String PlaceholderFromNativeAttribute() const;
   String GetValueContributionToName() const;
   bool UseNameFromSelectedOption() const;
-  bool SelectionShouldFollowFocus() const;
   virtual bool IsTabItemSelected() const;
 
   void AddChildrenImpl();

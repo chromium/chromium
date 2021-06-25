@@ -161,6 +161,13 @@ AX_BASE_EXPORT bool IsSelect(const ax::mojom::Role role);
 // element.
 AX_BASE_EXPORT bool IsSelectElement(const ax::mojom::Role role);
 
+// Returns true if the provided role either requires or has an implicit value
+// for aria-selected state.
+AX_BASE_EXPORT bool IsSelectRequiredOrImplicit(const ax::mojom::Role role);
+
+// Returns true if the provided role supports aria-selected state.
+AX_BASE_EXPORT bool IsSelectSupported(const ax::mojom::Role role);
+
 // Returns true if the provided role is ordered-set like, specifically if it
 // can hold set_size values. Roles that are set-like are not item-like.
 AX_BASE_EXPORT bool IsSetLike(const ax::mojom::Role role);
@@ -205,9 +212,6 @@ AX_BASE_EXPORT bool SupportsHierarchicalLevel(const ax::mojom::Role role);
 
 // Returns true if the provided role can have an orientation.
 AX_BASE_EXPORT bool SupportsOrientation(const ax::mojom::Role role);
-
-// Returns true if the provided role supports aria-selected state.
-AX_BASE_EXPORT bool SupportsSelected(const ax::mojom::Role role);
 
 // Returns true if the provided role supports toggle.
 AX_BASE_EXPORT bool SupportsToggle(const ax::mojom::Role role);

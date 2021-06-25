@@ -23,14 +23,14 @@ rootWebArea
 ++++++++staticText name='Level 5'
 ++++++++++inlineTextBox name='Level 5'
 ++++++tree
-++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1
+++++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
 ++++++++++staticText name='Tree item at level 1'
 ++++++++++++inlineTextBox name='Tree item at level 1'
 ++++++++++group
-++++++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2
+++++++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2 selected=false
 ++++++++++++++staticText name='Tree item at level 2'
 ++++++++++++++++inlineTextBox name='Tree item at level 2'
-++++++++treeItem name='Tree item at level 3' hierarchicalLevel=3
+++++++++treeItem name='Tree item at level 3' hierarchicalLevel=3 selected=false
 ++++++++++staticText name='Tree item at level 3'
 ++++++++++++inlineTextBox name='Tree item at level 3'
 ++++++treeGrid

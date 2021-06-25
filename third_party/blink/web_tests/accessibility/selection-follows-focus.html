@@ -12,9 +12,9 @@
     <div id="opt2.1" role="option">Option 2.1</div>
 </div>
 
-<!-- Selection should not follow focus for tree items -->
 <div role="tree" id="tree">
     <div id="treeitem1" role="treeitem" tabindex="-1">Tree item 1</div>
+    <div id="treeitem2" role="treeitem">Tree item 2</div>
 </div>
 
 <script>
@@ -59,7 +59,13 @@ test(function(t) {
 test(function(t) {
     document.getElementById('treeitem1').focus();
     var treeitem1 = axElementById("treeitem1");
-    assert_equals(treeitem1.isSelected, false);
-}, "Selection doesn't follow tabindex focus in tree items");
+    assert_equals(treeitem1.isSelected, true);
+}, "Selection follows tabindex focus in a single selection container");
+
+test(function(t) {
+    document.getElementById('treeitem2').focus();
+    var treeitem2 = axElementById("treeitem2");
+    assert_equals(treeitem2.isSelected, false);
+}, "Selection doesn't follow focus when aria-selected=false");
 
 </script>

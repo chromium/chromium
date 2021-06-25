@@ -606,6 +606,34 @@ bool IsSelectElement(const ax::mojom::Role role) {
   }
 }
 
+bool IsSelectRequiredOrImplicit(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kTab:
+    case ax::mojom::Role::kTreeItem:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsSelectSupported(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kColumnHeader:
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kRow:
+    case ax::mojom::Role::kRowHeader:
+    case ax::mojom::Role::kTab:
+    case ax::mojom::Role::kTreeItem:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsSetLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kDescriptionList:
@@ -822,22 +850,6 @@ bool SupportsOrientation(const ax::mojom::Role role) {
     case ax::mojom::Role::kToolbar:
     case ax::mojom::Role::kTreeGrid:
     case ax::mojom::Role::kTree:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool SupportsSelected(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kCell:
-    case ax::mojom::Role::kColumnHeader:
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kRow:
-    case ax::mojom::Role::kRowHeader:
-    case ax::mojom::Role::kTab:
-    case ax::mojom::Role::kTreeItem:
       return true;
     default:
       return false;
