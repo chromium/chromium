@@ -5,16 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_MANAGER_H_
 #define CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_MANAGER_H_
 
+#include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
+#include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
+#include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -23,6 +27,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,7 +59,7 @@ struct TabProperty {
   // Tab URL's engagement score. -1 if engagement service is disabled.
   int engagement_score = -1;
   // Whether user has form entry, i.e. text input.
-  bool has_form_entry;
+  bool has_form_entry = false;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -76,7 +81,8 @@ enum class FinalResult { kReactivation = 0, kOff = 1, kMaxValue = kOff };
 class UserActivityManager : public ui::UserActivityObserver,
                             public PowerManagerClient::Observer,
                             public viz::mojom::VideoDetectorObserver,
-                            public session_manager::SessionManagerObserver {
+                            public session_manager::SessionManagerObserver,
+                            public crosapi::WebPageInfoFactoryAsh::Observer {
  public:
   UserActivityManager(
       UserActivityUkmLogger* ukm_logger,
@@ -111,6 +117,14 @@ class UserActivityManager : public ui::UserActivityObserver,
   void UpdateAndGetSmartDimDecision(const IdleEventNotifier::ActivityData& data,
                                     base::OnceCallback<void(bool)> callback);
 
+  // Extracts `features_` with `activity_data` and `lacros_web_page_info` if
+  // it's not nullptr, otherwise with ash tab property, then makes call to
+  // ml-service with updated `features_` if smart dim is enabled.
+  void UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
+      const IdleEventNotifier::ActivityData& activity_data,
+      base::OnceCallback<void(bool)> callback,
+      crosapi::mojom::WebPageInfoPtr lacros_web_page_info);
+
   // Converts a Smart Dim model |prediction| into a yes/no decision about
   // whether to defer the screen dim and provides the result via |callback|.
   void HandleSmartDimDecision(base::OnceCallback<void(bool)> callback,
@@ -118,6 +132,16 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // session_manager::SessionManagerObserver overrides:
   void OnSessionStateChanged() override;
+
+  // crosapi::WebPageInfoFactoryAsh::Observer overrides:
+  // Called when a new lacros connection is registered, updates the
+  // `lacros_remote_id_`.
+  void OnLacrosInstanceRegistered(
+      const mojo::RemoteSetElementId& remote_id) override;
+  // Called when a lacros connection is disconnected, cleans the value of
+  // `lacros_remote_id_` if it's the one.
+  void OnLacrosInstanceDisconnected(
+      const mojo::RemoteSetElementId& remote_id) override;
 
  private:
   friend class UserActivityManagerTest;
@@ -136,8 +160,10 @@ class UserActivityManager : public ui::UserActivityObserver,
   // Gets properties of active tab from visible focused/topmost browser.
   TabProperty UpdateOpenTabURL();
 
-  // Extracts features from last known activity data and from device states.
-  void ExtractFeatures(const IdleEventNotifier::ActivityData& activity_data);
+  // Extracts features from last known activity data, device states and topmost
+  // browser window.
+  void ExtractFeatures(const IdleEventNotifier::ActivityData& activity_data,
+                       crosapi::mojom::WebPageInfoPtr lacros_web_page_info);
 
   // Log event only when an idle event is observed.
   void MaybeLogEvent(UserActivityEvent::Event::Type type,
@@ -152,6 +178,9 @@ class UserActivityManager : public ui::UserActivityObserver,
   void PopulatePreviousEventData(const base::TimeDelta& now);
 
   void ResetAfterLogging();
+
+  // Cancel any pending request for lacros web page info.
+  void CancelLacrosWebPageInfoRequest();
 
   // Cancel any pending request to `SmartDimMlAgent` to get a dim decision.
   void CancelDimDecisionRequest();
@@ -228,6 +257,9 @@ class UserActivityManager : public ui::UserActivityObserver,
   // set to true after we've received an idle event, but haven't received final
   // action to log the event.
   bool waiting_for_final_action_ = false;
+  // Whether we are waiting for features from lacros. Request to lacros for
+  // WebPageInfo is async.
+  bool waiting_for_lacros_features_ = false;
   // Whether we are waiting for a decision from the `SmartDimMlAgent`
   // regarding whether to proceed with a dim or not. It is only set
   // to true in OnIdleEventObserved() when we request a dim decision.
@@ -242,6 +274,15 @@ class UserActivityManager : public ui::UserActivityObserver,
   absl::optional<UserActivityEvent::ModelPrediction> model_prediction_;
 
   std::unique_ptr<PreviousIdleEventData> previous_idle_event_data_;
+
+  base::CancelableOnceCallback<void(crosapi::mojom::WebPageInfoPtr)>
+      lacros_web_page_info_callback_;
+  // Latest registered lacros remote id list.
+  // We just use the latest registered lacros connection when we meet a lacros
+  // window in mru window list first, with the assumption there's only one
+  // lacros instance at most. Although multiple lacros instances are possible
+  // for developers' convenience, we don't expect it to reach the end users.
+  absl::optional<mojo::RemoteSetElementId> lacros_remote_id_ = absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

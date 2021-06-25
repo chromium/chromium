@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_WEB_PAGE_INFO_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_WEB_PAGE_INFO_ASH_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -17,6 +20,14 @@ namespace crosapi {
 // the UI thread.
 class WebPageInfoFactoryAsh : public mojom::WebPageInfoFactory {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnLacrosInstanceRegistered(
+        const mojo::RemoteSetElementId& remote_id) = 0;
+    virtual void OnLacrosInstanceDisconnected(
+        const mojo::RemoteSetElementId& remote_id) = 0;
+  };
+
   WebPageInfoFactoryAsh();
   WebPageInfoFactoryAsh(const WebPageInfoFactoryAsh&) = delete;
   WebPageInfoFactoryAsh& operator=(const WebPageInfoFactoryAsh&) = delete;
@@ -29,14 +40,28 @@ class WebPageInfoFactoryAsh : public mojom::WebPageInfoFactory {
       mojo::PendingRemote<mojom::WebPageInfoProvider> web_page_info_provider)
       override;
 
-  // TODO(alanlxl): Add methods for smart dim to request lacros web page info.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Called by smart dim to request web page info from lacros. When receiving a
+  // WebPageInfoPtr, runs the callback.
+  using RequestCurrentWebPageInfoCallback =
+      base::OnceCallback<void(mojom::WebPageInfoPtr)>;
+  void RequestCurrentWebPageInfo(const mojo::RemoteSetElementId& remote_id,
+                                 RequestCurrentWebPageInfoCallback callback);
 
  private:
+  void OnDisconnected(mojo::RemoteSetElementId mojo_id);
+
   // Any number of crosapi clients can connect to this class.
   mojo::ReceiverSet<mojom::WebPageInfoFactory> receivers_;
 
   // This set maintains all registered web page info providers.
   mojo::RemoteSet<mojom::WebPageInfoProvider> web_page_info_providers_;
+
+  // The customers of lacros web page info. When `RegisterWebPageInfoProvider`
+  // is called, notify observers with the RemoteSetElementId.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<WebPageInfoFactoryAsh> weak_factory_{this};
 };

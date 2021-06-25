@@ -6,7 +6,10 @@
 
 namespace crosapi {
 
-WebPageInfoFactoryAsh::WebPageInfoFactoryAsh() = default;
+WebPageInfoFactoryAsh::WebPageInfoFactoryAsh() {
+  web_page_info_providers_.set_disconnect_handler(base::BindRepeating(
+      &WebPageInfoFactoryAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
+}
 
 WebPageInfoFactoryAsh::~WebPageInfoFactoryAsh() = default;
 
@@ -19,7 +22,33 @@ void WebPageInfoFactoryAsh::RegisterWebPageInfoProvider(
     mojo::PendingRemote<mojom::WebPageInfoProvider> web_page_info_provider) {
   mojo::Remote<mojom::WebPageInfoProvider> remote(
       std::move(web_page_info_provider));
-  web_page_info_providers_.Add(std::move(remote));
+  const auto remote_id = web_page_info_providers_.Add(std::move(remote));
+
+  for (auto& observer : observers_) {
+    observer.OnLacrosInstanceRegistered(remote_id);
+  }
+}
+
+void WebPageInfoFactoryAsh::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebPageInfoFactoryAsh::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void WebPageInfoFactoryAsh::RequestCurrentWebPageInfo(
+    const mojo::RemoteSetElementId& remote_id,
+    RequestCurrentWebPageInfoCallback callback) {
+  DCHECK(web_page_info_providers_.Contains(remote_id));
+  web_page_info_providers_.Get(remote_id)->RequestCurrentWebPageInfo(
+      std::move(callback));
+}
+
+void WebPageInfoFactoryAsh::OnDisconnected(mojo::RemoteSetElementId mojo_id) {
+  for (auto& observer : observers_) {
+    observer.OnLacrosInstanceDisconnected(mojo_id);
+  }
 }
 
 }  // namespace crosapi
