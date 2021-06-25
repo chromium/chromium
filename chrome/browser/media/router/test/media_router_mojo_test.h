@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
@@ -40,6 +39,8 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                               RouteRequestResult::ResultCode)>;
 
   MockMediaRouteProvider();
+  MockMediaRouteProvider(const MockMediaRouteProvider&) = delete;
+  MockMediaRouteProvider& operator=(const MockMediaRouteProvider&) = delete;
   ~MockMediaRouteProvider() override;
 
   void CreateRoute(const std::string& source_urn,
@@ -160,8 +161,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
  private:
   // The route that is passed into callbacks.
   absl::optional<MediaRoute> route_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaRouteProvider);
 };
 
 class MockMediaStatusObserver : public mojom::MediaStatusObserver {
@@ -202,6 +201,8 @@ class MockMediaController : public mojom::MediaController {
 class MediaRouterMojoTest : public ::testing::Test {
  public:
   MediaRouterMojoTest();
+  MediaRouterMojoTest(const MediaRouterMojoTest&) = delete;
+  MediaRouterMojoTest& operator=(const MediaRouterMojoTest&) = delete;
   ~MediaRouterMojoTest() override;
 
  protected:
@@ -238,8 +239,8 @@ class MediaRouterMojoTest : public ::testing::Test {
   Profile* profile() { return &profile_; }
 
   // Mock objects.
-  MockMediaRouteProvider mock_cast_provider_;
-  MockMediaRouteProvider mock_wired_display_provider_;
+  testing::NiceMock<MockMediaRouteProvider> mock_cast_provider_;
+  testing::NiceMock<MockMediaRouteProvider> mock_wired_display_provider_;
 
  private:
   // Helper method for RegisterCastProvider() and
@@ -253,14 +254,15 @@ class MediaRouterMojoTest : public ::testing::Test {
   mojo::ReceiverSet<mojom::MediaRouteProvider> provider_receivers_;
   std::unique_ptr<MediaRoutesObserver> routes_observer_;
   std::unique_ptr<MockMediaSinksObserver> sinks_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterMojoTest);
 };
 
 // An object whose Invoke method can be passed as a MediaRouteResponseCallback.
 class RouteResponseCallbackHandler {
  public:
   RouteResponseCallbackHandler();
+  RouteResponseCallbackHandler(const RouteResponseCallbackHandler&) = delete;
+  RouteResponseCallbackHandler& operator=(const RouteResponseCallbackHandler&) =
+      delete;
   ~RouteResponseCallbackHandler();
 
   // Calls DoInvoke with the contents of |connection| and |result|.
@@ -273,9 +275,6 @@ class RouteResponseCallbackHandler {
                     const std::string& error_text,
                     RouteRequestResult::ResultCode result_code,
                     mojom::RoutePresentationConnectionPtr& connection));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RouteResponseCallbackHandler);
 };
 
 }  // namespace media_router

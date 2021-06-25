@@ -43,6 +43,7 @@
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 using testing::WithArg;
 
@@ -206,7 +207,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
   void StartCastingAndExpectTimeout(MediaCastMode cast_mode,
                                     const std::string& expected_issue_title,
                                     int timeout_seconds) {
-    MockControllerObserver observer(ui_.get());
+    NiceMock<MockControllerObserver> observer(ui_.get());
     MediaSink sink(kSinkId, kSinkName, SinkIconType::CAST);
     ui_->OnResultsUpdated({{sink, {cast_mode}}});
     MediaRouteResponseCallback callback;
@@ -305,7 +306,7 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
 }
 
 TEST_F(MediaRouterViewsUITest, SinkFriendlyName) {
-  MockControllerObserver observer(ui_.get());
+  NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink(kSinkId, kSinkName, SinkIconType::CAST);
   sink.set_description(kSinkDescription);
@@ -363,7 +364,7 @@ TEST_F(MediaRouterViewsUITest, StopCasting) {
 }
 
 TEST_F(MediaRouterViewsUITest, ConnectingState) {
-  MockControllerObserver observer(ui_.get());
+  NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink(kSinkId, kSinkName, SinkIconType::GENERIC);
   for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
@@ -389,7 +390,7 @@ TEST_F(MediaRouterViewsUITest, ConnectingState) {
 }
 
 TEST_F(MediaRouterViewsUITest, DisconnectingState) {
-  MockControllerObserver observer(ui_.get());
+  NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink(kSinkId, kSinkName, SinkIconType::GENERIC);
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true, true);
@@ -422,8 +423,8 @@ TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
   NotifyUiOnResultsUpdated({{sink1, {MediaCastMode::TAB_MIRROR}},
                             {sink2, {MediaCastMode::TAB_MIRROR}}});
 
-  MockControllerObserver observer(ui_.get());
-  MockIssuesObserver issues_observer(mock_router_->GetIssueManager());
+  NiceMock<MockControllerObserver> observer(ui_.get());
+  NiceMock<MockIssuesObserver> issues_observer(mock_router_->GetIssueManager());
   issues_observer.Init();
   const std::string issue_title("Issue 1");
   IssueInfo issue(issue_title, IssueInfo::Action::DISMISS,
@@ -634,7 +635,7 @@ TEST_F(MediaRouterViewsUITest, AbortErrorOnClose) {
 // that display, to prevent showing a fullscreen presentation window over the
 // controlling window.
 TEST_F(MediaRouterViewsUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
-  MockControllerObserver observer(ui_.get());
+  NiceMock<MockControllerObserver> observer(ui_.get());
   const display::Display display1(1000001);
   const display::Display display2(1000002);
   const std::string display_sink_id1 =

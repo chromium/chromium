@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +35,7 @@
 using media_session::mojom::MediaPlaybackState;
 using media_session::mojom::MediaSessionAction;
 using ::testing::_;
+using ::testing::NiceMock;
 
 namespace {
 
@@ -43,7 +47,11 @@ class MockMediaNotificationContainerObserver
     : public MediaNotificationContainerObserver {
  public:
   MockMediaNotificationContainerObserver() = default;
-  ~MockMediaNotificationContainerObserver() = default;
+  MockMediaNotificationContainerObserver(
+      const MockMediaNotificationContainerObserver&) = delete;
+  MockMediaNotificationContainerObserver& operator=(
+      const MockMediaNotificationContainerObserver&) = delete;
+  ~MockMediaNotificationContainerObserver() override = default;
 
   // MediaNotificationContainerObserver implementation.
   MOCK_METHOD0(OnContainerSizeChanged, void());
@@ -56,9 +64,6 @@ class MockMediaNotificationContainerObserver
                void(const std::string& id, gfx::Rect bounds));
   MOCK_METHOD2(OnAudioSinkChosen,
                void(const std::string& id, const std::string& sink_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMediaNotificationContainerObserver);
 };
 
 media_router::MediaRoute CreateMediaRoute() {
@@ -103,12 +108,16 @@ class MockMediaNotificationController
 class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
  public:
   MediaNotificationContainerImplViewTest() : screen_override_(&fake_screen_) {}
+  MediaNotificationContainerImplViewTest(
+      const MediaNotificationContainerImplViewTest&) = delete;
+  MediaNotificationContainerImplViewTest& operator=(
+      const MediaNotificationContainerImplViewTest&) = delete;
   ~MediaNotificationContainerImplViewTest() override = default;
 
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    item_ = std::make_unique<MockMediaNotificationItem>();
+    item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
     SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
         kTestNotificationId, item_->GetWeakPtr(), nullptr,
         GlobalMediaControlsEntryPoint::kToolbarIcon));
@@ -121,7 +130,8 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     notification_container_ =
         widget_->SetContentsView(std::move(notification_container));
 
-    observer_ = std::make_unique<MockMediaNotificationContainerObserver>();
+    observer_ =
+        std::make_unique<NiceMock<MockMediaNotificationContainerObserver>>();
     notification_container_->AddObserver(observer_.get());
 
     SimulateMediaSessionData();
@@ -297,8 +307,6 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
 
   display::test::TestScreen fake_screen_;
   display::test::ScopedScreenOverride screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplViewTest);
 };
 
 // TODO(https://crbug.com/1022452): Remove this class once
@@ -400,7 +408,7 @@ class MediaNotificationContainerImplViewCastTest
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationItem> item_;
-  MockMediaNotificationController notification_controller_;
+  NiceMock<MockMediaNotificationController> notification_controller_;
   MockSessionController* session_controller_ = nullptr;
 };
 

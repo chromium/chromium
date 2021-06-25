@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@ using media_session::mojom::AudioFocusRequestStatePtr;
 using media_session::mojom::MediaSessionInfo;
 using media_session::mojom::MediaSessionInfoPtr;
 using testing::_;
+using testing::NiceMock;
 
 namespace {
 
@@ -52,9 +54,11 @@ class MockMediaToolbarButtonControllerDelegate
 
 class MediaToolbarButtonControllerTest : public testing::Test {
  public:
-  MediaToolbarButtonControllerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-                          base::test::TaskEnvironment::MainThreadType::UI) {}
+  MediaToolbarButtonControllerTest() = default;
+  MediaToolbarButtonControllerTest(const MediaToolbarButtonControllerTest&) =
+      delete;
+  MediaToolbarButtonControllerTest& operator=(
+      const MediaToolbarButtonControllerTest&) = delete;
   ~MediaToolbarButtonControllerTest() override = default;
 
   void SetUp() override {
@@ -130,14 +134,14 @@ class MediaToolbarButtonControllerTest : public testing::Test {
   MockMediaToolbarButtonControllerDelegate& delegate() { return delegate_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  MockMediaToolbarButtonControllerDelegate delegate_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::MainThreadType::UI};
+  NiceMock<MockMediaToolbarButtonControllerDelegate> delegate_;
   TestingProfile profile_;
   std::unique_ptr<MediaNotificationService> service_;
   std::unique_ptr<MediaToolbarButtonController> controller_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaToolbarButtonControllerTest);
 };
 
 TEST_F(MediaToolbarButtonControllerTest, HidesAfterTimeoutAndShowsAgainOnPlay) {

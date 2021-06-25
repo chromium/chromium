@@ -20,7 +20,7 @@ class MockMediaNotificationItem
     : public media_message_center::MediaNotificationItem {
  public:
   MockMediaNotificationItem();
-  ~MockMediaNotificationItem() final;
+  ~MockMediaNotificationItem() override;
 
   base::WeakPtr<MockMediaNotificationItem> GetWeakPtr();
 

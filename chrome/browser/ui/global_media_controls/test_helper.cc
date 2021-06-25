@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
 
+#include <memory>
+#include <string>
+
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -53,6 +53,7 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Not;
 using testing::Pointee;
 using testing::Return;
@@ -627,14 +628,16 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
   EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource));
   EXPECT_CALL(mock_cast_provider_, StartObservingMediaSinks(kSource2));
 
-  auto sinks_observer = std::make_unique<MockMediaSinksObserver>(
+  auto sinks_observer = std::make_unique<NiceMock<MockMediaSinksObserver>>(
       router(), media_source, url::Origin::Create(GURL(kOrigin)));
   EXPECT_TRUE(sinks_observer->Init());
-  auto extra_sinks_observer = std::make_unique<MockMediaSinksObserver>(
-      router(), media_source, url::Origin::Create(GURL(kOrigin)));
+  auto extra_sinks_observer =
+      std::make_unique<NiceMock<MockMediaSinksObserver>>(
+          router(), media_source, url::Origin::Create(GURL(kOrigin)));
   EXPECT_TRUE(extra_sinks_observer->Init());
-  auto unrelated_sinks_observer = std::make_unique<MockMediaSinksObserver>(
-      router(), MediaSource(kSource2), url::Origin::Create(GURL(kOrigin)));
+  auto unrelated_sinks_observer =
+      std::make_unique<NiceMock<MockMediaSinksObserver>>(
+          router(), MediaSource(kSource2), url::Origin::Create(GURL(kOrigin)));
   EXPECT_TRUE(unrelated_sinks_observer->Init());
   base::RunLoop().RunUntilIdle();
 
@@ -687,14 +690,16 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
       .Times(1);
 
   const auto origin = url::Origin::Create(GURL(kOrigin));
-  auto sinks_observer = std::make_unique<MockMediaSinksObserver>(
+  auto sinks_observer = std::make_unique<NiceMock<MockMediaSinksObserver>>(
       router(), tab_source_one, origin);
   EXPECT_TRUE(sinks_observer->Init());
-  auto extra_sinks_observer = std::make_unique<MockMediaSinksObserver>(
-      router(), tab_source_one, origin);
+  auto extra_sinks_observer =
+      std::make_unique<NiceMock<MockMediaSinksObserver>>(
+          router(), tab_source_one, origin);
   EXPECT_TRUE(extra_sinks_observer->Init());
-  auto second_tab_sinks_observer = std::make_unique<MockMediaSinksObserver>(
-      router(), MediaSource(kTabSourceTwo), origin);
+  auto second_tab_sinks_observer =
+      std::make_unique<NiceMock<MockMediaSinksObserver>>(
+          router(), MediaSource(kTabSourceTwo), origin);
   EXPECT_TRUE(second_tab_sinks_observer->Init());
   base::RunLoop().RunUntilIdle();
 
@@ -804,12 +809,13 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaRoutesObserver) {
   EXPECT_CALL(mock_router, RegisterMediaRoutesObserver(_))
       .Times(3)
       .WillRepeatedly(SaveArg<0>(&observer_captured));
-  MockMediaRoutesObserver routes_observer(&mock_router, media_source.id());
+  NiceMock<MockMediaRoutesObserver> routes_observer(&mock_router,
+                                                    media_source.id());
   EXPECT_EQ(observer_captured, &routes_observer);
-  MockMediaRoutesObserver extra_routes_observer(&mock_router,
-                                                media_source.id());
+  NiceMock<MockMediaRoutesObserver> extra_routes_observer(&mock_router,
+                                                          media_source.id());
   EXPECT_EQ(observer_captured, &extra_routes_observer);
-  MockMediaRoutesObserver different_routes_observer(
+  NiceMock<MockMediaRoutesObserver> different_routes_observer(
       &mock_router, different_media_source.id());
   EXPECT_EQ(observer_captured, &different_routes_observer);
   RegisterMediaRoutesObserver(&routes_observer);
@@ -1208,8 +1214,8 @@ TEST_F(MediaRouterMojoImplTest, ObserveSinksFromMultipleProviders) {
   sink2b.set_sink(MediaSink("sink2b", "", SinkIconType::CAST,
                             MediaRouteProviderId::WIRED_DISPLAY));
   RegisterWiredDisplayProvider();
-  MockMediaSinksObserver observer(router(), source,
-                                  url::Origin::Create(GURL(kOrigin)));
+  NiceMock<MockMediaSinksObserver> observer(router(), source,
+                                            url::Origin::Create(GURL(kOrigin)));
   observer.Init();
 
   // Have the Cast MRP report sinks.

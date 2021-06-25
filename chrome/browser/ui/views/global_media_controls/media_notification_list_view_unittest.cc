@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
+using testing::NiceMock;
+
 namespace {
 
 // Test IDs for notifications.
@@ -23,6 +25,9 @@ const char kTestNotificationId3[] = "testid3";
 class MediaNotificationListViewTest : public ChromeViewsTestBase {
  public:
   MediaNotificationListViewTest() = default;
+  MediaNotificationListViewTest(const MediaNotificationListViewTest&) = delete;
+  MediaNotificationListViewTest& operator=(
+      const MediaNotificationListViewTest&) = delete;
   ~MediaNotificationListViewTest() override = default;
 
   // ViewsTestBase:
@@ -34,7 +39,7 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
     list_view_ =
         widget_->SetContentsView(std::make_unique<MediaNotificationListView>());
 
-    item_ = std::make_unique<MockMediaNotificationItem>();
+    item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
     widget_->Show();
   }
 
@@ -60,8 +65,6 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   MediaNotificationListView* list_view_ = nullptr;
   std::unique_ptr<MockMediaNotificationItem> item_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationListViewTest);
 };
 
 TEST_F(MediaNotificationListViewTest, NoSeparatorForOneNotification) {

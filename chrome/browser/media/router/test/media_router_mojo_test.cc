@@ -13,6 +13,7 @@
 using testing::_;
 using testing::ByRef;
 using testing::Invoke;
+using testing::NiceMock;
 using testing::Not;
 using testing::Pointee;
 
@@ -148,7 +149,7 @@ void MediaRouterMojoTest::ProvideTestRoute(MediaRouteProviderId provider_id,
 void MediaRouterMojoTest::ProvideTestSink(MediaRouteProviderId provider_id,
                                           const MediaSink::Id& sink_id) {
   if (!sinks_observer_) {
-    sinks_observer_ = std::make_unique<MockMediaSinksObserver>(
+    sinks_observer_ = std::make_unique<NiceMock<MockMediaSinksObserver>>(
         router(), MediaSource(kSource), url::Origin::Create(GURL(kOrigin)));
     router()->RegisterMediaSinksObserver(sinks_observer_.get());
   }

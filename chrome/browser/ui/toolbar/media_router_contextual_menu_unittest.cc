@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -27,6 +27,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using testing::NiceMock;
+
 namespace {
 
 // These constants are used to inject the state of the Cast toolbar icon
@@ -44,7 +46,8 @@ bool HasCommandId(ui::MenuModel* menu_model, int command_id) {
 
 std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto controller = std::make_unique<MockMediaRouterActionController>(profile);
+  auto controller =
+      std::make_unique<NiceMock<MockMediaRouterActionController>>(profile);
   return std::make_unique<media_router::MediaRouterUIService>(
       profile, std::move(controller));
 }
@@ -60,8 +63,12 @@ class MockMediaRouterContextualMenuObserver
 
 class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
  public:
-  MediaRouterContextualMenuUnitTest() {}
-  ~MediaRouterContextualMenuUnitTest() override {}
+  MediaRouterContextualMenuUnitTest() = default;
+  MediaRouterContextualMenuUnitTest(const MediaRouterContextualMenuUnitTest&) =
+      delete;
+  MediaRouterContextualMenuUnitTest& operator=(
+      const MediaRouterContextualMenuUnitTest&) = delete;
+  ~MediaRouterContextualMenuUnitTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -109,9 +116,6 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
 
   ToolbarActionsModel* toolbar_actions_model_ = nullptr;
   MockMediaRouterContextualMenuObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterContextualMenuUnitTest);
 };
 
 // Tests the basic state of the contextual menu.

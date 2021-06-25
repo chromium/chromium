@@ -14,6 +14,8 @@
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using testing::NiceMock;
+
 class FakeCastToolbarIcon : public MediaRouterActionController::Observer {
  public:
   FakeCastToolbarIcon() = default;
@@ -38,16 +40,19 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
       : issue_(media_router::IssueInfo(
             "title notification",
             media_router::IssueInfo::Action::DISMISS,
-            media_router::IssueInfo::Severity::NOTIFICATION)),
-        source1_("fakeSource1"),
-        source2_("fakeSource2") {}
+            media_router::IssueInfo::Severity::NOTIFICATION)) {}
 
-  ~MediaRouterActionControllerUnitTest() override {}
+  MediaRouterActionControllerUnitTest(
+      const MediaRouterActionControllerUnitTest&) = delete;
+  MediaRouterActionControllerUnitTest& operator=(
+      const MediaRouterActionControllerUnitTest&) = delete;
+
+  ~MediaRouterActionControllerUnitTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    router_ = std::make_unique<media_router::MockMediaRouter>();
+    router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
     controller_ =
         std::make_unique<MediaRouterActionController>(profile(), router_.get());
     controller_->AddObserver(&icon_);
@@ -86,14 +91,12 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   const media_router::Issue issue_;
 
   // Fake Sources, used for the Routes.
-  const media_router::MediaSource source1_;
-  const media_router::MediaSource source2_;
+  const media_router::MediaSource source1_{"fakeSource1"};
+  const media_router::MediaSource source2_{"fakeSource2"};
 
   std::vector<media_router::MediaRoute> local_display_route_list_;
   std::vector<media_router::MediaRoute> non_local_display_route_list_;
   std::vector<media_router::MediaRoute::Id> empty_route_id_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterActionControllerUnitTest);
 };
 
 // TODO(b/185139027): Remove this class once

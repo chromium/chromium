@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +22,7 @@ using testing::_;
 using testing::ContainsRegex;
 using testing::Field;
 using testing::InvokeWithoutArgs;
+using testing::NiceMock;
 using testing::Return;
 using testing::Test;
 
@@ -79,7 +82,7 @@ class MediaRouterFileDialogTest : public Test {
   void SetUp() override {
     mock_delegate_ = std::make_unique<MockDelegate>();
 
-    auto temp_mock = std::make_unique<MockFileSystemDelegate>();
+    auto temp_mock = std::make_unique<NiceMock<MockFileSystemDelegate>>();
     mock_file_system_delegate = temp_mock.get();
 
     dialog_ = std::make_unique<MediaRouterFileDialog>(
