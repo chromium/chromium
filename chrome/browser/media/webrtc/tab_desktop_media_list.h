@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_
 
+#include <map>
+
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
 // Implementation of DesktopMediaList that shows tab/WebContents.

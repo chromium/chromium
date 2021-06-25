@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_LACROS_DOWNLOAD_CONTROLLER_CLIENT_LACROS_H_
 #define CHROME_BROWSER_LACROS_DOWNLOAD_CONTROLLER_CLIENT_LACROS_H_
 
+#include <memory>
+#include <set>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"

@@ -26,6 +26,7 @@
 #include "crypto/secure_util.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crx_file {
 

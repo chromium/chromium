@@ -7,8 +7,13 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <map>
 #include <memory>
+#include <queue>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"

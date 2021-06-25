@@ -8,7 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <deque>
 #include <map>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/memory_pressure_listener.h"

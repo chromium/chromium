@@ -6,6 +6,10 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_NOTIFICATION_CONTROLLER_H_
 
 #include <map>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "ash/ash_export.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"

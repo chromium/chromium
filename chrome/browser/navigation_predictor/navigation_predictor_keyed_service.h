@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_KEYED_SERVICE_H_
 
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 #include "base/macros.h"

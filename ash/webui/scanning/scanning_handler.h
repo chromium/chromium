@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_SCANNING_SCANNING_HANDLER_H_
 #define ASH_WEBUI_SCANNING_SCANNING_HANDLER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 

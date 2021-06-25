@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_SCHEDULER_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_SCHEDULER_WEBVIEW_H_
 
+#include <map>
+
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_scheduler.h"

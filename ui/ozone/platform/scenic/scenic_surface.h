@@ -9,6 +9,10 @@
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
 
+#include <memory>
+#include <unordered_map>
+#include <vector>
+
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/platform/platform_handle.h"

@@ -5,13 +5,13 @@
 #ifndef DEVICE_FIDO_BIO_ENROLLMENT_H_
 #define DEVICE_FIDO_BIO_ENROLLMENT_H_
 
+#include <map>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include "components/cbor/values.h"
-
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

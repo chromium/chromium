@@ -4,6 +4,8 @@
 
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 
+#include <set>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/time.h"

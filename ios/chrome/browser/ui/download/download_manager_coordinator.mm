@@ -8,6 +8,8 @@
 #import <StoreKit/StoreKit.h>
 
 #include <memory>
+#include <set>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"

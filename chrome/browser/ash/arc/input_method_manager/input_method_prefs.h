@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_METHOD_MANAGER_INPUT_METHOD_PREFS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_METHOD_MANAGER_INPUT_METHOD_PREFS_H_
 
+#include <set>
 #include <string>
-#include <vector>
 
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"

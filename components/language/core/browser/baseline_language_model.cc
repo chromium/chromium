@@ -4,6 +4,8 @@
 
 #include "components/language/core/browser/baseline_language_model.h"
 
+#include <unordered_set>
+
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "components/prefs/pref_service.h"

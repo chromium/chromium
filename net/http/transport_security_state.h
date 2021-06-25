@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <set>
 #include <string>
 
 #include "base/callback.h"

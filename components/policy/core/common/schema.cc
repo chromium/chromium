@@ -11,6 +11,7 @@
 #include <climits>
 #include <map>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/check_op.h"

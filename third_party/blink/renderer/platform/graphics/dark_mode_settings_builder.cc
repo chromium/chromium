@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 
+#include <string>
+#include <unordered_map>
+
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -11,8 +14,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
-
-#include <string>
 
 namespace blink {
 

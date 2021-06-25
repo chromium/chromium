@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback.h"

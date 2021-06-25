@@ -6,6 +6,7 @@
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback.h"

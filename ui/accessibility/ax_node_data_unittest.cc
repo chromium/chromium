@@ -5,6 +5,9 @@
 #include "ui/accessibility/ax_node_data.h"
 
 #include <set>
+#include <string>
+#include <unordered_set>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"

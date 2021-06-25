@@ -8,6 +8,7 @@
 #include <winevt.h>
 
 #include <memory>
+#include <unordered_map>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

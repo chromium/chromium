@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "chrome/browser/ui/tabs/tab_change_type.h"

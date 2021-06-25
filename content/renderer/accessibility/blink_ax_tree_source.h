@@ -9,6 +9,7 @@
 
 #include <set>
 #include <string>
+#include <unordered_map>
 
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

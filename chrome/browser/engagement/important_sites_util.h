@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_
 #define CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_
 
+#include <set>
 #include <string>
 #include <vector>
 

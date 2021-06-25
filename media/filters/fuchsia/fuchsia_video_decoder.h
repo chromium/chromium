@@ -5,7 +5,9 @@
 #ifndef MEDIA_FILTERS_FUCHSIA_FUCHSIA_VIDEO_DECODER_H_
 #define MEDIA_FILTERS_FUCHSIA_FUCHSIA_VIDEO_DECODER_H_
 
+#include <deque>
 #include <memory>
+#include <vector>
 
 #include <fuchsia/media/cpp/fidl.h>
 

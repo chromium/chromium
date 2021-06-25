@@ -4,6 +4,10 @@
 
 #include "chromecast/graphics/rounded_window_corners_manager.h"
 
+#include <memory>
+#include <string>
+#include <unordered_set>
+
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/graphics/cast_window_manager.h"

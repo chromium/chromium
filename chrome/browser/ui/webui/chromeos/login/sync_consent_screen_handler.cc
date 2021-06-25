@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

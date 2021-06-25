@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_
 #define CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_H_
 
+#include <list>
+#include <map>
 #include <string>
 #include <vector>
 

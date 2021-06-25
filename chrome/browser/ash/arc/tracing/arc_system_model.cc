@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+#include <set>
+
 #include "base/strings/stringprintf.h"
 
 namespace arc {

@@ -5,6 +5,7 @@
 #include "ash/accessibility/ui/accessibility_focus_ring_group.h"
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "ash/accessibility/ui/accessibility_focus_ring.h"

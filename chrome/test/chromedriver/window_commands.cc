@@ -7,9 +7,12 @@
 #include <stddef.h>
 
 #include <list>
+#include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/logging.h"

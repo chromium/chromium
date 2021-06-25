@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_PATH_HELPER_H_
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "device/vr/openxr/openxr_interaction_profiles.h"

@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_TEST_VIDEO_FRAME_VALIDATOR_H_
 #define MEDIA_GPU_TEST_VIDEO_FRAME_VALIDATOR_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>

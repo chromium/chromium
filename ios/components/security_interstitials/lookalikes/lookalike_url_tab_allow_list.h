@@ -5,6 +5,9 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_LOOKALIKES_LOOKALIKE_URL_TAB_ALLOW_LIST_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_LOOKALIKES_LOOKALIKE_URL_TAB_ALLOW_LIST_H_
 
+#include <set>
+#include <string>
+
 #import "ios/web/public/web_state_user_data.h"
 
 // LookalikeUrlTabAllowList tracks the allowlist decisions for lookalike URLs.

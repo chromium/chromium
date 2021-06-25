@@ -11,7 +11,7 @@
 #include <uiautomation.h>
 #include <wrl/client.h>
 
-#include <memory>
+#include <map>
 #include <string>
 #include <vector>
 

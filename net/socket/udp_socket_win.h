@@ -9,7 +9,9 @@
 #include <stdint.h>
 #include <winsock2.h>
 
+#include <atomic>
 #include <memory>
+#include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"

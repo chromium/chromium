@@ -5,6 +5,7 @@
 #include "ppapi/proxy/raw_var_data.h"
 
 #include <memory>
+#include <unordered_set>
 
 #include "base/containers/stack.h"
 #include "base/logging.h"

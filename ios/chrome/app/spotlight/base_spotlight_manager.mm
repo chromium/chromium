@@ -8,6 +8,10 @@
 
 #import <MaterialComponents/MaterialTypography.h>
 
+#include <memory>
+#include <set>
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/hash/md5.h"

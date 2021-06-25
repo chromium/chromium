@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MEMORY_METRICS_REPORTER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MEMORY_METRICS_REPORTER_H_
 
+#include <set>
+
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

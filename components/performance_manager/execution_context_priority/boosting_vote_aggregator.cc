@@ -5,6 +5,7 @@
 #include "components/performance_manager/execution_context_priority/boosting_vote_aggregator.h"
 
 #include <algorithm>
+#include <deque>
 #include <tuple>
 #include <utility>
 

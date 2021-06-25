@@ -5,6 +5,8 @@
 #ifndef CONTENT_TEST_MOCK_CLIENT_HINTS_UTILS_H_
 #define CONTENT_TEST_MOCK_CLIENT_HINTS_UTILS_H_
 
+#include <map>
+
 #include "content/public/common/origin_util.h"
 #include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_url.h"

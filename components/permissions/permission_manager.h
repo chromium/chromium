@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_MANAGER_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_MANAGER_H_
 
+#include <map>
 #include <unordered_map>
 
 #include "base/callback_forward.h"
