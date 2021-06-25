@@ -1273,6 +1273,7 @@ try_.chromium_linux_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
+    cores = None,
     executable = "recipe:chromium/compilator",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
