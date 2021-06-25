@@ -1132,6 +1132,11 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   Maybe<String> maybe_frame_id;
   if (!frame_id.IsEmpty())
     maybe_frame_id = frame_id;
+  if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
+    request_info->setIsSameSite(
+        loader->GetFrame()->GetDocument()->SiteForCookies().IsFirstParty(
+            request.Url()));
+  }
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),

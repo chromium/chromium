@@ -1940,6 +1940,13 @@ void NetworkHandler::NavigationRequestWillBeSent(
         BuildTrustTokenParams(*begin_params.trust_token_params));
   }
 
+  if (host_) {
+    RenderFrameHostImpl* root_host = host_->GetOutermostMainFrame();
+    WebExposedIsolationInfo web_exposed_isolation_info =
+        root_host->GetSiteInstance()->GetWebExposedIsolationInfo();
+    request->SetIsSameSite(
+        host_->ComputeSiteForCookies().IsFirstParty(common_params.url));
+  }
   frontend_->RequestWillBeSent(
       id, id, url_without_fragment, std::move(request), current_ticks,
       current_wall_time, std::move(initiator), std::move(redirect_response),
