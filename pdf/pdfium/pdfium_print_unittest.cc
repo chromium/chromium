@@ -161,7 +161,7 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
     // Default scaling
     static constexpr char kChecksum[] = "40e2e16416015cdde5c6e5735c1d06ac";
     static constexpr char kChecksumRaster[] =
-        "1ab7bfd2c59f6ffb7b1eb0885a9cf18d";
+        "535659885de1ba060222cb13df995ca7";
 
     std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
@@ -180,7 +180,7 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
 
     static constexpr char kChecksum[] = "41847e1f0c581150a84794482528f790";
     static constexpr char kChecksumRaster[] =
-        "f8c460d4b1a57e6dc580b88aadc73653";
+        "63e36d3b991bbd3126fbb6f6c95af336";
 
     std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
@@ -199,7 +199,7 @@ TEST_F(PDFiumPrintTest, AlterScaling) {
 
     static constexpr char kChecksum[] = "3a4828228bcbae230574c057b7a0669e";
     static constexpr char kChecksumRaster[] =
-        "93b20afea37f1ec437061c7affc03918";
+        "3ca8f6ead6fe5e41b5e2d8817bedecbb";
 
     std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
