@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"

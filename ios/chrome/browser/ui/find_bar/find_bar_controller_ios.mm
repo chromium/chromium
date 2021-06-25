@@ -22,7 +22,6 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"

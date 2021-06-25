@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"

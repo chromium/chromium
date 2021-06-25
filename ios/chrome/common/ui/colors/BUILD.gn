@@ -8,8 +8,6 @@ source_set("colors") {
   sources = [
     "UIColor+cr_semantic_colors.h",
     "UIColor+cr_semantic_colors.mm",
-    "dynamic_color_util.h",
-    "dynamic_color_util.mm",
     "semantic_color_names.h",
     "semantic_color_names.mm",
   ]
