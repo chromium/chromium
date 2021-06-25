@@ -248,15 +248,18 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
-  constexpr const char* kModifierKeys[] = {
-      "Shift",    "ShiftLeft", "ShiftRight", "Alt",         "AltLeft",
-      "AltRight", "AltGraph",  "CapsLock",   "ControlLeft", "ControlRight"};
+  // Pairs of Code/Key.
+  constexpr std::pair<const char*, const char*> kModifierKeys[] = {
+      {"ShiftLeft", "Shift"},     {"ShiftRight", "Shift"},
+      {"AltLeft", "Alt"},         {"AltRight", "Alt"},
+      {"AltRight", "AltGraph"},   {"CapsLock", "CapsLock"},
+      {"ControlLeft", "Control"}, {"ControlRight", "Control"}};
 
-  for (const auto* modifier_key : kModifierKeys) {
+  for (const auto& modifier_key : kModifierKeys) {
     mojom::KeypressResponseForRulebased response;
     input_method->ProcessKeypressForRulebased(
         mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown,
-                                     modifier_key, modifier_key,
+                                     modifier_key.first, modifier_key.second,
                                      mojom::ModifierState::New()),
         base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
     input_method.FlushForTesting();
