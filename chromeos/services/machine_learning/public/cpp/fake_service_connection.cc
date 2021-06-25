@@ -149,10 +149,12 @@ void FakeServiceConnectionImpl::LoadSpeechRecognizer(
 
 void FakeServiceConnectionImpl::LoadTextSuggester(
     mojo::PendingReceiver<mojom::TextSuggester> receiver,
+    mojom::TextSuggesterSpecPtr spec,
     mojom::MachineLearningService::LoadTextSuggesterCallback callback) {
-  ScheduleCall(base::BindOnce(
-      &FakeServiceConnectionImpl::HandleLoadTextSuggesterCall,
-      base::Unretained(this), std::move(receiver), std::move(callback)));
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleLoadTextSuggesterCall,
+                     base::Unretained(this), std::move(receiver),
+                     std::move(spec), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::Execute(
@@ -490,6 +492,7 @@ void FakeServiceConnectionImpl::HandleGrammarCheckerQueryCall(
 
 void FakeServiceConnectionImpl::HandleLoadTextSuggesterCall(
     mojo::PendingReceiver<mojom::TextSuggester> receiver,
+    mojom::TextSuggesterSpecPtr spec,
     mojom::MachineLearningService::LoadTextSuggesterCallback callback) {
   if (load_model_result_ == mojom::LoadModelResult::OK)
     text_suggester_receivers_.Add(this, std::move(receiver));

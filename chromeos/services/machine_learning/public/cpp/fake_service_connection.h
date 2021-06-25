@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
 
   void LoadTextSuggester(
       mojo::PendingReceiver<mojom::TextSuggester> receiver,
+      mojom::TextSuggesterSpecPtr spec,
       mojom::MachineLearningService::LoadTextSuggesterCallback callback)
       override;
 
@@ -288,6 +289,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojom::MachineLearningService::LoadSpeechRecognizerCallback callback);
   void HandleLoadTextSuggesterCall(
       mojo::PendingReceiver<mojom::TextSuggester> receiver,
+      mojom::TextSuggesterSpecPtr spec,
       mojom::MachineLearningService::LoadTextSuggesterCallback callback);
   void HandleTextSuggesterSuggestCall(
       mojom::TextSuggesterQueryPtr query,

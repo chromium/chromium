@@ -60,10 +60,13 @@ void RecordRequestLatency(base::TimeDelta delta) {
 }  // namespace
 
 SuggestionsServiceClient::SuggestionsServiceClient() {
+  auto spec = chromeos::machine_learning::mojom::TextSuggesterSpec::New(
+      chromeos::machine_learning::mojom::MultiWordExperimentGroup::kGboard);
+
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->GetMachineLearningService()
       .LoadTextSuggester(
-          text_suggester_.BindNewPipeAndPassReceiver(),
+          text_suggester_.BindNewPipeAndPassReceiver(), std::move(spec),
           base::BindOnce(
               [](bool* text_suggester_loaded_,
                  chromeos::machine_learning::mojom::LoadModelResult result) {

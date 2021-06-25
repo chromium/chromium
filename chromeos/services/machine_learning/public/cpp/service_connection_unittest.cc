@@ -800,6 +800,7 @@ TEST_F(ServiceConnectionTest, FakeTextSuggester) {
       ->GetMachineLearningService()
       .LoadTextSuggester(
           suggester.BindNewPipeAndPassReceiver(),
+          mojom::TextSuggesterSpec::New(),
           base::BindOnce(
               [](bool* callback_done, mojom::LoadModelResult result) {
                 EXPECT_EQ(result, mojom::LoadModelResult::OK);

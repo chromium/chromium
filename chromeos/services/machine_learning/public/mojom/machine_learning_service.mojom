@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -78,7 +78,9 @@ interface MachineLearningService {
   LoadGrammarChecker@7(pending_receiver<GrammarChecker> receiver)
       => (LoadModelResult result);
   // Create and initialize a text suggester.
-  [MinVersion=2] LoadTextSuggester@8(pending_receiver<TextSuggester> receiver)
+  [MinVersion=2] LoadTextSuggester@8(
+      pending_receiver<TextSuggester> receiver,
+      [MinVersion=3] TextSuggesterSpec? spec)
       => (LoadModelResult result);
   // Create a handwriting recognizer for web platform API.
   // This API shares the same HWR engine with `LoadHandwritingModel` and

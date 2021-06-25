@@ -101,6 +101,21 @@ struct TextSuggesterResult {
   array<TextSuggestionCandidate> candidates@1;
 };
 
+// Experiment groups for multi word suggestions
+// Next ordinal: 2
+[Stable, Extensible]
+enum MultiWordExperimentGroup {
+  [Default] kDefault = 0,
+  kGboard = 1,
+};
+
+// Encapsulates any settings details for a TextSuggester
+// Next ordinal: 1
+[Stable]
+struct TextSuggesterSpec {
+  // The experimental group for multi word suggestions
+  MultiWordExperimentGroup multi_word_experiment@0;
+};
 
 // The top level interface for requesting text based suggestions in the Chromium
 // browser process from the sandboxed ML service process.
