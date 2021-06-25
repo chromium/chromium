@@ -335,12 +335,14 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterApp("test1");
   RegisterApp("test2");
 
+  WaitForServerExit();
+
   SetExistenceCheckerPath(kTestAppId,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
 
   RunWake(0);
 
-  SleepFor(13);
+  WaitForServerExit();
   ExpectInstalled();
 
   ExpectAppUnregisteredExistenceCheckerPath(kTestAppId);
@@ -350,27 +352,30 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
 TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
-  SleepFor(2);
+  WaitForServerExit();
   ExpectInstalled();
   SetServerStarts(24);
   RunWake(0);
-  SleepFor(13);
+  WaitForServerExit();
+  SleepFor(2);
   ExpectClean();
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
-  SleepFor(2);
+  WaitForServerExit();
   ExpectInstalled();
   SetServerStarts(24);
   RunWake(0);
+  WaitForServerExit();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   SetExistenceCheckerPath(kTestAppId,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
   RunWake(0);
-  SleepFor(13);
+  WaitForServerExit();
+  SleepFor(2);
   ExpectClean();
 }
 
