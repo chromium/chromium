@@ -394,9 +394,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     handler_->frontend_->DetachedFromTarget(id_, agent_host_->GetId());
     if (flatten_protocol_)
       handler_->root_session_->DetachChildSession(id_);
-    if (host_closed)
-      handler_->auto_attacher_->AgentHostClosed(agent_host_.get());
-    else
+    if (!host_closed)
       agent_host_->DetachClient(this);
     handler_->auto_attached_sessions_.erase(agent_host_.get());
     devtools_session_ = nullptr;
@@ -626,7 +624,7 @@ void TargetHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
     NavigationHandle* navigation_handle) {
-  if (!auto_attacher_->ShouldThrottleFramesNavigation())
+  if (!auto_attacher_->auto_attach())
     return nullptr;
   if (access_mode_ == AccessMode::kBrowser) {
     FrameTreeNode* frame_tree_node =
@@ -681,18 +679,19 @@ void TargetHandler::SetAutoAttachInternal(bool auto_attach,
                                           bool flatten,
                                           base::OnceClosure callback) {
   flatten_auto_attach_ = flatten;
+  if (!auto_attach) {
+    while (!auto_attached_sessions_.empty())
+      AutoDetach(auto_attached_sessions_.begin()->first);
+    ClearThrottles();
+  }
   auto_attacher_->SetAutoAttach(auto_attach, wait_for_debugger_on_start,
                                 std::move(callback));
-  if (!auto_attacher_->ShouldThrottleFramesNavigation())
-    ClearThrottles();
-
   UpdateAgentHostObserver();
 }
 
 void TargetHandler::UpdateAgentHostObserver() {
-  bool should_observe =
-      discover_ || (access_mode_ == AccessMode::kBrowser &&
-                    auto_attacher_->ShouldThrottleFramesNavigation());
+  bool should_observe = discover_ || (access_mode_ == AccessMode::kBrowser &&
+                                      auto_attacher_->auto_attach());
   if (should_observe == observing_agent_hosts_)
     return;
   observing_agent_hosts_ = should_observe;
@@ -702,11 +701,14 @@ void TargetHandler::UpdateAgentHostObserver() {
     DevToolsAgentHost::RemoveObserver(this);
 }
 
-void TargetHandler::AutoAttach(DevToolsAgentHost* host,
+bool TargetHandler::AutoAttach(DevToolsAgentHost* host,
                                bool waiting_for_debugger) {
+  if (auto_attached_sessions_.find(host) != auto_attached_sessions_.end())
+    return false;
   std::string session_id =
       Session::Attach(this, host, waiting_for_debugger, flatten_auto_attach_);
   auto_attached_sessions_[host] = attached_sessions_[session_id].get();
+  return true;
 }
 
 void TargetHandler::AutoDetach(DevToolsAgentHost* host) {
@@ -716,8 +718,25 @@ void TargetHandler::AutoDetach(DevToolsAgentHost* host) {
   it->second->Detach(false);
 }
 
+void TargetHandler::SetAttachedTargetsOfType(
+    const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
+    const std::string& type) {
+  DCHECK(!type.empty());
+  auto old_sessions = auto_attached_sessions_;
+  for (auto& entry : old_sessions) {
+    scoped_refptr<DevToolsAgentHost> host(entry.first);
+    bool matches_type = type.empty() || host->GetType() == type;
+    if (matches_type && new_hosts.find(host) == new_hosts.end())
+      AutoDetach(host.get());
+  }
+  for (auto& host : new_hosts) {
+    if (old_sessions.find(host.get()) == old_sessions.end())
+      AutoAttach(host.get(), false);
+  }
+}
+
 bool TargetHandler::ShouldThrottlePopups() const {
-  return auto_attacher_->ShouldThrottleFramesNavigation();
+  return auto_attacher_->auto_attach();
 }
 
 Response TargetHandler::FindSession(Maybe<std::string> session_id,
@@ -967,10 +986,10 @@ void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
   // In the top level target handler auto-attach to pages as soon as they
   // are created, otherwise if they don't incur any network activity we'll
   // never get a chance to throttle them (and auto-attach there).
-  if (access_mode_ == AccessMode::kBrowser &&
-      auto_attacher_->ShouldThrottleFramesNavigation() &&
+  if (access_mode_ == AccessMode::kBrowser && auto_attacher_->auto_attach() &&
       IsMainFrameHost(host)) {
-    auto_attacher_->AttachToAgentHost(host);
+    // TODO(caseq): move this logic within BrowserTargetAutoAttacher instead.
+    AutoAttach(host, auto_attacher_->wait_for_debugger_on_start());
   }
 }
 

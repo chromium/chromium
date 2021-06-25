@@ -120,8 +120,11 @@ class TargetHandler : public DevToolsDomainHandler,
   class ResponseThrottle;
 
   // TargetAutoAttacher::Delegate implementation.
-  void AutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger) override;
+  bool AutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger) override;
   void AutoDetach(DevToolsAgentHost* host) override;
+  void SetAttachedTargetsOfType(
+      const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
+      const std::string& type) override;
 
   Response FindSession(Maybe<std::string> session_id,
                        Maybe<std::string> target_id,

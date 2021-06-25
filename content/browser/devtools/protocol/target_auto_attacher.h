@@ -22,11 +22,15 @@ class TargetAutoAttacher {
  public:
   class Delegate {
    public:
-    virtual void AutoAttach(DevToolsAgentHost* host,
+    virtual bool AutoAttach(DevToolsAgentHost* host,
                             bool waiting_for_debugger) = 0;
     virtual void AutoDetach(DevToolsAgentHost* host) = 0;
+    virtual void SetAttachedTargetsOfType(
+        const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
+        const std::string& type) = 0;
 
    protected:
+    Delegate() = default;
     virtual ~Delegate() = default;
   };
 
@@ -46,40 +50,28 @@ class TargetAutoAttacher {
                      bool wait_for_debugger_on_start,
                      base::OnceClosure callback);
 
-  void AgentHostClosed(DevToolsAgentHost* host);
-  bool ShouldThrottleFramesNavigation() const;
-  void AttachToAgentHost(DevToolsAgentHost* host);
   DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request);
   void ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
                           bool waiting_for_debugger);
   virtual void UpdatePortals();
   virtual void DidFinishNavigation(NavigationRequest* navigation_handle);
+  bool auto_attach() const { return auto_attach_; }
+  bool wait_for_debugger_on_start() const {
+    return wait_for_debugger_on_start_;
+  }
 
  protected:
   using Hosts = base::flat_set<scoped_refptr<DevToolsAgentHost>>;
 
   TargetAutoAttacher();
 
-  bool auto_attach() const { return auto_attach_; }
-  bool wait_for_debugger_on_start() const {
-    return wait_for_debugger_on_start_;
-  }
   Delegate* delegate() { return delegate_; }
 
   DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
                                        bool wait_for_debugger_on_start);
-  void ReattachTargetsOfType(const Hosts& new_hosts,
-                             const std::string& type,
-                             bool waiting_for_debugger);
-
   virtual void UpdateAutoAttach(base::OnceClosure callback);
 
-  Hosts auto_attached_hosts_;
-
  private:
-  void AttachToAgentHost(DevToolsAgentHost* host,
-                         bool wait_for_debugger_on_start);
-
   Delegate* delegate_ = nullptr;
 
   bool auto_attach_ = false;
