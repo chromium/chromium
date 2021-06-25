@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Всички допълнителни записи ще бъдат отхвърлени.</translation>
 <translation id="1101672080107056897">Грешка при действието</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Ако поставите отметка, Chrome ще съхранява копие на картата ви на това устройство с цел по-бързо попълване на формуляри.</translation>
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
 <translation id="1123753900084781868">Понастоящем функцията „Надписи на живо“ не е налице</translation>
@@ -433,7 +432,6 @@
 <translation id="2491414235131909199">Тази страница е блокирана от разширение</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Синтактичен анализ на JSON</translation>
-<translation id="2495093607237746763">Ако поставите отметка, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2498091847651709837">Сканиране на нова карта</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2505268675989099013">Защита на профила</translation>
@@ -710,7 +708,6 @@
 <translation id="3531780078352352885">Листове за заданието</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> иска да използва микрофона ви</translation>
 <translation id="3533328374079021623">Пощенска кутия 5</translation>
-<translation id="3539171420378717834">Съхраняване на копие на картата на това устройство</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
 <translation id="3566021033012934673">Връзката ви не е поверителна</translation>
@@ -1588,6 +1585,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">виолетово</translation>
 <translation id="6786747875388722282">Разширения</translation>
+<translation id="678982761784843853">Идентификатори на защитено съдържание</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="679355240208270552">Бе пренебрегнато, защото основното търсене не е активирано чрез правило.</translation>
 <translation id="6794951432696553238">Потвърждавайте картите си по-бързо, като от сега нататък използвате Windows Hello</translation>
@@ -1951,6 +1949,7 @@
 <translation id="8100588592594801589">Невалидните карти са премахнати</translation>
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8105368624971345109">Изключване</translation>
+<translation id="810875025413331850">Няма намерени устройства в близост.</translation>
 <translation id="8118489163946903409">Начин на плащане</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> не се инсталира правилно на компютъра ви или в мрежата. Помолете системния си администратор да реши този проблем.</translation>
 <translation id="8128526133099929547">Току-що въведохте паролата си в измамнически сайт. Chrome препоръчва да посетите <ph name="WEBSITE_1" /> и другите сайтове, за които я използвате, и да я промените в тях сега.</translation>

@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Baztertu egingo dira gainerako sarrerak.</translation>
 <translation id="1101672080107056897">Errore-ekintza</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
-<translation id="1107591249535594099">Hautatuta badago, Chrome-k txartelaren kopia bat gordeko du gailu honetan inprimakiak azkarrago betetzeko.</translation>
 <translation id="1110994991967754504">Hautatu honetarako baimena: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Desegin berrantolatzea</translation>
 <translation id="1123753900084781868">Istanteko azpitituluak ez daude erabilgarri</translation>
@@ -431,7 +430,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2491414235131909199">Luzapen batek blokeatu du orria</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON analizatzailea</translation>
-<translation id="2495093607237746763">Hautatuta badago, Chromium-ek txartelaren kopia bat gordeko du gailuan, inprimakiak bizkorrago betetzeko.</translation>
 <translation id="2498091847651709837">Eskaneatu beste txartel bat</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
 <translation id="2505268675989099013">Babestu kontua</translation>
@@ -704,7 +702,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3531780078352352885">Lan-orriak</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> webguneak mikrofonoa erabili nahi du</translation>
 <translation id="3533328374079021623">5. postontzia</translation>
-<translation id="3539171420378717834">Gorde gailu honetan txartelaren kopia bat</translation>
 <translation id="3552297013052089404">Sans-serif letra</translation>
 <translation id="3558573058928565255">Eguna</translation>
 <translation id="3566021033012934673">Konexioa ez da pribatua</translation>
@@ -1576,6 +1573,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Bioleta</translation>
 <translation id="6786747875388722282">Luzapenak</translation>
+<translation id="678982761784843853">Eduki babestuaren IDak</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="679355240208270552">Ez ikusi egin zaio bilaketa lehenetsia ez dagoelako gaituta gidalerroen arabera.</translation>
 <translation id="6794951432696553238">Aurrerantzean, berretsi txartelak bizkorrago Windows Hello erabilita</translation>
@@ -1939,6 +1937,7 @@ Xehetasun gehiago:
 <translation id="8100588592594801589">Kendu egin dira balio ez duten txartelak</translation>
 <translation id="8103161714697287722">Ordainketa-metodoa</translation>
 <translation id="8105368624971345109">Desaktibatu</translation>
+<translation id="810875025413331850">Ez da aurkitu gailurik inguruan.</translation>
 <translation id="8118489163946903409">Ordainketa-metodoa</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala instalatuta ordenagailuan edo sarean. Eskatu arazoa konpontzeko IKT saileko administratzaileari.</translation>
 <translation id="8128526133099929547">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> webgunera eta pasahitza erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>

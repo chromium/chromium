@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Այս դաշտը չպետք է ունենա ավելի քան <ph name="MAX_ITEMS_LIMIT" /> գրառում: Ավել գրառումները կհեռացվեն:</translation>
 <translation id="1101672080107056897">Գործողություն սխալի դեպքում</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
-<translation id="1107591249535594099">Նշված լինելու դեպքում Chrome-ը ձևերում արագ լրացման համար այս սարքում կպահի ձեր քարտի պատճենը:</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />՝ ընտրեք թույլտվություն</translation>
 <translation id="1113869188872983271">&amp;Հետարկել վերադասավորումը</translation>
 <translation id="1123753900084781868">Կենդանի ենթագրերն այս պահին հասանելի չեն</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Այս էջն արգելափակվել է ընդլայնման կողմից</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON վերլուծիչ</translation>
-<translation id="2495093607237746763">Եթե նշված է, Chromium-ն այս սարքում կպահի ձեր քարտի կրկնօրինակը՝ ձևն արագ լրացնելու համար:</translation>
 <translation id="2498091847651709837">Որոնել նոր քարտ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2505268675989099013">Պաշտպանել հաշիվը</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">Առաջադրանքի թերթեր</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> կայքն ուզում է օգտագործել ձեր խոսափողը</translation>
 <translation id="3533328374079021623">Փոստարկղ 5</translation>
-<translation id="3539171420378717834">Պահեք այս քարտի պատճենը սարքում</translation>
 <translation id="3552297013052089404">Sans-serif տառատեսակ</translation>
 <translation id="3558573058928565255">Ցերեկ</translation>
 <translation id="3566021033012934673">Ձեր կապակցումը պաշտպանված չէ</translation>
@@ -1590,6 +1587,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
+<translation id="678982761784843853">Պաշտպանված բովանդակության նույնացուցիչներ</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="679355240208270552">Անտեսվում է, քանի որ կանոնում սահմանված չէ կանխադրված որոնիչը։</translation>
 <translation id="6794951432696553238">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը Windows Hello-ի միջոցով</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">Անվավեր քարտերը հեռացվեցին</translation>
 <translation id="8103161714697287722">Վճարման եղանակ</translation>
 <translation id="8105368624971345109">Անջատել</translation>
+<translation id="810875025413331850">Մոտակա սարքեր չեն գտնվել:</translation>
 <translation id="8118489163946903409">Վճարման եղանակ</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» ծրագիրը ձեր համակարգչում կամ ցանցում ճիշտ չէ տեղադրվել: Հարցրեք ձեր ՏՏ ադմինիստրատորին կամ ինքներդ լուծեք այս խնդիրը:</translation>
 <translation id="8128526133099929547">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Խորհուրդ ենք տալիս փոխել ձեր գաղտնաբառը, որն օգտագործում եք <ph name="WEBSITE_1" /> և այլ կայքերում։</translation>

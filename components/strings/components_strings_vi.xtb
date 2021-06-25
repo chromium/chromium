@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Mọi mục thừa sẽ bị hủy.</translation>
 <translation id="1101672080107056897">Thao tác bị lỗi</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Nếu được chọn, Chrome sẽ lưu trữ bản sao thẻ của bạn trên thiết bị này để điền biểu mẫu nhanh hơn.</translation>
 <translation id="1110994991967754504">Chọn quyền cho <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Hoàn tác sắp xếp lại</translation>
 <translation id="1123753900084781868">Tính năng Phụ đề trực tiếp hiện không hoạt động</translation>
@@ -435,7 +434,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2491414235131909199">Trang này bị một tiện ích chặn</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Trình phân tích cú pháp JSON</translation>
-<translation id="2495093607237746763">Nếu được chọn, Chromium sẽ lưu trữ bản sao thẻ của bạn trên thiết bị này để điền biểu mẫu nhanh hơn.</translation>
 <translation id="2498091847651709837">Quét thẻ mới</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2505268675989099013">Bảo vệ tài khoản</translation>
@@ -712,7 +710,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3531780078352352885">Tờ công việc</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> muốn sử dụng micrô của bạn</translation>
 <translation id="3533328374079021623">Hộp thư 5</translation>
-<translation id="3539171420378717834">Giữ bản sao thẻ này trên thiết bị này</translation>
 <translation id="3552297013052089404">Phông chữ Sans-serif</translation>
 <translation id="3558573058928565255">Giờ ban ngày</translation>
 <translation id="3566021033012934673">Kết nối của bạn không phải là kết nối riêng tư</translation>
@@ -1590,6 +1587,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
+<translation id="678982761784843853">Giá trị nhận dạng cho nội dung được bảo vệ</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="679355240208270552">Đã bỏ qua vì chính sách đã tắt tìm kiếm mặc định.</translation>
 <translation id="6794951432696553238">Từ giờ trở đi, bạn có thể xác nhận các thẻ nhanh hơn bằng Windows Hello</translation>
@@ -1953,6 +1951,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8100588592594801589">Đã xóa các thẻ không hợp lệ</translation>
 <translation id="8103161714697287722">Phương thức thanh toán</translation>
 <translation id="8105368624971345109">Tắt</translation>
+<translation id="810875025413331850">Không tìm thấy thiết bị lân cận.</translation>
 <translation id="8118489163946903409">Phương thức thanh toán</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" đã được cài đặt không đúng trên máy tính hoặc mạng của bạn. Hãy yêu cầu quản trị viên CNTT của bạn giải quyết vấn đề này.</translation>
 <translation id="8128526133099929547">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome khuyên bạn nên truy cập vào <ph name="WEBSITE_1" /> và các trang web khác mà bạn dùng mật khẩu này rồi đổi mật khẩu ngay bây giờ.</translation>

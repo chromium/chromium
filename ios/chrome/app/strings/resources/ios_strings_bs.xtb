@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
 <translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
+<translation id="149095475893949513">Ova web lokacija pokušava preuzeti profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dodirnite dvaput da prebacite postavku</translation>
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovu web lokaciju</translation>
 <translation id="1509486075633541495">Prijava na web lokaciju</translation>
@@ -268,6 +269,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3609785682760573515">Sinhroniziranje…</translation>
 <translation id="3638472932233958418">Unapr. učit. web str.</translation>
+<translation id="3661160521073045932">Dostupan je profil konfiguracije</translation>
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3691593122358196899">Oznaka je pohranjena u folderu <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označi kao nepročitano</translation>

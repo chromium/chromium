@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks atmesti.</translation>
 <translation id="1101672080107056897">Darbība pēc kļūdas konstatēšanas</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
-<translation id="1107591249535594099">Ja šī izvēles rūtiņa ir atzīmēta, pārlūks Chrome saglabās jūsu kartes kopiju šajā ierīcē, lai nodrošinātu ātrāku veidlapu aizpildi.</translation>
 <translation id="1110994991967754504">Atlasiet atļauju: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Atsaukt pārkārtošanu</translation>
 <translation id="1123753900084781868">Subtitri reāllaikā pašlaik nav pieejami.</translation>
@@ -435,7 +434,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2491414235131909199">Šo lapu ir bloķējis kāds paplašinājums.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON parsētājs</translation>
-<translation id="2495093607237746763">Ja šī izvēles rūtiņa ir atzīmēta, pārlūks Chromium saglabās jūsu kartes informāciju šajā ierīcē, lai nodrošinātu ātrāku veidlapu aizpildi.</translation>
 <translation id="2498091847651709837">Skenēt jaunu karti</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2505268675989099013">Aizsargāt kontu</translation>
@@ -712,7 +710,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3531780078352352885">Uzdevuma lapas</translation>
 <translation id="3532844647053365774">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu mikrofonu.</translation>
 <translation id="3533328374079021623">5. pastkaste</translation>
-<translation id="3539171420378717834">Saglabāt šīs kartes kopiju šajā ierīcē</translation>
 <translation id="3552297013052089404">Sans Serif fonts</translation>
 <translation id="3558573058928565255">diena</translation>
 <translation id="3566021033012934673">Jūsu savienojums nav privāts</translation>
@@ -1589,6 +1586,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
+<translation id="678982761784843853">Aizsargāta satura ID</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="679355240208270552">Politika ignorēta, jo noklusējuma meklēšana nav iespējota politikā.</translation>
 <translation id="6794951432696553238">Turpmāk, izmantojot Windows Hello, apstipriniet kartes ātrāk</translation>
@@ -1726,7 +1724,7 @@ Papildu informācija:
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
 <translation id="7337248890521463931">Rādīt vairāk rindu</translation>
 <translation id="7337706099755338005">Nav pieejams jūsu platformā.</translation>
-<translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot Certificate Transparency.</translation>
+<translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot sertifikāta pārredzamību.</translation>
 <translation id="734600844861828519">11x15</translation>
 <translation id="7346048084945669753">Ir saistīts:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
@@ -1952,6 +1950,7 @@ Papildu informācija:
 <translation id="8100588592594801589">Nederīgās kartes tika noņemtas</translation>
 <translation id="8103161714697287722">Maksājuma veids</translation>
 <translation id="8105368624971345109">Izslēgt</translation>
+<translation id="810875025413331850">Nav atrasta neviena tuvumā esoša ierīce.</translation>
 <translation id="8118489163946903409">Maksājuma veids</translation>
 <translation id="8127301229239896662">Programmatūra <ph name="SOFTWARE_NAME" /> netika pareizi instalēta datorā vai tīklā. Lūdziet IT administratoram atrisināt šo problēmu.</translation>
 <translation id="8128526133099929547">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome ieteikums: tūlīt apmeklējiet vietni <ph name="WEBSITE_1" /> un citas vietnes, kurās izmantojat šo paroli, un nomainiet to.</translation>
@@ -2178,7 +2177,7 @@ Papildu informācija:
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">Vietne <ph name="URL" /> vēlas zināt, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="8996941253935762404">Vietnē, kura tiks atvērta, ir kaitīgas programmas</translation>
-<translation id="8997023839087525404">Serveris uzrādīja sertifikātu, kas netika publiski atklāts, izmantojot Certificate Transparency politiku. Šī ir prasība noteiktiem sertifikātiem, lai nodrošinātu to uzticamību un aizsardzību pret uzbrucējiem.</translation>
+<translation id="8997023839087525404">Serveris uzrādīja sertifikātu, kas netika publiski atklāts, izmantojot sertifikāta pārredzamības politiku. Šī ir prasība noteiktiem sertifikātiem, lai nodrošinātu to uzticamību un aizsardzību pret uzbrucējiem.</translation>
 <translation id="9001074447101275817">Starpniekserveris <ph name="DOMAIN" /> pieprasa lietotājvārdu un paroli.</translation>
 <translation id="9001963517402879850">Leciet!</translation>
 <translation id="9004367719664099443">Notiek VR sesija</translation>

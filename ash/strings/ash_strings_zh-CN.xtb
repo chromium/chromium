@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">已选择截取局部屏幕</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
+<translation id="1036073649888683237">如需管理通知，请转到“设置”</translation>
 <translation id="1036672894875463507">我是你的 Google 助理，可以帮你处理日常生活大小事！
 要开始体验，你不妨试一下这些功能。</translation>
 <translation id="1037492556044956303">已添加<ph name="DEVICE_NAME" /></translation>
@@ -550,6 +551,7 @@
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5302048478445481009">语言</translation>
+<translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
 <translation id="5322611492012084517">找不到您的手机</translation>

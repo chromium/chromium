@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
 <translation id="1101672080107056897">Veprimi i gabimit</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Nëse zgjidhet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për një plotësim më të shpejtë të formularit.</translation>
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
 <translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
@@ -434,7 +433,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2491414235131909199">Kjo faqe është bllokuar nga një shtesë</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizuesi JSON</translation>
-<translation id="2495093607237746763">Nëse zgjidhet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për një plotësim më të shpejtë të formularit.</translation>
 <translation id="2498091847651709837">Skano një kartë të re</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2505268675989099013">Mbroje llogarinë</translation>
@@ -711,7 +709,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3531780078352352885">Fletët e punës</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> kërkon të përdorë mikrofonin</translation>
 <translation id="3533328374079021623">Kutia postare 5</translation>
-<translation id="3539171420378717834">Mbaj një kopje të kësaj karte në këtë pajisje</translation>
 <translation id="3552297013052089404">Fonti sans-serif</translation>
 <translation id="3558573058928565255">Dita dhe ora</translation>
 <translation id="3566021033012934673">Lidhja jote nuk është private.</translation>
@@ -1586,6 +1583,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Vjollcë</translation>
 <translation id="6786747875388722282">Shtesat</translation>
+<translation id="678982761784843853">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="679355240208270552">U shpërfill sepse kërkimi i parazgjedhur nuk është aktivizuar nga politika.</translation>
 <translation id="6794951432696553238">Konfirmo kartat e tua më shpejt duke përdorur Windows Hello nga tani e tutje</translation>
@@ -1949,6 +1947,7 @@ Detaje shtesë:
 <translation id="8100588592594801589">Kartat e pavlefshme janë hequr</translation>
 <translation id="8103161714697287722">Mënyra e pagesës</translation>
 <translation id="8105368624971345109">Çaktivizo</translation>
+<translation id="810875025413331850">Nuk u gjetën pajisje afër.</translation>
 <translation id="8118489163946903409">Mënyra e pagesës</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
 <translation id="8128526133099929547">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë.</translation>

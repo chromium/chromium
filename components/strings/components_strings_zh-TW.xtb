@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘將會捨棄。</translation>
 <translation id="1101672080107056897">錯誤動作</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">勾選後，Chrome 會在這個裝置上儲存您的信用卡複本，以便更快填寫資訊。</translation>
 <translation id="1110994991967754504">選取<ph name="PERMISSION_NAME" />權限設定</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕功能</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">擴充功能已封鎖這個網頁</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
-<translation id="2495093607237746763">勾選後，Chromium 會將您的信用卡資料儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="2498091847651709837">掃描新信用卡</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2505268675989099013">保護帳戶</translation>
@@ -708,7 +706,6 @@
 <translation id="3531780078352352885">工作表</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 要求使用麥克風</translation>
 <translation id="3533328374079021623">出紙槽 5</translation>
-<translation id="3539171420378717834">在這個裝置上保留這張信用卡的複本</translation>
 <translation id="3552297013052089404">Sans Serif 字型</translation>
 <translation id="3558573058928565255">白天</translation>
 <translation id="3566021033012934673">你的連線不是私人連線</translation>
@@ -1581,6 +1578,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
+<translation id="678982761784843853">受保護的內容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679355240208270552">由於政策未啟用預設搜尋設定，因此遭到忽略。</translation>
 <translation id="6794951432696553238">現在就開始使用 Windows Hello，加快卡片驗證速度</translation>
@@ -1944,6 +1942,7 @@
 <translation id="8100588592594801589">已移除無效的卡片</translation>
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8105368624971345109">關閉</translation>
+<translation id="810875025413331850">找不到附近的裝置。</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8128526133099929547">你剛才在詐騙網站上輸入了密碼。Chrome 建議你立即前往 <ph name="WEBSITE_1" /> 以及也使用這個密碼的其他網站變更密碼。</translation>

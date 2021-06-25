@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ যোৰা লাগিবলৈ অনুমতি বিচাৰে। অনুগ্ৰহ কৰি সেই ডিভাইচত এই পিন ক'ডটো দিয়ক: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">আংশিক স্ক্ৰীনশ্বট বাছনি কৰা হ'ল</translation>
 <translation id="1032891413405719768">ষ্টাইলাছৰ বেটাৰি কম আছে</translation>
+<translation id="1036073649888683237">জাননী পৰিচালনা কৰিবলৈ ছেটিঙলৈ যাওক</translation>
 <translation id="1036672894875463507">মই আপোনাৰ Google Assistant, আপোনাক গোটেই দিনটো সহায় আগবঢ়াবলৈ প্ৰস্তুত!
 এয়া আৰম্ভ কৰিবলৈ আপুনি চেষ্টা কৰিব পৰা কিছুমান কথা।</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> যোগ কৰা হ’ল</translation>
@@ -14,6 +15,7 @@
 <translation id="1052916631016577720">বস্তুৰ স্কেন</translation>
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">বেটাৰীটো সলনি কৰক অথবা ৰিচাৰ্জ কৰক</translation>
 <translation id="108486256082349153">চেলুলাৰ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">শুভ অপৰাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">মই বিৰক্ত হৈছোঁ</translation>
@@ -306,6 +308,7 @@
 <translation id="3430396595145920809">উভতি যাবলৈ সোঁফালৰ পৰা ছোৱাইপ কৰক</translation>
 <translation id="343571671045587506">ৰিমাণ্ডাৰ সম্পাদনা কৰক</translation>
 <translation id="3435967511775410570">ফিংগাৰপ্ৰিণ্ট চিনাক্ত কৰা হ’ল</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
 <translation id="3454224730401036106">আপোনাৰ সংযোগ অন্য কোনো সুৰক্ষিত নেটৱর্কলৈ সলনি কৰা হৈছে</translation>
@@ -429,6 +432,7 @@
 <translation id="4378551569595875038">সংযোগ হৈছে...</translation>
 <translation id="4379531060876907730">এইয়া আপোনাৰ ষ্টাইলাছৰ সঁজুলি</translation>
 <translation id="4389184120735010762">আপুনি ড'ক কৰা বিৱৰ্ধকৰ বাবে কীব'ৰ্ডৰ শ্বৰ্টকাট টিপিছে। আপুনি এইটো অন কৰিব খোজেনে?</translation>
+<translation id="439598569299422042">পজ কৰা আছে, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> অফ কৰা আছে।</translation>
 <translation id="4421231901400348175">আপোনাৰ স্ক্ৰীণৰ নিয়ন্ত্ৰণ ৰিম’ট সহায়কৰ দ্বাৰা <ph name="HELPER_NAME" />ৰ সৈতে শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
@@ -546,6 +550,7 @@
 <translation id="5286194356314741248">স্কেন কৰি থকা হৈছে</translation>
 <translation id="5297704307811127955">অফ আছে</translation>
 <translation id="5302048478445481009">ভাষা</translation>
+<translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5313326810920013265">ব্লুটুথ ছেটিংসমূহ</translation>
 <translation id="5314219114274263156">স্ক্ৰীন ৰেকৰ্ডিং লোৱা হ'ল</translation>
 <translation id="5322611492012084517">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই</translation>

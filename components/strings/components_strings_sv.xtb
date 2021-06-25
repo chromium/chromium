@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver detta antal ignoreras.</translation>
 <translation id="1101672080107056897">Ett fel uppstod under åtgärden</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Om alternativet är markerat sparas en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
 <translation id="1110994991967754504">Välj behörighet för <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Ångra Ändra ordning</translation>
 <translation id="1123753900084781868">Live Caption är inte tillgängligt just nu</translation>
@@ -435,7 +434,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2491414235131909199">Den här sidan har blockerats av ett tillägg</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-analysator</translation>
-<translation id="2495093607237746763">Om alternativet är markerat sparar Chromium en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
 <translation id="2498091847651709837">Läs in ett nytt kort</translation>
 <translation id="2501278716633472235">Föregående</translation>
 <translation id="2505268675989099013">Skydda kontot</translation>
@@ -712,7 +710,6 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3531780078352352885">Arbetsordrar</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vill använda din mikrofon</translation>
 <translation id="3533328374079021623">Postfack 5</translation>
-<translation id="3539171420378717834">Spara en kopia av kortet på enheten</translation>
 <translation id="3552297013052089404">Sans serif-teckensnitt</translation>
 <translation id="3558573058928565255">dagtid</translation>
 <translation id="3566021033012934673">Anslutningen är inte privat</translation>
@@ -1590,6 +1587,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786747875388722282">Tillägg</translation>
+<translation id="678982761784843853">Skyddade innehålls-id:n</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="679355240208270552">Ignoreras eftersom standardsökmotorn inte har aktiverats av principen.</translation>
 <translation id="6794951432696553238">Verifiera kreditkort snabbare genom att använda Windows Hello från och med nu</translation>
@@ -1953,6 +1951,7 @@ Mer information.
 <translation id="8100588592594801589">De ogiltiga korten har tagits bort</translation>
 <translation id="8103161714697287722">Betalningsmetod</translation>
 <translation id="8105368624971345109">Inaktivera</translation>
+<translation id="810875025413331850">Inga enheter i närheten hittades.</translation>
 <translation id="8118489163946903409">Betalningsmetod</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> har inte installerats korrekt på datorn eller nätverket. Be IT-administratören om hjälp med problemet.</translation>
 <translation id="8128526133099929547">Du angav just ditt lösenord på en bedräglig webbplats. Chrome rekommenderar att du besöker <ph name="WEBSITE_1" /> och andra sidor där du använder lösenordet och ändrar det nu.</translation>

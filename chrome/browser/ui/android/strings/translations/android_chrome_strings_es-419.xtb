@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Mover a otra ventana</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
-<translation id="1569387923882100876">Dispositivo conectado</translation>
 <translation id="1571304935088121812">Copiar el nombre de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
-<translation id="1612196535745283361">Chrome debe acceder a la ubicación para buscar dispositivos. El acceso a la ubicación está <ph name="BEGIN_LINK" />desactivado en este dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Botón <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> desea sincronizarse</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# archivo}other{# archivos}}</translation>
 <translation id="2017836877785168846">Borra el historial y las opciones de autocompletado en la barra de direcciones.</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3522247891732774234">Actualización disponible. Mas opciones</translation>
 <translation id="3524138585025253783">IU para desarrolladores</translation>
+<translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique tu identidad.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775">KB disponibles: <ph name="KILOBYTES" /></translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
 <translation id="3771290962915251154">Se inhabilitó esta configuración porque los controles parentales están activados</translation>
 <translation id="3771694256347217732">Condiciones del Servicio de Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Activa Bluetooth<ph name="END_LINK" /> para permitir la sincronización</translation>
 <translation id="3773856050682458546">Información básica y datos sobre los sitios web que visitas y las apps que usas</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3778956594442850293">Se agregó a la pantalla principal</translation>
@@ -604,7 +601,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4910889077668685004">Apps de pago</translation>
 <translation id="4913161338056004800">Restablecer estadísticas</translation>
 <translation id="4913169188695071480">Detener actualización</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /> mientras se buscan dispositivos…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# página}other{# páginas}}</translation>
 <translation id="4925120120285606924">Captura de pantalla del <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Se exportarán tus contraseñas y se descargarán como un archivo de texto. Las personas y las apps que tengan acceso a la carpeta de destino podrán ver estas contraseñas.</translation>
@@ -653,7 +649,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5215116848420601511">Formas de pago y direcciones con Google Pay</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5227554086496586518">Presiona para ver los resultados de la búsqueda.</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5250483651202458397">Captura de pantalla. Presionar para cerrar.</translation>
 <translation id="5262378156578470238">Verás una notificación cuando esta descarga comience el <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestaña abierta; presiona para cambiar de pestaña}other{<ph name="OPEN_TABS_MANY" /> pestañas abiertas; presiona para cambiar de pestaña}}</translation>
 <translation id="5375577065097716013">Buscar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir solo algunos sitios</translation>
+<translation id="5409881200985013443">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando…</translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas que visites con más frecuencia</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
@@ -695,7 +691,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Se bloqueó el redireccionamiento</translation>
-<translation id="5527082711130173040">Chrome debe acceder a la ubicación para buscar dispositivos. <ph name="BEGIN_LINK1" />Actualiza los permisos<ph name="END_LINK1" />. El acceso a la ubicación también está <ph name="BEGIN_LINK2" />desactivado en este dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Se copió el sitio</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
@@ -743,14 +738,12 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="5810864297166300463">Asistencia web</translation>
 <translation id="5814131985548525293">Escribe aquí o presiona el ícono de micrófono para comenzar</translation>
-<translation id="5817918615728894473">Sincronizar</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5833984609253377421">Compartir vínculo</translation>
 <translation id="5836192821815272682">Descargando la actualización de Chrome…</translation>
 <translation id="5853623416121554550">pausado</translation>
 <translation id="5854512288214985237">No se envían informes de fallas ni estadísticas a Google</translation>
 <translation id="5855546874025048181">Definir mejor: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome no puede activar el adaptador Bluetooth</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862731021271217234">Para obtener las pestañas de tus otros dispositivos, activa la sincronización</translation>
@@ -895,7 +888,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6643649862576733715">Ordenar por cantidad de datos ahorrados</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="6649642165559792194">Vista previa de imagen <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome necesita acceder a la ubicación para buscar dispositivos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7583262514280211622">Aquí encontrarás tu lista de lectura</translation>
 <translation id="7588219262685291874">Activar el tema oscuro cuando esté activado el Ahorro de batería de tu dispositivo</translation>
 <translation id="7593557518625677601">Para iniciar la Sincronización de Chrome, abre la configuración de Android y vuelve a habilitar la sincronización del sistema Android</translation>
+<translation id="7594687499944811403">Permite que <ph name="EMBEDDED_ORIGIN" /> verifique tu identidad para <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
 <translation id="7606077192958116810">El modo lite está activado. Puedes administrarlo en Configuración.</translation>
 <translation id="7612619742409846846">Accediste a Google como</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> no se pudo descargar debido a fallas en la red.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Obtener ayuda<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />volver a buscar<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7630202231528827509">URL del proveedor</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
@@ -1081,7 +1073,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página sin leer}other{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas sin leer}}</translation>
 <translation id="7882131421121961860">No se encontraron entradas en el historial</translation>
-<translation id="7884346424584885269">Chrome necesita permiso para buscar dispositivos cercanos. <ph name="BEGIN_LINK" />Actualiza los permisos<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Se está ejecutando en Chrome</translation>
 <translation id="789763218334337857">Cómo usar Chrome</translation>
 <translation id="7903184275147100332">Esto puede tardar un minuto.</translation>
@@ -1160,7 +1151,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8349013245300336738">Ordenar por cantidad de datos utilizados</translation>
 <translation id="835847953965672673">Se restablecieron <ph name="NUMBER_OF_DOWNLOADS" /> descargas</translation>
 <translation id="8364299278605033898">Ver sitios populares</translation>
-<translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">El idioma <ph name="LANG" /> está listo.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
@@ -1221,7 +1211,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="867767487203716855">Próxima actualización</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de potencia de la señal: # barra}other{Nivel de potencia de la señal: # barras}}</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>
@@ -1287,7 +1276,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="9108312223223904744">Asistencia del teléfono como llave de seguridad</translation>
 <translation id="9108808586816295166">Es posible que el DNS seguro no esté disponible en todo momento</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Accede nuevamente</translation>
 <translation id="9155898266292537608">También puedes presionar brevemente la palabra para realizar una búsqueda</translation>

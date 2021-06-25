@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1449835205994625556">Nascondi password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementi</translation>
+<translation id="149095475893949513">Questo sito web sta cercando di scaricare un profilo di configurazione.</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
@@ -114,7 +115,7 @@
 <translation id="209018056901015185">Richiedi sito desktop</translation>
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi spostati</translation>
-<translation id="212623074644302906">Attiva o disattiva Aggiungi a Elenco di lettura</translation>
+<translation id="212623074644302906">Attiva o disattiva Aggiungi all'elenco di lettura</translation>
 <translation id="2139867232736819575">Cerca il testo copiato</translation>
 <translation id="214201757571129614">Accedi…</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
@@ -268,6 +269,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3607167657931203000">Dati della Compilazione automatica</translation>
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
 <translation id="3638472932233958418">Precarica pagine web</translation>
+<translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3691593122358196899">Preferito aggiunto in: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Contrassegna come da leggere</translation>
@@ -437,7 +439,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 La funzione Handoff deve anche essere attivata nella sezione Generali di Impostazioni e sui dispositivi deve essere in uso lo stesso account iCloud.</translation>
 <translation id="5551897871312988470">Proponi di tradurre</translation>
 <translation id="5556459405103347317">Ricarica</translation>
-<translation id="5580834567471114021">Aggiungere a Elenco di lettura per consultare la pagina in un secondo momento?</translation>
+<translation id="5580834567471114021">Aggiungere all'elenco di lettura per consultare la pagina in un secondo momento?</translation>
 <translation id="5592679540098330836">Attiva la sincronizzazione per <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>

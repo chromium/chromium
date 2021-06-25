@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Premik v drugo okno</translation>
 <translation id="1553358976309200471">Posodobi Chrome</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
-<translation id="1569387923882100876">Povezana naprava</translation>
 <translation id="1571304935088121812">Kopiranje uporabniškega imena</translation>
 <translation id="1592864538817356322">Standardna zaščita:</translation>
-<translation id="1612196535745283361">Chrome za iskanje naprav potrebuje dostop do lokacije. Dostop do lokacije <ph name="BEGIN_LINK" />je izklopljen za to napravo<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="1986685561493779662">Ime že obstaja</translation>
 <translation id="1987739130650180037">Gumb <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> želi opraviti seznanitev</translation>
 <translation id="2000419248597011803">Pošilja nekatere piškotke in iskanja iz naslovne vrstice ter iskalnega polja privzetemu iskalniku</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="2017836877785168846">Izbriše zgodovino in samodokončanja v naslovni vrstici.</translation>
@@ -399,6 +396,7 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3518985090088779359">Sprejmi in nadaljuj</translation>
 <translation id="3522247891732774234">Posodobitev je na voljo. Več možnosti.</translation>
 <translation id="3524138585025253783">Uporabniški vmesnik za razvijalce</translation>
+<translation id="3524334353996115845">Naj <ph name="ORIGIN" /> preveri, da sta to vi.</translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3542235761944717775">Na voljo: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Iščite v svoji zgodovini</translation>
@@ -431,7 +429,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3771290962915251154">Ta nastavitev je onemogočena, ker je vklopljen starševski nadzor</translation>
 <translation id="3771694256347217732">Googlovi pogoji storitve</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Vklopite Bluetooth<ph name="END_LINK" />, če želite dovoliti seznanjanje</translation>
 <translation id="3773856050682458546">Osnovni podatki, vključno s podatki o spletnih mestih, ki jih obiskujete, in aplikacijami, ki jih uporabljate.</translation>
 <translation id="3775705724665058594">Pošiljanje v naprave</translation>
 <translation id="3778956594442850293">Dodano na začetni zaslon</translation>
@@ -604,7 +601,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4910889077668685004">Aplikacije za plačevanje</translation>
 <translation id="4913161338056004800">Ponastavitev statističnih podatkov</translation>
 <translation id="4913169188695071480">Ustavitev osveževanja</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Poiščite pomoč<ph name="END_LINK" /> med iskanjem naprav …</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# stran}one{# stran}two{# strani}few{# strani}other{# strani}}</translation>
 <translation id="4925120120285606924">Posnetek zaslona <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Gesla bodo izvožena in prenesena v obliki besedilne datoteke. Vidna bodo vsem osebam in aplikacijam, ki imajo dostop do ciljne mape.</translation>
@@ -653,7 +649,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5215116848420601511">Plačilna sredstva in naslovi z Googlom Pay</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5227554086496586518">Dotaknite se, če želite prikazati rezultate iskanja</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> želi iskati naprave Bluetooth v bližini. Najdene so bile te naprave:</translation>
 <translation id="5233638681132016545">Nov zavihek</translation>
 <translation id="5250483651202458397">Posnetek zaslona. Dotaknite se, če ga želite zapreti.</translation>
 <translation id="5262378156578470238">Ko se ta prenos začne <ph name="DATE" />, bo prikazano obvestilo.</translation>
@@ -672,6 +667,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}one{<ph name="OPEN_TABS_MANY" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}two{<ph name="OPEN_TABS_MANY" /> odprta zavihka, dotaknite se, če želite preklopiti med zavihki}few{<ph name="OPEN_TABS_MANY" /> odprti zavihki, dotaknite se, če želite preklopiti med zavihki}other{<ph name="OPEN_TABS_MANY" /> odprtih zavihkov, dotaknite se, če želite preklopiti med zavihki}}</translation>
 <translation id="5375577065097716013">Išči sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Dovoli samo nekatera spletna mesta</translation>
+<translation id="5409881200985013443">Dovolite, da se <ph name="ONE_TIME_CODE" /> pošlje v napravi <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Preverjanje …</translation>
 <translation id="5423934151118863508">Tu bodo prikazane strani, ki jih obiskujete najpogosteje</translation>
 <translation id="5424588387303617268">Na voljo: <ph name="GIGABYTES" /> GB</translation>
@@ -695,7 +691,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5515439363601853141">Odklenite, če si želite ogledati geslo</translation>
 <translation id="5517095782334947753">Iz računa <ph name="FROM_ACCOUNT" /> imate zaznamke, zgodovino, gesla in druge nastavitve.</translation>
 <translation id="5524843473235508879">Preusmeritev je bila blokirana.</translation>
-<translation id="5527082711130173040">Chrome za iskanje naprav potrebuje dostop do lokacije. <ph name="BEGIN_LINK1" />Posodobite dovoljenja<ph name="END_LINK1" />. Dostop do lokacije je prav tako <ph name="BEGIN_LINK2" />izklopljen za to napravo<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Spletno mesto kopirano</translation>
 <translation id="5548606607480005320">Varnostno preverjanje</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
@@ -743,14 +738,12 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="5810864297166300463">Spletna pomoč</translation>
 <translation id="5814131985548525293">Vnesite tukaj ali se dotaknite ikone govora, če želite začeti.</translation>
-<translation id="5817918615728894473">Seznani</translation>
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5833984609253377421">Deli povezavo z drugimi</translation>
 <translation id="5836192821815272682">Prenašanje posodobitve za Chrome …</translation>
 <translation id="5853623416121554550">začasno ustavljeno</translation>
 <translation id="5854512288214985237">Googlu ne bodo poslani statistični podatki ali poročila o zrušitvah.</translation>
 <translation id="5855546874025048181">Spremeni: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome ne more vklopiti vmesnika za Bluetooth</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5862731021271217234">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo</translation>
@@ -895,7 +888,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6643649862576733715">Razvrsti glede na prihranek pri količini prenesenih podatkov</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Predogled slike <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome za iskanje naprav potrebuje dostop do lokacije. <ph name="BEGIN_LINK" />Posodobite dovoljenja<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659594942844771486">Tabulator</translation>
 <translation id="666731172850799929">Odpri v: <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7583262514280211622">Tukaj bo prikazan seznam za branje</translation>
 <translation id="7588219262685291874">Vklop temne teme, ko je v napravi vklopljeno varčevanje z energijo</translation>
 <translation id="7593557518625677601">Odprite nast. za Android in znova omog. sinh. v Androidu za zač. sinh. za Chrome</translation>
+<translation id="7594687499944811403">Naj <ph name="EMBEDDED_ORIGIN" /> preveri, da ste to vi, za <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Operacijski sistem</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="7606077192958116810">Lahki način je vklopljen. Upravljate ga lahko v nastavitvah.</translation>
 <translation id="7612619742409846846">V Google ste prijavljeni kot</translation>
 <translation id="7619072057915878432">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v omrežju.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Poiščite pomoč<ph name="END_LINK1" /> ali <ph name="BEGIN_LINK2" />znova iščite<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7630202231528827509">URL ponudnika</translation>
 <translation id="7638584964844754484">Napačno geslo</translation>
@@ -1081,7 +1073,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7876243839304621966">Odstrani vse</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> neprebrano stran.}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neprebrano stran.}two{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neprebrani strani.}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neprebrane strani.}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> neprebranih strani.}}</translation>
 <translation id="7882131421121961860">Ni zgodovine</translation>
-<translation id="7884346424584885269">Chrome potrebuje dovoljenje za iskanje naprav v bližini. <ph name="BEGIN_LINK" />Posodobitev dovoljenj<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Izvaja se v Chromu</translation>
 <translation id="789763218334337857">Uporaba Google Chroma</translation>
 <translation id="7903184275147100332">To lahko traja kakšno minuto</translation>
@@ -1160,7 +1151,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8349013245300336738">Razvrsti glede na količino prenesenih podatkov</translation>
 <translation id="835847953965672673">Obnovljenih je bilo toliko prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Ogled priljubljenih spletnih mest</translation>
-<translation id="8368027906805972958">Neznana ali nepodprta naprava (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Jezik <ph name="LANG" /> je pripravljen.</translation>
 <translation id="8387617938027387193">Preverite, da ste res vi</translation>
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
@@ -1221,7 +1211,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="867767487203716855">Naslednja posodobitev</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8683081248374354009">Ponastavi skupino</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Moč signala: # črtica}one{Moč signala: # črtica}two{Moč signala: # črtici}few{Moč signala: # črtice}other{Moč signala: # črtic}}</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
 <translation id="8712637175834984815">Razumem</translation>
@@ -1287,7 +1276,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9108312223223904744">Podpora za telefon kot varnostni ključ</translation>
 <translation id="9108808586816295166">Varni DNS morda ni na voljo ves čas</translation>
 <translation id="9133397713400217035">Raziščite vsebino brez povezave</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Pokaži izvirno besedilo</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9155898266292537608">Prav tako lahko iščete, tako da se hitro dotaknete besede</translation>

@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1449835205994625556">Skrivanje gesla</translation>
 <translation id="145015347812617860">Št. elementov: <ph name="COUNT" /></translation>
+<translation id="149095475893949513">To spletno mesto poskuša prenesti profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dvakrat se dotaknite, da preklopite nastavitev</translation>
 <translation id="1492417797159476138">Za to spletno mesto ste že shranili to uporabniško ime.</translation>
 <translation id="1509486075633541495">Prijavite se na spletnem mestu</translation>
@@ -268,6 +269,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3607167657931203000">Autofill Data</translation>
 <translation id="3609785682760573515">Sinhroniziranje ...</translation>
 <translation id="3638472932233958418">Vnaprej naloži spletne strani</translation>
+<translation id="3661160521073045932">Profil konfiguracije je na voljo</translation>
 <translation id="3670030362669914947">Številka</translation>
 <translation id="3691593122358196899">Zaznamek ustvarjen v mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>

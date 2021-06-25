@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
 <translation id="1101672080107056897">Działanie w razie wystąpienia błędu</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Po zaznaczeniu tej opcji Chrome będzie zapisywać kopię danych karty na tym urządzeniu, by szybciej wypełniać formularze.</translation>
 <translation id="1110994991967754504">Wybierz uprawnienia dla: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Cofnij zmianę kolejności</translation>
 <translation id="1123753900084781868">Napisy na żywo nie są teraz dostępne</translation>
@@ -431,7 +430,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2491414235131909199">Ta strona została zablokowana przez rozszerzenie</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Parser JSON</translation>
-<translation id="2495093607237746763">Jeśli zaznaczysz tę opcję, Chromium zapisze kopię Twojej karty na tym urządzeniu, by umożliwić Ci szybsze wypełnianie formularzy.</translation>
 <translation id="2498091847651709837">Zeskanuj nową kartę</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2505268675989099013">Chroń konto</translation>
@@ -708,7 +706,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3531780078352352885">Arkusze zadań</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> chce korzystać z mikrofonu</translation>
 <translation id="3533328374079021623">Zestaw tac odbiorczych 5</translation>
-<translation id="3539171420378717834">Zachowaj kopię tej karty na urządzeniu</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
@@ -1581,6 +1578,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Fioletowy</translation>
 <translation id="6786747875388722282">Rozszerzenia</translation>
+<translation id="678982761784843853">Identyfikatory treści chronionych</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="679355240208270552">Ignorowana, ponieważ wyszukiwarka domyślna nie jest dozwolona przez zasadę.</translation>
 <translation id="6794951432696553238">Potwierdzaj karty szybciej przy użyciu Windows Hello</translation>
@@ -1944,6 +1942,7 @@ Dodatkowe informacje:
 <translation id="8100588592594801589">Nieprawidłowe karty zostały usunięte</translation>
 <translation id="8103161714697287722">Forma płatności</translation>
 <translation id="8105368624971345109">Wyłącz</translation>
+<translation id="810875025413331850">Nie znaleziono żadnych urządzeń w pobliżu.</translation>
 <translation id="8118489163946903409">Forma płatności</translation>
 <translation id="8127301229239896662">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie zostało prawidłowo zainstalowane na komputerze lub w sieci. Poproś administratora o rozwiązanie tego problemu.</translation>
 <translation id="8128526133099929547">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" /> oraz na innych stronach, na których go używasz.</translation>

@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Muut kohdat ohitetaan.</translation>
 <translation id="1101672080107056897">Virhetapahtuma</translation>
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
-<translation id="1107591249535594099">Jos tämä ruutu on valittu, Chrome tallentaa kortin kopion tälle laitteelle, jotta lomakkeiden täyttö nopeutuu.</translation>
 <translation id="1110994991967754504">Valitse käyttöoikeus kohteelle <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">K&amp;umoa uudelleenjärjestely</translation>
 <translation id="1123753900084781868">Livetekstitys ei ole juuri nyt käytettävissä</translation>
@@ -435,7 +434,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2491414235131909199">Laajennus on estänyt tämän sivun</translation>
 <translation id="2493640343870896922">Kirje-plus</translation>
 <translation id="2495083838625180221">JSON-jäsentäjä</translation>
-<translation id="2495093607237746763">Jos tämä on valittu, Chromium tallentaa kortin kopion tälle laitteelle nopeuttaakseen lomakkeiden täyttöä.</translation>
 <translation id="2498091847651709837">Skannaa uusi kortti</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2505268675989099013">Suojaa tili</translation>
@@ -713,7 +711,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3531780078352352885">Työpaikkasivut</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> haluaa käyttää mikrofoniasi.</translation>
 <translation id="3533328374079021623">Postilaatikko 5</translation>
-<translation id="3539171420378717834">Säilytä tämän kortin kopio laitteella.</translation>
 <translation id="3552297013052089404">Sans Serif ‑fontti</translation>
 <translation id="3558573058928565255">Päiväsaika</translation>
 <translation id="3566021033012934673">Yhteytesi ei ole salattu</translation>
@@ -1591,6 +1588,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6775759552199460396">JIS B2 (515 mm x 728 mm)</translation>
 <translation id="67862343314499040">Lila</translation>
 <translation id="6786747875388722282">Laajennukset</translation>
+<translation id="678982761784843853">Suojatun sisällön tunnukset</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="679355240208270552">Ohitettu, koska oletushaku on poistettu käytöstä käytännön johdosta</translation>
 <translation id="6794951432696553238">Vahvista kortit jatkossa nopeammin Windows Hellolla</translation>
@@ -1954,6 +1952,7 @@ Lisätietoja:
 <translation id="8100588592594801589">Virheelliset kortit on poistettu</translation>
 <translation id="8103161714697287722">Maksutapa</translation>
 <translation id="8105368624971345109">Poista käytöstä</translation>
+<translation id="810875025413331850">Lähistöllä olevia laitteita ei löydy.</translation>
 <translation id="8118489163946903409">Maksutapa</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> on asennettu virheellisesti tietokoneellesi tai verkkoon. Pyydä järjestelmänvalvojaasi ratkaisemaan ongelma.</translation>
 <translation id="8128526133099929547">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee vaihtamaan salasanan heti kaikilla sivustoilla, joilla käytät sitä (esim. <ph name="WEBSITE_1" />).</translation>

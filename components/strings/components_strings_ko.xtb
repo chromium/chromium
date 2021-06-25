@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
 <translation id="1101672080107056897">오류 작업</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
-<translation id="1107591249535594099">선택하면 Chrome에서 양식을 더 빠르게 입력할 수 있도록 이 기기에 카드 사본을 저장합니다.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
 <translation id="1123753900084781868">현재 실시간 자막을 사용할 수 없습니다.</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">확장 프로그램에서 차단한 페이지입니다.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
-<translation id="2495093607237746763">선택하면 이 기기에 카드 사본이 저장되어 Chromium에서 양식을 더 빠르게 입력할 수 있습니다.</translation>
 <translation id="2498091847651709837">새 카드 스캔</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2505268675989099013">계정 보호</translation>
@@ -708,7 +706,6 @@
 <translation id="3531780078352352885">작업 시트</translation>
 <translation id="3532844647053365774"><ph name="HOST" />에서 마이크를 사용하려고 합니다</translation>
 <translation id="3533328374079021623">메일박스 5</translation>
-<translation id="3539171420378717834">카드 사본을 이 기기에 저장</translation>
 <translation id="3552297013052089404">산세리프 글꼴</translation>
 <translation id="3558573058928565255">낮</translation>
 <translation id="3566021033012934673">연결이 비공개로 설정되어 있지 않습니다.</translation>
@@ -1393,7 +1390,7 @@
 <translation id="6032524144326295339">메일박스 2</translation>
 <translation id="6032955021262906325">왼쪽 바인드</translation>
 <translation id="6034000775414344507">연한 회색</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> 앱은 크기 조절을 제대로 지원하지 않을 수 있습니다. 앱이 오작동하지 않도록 미리 설정된 창 크기를 사용하세요.</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" />의 크기 조절이 제대로 되지 않을 수 있습니다. 앱이 오작동하지 않도록 미리 설정된 창 크기를 사용하세요.</translation>
 <translation id="6034283069659657473">10x14(봉투)</translation>
 <translation id="6034514109191629503">아코디언 폴드</translation>
 <translation id="6039846035001940113">문제가 계속되면 사이트 소유자에게 문의하세요.</translation>
@@ -1581,6 +1578,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">보라색</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
+<translation id="678982761784843853">보호된 콘텐츠 ID</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="679355240208270552">정책에 의해 기본 검색이 사용 설정되지 않았기 때문에 무시되었습니다.</translation>
 <translation id="6794951432696553238">지금부터 Windows Hello를 사용하여 빠르게 카드를 확인합니다.</translation>
@@ -1943,6 +1941,7 @@
 <translation id="8100588592594801589">유효하지 않은 카드가 삭제되었습니다.</translation>
 <translation id="8103161714697287722">결제 수단</translation>
 <translation id="8105368624971345109">사용 중지</translation>
+<translation id="810875025413331850">주변 기기를 찾을 수 없습니다.</translation>
 <translation id="8118489163946903409">결제 수단</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
 <translation id="8128526133099929547">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>

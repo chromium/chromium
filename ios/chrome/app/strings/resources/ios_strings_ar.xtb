@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
+<translation id="149095475893949513">يحاول هذا الموقع الإلكتروني تنزيل ملف شخصي يتضمّن إعدادات.</translation>
 <translation id="1491277525950327607">انقر مرّتين لتبديل الإعداد</translation>
 <translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
 <translation id="1509486075633541495">تسجيل الدخول إلى الموقع الإلكتروني</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">ملء البيانات تلقائيًا</translation>
 <translation id="3609785682760573515">جارٍ المزامنة...</translation>
 <translation id="3638472932233958418">تحميل صفحات الويب مسبقًا</translation>
+<translation id="3661160521073045932">يتوفّر ملف شخصي يتضمّن إعدادات</translation>
 <translation id="3670030362669914947">رقم</translation>
 <translation id="3691593122358196899">أُضيفَت إشارة مرجعية إلى <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">وضع علامة "غير مقروءة"</translation>

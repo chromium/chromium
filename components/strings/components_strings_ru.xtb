@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
 <translation id="1101672080107056897">Действие при ошибке</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Если флажок установлен, Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: выберите разрешение</translation>
 <translation id="1113869188872983271">&amp;Отменить изменение порядка</translation>
 <translation id="1123753900084781868">Автоматические субтитры сейчас недоступны.</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">Эта страница была заблокирована расширением.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Синтаксический анализатор JSON</translation>
-<translation id="2495093607237746763">Если флажок установлен, Chromium будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="2498091847651709837">Сканировать новую карту</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2505268675989099013">Защитить аккаунт</translation>
@@ -707,7 +705,6 @@
 <translation id="3531780078352352885">Листы задания</translation>
 <translation id="3532844647053365774">Сайт <ph name="HOST" /> запрашивает доступ к микрофону.</translation>
 <translation id="3533328374079021623">Почтовый ящик 5</translation>
-<translation id="3539171420378717834">Хранить данные карты на этом устройстве</translation>
 <translation id="3552297013052089404">Шрифт без засечек</translation>
 <translation id="3558573058928565255">До дня</translation>
 <translation id="3566021033012934673">Подключение не защищено</translation>
@@ -1392,7 +1389,7 @@
 <translation id="6032524144326295339">Почтовый ящик 2</translation>
 <translation id="6032955021262906325">Скрепление слева</translation>
 <translation id="6034000775414344507">Светло-серый</translation>
-<translation id="6034062182346928710">В случае изменения размеров приложение "<ph name="APP_NAME" />" может работать некорректно. Чтобы избежать этого, используйте стандартные размеры.</translation>
+<translation id="6034062182346928710">Если размер приложения "<ph name="APP_NAME" />" изменить, оно может работать некорректно. Чтобы избежать этого, используйте стандартные размеры.</translation>
 <translation id="6034283069659657473">10x14 (конверт)</translation>
 <translation id="6034514109191629503">Фальцовка гармошкой в три сгиба</translation>
 <translation id="6039846035001940113">Если проблема не исчезнет, свяжитесь с владельцем сайта.</translation>
@@ -1580,6 +1577,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фиолетовый</translation>
 <translation id="6786747875388722282">Расширения</translation>
+<translation id="678982761784843853">ID защищенного контента</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="679355240208270552">Игнорируется, так как в правиле не задан поиск по умолчанию.</translation>
 <translation id="6794951432696553238">Подтверждайте карты быстрее с помощью Windows Hello</translation>
@@ -1943,6 +1941,7 @@
 <translation id="8100588592594801589">Недействительные карты удалены.</translation>
 <translation id="8103161714697287722">Способ оплаты</translation>
 <translation id="8105368624971345109">Отключить</translation>
+<translation id="810875025413331850">Устройства поблизости не найдены.</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
 <translation id="8128526133099929547">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для ресурса <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете введенный пароль.</translation>

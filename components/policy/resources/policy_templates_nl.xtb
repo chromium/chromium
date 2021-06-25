@@ -367,6 +367,9 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="1502843533062797703">Injectie van software van derden blokkeren</translation>
+<translation id="1503969899251962413">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.
+
+      Dit beleid is verwijderd in M94.</translation>
 <translation id="150857982247452081">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane oorsprongpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
 
       Als dit beleid is ingesteld, kan een protocol volgens het beleid een externe app alleen starten zonder prompt aan de gebruiker als het protocol in de lijst wordt vermeld en de oorsprong van de site die probeert het protocol te starten, overeenkomt met een van de oorsprongpatronen in de lijst allowed_origins van dat protocol. Als een van de voorwaarden False is, wordt de prompt voor starten via een extern protocol volgens het beleid niet overgeslagen.
@@ -4579,11 +4582,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="69525503251220566">Parameter die een functie voor zoeken op afbeelding levert voor de standaardzoekprovider</translation>
 <translation id="6953102253399571439">Afdrukken met pincode standaard aanzetten</translation>
 <translation id="6956272732789158625">Sites niet toestaan sleutels te genereren</translation>
-<translation id="6959021201443139119">Cookies die zijn ingesteld voor domeinen die met deze patronen overeenkomen, worden teruggezet naar het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" />. Als je het verouderde gedrag terugzet, worden cookies waarin geen <ph name="ATTRIBUTE_SAMESITE_NAME" />-kenmerk is opgegeven, als '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' behandeld en wordt de vereiste weggenomen dat cookies van '<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />' het kenmerk '<ph name="ATTRIBUTE_SECURE_NAME" />' bevatten. De schemavergelijking wordt overgeslagen tijdens de controle of twee sites dezelfde site zijn. Zie https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies voor een volledige beschrijving.
-
-          Voor cookies op domeinen die niet overeenkomen met de hier genoemde patronen, of voor alle cookies als dit beleid niet is ingesteld, is de globale standaardwaarde de persoonlijke configuratie van de gebruiker.
-
-          Houd er rekening mee dat de patronen die je hier opgeeft, worden behandeld als domeinen (en niet als URL's). Geef daarom geen schema of poort op.</translation>
 <translation id="6961602002757991199">Als je dit beleid instelt op een geldige URL, downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn ingesteld met het <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />-beleid. Met dit beleid wordt voorkomen dat <ph name="PRODUCT_NAME" /> en de alternatieve browser elkaar openen.
 
       Als je dit beleid niet instelt (of instelt op een ongeldige URL), gebruikt <ph name="PRODUCT_NAME" /> dit beleid niet als een bron van regels die het niet overschakelen naar een andere browser regelen.

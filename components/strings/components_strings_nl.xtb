@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
 <translation id="1101672080107056897">Fout in actie</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
-<translation id="1107591249535594099">Als deze optie is aangevinkt, bewaart Chrome een exemplaar van je pas op dit apparaat om formulieren sneller te kunnen invullen.</translation>
 <translation id="1110994991967754504">Rechten selecteren voor <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Volgorde wijzigen ongedaan maken</translation>
 <translation id="1123753900084781868">Live ondertiteling is momenteel niet beschikbaar</translation>
@@ -430,7 +429,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2491414235131909199">Deze pagina is geblokkeerd door een extensie</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
-<translation id="2495093607237746763">Als deze optie is aangevinkt, bewaart Chromium een exemplaar van je pas op dit apparaat om formulieren sneller te kunnen invullen.</translation>
 <translation id="2498091847651709837">Nieuwe pas scannen</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2505268675989099013">Account beschermen</translation>
@@ -703,7 +701,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3531780078352352885">Taakbladen</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> wil gebruikmaken van je microfoon</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
-<translation id="3539171420378717834">Een exemplaar van deze pas op dit apparaat bewaren</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
 <translation id="3558573058928565255">Tijd van de dag</translation>
 <translation id="3566021033012934673">Je verbinding is niet privé</translation>
@@ -816,7 +813,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3963721102035795474">Lezermodus</translation>
 <translation id="3963837677003247395">Handmatig doorgaan?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van één site }other{Van # sites }}</translation>
-<translation id="3970481983430640194">Je kunt deze app nu slepen en het formaat ervan aanpassen</translation>
+<translation id="3970481983430640194">Je kunt deze app nu slepen om het formaat ervan aan te passen</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3973357910713125165">Knop Chrome-veiligheidscheck uitvoeren, druk op Enter om de veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
@@ -1577,6 +1574,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensies</translation>
+<translation id="678982761784843853">ID's van beschermde content</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="679355240208270552">Genegeerd omdat de standaard zoekoptie is uitgezet door het beleid.</translation>
 <translation id="6794951432696553238">Bevestig je kaarten sneller door vanaf nu Windows Hello te gebruiken</translation>
@@ -1940,6 +1938,7 @@ Aanvullende informatie:
 <translation id="8100588592594801589">De ongeldige passen zijn verwijderd</translation>
 <translation id="8103161714697287722">Betaalmethode</translation>
 <translation id="8105368624971345109">Uitzetten</translation>
+<translation id="810875025413331850">Geen apparaten in de buurt gevonden.</translation>
 <translation id="8118489163946903409">Betaalmethode</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' is niet correct geïnstalleerd op je computer of netwerk. Neem contact op met je IT-beheerder om dit probleem op te lossen.</translation>
 <translation id="8128526133099929547">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan naar <ph name="WEBSITE_1" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>

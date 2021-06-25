@@ -2466,7 +2466,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3664511988987167893">Utvidelsesikon</translation>
 <translation id="3665589677786828986">Chrome har oppdaget at noen av innstillingene ble ødelagt av et annet program og tilbakestille dem til originalinnstillingene.</translation>
 <translation id="3668801437375206837">For å diagnostisere Bluetooth-problemer kan Googlere inkludere flere Bluetooth-logger i tilbakemeldingsrapportene sine. Når dette alternativet er avmerket, inkluderer rapporten din btsnoop- and HCI-logger fra den gjeldende økten din. Disse er anonymisert for å fjerne så mye personlig identifiserende informasjon (PII) som mulig. Tilgang til disse loggene blir begrenset til administratorer av Chrome OS-produktgruppen i Listnr. Logger slettes permanent etter 90 dager.</translation>
-<translation id="3668823961463113931">Behandlere</translation>
 <translation id="3670113805793654926">Enheter fra alle leverandører</translation>
 <translation id="3670229581627177274">Slå på Bluetooth</translation>
 <translation id="3672681487849735243">En fabrikkfeil har blitt oppdaget</translation>
@@ -3858,7 +3857,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5227679487546032910">Blågrønt standardbrukerbilde</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
 <translation id="5230516054153933099">Vindu</translation>
-<translation id="523271575098439435">Legg til nettstedspråkene du foretrekker. Det øverste språket på listen blir brukt i oversettelser.</translation>
 <translation id="5233019165164992427">NaCl-feilsøkingsport</translation>
 <translation id="5233231016133573565">Prosess-ID</translation>
 <translation id="5233638681132016545">Ny fane</translation>
@@ -5756,6 +5754,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7371490947952970241">Du kan slå av Posisjon ved å slå av enhetens hovedinnstilling for Posisjon. Du kan også slå av bruken av Wi-Fi, mobilnettverk og sensorer for posisjon i posisjonsinnstillingene.</translation>
 <translation id="7371917887111892735">Faner krymper til de er på bredde med festede faner</translation>
 <translation id="7374376573160927383">Administrer USB-enheter</translation>
+<translation id="7374461526650987610">Protokollbehandlere</translation>
 <translation id="7375235221357833624">{0,plural, =1{Oppdater enheten innen en time}other{Oppdater enheten innen # timer}}</translation>
 <translation id="7376553024552204454">Fremhev musepekeren når den beveger seg</translation>
 <translation id="737728204345822099">Besøket ditt på dette nettstedet kan bli registrert på sikkerhetsnøkkelen.</translation>
@@ -5865,6 +5864,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7488682689406685343">Det kan hende at dette nettstedet prøver å lure deg til å tillate påtrengende varsler.</translation>
 <translation id="7489761397368794366">Ring fra enheten din</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
+<translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 informasjonskapsel}other{{NUM_COOKIES} informasjonskapsler}}</translation>
 <translation id="7493386493263658176">Det kan hende at utvidelsen <ph name="EXTENSION_NAME" /> registrerer all tekst du skriver inn, deriblant personlige data som passord og kredittkortnumre. Vil du bruke denne utvidelsen?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -6467,7 +6467,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8107015733319732394">Installerer Google Play-butikken på <ph name="DEVICE_TYPE" />-enheten din. Dette kan ta noen minutter.</translation>
 <translation id="810728361871746125">Skjermoppløsning</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ingen informasjonskapsler fra tredjeparter}=1{1 informasjonskapsel fra en tredjepart er blokkert}other{# informasjonskapsler fra tredjeparter er blokkert}}</translation>
-<translation id="810875025413331850">Fant ingen enheter i nærheten.</translation>
 <translation id="8109109153262930486">Standard brukerbilde</translation>
 <translation id="8110489095782891123">Laster ned kontaktlisten …</translation>
 <translation id="8113476325385351118">Fortsett å blokkere dette nettstedet fra å ha full kontroll over MIDI-enheter</translation>
@@ -7213,7 +7212,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="893298445929867520">Handlekurvene er skjult. De blir synlige igjen når du gjør endringer.</translation>
 <translation id="8933960630081805351">&amp;Vis i Finder</translation>
 <translation id="8934732568177537184">Fortsett</translation>
-<translation id="8938306522009698937">behandlere</translation>
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8940081510938872932">Datamaskinen din har for mange baller i luften nå. Prøv på nytt senere.</translation>
 <translation id="8941173171815156065">Opphev tillatelsen «<ph name="PERMISSION" />»</translation>

@@ -364,6 +364,9 @@
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
+<translation id="1503969899251962413">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。
+
+      此政策已从 M94 中移除。</translation>
 <translation id="150857982247452081">让您能够设置一个协议列表，并为每份协议设置一个关联列表，包含允许的来源格式，使协议无需提示用户就能启动外部应用。罗列协议时不应添加结尾分隔符，因此请罗列“skype”而非“skype:”或“skype://”。
 
       如果您设置了此政策，那么仅当满足以下条件时，相应协议才可依照政策在不提示用户的情况下启动外部应用：该协议包含在列表中，而且尝试启动该协议的网站的来源与该协议 allowed_origins 列表中的来源格式之一匹配。如果相应协议不满足上述任一条件，系统将不会依照此政策跳过外部协议启动提示。
@@ -602,7 +605,7 @@
 <translation id="1803646570632580723">要在启动程序中显示的固定应用的列表</translation>
 <translation id="1808715480127969042">在这些网站上阻止 Cookie</translation>
 <translation id="1810261428246410396">允许使用即时网络共享功能。</translation>
-<translation id="1813672770917912317">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将运行启用了 JIT（即时）编译器的 v8 JavaScript 引擎。
+<translation id="1813672770917912317">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将在运行 v8 JavaScript 引擎时启用 JIT（即时）编译器。
 
           停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 呈现网页内容的速度可能会更慢，且可能会停用 JavaScript 的某些部分（包括 WebAssembly）。停用 JavaScript JIT 可能会允许 <ph name="PRODUCT_NAME" /> 以更安全的配置呈现网页内容。
 
@@ -866,13 +869,13 @@
       如果此政策未设置，那么仅当检测到所用机器的物理内存容量即将用尽时，浏览器才会开始尝试节省内存空间。</translation>
 <translation id="2166155400701622446">这是 <ph name="PRODUCT_NAME" /> 内置的受限端口列表。与这些端口的连接将失败。此设置允许绕过该列表。此政策的值应是一个逗号分隔列表，包含 0 个或多个获准进行外发连接的端口。
 
-      限制端口是为了防止不良之徒将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以协助将正在禁用端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
+      限制端口是为了防止有人将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以便将在被禁用的端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
 
       恶意网站可轻松地检测到此政策已设置以及其中指定了哪些端口，并会使用这类信息来确定攻击目标。
 
       此处的每个端口都带有日期标签，此日期代表该端口可解禁的截止日期。该日期过后，无论此设置是怎样设定的，相应端口都会受到限制。
 
-      将此政策的值留空（不设置此政策）意味着所有受限端口都会被禁用。如果该列表既包含有效值也包含无效值，有效值会被付诸应用。
+      将此政策的值留空（或不设置此政策）意味着所有受限端口都会被禁用。如果该列表既包含有效值也包含无效值，有效值会被应用。
 
       此政策会覆盖“--explicitly-allowed-ports”命令行选项。</translation>
 <translation id="2166472654199325139">不滤除提供成人内容的网站</translation>
@@ -2614,13 +2617,13 @@
 <translation id="4410236409016356088">启用网络带宽限制功能</translation>
 <translation id="4411734231900934213">孩子设备上的时钟和家长设备上的时钟可以相差多少（以秒为单位）。</translation>
 <translation id="441217499641439905">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中，不允许通过移动网络连接到 Google 云端硬盘</translation>
-<translation id="4413453659814156568">让您能够设置一系列网站网址格式，从而指定允许哪些网站运行启用了 JIT（即时）编译器的 JavaScript。
+<translation id="4413453659814156568">让您能够设置一系列网站网址格式，从而指定允许哪些网站在运行 JavaScript 时启用 JIT（即时）编译器。
 
           如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
 
           系统将仅以网站 (eTLD+1) 为单位强制执行 JavaScript JIT 政策例外情况。仅为 subdomain.site.com 设置的政策将不会正确应用于 site.com 或 subdomain.site.com，因为这两者都解析为未应用任何政策的同一个 eTLD+1 (site.com)。在这种情况下，必须对 site.com 设置相应政策，才能将此政策同时正确应用于 site.com 和 subdomain.site.com。
 
-          此政策逐框架适用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将启用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
+          此政策会按框架逐一应用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将启用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
 
           如果没有为网站设置此政策，那么 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）将应用于该网站，否则为该网站启用 JavaScript JIT。</translation>
 <translation id="4415603335307944578">如果将此政策设置为 true 或未配置，在操作系统升级后，该浏览器首次启动时将重新显示欢迎页面。
@@ -4090,6 +4093,14 @@
 <translation id="6449476513004303784">禁止用户管理证书</translation>
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能</translation>
 <translation id="645425387487868471">为 <ph name="PRODUCT_NAME" /> 启用强制登录功能</translation>
+<translation id="6455842857207956758">允许在多部 Chrome 设备之间同步 SAML 密码，方法是监控密码同步令牌，并在密码已更新且需要同步时安排用户在线重新验证身份。
+
+      通过 chrome://password-change 启用一个页面，以便 SAML 用户能够在会话期间更改其 SAML 密码，从而确保 SAML 密码和设备屏幕锁定密码保持同步。
+
+      此政策还可在 SAML 密码即将到期时向 SAML 用户显示通知以示警告，以便他们能够通过在会话期间更改密码来立即采取应对措施。
+      但是，除非 SAML 身份提供商在 SAML 登录流程中将密码到期信息发送给设备，否则系统不会显示此类通知。
+
+      如果此政策已停用或未设置，用户将无法在 chrome://password-change 上更改 SAML 密码，而且当 SAML 密码即将到期时，系统将不会显示任何通知。</translation>
 <translation id="6458361632497500815">如果此政策已启用或未设置，系统会允许所有用户使用 <ph name="PRODUCT_CROSTINI_NAME" />，前提是 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 和 <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> 这 3 项政策均已启用。如果此政策已停用，意味着独立用户无法使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果将此政策的状态改为已停用，此政策将开始应用于新启动的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，而非应用于已在运行的容器。</translation>
 <translation id="6464074037294098618">自动填充地址信息</translation>
 <translation id="6467613372414922590">允许使用用户级本地消息传递主机（安装时没有管理员权限）</translation>
@@ -4270,6 +4281,7 @@
 
       如果此政策已停用或未设置，打印命令将触发打印预览屏幕。</translation>
 <translation id="6658245400435704251">指定一个时间（以秒为单位），即从更新首次推送到服务器起设备随机延迟更新下载的最大时间。设备的这一等待时间一部分会按照实际时间计算，而剩下的部分则取决于更新检查的次数。在任何情况下，分配的时间上限都是固定的，因此设备绝不会一直等待下载某个更新。</translation>
+<translation id="6659537776197644458">请勿触发身份验证流程以进行密码同步</translation>
 <translation id="6662162847932043943">通过设置此政策，您可以罗列自动授权哪些网站访问所有可用的串行端口。
 
       这些网址必须有效，否则系统会忽略此政策。系统将仅考虑相应网址的来源（架构、主机和端口）。
@@ -4568,11 +4580,6 @@
 <translation id="69525503251220566">用来为默认搜索服务提供商提供图片搜索功能的参数</translation>
 <translation id="6953102253399571439">默认启用 PIN 码打印</translation>
 <translation id="6956272732789158625">不允许任何网站使用密钥生成功能</translation>
-<translation id="6959021201443139119">为与这些格式匹配的网域设置的 Cookie 将恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为。恢复为旧版行为会导致未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性的 Cookie 被当作“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 来处理，会撤消“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 必须附带“<ph name="ATTRIBUTE_SECURE_NAME" />”属性的要求，并会在评估两个网站是否为同一个网站时跳过架构对比。如需查看完整说明，请参阅 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
-
-          对于与此处所列格式不匹配的网域上的 Cookie 以及未设置此政策时的所有 Cookie，全局默认值将是用户的个人配置。
-
-          请注意，您在此处列出的格式会被系统视为网域（而非网址），因此您不应指定协议或端口。</translation>
 <translation id="6961602002757991199">如果此政策设为一个有效网址，<ph name="PRODUCT_NAME" /> 就会从该网址下载网站列表，并参照 <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> 政策的设定应用相应规则。这些政策会阻止 <ph name="PRODUCT_NAME" /> 和备用浏览器互相打开。
 
       如果此政策未设置（或设为一个无效网址），<ph name="PRODUCT_NAME" /> 便不会将它用作浏览器不切换规则的来源。
@@ -4943,6 +4950,7 @@
       如果您停用了此设置，用户将无法使用该功能。如果 PhoneHubAllowed 政策已停用，用户也将无法使用该功能。
 
       如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
+<translation id="7367734504783638685">第三方 SSO 提供商和 Chrome 设备之间的密码同步</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
 <translation id="7373680616478819439">此设置会启用或停用登录拦截功能。
@@ -5633,6 +5641,7 @@
 <translation id="8314214821702356835">允许用户在设备锁定时播放媒体</translation>
 <translation id="8319678975002906774">为特定来源的网站设定受管理配置值</translation>
 <translation id="8320149248919453401">电池充电模式</translation>
+<translation id="8329434144708110">触发身份验证流程，以便与 SSO 提供商同步密码</translation>
 <translation id="8329984337216493753">此政策仅在零售模式下有效。
 
       如果 DeviceIdleLogoutTimeout 已指定，此政策就用于定义警告框的持续时间，系统会在执行退出操作前向用户显示一个倒计时器。
@@ -5780,7 +5789,7 @@
 <translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
-<translation id="8543103455510904459">让您能够设置一系列网站网址格式，从而指定不允许哪些网站运行启用了 JIT（即时）编译器的 JavaScript。
+<translation id="8543103455510904459">让您能够设置一系列网站网址格式，从而指定不允许哪些网站在运行 JavaScript 时启用 JIT（即时）编译器。
 
           停用 JavaScript JIT 后，<ph name="PRODUCT_NAME" /> 呈现网页内容的速度可能会更慢，且可能会停用 JavaScript 的某些部分（包括 WebAssembly）。停用 JavaScript JIT 可能会允许 <ph name="PRODUCT_NAME" /> 以更安全的配置呈现网页内容。
 
@@ -5788,7 +5797,7 @@
 
           系统将仅以网站 (eTLD+1) 为单位强制执行 JavaScript JIT 政策例外情况。仅为 subdomain.site.com 设置的政策将不会正确应用于 site.com 或 subdomain.site.com，因为这两者都解析为未应用任何政策的同一个 eTLD+1 (site.com)。在这种情况下，必须对 site.com 设置相应政策，才能将此政策同时正确应用于 site.com 和 subdomain.site.com。
 
-          此政策逐框架适用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将停用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
+          此政策会按框架逐一应用，而非仅基于顶级原始网址，例如，如果 site-one.com 已列在 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策中，但 site-one.com 会加载包含 site-two.com 的框架，那么 site-one.com 将停用 JavaScript JIT，但 site-two.com 将使用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）或默认启用 JavaScript JIT。
 
           如果没有为网站设置此政策，那么 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 中的政策（若已设置）将应用于该网站，否则为该网站启用 JavaScript JIT。</translation>
 <translation id="8543108307976719751">禁止与这台计算机建立远程访问连接</translation>

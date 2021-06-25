@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1449835205994625556">پنهان کردن گذرواژه</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> مورد</translation>
+<translation id="149095475893949513">این وب‌سایت می‌خواهد نمایه پیکربندی بارگیری کند.</translation>
 <translation id="1491277525950327607">برای جابه‌جایی بین تنظیمات، دو ضربه سریع بزنید</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1509486075633541495">ورود به سیستم وب‌سایت</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">داده‌های تکمیل خودکار</translation>
 <translation id="3609785682760573515">در حال همگام‌سازی...</translation>
 <translation id="3638472932233958418">صفحات وب از پیش بارگیری شده</translation>
+<translation id="3661160521073045932">پیکربندی نمایه دردسترس است</translation>
 <translation id="3670030362669914947">عدد</translation>
 <translation id="3691593122358196899">نشانک به <ph name="FOLDER_TITLE" /> اضافه شد</translation>
 <translation id="3709582977625132201">علامت‌گذاری به‌عنوان خوانده‌نشده</translation>

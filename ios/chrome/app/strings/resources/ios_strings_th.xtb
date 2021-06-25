@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
+<translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
 <translation id="1491277525950327607">แตะ 2 ครั้งเพื่อสลับการตั้งค่า</translation>
 <translation id="1492417797159476138">คุณบันทึกชื่อผู้ใช้นี้สำหรับเว็บไซต์นี้แล้ว</translation>
 <translation id="1509486075633541495">ลงชื่อเข้าใช้เว็บไซต์</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="3609785682760573515">กำลังซิงค์...</translation>
 <translation id="3638472932233958418">โหลดหน้าเว็บล่วงหน้า</translation>
+<translation id="3661160521073045932">มีโปรไฟล์การกำหนดค่า</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
 <translation id="3691593122358196899">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_TITLE" /> แล้ว</translation>
 <translation id="3709582977625132201">ทำเครื่องหมายว่ายังไม่อ่าน</translation>

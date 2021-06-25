@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ang field na ito ay hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry. Madi-discard ang lahat ng karagdagang entry.</translation>
 <translation id="1101672080107056897">Error sa pagkilos</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Kung lalagyan ng check, mag-iimbak ang Chrome ng kopya ng iyong card sa device na ito para sa mas mabilis na pagsagot sa form.</translation>
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;I-undo ang pagbabago sa ayos</translation>
 <translation id="1123753900084781868">Hindi available sa ngayon ang Instant Caption</translation>
@@ -435,7 +434,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2491414235131909199">Na-block ng extension ang page na ito</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Pang-parse ng JSON</translation>
-<translation id="2495093607237746763">Kung may check, mag-iimbak ang Chromium ng kopya ng iyong card sa device na ito para sa mas mabilis na pagsagot sa form.</translation>
 <translation id="2498091847651709837">Mag-scan ng bagong card</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2505268675989099013">Protektahan ang Account</translation>
@@ -712,7 +710,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3531780078352352885">Mga sheet ng trabaho</translation>
 <translation id="3532844647053365774">Gustong gamitin ng <ph name="HOST" /> ang iyong mikropono</translation>
 <translation id="3533328374079021623">Mailbox 5</translation>
-<translation id="3539171420378717834">Magtago ng kopya ng card na ito sa device na ito</translation>
 <translation id="3552297013052089404">Sans-serif Font</translation>
 <translation id="3558573058928565255">Oras sa umaga</translation>
 <translation id="3566021033012934673">Hindi pribado ang iyong koneksyon</translation>
@@ -1590,6 +1587,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Mga Extension</translation>
+<translation id="678982761784843853">Mga pinoprotektahang content ID</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="679355240208270552">Binalewala dahil hindi na-enable ng patakaran ang default na paghahanap.</translation>
 <translation id="6794951432696553238">Kumpirmahin nang mas mabilis ang iyong mga card gamit ang Windows Hello mula ngayon</translation>
@@ -1953,6 +1951,7 @@ Mga karagdagang detalye:
 <translation id="8100588592594801589">Naalis na ang mga invalid na card</translation>
 <translation id="8103161714697287722">Paraan ng Pagbabayad</translation>
 <translation id="8105368624971345109">I-off</translation>
+<translation id="810875025413331850">Walang nakitang device na nasa malapit.</translation>
 <translation id="8118489163946903409">Paraan ng pagbabayad</translation>
 <translation id="8127301229239896662">Hindi na-install nang maayos ang "<ph name="SOFTWARE_NAME" />" sa iyong computer o network. Magtanong sa IT administrator mo upang malutas ang isyung ito.</translation>
 <translation id="8128526133099929547">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Inirerekomenda ng Chrome na pumunta sa <ph name="WEBSITE_1" /> at sa iba pang site kung saan mo ginamit ang password na ito at baguhin ito ngayon.</translation>

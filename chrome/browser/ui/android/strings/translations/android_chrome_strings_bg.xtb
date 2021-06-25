@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Преместв. в другия прозорец</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
-<translation id="1569387923882100876">Свързано устройство</translation>
 <translation id="1571304935088121812">Копиране на потребителското име</translation>
 <translation id="1592864538817356322">Стандартна защита:</translation>
-<translation id="1612196535745283361">Chrome се нуждае от достъп до местоположението, за да сканира за устройства, но съответните услуги са <ph name="BEGIN_LINK" />изключени за това устройство<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Премахване на 1 избран елемент}other{Премахване на # избрани елемента}}</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="164269334534774161">Преглеждате офлайн копие на тази страница, създадено на <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> бутон „<ph name="LINK_NAME" />“</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> иска да се сдвои</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
 <translation id="2017836877785168846">Изчиства историята и автоматичните довършвания в адресната лента.</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3518985090088779359">Приемам и напред</translation>
 <translation id="3522247891732774234">Налице е актуализация. Още опции</translation>
 <translation id="3524138585025253783">ПИ за програмисти</translation>
+<translation id="3524334353996115845">Разрешете на <ph name="ORIGIN" /> да потвърди самоличността ви</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3542235761944717775">Свободно място: <ph name="KILOBYTES" /> КБ</translation>
 <translation id="3549657413697417275">Търсене в историята ви</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3771033907050503522">Раздели „инкогнито“</translation>
 <translation id="3771290962915251154">Тази настройка е деактивирана, защото родителските контроли са включени</translation>
 <translation id="3771694256347217732">Общи условия на Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Включете Bluetooth<ph name="END_LINK" />, за да разрешите сдвояването</translation>
 <translation id="3773856050682458546">Основните данни плюс информация за посещаваните от вас уебсайтове и за приложенията, които използвате</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3778956594442850293">Добавено към началния екран</translation>
@@ -604,7 +601,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4910889077668685004">Приложения за плащане</translation>
 <translation id="4913161338056004800">Нулиране на статистическите данни</translation>
 <translation id="4913169188695071480">Спиране на опресняването</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" />, докато се сканира за устройства…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# страница}other{# страници}}</translation>
 <translation id="4925120120285606924">Екранна снимка от <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Паролите ви ще бъдат експортирани и изтеглени като текстов файл. Те ще бъдат видими за всички хора и приложения, които имат достъп до целевата папка.</translation>
@@ -653,7 +649,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5215116848420601511">Начини на плащане и адреси посредством Google Pay</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5227554086496586518">Докоснете, за да видите резултатите от търсенето</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> иска да сканира за устройства с Bluetooth в близост. Намерени са следните:</translation>
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
 <translation id="5262378156578470238">Ще видите известие, когато изтеглянето започне на <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворен раздел. Докоснете за превключване между разделите}other{<ph name="OPEN_TABS_MANY" /> отворени раздела. Докоснете за превключване между тях}}</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
+<translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
 <translation id="5423934151118863508">Най-посещаваните от вас страници ще се показват тук</translation>
 <translation id="5424588387303617268">Налични: <ph name="GIGABYTES" /> ГБ</translation>
@@ -695,7 +691,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5515439363601853141">Отключете, за да видите паролата си</translation>
 <translation id="5517095782334947753">Имате отметки, история, пароли и други настройки от <ph name="FROM_ACCOUNT" /></translation>
 <translation id="5524843473235508879">Блокирано бе пренасочване.</translation>
-<translation id="5527082711130173040">Chrome се нуждае от достъп до местоположението, за да сканира за устройства. <ph name="BEGIN_LINK1" />Актуализирайте разрешенията<ph name="END_LINK1" />. Също така услугите за местоположение са <ph name="BEGIN_LINK2" />изключени за това устройство<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Сайтът е копиран</translation>
 <translation id="5548606607480005320">Проверка на безопасността</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
@@ -743,14 +738,12 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="5810864297166300463">Помощ в мрежата</translation>
 <translation id="5814131985548525293">За да стартирате търсенето, въведете текст тук или докоснете иконата на микрофон</translation>
-<translation id="5817918615728894473">Сдвояване</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Споделяне на връзката</translation>
 <translation id="5836192821815272682">Актуализацията на Chrome се изтегля…</translation>
 <translation id="5853623416121554550">на пауза</translation>
 <translation id="5854512288214985237">До Google не се изпращат статистика и сигнали за сривове</translation>
 <translation id="5855546874025048181">Прецизиране: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome не може да включи адаптера за Bluetooth</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5862731021271217234">Включете синхронизирането, за да получите разделите си от другите си устройства</translation>
@@ -895,7 +888,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6643649862576733715">Сортирайте по количество спестени данни</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome се нуждае от достъп до местоположението, за да сканира за устройства. <ph name="BEGIN_LINK" />Актуализиране на разрешенията<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="666731172850799929">Отваряне в <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7583262514280211622">Тук ще се показва списъкът ви за четене</translation>
 <translation id="7588219262685291874">Включване на тъмната тема, когато режимът за запазване на батерията на устройството ви е включен</translation>
 <translation id="7593557518625677601">За старт на синхронизирането активирайте системното синхронизиране на Android</translation>
+<translation id="7594687499944811403">Разрешете на <ph name="EMBEDDED_ORIGIN" /> да потвърди самоличността ви за <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Операционна система</translation>
 <translation id="7605594153474022051">Синхронизирането не работи</translation>
 <translation id="7606077192958116810">Олекотеният режим е включен. Можете да го управлявате от настройките.</translation>
 <translation id="7612619742409846846">Влезли сте в Google като</translation>
 <translation id="7619072057915878432">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки в мрежата.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Получете помощ<ph name="END_LINK1" /> или <ph name="BEGIN_LINK2" />сканирайте отново<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Добре дошли в Chrome</translation>
 <translation id="7630202231528827509">URL адрес на доставчика</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
@@ -1081,7 +1073,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7876243839304621966">Премахване на всички</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочетена страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочетени страници}}</translation>
 <translation id="7882131421121961860">Няма намерена история</translation>
-<translation id="7884346424584885269">Chrome има нужда от разрешение да сканира за устройства в близост. <ph name="BEGIN_LINK" />Актуализиране на разрешенията<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Изпълнява се в Chrome</translation>
 <translation id="789763218334337857">Начин на използване на Chrome</translation>
 <translation id="7903184275147100332">Това може да отнеме известно време</translation>
@@ -1160,7 +1151,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8349013245300336738">Сортиране по количеството използвани данни</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
-<translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
@@ -1221,7 +1211,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8683039184091909753">изображение</translation>
 <translation id="8683081248374354009">Повторно задаване на групата</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Сила на сигнала: # чертичка}other{Сила на сигнала: # чертички}}</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>
@@ -1287,7 +1276,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9108312223223904744">Поддръжка за използване на телефона като ключ за сигурност</translation>
 <translation id="9108808586816295166">Сигурният DNS може да не е налице по всяко време</translation>
 <translation id="9133397713400217035">Разглеждане в офлайн режим</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>

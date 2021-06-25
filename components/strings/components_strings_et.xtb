@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõigist ülejäänud kirjetest loobutakse.</translation>
 <translation id="1101672080107056897">Veatoiming</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Kui see on märgitud, salvestab Chrome teie kaardi koopia sellesse seadmesse, et vormi kiiremini täita.</translation>
 <translation id="1110994991967754504">Valige luba üksuse <ph name="PERMISSION_NAME" /> jaoks</translation>
 <translation id="1113869188872983271">&amp;Võta korrastamine tagasi</translation>
 <translation id="1123753900084781868">Reaalajas subtiitrid ei ole praegu saadaval</translation>
@@ -434,7 +433,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2491414235131909199">Laiendus blokeeris selle lehe</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-i parser</translation>
-<translation id="2495093607237746763">Kui see on märgitud, salvestab Chromium teie kaardi koopia vormide kiiremaks täitmiseks sellesse seadmesse.</translation>
 <translation id="2498091847651709837">Uue kaardi skannimine</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="2505268675989099013">Konto kaitsmine</translation>
@@ -711,7 +709,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3531780078352352885">Töölehed</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> soovib kasutada teie mikrofoni</translation>
 <translation id="3533328374079021623">Postkast 5</translation>
-<translation id="3539171420378717834">Säilita kaardi koopia seadmes</translation>
 <translation id="3552297013052089404">Seriifideta font</translation>
 <translation id="3558573058928565255">Päev</translation>
 <translation id="3566021033012934673">Teie ühendus ei ole privaatne</translation>
@@ -1589,6 +1586,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violetne</translation>
 <translation id="6786747875388722282">Laiendused</translation>
+<translation id="678982761784843853">Kaitstud sisu ID-d</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="679355240208270552">Seda eiratakse, kuna vaikeotsing ei ole reegliga lubatud.</translation>
 <translation id="6794951432696553238">Kinnitage oma kaardid kiiremini, kasutades edaspidi funktsiooni Google Hello</translation>
@@ -1952,6 +1950,7 @@ Lisateave:
 <translation id="8100588592594801589">Kehtetud kaardid eemaldati</translation>
 <translation id="8103161714697287722">Makseviis</translation>
 <translation id="8105368624971345109">Lülita välja</translation>
+<translation id="810875025413331850">Läheduses olevaid seadmeid ei leitud.</translation>
 <translation id="8118489163946903409">Makseviis</translation>
 <translation id="8127301229239896662">Tarkvara „<ph name="SOFTWARE_NAME" />” ei installitud teie arvutisse või võrku korralikult. Paluge IT-administraatoril see probleem lahendada.</translation>
 <translation id="8128526133099929547">Sisestasite äsja oma parooli petturlikule saidile. Chrome soovitab teil minna veebisaidile <ph name="WEBSITE_1" /> ja muudele saitidele, kus seda parooli kasutate, ning kohe oma parooli muuta.</translation>

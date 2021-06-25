@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Энэ талбар нь <ph name="MAX_ITEMS_LIMIT" />-с илүү оролттой байж болохгүй. Цаашдын бүх оролтыг устгах болно.</translation>
 <translation id="1101672080107056897">Алдаа гарахад хийх үйлдэл</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
-<translation id="1107591249535594099">Сонгосон тохиолдолд Chrome нь илүү хурдан бөглөдөг болгох зорилгоор таны картын хуулбарыг энэ төхөөрөмж дээр хадгалах болно.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />-д зөвшөөрөл сонгох</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="1123753900084781868">Шууд тайлбар яг одоо боломжгүй байна</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Энэ хуудсыг өргөтгөл блоклосон байна</translation>
 <translation id="2493640343870896922">Захидал-Нэмэх</translation>
 <translation id="2495083838625180221">JSON Задлагч</translation>
-<translation id="2495093607237746763">Сонгосон тохиолдолд Chromium нь таны энэ төхөөрөмжийн картын хуулбарыг маягт хурдан бөглөхийн тулд хадгалах болно.</translation>
 <translation id="2498091847651709837">Шинэ картыг скан хийх</translation>
 <translation id="2501278716633472235">Буцаах</translation>
 <translation id="2505268675989099013">Бүртгэлийг хамгаалах</translation>
@@ -713,7 +711,6 @@
 <translation id="3531780078352352885">Ажлын хүснэгт</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> таны микрофоныг ашиглах хүсэлтэй байна</translation>
 <translation id="3533328374079021623">Шуудангийн хайрцаг 5</translation>
-<translation id="3539171420378717834">Энэ төхөөрөмж дээр тус картын хуулбарыг хадгалах</translation>
 <translation id="3552297013052089404">Санс-сериф фонт</translation>
 <translation id="3558573058928565255">Өдөр цаг</translation>
 <translation id="3566021033012934673">Таны холболт хаалттай бус байна</translation>
@@ -1590,6 +1587,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Нил хөх ягаан</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
+<translation id="678982761784843853">Хамгаалагдсан контентын ID</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="679355240208270552">Өгөгдмөл хайлтыг удирдамжаар идэвхжүүлээгүй тул хэрэгсэхгүй орхисон.</translation>
 <translation id="6794951432696553238">Одооноос Windows Hello ашиглан картуудаа илүү хурдан баталгаажуулаарай</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">Хүчингүй картыг устгалаа</translation>
 <translation id="8103161714697287722">Төлбөрийн хэрэгсэл</translation>
 <translation id="8105368624971345109">Унтраах</translation>
+<translation id="810875025413331850">Ойролцоох төхөөрөмж олдсонгүй.</translation>
 <translation id="8118489163946903409">Төлбөрийн хэрэгсэл</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />"-г таны компьютер эсвэл сүлжээнд зөв суулгаагүй байна. Энэ асуудлыг шийдвэрлэхийн тулд админтайгаа холбогдоно уу.</translation>
 <translation id="8128526133099929547">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Таны энэ нууц үгийг ашигладаг <ph name="WEBSITE_1" /> болон бусад сайт руу очиж, түүнийг одоо өөрчлөхийг Chrome зөвлөж байна.</translation>

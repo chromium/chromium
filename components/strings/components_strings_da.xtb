@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
 <translation id="1101672080107056897">Fejlhandling</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Hvis dette felt er markeret, gemmer Chrome en kopi af dit kort på denne enhed, så formularer hurtigere kan udfyldes fremover.</translation>
 <translation id="1110994991967754504">Vælg tilladelse til <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
 <translation id="1123753900084781868">Livetekstning er ikke tilgængelig lige nu</translation>
@@ -435,7 +434,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2491414235131909199">En udvidelse har blokeret denne side</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Værktøj til parsing af JSON-filer</translation>
-<translation id="2495093607237746763">Hvis dette felt er markeret, gemmer Chromium en kopi af dit kort på denne enhed for at gøre det hurtigere at udfylde formularer.</translation>
 <translation id="2498091847651709837">Scan et nyt kort</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2505268675989099013">Beskyt konto</translation>
@@ -712,7 +710,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3531780078352352885">Udskriftsjob</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> anmoder om at bruge din mikrofon</translation>
 <translation id="3533328374079021623">Postkasse 5</translation>
-<translation id="3539171420378717834">Gem en kopi af dette kort på denne enhed</translation>
 <translation id="3552297013052089404">Sans Serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtimer</translation>
 <translation id="3566021033012934673">Din forbindelse er ikke privat</translation>
@@ -826,7 +823,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3963721102035795474">Læser-tilstand</translation>
 <translation id="3963837677003247395">Vil du fortsætte manuelt?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{1 website }one{# website }other{# websites }}</translation>
-<translation id="3970481983430640194">Du kan nu trække og tilpasse størrelsen på denne app</translation>
+<translation id="3970481983430640194">Du kan nu trække i denne app og tilpasse størrelsen</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3973357910713125165">Knappen Kør Chrome-sikkerhedstjek – tryk på Enter for at køre sikkerhedstjekket i Chrome-indstillingerne</translation>
@@ -1590,6 +1587,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
+<translation id="678982761784843853">Beskyttede indholds-id'er</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="679355240208270552">Ignoreret, fordi en standardsøgemaskine ikke er aktiveret af politikken.</translation>
 <translation id="6794951432696553238">Bekræft dine kort hurtigere ved hjælp af Windows Hello fra nu af</translation>
@@ -1953,6 +1951,7 @@ Yderligere oplysninger:
 <translation id="8100588592594801589">De ugyldige kort er fjernet</translation>
 <translation id="8103161714697287722">Betalingsmetode</translation>
 <translation id="8105368624971345109">Deaktiver</translation>
+<translation id="810875025413331850">Der blev ikke fundet nogen enheder i nærheden.</translation>
 <translation id="8118489163946903409">Betalingsmetode</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" blev ikke korrekt installeret på computeren eller netværket. Bed din IT-administrator om at løse problemet.</translation>
 <translation id="8128526133099929547">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at du straks går til <ph name="WEBSITE_1" /> og eventuelle andre websites, hvor du har brugt denne adgangskode, og ændrer adgangskoden.</translation>

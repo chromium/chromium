@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Mover a outra ventá</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
-<translation id="1569387923882100876">Dispositivo conectado</translation>
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
-<translation id="1612196535745283361">Chrome necesita acceder á localización para buscar dispositivos. O acceso á localización deste dispositivo está <ph name="BEGIN_LINK" />desactivado<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="1986685561493779662">O nome xa existe</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botón <ph name="LINK_NAME" />)</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> quere sincronizarse</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2017836877785168846">Borra o historial e os completados automáticos na barra de enderezos.</translation>
@@ -399,6 +396,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3518985090088779359">Aceptar e continuar</translation>
 <translation id="3522247891732774234">Hai unha actualización dispoñible. Máis opcións</translation>
 <translation id="3524138585025253783">IU para programadores</translation>
+<translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique a túa identidade</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3542235761944717775">Almacenamento dispoñible: <ph name="KILOBYTES" /> kB</translation>
 <translation id="3549657413697417275">Buscar no historial</translation>
@@ -431,7 +429,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3771290962915251154">Esta opción de configuración está desactivada porque os controis parentais están activados</translation>
 <translation id="3771694256347217732">Condicións de servizo de Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Activa o Bluetooth<ph name="END_LINK" /> para permitir a sincronización</translation>
 <translation id="3773856050682458546">Datos básicos, así como información sobre os sitios web que visitas e as aplicacións que utilizas</translation>
 <translation id="3775705724665058594">Enviar contido aos teus dispositivos</translation>
 <translation id="3778956594442850293">Engadiuse á pantalla de inicio</translation>
@@ -604,7 +601,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4910889077668685004">Aplicacións de pagos</translation>
 <translation id="4913161338056004800">Restablecer estatísticas</translation>
 <translation id="4913169188695071480">Deter a actualización</translation>
-<translation id="4915549754973153784">Podes <ph name="BEGIN_LINK" />obter axuda<ph name="END_LINK" /> mentres se buscan dispositivos…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# páxina}other{# páxinas}}</translation>
 <translation id="4925120120285606924">Captura de pantalla (<ph name="CURRENT_DATE_ISO" />)</translation>
 <translation id="49268022542405662">Os teus contrasinais exportaranse e descargaranse como ficheiro de texto. Poderá velos calquera persoa e calquera aplicación con acceso ao cartafol de destino.</translation>
@@ -653,7 +649,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5215116848420601511">Métodos de pago e enderezos que usan Google Pay</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5227554086496586518">Toca para ver os resultados da busca</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5250483651202458397">Captura de pantalla. Toca para pechala.</translation>
 <translation id="5262378156578470238">Recibirás unha notificación cando se inicie esta descarga o <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestana aberta, toca para cambiar de pestana}other{<ph name="OPEN_TABS_MANY" /> pestanas abertas, toca para cambiar de pestana}}</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir só determinados sitios</translation>
+<translation id="5409881200985013443">Queres enviar o código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
 <translation id="5423934151118863508">As túas páxinas máis visitadas aparecerán aquí</translation>
 <translation id="5424588387303617268">Espazo dispoñible: <ph name="GIGABYTES" /> GB</translation>
@@ -695,7 +691,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5515439363601853141">Desbloquea a pantalla para ver o teu contrasinal</translation>
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Bloqueouse a redirección.</translation>
-<translation id="5527082711130173040">Chrome necesita acceder á localización para buscar dispositivos. <ph name="BEGIN_LINK1" />Actualizar permisos<ph name="END_LINK1" />. O acceso á localización deste dispositivo está <ph name="BEGIN_LINK2" />desactivado<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Copiouse o sitio</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
@@ -743,14 +738,12 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="5810864297166300463">Asistencia na Web</translation>
 <translation id="5814131985548525293">Para comezar, escribe aquí ou toca a icona de micrófono</translation>
-<translation id="5817918615728894473">Sincronizar</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5833984609253377421">Compartir ligazón</translation>
 <translation id="5836192821815272682">Descargando actualización de Chrome…</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">Non se envían estatísticas nin informes de fallos a Google</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome non é capaz de activar o adaptador de Bluetooth</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862731021271217234">Activa a sincronización para sincronizar as pestanas dos demais dispositivos</translation>
@@ -895,7 +888,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6643649862576733715">Ordenar por cantidade de datos aforrados</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}other{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}}</translation>
 <translation id="6649642165559792194">Vista previa: imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome precisa acceder á localización para analizar dispositivos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659594942844771486">Pestana</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7583262514280211622">Aquí atoparás a túa lista de lectura</translation>
 <translation id="7588219262685291874">Activa o tema escuro cando estea activada a función do dispositivo Aforro de batería</translation>
 <translation id="7593557518625677601">Sincronizar Chrome: abre a config. de Android e sincroniza de novo o seu sistema</translation>
+<translation id="7594687499944811403">Permite que <ph name="EMBEDDED_ORIGIN" /> verifique a túa identidade para <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
 <translation id="7605594153474022051">A sincronización non funciona</translation>
 <translation id="7606077192958116810">O modo básico está activado. Xestiónao en Configuración.</translation>
 <translation id="7612619742409846846">Iniciaches sesión en Google como</translation>
 <translation id="7619072057915878432">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros na rede.</translation>
-<translation id="7624880197989616768">Podes <ph name="BEGIN_LINK1" />obter axuda<ph name="END_LINK1" /> ou <ph name="BEGIN_LINK2" />volver buscar<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7630202231528827509">URL do provedor</translation>
 <translation id="7638584964844754484">Contrasinal incorrecto</translation>
@@ -1081,7 +1073,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> páxina sen ler}other{Tes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páxinas sen ler}}</translation>
 <translation id="7882131421121961860">Non se atopou ningún elemento do historial</translation>
-<translation id="7884346424584885269">Chrome necesita permiso para buscar dispositivos próximos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">A páxina estase executando en Chrome</translation>
 <translation id="789763218334337857">Como usar Chrome?</translation>
 <translation id="7903184275147100332">Esta acción pode tardar un minuto</translation>
@@ -1111,6 +1102,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8035133914807600019">Cartafol novo...</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
+<translation id="8040831032425909005">Icona do widget da busca de accións rápidas</translation>
 <translation id="804335162455518893">Non se atopou a tarxeta SD</translation>
 <translation id="8051695050440594747">Almacenamento dispoñible: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Abrir na pestana de Chrome</translation>
@@ -1159,7 +1151,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8349013245300336738">Ordenar por cantidade de datos usados</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8364299278605033898">Descubre sitios web populares</translation>
-<translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">O idioma (<ph name="LANG" />) está listo.</translation>
 <translation id="8387617938027387193">Verifica que es ti</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
@@ -1173,6 +1164,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8442258441309440798">Non hai ningunha historia dispoñible</translation>
 <translation id="8443209985646068659">Non se actualiza Chrome</translation>
 <translation id="8445448999790540984">Non se puideron exportar os contrasinais</translation>
+<translation id="8453310803815879010">Inicia o xogo do dinosauro</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466613982764129868">Asegúrate de que o dispositivo <ph name="TARGET_DEVICE_NAME" /> estea conectado a Internet</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
@@ -1219,7 +1211,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="867767487203716855">Seguinte actualización</translation>
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="8683081248374354009">Restablecer grupo</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidade do sinal: # barra}other{Nivel de intensidade do sinal: # barras}}</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8712637175834984815">De acordo</translation>
@@ -1285,7 +1276,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9108312223223904744">Asistencia relativa ao uso do teléfono como chave de seguranza</translation>
 <translation id="9108808586816295166">O DNS seguro pode non estar dispoñible continuamente</translation>
 <translation id="9133397713400217035">Explorar sen conexión</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>

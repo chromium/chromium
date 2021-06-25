@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A rendszer az összes további bejegyzést elveti.</translation>
 <translation id="1101672080107056897">Hibaművelet</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
-<translation id="1107591249535594099">Ha be van jelölve, a Chrome ezen az eszközön tárolja a kártya egy példányát az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="1110994991967754504">Engedély kiválasztása a következőhöz: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Átrendezés visszavonása</translation>
 <translation id="1123753900084781868">Az élő feliratozás jelenleg nem áll rendelkezésre</translation>
@@ -435,7 +434,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2491414235131909199">Ezt az oldalt valamelyik bővítmény blokkolja</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
-<translation id="2495093607237746763">Ha be van jelölve, a Chromium megőrzi a kártya másolatát ezen az eszközön a gyorsabb űrlapkitöltés érdekében.</translation>
 <translation id="2498091847651709837">Új kártya beolvasása</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2505268675989099013">Fiók védelme</translation>
@@ -710,7 +708,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3531780078352352885">Munkalapok</translation>
 <translation id="3532844647053365774">A(z) <ph name="HOST" /> használni szeretné a mikrofont</translation>
 <translation id="3533328374079021623">5. postaláda</translation>
-<translation id="3539171420378717834">A kártya másolatának megőrzése az eszközön</translation>
 <translation id="3552297013052089404">Sans-serif betűtípus</translation>
 <translation id="3558573058928565255">Nappal</translation>
 <translation id="3566021033012934673">Az Ön kapcsolata nem privát</translation>
@@ -1588,6 +1585,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
 <translation id="6786747875388722282">Bővítmények</translation>
+<translation id="678982761784843853">A védett tartalmak azonosítói</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="679355240208270552">Figyelmen kívül hagyva, mert az alapértelmezett keresőmotort nem engedélyezi a házirend.</translation>
 <translation id="6794951432696553238">Mostantól gyorsabban igazolhatja kártyáit a Windows Hello használatával</translation>
@@ -1951,6 +1949,7 @@ További részletek:
 <translation id="8100588592594801589">Az érvénytelen kártyákat eltávolítottuk</translation>
 <translation id="8103161714697287722">Fizetési mód</translation>
 <translation id="8105368624971345109">Kikapcsolás</translation>
+<translation id="810875025413331850">Nem található közeli eszköz.</translation>
 <translation id="8118489163946903409">Fizetési mód</translation>
 <translation id="8127301229239896662">A(z) „<ph name="SOFTWARE_NAME" />” nem megfelelően lett telepítve a számítógépre vagy a hálózatra. A probléma elhárítása érdekében forduljon rendszergazdájához.</translation>
 <translation id="8128526133099929547">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>

@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1449835205994625556">Skrýt heslo</translation>
 <translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
+<translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
 <translation id="1491277525950327607">Nastavení můžete přepnout dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
 <translation id="1509486075633541495">Přihlásit se k webu</translation>
@@ -268,6 +269,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="3607167657931203000">Data automatického vyplňování</translation>
 <translation id="3609785682760573515">Synchronizace...</translation>
 <translation id="3638472932233958418">Přednačítat stránky</translation>
+<translation id="3661160521073045932">Je k dispozici profil konfigurace</translation>
 <translation id="3670030362669914947">Číslo</translation>
 <translation id="3691593122358196899">Záložka přidána do složky <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označit jako nepřečtené</translation>

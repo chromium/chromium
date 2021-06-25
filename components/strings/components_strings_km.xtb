@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់ដែល​លើសពីនេះនឹងត្រូវលុបចោល។</translation>
 <translation id="1101672080107056897">សកម្មភាព​មានបញ្ហា</translation>
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
-<translation id="1107591249535594099">ប្រសិនបើបានធីក Chrome នឹងផ្ទុកច្បាប់ចម្លងនៃកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញបែបបទឲ្យបានលឿនជាងមុន។</translation>
 <translation id="1110994991967754504">ជ្រើសរើស​ការអនុញ្ញាត​សម្រាប់ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">បកក្រោយការតម្រៀបឡើងវិញ</translation>
 <translation id="1123753900084781868">មិន​អាចប្រើអក្សររត់ក្នុងពេលជាក់ស្ដែងនៅពេលនេះបានទេ</translation>
@@ -438,7 +437,6 @@
 <translation id="2491414235131909199">ទំព័រ​នេះ​ត្រូវបាន​ទប់ស្កាត់ដោយកម្មវិធីបន្ថែម​</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">កម្មវិធីញែក JSON</translation>
-<translation id="2495093607237746763">ប្រសិនបើបានធីក នោះ Chromium នឹងផ្ទុកច្បាប់ចម្លងនៃកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទឲ្យបានលឿនជាងមុន។</translation>
 <translation id="2498091847651709837">ស្កេនកាតថ្មី</translation>
 <translation id="2501278716633472235">ត្រលប់ក្រោយ</translation>
 <translation id="2505268675989099013">ការពារ​គណនី</translation>
@@ -715,7 +713,6 @@
 <translation id="3531780078352352885">សន្លឹក​កិច្ចការ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ចង់​ប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3533328374079021623">ប្រអប់​សំបុត្រទី 5</translation>
-<translation id="3539171420378717834">រក្សាច្បាប់ចម្លងនៃកាតនេះនៅលើឧបករណ៍នេះ</translation>
 <translation id="3552297013052089404">ពុម្ពអក្សរ Sans-serif</translation>
 <translation id="3558573058928565255">ពេលថ្ងៃ</translation>
 <translation id="3566021033012934673">ការភ្ជាប់របស់អ្នកមិនឯកជនទេ</translation>
@@ -1594,6 +1591,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ស្វាយ</translation>
 <translation id="6786747875388722282">កម្មវិធីបន្ថែម</translation>
+<translation id="678982761784843853">លេខសម្គាល់​ខ្លឹមសារ​ដែលមាន​ការការពារ</translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="679355240208270552">មិនត្រូវ​បាន​អើពើ​ព្រោះ​ការស្វែង​រក​លំនាំដើម​មិន​បានបើក​ដោយ​គោលការណ៍​ទេ។</translation>
 <translation id="6794951432696553238">បញ្ជាក់​បណ្ណ​​របស់អ្នក​រហ័ស​ជាងមុន​ដោយប្រើ Windows Hello ចាប់ពី​ពេលនេះ​តទៅ</translation>
@@ -1958,6 +1956,7 @@
 <translation id="8100588592594801589">បានលុប​បណ្ណ​ដែលមិនត្រឹមត្រូវចេញហើយ</translation>
 <translation id="8103161714697287722">វិធី​បង់ប្រាក់</translation>
 <translation id="8105368624971345109">បិទ</translation>
+<translation id="810875025413331850">រក​មិនឃើញ​ឧបករណ៍​ដែលនៅជិត​ទេ។</translation>
 <translation id="8118489163946903409">វិធីបង់ប្រាក់</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" មិនបានដំឡើងត្រឹមត្រូវនៅលើកុំព្យូទ័រ ឬបណ្តាញរបស់អ្នកទេ។ សូមស្នើឱ្យអ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកដោះស្រោយបញ្ហានេះ។</translation>
 <translation id="8128526133099929547">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ Chrome សូមណែនាំឱ្យ​ចូលទៅកាន់ <ph name="WEBSITE_1" /> និងគេហទំព័រ​ផ្សេងទៀត ​ដែល​អ្នកប្រើ​ពាក្យសម្ងាត់​នេះ រួច​ប្ដូរ​ពាក្យសម្ងាត់​ឥឡូវនេះ។</translation>

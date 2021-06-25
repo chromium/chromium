@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी काढून टाकल्या जातील.</translation>
 <translation id="1101672080107056897">कृतीमध्ये एरर</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">चेक केल्यास, अधिक जलद फॉर्म भरण्यासाठी या डिव्हाइसवर Chrome तुमच्या कार्डची एक प्रत संचयित करेल.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ची परवानगी निवडा</translation>
 <translation id="1113869188872983271">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
 <translation id="1123753900084781868">आता लाइव्ह कॅप्शन उपलब्ध नाही</translation>
@@ -313,6 +312,7 @@
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{When this control is on and the status is active, Chrome determines which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}=1{हे नियंत्रण सुरू असते आणि त्याचे स्टेटस अ‍ॅक्टिव्ह असते तेव्हा, तुमची अलीकडील ब्राउझिंग अ‍ॅक्टिव्हिटी ही लोकांच्या कोणत्या मोठ्या गटासारखी किंवा "समूह" यासारखी आहे हे Chrome निश्चित करते. जाहिरातदार हे गटासाठी जाहिराती निवडू शकतात आणि तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी तुमच्या डिव्हाइसवर खाजगी ठेवली जाते. तुमचा गट दररोज अपडेट केला जातो.}other{हे नियंत्रण सुरू असते आणि त्याचे स्टेटस अ‍ॅक्टिव्ह असते तेव्हा, तुमची अलीकडील ब्राउझिंग अ‍ॅक्टिव्हिटी ही लोकांच्या कोणत्या मोठ्या गटासारखी किंवा "समूह" यासारखी आहे हे Chrome निश्चित करते. जाहिरातदार हे गटासाठी जाहिराती निवडू शकतात आणि तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी तुमच्या डिव्हाइसवर खाजगी ठेवली जाते. तुमचा गट दर {NUM_DAYS} दिवसांनी अपडेट केला जातो.}}</translation>
 <translation id="2053553514270667976">पिनकोड</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 सूचना}other{# सूचना}}</translation>
+<translation id="2071156619270205202">हे कार्ड व्हर्च्युअल कार्ड नंबरसाठी पात्र नाही.</translation>
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉंफिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
@@ -434,7 +434,6 @@
 <translation id="2491414235131909199">हे पेज एखाद्या एक्स्टेंशनने ब्लॉक केले आहे</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
-<translation id="2495093607237746763">चेक केल्यास, अधिक जलद फॉर्म भरण्यासाठी या डिव्हाइसवर Chromium तुमच्या कार्डची एक प्रत संचयित करेल.</translation>
 <translation id="2498091847651709837">नवीन कार्ड स्कॅन करा</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2505268675989099013">खात्याचे संरक्षण करा</translation>
@@ -442,9 +441,11 @@
 <translation id="2521385132275182522">स्टेपल बॉटम राइट</translation>
 <translation id="2523886232349826891">फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>
 <translation id="2524461107774643265">अधिक माहिती जोडा</translation>
+<translation id="2529899080962247600">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी दुर्लक्षित केल्या जातील.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{आणि आणखी एक}other{आणि आणखी #}}</translation>
 <translation id="2536110899380797252">पत्ता जोडा</translation>
 <translation id="2539524384386349900">शोधा</translation>
+<translation id="2540701853218677861">टाइमस्टॅंप आणि अयशस्वी प्रयत्नांच्या समावेशासह डिव्हाइसचा लॉग इन/लॉगआउट इतिहास</translation>
 <translation id="2541219929084442027">तुम्ही गुप्त मोडमध्ये पाहिलेली पेज तुमचे सर्व गुप्त टॅब बंद केल्यानंतर तुमचा ब्राउझर इतिहास, कुकी स्टोअर किंवा शोध इतिहास यांमध्ये राहणार नाहीत. तुम्ही डाउनलोड करता त्या कोणत्याही फाइल किंवा तुम्ही तयार केलेले बुकमार्क ठेवले जातील.</translation>
 <translation id="2544644783021658368">एक दस्तऐवज</translation>
 <translation id="254947805923345898">धोरण मूल्य वैध नाही.</translation>
@@ -636,6 +637,7 @@
 <translation id="3320021301628644560">बिलिंग पत्ता जोडा</translation>
 <translation id="3324983252691184275">किरमिजी</translation>
 <translation id="3329013043687509092">संपृक्तता</translation>
+<translation id="3333762389743153920">व्हर्च्युअल कार्डसाठी पात्र नाही</translation>
 <translation id="3338095232262050444">सुरक्षित</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
@@ -707,7 +709,6 @@
 <translation id="3531780078352352885">जॉब पत्रके</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ला तुमचा मायक्रोफोन वापरायचा आहे</translation>
 <translation id="3533328374079021623">मेलबॉक्स ५</translation>
-<translation id="3539171420378717834">या डिव्हाइसवर या कार्डची एक प्रत ठेवा</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
 <translation id="3566021033012934673">तुमचे कनेक्शन खाजगी नाही</translation>
@@ -1151,6 +1152,7 @@
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">तुमच्या कार्डाची पडताळणी करा</translation>
 <translation id="5135404736266831032">पत्ते व्यवस्थापित करा...</translation>
+<translation id="5138014172396933048">सध्या व्हर्च्युअल कार्ड उपलब्ध नाही, कृपया तुमच्या बँकशी संपर्क साधा</translation>
 <translation id="5138227688689900538">कमी दाखवा</translation>
 <translation id="514010763713772514">पुढील वेळी आणखी जलद पडताळणी करा</translation>
 <translation id="5145883236150621069">धोरण प्रतिसादामध्ये एरर कोड अस्तित्वात आहे</translation>
@@ -1197,6 +1199,7 @@
 <translation id="5287240709317226393">कुकीज दाखवा</translation>
 <translation id="5287456746628258573">ही साइट कालबाह्य झालेली सुरक्षितता काँफिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड किंवा क्रेडिट कार्ड क्रमांक) या साइटला पाठवताना ती उघड होऊ शकते.</translation>
 <translation id="5288108484102287882">धोरण मूल्यांच्या वैधतेमुळे चेतावण्या वाढल्या आहेत</translation>
+<translation id="5288808348893593856">Chrome तुम्हाला सांगत नाही तोपर्यंत साइटचे कनेक्शन सुरक्षित असते.</translation>
 <translation id="5289384342738547352">एकापेक्षा अधिक दस्तऐवज हाताळणे</translation>
 <translation id="5299298092464848405">धोरण पार्स करताना एरर</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
@@ -1562,9 +1565,11 @@
 <translation id="6685834062052613830">साइन आउट करा आणि सेटअप पूर्ण करा</translation>
 <translation id="6687335167692595844">विनंती केलेल्या फॉंटचा आकार</translation>
 <translation id="6688743156324860098">अपडेट करा…</translation>
+<translation id="6688775486821967877">सध्या व्हर्च्युअल कार्ड उपलब्ध नाही. कृपया नंतर प्रयत्न करा</translation>
 <translation id="6689249931105087298">काळ्या पॉइंटच्या काँप्रेशनशी संबंंधित</translation>
 <translation id="6689271823431384964">तुम्ही साइन इन केले असल्यामुळे Chrome तुमच्या Google खात्यामध्ये तुमची कार्डे सेव्ह करत आहे. तुम्‍ही हे वर्तन सेटिंग्‍जमध्‍ये बदलू शकता. कार्डधारकाचे नाव तुमच्या खात्यामधून घेतले जाते.</translation>
 <translation id="6698381487523150993">तयार केलेले:</translation>
+<translation id="6699188552522342100">ही वेबसाइट योग्य आहे का?</translation>
 <translation id="6702919718839027939">सादर करा</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6710594484020273272">&lt;शोध संज्ञा एंटर करा&gt;</translation>
@@ -1945,6 +1950,7 @@
 <translation id="8100588592594801589">चुकीची कार्डे काढून टाकण्यात आली आहेत</translation>
 <translation id="8103161714697287722">पेमेंट पद्धत</translation>
 <translation id="8105368624971345109">बंद करा</translation>
+<translation id="810875025413331850">कोणतीही जवळपासची डिव्हाइस आढळली नाहीत.</translation>
 <translation id="8118489163946903409">पेमेंट पद्धत</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" तुमच्या काँप्युटरवर किंवा नेटवर्कवर योग्य रीतीने इंस्टॉल केले नव्हते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ही समस्या सोडवण्यास सांगा.</translation>
 <translation id="8128526133099929547">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला आहे. Chrome <ph name="WEBSITE_1" /> आणि इतर साइटवर जाण्याची शिफारस करतो जेथे तुम्ही हा पासवर्ड वापरू शकता आणि तो आता बदलू शकता.</translation>
@@ -2069,6 +2075,7 @@
           <ph name="LIST_ITEM" />कुकी आणि साइट डेटा
           <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">कार्डांची जलद खात्री करण्यासाठी टच आयडी वापरा</translation>
+<translation id="8577348305244205642">व्हर्च्युअल कार्ड उपलब्ध नाही</translation>
 <translation id="858637041960032120">फोन नंबर जोडा</translation>
 <translation id="8589998999637048520">सर्वोत्तम गुणवत्ता</translation>
 <translation id="8600271352425265729">फक्त या वेळी</translation>

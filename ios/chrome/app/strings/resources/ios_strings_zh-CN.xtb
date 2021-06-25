@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
+<translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1509486075633541495">登录网站</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">自动填充数据</translation>
 <translation id="3609785682760573515">正在同步…</translation>
 <translation id="3638472932233958418">预先加载网页</translation>
+<translation id="3661160521073045932">有可用的配置文件</translation>
 <translation id="3670030362669914947">卡号</translation>
 <translation id="3691593122358196899">已将书签添加到“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="3709582977625132201">标记为未读</translation>

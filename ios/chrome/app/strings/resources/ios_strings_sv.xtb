@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1449835205994625556">Dölj lösenord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
+<translation id="149095475893949513">Den här webbplatsen försöker ladda ned en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Aktivera eller inaktivera inställningen genom att trycka snabbt två gånger</translation>
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
@@ -268,6 +269,7 @@ Följ stegen nedan:</translation>
 <translation id="3607167657931203000">Autofyll uppgifter</translation>
 <translation id="3609785682760573515">Synkroniserar ...</translation>
 <translation id="3638472932233958418">Läs in webbsidor i förväg</translation>
+<translation id="3661160521073045932">Tillgänglig konfigurationsprofil</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bokmärkt i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markera som oläst</translation>

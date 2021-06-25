@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">इस फ़ाइल में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा एंट्री नहीं हो सकती. इसके बाद की सभी एंट्री खारिज हो जाएंगी.</translation>
 <translation id="1101672080107056897">गड़बड़ी पर कार्रवाई</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
-<translation id="1107591249535594099">चेक किए होने पर, ज़्यादा तेज़ फ़ॉर्म भरने के लिए Chrome इस डिवाइस पर आपके कार्ड की कॉपी संग्रहित कर लेगा.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
@@ -436,7 +435,6 @@
 <translation id="2491414235131909199">इस पेज को किसी एक्सटेंशन ने ब्लॉक कर दिया है</translation>
 <translation id="2493640343870896922">लेटर-प्लस</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
-<translation id="2495093607237746763">अगर चेक किया गया हो, तो ज़्यादा तेज़ी से फ़ॉर्म भरने के लिए क्रोमियम इस डिवाइस पर आपके कार्ड की कॉपी संग्रहित करेगा.</translation>
 <translation id="2498091847651709837">नया कार्ड स्‍कैन करें</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2505268675989099013">खाते की सुरक्षा करें</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">जॉब की शीट</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> वेबसाइट आपके माइक्रोफ़ोन का इस्तेमाल करना चाहती है</translation>
 <translation id="3533328374079021623">मेलबॉक्स 5</translation>
-<translation id="3539171420378717834">इस डिवाइस पर इस कार्ड की कॉपी रखें</translation>
 <translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
 <translation id="3566021033012934673">आपका कनेक्शन निजी नहीं है</translation>
@@ -1590,6 +1587,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">बैंगनी</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
+<translation id="678982761784843853">सुरक्षित कॉन्टेंट का आईडी</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="679355240208270552">अनदेखा किया गया क्योंकि नीति ने डिफ़ॉल्ट सर्च चालू नहीं किया है.</translation>
 <translation id="6794951432696553238">अब Windows Hello का इस्तेमाल करके अपने कार्ड की जल्दी पुष्टि करें</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">अमान्य कार्ड हटा दिए गए हैं</translation>
 <translation id="8103161714697287722">भुगतान का तरीका</translation>
 <translation id="8105368624971345109">बंद करें</translation>
+<translation id="810875025413331850">आस-पास का कोई ब्लूटूथ डिवाइस नहीं मिला.</translation>
 <translation id="8118489163946903409">भुगतान का तरीका</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" आपके कंप्यूटर या नेटवर्क पर ठीक से इंस्टॉल नहीं हुआ था. अपने आईटी व्यवस्थापक से इस समस्या को ठीक करने के लिए कहें.</translation>
 <translation id="8128526133099929547">आपने अभी-अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. Chrome, <ph name="WEBSITE_1" /> और उन साइटों पर जाकर पासवर्ड बदलने का सुझाव देता है जिन पर आपने इसे इस्तेमाल किया था.</translation>

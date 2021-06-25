@@ -4126,6 +4126,14 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6449476513004303784">Nutzern nicht erlauben, Zertifikate zu verwalten</translation>
 <translation id="6453641799812499182">Einschränkungen bei <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung aktivieren</translation>
 <translation id="645425387487868471">Erzwungene Anmeldung für <ph name="PRODUCT_NAME" /> aktivieren</translation>
+<translation id="6455842857207956758">Aktiviert die SAML-Passwortsynchronisierung zwischen mehreren Chrome-Geräten. Dazu wird der Wert des Passwortsynchronisierungstokens überwacht und der Nutzer muss noch einmal die Onlineauthentifizierung durchlaufen, falls das Passwort aktualisiert wurde und synchronisiert werden muss.
+
+      Aktiviert eine Seite auf chrome://password-change, auf der SAML-Nutzer ihre SAML-Passwörter bei laufender Sitzung ändern können. Hierdurch wird dafür gesorgt, dass das SAML-Passwort und das Passwort für den Sperrbildschirm des Geräts synchronisiert bleiben.
+
+      Außerdem ermöglicht diese Richtlinie Benachrichtigungen, mit denen SAML-Nutzer gewarnt werden, wenn ihre SAML-Passwörter bald ablaufen. Sie können dann direkt bei laufender Sitzung ihr Passwort ändern.
+      Allerdings werden diese Benachrichtigungen nur angezeigt, wenn vom SAML-Identitätsanbieter während des SAML-Anmeldeablaufs Informationen zum Ablauf des Passworts an das Gerät gesendet werden.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann das SAML-Passwort auf chrome://password-change nicht geändert werden und Sie erhalten keine Benachrichtigung, wenn SAML-Passwörter bald ablaufen.</translation>
 <translation id="6458361632497500815">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können alle Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> verwenden, solange alle 3 Richtlinien, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> und <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />, aktiviert sind. Ist die Richtlinie deaktiviert, können nicht verknüpfte Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> nicht verwenden. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="6464074037294098618">„Automatisches Ausfüllen“ für Adressen aktivieren</translation>
 <translation id="6467613372414922590">Hosts für natives Messaging, die ohne Berechtigung des Administrators installiert wurden, auf Nutzerebene zulassen</translation>
@@ -4306,6 +4314,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, führen Druckbefehle zur Anzeige der Druckvorschau.</translation>
 <translation id="6658245400435704251">Legt die Anzahl von Sekunden fest, die eine Verzögerung ab dem Übertragungszeitpunkt an den Server maximal betragen darf, wenn ein Gerät ein Update herunterlädt. Die Verzögerungszeit setzt sich aus der Istzeit und der auf die Anzahl der Überprüfungen auf Updates verwendeten Zeit zusammen. Die obere Grenze für den Streufaktor bildet ein konstanter Zeitraum, sodass ein Gerät nur eine begrenzte Zeit lang auf den Download eines Updates wartet.</translation>
+<translation id="6659537776197644458">Keine Authentifizierungsabläufe für die Synchronisierung von Passwörtern auslösen</translation>
 <translation id="6662162847932043943">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit Websites erstellen, die automatisch die Berechtigung für den Zugriff auf alle verfügbaren seriellen Ports erhalten.
 
       Die URLs müssen gültig sein, da die Richtlinie andernfalls ignoriert wird. Es wird nur der Ursprung (Schema, Host und Port) der URL berücksichtigt.
@@ -4605,11 +4614,6 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="69525503251220566">Parameter für Funktion zur bildgesteuerten Suche für Standardsuchanbieter</translation>
 <translation id="6953102253399571439">PIN-Druckmodus standardmäßig aktivieren</translation>
 <translation id="6956272732789158625">Schlüsselgenerierung für keine Website zulassen</translation>
-<translation id="6959021201443139119">Für Cookies, die in Domains festgelegt sind, die diesen Mustern entsprechen, wird das alte Verhalten von „<ph name="ATTRIBUTE_SAMESITE_NAME" />“ wiederhergestellt. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
-
-          Für Cookies, die in Domains festgelegt sind, die diesen Mustern nicht entsprechen, oder für alle Cookies, falls diese Richtlinie nicht konfiguriert ist, wird die persönliche Konfiguration des Nutzers als globaler Standardwert verwendet.
-
-          Beachten Sie, dass die Muster, die Sie hier eintragen, als Domains und nicht als URLs behandelt werden. Geben Sie deshalb kein Schema und keinen Port an.</translation>
 <translation id="6961602002757991199">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />" konfiguriert worden. Diese Richtlinien verhindern, dass sich <ph name="PRODUCT_NAME" /> und der alternative Browser gegenseitig öffnen.
 
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Quelle für Regeln verwendet, die einen Browserwechsel verhindern.
@@ -4980,6 +4984,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn diese Einstellung deaktiviert ist, können Nutzer die Funktion nicht verwenden. Ist die Richtlinie „PhoneHubAllowed“ deaktiviert, können Nutzer die Funktion ebenfalls nicht verwenden.
 
       Wenn diese Richtlinie nicht konfiguriert ist, ist die Einstellung für vom Unternehmen verwaltete Nutzer und für nicht verwaltete Nutzer standardmäßig aktiviert.</translation>
+<translation id="7367734504783638685">Synchronisierung von Passwörtern zwischen SSO-Drittanbietern und Chrome-Geräten</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
 <translation id="7373200034079131670">Nach Nutzerabmeldung neu starten, wenn Android oder eine VM gestartet wurde.</translation>
 <translation id="7373680616478819439">Mit diesen Einstellungen wird das Anmeldungsabfangen aktiviert oder deaktiviert.
@@ -5668,6 +5673,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8314214821702356835">Erlaubt es Nutzern, Medien wiederzugeben, während das Gerät gesperrt ist</translation>
 <translation id="8319678975002906774">Mit dieser Richtlinie legen Sie für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
+<translation id="8329434144708110">Authentifizierungsabläufe für die Synchronisierung von Passwörtern auslösen</translation>
 <translation id="8329984337216493753">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Falls die Richtlinie "DeviceIdleLogoutTimeout" konfiguriert ist, wird mithilfe der vorliegenden Richtlinie festgelegt, wie lange das Warnfenster mit Countdown für Nutzer zu sehen sein soll, bevor sie abgemeldet werden.

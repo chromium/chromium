@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1449835205994625556">Amaga la contrasenya</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elements</translation>
+<translation id="149095475893949513">Aquest lloc web està provant de baixar un perfil de configuració</translation>
 <translation id="1491277525950327607">Fes doble toc per canviar la configuració</translation>
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
 <translation id="1509486075633541495">Inicia la sessió al lloc web</translation>
@@ -268,6 +269,7 @@ Segueix aquests passos:</translation>
 <translation id="3607167657931203000">Dades d'Emplenament automàtic</translation>
 <translation id="3609785682760573515">S'està sincronitzant...</translation>
 <translation id="3638472932233958418">Càrrega prèvia de pàgines web</translation>
+<translation id="3661160521073045932">Perfil de configuració disponible</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Adreça d'interès afegida a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marca com a no llegit</translation>

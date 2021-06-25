@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri selebihnya akan dibuang.</translation>
 <translation id="1101672080107056897">Tindakan ralat</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Jika ditandai, Chrome akan menyimpan salinan kad anda pada peranti ini untuk pengisian borang yang lebih cepat.</translation>
 <translation id="1110994991967754504">Pilih kebenaran untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Buat asal susun semula</translation>
 <translation id="1123753900084781868">Sari Kata Langsung tidak tersedia sekarang</translation>
@@ -435,7 +434,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2491414235131909199">Halaman ini telah disekat oleh sambungan</translation>
 <translation id="2493640343870896922">Surat-Plus</translation>
 <translation id="2495083838625180221">Penghurai JSON</translation>
-<translation id="2495093607237746763">Jika ditandai, Chromium akan menyimpan salinan kad anda pada peranti ini untuk pengisian borang yang lebih cepat.</translation>
 <translation id="2498091847651709837">Imbas kad baharu</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2505268675989099013">Lindungi Akaun</translation>
@@ -712,7 +710,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3531780078352352885">Helaian tugas</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ingin menggunakan mikrofon anda</translation>
 <translation id="3533328374079021623">Peti mel 5</translation>
-<translation id="3539171420378717834">Simpan salinan kad ini pada peranti ini</translation>
 <translation id="3552297013052089404">Fon Sans-serif</translation>
 <translation id="3558573058928565255">Waktu siang</translation>
 <translation id="3566021033012934673">Sambungan anda tidak diperibadikan</translation>
@@ -1591,6 +1588,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
+<translation id="678982761784843853">ID kandungan yang dilindungi</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="679355240208270552">Diabaikan kerana carian lalai tidak didayakan oleh dasar.</translation>
 <translation id="6794951432696553238">Sahkan kad anda dengan lebih cepat dengan menggunakan Windows Hello mulai sekarang</translation>
@@ -1954,6 +1952,7 @@ Butiran tambahan:
 <translation id="8100588592594801589">Kad tidak sah telah dialih keluar</translation>
 <translation id="8103161714697287722">Kaedah Pembayaran</translation>
 <translation id="8105368624971345109">Matikan</translation>
+<translation id="810875025413331850">Tiada peranti berdekatan dijumpai.</translation>
 <translation id="8118489163946903409">Kaedah pembayaran</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
 <translation id="8128526133099929547">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chrome mengesyorkan supaya anda pergi ke <ph name="WEBSITE_1" /> dan tapak lain yang anda gunakan kata laluan ini dan menukar kata laluan tersebut sekarang.</translation>

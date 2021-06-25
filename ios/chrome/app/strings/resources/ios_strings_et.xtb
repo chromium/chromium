@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1449835205994625556">Peida parool</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> üksust</translation>
+<translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
 <translation id="1491277525950327607">Seade vahetamiseks topeltpuudutage</translation>
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
 <translation id="1509486075633541495">Logi veebisaidile sisse</translation>
@@ -268,6 +269,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="3607167657931203000">Automaattäite andmed</translation>
 <translation id="3609785682760573515">Sünkroonimine ...</translation>
 <translation id="3638472932233958418">Lehtede eellaadimine</translation>
+<translation id="3661160521073045932">Seadistusprofiil on saadaval</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3691593122358196899">Lisatud järjehoidjana kausta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Märgi mitteloetuks</translation>

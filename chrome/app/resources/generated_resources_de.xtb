@@ -235,6 +235,7 @@
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
 <translation id="1257553931232494454">Zoomstufen</translation>
+<translation id="1258491128795710625">Neue Funktionen</translation>
 <translation id="1259152067760398571">Der Sicherheitscheck wurde gestern durchgeführt</translation>
 <translation id="1260451001046713751">Pop-ups und Weiterleitungen von <ph name="HOST" /> immer zulassen</translation>
 <translation id="1261380933454402672">Moderat</translation>
@@ -410,6 +411,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Fehlerbehebungsprotokolle<ph name="END_LINK" /> senden (empfohlen)</translation>
 <translation id="1454223536435069390">Screenshot &amp;erstellen</translation>
 <translation id="145432137617179457">Sprachen für die Rechtschreibprüfung</translation>
+<translation id="1455119378540982311">Voreingestellte Fenstergrößen</translation>
 <translation id="1459693405370120464">Wetter</translation>
 <translation id="1459967076783105826">Von Erweiterungen hinzugefügte Suchmaschinen</translation>
 <translation id="146000042969587795">Dieser Frame wurde gesperrt, weil er unsicheren Inhalt enthält.</translation>
@@ -1696,6 +1698,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2816319641769218778">Aktivieren Sie die Synchronisierung, um Passwörter in Ihrem Google-Konto zu speichern.</translation>
 <translation id="2816628817680324566">Zulassen, dass diese Website Ihren Sicherheitsschlüssel identifiziert?</translation>
 <translation id="2818476747334107629">Druckerdetails</translation>
+<translation id="2819167288942847344">Voreinstellungen verwenden für Smartphone, Tablet oder anpassbare Fenster, um Fehldarstellung der App zu verhindern</translation>
 <translation id="2822634587701817431">Reduzieren bzw. erweitern</translation>
 <translation id="2822910719211888134">Fehler beim Sichern von Linux</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen von Ihrem Administrator</translation>
@@ -2419,6 +2422,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3629631988386925734">Geben Sie Ihr Passwort ein, um Smart Lock zu aktivieren. Beim nächsten Mal wird Ihr <ph name="DEVICE_TYPE" /> durch Ihr Smartphone entsperrt. Sie können Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="3630132874740063857">Mein Smartphone</translation>
 <translation id="3630995161997703415">Fügen Sie diese Website Ihrer Ablage hinzu, um sie jederzeit zu verwenden</translation>
+<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />, <ph name="OPTION_POSITION" /> von <ph name="NUM_OPTIONS" /></translation>
 <translation id="3634652306074934350">Berechtigungsanfrage abgelaufen</translation>
 <translation id="3635353578505343390">Feedback an Google senden</translation>
 <translation id="3635960017746711110">Crostini-USB-Einstellungen</translation>
@@ -2450,7 +2454,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
 <translation id="3665589677786828986">Chrome hat festgestellt, dass einige Ihrer Einstellungen von einem anderen Programm manipuliert wurden, und hat sie auf die ursprünglichen Standardwerte zurückgesetzt.</translation>
 <translation id="3668801437375206837">Damit Bluetooth-Probleme besser diagnostiziert werden können, haben Google-Mitarbeiter die Möglichkeit, Feedbackberichte durch zusätzliche Bluetooth-Protokolle zu ergänzen. Wenn diese Option ausgewählt ist, enthält Ihr Bericht btsnoop- und HCI-Protokolle der aktuellen Sitzung. Personenidentifizierbare Informationen werden dabei so gut wie möglich entfernt. Nur die Administratoren der entsprechenden Chrome OS-Produktgruppe in Listnr haben Zugriff auf die Protokolle. Diese werden nach 90 Tagen dauerhaft gelöscht.</translation>
-<translation id="3668823961463113931">Handler</translation>
 <translation id="3670113805793654926">Geräte von allen Anbietern</translation>
 <translation id="3670229581627177274">Bluetooth aktivieren</translation>
 <translation id="3672681487849735243">Ein werkseitiger Fehler wurde festgestellt.</translation>
@@ -2916,6 +2919,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4147911968024186208">Bitte versuchen Sie es noch einmal. Wenn dieser Fehler wieder auftritt, wenden Sie sich an Ihren Support-Mitarbeiter.</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4150569944729499860">Bildschirmkontext</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="4154664944169082762">Fingerabdrücke</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
@@ -3544,6 +3548,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4884987973312178454">6-fach</translation>
 <translation id="4887424188275796356">Mit System Viewer öffnen</translation>
 <translation id="488785315393301722">Details ansehen</translation>
+<translation id="4889792122460431731">Um relevantere Antworten auf Ihre Fragen zu erhalten, können Sie Assistant erlauben, Informationen auf Ihrem Bildschirm zu verwenden. Das kann auch Informationen über abgespielte Lieder oder Videos umfassen.</translation>
 <translation id="4890773143211625964">Erweiterte Druckereinstellungen anzeigen</translation>
 <translation id="4891089016822695758">Beta-Forum</translation>
 <translation id="4892229439761351791">Website kann Bluetooth verwenden</translation>
@@ -3840,7 +3845,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5227679487546032910">Blaugrüner Standardavatar</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
 <translation id="5230516054153933099">Fenster</translation>
-<translation id="523271575098439435">Fügen Sie die gewünschten Sprachen für Websites hinzu. Die erste Sprache auf der Liste wird für Übersetzungen verwendet.</translation>
 <translation id="5233019165164992427">NaCl-Debug-Port</translation>
 <translation id="5233231016133573565">Prozess-ID</translation>
 <translation id="5233638681132016545">Neuer Tab</translation>
@@ -3917,6 +3921,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5307030433605830021">Quelle nicht unterstützt</translation>
 <translation id="5307386115243749078">Bluetooth-Schalter koppeln</translation>
 <translation id="5308380583665731573">Verbinden</translation>
+<translation id="5309418307557605830">Google Assistant funktioniert hier auch</translation>
 <translation id="5310281978693206542">Link an meine Geräte senden</translation>
 <translation id="5311304534597152726">Anmeldung als</translation>
 <translation id="5311565231560644461">Websites nicht erlauben, meine Virtual-Reality-Geräte und ‑Daten zu verwenden</translation>
@@ -5477,6 +5482,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7062222374113411376">Fertigstellen des Datenversands und -empfangs von kürzlich geschlossenen Websites erlauben (empfohlen)</translation>
 <translation id="7063129466199351735">Verknüpfungen werden bearbeitet...</translation>
 <translation id="7063311912041006059">URL mit <ph name="SPECIAL_SYMBOL" /> statt der Suchanfrage</translation>
+<translation id="706342288220489463">Assistant erlauben, Informationen auf Ihrem Bildschirm zum besseren Beantworten von Fragen zu verwenden</translation>
 <translation id="7064734931812204395">Der Linux-Container wird konfiguriert. Dies kann bis zu 30 Minuten dauern.</translation>
 <translation id="7065223852455347715">Dieses Gerät ist gesperrt, sodass keine Unternehmensanmeldung möglich ist. Wenn Sie das Gerät anmelden möchten, müssen Sie zunächst eine Gerätewiederherstellung durchführen.</translation>
 <translation id="7065534935986314333">Systeminformationen</translation>
@@ -5559,6 +5565,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7171559745792467651">Apps von Ihren anderen Geräten installieren</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
+<translation id="7173336557300642430">Google Assistant darf die Informationen auf meinem Bildschirm verwenden, um mir relevantere Antworten auf meine Fragen zu geben. Assistant darf auch Informationen über abgespielte Lieder oder Videos verwenden.</translation>
 <translation id="7173852404388239669"><ph name="DEVICE_TYPE" /> personalisieren</translation>
 <translation id="7174199383876220879">Neu! Sie können nun Musik, Videos und andere Medien steuern.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> konfigurieren</translation>
@@ -5732,6 +5739,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7371490947952970241">Sie können die Standortermittlung deaktivieren, indem Sie die Haupteinstellung "Standort" auf diesem Gerät deaktivieren. Außerdem haben Sie die Möglichkeit, die Nutzung von WLANs, Mobilfunknetzen und Sensoren zur Standortermittlung in den Standorteinstellungen zu deaktivieren.</translation>
 <translation id="7371917887111892735">Tabs werden auf die Breite von angepinnten Tabs verkleinert</translation>
 <translation id="7374376573160927383">USB-Geräte verwalten</translation>
+<translation id="7374461526650987610">Protokoll-Handler</translation>
 <translation id="7375235221357833624">{0,plural, =1{Gerät innerhalb von einer Stunde aktualisieren}other{Gerät innerhalb von # Stunden aktualisieren}}</translation>
 <translation id="7376553024552204454">Cursor bei Bewegung hervorheben</translation>
 <translation id="737728204345822099">Auf Ihrem Sicherheitsschlüssel kann zum Besuch dieser Website ein Datensatz angelegt werden.</translation>
@@ -5841,6 +5849,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7488682689406685343">Diese Website verleitet Sie möglicherweise dazu, aufdringliche Benachrichtigungen zuzulassen.</translation>
 <translation id="7489761397368794366">Über mein Gerät anrufen</translation>
 <translation id="749028671485790643">Profil <ph name="VALUE" /></translation>
+<translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 Cookie}other{{NUM_COOKIES} Cookies}}</translation>
 <translation id="7493386493263658176">Die Erweiterung <ph name="EXTENSION_NAME" /> erfasst unter Umständen alle von Ihnen eingegebenen Textinhalte, einschließlich personenbezogener Daten wie Passwörter und Kreditkartennummern. Möchten Sie diese Erweiterung verwenden?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -6081,6 +6090,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Blendet eine Seitenleiste auf Browserebene ein, über die Sie jederzeit bequem auf Ihre Leseliste und Lesezeichen zugreifen können.</translation>
 <translation id="7742706086992565332">Sie können bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
+<translation id="7742879569460013116">Link teilen für</translation>
 <translation id="774377079771918250">Speicherort auswählen</translation>
 <translation id="7744047395460924128">Druckverlauf anzeigen</translation>
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
@@ -6442,7 +6452,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8107015733319732394">Google Play Store wird auf Ihrem <ph name="DEVICE_TYPE" /> installiert. Dies kann ein paar Minuten dauern.</translation>
 <translation id="810728361871746125">Displayauflösung</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Keine Drittanbieter-Cookies}=1{1 Cookie von Drittanbietern blockiert}other{# Cookies von Drittanbietern blockiert}}</translation>
-<translation id="810875025413331850">Keine Geräte in der Nähe gefunden.</translation>
 <translation id="8109109153262930486">Standardavatar</translation>
 <translation id="8110489095782891123">Kontaktliste wird heruntergeladen...</translation>
 <translation id="8113476325385351118">Dieser Website weiterhin keine vollständige Kontrolle über MIDI-Geräte gewähren</translation>
@@ -6555,6 +6564,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8230134520748321204">Passwort für <ph name="ORIGIN" /> speichern?</translation>
 <translation id="8230446983261649357">Websites dürfen keine Bilder anzeigen</translation>
 <translation id="8234795456569844941">Bitte helfen Sie unseren Entwicklern bei der Lösung dieses Problems. Beschreiben Sie genau, was passiert ist, bevor Sie die Profilfehlermeldung erhalten haben:</translation>
+<translation id="8235418492073272647">Seite geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="8236917170563564587">Stattdessen diesen Tab teilen</translation>
 <translation id="8237647586961940482">Dunkelrosa und Rot</translation>
 <translation id="8239032431519548577">Enterprise-Registrierung abgeschlossen</translation>
@@ -6761,6 +6771,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8480869669560681089">Unbekanntes Gerät von <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-Berechtigung bestätigen</translation>
 <translation id="8481980314595922412">Testfunktionen sind aktiviert</translation>
+<translation id="8482860770919360244">Sie haben Google Assistant schon auf einem anderen Gerät eingerichtet. Wenn Sie den Bildschirmkontext aktivieren, können Sie Assistant noch besser nutzen.</translation>
 <translation id="848666842773560761">Eine App versucht, auf die Kamera zuzugreifen. Schalten Sie den Vertraulichkeitsmodus der Kamera aus, um den Zugriff zu erlauben.</translation>
 <translation id="8487678622945914333">Vergrößern</translation>
 <translation id="8489156414266187072">Persönliche Vorschläge werden nur in deinem Konto angezeigt</translation>
@@ -7186,7 +7197,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="893298445929867520">Einkaufswagen ausgeblendet. Sie werden wieder angezeigt, wenn Sie Änderungen vornehmen.</translation>
 <translation id="8933960630081805351">Im Finder &amp;anzeigen</translation>
 <translation id="8934732568177537184">Weiter</translation>
-<translation id="8938306522009698937">Handler</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8940081510938872932">Ihr Computer erledigt momentan zu viele Aufgaben gleichzeitig. Bitte versuchen Sie es später erneut.</translation>
 <translation id="8941173171815156065">Berechtigung "<ph name="PERMISSION" />" aufheben</translation>
@@ -7475,6 +7485,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>
 <translation id="960987915827980018">Noch etwa 1 Stunde</translation>
 <translation id="962802172452141067">Lesezeichenordnerstruktur</translation>
+<translation id="963941169782009567">Sie können dies jederzeit in den Einstellungen &gt; „Google Assistant“ &gt; „Bildschirmkontext“ ändern.</translation>
 <translation id="964057662886721376">Einige Erweiterungen können Sie ausbremsen – vor allem solche, die Sie nicht installieren wollten.</translation>
 <translation id="964286338916298286">Ihr IT-Administrator hat Chrome-Extras für Ihr Gerät deaktiviert.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Anwendung}other{Anwendungen}}</translation>

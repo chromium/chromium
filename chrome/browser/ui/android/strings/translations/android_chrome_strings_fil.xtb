@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Lumipat sa ibang window</translation>
 <translation id="1553358976309200471">I-update ang Chrome</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
-<translation id="1569387923882100876">Nakakonektang Device</translation>
 <translation id="1571304935088121812">Kopyahin ang username</translation>
 <translation id="1592864538817356322">Karaniwang proteksyon:</translation>
-<translation id="1612196535745283361">Kailangan ng Chrome ng access sa lokasyon upang magkapag-scan ng mga device. Ang access sa lokasyon ay <ph name="BEGIN_LINK" />naka-off para sa device na ito<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alisin ang 1 piniling item}one{Alisin ang # piniling item}other{Alisin ang # na piniling item}}</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
 <translation id="1987739130650180037">Button ng <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658">Gustong makipagpares ng <ph name="SITE" /></translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}one{# File}other{# na File}}</translation>
 <translation id="2017836877785168846">Kini-clear ang history at mga awtomatikong pagkumpleto sa address bar.</translation>
@@ -399,6 +396,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="3518985090088779359">Tanggapin, magpatuloy</translation>
 <translation id="3522247891732774234">May available na update. Higit pang mga opsyon</translation>
 <translation id="3524138585025253783">Developer UI</translation>
+<translation id="3524334353996115845">Hayaan ang <ph name="ORIGIN" /> na patunayang ikaw ito</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ang available</translation>
 <translation id="3549657413697417275">Hanapin sa iyong history</translation>
@@ -431,7 +429,6 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="3771033907050503522">Mga Tab na Incognito</translation>
 <translation id="3771290962915251154">Naka-disable ang setting na ito dahil naka-on ang parental controls</translation>
 <translation id="3771694256347217732">Mga Tuntunin ng Serbisyo ng Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />I-on ang Bluetooth<ph name="END_LINK" /> upang payagan ang pagpapares</translation>
 <translation id="3773856050682458546">Basic na data pati ang impormasyon tungkol sa mga website na iyong binibisita at ang mga app na ginagamit mo</translation>
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3778956594442850293">Idinagdag sa Home screen</translation>
@@ -604,7 +601,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4913161338056004800">I-reset ang mga istatistika</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Humingi ng tulong<ph name="END_LINK" /> habang nag-ii-scan ng mga device…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# Page}one{# Page}other{# na Page}}</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ie-export ang iyong mga password at ida-download ang mga ito bilang text file. Magiging visible ang mga ito sa sinuman at sa anumang app na may access sa folder ng destinasyon.</translation>
@@ -653,7 +649,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5215116848420601511">Mga paraan ng pagbabayad at address gamit ang Google Pay</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5227554086496586518">I-tap para makita ang mga resulta ng paghahanap</translation>
-<translation id="5230560987958996918">Gustong mag-scan ng <ph name="SITE" /> para sa mga Bluetooth device na nasa malapit. Nahanap ang mga sumusunod na device:</translation>
 <translation id="5233638681132016545">Bagong tab</translation>
 <translation id="5250483651202458397">Screenshot. I-tap para isara.</translation>
 <translation id="5262378156578470238">Makakakita ka ng notification kapag nagsimula na ang pag-download na ito sa <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> nakabukas na tab, i-tap para lumipat ng tab}one{<ph name="OPEN_TABS_MANY" /> nakabukas na tab, i-tap para lumipat ng tab}other{<ph name="OPEN_TABS_MANY" /> na nakabukas na tab, i-tap para lumipat ng tab}}</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Ilang partikular na site lang ang payagan</translation>
+<translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
 <translation id="5423934151118863508">Lalabas dito ang mga page na madalas mong bisitahin</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ang available</translation>
@@ -695,7 +691,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5515439363601853141">I-unlock upang tingnan ang iyong password</translation>
 <translation id="5517095782334947753">Mayroon kang mga bookmark, history, password at iba pang mga setting mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Na-block ang pag-redirect.</translation>
-<translation id="5527082711130173040">Kailangan ng Chrome ng access sa lokasyon upang makapag-scan ng mga device. <ph name="BEGIN_LINK1" />I-update ang mga pahintulot<ph name="END_LINK1" />. Ang access sa lokasyon ay <ph name="BEGIN_LINK2" />naka-off din para sa device na ito<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Nakopya ang site</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
 <translation id="5556459405103347317">I-reload</translation>
@@ -743,14 +738,12 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="5810864297166300463">Tulong sa Web</translation>
 <translation id="5814131985548525293">Mag-type dito o i-tap ang icon na boses para magsimula</translation>
-<translation id="5817918615728894473">Ipares</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5833984609253377421">Ibahagi ang link</translation>
 <translation id="5836192821815272682">Dina-download ang Update sa Chrome…</translation>
 <translation id="5853623416121554550">naka-pause</translation>
 <translation id="5854512288214985237">Walang naipadalang istatistika o ulat ng pag-crash sa Google</translation>
 <translation id="5855546874025048181">Pinuhin: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Hindi ma-on ng Chrome ang Bluetooth adapter</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5862731021271217234">Para makuha ang iyong mga tab mula sa iba mo pang device, i-on ang pag-sync</translation>
@@ -895,7 +888,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6643649862576733715">Pagbukud-bukurin ayon sa dami ng data na natipid</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Kailangan ng Chrome ng access sa lokasyon upang makapag-scan at makakita ng mga device. <ph name="BEGIN_LINK" />I-update ang mga pahintulot<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7583262514280211622">Makikita mo rito ang iyong listahan ng babasahin</translation>
 <translation id="7588219262685291874">I-on ang madilim na tema kapag naka-on ang Pantipid ng Baterya ng iyong device</translation>
 <translation id="7593557518625677601">Buksan ang mga setting ng Android at muling i-enable ang Android system sync upang simulan ang Chrome sync</translation>
+<translation id="7594687499944811403">Hayaan ang <ph name="EMBEDDED_ORIGIN" /> na patunayang ikaw ito para sa <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operating system</translation>
 <translation id="7605594153474022051">Hindi gumagana ang pag-sync</translation>
 <translation id="7606077192958116810">Naka-on ang Lite mode. Pamahalaan ito sa Mga Setting.</translation>
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
 <translation id="7619072057915878432">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga problema sa network.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Humingi ng tulong<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />muling mag-scan<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
@@ -1081,7 +1073,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7876243839304621966">Alisin lahat</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page na hindi pa nababasa}one{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page na hindi pa nababasa}other{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> na page na hindi pa nababasa}}</translation>
 <translation id="7882131421121961860">Walang nakitang history</translation>
-<translation id="7884346424584885269">Nangangailangan ng pahintulot ang Chrome para makapag-scan ng mga kalapit na device. <ph name="BEGIN_LINK" />I-update ang mga pahintulot<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Gumagana sa Chrome</translation>
 <translation id="789763218334337857">Paano gamitin ang Chrome</translation>
 <translation id="7903184275147100332">Puwede itong abutin nang ilang sandali</translation>
@@ -1160,7 +1151,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8349013245300336738">Pagbukud-bukurin ayon sa dami ng data na nagamit</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> (na) download ang na-restore</translation>
 <translation id="8364299278605033898">Tingnan ang mga sikat na website</translation>
-<translation id="8368027906805972958">Hindi alam o hindi sinusuportahang device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Handa na ang <ph name="LANG" />.</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
@@ -1221,7 +1211,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="867767487203716855">Susunod na update</translation>
 <translation id="8683039184091909753">larawan</translation>
 <translation id="8683081248374354009">I-reset ang grupo</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Antas ng Lakas ng Signal: # bar}one{Antas ng Lakas ng Signal: # bar}other{Antas ng Lakas ng Signal: # na bar}}</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
@@ -1287,7 +1276,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="9108312223223904744">Telepono bilang Security Key Support</translation>
 <translation id="9108808586816295166">Posibleng hindi available sa lahat ng oras ang secure na DNS</translation>
 <translation id="9133397713400217035">I-explore Offline</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9155898266292537608">Makakapaghanap ka rin gamit ang mabilisang pag-tap sa isang salita</translation>

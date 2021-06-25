@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1449835205994625556">Jelszó elrejtése</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
+<translation id="149095475893949513">Ez a webhely konfigurációs profilt próbál letölteni.</translation>
 <translation id="1491277525950327607">A beállítás módosításához koppintson duplán</translation>
 <translation id="1492417797159476138">Már elmentette ezt a felhasználónevet ehhez a webhelyhez</translation>
 <translation id="1509486075633541495">Bejelentkezés a webhelyre</translation>
@@ -268,6 +269,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="3607167657931203000">Automatikus kitöltés adatai</translation>
 <translation id="3609785682760573515">Szinkronizálás...</translation>
 <translation id="3638472932233958418">Weboldalak előtöltése</translation>
+<translation id="3661160521073045932">Rendelkezésre áll egy konfigurációs profil</translation>
 <translation id="3670030362669914947">Szám</translation>
 <translation id="3691593122358196899">Könyvjelzők közé téve itt: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Megjelölés olvasatlanként</translation>

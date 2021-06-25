@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1449835205994625556">Թաքցնել գաղտնաբառը</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> տարր</translation>
+<translation id="149095475893949513">Այս կայքը փորձում է կազմաձևման պրոֆիլ ներբեռնել։</translation>
 <translation id="1491277525950327607">Կրկնակի հպեք՝ կարգավորումը միացնելու/անջատելու համար</translation>
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1509486075633541495">Մտեք հաշիվ</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">Ինքնալցման տվյալները</translation>
 <translation id="3609785682760573515">Համաժամացում…</translation>
 <translation id="3638472932233958418">Նախաբեռնել ոստայնէջերը</translation>
+<translation id="3661160521073045932">Կազմաձևման պրոֆիլ է հասանելի</translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
 <translation id="3691593122358196899">Էջանիշը պահվել է <ph name="FOLDER_TITLE" />-ում</translation>
 <translation id="3709582977625132201">Նշել որպես չկարդացված</translation>

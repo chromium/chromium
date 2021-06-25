@@ -80,7 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar geleden}other{# jaar geleden}}</translation>
 <translation id="2878511608894704031">Alles verwijderen</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{over 1 d}other{over # d}}</translation>
-<translation id="2922712708897119705">Kolom <ph name="COLUMN_NAME" /> in aflopende volgorde gesorteerd</translation>
+<translation id="2922712708897119705">Kolom <ph name="COLUMN_NAME" /> in aflopende volgorde gesorteerd.</translation>
 <translation id="2931838996092594335">klikken</translation>
 <translation id="2981684127883932071">Suggesties weergeven</translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
@@ -178,6 +178,7 @@
 <translation id="6156262341071374681">Uitbreiden naar alle apps</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6166852626429024716">Zoek op je apparaat, in apps en instellingen en op internet...</translation>
+<translation id="6237461503717005873"><ph name="ROW_NAME" /> is geselecteerd.</translation>
 <translation id="6264365405983206840">&amp;Alles selecteren</translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
 <translation id="6364916375976753737">Naar links bladeren</translation>

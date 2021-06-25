@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">මෙම ක්‍ෂේත්‍රයට <ph name="MAX_ITEMS_LIMIT" /> ට වැඩි ඇතුළත් කිරීම් තිබිය යුතු ය. වැඩිදුර ඇතුළත් කිරීම් සියල්ල ඉවත ලනු ලැබේ.</translation>
 <translation id="1101672080107056897">දෝෂ ක්‍රියාව</translation>
 <translation id="1103523840287552314">සැමවිටම <ph name="LANGUAGE" /> පරිවර්තනය කරන්න</translation>
-<translation id="1107591249535594099">පරීක්ෂා කළේනම්, වේගවත් ආකෘති පිරවීම සඳහා Chrome ඔබේ කාඩ්පතේ පිටපතක් මෙම උපාංගයෙහි ගබඩා කරනු ඇත.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> සඳහා අවසරය තෝරන්න</translation>
 <translation id="1113869188872983271">යළි ඇණවුම් කිරීම &amp;පසුගමනය කරන්න</translation>
 <translation id="1123753900084781868">මේ මොහොතේ සජීවී සිරස්තලය ලබා ගත නොහැක</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">දිගුවක් මගින් මෙම පිටුව අවහිර කර ඇත</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
-<translation id="2495093607237746763">පරීක්ෂා කළේ නම්, වඩා වේගවත් පෝරමක් පිරවීම සඳහා Chromium ඔබේ කාඩ්පතේ පිටපතක් මෙම උපාංගයෙහි ගබඩා කරනු ඇත.</translation>
 <translation id="2498091847651709837">නව කාඩ්පත ස්කෑන් කරන්න</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2505268675989099013">ගිණුම ආරක්‍ෂා කරන්න</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">වැඩ පත්‍ර</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> හට ඔබේ මයික්‍රෆෝනය භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="3533328374079021623">තැපැල් පෙට්ටිය 5</translation>
-<translation id="3539171420378717834">මෙම උපාංගය මත මෙම කාඩ්පතේ පිටපතක් තබා ගන්න</translation>
 <translation id="3552297013052089404">Sans-serif ෆොන්ට</translation>
 <translation id="3558573058928565255">දවස, වේලාව</translation>
 <translation id="3566021033012934673">ඔබගේ සබැඳුම පුද්ගලික නොවේ</translation>
@@ -1587,6 +1584,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ජම්බූල</translation>
 <translation id="6786747875388722282">දිගු</translation>
+<translation id="678982761784843853">ආරක්ෂිත අන්තර්ගත ID</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="679355240208270552">ප්‍රතිපත්තිය මඟින් පෙරනිමි සෙවීම සබල කර නැති නිසා නොසලකා හරිනු ලැබේ.</translation>
 <translation id="6794951432696553238">දැන් සිට Windows Hello භාවිත කිරීමෙන් ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
@@ -1950,6 +1948,7 @@
 <translation id="8100588592594801589">අවලංගු කාඩ්පත් ඉවත් කර ඇත</translation>
 <translation id="8103161714697287722">ගෙවීමේ ක්‍රමය</translation>
 <translation id="8105368624971345109">ක්‍රියා විරහිත කරන්න</translation>
+<translation id="810875025413331850">කිසිඳු උපාංගයක් අවටින් හමු නොවිය.</translation>
 <translation id="8118489163946903409">ගෙවීම් ක්‍රමය</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ඔබේ පරිගණකයේ හෝ ජාලයේ නිසියාකාරව ස්ථාපිත කර නැත. මෙම ගැටලුව විසඳීමට ඔබේ තොරතුරු තාක්ෂණ පරිපාලකයාගෙන් විමසන්න.</translation>
 <translation id="8128526133099929547">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක් මත ඔබේ මුරපදය ඇතුළත් කළා. Chrome <ph name="WEBSITE_1" /> සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>

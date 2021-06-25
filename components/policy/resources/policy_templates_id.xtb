@@ -366,6 +366,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
+<translation id="1503969899251962413">Menyetel kebijakan akan menentukan kunci lisensi <ph name="PLUGIN_VM_NAME" /> untuk perangkat ini.
+
+      Kebijakan ini dihapus di M94.</translation>
 <translation id="150857982247452081">Memungkinkan Anda menyetel daftar protokol, dan daftar terkait pola asal yang diizinkan untuk setiap protokol, yang dapat meluncurkan aplikasi eksternal tanpa meminta izin pengguna. Pemisah di akhir tidak boleh disertakan saat mencantumkan protokol, jadi cantumkan "skype" bukan "skype:" atau "skype://".
 
       Jika kebijakan ini disetel, protokol hanya akan diizinkan oleh kebijakan untuk meluncurkan aplikasi eksternal tanpa meminta izin jika protokol tersebut tercantum, dan asal situs yang mencoba meluncurkan protokol tersebut cocok dengan pola asal dalam daftar allowed_origins protokol. Jika salah satu kondisinya tidak terpenuhi, permintaan izin peluncuran protokol eksternal tidak akan dihilangkan oleh kebijakan.
@@ -4659,11 +4662,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="69525503251220566">Parameter menyediakan fitur telusuri pakai gambar untuk penyedia penelusuran default</translation>
 <translation id="6953102253399571439">Aktifkan pencetakan PIN secara default</translation>
 <translation id="6956272732789158625">Jangan izinkan situs apa pun menggunakan pembuatan kunci</translation>
-<translation id="6959021201443139119">Cookie yang disetel untuk domain yang sesuai dengan pola ini akan kembali ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Untuk cookie pada domain yang tidak tercakup oleh pola yang ditentukan di sini, atau untuk semua cookie jika kebijakan ini tidak disetel, nilai default global-nya adalah konfigurasi pribadi pengguna.
-
-          Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai domain, bukan URL, jadi Anda tidak perlu menentukan skema atau port.</translation>
 <translation id="6961602002757991199">Jika kebijakan disetel ke URL yang valid, <ph name="PRODUCT_NAME" /> akan mendownload daftar situs dari URL tersebut dan menerapkan aturan seolah-olah aturan tersebut disiapkan dengan kebijakan <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Kebijakan ini akan mencegah <ph name="PRODUCT_NAME" /> dan browser alternatif membuka satu sama lain.
 
       Jika kebijakan tidak disetel (atau disetel ke URL yang tidak valid), <ph name="PRODUCT_NAME" /> tidak akan menggunakan kebijakan sebagai sumber aturan untuk tidak beralih browser.

@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. از همه ورودی‌های آینده صرف‌نظر می‌شود.</translation>
 <translation id="1101672080107056897">اقدام خطا</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
-<translation id="1107591249535594099">‏اگر علامت زده شود، Chrome یک کپی از این کارت را در دستگاه نگهداری می‌کند تا برای پرکردن فرم‌ها از آن استفاده شود.</translation>
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113869188872983271">&amp;واگرد ترتیب‌بندی مجدد</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">این صفحه را یکی از افزونه‌ها مسدود کرده است</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">‏تجزیه‌کننده JSON</translation>
-<translation id="2495093607237746763">‏اگر علامت زده شود، Chromium برای پر کردن سریع‌تر فرم، یک کپی از کارت شما در این دستگاه ذخیره می‌کند.</translation>
 <translation id="2498091847651709837">اسکن کارت جدید</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2505268675989099013">محافظت از حساب</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">برگ‌های کار</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> می‌خواهد از میکروفن شما استفاده کند</translation>
 <translation id="3533328374079021623">صندوق پست ۵</translation>
-<translation id="3539171420378717834">یک کپی از این کارت در این دستگاه نگهداری شود</translation>
 <translation id="3552297013052089404">قلم سن‌سریف</translation>
 <translation id="3558573058928565255">ساعت از روز</translation>
 <translation id="3566021033012934673">اتصال شما خصوصی نیست</translation>
@@ -1590,6 +1587,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">بنفش</translation>
 <translation id="6786747875388722282">افزونه‌ها</translation>
+<translation id="678982761784843853">شناسه‌های محتوای محافظت‌شده</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="679355240208270552">نادیده گرفته شد، زیرا جستجوی پیش‌فرض توسط خط‌مشی فعال نشده است.</translation>
 <translation id="6794951432696553238">‏ازاین‌پس، برای به‌تأیید رساندن سریع‌تر کارت‌ها، از Windows Hello استفاده شود</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">کارت‌های نامعتبر برداشته می‌شوند</translation>
 <translation id="8103161714697287722">روش پرداخت</translation>
 <translation id="8105368624971345109">خاموش کردن</translation>
+<translation id="810875025413331850">هیچ دستگاه نزدیکی پیدا نشد.</translation>
 <translation id="8118489163946903409">روش پرداخت</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» به‌درستی در رایانه یا شبکه‌تان پیکربندی نشد. از سرپرست فناوری اطلاعات خود بخواهید این مشکل را حل کند.</translation>
 <translation id="8128526133099929547">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome توصیه می‌کند همین حالا به <ph name="WEBSITE_1" />، و سایت‌های دیگری که در آن‌ها از این گذرواژه استفاده کرده‌اید، بروید و گذرواژه را تغییر دهید.</translation>

@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Es descartaran totes les entrades restants.</translation>
 <translation id="1101672080107056897">Acció d'error</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Si s'activa aquesta casella, Chrome emmagatzema una còpia d'aquesta targeta al dispositiu per agilitzar l'emplenament de formularis.</translation>
 <translation id="1110994991967754504">Selecciona un permís per a <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Desfés el canvi d'ordre</translation>
 <translation id="1123753900084781868">La funció Subtítols instantanis no està disponible en aquests moments</translation>
@@ -431,7 +430,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2491414235131909199">Una extensió ha bloquejat aquesta pàgina</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analitzador JSON</translation>
-<translation id="2495093607237746763">Si s'activa aquesta casella, Chromium desa una còpia de la vostra targeta al dispositiu per agilitzar l'emplenament de formularis.</translation>
 <translation id="2498091847651709837">Escaneja una targeta nova</translation>
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2505268675989099013">Protegeix el compte</translation>
@@ -708,7 +706,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3531780078352352885">Fulls de treball</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vol utilitzar el micròfon</translation>
 <translation id="3533328374079021623">Bústia de correu 5</translation>
-<translation id="3539171420378717834">Desa una còpia d'aquesta targeta al dispositiu</translation>
 <translation id="3552297013052089404">Tipus de lletra Sans Serif</translation>
 <translation id="3558573058928565255">Durant el dia</translation>
 <translation id="3566021033012934673">La connexió no és privada</translation>
@@ -1581,6 +1578,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensions</translation>
+<translation id="678982761784843853">Identificadors de contingut protegit</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="679355240208270552">S'ha ignorat perquè la política no ha activat la cerca predeterminada.</translation>
 <translation id="6794951432696553238">A partir d'ara, confirma les targetes més ràpidament amb Windows Hello</translation>
@@ -1944,6 +1942,7 @@ Detalls addicionals:
 <translation id="8100588592594801589">Les targetes que no eren vàlides s'han suprimit</translation>
 <translation id="8103161714697287722">Mètode de pagament</translation>
 <translation id="8105368624971345109">Desactiva</translation>
+<translation id="810875025413331850">No s'ha trobat cap dispositiu a prop.</translation>
 <translation id="8118489163946903409">Mètode de pagament</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> no s'ha instal·lat correctament a l'ordinador o a la xarxa. Demana a l'administrador de TI que resolgui aquest problema.</translation>
 <translation id="8128526133099929547">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome et recomana que vagis a <ph name="WEBSITE_1" /> i a altres llocs web en què utilitzes aquesta contrasenya i que la canviïs ara.</translation>

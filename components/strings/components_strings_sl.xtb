@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
 <translation id="1101672080107056897">Dejanje ob napaki</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Če je izbrana ta možnost, bo shranil kopijo kartice v tej napravi za hitrejše izpolnjevanje obrazcev.</translation>
 <translation id="1110994991967754504">Izbira dovoljenja za: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Razveljavi razvrstitev</translation>
 <translation id="1123753900084781868">Samodejni podnapisi trenutno niso na voljo</translation>
@@ -435,7 +434,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2491414235131909199">To stran je blokirala razširitev.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Razčlenjevalnik za JSON</translation>
-<translation id="2495093607237746763">Če je izbrana ta možnost, bo Chromium shranil kopijo kartice v tej napravi za hitrejše izpolnjevanje obrazcev.</translation>
 <translation id="2498091847651709837">Optično branje nove kartice</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2505268675989099013">Zaščita računa</translation>
@@ -712,7 +710,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3531780078352352885">Delovni listi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi uporabiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Nabiralnik 5</translation>
-<translation id="3539171420378717834">Ohrani kopijo te kartice v tej napravi</translation>
 <translation id="3552297013052089404">Neserifna pisava</translation>
 <translation id="3558573058928565255">Dnevni čas</translation>
 <translation id="3566021033012934673">Vaša povezava ni zasebna</translation>
@@ -1590,6 +1587,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Vijoličnomodra</translation>
 <translation id="6786747875388722282">Razširitve</translation>
+<translation id="678982761784843853">ID-ji zaščitene vsebine</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="679355240208270552">Prezrto, ker pravilnik ne omogoča privzetega iskanja.</translation>
 <translation id="6794951432696553238">Od zdaj naprej lahko uporabljate Windows Hello in kartice potrjujete hitreje</translation>
@@ -1953,6 +1951,7 @@ Dodatne podrobnosti:
 <translation id="8100588592594801589">Neveljavne kartice so odstranjene</translation>
 <translation id="8103161714697287722">Plačilno sredstvo</translation>
 <translation id="8105368624971345109">Izklop</translation>
+<translation id="810875025413331850">Ni naprav v bližini.</translation>
 <translation id="8118489163946903409">Plačilno sredstvo</translation>
 <translation id="8127301229239896662">Programska oprema »<ph name="SOFTWARE_NAME" />« ni bila pravilno nameščena v računalniku ali omrežju. Obrnite se na skrbnika za IT glede odpravljanja te težave.</translation>
 <translation id="8128526133099929547">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da obiščete <ph name="WEBSITE_1" /> ter druga spletna mesta, na katerih uporabljate to geslo, in ga takoj spremenite.</translation>

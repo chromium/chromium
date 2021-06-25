@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi dodatni unosi će biti odbačeni.</translation>
 <translation id="1101672080107056897">Radnja zbog greške</translation>
 <translation id="1103523840287552314">Uvek prevodi <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Ako označite ovu opciju, Chrome će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="1110994991967754504">Izaberite dozvolu: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Opozovi promenu redosleda</translation>
 <translation id="1123753900084781868">Titl uživo trenutno nije dostupan</translation>
@@ -435,7 +434,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2491414235131909199">Dodatak blokira ovu stranicu</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Raščlanjivač JSON datoteka</translation>
-<translation id="2495093607237746763">Ako označite ovu opciju, Chromium će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="2498091847651709837">Skenirajte novu karticu</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2505268675989099013">Zaštiti nalog</translation>
@@ -712,7 +710,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3531780078352352885">Radni listovi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi da koristi mikrofon</translation>
 <translation id="3533328374079021623">5. poštansko sanduče</translation>
-<translation id="3539171420378717834">Zadrži kopiju ove kartice na ovom uređaju</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">Vreme dana</translation>
 <translation id="3566021033012934673">Veza nije privatna</translation>
@@ -1589,6 +1586,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786747875388722282">Dodaci</translation>
+<translation id="678982761784843853">ID-ovi zaštićenog sadržaja</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="679355240208270552">Zanemaruje se zato što smernice nisu omogućile podrazumevani pretraživač.</translation>
 <translation id="6794951432696553238">Od sada brže potvrđujte kartice uz Windows Hello</translation>
@@ -1952,6 +1950,7 @@ Dodatni detalji:
 <translation id="8100588592594801589">Nevažeće kartice su uklonjene</translation>
 <translation id="8103161714697287722">Način plaćanja</translation>
 <translation id="8105368624971345109">Isključi</translation>
+<translation id="810875025413331850">Nije pronađen nijedan uređaj u blizini.</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8127301229239896662">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno instaliran na računaru ili mreži. Zatražite od IT administratora da reši ovaj problem.</translation>
 <translation id="8128526133099929547">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da odete na <ph name="WEBSITE_1" />, kao i na druge sajtove gde koristite ovu lozinku, i da je odmah promenite.</translation>

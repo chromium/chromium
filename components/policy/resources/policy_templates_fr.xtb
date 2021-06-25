@@ -367,6 +367,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
+<translation id="1503969899251962413">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil.
+
+      Cette règle a été supprimée dans M94.</translation>
 <translation id="150857982247452081">Permet d'établir la liste des protocoles (et pour chacun d'eux, une liste associée de formats d'origines autorisées) qui peuvent lancer une application externe sans afficher d'invite. Lorsqu'un protocole est répertorié, le séparateur de fin ne doit pas être inclus. Par exemple, il convient de garder "skype" et non "skype:" ou "skype://".
 
       Si cette règle est configurée, un protocole n'est autorisé à lancer une application externe sans afficher d'invite que si ce protocole est répertorié dans la liste établie, et si l'origine du site qui essaie de lancer le protocole correspond à l'un des formats d'origines figurant dans la liste des origines autorisées de ce protocole. Si l'une des deux conditions est fausse, la règle n'omet pas l'invite de lancement du protocole externe.
@@ -4628,11 +4631,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="69525503251220566">Paramètre qui active la fonctionnalité de recherche par image pour le moteur de recherche par défaut</translation>
 <translation id="6953102253399571439">Activer l'impression par code définie par défaut</translation>
 <translation id="6956272732789158625">Interdire à tous les sites d'utiliser la génération de clé</translation>
-<translation id="6959021201443139119">Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies définis sur les domaines correspondant à ces formats. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. De plus, ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Enfin, les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour une description complète, accédez à https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Pour les cookies sur des domaines autres que ceux représentés par les formats spécifiés ici, ou pour tous les cookies si cette règle n'est pas configurée, la valeur globale par défaut sera définie à partir de la configuration personnelle de l'utilisateur.
-
-          Les formats que vous répertoriez ici sont traités comme des domaines et non des URL. Vous ne devez donc pas spécifier de schéma ni de port.</translation>
 <translation id="6961602002757991199">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Ces instructions empêchent <ph name="PRODUCT_NAME" /> et le navigateur secondaire de s'ouvrir l'un l'autre.
 
       Si cette règle n'est pas configurée ou qu'elle est définie sur une URL non valide, <ph name="PRODUCT_NAME" /> n'utilise pas cette règle comme source d'instructions pour ne pas changer de navigateur.

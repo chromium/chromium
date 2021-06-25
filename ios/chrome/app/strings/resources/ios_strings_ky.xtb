@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> нерсе</translation>
+<translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
 <translation id="1492417797159476138">Бул сайт үчүн ушул колдонуучунун атын сактап койгонсуз</translation>
 <translation id="1509486075633541495">Вебсайтка кирүү</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">Дайындарды автотолтуруу</translation>
 <translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
 <translation id="3638472932233958418">Желебет алдн-ал жүкт</translation>
+<translation id="3661160521073045932">Профилдин конфигурациясы жеткиликтүү</translation>
 <translation id="3670030362669914947">Сан</translation>
 <translation id="3691593122358196899">Кыстарма <ph name="FOLDER_TITLE" /> куржунуна кошулду</translation>
 <translation id="3709582977625132201">Окула элек деп белгилөө</translation>

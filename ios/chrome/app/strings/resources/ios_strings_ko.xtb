@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1449835205994625556">비밀번호 숨기기</translation>
 <translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
+<translation id="149095475893949513">웹사이트에서 구성 프로필을 다운로드하려고 합니다.</translation>
 <translation id="1491277525950327607">설정을 전환하려면 두 번 탭하세요.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1509486075633541495">웹사이트에 로그인</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">데이터 자동 완성</translation>
 <translation id="3609785682760573515">동기화 중...</translation>
 <translation id="3638472932233958418">웹페이지 미리 로드하기</translation>
+<translation id="3661160521073045932">구성 프로필 이용 가능</translation>
 <translation id="3670030362669914947">번호</translation>
 <translation id="3691593122358196899">북마크를 <ph name="FOLDER_TITLE" />에 추가함</translation>
 <translation id="3709582977625132201">읽지않음으로 표시</translation>
@@ -623,7 +625,7 @@
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7133798577887235672">이름</translation>
 <translation id="7136892417564438900">카메라를 사용할 수 없음</translation>
-<translation id="7153999225810839758">읽는 데 <ph name="TIME" />분 소요</translation>
+<translation id="7153999225810839758">읽는 데 <ph name="TIME" />분 소요 예상</translation>
 <translation id="7159472599653637159">모바일 사이트 요청</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 시크릿 탭 잠금 해제</translation>
 <translation id="7172852049901402487">보안 문제로부터 비밀번호를 안전하게 보호합니다.</translation>

@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">अन्य विंडो में ले जाएं</translation>
 <translation id="1553358976309200471">Chrome अपडेट करें</translation>
 <translation id="1558391695376153246">गुप्त टैब बंद करें</translation>
-<translation id="1569387923882100876">कनेक्ट किया गया डिवाइस</translation>
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1592864538817356322">सामान्य सुरक्षा मोड:</translation>
-<translation id="1612196535745283361">डिवाइस स्कैन करने के लिए Chrome को जगह की जानकारी का एक्सेस की ज़रूरत होती है. जगह की जानकारी का एक्सेस <ph name="BEGIN_LINK" />इस डिवाइस के लिए बंद<ph name="END_LINK" /> है.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
 <translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
 <translation id="1986685561493779662">नाम पहले से मौजूद है</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> बटन</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> युग्मित करना चाहता है</translation>
 <translation id="2000419248597011803">'पता बार' और 'खोज बॉक्स' की कुछ कुकी और खोजों को आपके डिफ़ॉल्ट खोज इंजन पर भेजा जाता है</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फ़ाइल}one{# फ़ाइलें}other{# फ़ाइलें}}</translation>
 <translation id="2017836877785168846">इतिहास साफ़ करता है और पता बार मेंअपने-आपपूर्णता को साफ़ करता है.</translation>
@@ -399,6 +396,7 @@
 <translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध है. ज़्यादा विकल्प</translation>
 <translation id="3524138585025253783">डेवलपर यूज़र इंटरफ़ेस (यूआई)</translation>
+<translation id="3524334353996115845"><ph name="ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> केबी उपलब्ध</translation>
 <translation id="3549657413697417275">अपने इतिहास में खोजें</translation>
@@ -431,7 +429,6 @@
 <translation id="3771033907050503522">गुप्त टैब</translation>
 <translation id="3771290962915251154">यह सेटिंग बंद है, क्योंकि 'माता-पिता के नियंत्रण में' सुविधा चालू है</translation>
 <translation id="3771694256347217732">Google की सेवा की शर्तें</translation>
-<translation id="3773755127849930740">युग्मन की अनुमति देने के लिए <ph name="BEGIN_LINK" />ब्लूटूथ चालू करें<ph name="END_LINK" /></translation>
 <translation id="3773856050682458546">इसमें बुनियादी डेटा और उन वेबसाइटों की जानकारी शामिल है जिन पर आप जाते हैं. इसमें आपके इस्तेमाल किए गए ऐप्लिकेशन की जानकारी भी शामिल है</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
@@ -604,7 +601,6 @@
 <translation id="4910889077668685004">भुगतान ऐप्लिकेशन</translation>
 <translation id="4913161338056004800">आंकड़े रीसेट करें</translation>
 <translation id="4913169188695071480">रीफ्रेश करना बंद करें</translation>
-<translation id="4915549754973153784">डिवाइस स्कैन करने में <ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" />...</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# पेज}one{# पेज}other{# पेज}}</translation>
 <translation id="4925120120285606924">स्क्रीनशॉट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">आपके पासवर्ड एक्सपोर्ट करके, टेक्स्ट फ़ाइल के रूप में डाउनलोड किए जाएंगे. डेस्टिनेशन फ़ोल्डर के ऐक्सेस की मदद से, कोई भी व्यक्ति और ऐप्लिकेशन ये पासवर्ड देख सकेंगे.</translation>
@@ -653,7 +649,6 @@
 <translation id="5215116848420601511">Google Pay का इस्तेमाल करने वाले भुगतान के तरीके और पते</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5227554086496586518">खोज नतीजे देखने के लिए टैप करें</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> आस-पास मौजूद ब्लूटूथ वाले डिवाइस स्कैन करना चाहती है. ये डिवाइस मिले हैं:</translation>
 <translation id="5233638681132016545">नया टैब</translation>
 <translation id="5250483651202458397">स्क्रीनशॉट. बंद करने के लिए इस पर टैप करें.</translation>
 <translation id="5262378156578470238">जब यह डाउनलोड <ph name="DATE" /> को शुरू होगा, तब आपको एक सूचना दिखेगी.</translation>
@@ -672,6 +667,7 @@
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> टैब खुला है, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}one{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}other{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}}</translation>
 <translation id="5375577065097716013"><ph name="BEGIN_NEW" />नया<ph name="END_NEW" /> Google Lens से इमेज खोजें</translation>
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
+<translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
 <translation id="5423934151118863508">  सबसे ज़्यादा देखे गए पेज यहां दिखाई देंगे</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जीबी उपलब्ध है</translation>
@@ -695,7 +691,6 @@
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
 <translation id="5517095782334947753">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग हैं.</translation>
 <translation id="5524843473235508879">रीडायरेक्ट ब्लॉक किया गया.</translation>
-<translation id="5527082711130173040">डिवाइस स्कैन करने के लिए Chrome को जगह की जानकारी का एक्सेस की ज़रूरत होती है. <ph name="BEGIN_LINK1" />अनुमतियां अपडेट करें<ph name="END_LINK1" />. जगह की जानकारी का एक्सेस <ph name="BEGIN_LINK2" />इस डिवाइस के लिए भी बंद<ph name="END_LINK2" /> है.</translation>
 <translation id="5534640966246046842">साइट की कॉपी की गई</translation>
 <translation id="5548606607480005320">सुरक्षा जांच</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
@@ -743,14 +738,12 @@
 <translation id="5810288467834065221">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="5810864297166300463">वेब सहायता</translation>
 <translation id="5814131985548525293">शुरू करने के लिए, यहां लिखें या आवाज़ वाले आइकॉन पर टैप करें</translation>
-<translation id="5817918615728894473">युग्‍मित करें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेयर करें</translation>
 <translation id="5836192821815272682">Chrome का अपडेट डाउनलोड हो रहा है…</translation>
 <translation id="5853623416121554550">रोका गया</translation>
 <translation id="5854512288214985237">Google को आंकड़े या क्रैश रिपोर्ट नहीं भेजी जातीं</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome, ब्लूटूथ एडाप्टर को चालू नहीं कर सका</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5862731021271217234">अपने दूसरे डिवाइस से अपने टैब पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -895,7 +888,6 @@
 <translation id="6643649862576733715">सेव किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
 <translation id="6649642165559792194">इमेज की झलक देखें <ph name="BEGIN_NEW" />नई<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">डिवाइस स्‍कैन करने के लिए Chrome को जगह की जानकारी का एक्‍सेस की ज़रूरत है. <ph name="BEGIN_LINK" />अनुमतियां अपडेट करें<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
@@ -1031,12 +1023,12 @@
 <translation id="7583262514280211622">आपको अपनी 'पढ़ने की सूची' यहां मिलेगी</translation>
 <translation id="7588219262685291874">आपके डिवाइस की 'बैटरी सेवर' सुविधा चालू होने पर 'गहरे रंग वाली थीम' चालू करें</translation>
 <translation id="7593557518625677601">Android सेटिंग खोलें और Chrome सिंक शुरू करने के लिए Android सिस्टम सिंक फिर से चालू करें</translation>
+<translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> के लिए, <ph name="EMBEDDED_ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
 <translation id="7605594153474022051">समन्वयन काम नहीं कर रहा है</translation>
 <translation id="7606077192958116810">लाइट मोड चालू है. इसे 'सेटिंग' में जाकर प्रबंधित करें.</translation>
 <translation id="7612619742409846846">आपने Google में इस ईमेल पते से साइन इन किया है</translation>
 <translation id="7619072057915878432">नेटवर्क विफलताओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />सहायता पाएं<ph name="END_LINK1" /> या <ph name="BEGIN_LINK2" />फिर से स्कैन करें<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Chrome में आपका स्वागत है</translation>
 <translation id="7630202231528827509">सेवा देने वाली कंपनी का यूआरएल</translation>
 <translation id="7638584964844754484">गलत 'पासफ़्रेज़'</translation>
@@ -1081,7 +1073,6 @@
 <translation id="7876243839304621966">सभी को निकालें</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
 <translation id="7882131421121961860">कोई इतिहास नहीं मिला</translation>
-<translation id="7884346424584885269">आस-पास मौजूद डिवाइसें स्कैन करने के लिए, Chrome को अनुमति चाहिए. <ph name="BEGIN_LINK" />अनुमतियां अपडेट करें<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Chrome में चल रहा है</translation>
 <translation id="789763218334337857">Chrome को इस्तेमाल करने का तरीका</translation>
 <translation id="7903184275147100332">इसमें एक मिनट लग सकता है</translation>
@@ -1160,7 +1151,6 @@
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
-<translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> इस्तेमाल के लिए तैयार है.</translation>
 <translation id="8387617938027387193">अपनी पहचान की पुष्टि करें</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
@@ -1221,7 +1211,6 @@
 <translation id="867767487203716855">अगला अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{सिग्नल सशक्तता का स्तर: # बार}one{सिग्नल सशक्तता का स्तर: # बार}other{सिग्नल सशक्तता का स्तर: # बार}}</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
@@ -1287,7 +1276,6 @@
 <translation id="9108312223223904744">फ़ोन को सुरक्षा कुंजी के तौर पर इस्तेमाल करें</translation>
 <translation id="9108808586816295166">हो सकता है कि सुरक्षित डीएनएस हर समय उपलब्ध न हो</translation>
 <translation id="9133397713400217035">ऑफ़लाइन सामग्री देखें</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9148126808321036104">फिर से साइन इन करें</translation>
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>

@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">У гэтым полі павінна быць максімум <ph name="MAX_ITEMS_LIMIT" /> запісаў. Усе лішнія запісы будуць адхілены.</translation>
 <translation id="1101672080107056897">Памылковае дзеянне</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Калі тут паставіць птушку, Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="1110994991967754504">Выберыце дазвол для <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Адрабіць змяненне парадку</translation>
 <translation id="1123753900084781868">Імгненныя субцітры зараз недаступныя</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Старонка заблакіравана пашырэннем</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Аналізатар JSON</translation>
-<translation id="2495093607237746763">Калі тут паставіць птушку, Chromium будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="2498091847651709837">Сканіраваць новую картку</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2505268675989099013">Абараніць уліковы запіс</translation>
@@ -711,7 +709,6 @@
 <translation id="3531780078352352885">Аркушы задання</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="3533328374079021623">Паштовая скрынка 5</translation>
-<translation id="3539171420378717834">Захаваць даныя карткі на прыладзе</translation>
 <translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="3566021033012934673">Падключэнне не з'яўляецца прыватным</translation>
@@ -1589,6 +1586,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фіялетавы</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
+<translation id="678982761784843853">Ідэнтыфікатары абароненага змесціва</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="679355240208270552">Праігнаравана, бо згодна з палітыкай стандартная служба пошуку не ўключана.</translation>
 <translation id="6794951432696553238">Калі выкарыстоўваць Windows Hello, пацвярджаць карткі можна будзе хутчэй</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">Несапраўдныя карткі выдалены</translation>
 <translation id="8103161714697287722">Спосаб аплаты</translation>
 <translation id="8105368624971345109">Выключыць</translation>
+<translation id="810875025413331850">Прылад паблізу не знойдзена.</translation>
 <translation id="8118489163946903409">Спосаб аплаты</translation>
 <translation id="8127301229239896662">Праграма "<ph name="SOFTWARE_NAME" />" не была належным чынам усталявана на камп'ютар або ў сетцы: папрасіце IT-адміністратара вырашыць гэту праблему.</translation>
 <translation id="8128526133099929547">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chrome рэкамендуе неадкладна змяніць пароль на сайце <ph name="WEBSITE_1" /> і на іншых сайтах, дзе выкарыстоўваецца гэты пароль.</translation>

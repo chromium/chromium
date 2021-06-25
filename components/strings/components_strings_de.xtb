@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren werden verworfen.</translation>
 <translation id="1101672080107056897">Fehleraktion</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
-<translation id="1107591249535594099">Bei Aktivierung speichert Chrome eine Kopie Ihrer Karte auf diesem Gerät, damit Formulare schneller ausgefüllt werden können.</translation>
 <translation id="1110994991967754504">Berechtigung für <ph name="PERMISSION_NAME" /> auswählen</translation>
 <translation id="1113869188872983271">&amp;Neu anordnen rückgängig machen</translation>
 <translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
@@ -124,6 +123,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1360955481084547712">Ein neues Inkognitofenster öffnen, um privat zu surfen</translation>
 <translation id="1363819917331173092">Übersetzen von Seiten in <ph name="SOURCE_LANGUAGE" /> nicht anbieten</translation>
 <translation id="1364822246244961190">Diese Richtlinie ist blockiert und ihr Wert wird deshalb ignoriert.</translation>
+<translation id="1368318639262510626">Dino-Spiel. Ein verpixelter Dinosaurier weicht Kakteen und kleinen Flugsauriern aus, während er durch eine karge Landschaft läuft. Sobald Sie einen Ton hören, drücken Sie die Leertaste, um über Hindernisse zu springen.</translation>
 <translation id="1374468813861204354">Vorschläge</translation>
 <translation id="1374692235857187091">Index-4x6 (Postkarte)</translation>
 <translation id="1375198122581997741">Informationen zur Version</translation>
@@ -132,6 +132,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1380591466760231819">Brieffaltung</translation>
 <translation id="138218114945450791">Hellblau</translation>
 <translation id="1382194467192730611">USB-Gerät wurde von Ihrem Administrator zugelassen</translation>
+<translation id="1384725838384960382">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen</translation>
 <translation id="1386623374109090026">Anmerkungen</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hat keine Daten gesendet.</translation>
 <translation id="1405567553485452995">Hellgrün</translation>
@@ -269,6 +270,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1875512691959384712">Google Formulare</translation>
 <translation id="187918866476621466">"Beim Start"-Seiten öffnen</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
+<translation id="1890171020361705182">Dino-Spiel. Ein verpixelter Dinosaurier weicht Kakteen und kleinen Flugsauriern aus, während er durch eine karge Landschaft läuft. Sobald Sie einen Ton hören, tippen Sie, um über Hindernisse zu springen.</translation>
 <translation id="1898423065542865115">Filtern</translation>
 <translation id="1901443836186977402">{1,plural, =1{Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist in den letzten 24 Stunden abgelaufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt. Die Uhr Ihres Computers ist derzeit auf <ph name="CURRENT_DATE" /> eingestellt. Ist das korrekt? Falls nicht, stellen Sie die Uhr Ihres Systems richtig ein und aktualisieren Sie anschließend diese Seite.}other{Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist vor # Tagen abgelaufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt. Die Uhr Ihres Computers ist momentan auf <ph name="CURRENT_DATE" /> eingestellt. Ist das richtig? Wenn nicht, korrigieren Sie die Uhrzeit Ihres Systems und aktualisieren Sie dann diese Seite.}}</translation>
 <translation id="1902576642799138955">Gültigkeitsdauer</translation>
@@ -428,7 +430,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
-<translation id="2495093607237746763">Wenn Sie diese Option auswählen, speichert Chromium eine Kopie Ihrer Karte auf diesem Gerät, damit Formulare schneller ausgefüllt werden können.</translation>
 <translation id="2498091847651709837">Neue Karte scannen</translation>
 <translation id="2501278716633472235">Zurück</translation>
 <translation id="2505268675989099013">Konto schützen</translation>
@@ -704,7 +705,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3531780078352352885">Auftragsblätter</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> möchte Ihr Mikrofon verwenden</translation>
 <translation id="3533328374079021623">Ablage 5</translation>
-<translation id="3539171420378717834">Kopie dieser Karte auf diesem Gerät speichern</translation>
 <translation id="3552297013052089404">Schriftart Sans-Serif</translation>
 <translation id="3558573058928565255">Tageszeit</translation>
 <translation id="3566021033012934673">Dies ist keine sichere Verbindung</translation>
@@ -1004,6 +1004,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4660119392514473465">Sie können jetzt privat surfen. Andere Personen, die dieses Gerät verwenden, können Ihre Aktivität nicht sehen. Downloads, Lesezeichen und Websiten auf Ihrer Leseliste werden jedoch gespeichert.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4673460618347856347">Dino-Spiel, spielen</translation>
 <translation id="4675657451653251260">Im Gastmodus können Sie keine Informationen von Chrome-Profilen einsehen. Sie können <ph name="LINK_BEGIN" />sich anmelden<ph name="LINK_END" />, um auf Ihre Google-Kontoinformationen wie Passwörter und Zahlungsmethoden zuzugreifen.</translation>
 <translation id="467662567472608290">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat enthält Fehler. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> möchte auf Bedienungshilfen reagieren</translation>
@@ -1300,6 +1301,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5689199277474810259">Als JSON exportieren</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="569000877158168851">Der Wert von "DnsOverHttpsTemplates" ist nicht relevant und wird nicht verwendet, es sei denn, die Richtlinie "DnsOverHttpsMode" ist auf <ph name="SECURE_DNS_MODE_AUTOMATIC" /> oder <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt.</translation>
+<translation id="5694206146481922091">Ansicht zum Registrieren für sichere Anmeldedaten für Zahlungen ist geöffnet</translation>
 <translation id="5695542892312572833">Möchten Sie zum Bestätigen und Abschließen Ihres Kaufs Windows Hello verwenden?</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="570530837424789914">Verwalten…</translation>
@@ -1430,6 +1432,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6180316780098470077">Wiederholungsintervall</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6203231073485539293">Bitte überprüfen Sie Ihre Internetverbindung.</translation>
+<translation id="6211666000885129820">Ansicht zum Registrieren für sichere Anmeldedaten für Zahlungen</translation>
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
 <translation id="6221345481584921695">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden. Websites, die in der Regel sicher sind, können gelegentlich mit Malware infiziert sein. Der schädliche Inhalt stammt von <ph name="SUBRESOURCE_HOST" />, einem bekannten Verteiler von Malware.</translation>
@@ -1587,6 +1590,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6865412394715372076">Diese Karte kann momentan nicht geprüft werden</translation>
 <translation id="6874604403660855544">&amp;Hinzufügen wiederholen</translation>
 <translation id="6881240511396774766">Schnell ein neues Google-Dokument erstellen</translation>
+<translation id="6883221904761970440">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geschlossen</translation>
 <translation id="6884662655240309489">Größe 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Diese Seite wird in Chrome vereinfacht dargestellt, damit sie leichter zu lesen ist. Die Originalseite hat Chrome über eine unsichere Verbindung abgerufen.</translation>
@@ -1935,6 +1939,7 @@ Weitere Details:
 <translation id="8100588592594801589">Die ungültigen Karten wurden entfernt</translation>
 <translation id="8103161714697287722">Zahlungsmethode</translation>
 <translation id="8105368624971345109">Deaktivieren</translation>
+<translation id="810875025413331850">Keine Geräte in der Nähe gefunden.</translation>
 <translation id="8118489163946903409">Zahlungsmethode</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" war nicht ordnungsgemäß auf Ihrem Computer oder im Netzwerk installiert. Bitten Sie Ihren IT-Administrator, das Problem zu lösen.</translation>
 <translation id="8128526133099929547">Sie haben Ihr Passwort gerade auf einer verdächtigen Website eingegeben. Chrome empfiehlt, Ihr Passwort auf <ph name="WEBSITE_1" /> und allen anderen Websites, auf denen Sie es verwendet haben, zu ändern.</translation>
@@ -2109,6 +2114,7 @@ Weitere Details:
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
 <translation id="8761567432415473239">Google Safe Browsing hat vor Kurzem <ph name="BEGIN_LINK" />schädliche Programme<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden.</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
+<translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>
 <translation id="8774457497170244317">Sie haben Ihr Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, Ihre gespeicherten Passwörter für <ph name="WEBSITE_1" /> und alle anderen Websites, auf denen Sie dieses Passwort verwenden, zu prüfen.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>
@@ -2227,6 +2233,7 @@ Weitere Details:
 <translation id="9199905725844810519">Drucken ist blockiert</translation>
 <translation id="9205078245616868884">Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="9207861905230894330">Der Artikel konnte nicht hinzugefügt werden.</translation>
+<translation id="9211470216863457665">Ansicht zum Registrieren für sichere Anmeldedaten für Zahlungen ist geschlossen</translation>
 <translation id="9213433120051936369">Layout anpassen</translation>
 <translation id="9215416866750762878">Eine Anwendung verhindert, dass Chrome eine sichere Internetverbindung zu dieser Website herstellt</translation>
 <translation id="9219103736887031265">Bilder</translation>

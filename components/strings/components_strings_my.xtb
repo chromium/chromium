@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">ဤအကွက်တွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရ။ နောက်ထပ် ထည့်သွင်းမှုများကို ဖယ်ပစ်ပါမည်။</translation>
 <translation id="1101672080107056897">အမှား လုပ်ဆောင်ချက်</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />ကို အမြဲတမ်း ဘာသာပြန်ရန်</translation>
-<translation id="1107591249535594099">အမှန်ခြစ်ထားပါက၊ အမြန်ဖြည့်နိုင်ရန်အတွက် Chrome သည် သင့်ကဒ်၏ မိတ္ထူတစ်စောင်အား ဤစက်ကိရိယာပေါ်တွင် သိမ်းထားလိမ့်မည်။</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> အတွက် ခွင့်ပြုချက်များ ရွေးပါ</translation>
 <translation id="1113869188872983271">&amp;ပြန်စီစဉ်ကို ပြန်လုပ်ရန်</translation>
 <translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
@@ -437,7 +436,6 @@
 <translation id="2491414235131909199">နောက်ဆက်တွဲတစ်ခုက ဤစာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
-<translation id="2495093607237746763">အမှန်ခြစ်ထားပါက၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome သည် သင့်ကဒ်၏ မိတ္ထူကို ဤကိရိယာထဲတွင် သိမ်းထားပါမည်။</translation>
 <translation id="2498091847651709837">ကတ်အသစ်အား ဖတ်ရှုစစ်ဆေးပါ</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2505268675989099013">အကောင့်ကို ကာကွယ်ပါ</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">အလုပ် စာမျက်နှာများ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> သည် သင်၏မိုက်ခရိုဖုန်းကို အသုံးပြုလိုသည်</translation>
 <translation id="3533328374079021623">စာတိုက်ပုံး ၅</translation>
-<translation id="3539171420378717834">ဤစက်ကိရိယာတွင် ထိုကဒ်များ၏ မိတ္တူအား သိမ်းထားရန်</translation>
 <translation id="3552297013052089404">Sans-serif ဖောင့်</translation>
 <translation id="3558573058928565255">နေ့အချိန်</translation>
 <translation id="3566021033012934673">သင်၏ ချိတ်ဆက်မှုမှာ ကိုယ်ပိုင် မဟုတ်ပါ</translation>
@@ -1589,6 +1586,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ခရမ်းပြာ</translation>
 <translation id="6786747875388722282">အိတ်စတန်းရှင်းများ</translation>
+<translation id="678982761784843853">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="679355240208270552">မူလရှာဖွေမှုကို မူဝါဒဖြင့် ဖွင့်မထား၍ လျစ်လျူရှုထားသည်။</translation>
 <translation id="6794951432696553238">ယခုမှစ၍ Windows Hello ကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
@@ -1953,6 +1951,7 @@
 <translation id="8100588592594801589">အကျုံးမဝင်သော ကတ်များကို ဖယ်ရှားပြီးပါပြီ</translation>
 <translation id="8103161714697287722">ငွေပေးချေမှု နည်းလမ်း</translation>
 <translation id="8105368624971345109">ပိတ်ပါ</translation>
+<translation id="810875025413331850">အနီးအနားတွင် ကိရိယာများ မရှိပါ။</translation>
 <translation id="8118489163946903409">ငွေပေးချေမှုစနစ်</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ကို သင်၏ ကွန်ပျူတာ သို့မဟုတ် ကွန်ရက်တွင် မှန်ကန်စွာ ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် သင်၏ IT စီမံခန့်ခွဲသူကို မေးမြန်းပါ။</translation>
 <translation id="8128526133099929547">လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်တစ်ခုတွင် သင့်စကားဝှက်ကို သင်က ယခုလေးတွင် ထည့်လိုက်သည်။ <ph name="WEBSITE_1" /> နှင့် ဤစကားဝှက်အသုံးပြုသည့် အခြားဝဘ်ဆိုက်များသို့သွားပြီး ၎င်းကိုပြောင်းရန် Chrome က အကြံပြုပါသည်။</translation>

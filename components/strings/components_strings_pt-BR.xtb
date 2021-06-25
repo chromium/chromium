@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
 <translation id="1101672080107056897">Ação de erro</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Se esta opção for selecionada, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preenchimento de formulários mais rapidamente.</translation>
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
 <translation id="1123753900084781868">A "Legenda instantânea" não está disponível no momento</translation>
@@ -431,7 +430,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2491414235131909199">Esta página foi bloqueada por uma extensão</translation>
 <translation id="2493640343870896922">Letter Plus</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
-<translation id="2495093607237746763">Se esta opção for selecionada, o Chromium armazenará uma cópia do seu cartão neste dispositivo para preencher de formulários mais rapidamente.</translation>
 <translation id="2498091847651709837">Digitalizar novo cartão</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2505268675989099013">Proteger conta</translation>
@@ -708,7 +706,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3531780078352352885">Páginas da tarefa</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> quer usar seu microfone</translation>
 <translation id="3533328374079021623">Caixa de e-mails 5</translation>
-<translation id="3539171420378717834">Manter uma cópia deste cartão neste dispositivo</translation>
 <translation id="3552297013052089404">Fonte Sans-Serif</translation>
 <translation id="3558573058928565255">Dia</translation>
 <translation id="3566021033012934673">Sua conexão não é particular</translation>
@@ -1581,6 +1578,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
+<translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa padrão não foi ativada pela política.</translation>
 <translation id="6794951432696553238">Confirme seus cartões mais rapidamente usando o Windows Hello de agora em diante</translation>
@@ -1944,6 +1942,7 @@ Mais detalhes:
 <translation id="8100588592594801589">Os cartões inválidos foram removidos</translation>
 <translation id="8103161714697287722">Forma de Pagamento</translation>
 <translation id="8105368624971345109">Desativar</translation>
+<translation id="810875025413331850">Nenhum dispositivo próximo encontrado.</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8127301229239896662">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao administrador de TI para resolver o problema.</translation>
 <translation id="8128526133099929547">Você acabou de digitar sua senha em um site suspeito. O Chrome recomenda acessar <ph name="WEBSITE_1" /> e outros sites em que você usa essa senha para mudá-la agora mesmo.</translation>

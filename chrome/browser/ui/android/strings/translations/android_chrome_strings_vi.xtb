@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
 <translation id="1558391695376153246">Đóng các thẻ Ẩn danh</translation>
-<translation id="1569387923882100876">Thiết bị đã kết nối</translation>
 <translation id="1571304935088121812">Sao chép tên người dùng</translation>
 <translation id="1592864538817356322">Chế độ bảo vệ thông thường:</translation>
-<translation id="1612196535745283361">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. Tính năng truy cập vị trí bị <ph name="BEGIN_LINK" />tắt cho thiết bị này<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
 <translation id="1987739130650180037">Nút <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> muốn ghép nối</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tệp}other{# tệp}}</translation>
 <translation id="2017836877785168846">Xóa lịch sử duyệt web và nội dung tự động hoàn thành trong thanh địa chỉ.</translation>
@@ -399,6 +396,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3522247891732774234">Bản cập nhật có sẵn. Tùy chọn khác</translation>
 <translation id="3524138585025253783">Giao diện người dùng dành cho nhà phát triển</translation>
+<translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>
 <translation id="3542235761944717775">Còn <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Tìm kiếm trong lịch sử duyệt web</translation>
@@ -431,7 +429,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3771033907050503522">Thẻ ẩn danh</translation>
 <translation id="3771290962915251154">Tùy chọn cài đặt này bị tắt do các quyền kiểm soát của cha mẹ đang bật</translation>
 <translation id="3771694256347217732">Điều khoản dịch vụ của Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Bật Bluetooth<ph name="END_LINK" /> để cho phép ghép nối</translation>
 <translation id="3773856050682458546">Dữ liệu cơ bản cùng với thông tin về những trang web bạn truy cập và các ứng dụng bạn dùng</translation>
 <translation id="3775705724665058594">Gửi đến các thiết bị của bạn</translation>
 <translation id="3778956594442850293">Đã thêm vào màn hình chính</translation>
@@ -604,7 +601,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4910889077668685004">Ứng dụng thanh toán</translation>
 <translation id="4913161338056004800">Đặt lại thống kê</translation>
 <translation id="4913169188695071480">Ngừng làm mới</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Nhận trợ giúp<ph name="END_LINK" /> trong khi quét tìm thiết bị…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# trang}other{# trang}}</translation>
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
@@ -653,7 +649,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5215116848420601511">Địa chỉ và phương thức thanh toán lưu trong Google Pay</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5227554086496586518">Nhấn để xem kết quả tìm kiếm</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> muốn quét tìm các thiết bị Bluetooth ở gần và đã tìm thấy các thiết bị sau đây:</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5250483651202458397">Ảnh chụp màn hình. Nhấn để đóng.</translation>
 <translation id="5262378156578470238">Bạn sẽ thấy một thông báo khi tệp này bắt đầu tải xuống vào <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> thẻ đang mở, nhấn để chuyển thẻ}other{<ph name="OPEN_TABS_MANY" /> thẻ đang mở, nhấn để chuyển thẻ}}</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
+<translation id="5409881200985013443">Gửi <ph name="ONE_TIME_CODE" /> trên <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
 <translation id="5423934151118863508">Trang bạn truy cập nhiều nhất sẽ xuất hiện ở đây</translation>
 <translation id="5424588387303617268">Còn trống <ph name="GIGABYTES" /> GB</translation>
@@ -695,7 +691,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5515439363601853141">Mở khóa để xem mật khẩu của bạn</translation>
 <translation id="5517095782334947753">Bạn có dấu trang, lịch sử, mật khẩu và các cài đặt khác từ <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
-<translation id="5527082711130173040">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. <ph name="BEGIN_LINK1" />Cập nhật quyền<ph name="END_LINK1" />. Tính năng truy cập vị trí cũng bị <ph name="BEGIN_LINK2" />tắt cho thiết bị này<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Đã sao chép trang web</translation>
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5556459405103347317">Tải lại</translation>
@@ -743,14 +738,12 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5810288467834065221">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="5810864297166300463">Hỗ trợ trên web</translation>
 <translation id="5814131985548525293">Nhập vào đây hoặc nhấn vào biểu tượng giọng nói để bắt đầu</translation>
-<translation id="5817918615728894473">Ghép nối</translation>
 <translation id="583281660410589416">Không xác định</translation>
 <translation id="5833984609253377421">Chia sẻ liên kết</translation>
 <translation id="5836192821815272682">Đang tải Bản cập nhật Chrome…</translation>
 <translation id="5853623416121554550">đã tạm dừng</translation>
 <translation id="5854512288214985237">Không có số liệu thống kê hoặc báo cáo sự cố nào được gửi cho Google</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome không thể bật bộ điều hợp Bluetooth</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5862731021271217234">Để sử dụng các thẻ từ những thiết bị khác, hãy bật tính năng đồng bộ hóa</translation>
@@ -895,7 +888,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6643649862576733715">Sắp xếp theo lượng dữ liệu tiết kiệm được</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}other{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}}</translation>
 <translation id="6649642165559792194">Xem trước hình ảnh <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome cần có quyền truy cập vị trí để quét tìm thiết bị. <ph name="BEGIN_LINK" />Cập nhật quyền<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659594942844771486">Thẻ</translation>
 <translation id="666731172850799929">Mở trong <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7583262514280211622">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
 <translation id="7593557518625677601">Mở c.đặt Android &amp; bật lại đ.bộ hóa hệ thống Android để b.đầu đồng bộ hóa Chrome</translation>
+<translation id="7594687499944811403">Cho phép <ph name="EMBEDDED_ORIGIN" /> xác minh danh tính của bạn trên <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
 <translation id="7605594153474022051">Đồng bộ hóa không hoạt động</translation>
 <translation id="7606077192958116810">Chế độ thu gọn đang bật. Quản lý chế độ này trong phần Cài đặt.</translation>
 <translation id="7612619742409846846">Đã đăng nhập vào Google bằng</translation>
 <translation id="7619072057915878432">Tải xuống không thành công <ph name="FILE_NAME" /> do lỗi mạng.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Nhận trợ giúp<ph name="END_LINK1" /> hoặc <ph name="BEGIN_LINK2" />quét lại<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
 <translation id="7630202231528827509">URL của nhà cung cấp</translation>
 <translation id="7638584964844754484">Cụm mật khẩu không chính xác</translation>
@@ -1081,7 +1073,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
 <translation id="7882131421121961860">Không tìm thấy nội dung nào khớp</translation>
-<translation id="7884346424584885269">Chrome cần có quyền để quét tìm các thiết bị ở gần. <ph name="BEGIN_LINK" />Cập nhật quyền<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
 <translation id="789763218334337857">Cách sử dụng Chrome</translation>
 <translation id="7903184275147100332">Quá trình này có thể mất ít phút</translation>
@@ -1160,7 +1151,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8349013245300336738">Sắp xếp theo lượng dữ liệu đã dùng</translation>
 <translation id="835847953965672673">Đã khôi phục <ph name="NUMBER_OF_DOWNLOADS" /> tệp đã tải xuống</translation>
 <translation id="8364299278605033898">Xem các trang web phổ biến</translation>
-<translation id="8368027906805972958">Thiết bị không xác định hoặc không được hỗ trợ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> đã sẵn sàng.</translation>
 <translation id="8387617938027387193">Xác minh danh tính của bạn</translation>
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
@@ -1221,7 +1211,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="8683081248374354009">Đặt lại nhóm</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Mức cường độ tín hiệu: # vạch}other{Mức cường độ tín hiệu: # vạch}}</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
@@ -1287,7 +1276,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9108312223223904744">Hỗ trợ dùng điện thoại làm Khóa bảo mật</translation>
 <translation id="9108808586816295166">DNS bảo mật có thể không phải lúc nào cũng hoạt động</translation>
 <translation id="9133397713400217035">Khám phá khi không kết nối Internet</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9155898266292537608">Bạn cũng có thể tìm kiếm bằng cách nhấn nhanh vào một từ</translation>

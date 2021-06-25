@@ -637,6 +637,7 @@
 <translation id="16815041330799488">Tillad ikke, at websites kan se tekst og billeder, der er kopieret til udklipsholderen</translation>
 <translation id="1682548588986054654">Nyt inkognitovindue</translation>
 <translation id="1682867089915960590">Vil du aktivere tastenavigation?</translation>
+<translation id="1684279041537802716">Kontrastfarve</translation>
 <translation id="1686550358074589746">Aktivér glidende indtastning</translation>
 <translation id="168715261339224929">Aktivér synkronisering for at se dine bogmærker på alle dine enheder.</translation>
 <translation id="1688867105868176567">Ville du rydde websitets data?</translation>
@@ -832,6 +833,7 @@
 <translation id="1868193363684582383">"Hey Google"</translation>
 <translation id="1868553836791672080">Kontrol af adgangskode er ikke tilgængelig i Chromium</translation>
 <translation id="1869433484041798909">Knappen Bogmærke</translation>
+<translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
 <translation id="187145082678092583">Færre apps</translation>
 <translation id="1871534214638631766">Vis relaterede oplysninger, når du højreklikker eller trykker længe på indholdet</translation>
 <translation id="1871615898038944731">Din <ph name="DEVICE_TYPE" /> er opdateret</translation>
@@ -907,6 +909,7 @@
 <translation id="1954597385941141174">Websites kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
 <translation id="1954813140452229842">Der opstod en fejl ved anvendelse af deling. Tjek dine loginoplysninger, og prøv igen.</translation>
 <translation id="1956050014111002555">Filen indeholdt flere certifikater, hvoraf ingen af dem blev importeret:</translation>
+<translation id="1956167375087861299">Har ikke tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
 <translation id="1956390763342388273">Denne handling uploader alle filer fra "<ph name="FOLDER_PATH" />". Gør kun dette, hvis du har tillid til websitet.</translation>
 <translation id="1962233722219655970">Denne side bruger en Native Client-app, der ikke virker på din computer.</translation>
 <translation id="1963227389609234879">Slet alle</translation>
@@ -1164,6 +1167,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2229161054156947610">Mere end én time tilbage</translation>
 <translation id="222931766245975952">Fil forkortet</translation>
 <translation id="2230005943220647148">Celsius</translation>
+<translation id="2231160360698766265">Websites kan afspille beskyttet indhold</translation>
 <translation id="2231238007119540260">Hvis du sletter et servercertifikat, gendanner du den sædvanlige sikkerhedskontrol for den server og kræver, at den bruger et gyldigt certifikat.</translation>
 <translation id="2232751457155581899">Websites kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="2232876851878324699">Filen indeholdt ét certifikat, der ikke blev importeret:</translation>
@@ -1351,6 +1355,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="244231003699905658">Ugyldig adresse. Tjek adressen, og prøv igen.</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
+<translation id="2443487764245141020">Det kan også være nødvendigt for websites at identificere din enhed ved hjælp af et id</translation>
 <translation id="2445081178310039857">Udvidelsens rodmappe er påkrævet.</translation>
 <translation id="2445484935443597917">Opret en ny profil</translation>
 <translation id="244641233057214044">Relateret til din søgning</translation>
@@ -1460,6 +1465,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2542050502251273923">Angiver fejlretningsniveauet for netværksforbindelsens administrator og andre tjenester ved brug af ff_debug.</translation>
 <translation id="2544352060595557290">Denne fane</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
+<translation id="2546302722632337735">Tillad ikke, at websites bruger id'er til at afspille beskyttet indhold</translation>
 <translation id="2548347166720081527">Tillod <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nulstil eSIM-profilens cache</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
@@ -2210,6 +2216,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3391482648489541560">filredigering</translation>
 <translation id="3391512812407811893">Prøveperioder til Privacy Sandbox</translation>
 <translation id="339178315942519818">Se notifikationer fra dine chatapps på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="3394850431319394743">Har tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
 <translation id="3396800784455899911">Når du klikker på knappen "Acceptér og fortsæt", accepterer du den behandling, der er beskrevet ovenfor, for disse Google-tjenester.</translation>
 <translation id="339722927132407568">Fryser</translation>
 <translation id="3399432415385675819">Notifikationer deaktiveres</translation>
@@ -2473,7 +2480,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3664511988987167893">Udvidelsesikon</translation>
 <translation id="3665589677786828986">Chrome har registreret, at nogle af dine indstillinger er blevet ændret af et andet program, og har derfor gendannet standardindstillingerne.</translation>
 <translation id="3668801437375206837">Googlere kan medtage yderligere Bluetooth-logfiler i deres feedbackrapporter for at forbedre diagnosticeringen af Bluetooth-problemer. Når denne mulighed er valgt, omfatter din rapport btsnoop- og HCI-logfiler fra din nuværende session. Disse er renset for at fjerne så mange personhenførbare oplysninger som muligt. Det er kun administratorer af Chrome OS-produktgruppen i Listnr, der har adgang til disse. Logfiler ryddes efter 90 dage.</translation>
-<translation id="3668823961463113931">Håndtering</translation>
 <translation id="3670113805793654926">Enheder fra alle leverandører</translation>
 <translation id="3670229581627177274">Slå Bluetooth til</translation>
 <translation id="3672681487849735243">Der blev registreret er fabriksfejl</translation>
@@ -2739,6 +2745,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3928659086758780856">Lavt blækniveau</translation>
 <translation id="3929426037718431833">Disse udvidelser kan se og ændre oplysninger på dette website.</translation>
 <translation id="3930155420525972941">Flyt gruppe til nyt vindue</translation>
+<translation id="3930602610362250897">For at afspille ophavsretligt beskyttet indhold kan det være nødvendigt for websites at benytte en tjeneste til beskyttelse af indhold</translation>
 <translation id="3930737994424905957">Søger efter enheder</translation>
 <translation id="3930968231047618417">Baggrundsfarve</translation>
 <translation id="3933283459331715412">Gendan en slettet adgangskode for <ph name="USERNAME" /></translation>
@@ -2861,6 +2868,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="406070391919917862">Apps i baggrunden</translation>
 <translation id="4061374428807229313">Hvis du vil dele, skal du højreklikke på en mappe i appen Filer og derefter vælge "Del med Parallels Desktop".</translation>
 <translation id="406213378265872299">Tilpasset adfærd</translation>
+<translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">Det netværk, du bruger (<ph name="NETWORK_ID" />), kan kræve, at du går til netværkets loginside.</translation>
 <translation id="4066207411788646768">Tjek din forbindelse for at se tilgængelige printere på dit netværk.</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
@@ -3019,7 +3027,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4268025649754414643">Omsætning af nøgle til kode</translation>
 <translation id="4268670020635416342">Tilføj et navn eller en etiket, f.eks. Arbejde, Privat eller Børn</translation>
 <translation id="4270393598798225102">Version <ph name="NUMBER" /></translation>
-<translation id="4272765551319099134">Der kan ikke oprettes forbindelse til denne side</translation>
+<translation id="4272765551319099134">Der er ingen forbindelse til denne side</translation>
 <translation id="4274667386947315930">Logindata</translation>
 <translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4275291496240508082">Lyd ved opstart</translation>
@@ -3255,6 +3263,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4535127706710932914">Standardprofil</translation>
 <translation id="4535767533210902251">Fingeraftrykslæseren er tasten øverst til højre på dit tastatur. Tryk let på den med en finger.</translation>
 <translation id="4536140153723794651">Websites, der altid kan anvende cookies</translation>
+<translation id="4538163005498287211">Baseret på din baggrund</translation>
 <translation id="4538417792467843292">Slet ord</translation>
 <translation id="4538792345715658285">Installeret af virksomhedspolitik.</translation>
 <translation id="4541123282641193691">Kontoen kunne ikke bekræftes. Prøv igen, eller genstart din Chromebook.</translation>
@@ -3868,7 +3877,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5227679487546032910">Grønblå standardavatar</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5230516054153933099">Vindue</translation>
-<translation id="523271575098439435">Tilføj dine foretrukne sprog for websites. De øverste sprog på listen anvendes til oversættelser.</translation>
 <translation id="5233019165164992427">NaCl-fejlretningsport</translation>
 <translation id="5233231016133573565">Behandling af ID</translation>
 <translation id="5233638681132016545">Ny fane</translation>
@@ -4234,6 +4242,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5627832140542566187">Visningsretning</translation>
 <translation id="562935524653278697">Din administrator har deaktiveret synkroniseringen af bogmærker, historik, adgangskoder og andre indstillinger.</translation>
 <translation id="5631017369956619646">CPU-forbrug</translation>
+<translation id="5631713186079911700">Rydder historikken i søgefeltet</translation>
 <translation id="5632059346822207074">Der er anmodet om tilladelse. Tryk på Ctrl + skåstregtasten for at svare</translation>
 <translation id="5632566673632479864">Din konto, <ph name="EMAIL" />, kan ikke længere være den primære konto. Da denne konto administreres af <ph name="DOMAIN" />, ryddes dine bogmærker, din historik, dine adgangskoder og andre indstillinger fra denne enhed.</translation>
 <translation id="5632592977009207922">Downloader. <ph name="PERCENT_REMAINING" /> % tilbage</translation>
@@ -4538,6 +4547,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5984222099446776634">Besøgt for nylig</translation>
 <translation id="5985458664595100876">Ugyldigt webadresseformat. De understøttede formater er \\server\share og smb://server/share.</translation>
 <translation id="598810097218913399">Fjern tildeling</translation>
+<translation id="5989136665954016134">Åbning af understøttede links</translation>
 <translation id="5990266201903445068">Kun Wi-Fi</translation>
 <translation id="5990386583461751448">Oversat</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}one{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}other{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne disse apps.}}</translation>
@@ -5242,6 +5252,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6787839852456839824">Tastaturgenveje</translation>
 <translation id="6788210894632713004">Upakket udvidelse</translation>
 <translation id="6789592661892473991">Opdel vandret</translation>
+<translation id="678982761784843853">Beskyttede indholds-id'er</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> blev tilføjet eksternt</translation>
 <translation id="6790820461102226165">Tilføj person...</translation>
@@ -5724,6 +5735,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7328867076235380839">Ugyldig kombination</translation>
 <translation id="7329154610228416156">Login mislykkedes, da det er konfigureret til at anvende en webadresse, der ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7334014994694414993">Vælg farvetema for applisten, hylden, Kvikmenu m.m.</translation>
 <translation id="7334274148831027933">Aktivér fastgjort lupvindue</translation>
 <translation id="7335974957018254119">Brug stavekontrol for</translation>
 <translation id="7336799713063880535">Notifikationer blokeres.</translation>
@@ -5766,6 +5778,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7371490947952970241">Du kan deaktivere Placering ved at deaktivere den overordnede placeringsindstilling på denne enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i placeringsindstillingerne.</translation>
 <translation id="7371917887111892735">Faner formindskes til bredden for fastgjorte faner</translation>
 <translation id="7374376573160927383">Administrer USB-enheder</translation>
+<translation id="7374461526650987610">Protokolhåndtering</translation>
 <translation id="7375235221357833624">{0,plural, =1{Genstart enheden inden for en time}one{Genstart enheden inden for # time}other{Genstart enheden inden for # timer}}</translation>
 <translation id="7376553024552204454">Fremhæv musemarkøren, når den bevæger sig</translation>
 <translation id="737728204345822099">En registrering af dit besøg på dette website gemmes muligvis på din sikkerhedsnøgle.</translation>
@@ -5875,6 +5888,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7488682689406685343">Dette website forsøger muligvis at narre dig til at tillade påtrængende notifikationer.</translation>
 <translation id="7489761397368794366">Ring fra din enhed</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
+<translation id="7491962110804786152">fane</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">Udvidelsen <ph name="EXTENSION_NAME" /> indsamler muligvis al den tekst, du indtaster, herunder personlige oplysninger såsom adgangskoder og kreditkortnumre. Vil du bruge denne udvidelse?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -6113,7 +6127,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7737115349420013392">Parrer med "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737948071472253612">Har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Aktiverer et sidepanel i browseren, så du til enhver tid nemt kan få adgang til din læseliste og bogmærker.</translation>
+<translation id="7741307896921365578">Viser et sidepanel i browseren, så du altid nemt kan finde din læseliste og dine bogmærker.</translation>
 <translation id="7742706086992565332">Du kan angive, hvor meget der skal zoomes ind eller ud på bestemte websites</translation>
 <translation id="7742879569460013116">Del link med</translation>
 <translation id="774377079771918250">Vælg, hvor du vil gemme</translation>
@@ -6477,7 +6491,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8107015733319732394">Google Play Butik installeres på din <ph name="DEVICE_TYPE" />. Det kan tage nogle minutter.</translation>
 <translation id="810728361871746125">Skærmopløsning</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ingen tredjepartscookies}=1{1 tredjepartscookie er blokeret}one{# tredjepartscookie er blokeret}other{# tredjepartscookies er blokeret}}</translation>
-<translation id="810875025413331850">Der blev ikke fundet nogen enheder i nærheden.</translation>
 <translation id="8109109153262930486">Standardavatar</translation>
 <translation id="8110489095782891123">Downloader liste over kontakter...</translation>
 <translation id="8113476325385351118">Bloker fortsat dette website, så det ikke kan få fuld kontrol over MIDI-enheder</translation>
@@ -6600,6 +6613,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8241868517363889229">Læse og redigere dine bogmærker</translation>
 <translation id="8242370300221559051">Aktivér Play Butik</translation>
 <translation id="8242426110754782860">Fortsæt</translation>
+<translation id="8243948765190375130">Mediets kvalitet kan være forringet</translation>
 <translation id="8244514732452879619">Det er snart sengetid</translation>
 <translation id="8246776524656196770">Beskyt din sikkerhedsnøgle med en pinkode</translation>
 <translation id="8248050856337841185">&amp;Indsæt</translation>
@@ -7225,7 +7239,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="893298445929867520">Indkøbskurve er skjult. De vises igen, når du foretager ændringer.</translation>
 <translation id="8933960630081805351">&amp;Vis i Finder</translation>
 <translation id="8934732568177537184">Fortsæt</translation>
-<translation id="8938306522009698937">handlers</translation>
 <translation id="8938800817013097409">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="8940081510938872932">Computeren foretager sig for mange ting i øjeblikket. Prøv igen senere.</translation>
 <translation id="8941173171815156065">Tilbagekald tilladelsen "<ph name="PERMISSION" />"</translation>
@@ -7409,6 +7422,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9128870381267983090">Opret forbindelse til netværk</translation>
 <translation id="9130015405878219958">Den angivne tilstand er ugyldig.</translation>
 <translation id="9131487537093447019">Sende beskeder til og modtage beskeder fra Bluetooth-enheder.</translation>
+<translation id="9134066738478820307">Websites kan bruge id'er til at afspille beskyttet indhold</translation>
 <translation id="913411432238655354">Gendan apps ved opstart</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9137157311132182254">Foretrukken søgemaskine</translation>

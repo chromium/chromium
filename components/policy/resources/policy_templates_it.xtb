@@ -367,6 +367,9 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
+<translation id="1503969899251962413">La configurazione del criterio consente di specificare il codice licenza <ph name="PLUGIN_VM_NAME" /> per il dispositivo.
+
+      Questo criterio è stato rimosso dalla versione M94.</translation>
 <translation id="150857982247452081">Consente di impostare un elenco di protocolli, e per ogni protocollo un elenco associato di pattern di origini consentite, che possono lanciare un'applicazione esterna senza chiedere conferma all'utente. Il separatore finale non deve essere incluso nell'elenco di protocolli, quindi usa "skype" anziché "skype:" o "skype://".
 
       Se questo criterio viene impostato, un protocollo sarà autorizzato a lanciare un'applicazione esterna senza chiedere conferma in base al criterio soltanto se il protocollo è nell'elenco e se l'origine del sito che prova a lanciare il protocollo corrisponde a uno dei pattern di origini nell'elenco allowed_origins del protocollo. Se una delle condizioni è falsa, la richiesta di lancio di un protocollo esterno non sarà omessa, in base al criterio.
@@ -394,7 +397,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
 <translation id="152078218786467087">L'ora in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo.</translation>
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
-<translation id="1523587744262636189">Porta 10080 (può essere sbloccata fino al 01/04/2022)</translation>
+<translation id="1523587744262636189">porta 10080 (può essere sbloccata fino al 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="1524243669991877602">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ai criteri a livello di macchina.
 
@@ -2636,7 +2639,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
           Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
 
-          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto alla granularità di un sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi risolvono lo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
+          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
 
           Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà attivato JIT di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se configurato, o JIT di JavaScript sarà attivato per impostazione predefinita.
 
@@ -2986,7 +2989,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su Disattivato, tali log non vengono raccolti né caricati.
 
       Se il criterio non viene impostato su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dai criteri aziendali a livello di utente basati su cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
-<translation id="4911334289324462969">Porta 989 (può essere sbloccata fino al 01/02/2022)</translation>
+<translation id="4911334289324462969">porta 989 (può essere sbloccata fino al 01/02/2022)</translation>
 <translation id="4913065710388638917">Attiva flusso di attestazione per un elenco di URL</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
@@ -3808,7 +3811,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Questo criterio obbligatorio interessa i criteri relativi al cloud in ambito macchina.</translation>
 <translation id="5961137303188584693">Indirizzo MAC NIC integrato del dispositivo</translation>
-<translation id="5963752574792883406">Porta 990 (può essere sbloccata fino al 01/02/2022)</translation>
+<translation id="5963752574792883406">porta 990 (può essere sbloccata fino al 01/02/2022)</translation>
 <translation id="5966615072639944554">Estensioni autorizzate a utilizzare l'API di attestazione da remoto</translation>
 <translation id="596732417280023843">Il nome del profilo di certificato.</translation>
 <translation id="5975765799383881158">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono inviare dei feedback a Google tramite una combinazione di tasti o nella sezione Menu &gt; Guida &gt; Segnala un problema.
@@ -3978,7 +3981,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Ciò espone gli utenti a rischi di sicurezza correlati all'esecuzione del sottosistema audio senza limitazione tramite sandbox.
       Se questo criterio non viene impostato, verrà usata la configurazione predefinita per la sandbox dell'audio, che potrebbe differire in base alla piattaforma.
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
-<translation id="624818583115864448">Porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="6252773211180267325">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
@@ -4605,11 +4608,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="69525503251220566">Parametro che fornisce la funzione di ricerca tramite immagine per il provider di ricerca predefinito</translation>
 <translation id="6953102253399571439">Attiva la stampa PIN per impostazione predefinita</translation>
 <translation id="6956272732789158625">Non consentire a nessun sito di utilizzare la generazione di chiavi</translation>
-<translation id="6959021201443139119">Per i cookie impostati per i domini corrispondenti a questi pattern verrà ripristinato il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono uno stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutti i cookie se questo criterio non viene impostato, il valore predefinito globale sarà la configurazione personale dell'utente.
-
-          Tieni presente che i pattern elencati qui vengono considerati come domini, non URL, quindi non dovresti specificare uno schema o una porta.</translation>
 <translation id="6961602002757991199">Se per il criterio viene impostato un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con il criterio <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Questi criteri impediscono a <ph name="PRODUCT_NAME" /> e al browser alternativo di aprirsi a vicenda.
 
       Se il criterio non viene impostato (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa il criterio come fonte di regole per non cambiare browser.
@@ -5828,7 +5826,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
           Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.
 
-          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto alla granularità di un sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi risolvono lo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
+          Le eccezioni relative ai criteri di JIT di JavaScript verranno applicate soltanto sito per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
 
           Questo criterio viene applicato frame per frame e non si basa esclusivamente sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, ma tale sito carica un frame che contiene sito-due.com, sito-uno.com avrà disattivato JIT di JavaScript, ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se configurato, o JIT di JavaScript sarà attivato per impostazione predefinita.
 
@@ -6234,7 +6232,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se questo criterio non è impostato, la selezione automatica non avviene per nessun sito.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="9068629430243705879">Porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="9073405975862312795">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano i periodi di attività di un utente sul dispositivo.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano e non segnalano i tempi di attività.</translation>

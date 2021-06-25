@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви додатни уноси ће бити одбачени.</translation>
 <translation id="1101672080107056897">Радња због грешке</translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Ако означите ову опцију, Chrome ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
 <translation id="1110994991967754504">Изаберите дозволу: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Опозови промену редоследа</translation>
 <translation id="1123753900084781868">Титл уживо тренутно није доступан</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Додатак блокира ову страницу</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Рашчлањивач JSON датотека</translation>
-<translation id="2495093607237746763">Ако означите ову опцију, Chromium ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
 <translation id="2498091847651709837">Скенирајте нову картицу</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2505268675989099013">Заштити налог</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">Радни листови</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> жели да користи микрофон</translation>
 <translation id="3533328374079021623">5. поштанско сандуче</translation>
-<translation id="3539171420378717834">Задржи копију ове картице на овом уређају</translation>
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
 <translation id="3558573058928565255">Време дана</translation>
 <translation id="3566021033012934673">Веза није приватна</translation>
@@ -1589,6 +1586,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Љубичаста</translation>
 <translation id="6786747875388722282">Додаци</translation>
+<translation id="678982761784843853">ИД-ови заштићеног садржаја</translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="679355240208270552">Занемарује се зато што смернице нису омогућиле подразумевани претраживач.</translation>
 <translation id="6794951432696553238">Од сада брже потврђујте картице уз Windows Hello</translation>
@@ -1952,6 +1950,7 @@
 <translation id="8100588592594801589">Неважеће картице су уклоњене</translation>
 <translation id="8103161714697287722">Начин плаћања</translation>
 <translation id="8105368624971345109">Искључи</translation>
+<translation id="810875025413331850">Није пронађен ниједан уређај у близини.</translation>
 <translation id="8118489163946903409">Начин плаћања</translation>
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
 <translation id="8128526133099929547">Управо сте унели лозинку на обмањујућем сајту. Chrome вам препоручује да одете на <ph name="WEBSITE_1" />, као и на друге сајтове где користите ову лозинку, и да је одмах промените.</translation>

@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1449835205994625556">Ukryj hasło</translation>
 <translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
+<translation id="149095475893949513">Ta strona próbuje pobrać profil konfiguracji.</translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
 <translation id="1509486075633541495">Zaloguj się w witrynie</translation>
@@ -266,6 +267,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="3607167657931203000">Autouzupełnianie</translation>
 <translation id="3609785682760573515">Synchronizuję...</translation>
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
+<translation id="3661160521073045932">Dostępny jest profil konfiguracji</translation>
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3691593122358196899">Utworzono zakładkę w folderze <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Oznacz jako nieprzeczytane</translation>

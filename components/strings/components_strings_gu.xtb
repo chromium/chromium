@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની બધી એન્ટ્રીને કાઢી નાખવામાં આવશે.</translation>
 <translation id="1101672080107056897">ક્રિયામાં ભૂલ</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> નો હંમેશાં અનુવાદ કરો</translation>
-<translation id="1107591249535594099">જો ચેક કરેલું હોય, તો ઝડપથી ફોર્મ ભરવા માટે Chrome આ ઉપકરણ પર તમારા કાર્ડની એક કૉપિ સંગ્રહશે.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">કોઈ એક્સ્ટેન્શન દ્વારા આ પેજને બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="2493640343870896922">લેટર-પ્લસ</translation>
 <translation id="2495083838625180221">JSON વિશ્લેષક</translation>
-<translation id="2495093607237746763">જો ચેક કરેલું હોય, તો ઝડપથી ફોર્મ ભરવા માટે Chromium આ ઉપકરણ પર તમારા કાર્ડની એક કૉપિ સંગ્રહિત કરશે.</translation>
 <translation id="2498091847651709837">નવું કાર્ડ સ્કૅન કરો</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2505268675989099013">એકાઉન્ટ સુરક્ષિત કરો</translation>
@@ -711,7 +709,6 @@
 <translation id="3531780078352352885">જોબ શીટ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> તમારા માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="3533328374079021623">મેઇલબૉક્સ 5</translation>
-<translation id="3539171420378717834">આ ઉપકરણ પર આ કાર્ડની એક કૉપિ રાખો</translation>
 <translation id="3552297013052089404">Sans-Serif ફૉન્ટ</translation>
 <translation id="3558573058928565255">દિવસનો સમય</translation>
 <translation id="3566021033012934673">તમારું કનેક્શન ખાનગી નથી</translation>
@@ -1952,6 +1949,7 @@
 <translation id="8100588592594801589">અમાન્ય કાર્ડ કાઢી નાખવામાં આવ્યાં છે</translation>
 <translation id="8103161714697287722">ચુકવણીની પદ્ધતિ</translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
+<translation id="810875025413331850">નજીકમાં કોઈ ડિવાઇસ ન મળ્યું.</translation>
 <translation id="8118489163946903409">ચુકવણી પદ્ધતિ</translation>
 <translation id="8127301229239896662">તમારા કમ્પ્યુટરમાં અથવા નેટવર્ક પર "<ph name="SOFTWARE_NAME" />" યોગ્ય રીતે ઇન્સ્ટૉલ થયું નથી. તમારા IT વ્યવસ્થાપકને આ સમસ્યા હલ કરવાનું કહો.</translation>
 <translation id="8128526133099929547">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chrome <ph name="WEBSITE_1" /> તેમજ તમે આ પાસવર્ડનો જ્યાં ઉપયોગ કરતા હોય તે અન્ય સાઇટ પર જઈને તેને હમણાં જ બદલવાનો સુઝાવ આપે છે.</translation>

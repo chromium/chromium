@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
+<translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1509486075633541495">Log ind på website</translation>
@@ -268,6 +269,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3607167657931203000">AutoFyld-data</translation>
 <translation id="3609785682760573515">Synkroniserer…</translation>
 <translation id="3638472932233958418">Forudindlæs websider</translation>
+<translation id="3661160521073045932">Der er en tilgængelig konfigurationsprofil</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bogmærket er gemt i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markér som ulæst</translation>

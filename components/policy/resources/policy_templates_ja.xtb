@@ -357,6 +357,9 @@
 
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="1502843533062797703">第三者ソフトウェアからのコードの挿入をブロックする</translation>
+<translation id="1503969899251962413">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。
+
+      このポリシーは M94 で削除されました。</translation>
 <translation id="150857982247452081">ユーザーに許可を求めずに外部アプリケーションを実行できるプロトコルのリストと、各プロトコルに対して許可する提供元のパターンのリストを定義します。プロトコルのリストは、末尾の区切り記号を含めずに指定してください。たとえば「skype:」や「skype://」ではなく「skype」と指定します。
 
       このポリシーを設定した場合、プロトコルがリストで指定されていて、プロトコルを実行するサイトの提供元がそのプロトコルの allowed_origins リストのパターンと一致する場合にのみ、ユーザーに許可を求めずに外部アプリケーションを実行できます。いずれかの条件を満たさない場合、ポリシーによって外部プロトコルの実行プロンプトを省略することはできません。
@@ -4476,11 +4479,6 @@
 <translation id="69525503251220566">既定の検索プロバイダに画像検索機能を提供するパラメータ</translation>
 <translation id="6953102253399571439">デフォルトで PIN の印刷を有効にします</translation>
 <translation id="6956272732789158625">すべてのサイトにキー生成の使用を許可しない</translation>
-<translation id="6959021201443139119">ここで指定したパターンに一致するドメインに設定されている Cookie を、以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻します。以前の動作に戻すと、<ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性のない Cookie は「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」が指定されたものとして扱われます。また、「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」の Cookie に「<ph name="ATTRIBUTE_SECURE_NAME" />」属性は必須ではなくなります。さらに、2 つのサイトが同一サイトかどうかを評価する際に、スキーム比較がスキップされます。詳細については https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies をご覧ください。
-
-          ここで指定したパターンに一致しないドメインの Cookie（またはこのポリシーが未設定の場合はすべての Cookie）には、グローバルなデフォルト値がユーザーの個人設定の値として使用されます。
-
-          ここで指定するパターンは URL ではなくドメインとして扱われるため、スキームやポートは指定しないでください。</translation>
 <translation id="6961602002757991199">このポリシーが有効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> はその URL からサイトリストをダウンロードし、<ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> ポリシーで設定されているものとしてルールを適用します。このポリシーにより、<ph name="PRODUCT_NAME" /> と代替ブラウザの双方で互いに他方を開くことができなくなります。
 
       このポリシーが未設定のままか、無効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> は、このポリシーをブラウザの切り替えを行わないルールの参照元として使用しません。

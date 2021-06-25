@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Si cette case est cochée, une copie de votre carte est stockée sur cet appareil pour compléter les formulaires plus rapidement.</translation>
 <translation id="1110994991967754504">Sélectionnez une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
 <translation id="1123753900084781868">Sous-titres instantanés non disponibles pour l'instant</translation>
@@ -435,7 +434,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2491414235131909199">Cette page a été bloquée par une extension</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analyse de fichiers JSON</translation>
-<translation id="2495093607237746763">Si cette case est cochée, Chromium enregistre une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement les formulaires.</translation>
 <translation id="2498091847651709837">Lire une nouvelle carte</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2505268675989099013">Protéger le compte</translation>
@@ -712,7 +710,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3531780078352352885">Feuilles de travail</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> souhaite utiliser votre micro</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
-<translation id="3539171420378717834">Conserver une copie de cette carte sur cet appareil</translation>
 <translation id="3552297013052089404">Police Sans Serif</translation>
 <translation id="3558573058928565255">Dans la journée</translation>
 <translation id="3566021033012934673">Votre connexion n'est pas privée</translation>
@@ -1590,6 +1587,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
+<translation id="678982761784843853">ID de contenu protégé</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679355240208270552">Règle ignorée, car le moteur de recherche par défaut n'est pas activé par une règle.</translation>
 <translation id="6794951432696553238">Confirmez désormais vos cartes plus rapidement avec Windows Hello</translation>
@@ -1954,6 +1952,7 @@ Informations supplémentaires :
 <translation id="8100588592594801589">Les cartes non valides ont été supprimées</translation>
 <translation id="8103161714697287722">Mode de paiement</translation>
 <translation id="8105368624971345109">Désactiver</translation>
+<translation id="810875025413331850">Aucun appareil à proximité n'a été trouvé.</translation>
 <translation id="8118489163946903409">Mode de paiement</translation>
 <translation id="8127301229239896662">Le logiciel "<ph name="SOFTWARE_NAME" />" n'a pas été installé correctement sur votre ordinateur ou sur votre réseau. Demandez à l'administrateur informatique de résoudre le problème.</translation>
 <translation id="8128526133099929547">Vous venez de saisir votre mot de passe sur un site trompeur. Nous vous recommandons d'accéder à <ph name="WEBSITE_1" /> ainsi qu'à d'autres sites sur lesquels vous utilisez ce mot de passe pour le modifier immédiatement.</translation>

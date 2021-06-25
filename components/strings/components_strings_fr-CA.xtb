@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Chrome conservera une copie de votre carte sur cet appareil pour remplir plus rapidement vos formulaires, lorsque l’option est cochée.</translation>
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
 <translation id="1123753900084781868">La transcription instantanée n'est pas accessible pour le moment</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">Une extension a bloqué cette page</translation>
 <translation id="2493640343870896922">Lettre plus</translation>
 <translation id="2495083838625180221">Analyseur JSON</translation>
-<translation id="2495093607237746763">Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires, lorsque l'option est cochée.</translation>
 <translation id="2498091847651709837">Numériser la nouvelle carte</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2505268675989099013">Protéger le compte</translation>
@@ -708,7 +706,6 @@
 <translation id="3531780078352352885">Feuilles de travail</translation>
 <translation id="3532844647053365774">L'hôte <ph name="HOST" /> veut utiliser votre microphone</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
-<translation id="3539171420378717834">Conserver une copie de cette carte sur cet appareil</translation>
 <translation id="3552297013052089404">Police sans empattement</translation>
 <translation id="3558573058928565255">Pendant la journée</translation>
 <translation id="3566021033012934673">Votre connexion n'est pas privée</translation>
@@ -1581,6 +1578,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
+<translation id="678982761784843853">Identifiants de contenu protégé</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="679355240208270552">Sans effet, car la recherche par défaut n'est pas activée par une politique.</translation>
 <translation id="6794951432696553238">Vérifiez vos cartes plus rapidement en vous servant de Windows Hello à partir de maintenant</translation>
@@ -1944,6 +1942,7 @@ Détails supplémentaires :
 <translation id="8100588592594801589">Les cartes non valides ont été supprimées</translation>
 <translation id="8103161714697287722">Mode de paiement</translation>
 <translation id="8105368624971345109">Désactiver</translation>
+<translation id="810875025413331850">Aucun appareil à proximité n'a été détecté.</translation>
 <translation id="8118489163946903409">Mode de paiement</translation>
 <translation id="8127301229239896662">« <ph name="SOFTWARE_NAME" /> » n'a pas été correctement installé sur votre ordinateur ou votre réseau. Demandez à votre administrateur informatique de résoudre ce problème.</translation>
 <translation id="8128526133099929547">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de visiter <ph name="WEBSITE_1" />, ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>

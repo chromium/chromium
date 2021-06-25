@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
 <translation id="1101672080107056897">Acción incorrecta</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Se se comproba, Chrome almacenará unha copia da túa tarxeta neste dispositivo para completar os formularios máis rápido.</translation>
 <translation id="1110994991967754504">Seleccionar permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Desfacer o cambio de orde</translation>
 <translation id="1123753900084781868">A función Subtítulos instantáneos non está dispoñible nestes intres</translation>
@@ -124,6 +123,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1360955481084547712">Abre unha nova ventá do modo de incógnito para navegar de forma privada</translation>
 <translation id="1363819917331173092">Non ofrecer opción de traducir páxinas escritas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada, polo cal se ignorará o seu valor.</translation>
+<translation id="1368318639262510626">Xogo do dinosauro. Un dinosauro pixelado esquiva cactos e pterodáctilos mentres vai a fume de carozo por unha paisaxe desolada. Cando escoites un sinal de audio, preme Espazo para saltar os obstáculos.</translation>
 <translation id="1374468813861204354">suxestións</translation>
 <translation id="1374692235857187091">Index-4x6 (postal)</translation>
 <translation id="1375198122581997741">Acerca da versión</translation>
@@ -132,6 +132,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1380591466760231819">Dobrez de carta</translation>
 <translation id="138218114945450791">Azul claro</translation>
 <translation id="1382194467192730611">O teu administrador permite utilizar este dispositivo USB</translation>
+<translation id="1384725838384960382">Folla de autenticación da credencial de pagos seguros</translation>
 <translation id="1386623374109090026">Anotacións</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non enviou datos.</translation>
 <translation id="1405567553485452995">Verde claro</translation>
@@ -272,6 +273,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1875512691959384712">Formularios de Google</translation>
 <translation id="187918866476621466">Abrir páxinas de inicio</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
+<translation id="1890171020361705182">Xogo do dinosauro. Un dinosauro pixelado esquiva cactos e pterodáctilos mentres vai a fume de carozo por unha paisaxe desolada. Cando escoites un sinal de audio, toca a pantalla para saltar os obstáculos.</translation>
 <translation id="1898423065542865115">Filtrando</translation>
 <translation id="1901443836186977402">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" />; o seu certificado de seguranza caducou o último día. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión. A data actual do reloxo do teu ordenador é a seguinte: <ph name="CURRENT_DATE" />. É correcta? Se non é así, debes corrixir o reloxo do sistema e despois actualizar esta páxina.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" />; o seu certificado de seguranza caducou hai # días. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión. A data actual do reloxo do teu ordenador é a seguinte: <ph name="CURRENT_DATE" />. É correcta? Se non é así, debes corrixir o reloxo do sistema e despois actualizar esta páxina.}}</translation>
 <translation id="1902576642799138955">Período de validez</translation>
@@ -431,7 +433,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2491414235131909199">Unha extensión bloqueou esta páxina</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizador JSON</translation>
-<translation id="2495093607237746763">Se se marca esta opción, Chromium almacenará unha copia da túa tarxeta neste dispositivo para completar os formularios máis rápido.</translation>
 <translation id="2498091847651709837">Dixitalizar nova tarxeta</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2505268675989099013">Protexer conta</translation>
@@ -708,7 +709,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3531780078352352885">Follas do traballo</translation>
 <translation id="3532844647053365774">O host <ph name="HOST" /> quere usar o teu micrófono</translation>
 <translation id="3533328374079021623">Caixa de correo 5</translation>
-<translation id="3539171420378717834">Manter unha copia desta tarxeta neste dispositivo</translation>
 <translation id="3552297013052089404">Tipo de letra sen serifas</translation>
 <translation id="3558573058928565255">Hora do día</translation>
 <translation id="3566021033012934673">A túa conexión non é privada</translation>
@@ -1014,6 +1014,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4660119392514473465">Agora podes navegar de forma privada sen que os outros usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas, os marcadores e os elementos da lista de lectura.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4673460618347856347">Xogo do dinosauro, comezar partida</translation>
 <translation id="4675657451653251260">Non verás a información de ningún perfil de Chrome no modo de convidado. Podes <ph name="LINK_BEGIN" />iniciar sesión<ph name="LINK_END" /> para acceder á información (como os contrasinais e os métodos de pago) da túa conta de Google.</translation>
 <translation id="467662567472608290">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza contén erros. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4677585247300749148">O URL <ph name="URL" /> quere responder a eventos de accesibilidade</translation>
@@ -1310,6 +1311,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="569000877158168851">O valor de DnsOverHttpsTemplates non é relevante e non se utilizará, a non ser que a política DnsOverHttpsMode se defina como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5694206146481922091">A folla de inscrición da credencial de pagos seguros está aberta</translation>
 <translation id="5695542892312572833">Queres utilizar Windows Hello para verificar e completar a compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Xestiona o contido...</translation>
@@ -1440,6 +1442,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
+<translation id="6211666000885129820">Folla de inscrición da credencial de pagos seguros</translation>
 <translation id="6218753634732582820">Queres eliminar o enderezo de Chromium?</translation>
 <translation id="622039917539443112">Dobrez en paralelo</translation>
 <translation id="6221345481584921695">A navegación segura de Google <ph name="BEGIN_LINK" />detectou software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recentemente. Ás veces, os sitios web que adoitan ser seguros inféctanse con software malicioso. O contido malicioso procede de <ph name="SUBRESOURCE_HOST" />, un coñecido distribuidor de software malicioso.</translation>
@@ -1583,6 +1586,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensións</translation>
+<translation id="678982761784843853">Códigos de identificación de contido protexido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679355240208270552">Ignorouse porque a busca predeterminada non está activada pola política.</translation>
 <translation id="6794951432696553238">A partir de agora, confirma as tarxetas máis rápido con Windows Hello</translation>
@@ -1597,6 +1601,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6865412394715372076">Esta tarxeta non puido verificarse neste momento</translation>
 <translation id="6874604403660855544">&amp;Refacer adición</translation>
 <translation id="6881240511396774766">Crea rapidamente un novo documento de Google</translation>
+<translation id="6883221904761970440">A folla de autenticación da credencial de pagos seguros está pechada</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplificou esta páxina para que sexa máis fácil de ler. Chrome recuperou a páxina orixinal a través dunha conexión insegura.</translation>
@@ -1945,6 +1950,7 @@ Detalles adicionais:
 <translation id="8100588592594801589">Quitáronse as tarxetas non válidas</translation>
 <translation id="8103161714697287722">Método de pago</translation>
 <translation id="8105368624971345109">Desactivar</translation>
+<translation id="810875025413331850">Non se encontraron dispositivos cerca.</translation>
 <translation id="8118489163946903409">Método de pago</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> non se instalou correctamente no teu ordenador ou na rede. Pídelle ao administrador de TI que solucione este problema.</translation>
 <translation id="8128526133099929547">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome recoméndache que vaias a <ph name="WEBSITE_1" /> e outros sitios nos que utilices este contrasinal para cambialo agora.</translation>
@@ -2118,6 +2124,7 @@ Detalles adicionais:
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="8761567432415473239">A navegación segura de Google <ph name="BEGIN_LINK" />atopou programas prexudiciais<ph name="END_LINK" /> recentemente en <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766943070169463815">A folla de autenticación da credencial de pagos seguros está aberta</translation>
 <translation id="8774457497170244317">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refacer eliminación</translation>
@@ -2235,6 +2242,7 @@ Detalles adicionais:
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
+<translation id="9211470216863457665">A folla de inscrición da credencial de pagos seguros está pechada</translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>
 <translation id="9215416866750762878">Unha aplicación está evitando que Chrome se conecte de forma segura a este sitio</translation>
 <translation id="9219103736887031265">Imaxes</translation>

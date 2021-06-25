@@ -1915,6 +1915,7 @@
 <translation id="3027296729579831126">Nearby सह शेअरिंग सुरू करा</translation>
 <translation id="3029466929721441205">शेल्फमध्ये स्टायलस टूल दाखवा</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही आजच अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनच्‍या आधी अपडेट डाउनलोड करणे आवश्यक आहे. तुम्ही इंटरनेटशी कनेक्ट केल्यावर अपडेट आपोआप डाउनलोड होईल.}}</translation>
+<translation id="3030967311408872958">सूर्यास्त ते सूर्योदय</translation>
 <translation id="3031417829280473749">एजंट X</translation>
 <translation id="3031557471081358569">इंपोर्ट करण्यासाठी आयटम निवडा:</translation>
 <translation id="3036327949511794916">हे <ph name="DEVICE_TYPE" /> परत करण्याची डेडलाइन निघून गेली आहे.</translation>
@@ -2470,7 +2471,6 @@
 <translation id="3664511988987167893">एक्स्टेंशन आयकन</translation>
 <translation id="3665589677786828986">Chrome ला आढळले आहे की आपल्या काही सेटिंग्ज दुसर्‍या प्रोग्रामद्वारे दूषित झाल्या होत्या आणि त्यांच्या मूळ डीफॉल्टवर त्या रीसेट केल्या.</translation>
 <translation id="3668801437375206837">ब्लूटूथ समस्यांचे निदान चांगल्या प्रकारे करण्यासाठी, Googlers त्यांच्या फीडबॅक अहवालासह अतिरिक्त ब्लूटूथ लॉगचा समावेश करू शकतात. हा पर्याय निवडल्यास, तुमच्या अहवालात तुमच्या सध्याच्या सत्रातून शक्य तेवढे PII काढून टाकण्यासाठी btsnoop आणि HCI लॉगचा समावेश असेल. या लॉगचा ॲक्सेस Listnr मधील Chrome OS उत्पादन गटाच्या व्यवस्थापकांपर्यंत मर्यादित राहिल. ९० दिवसांनंतर लॉग कायमचे काढून टाकले जातील.</translation>
-<translation id="3668823961463113931">हँडलर</translation>
 <translation id="3670113805793654926">कोणत्याही विक्रेत्याकडील डिव्हाइस</translation>
 <translation id="3670229581627177274">ब्लूटूथ सुरू करा</translation>
 <translation id="3672681487849735243">एक फॅक्टरी एरर शोधली गेली</translation>
@@ -3863,7 +3863,6 @@
 <translation id="5227679487546032910">डीफॉल्ट हिरवट निळा अवतार</translation>
 <translation id="5228579091201413441">सिंक सुरू करा</translation>
 <translation id="5230516054153933099">विंडो</translation>
-<translation id="523271575098439435">वेबसाइटवर तुमच्या प्राधान्य असलेल्या भाषा निवडा. सूचीमधील टॉप भाषा भाषांतर करण्यासाठी वापरली जाईल.</translation>
 <translation id="5233019165164992427">NaCl डीबग पोर्ट</translation>
 <translation id="5233231016133573565">प्रक्रिया आयडी</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
@@ -4111,6 +4110,7 @@
 <translation id="5502500733115278303">Firefox कडून आयातीत</translation>
 <translation id="5502915260472117187">लहान मूल</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि तो हलवण्याची व तुमचा मायक्रोफोन वापरण्याची अनुमती देणे सुरू ठेवा.</translation>
+<translation id="5504909642107847870">गोपनीयता आणि सुरक्षा यांचे पुनरावलोकन</translation>
 <translation id="5505264765875738116">साइट सूचना पाठवण्यास सांगू शकत नाहीत</translation>
 <translation id="5505307013568720083">शाई संपली</translation>
 <translation id="5505794066310932198">कमांडर टॉगल करा</translation>
@@ -4938,6 +4938,7 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - ब्लूटूथ स्कॅन सुरू आहे</translation>
 <translation id="6445450263907939268">तुम्हाला हे बदल नको असल्यास, तुम्ही आपल्या मागील सेटिंग्ज पुनर्संचयित करू शकता.</translation>
 <translation id="6446213738085045933">डेस्कटॉप शॉर्टकट तयार करा</translation>
+<translation id="6447210166804596538">सर्वात महत्त्वाची गोपनीयता आणि सुरक्षा नियंत्रणे यांचे एकाच ठिकाणी पुनरावलोकन करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6450876761651513209">आपल्या गोपनीयतेशी संबंधित सेटिंग्ज बदला</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> आणि दुसरा एक टॅब}other{<ph name="PAGE_TITLE" /> आणि दुसरे # टॅब}}</translation>
@@ -5760,6 +5761,7 @@
 <translation id="7371490947952970241">या डिव्हाइसवरील मुख्य स्थान सेटिंग्ज बंद करून तुम्ही स्थान बंद करू शकता. तुम्ही स्थान सेटिंग्जमध्ये स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेन्सरचा वापरदेखील बंद करू शकता.</translation>
 <translation id="7371917887111892735">टॅब पिन केलेली टॅबच्या रुंदीवर आक्रसतात</translation>
 <translation id="7374376573160927383">USB डिव्हाइस व्यवस्थापित करा</translation>
+<translation id="7374461526650987610">प्रोटोकॉल हँडलर</translation>
 <translation id="7375235221357833624">{0,plural, =1{डिव्हाइस एका तासाच्या आत अपडेट करा}other{डिव्हाइस # तासांच्या आत अपडेट करा}}</translation>
 <translation id="7376553024552204454">माउस कर्सर हलताना हायलाइट करा</translation>
 <translation id="737728204345822099">तुम्ही या साइटला भेट दिल्याचे रेकॉर्ड कदाचित तुमच्या सिक्युरिटी कीमध्ये समाविष्ट केले जाईल.</translation>
@@ -5869,6 +5871,7 @@
 <translation id="7488682689406685343">ही साइट कदाचित तुम्हाला फसवून अनाहूत सूचनांना अनुमती द्यायला लावण्याचा प्रयत्न करत आहे.</translation>
 <translation id="7489761397368794366">तुमच्या डिव्हाइसवरून कॉल करा</translation>
 <translation id="749028671485790643">व्यक्ती <ph name="VALUE" /></translation>
+<translation id="7491962110804786152">टॅब</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{एक कुकी}other{{NUM_COOKIES} कुकी}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> एक्स्टेंशन पासवर्ड आणि क्रेडिट कार्ड नंबर यासारख्या वैयक्तिक डेटासह तुम्ही टाइप करता तो सर्व मजकूर गोळा करू शकतो.</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -6470,7 +6473,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8107015733319732394">तुमच्या <ph name="DEVICE_TYPE" /> वर Google Play स्टोअर इंस्टॉल करत आहे. यासाठी काही मिनिटे लागतील.</translation>
 <translation id="810728361871746125">डिस्प्ले रिझोल्युशन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{कोणत्याही तृतीय पक्ष कुकी नाहीत}=1{१ तृतीय पक्ष कुकी ब्लॉक केली आहे}other{# तृतीय पक्ष कुकी ब्लॉक केल्या आहेत}}</translation>
-<translation id="810875025413331850">कोणतीही जवळपासची डिव्हाइस आढळली नाहीत.</translation>
 <translation id="8109109153262930486">डीफॉल्ट अवतार</translation>
 <translation id="8110489095782891123">संपर्क सूची डाउनलोड करत आहे...</translation>
 <translation id="8113476325385351118">या साइटला MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्यापासून ब्लॉक करणे पुढे सुरू ठेवा</translation>
@@ -6938,6 +6940,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8655972064210167941">साइन-इन अयशस्वी झाले कारण तुमचा पासवर्डची पडताळणी करणे शक्य झाले नाही. कृपया तुमच्या ॲडमिनिस्ट्रेटरला संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
 <translation id="8657393004602556571">तुम्हाला फीडबॅक काढून टाकायचा आहे का?</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> तुमची स्क्रीन आणि ऑडिओ <ph name="TAB_NAME" /> सह शेअर करीत आहे.</translation>
+<translation id="8660073998956001352">तुमचे शोध इंजीन</translation>
 <translation id="8661290697478713397">गुप्त विंडोमध्ये लिंक उघडा</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8662795692588422978">लोक </translation>
@@ -7127,6 +7130,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846163936679269230">eSIM प्रोफाइल रीसेट करा</translation>
+<translation id="8846746259444262774">इंस्टॉल करता आले नाही</translation>
 <translation id="8847523528195140327">कव्हर बंद केल्यावर साइन आउट करा</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
@@ -7215,7 +7219,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="893298445929867520">कार्ट लपवल्या आहेत. तुम्ही बदल केल्यावर त्या पुन्हा दिसतील.</translation>
 <translation id="8933960630081805351">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="8934732568177537184">सुरू ठेवा</translation>
-<translation id="8938306522009698937">हँडलर</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8940081510938872932">तुमचे कॉंप्युटर यावेळी असंख्य गोष्‍टी करत आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>

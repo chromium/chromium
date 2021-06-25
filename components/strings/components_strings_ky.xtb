@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Бул талаага киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек. Ашыкча маанилер жоюлат.</translation>
 <translation id="1101672080107056897">Ката аракет</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
-<translation id="1107591249535594099">Эгер белгиленсе, форманы тезирээк толтуруу үчүн Chrome картаңыздын көчүрмөсүн ушул түзмөккө сактайт.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> уруксатын тандоо</translation>
 <translation id="1113869188872983271">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="1123753900084781868">Ыкчам коштомо жазуулар учурда жеткиликтүү эмес</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Бул баракты кеңейтүү бөгөттөп койду</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Талдоочу</translation>
-<translation id="2495093607237746763">Эгер белгиленсе, форманы тезирээк толтуруу үчүн карточкаңыздын көчүрмөсүн Chromium ушул түзмөккө сактап коёт.</translation>
 <translation id="2498091847651709837">Жаңы картаны скандоо</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2505268675989099013">Аккаунттун коопсуздугун коргоо</translation>
@@ -711,7 +709,6 @@
 <translation id="3531780078352352885">Жумуш барактары</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> микрофонуңузду колдонгону жатат</translation>
 <translation id="3533328374079021623">5-электрондук каттар кутусу</translation>
-<translation id="3539171420378717834">Бул картанын көчүрмөсү ушул түзмөктө сакталсын</translation>
 <translation id="3552297013052089404">Sans-serif ариби</translation>
 <translation id="3558573058928565255">Күндүз</translation>
 <translation id="3566021033012934673">Туташууңуз купуя эмес</translation>
@@ -1589,6 +1586,7 @@
 <translation id="6775759552199460396">JIS B2 (515mm x 728mm)</translation>
 <translation id="67862343314499040">Кызгылт көк</translation>
 <translation id="6786747875388722282">Кеңейтүүлөр</translation>
+<translation id="678982761784843853">Корголгон Content ID'лер</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="679355240208270552">Четке кагылды, себеби демейки издөө саясат тарабынан иштетилген эмес.</translation>
 <translation id="6794951432696553238">Мындан ары Windows Hello функциясын колдонуп, карталарды тезирээк ырастаңыз</translation>
@@ -1952,6 +1950,7 @@
 <translation id="8100588592594801589">Жараксыз карталар өчүрүлдү</translation>
 <translation id="8103161714697287722">Төлөм ыкмасы</translation>
 <translation id="8105368624971345109">Өчүрүү</translation>
+<translation id="810875025413331850">Жакынкы түзмөктөр табылган жок.</translation>
 <translation id="8118489163946903409">Төлөм ыкмасы</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" программасы компьютериңизге же тармагыңызга туура орнотулган эмес. Бул маселени чечүү үчүн IT администраторуңузга кайрылыңыз.</translation>
 <translation id="8128526133099929547">Сырсөзүңүздү жаңы эле адаштыруучу сайтта киргиздиңиз. Chrome ушул сырсөздү колдонгон <ph name="WEBSITE_1" /> жана башка сайттарга өтүп, аны азыр өзгөртүүнү сунуштайт.</translation>

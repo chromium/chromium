@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
 <translation id="1101672080107056897">错误操作</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">选中后，Chrome 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
 <translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
@@ -124,6 +123,7 @@
 <translation id="1360955481084547712">若要私密地浏览网页，请打开一个新的无痕式窗口</translation>
 <translation id="1363819917331173092">不询问是否翻译<ph name="SOURCE_LANGUAGE" />网页</translation>
 <translation id="1364822246244961190">此政策已被禁用，其值也会被忽略。</translation>
+<translation id="1368318639262510626">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1374468813861204354">建议</translation>
 <translation id="1374692235857187091">Index-4x6 (Postcard)</translation>
 <translation id="1375198122581997741">关于版本</translation>
@@ -132,6 +132,7 @@
 <translation id="1380591466760231819">包芯折</translation>
 <translation id="138218114945450791">浅蓝色</translation>
 <translation id="1382194467192730611">您的管理员允许使用的 USB 设备</translation>
+<translation id="1384725838384960382">安全付款凭据身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1405567553485452995">浅绿色</translation>
@@ -269,6 +270,7 @@
 <translation id="1875512691959384712">Google 表单</translation>
 <translation id="187918866476621466">打开启动页</translation>
 <translation id="1883255238294161206">收起列表</translation>
+<translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1898423065542865115">过滤</translation>
 <translation id="1901443836186977402">{1,plural, =1{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在昨天过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}other{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在 # 天前过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}}</translation>
 <translation id="1902576642799138955">有效期</translation>
@@ -428,7 +430,6 @@
 <translation id="2491414235131909199">此页面已被某个扩展程序屏蔽</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 解析器</translation>
-<translation id="2495093607237746763">选中后，Chromium 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="2498091847651709837">扫描新的信用卡</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2505268675989099013">保护帐号</translation>
@@ -702,7 +703,6 @@
 <translation id="3531780078352352885">工作表</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 想使用您的麦克风</translation>
 <translation id="3533328374079021623">信箱 5</translation>
-<translation id="3539171420378717834">在此设备上保存此信用卡的副本</translation>
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
 <translation id="3558573058928565255">日间</translation>
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
@@ -815,7 +815,7 @@
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3963837677003247395">以手动方式继续？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
-<translation id="3970481983430640194">现在，您可以拖动此应用并调整它的大小了</translation>
+<translation id="3970481983430640194">现在，您可以通过拖动来调整此应用的大小了</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3973357910713125165">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
@@ -1002,6 +1002,7 @@
 <translation id="4660119392514473465">现在，您便可进行私密浏览了。与您共用此设备的其他用户将不会看到您的活动，但您的下载内容、书签和阅读清单项将会保存在此设备上。</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">虚拟实境</translation>
+<translation id="4673460618347856347">恐龙游戏，玩</translation>
 <translation id="4675657451653251260">在访客模式下，您无法查看任何 Chrome 个人资料的信息。您可<ph name="LINK_BEGIN" />登录<ph name="LINK_END" />以访问您的 Google 帐号信息（例如密码和付款方式）。</translation>
 <translation id="467662567472608290">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书有误。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 想对无障碍事件做出响应</translation>
@@ -1298,6 +1299,7 @@
 <translation id="5689199277474810259">导出为 JSON 格式</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates 值不相关，因此不会被使用，除非 DnsOverHttpsMode 政策设为“<ph name="SECURE_DNS_MODE_AUTOMATIC" />”或“<ph name="SECURE_DNS_MODE_SECURE" />”。</translation>
+<translation id="5694206146481922091">安全付款凭据注册表单已打开</translation>
 <translation id="5695542892312572833">使用 Windows Hello 验证并完成您的购买交易？</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="570530837424789914">管理…</translation>
@@ -1427,6 +1429,7 @@
 <translation id="6180316780098470077">重试间隔</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
+<translation id="6211666000885129820">安全付款凭据注册表单</translation>
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
@@ -1570,6 +1573,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786747875388722282">扩展程序</translation>
+<translation id="678982761784843853">受保护内容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679355240208270552">由于政策未启用默认搜索引擎，因此政策值已被忽略。</translation>
 <translation id="6794951432696553238">从现在开始，您只需使用 Windows Hello 便能更快速地确认银行卡</translation>
@@ -1584,6 +1588,7 @@
 <translation id="6865412394715372076">暂时无法验证此信用卡</translation>
 <translation id="6874604403660855544">恢复添加(&amp;R)</translation>
 <translation id="6881240511396774766">快速创建一个新的 Google 文档</translation>
+<translation id="6883221904761970440">安全付款凭据身份验证表单已关闭</translation>
 <translation id="6884662655240309489">大小：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已简化该页面，让内容更易于阅读，并且通过不安全的连接检索到了原始网页。</translation>
@@ -1932,6 +1937,7 @@
 <translation id="8100588592594801589">无效的卡已被移除</translation>
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8105368624971345109">关闭</translation>
+<translation id="810875025413331850">未找到附近的设备。</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8128526133099929547">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" /> 以及使用此密码的其他网站更改密码。</translation>
@@ -2106,6 +2112,7 @@
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
 <translation id="8761567432415473239">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />发现了有害程序<ph name="END_LINK" />。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
+<translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>
 <translation id="8774457497170244317">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" /> 以及使用此密码的其他网站检查您保存的密码。</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">恢复删除(&amp;R)</translation>
@@ -2223,6 +2230,7 @@
 <translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
+<translation id="9211470216863457665">安全付款凭据注册表单已关闭</translation>
 <translation id="9213433120051936369">自定义外观</translation>
 <translation id="9215416866750762878">有一款应用正在阻止 Chrome 安全地连接到此网站</translation>
 <translation id="9219103736887031265">图片</translation>

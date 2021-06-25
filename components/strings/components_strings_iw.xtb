@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
 <translation id="1101672080107056897">פעולת שגיאה</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
-<translation id="1107591249535594099">‏אם האפשרות הזו מסומנת, Chrome ישמור עותק של הכרטיס במכשיר הזה כדי למלא טפסים במהירות רבה יותר.</translation>
 <translation id="1110994991967754504">צריך לבחור את ההרשאה של <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;ביטול של שינוי סדר</translation>
 <translation id="1123753900084781868">הכתוביות המיידיות לא זמינות עכשיו.</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">הדף הזה נחסם על ידי תוסף כלשהו</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">‏מנתח JSON</translation>
-<translation id="2495093607237746763">‏אם האפשרות תסומן, Chromium ישמור עותק של הכרטיס במכשיר הזה כדי למלא טפסים במהירות רבה יותר.</translation>
 <translation id="2498091847651709837">סריקת כרטיס חדש</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2505268675989099013">הגנה על החשבון</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">גיליונות עבודה</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> רוצה להשתמש במיקרופון שלך</translation>
 <translation id="3533328374079021623">תיבת דואר 5</translation>
-<translation id="3539171420378717834">שמירת עותק של הכרטיס במכשיר הזה</translation>
 <translation id="3552297013052089404">‏גופן Sans-Serif</translation>
 <translation id="3558573058928565255">שעות היום</translation>
 <translation id="3566021033012934673">החיבור שלך אינו פרטי</translation>
@@ -1593,6 +1590,7 @@ Del</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
 <translation id="6786747875388722282">תוספים</translation>
+<translation id="678982761784843853">‏מזהי Content ID מוגנים</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="679355240208270552">המערכת התעלמה מערך מדיניות זה, משום שלפי המדיניות חיפוש ברירת המחדל מושבת.</translation>
 <translation id="6794951432696553238">‏כדי לאשר את הכרטיסים שלך מהר יותר, ניתן להשתמש ב-Windows Hello מעכשיו והלאה</translation>
@@ -1956,6 +1954,7 @@ Del</translation>
 <translation id="8100588592594801589">הכרטיסים שאינם בתוקף הוסרו</translation>
 <translation id="8103161714697287722">אמצעי תשלום</translation>
 <translation id="8105368624971345109">כיבוי</translation>
+<translation id="810875025413331850">לא נמצאו מכשירים קרובים.</translation>
 <translation id="8118489163946903409">אמצעי תשלום</translation>
 <translation id="8127301229239896662">‏הייתה בעיה בהתקנה של "<ph name="SOFTWARE_NAME" />" במחשב שלך או ברשת. יש לבקש ממנהל ה-IT לפתור את הבעיה.</translation>
 <translation id="8128526133099929547">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chrome היא לעבור אל <ph name="WEBSITE_1" /> ואל אתרים אחרים שבהם הסיסמה הזו בשימוש ולשנות אותה עכשיו.</translation>

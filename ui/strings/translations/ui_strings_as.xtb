@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{১ বছৰ পূর্বে}one{# বছৰ পূর্বে}other{# বছৰ পূর্বে}}</translation>
 <translation id="2878511608894704031">সকলো মচক</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{১ দিনত}one{# দিনত}other{# দিনত}}</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> স্তম্ভটো অধঃক্ৰমত সজোৱা হৈছে।</translation>
 <translation id="2931838996092594335">ক্লিক কৰক</translation>
 <translation id="2981684127883932071">পৰামৰ্শ দেখুৱাই থকা হৈছে</translation>
 <translation id="3036649622769666520">ফাইল খোলক</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3909791450649380159">কা&amp;ট কৰক</translation>
 <translation id="3990502903496589789">সোঁ কাষ</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> স্তম্ভটো ঊৰ্ধ্বক্ৰমত সজোৱা হৈছে।</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{১টা নপঢ়া জাননী}one{#টা নপঢ়া জাননী}other{#টা নপঢ়া জাননী}}</translation>
 <translation id="4202807286478387388">পোনপটীয়াকৈ যাওক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
@@ -215,6 +217,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{১ মিনিট বাকী আছে}one{# মিনিট বাকী আছে}other{# মিনিট বাকী আছে}}</translation>
 <translation id="7430878839542012341">এই সন্ধানৰ তথ্য আপোনাৰ ইতিহাসৰ পৰা বিলোপ কৰিব নেকি?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> স্তম্ভ সজোৱা নাই।</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> টি.বি.</translation>
 <translation id="7507604095951736240">ইম’জি</translation>
 <translation id="7620655452534002301">আঁতৰোৱা হ’ল।</translation>

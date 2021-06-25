@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">ამ ველში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს. ყველა დანარჩენი ჩანაწერი გაუქმდება.</translation>
 <translation id="1101672080107056897">შეცდომასთან დაკავშირებული ქმედება</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">თუ მონიშნულია, Chrome ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="1110994991967754504">აირჩიეთ ნებართვა: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">გადალაგების &amp;მოქმედების გაუქმება</translation>
 <translation id="1123753900084781868">ავტოსუბტიტრები ამჟამად მიუწვდომელია</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">ეს გვერდი დაბლოკილია გაფართოების მიერ</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-ის სინტაქსური ანალიზის პროგრამა</translation>
-<translation id="2495093607237746763">მონიშვნის შემთხვევაში, Chromium ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="2498091847651709837">ახალი ბარათების სკანირება</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
 <translation id="2505268675989099013">დაიცავით ანგარიში</translation>
@@ -708,7 +706,6 @@
 <translation id="3531780078352352885">დავალების ფურცლები</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ითხოვს თქვენი მიკროფონის გამოყენების ნებართვას</translation>
 <translation id="3533328374079021623">საფოსტო ყუთი 5</translation>
-<translation id="3539171420378717834">ამ ბარათის ასლის მოწყობილობაში შენახვა</translation>
 <translation id="3552297013052089404">Sans-serif შრიფტი</translation>
 <translation id="3558573058928565255">დღე</translation>
 <translation id="3566021033012934673">თქვენი კავშირი არ არის პირადი</translation>
@@ -1581,6 +1578,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">იისფერი</translation>
 <translation id="6786747875388722282">გაფართოებები</translation>
+<translation id="678982761784843853">დაცული კონტენტის ID-ები</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="679355240208270552">იგნორირებულია, რადგან ნაგულისხმევი ძიებას წესები არ ითვალისწინებს.</translation>
 <translation id="6794951432696553238">დაადასტურეთ ბარათები უფრო სწრაფად ამიერიდან Windows Hello-ს გამოყენების მეშვეობით</translation>
@@ -1944,6 +1942,7 @@
 <translation id="8100588592594801589">არასწორი ბარათები ამოიშალა</translation>
 <translation id="8103161714697287722">გადახდის მეთოდი</translation>
 <translation id="8105368624971345109">გამორთვა</translation>
+<translation id="810875025413331850">ახლომდებარე მოწყობილობები ვერ მოიძებნა.</translation>
 <translation id="8118489163946903409">გადახდის მეთოდი</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />“ არასათანადოდ დაინსტალირდა თქვენს კომპიუტერზე ან ქსელში. სთხოვეთ თქვენს IT ადმინისტრატორს ამ პრობლემის მოგვარება.</translation>
 <translation id="8128526133099929547">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. Chrome გირჩევთ, ახლავე გადახვიდეთ <ph name="WEBSITE_1" />-ზე და სხვა საიტებზე, სადაც ამ პაროლს იყენებთ, შემდეგ კი შეცვალოთ ის.</translation>

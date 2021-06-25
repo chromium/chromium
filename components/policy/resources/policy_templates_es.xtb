@@ -367,6 +367,9 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
+<translation id="1503969899251962413">Si se le asigna un valor a esta política, se especificará la clave de licencia de <ph name="PLUGIN_VM_NAME" /> de este dispositivo.
+
+      Esta política se quitó en la versión M94.</translation>
 <translation id="150857982247452081">Permite definir una lista de protocolos y una lista asociada de patrones de origen permitidos para cada uno de los protocolos, que pueden abrir una aplicación externa sin pedir permiso al usuario. No se debe incluir el separador del final al añadir el protocolo a la lista, así que añade "skype" en lugar de "skype:" o "skype://".
 
       Si se define esta política, un protocolo solo podrá abrir una aplicación externa sin pedir permiso (por política) si está en la lista y si el origen del sitio que intenta iniciar el protocolo coincide con uno de los patrones de origen de la lista allowed_origins del protocolo. Si no se cumple alguna de estas condiciones, esta política no omitirá la solicitud para iniciar el protocolo externo.
@@ -4658,11 +4661,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imagen para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilitar de manera predeterminada la impresión con PIN</translation>
 <translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
-<translation id="6959021201443139119">Las cookies establecidas para los dominios que coincidan con estos patrones recuperarán la antigua configuración de comportamiento de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si se restablece la configuración de comportamiento antigua, las cookies que no especifiquen ningún atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si tuvieran "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" y las cookies "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" no necesitarán tener el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />". Además, se omitirá la comparación de esquemas cuando se evalúe si dos sitios web son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
-
-          Para las cookies de dominios que no coincidan con los patrones indicados, o para todas las cookies si no se define esta política, se usará el valor predeterminado global de la configuración personal del usuario.
-
-          Nota: Los patrones que indiques aquí se tratarán como dominios, no como URLs, así que no especifiques esquemas ni puertos.</translation>
 <translation id="6961602002757991199">Si se define esta política como una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Estas políticas evitarán que <ph name="PRODUCT_NAME" /> y el navegador alternativo se abran entre sí.
 
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no la usará como fuente de reglas para no cambiar de navegador.

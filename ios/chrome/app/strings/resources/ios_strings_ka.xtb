@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1449835205994625556">პაროლის დამალვა</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ელემენტი</translation>
+<translation id="149095475893949513">ეს ვებსაიტი კონფიგურაციის პროფილის ჩამოტვირთვას ცდილობს.</translation>
 <translation id="1491277525950327607">პარამეტრის გადასართავად, შეეხეთ ორმაგად</translation>
 <translation id="1492417797159476138">მომხმარებლის ეს სახელი ამ საიტისთვის უკვე შეინახეთ</translation>
 <translation id="1509486075633541495">ვებსაიტში შესვლა</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">ავტომატური შევსების მონაცემები</translation>
 <translation id="3609785682760573515">სინქრონიზაცია…</translation>
 <translation id="3638472932233958418">ვებგვერდების წინასწარი ჩატვირთვა</translation>
+<translation id="3661160521073045932">ხელმისაწვდომია კონფიგურაციის პროფილი</translation>
 <translation id="3670030362669914947">ნომერი</translation>
 <translation id="3691593122358196899">სანიშნე შენახულია „<ph name="FOLDER_TITLE" />“-ში</translation>
 <translation id="3709582977625132201">წაუკითხავად მონიშვნა</translation>

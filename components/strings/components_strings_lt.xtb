@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Šiame lauke negali būti daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Visi šį apribojimą viršijantys įrašai bus atmesti.</translation>
 <translation id="1101672080107056897">Klaidos veiksmas</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Jei pažymėta, „Chrome“ išsaugos kortelės kopiją įrenginyje, kad galėtumėte greičiau užpildyti formas.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
 <translation id="1123753900084781868">Subtitrų realiuoju laiku funkcija dabar nepasiekiama</translation>
@@ -435,7 +434,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2491414235131909199">Šį puslapį užblokavo plėtinys</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON analizavimo įrankis</translation>
-<translation id="2495093607237746763">Jei pažymėta, „Chromium“ išsaugos kortelės kopiją įrenginyje, kad galėtumėte greičiau užpildyti formas.</translation>
 <translation id="2498091847651709837">Nuskaityti naują kortelę</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2505268675989099013">Apsaugoti paskyrą</translation>
@@ -713,7 +711,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3531780078352352885">Užduoties lapai</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> nori naudoti mikrofoną</translation>
 <translation id="3533328374079021623">5 pašto dėžutė</translation>
-<translation id="3539171420378717834">Išsaugoti kortelės kopiją įrenginyje</translation>
 <translation id="3552297013052089404">Šriftas be užraitų</translation>
 <translation id="3558573058928565255">Dienos metas</translation>
 <translation id="3566021033012934673">Jūsų ryšys nėra privatus</translation>
@@ -1591,6 +1588,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violetinė</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
+<translation id="678982761784843853">Apsaugoto turinio ID</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="679355240208270552">Nepaisoma, nes numatytoji paieška neįgalinta pagal politiką.</translation>
 <translation id="6794951432696553238">Nuo šiol patvirtinkite korteles greičiau su „Windows Hello“</translation>
@@ -1954,6 +1952,7 @@ Papildoma išsami informacija:
 <translation id="8100588592594801589">Netinkamos kortelės pašalintos</translation>
 <translation id="8103161714697287722">Mokėjimo metodas</translation>
 <translation id="8105368624971345109">Išjungti</translation>
+<translation id="810875025413331850">Netoliese esančių įrenginių nerasta.</translation>
 <translation id="8118489163946903409">Mokėjimo metodas</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />“ nebuvo tinkamai įdiegta kompiuteryje ar tinkle. Kreipkitės į IT administratorių, kad ši problema būtų išspręsta.</translation>
 <translation id="8128526133099929547">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chrome“ rekomenduoja dabar apsilankyti <ph name="WEBSITE_1" /> ir kitose svetainėse, kuriose naudojate šį slaptažodį, ir jį pakeisti.</translation>

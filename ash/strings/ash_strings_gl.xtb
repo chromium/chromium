@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Introduce este código PIN nese dispositivo: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">Seleccionouse unha captura de pantalla parcial</translation>
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
+<translation id="1036073649888683237">Para xestionar as notificacións vai a Configuración</translation>
 <translation id="1036672894875463507">Son o teu Asistente de Google e estou aquí para botarche unha man ao longo do día.
 Para comezar, podes probar o seguinte.</translation>
 <translation id="1037492556044956303">Engadiuse <ph name="DEVICE_NAME" /></translation>
@@ -551,6 +552,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Realizouse unha gravación da pantalla</translation>
 <translation id="5322611492012084517">Non puidemos atopar o teu teléfono</translation>

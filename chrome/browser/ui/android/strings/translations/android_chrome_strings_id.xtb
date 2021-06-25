@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Beralih ke jendela lain</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
-<translation id="1569387923882100876">Perangkat yang Terhubung</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
 <translation id="1592864538817356322">Perlindungan standar:</translation>
-<translation id="1612196535745283361">Chrome memerlukan akses lokasi untuk memindai perangkat. Akses lokasi <ph name="BEGIN_LINK" />dinonaktifkan untuk perangkat ini<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1986685561493779662">Nama sudah ada</translation>
 <translation id="1987739130650180037">Tombol <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> ingin menyandingkan</translation>
 <translation id="2000419248597011803">Mengirimkan beberapa cookie dan penelusuran dari kolom URL dan kotak penelusuran ke mesin telusur default</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# File}}</translation>
 <translation id="2017836877785168846">Hapus histori dan pelengkapan otomatis di kolom URL.</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3518985090088779359">Terima &amp; lanjutkan</translation>
 <translation id="3522247891732774234">Pembaruan tersedia. Opsi lainnya</translation>
 <translation id="3524138585025253783">UI Developer</translation>
+<translation id="3524334353996115845">Izinkan <ph name="ORIGIN" /> memverifikasi diri Anda</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
 <translation id="3549657413697417275">Telusuri histori penggunaan</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3771033907050503522">Tab Samaran</translation>
 <translation id="3771290962915251154">Setelan ini dinonaktifkan karena kontrol orang tua aktif</translation>
 <translation id="3771694256347217732">Persyaratan Layanan Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Aktifkan Bluetooth<ph name="END_LINK" /> untuk mengizinkan penyambungan</translation>
 <translation id="3773856050682458546">Data dasar ditambah informasi tentang situs yang Anda kunjungi dan aplikasi yang Anda gunakan</translation>
 <translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3778956594442850293">Ditambahkan ke Layar utama</translation>
@@ -604,7 +601,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4910889077668685004">Aplikasi pembayaran</translation>
 <translation id="4913161338056004800">Reset statistik</translation>
 <translation id="4913169188695071480">Hentikan refresh</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /> saat memindai perangkat…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# Halaman}other{# Halaman}}</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Sandi Anda akan diekspor dan didownload sebagai file teks. Sandi akan dapat dilihat oleh semua orang dan semua aplikasi yang memiliki akses ke folder tujuan.</translation>
@@ -653,7 +649,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5215116848420601511">Metode pembayaran dan alamat yang menggunakan Google Pay</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5227554086496586518">Ketuk untuk melihat hasil penelusuran</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> ingin memindai perangkat Bluetooth di sekitar. Perangkat berikut telah ditemukan:</translation>
 <translation id="5233638681132016545">Tab baru</translation>
 <translation id="5250483651202458397">Screenshot. Ketuk untuk menutup.</translation>
 <translation id="5262378156578470238">Anda akan melihat notifikasi saat download ini dimulai pada <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketuk untuk beralih tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketuk untuk beralih tab}}</translation>
 <translation id="5375577065097716013">Telusuri gambar dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Hanya izinkan situs tertentu</translation>
+<translation id="5409881200985013443">Kirim <ph name="ONE_TIME_CODE" /> di <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Memverifikasi...</translation>
 <translation id="5423934151118863508">Halaman yang paling sering dikunjungi akan muncul di sini</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tersedia</translation>
@@ -695,7 +691,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5515439363601853141">Buka kunci untuk melihat sandi Anda</translation>
 <translation id="5517095782334947753">Anda memiliki bookmark, histori, sandi, dan setelan lain dari <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Pengalihan diblokir.</translation>
-<translation id="5527082711130173040">Chrome memerlukan akses lokasi untuk memindai perangkat. <ph name="BEGIN_LINK1" />Perbarui izin<ph name="END_LINK1" />. Akses lokasi juga <ph name="BEGIN_LINK2" />dinonaktifkan untuk perangkat ini<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Situs disalin</translation>
 <translation id="5548606607480005320">Pemeriksaan keamanan</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
@@ -743,14 +738,12 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5810288467834065221">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="5810864297166300463">Bantuan Web</translation>
 <translation id="5814131985548525293">Ketik di sini atau ketuk ikon suara untuk memulai</translation>
-<translation id="5817918615728894473">Sandingkan</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5833984609253377421">Bagikan link</translation>
 <translation id="5836192821815272682">Mendownload Update Chrome…</translation>
 <translation id="5853623416121554550">dijeda</translation>
 <translation id="5854512288214985237">Tidak ada statistik atau laporan kerusakan yang dikirim ke Google</translation>
 <translation id="5855546874025048181">Saring: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome tidak dapat mengaktifkan adaptor Bluetooth</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5862731021271217234">Untuk membuka tab dari perangkat Anda yang lain, aktifkan sinkronisasi</translation>
@@ -895,7 +888,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6643649862576733715">Urutkan menurut jumlah kuota yang dihemat</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
 <translation id="6649642165559792194">Lihat pratinjau gambar <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome memerlukan akses lokasi untuk memindai perangkat. <ph name="BEGIN_LINK" />Perbarui izin<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Buka di <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7583262514280211622">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="7588219262685291874">Mengaktifkan tema gelap saat mode Penghemat Baterai perangkat aktif</translation>
 <translation id="7593557518625677601">Buka setelan Android dan aktifkan kembali sinkronisasi sistem Android untuk memulai Sinkronisasi Chrome</translation>
+<translation id="7594687499944811403">Izinkan <ph name="EMBEDDED_ORIGIN" /> memverifikasi diri Anda untuk <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistem operasi</translation>
 <translation id="7605594153474022051">Sinkronisasi tidak berfungsi</translation>
 <translation id="7606077192958116810">Mode Ringan aktif. Kelola di Setelan.</translation>
 <translation id="7612619742409846846">Login ke Google sebagai</translation>
 <translation id="7619072057915878432">Download <ph name="FILE_NAME" /> gagal karena kesalahan jaringan.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Dapatkan bantuan<ph name="END_LINK1" /> atau <ph name="BEGIN_LINK2" />pindai ulang<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7630202231528827509">URL Penyedia</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
@@ -1081,7 +1073,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7876243839304621966">Hapus semua</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda memiliki <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman yang belum dibaca}other{Anda memiliki <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman yang belum dibaca}}</translation>
 <translation id="7882131421121961860">Tidak ada histori</translation>
-<translation id="7884346424584885269">Chrome memerlukan izin untuk memindai perangkat di sekitar. <ph name="BEGIN_LINK" />Perbarui izin<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Berjalan di Chrome</translation>
 <translation id="789763218334337857">Cara menggunakan Chrome</translation>
 <translation id="7903184275147100332">Mungkin perlu waktu beberapa saat</translation>
@@ -1160,7 +1151,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8349013245300336738">Urutkan menurut jumlah kuota yang digunakan</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
 <translation id="8364299278605033898">Lihat situs yang populer</translation>
-<translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Bahasa <ph name="LANG" /> sudah siap.</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
@@ -1221,7 +1211,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="867767487203716855">Update berikutnya</translation>
 <translation id="8683039184091909753">gambar</translation>
 <translation id="8683081248374354009">Reset grup</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Tingkat Kekuatan Sinyal: # batang}other{Tingkat Kekuatan Sinyal: # batang}}</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8712637175834984815">Mengerti</translation>
@@ -1287,7 +1276,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="9108312223223904744">Dukungan Ponsel sebagai Kunci Keamanan</translation>
 <translation id="9108808586816295166">DNS aman mungkin tidak tersedia sepanjang waktu</translation>
 <translation id="9133397713400217035">Jelajahi Offline</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9155898266292537608">Anda juga dapat menelusuri dengan mengetuk kata secara cepat</translation>

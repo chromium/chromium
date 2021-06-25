@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
 <translation id="1101672080107056897">Eroare privind acțiunea</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Dacă este bifată opțiunea, Chrome va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
 <translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
@@ -435,7 +434,6 @@
 <translation id="2491414235131909199">Pagina a fost blocată de o extensie</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizor JSON</translation>
-<translation id="2495093607237746763">Dacă opțiunea este bifată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2498091847651709837">Scanează un card nou</translation>
 <translation id="2501278716633472235">Înapoi</translation>
 <translation id="2505268675989099013">Protejează contul</translation>
@@ -712,7 +710,6 @@
 <translation id="3531780078352352885">Foile sarcinii</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> dorește să utilizeze microfonul</translation>
 <translation id="3533328374079021623">Căsuța de e-mail 5</translation>
-<translation id="3539171420378717834">Păstrează o copie a cardului pe dispozitiv</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">În timpul zilei</translation>
 <translation id="3566021033012934673">Conexiunea nu este privată</translation>
@@ -1590,6 +1587,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensii</translation>
+<translation id="678982761784843853">ID-uri de conținut protejat</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="679355240208270552">Valoare ignorată, deoarece politica nu a activat căutarea prestabilită.</translation>
 <translation id="6794951432696553238">Confirmă-ți cardurile mai rapid, folosind Windows Hello</translation>
@@ -1953,6 +1951,7 @@ Detalii suplimentare:
 <translation id="8100588592594801589">Cardurile nevalide au fost eliminate</translation>
 <translation id="8103161714697287722">Metodă de plată</translation>
 <translation id="8105368624971345109">Dezactivează</translation>
+<translation id="810875025413331850">Nu a fost găsit niciun dispozitiv în apropiere.</translation>
 <translation id="8118489163946903409">Metodă de plată</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />” nu a fost instalat corect pe computer sau în rețea. Contactează administratorul IT pentru a remedia această problemă.</translation>
 <translation id="8128526133099929547">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>

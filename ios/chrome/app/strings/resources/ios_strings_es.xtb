@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
+<translation id="149095475893949513">Este sitio web está intentando descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Toca dos veces para activar o desactivar esta opción</translation>
 <translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
 <translation id="1509486075633541495">Inicia sesión en el sitio web</translation>
@@ -268,6 +269,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="3607167657931203000">Datos de la función Autocompletar</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
 <translation id="3638472932233958418">Precargar páginas web</translation>
+<translation id="3661160521073045932">Perfil de configuración disponible</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Marcador añadido a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>

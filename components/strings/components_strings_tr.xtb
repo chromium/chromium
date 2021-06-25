@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
 <translation id="1101672080107056897">Hata işlemi</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
-<translation id="1107591249535594099">İşaretlenirse Chrome, formları daha hızlı doldurma amacıyla kartınızın bir kopyasını bu cihazda depolar.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
 <translation id="1123753900084781868">Canlı Altyazı şu anda kullanılamıyor</translation>
@@ -432,7 +431,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2491414235131909199">Bu sayfa bir uzantı tarafından engellendi</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Ayrıştırıcı</translation>
-<translation id="2495093607237746763">İşaretlenirse Chromium, formları daha hızlı doldurma amacıyla kartınızın bir kopyasını bu cihazda depolar.</translation>
 <translation id="2498091847651709837">Yeni kart tara</translation>
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2505268675989099013">Hesabı Koru</translation>
@@ -709,7 +707,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3531780078352352885">İş sayfaları</translation>
 <translation id="3532844647053365774"><ph name="HOST" />, mikrofonunuzu kullanmak istiyor</translation>
 <translation id="3533328374079021623">Posta kutusu 5</translation>
-<translation id="3539171420378717834">Bu kartın bir kopyasını bu cihazda tut</translation>
 <translation id="3552297013052089404">Sans-Serif Yazı Tipi</translation>
 <translation id="3558573058928565255">Gündüz</translation>
 <translation id="3566021033012934673">Bağlantınız gizli değil</translation>
@@ -1583,6 +1580,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mor</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
+<translation id="678982761784843853">Korumalı içerik kimlikleri</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="679355240208270552">Varsayılan arama motoru politika tarafından etkinleştirilmediği için yoksayıldı.</translation>
 <translation id="6794951432696553238">Bundan böyle Windows Hello'yu kullanarak kartlarınızı daha hızlı onaylayın</translation>
@@ -1946,6 +1944,7 @@ Ek ayrıntılar:
 <translation id="8100588592594801589">Geçersiz kartlar kaldırıldı</translation>
 <translation id="8103161714697287722">Ödeme Yöntemi</translation>
 <translation id="8105368624971345109">Kapat</translation>
+<translation id="810875025413331850">Yakında olan cihaz bulunamadı.</translation>
 <translation id="8118489163946903409">Ödeme yöntemi</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
 <translation id="8128526133099929547">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, bu şifreyi kullandığınız <ph name="WEBSITE_1" /> ve diğer sitelere giderek şifrenizi hemen değiştirmenizi öneriyor.</translation>

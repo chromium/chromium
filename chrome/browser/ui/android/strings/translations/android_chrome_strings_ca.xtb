@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Mou a l'altra finestra</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
-<translation id="1569387923882100876">Dispositiu connectat</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1592864538817356322">Protecció estàndard:</translation>
-<translation id="1612196535745283361">Chrome necessita accedir a la ubicació per poder cercar dispositius, però aquesta funció està <ph name="BEGIN_LINK" />desactivada en aquest dispositiu<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1986685561493779662">El nom ja existeix</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> (botó <ph name="LINK_NAME" />)</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> es vol vincular</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
 <translation id="2017836877785168846">Esborra l'historial i les complecions automàtiques a la barra d'adreces.</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3518985090088779359">Accepta i continua</translation>
 <translation id="3522247891732774234">Hi ha una actualització disponible. Més opcions</translation>
 <translation id="3524138585025253783">Interfície d'usuari per a desenvolupadors</translation>
+<translation id="3524334353996115845">Permet que <ph name="ORIGIN" /> verifiqui la teva identitat</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibles</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3771033907050503522">Pestanyes d'incògnit</translation>
 <translation id="3771290962915251154">Aquesta opció de configuració està desactivada perquè els controls parentals estan activats</translation>
 <translation id="3771694256347217732">Condicions del servei de Google</translation>
-<translation id="3773755127849930740">Per permetre la vinculació, <ph name="BEGIN_LINK" />activa el Bluetooth<ph name="END_LINK" /></translation>
 <translation id="3773856050682458546">Dades bàsiques i informació sobre els llocs web que visites i les aplicacions que utilitzes</translation>
 <translation id="3775705724665058594">Envia als teus dispositius</translation>
 <translation id="3778956594442850293">S'ha afegit a la pantalla d'inici</translation>
@@ -604,7 +601,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4913161338056004800">Restableix les estadístiques</translation>
 <translation id="4913169188695071480">Deixa d'actualitzar</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Obtén ajuda<ph name="END_LINK" /> mentre se cerquen dispositius…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# pàgina}other{# pàgines}}</translation>
 <translation id="4925120120285606924">Captura de pantalla del dia <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Les teves contrasenyes s'exportaran i es baixaran com a fitxer de text. Qualsevol persona o aplicació que tingui accés a la carpeta de destinació podrà veure també les teves contrasenyes.</translation>
@@ -653,7 +649,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5215116848420601511">Formes de pagament i adreces que fan servir Google Pay</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5227554086496586518">Toca per veure els resultats de la cerca</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> vol cercar dispositius Bluetooth propers. S'han trobat els dispositius següents:</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5250483651202458397">Captura de pantalla. Toca per tancar.</translation>
 <translation id="5262378156578470238">Veuràs una notificació quan aquesta baixada comenci el dia <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestanya oberta; toca per canviar de pestanya}other{<ph name="OPEN_TABS_MANY" /> pestanyes obertes; toca per canviar de pestanya}}</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permet només certs llocs web</translation>
+<translation id="5409881200985013443">Vols enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">S'està verificant...</translation>
 <translation id="5423934151118863508">Les pàgines més visitades es mostraran aquí</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
@@ -695,7 +691,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5515439363601853141">Desbloqueja la pantalla per veure la contrasenya</translation>
 <translation id="5517095782334947753">Tens les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de l'adreça <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">S'ha bloquejat la redirecció.</translation>
-<translation id="5527082711130173040">Chrome necessita accedir a la ubicació per poder cercar dispositius. <ph name="BEGIN_LINK1" />Actualitza els permisos<ph name="END_LINK1" />. L'accés a la ubicació també està <ph name="BEGIN_LINK2" />desactivat en aquest dispositiu<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">S'ha copiat el lloc web</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -743,14 +738,12 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="5810864297166300463">Assistència web</translation>
 <translation id="5814131985548525293">Escriu aquí o toca la icona de veu per començar</translation>
-<translation id="5817918615728894473">Vincula</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5833984609253377421">Comparteix l'enllaç</translation>
 <translation id="5836192821815272682">S'està baixant l'actualització de Chrome…</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">No s'envien informes d'error ni estadístiques a Google</translation>
 <translation id="5855546874025048181">Defineix millor: "<ph name="REFINE_TEXT" />"</translation>
-<translation id="5858741533101922242">Chrome no pot activar l'adaptador Bluetooth</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5862731021271217234">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis</translation>
@@ -895,7 +888,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6643649862576733715">Ordena per quantitat de dades estalviades</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
 <translation id="6649642165559792194">Previsualitza la imatge <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome necessita accedir a la ubicació per poder cercar dispositius. <ph name="BEGIN_LINK" />Actualitza els permisos<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6659594942844771486">Pestanya</translation>
 <translation id="666731172850799929">Obre a <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7583262514280211622">Trobaràs la llista de lectura aquí</translation>
 <translation id="7588219262685291874">Activa el tema fosc quan l'estalvi de bateria del dispositiu estigui activat</translation>
 <translation id="7593557518625677601">Obre la configuració d'Android i torna a activar la sincronització del sistema Android per començar la sincronització de Chrome</translation>
+<translation id="7594687499944811403">Permet que <ph name="EMBEDDED_ORIGIN" /> verifiqui la teva identitat per a <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operatiu</translation>
 <translation id="7605594153474022051">La sincronització no funciona</translation>
 <translation id="7606077192958116810">El mode bàsic està activat. Gestiona'l a Configuració.</translation>
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7619072057915878432">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors a la xarxa.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Obtén ajuda<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />torna a fer la cerca<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7630202231528827509">URL del proveïdor</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
@@ -1081,7 +1073,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7876243839304621966">Suprimeix-ho tot</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pàgina no llegida}other{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pàgines no llegides}}</translation>
 <translation id="7882131421121961860">No s'ha trobat l'element que cerques a l'historial</translation>
-<translation id="7884346424584885269">Chrome necessita permís per cercar dispositius propers. <ph name="BEGIN_LINK" />Actualitza els permisos<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">S'està executant a Chrome</translation>
 <translation id="789763218334337857">Com s'utilitza Chrome</translation>
 <translation id="7903184275147100332">Aquest procés pot tardar una estona</translation>
@@ -1160,7 +1151,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8349013245300336738">Ordena per quantitat de dades utilitzades</translation>
 <translation id="835847953965672673">S'han restaurat <ph name="NUMBER_OF_DOWNLOADS" /> baixades</translation>
 <translation id="8364299278605033898">Mostra llocs web populars</translation>
-<translation id="8368027906805972958">Dispositiu desconegut o no admès (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ja està a punt.</translation>
 <translation id="8387617938027387193">Verifica que ets tu</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
@@ -1221,7 +1211,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="867767487203716855">Propera actualització</translation>
 <translation id="8683039184091909753">imatge</translation>
 <translation id="8683081248374354009">Restableix el grup</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Intensitat del senyal: # barra}other{Intensitat del senyal: # barres}}</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
 <translation id="8712637175834984815">Entesos</translation>
@@ -1287,7 +1276,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9108312223223904744">el telèfon com a clau de seguretat</translation>
 <translation id="9108808586816295166">És possible que el DNS segur no estigui disponible en tot moment</translation>
 <translation id="9133397713400217035">Explora sense connexió</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9155898266292537608">També pots fer un toc ràpid en una paraula per fer cerques</translation>

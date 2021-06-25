@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
 <translation id="1101672080107056897">خرابی کی کارروائی</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
-<translation id="1107591249535594099">‏نشان زد کیے جانے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی ایک کاپی اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> کے لیے اجازت منتخب کریں</translation>
 <translation id="1113869188872983271">دوبارہ ترتیب &amp;کالعدم کریں</translation>
 <translation id="1123753900084781868">لائیو کیپشن ابھی دستیاب نہیں ہے</translation>
@@ -436,7 +435,6 @@
 <translation id="2491414235131909199">اس صفحے کو ایک ایکسٹینشن نے مسدود کر دیا ہے</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">‏JSON پارسر</translation>
-<translation id="2495093607237746763">‏نشان زد کیے جانے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chromium آپ کے کارڈ کی ایک کاپی اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="2498091847651709837">نیا کارڈ اسکین کریں</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2505268675989099013">اکاؤنٹ محفوظ کریں</translation>
@@ -714,7 +712,6 @@
 <translation id="3531780078352352885">جاب کی شیٹس</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> آپ کا مائیکروفون استعمال کرنا چاہتا ہے</translation>
 <translation id="3533328374079021623">میل باکس 5</translation>
-<translation id="3539171420378717834">اس کارڈ کی ایک کاپی اس آلہ پر رکھیں</translation>
 <translation id="3552297013052089404">‏Sans Serif فونٹ</translation>
 <translation id="3558573058928565255">دن کا وقت</translation>
 <translation id="3566021033012934673">آپ کا کنکشن نجی نہیں ہے</translation>
@@ -1593,6 +1590,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">وائلیٹ</translation>
 <translation id="6786747875388722282">توسیعات</translation>
+<translation id="678982761784843853">‏تحفظ یافتہ مواد کی IDs</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="679355240208270552">نظر انداز کر دیا گیا کیونکہ ڈیفالٹ تلاش پالیسی کے ذریعے فعال نہیں کی گئی ہے۔</translation>
 <translation id="6794951432696553238">‏اب سے Windows Hello کے استعمال سے تیزی سے اپنے کارڈز کی تصدیق کریں</translation>
@@ -1956,6 +1954,7 @@
 <translation id="8100588592594801589">غلط کارڈز کو ہٹا دیا گیا ہے</translation>
 <translation id="8103161714697287722">ادائیگی کا طریقہ</translation>
 <translation id="8105368624971345109">آف کریں</translation>
+<translation id="810875025413331850">کوئی قریبی آلہ نہیں ملا۔</translation>
 <translation id="8118489163946903409">ادائیگی کا طریقہ</translation>
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
 <translation id="8128526133099929547">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chrome <ph name="WEBSITE_1" /> اور دیگر ایسی سائٹس پر جا کر ابھی پاس ورڈ بدلنے کی تجویز کرتا ہے جہاں آپ اسے استعمال کرتے ہیں۔</translation>

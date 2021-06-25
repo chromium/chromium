@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Siirrä toiseen ikkunaan</translation>
 <translation id="1553358976309200471">Päivitä Chrome</translation>
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
-<translation id="1569387923882100876">Yhdistetty laite</translation>
 <translation id="1571304935088121812">Kopioi käyttäjänimi</translation>
 <translation id="1592864538817356322">Perustason suojaus:</translation>
-<translation id="1612196535745283361">Chrome tarvitsee sijaintitietoja hakeakseen laitteita. Sijaintitiedot on <ph name="BEGIN_LINK" />poistettu käytöstä tällä laitteella<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Poista 1 valittu kohde}other{Poista # valittua kohdetta}}</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Ei suojausta (ei suositella)</translation>
 <translation id="1986685561493779662">Nimi on jo käytössä</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" />-painike</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> haluaa muodostaa laiteparin</translation>
 <translation id="2000419248597011803">Lähettää joitakin osoitekentän ja hakukentän kautta tehtyjä hakuja sekä joitakin evästeitä oletushakukoneellesi</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# tiedosto}other{# tiedostoa}}</translation>
 <translation id="2017836877785168846">Tyhjentää historian ja osoitepalkin automaattiset täydennykset.</translation>
@@ -399,6 +396,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3518985090088779359">Hyväksy ja jatka</translation>
 <translation id="3522247891732774234">Päivitys on saatavilla. Näytä lisäasetukset.</translation>
 <translation id="3524138585025253783">Kehittäjän UI</translation>
+<translation id="3524334353996115845">Salli, että <ph name="ORIGIN" /> todentaa henkilöllisyytesi</translation>
 <translation id="3527085408025491307">Kansio</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kt käytettävissä</translation>
 <translation id="3549657413697417275">Haku omasta historiasta</translation>
@@ -431,7 +429,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3771033907050503522">Incognito</translation>
 <translation id="3771290962915251154">Tämä asetus on poistettu käytöstä, koska lapsilukko on päällä</translation>
 <translation id="3771694256347217732">Googlen käyttöehdot</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Ota Bluetooth käyttöön<ph name="END_LINK" />, jotta laiteparin muodostus onnistuu.</translation>
 <translation id="3773856050682458546">Perustiedot sekä tiedot avaamistasi sivustoista ja käyttämistäsi sovelluksista</translation>
 <translation id="3775705724665058594">Lähetä laitteillesi</translation>
 <translation id="3778956594442850293">Lisätty aloitusnäytölle</translation>
@@ -604,7 +601,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4910889077668685004">Maksusovellukset</translation>
 <translation id="4913161338056004800">Nollaa tilastot</translation>
 <translation id="4913169188695071480">Lopeta päivittäminen</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Tutustu ohjeisiin<ph name="END_LINK" /> laitteiden skannauksen aikana…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# sivu}other{# sivua}}</translation>
 <translation id="4925120120285606924">Kuvakaappaus <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Salasanasi viedään ja ladataan tekstitiedostona. Ne näkyvät kaikille käyttäjille ja sovelluksille, joilla on pääsy kohdekansioon.</translation>
@@ -653,7 +649,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5215116848420601511">Maksutavat ja osoitteet Google Paysta</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5227554086496586518">Katso hakutulokset napauttamalla</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5250483651202458397">Kuvakaappaus. Sulje napauttamalla.</translation>
 <translation id="5262378156578470238">Näet ilmoituksen, kun tämä lataus alkaa <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> avoin välilehti, vaihda välilehteä napauttamalla}other{<ph name="OPEN_TABS_MANY" /> avointa välilehteä, vaihda välilehteä napauttamalla}}</translation>
 <translation id="5375577065097716013">Hae kuvaa Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Salli vain tietyt sivustot</translation>
+<translation id="5409881200985013443">Lähetetäänkö <ph name="ONE_TIME_CODE" /> (<ph name="CLIENT_NAME" />)?</translation>
 <translation id="5414836363063783498">Vahvistetaan…</translation>
 <translation id="5423934151118863508">Käydyimmät sivusi näkyvät täällä</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Gt käytettävissä</translation>
@@ -695,7 +691,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5515439363601853141">Avaa lukitus nähdäksesi salasanan</translation>
 <translation id="5517095782334947753">Tililläsi <ph name="FROM_ACCOUNT" /> on kirjanmerkkejä, salasanoja ja muita asetuksia.</translation>
 <translation id="5524843473235508879">Uudelleenohjaus estetty</translation>
-<translation id="5527082711130173040">Chrome tarvitsee sijaintitietoja hakeakseen laitteita. <ph name="BEGIN_LINK1" />Päivitä käyttöoikeudet<ph name="END_LINK1" />. Sijaintitiedot on lisäksi <ph name="BEGIN_LINK2" />poistettu käytöstä tällä laitteella<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Sivusto kopioitu</translation>
 <translation id="5548606607480005320">Turvatarkistus</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
@@ -743,14 +738,12 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="5810864297166300463">Verkkoapu</translation>
 <translation id="5814131985548525293">Kirjoita tähän tai aloita napauttamalla puhekuvaketta</translation>
-<translation id="5817918615728894473">Muodosta laitepari</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5833984609253377421">Jaa linkki</translation>
 <translation id="5836192821815272682">Ladataan Chrome-päivitystä…</translation>
 <translation id="5853623416121554550">keskeytetty</translation>
 <translation id="5854512288214985237">Tilastoja tai virheraportteja ei lähetetä Googlelle</translation>
 <translation id="5855546874025048181">Tarkenna: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome ei voi ottaa käyttöön Bluetooth-sovitinta.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5862731021271217234">Ota synkronointi käyttöön, niin voit käyttää välilehtiä muilta laitteiltasi</translation>
@@ -895,7 +888,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6643649862576733715">Lajittele säästetyn datan määrän mukaan</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muu}other{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
 <translation id="6649642165559792194">Esikatsele kuva <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome tarvitsee sijaintitietojen käyttöoikeuden hakeakseen laitteita. <ph name="BEGIN_LINK" />Päivitä käyttöoikeudet<ph name="END_LINK" />.</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659594942844771486">Välilehti</translation>
 <translation id="666731172850799929">Avaa sovelluksessa <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7583262514280211622">Näet lukulistasi täällä</translation>
 <translation id="7588219262685291874">Ota tumma teema käyttöön, kun laitteen virransäästö on käytössä</translation>
 <translation id="7593557518625677601">Avaa Android-asetukset ja ota järjestelmän synkronointi uudelleen käyttöön.</translation>
+<translation id="7594687499944811403">Salli, että <ph name="EMBEDDED_ORIGIN" /> todentaa henkilöllisyytesi: <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Käyttöjärjestelmä</translation>
 <translation id="7605594153474022051">Synkronointi ei toimi</translation>
 <translation id="7606077192958116810">Yksinkertaistettu tila on päällä. Ylläpidä sitä asetuksissa.</translation>
 <translation id="7612619742409846846">Olet kirjautunut Googleen käyttäjänä</translation>
 <translation id="7619072057915878432">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui verkkovirheen vuoksi.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Lue ohjeita<ph name="END_LINK1" /> tai <ph name="BEGIN_LINK2" />hae uudelleen<ph name="END_LINK2" />.</translation>
 <translation id="7626032353295482388">Tervetuloa Chromeen</translation>
 <translation id="7630202231528827509">Palvelun URL-osoite</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
@@ -1081,7 +1073,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7876243839304621966">Poista kaikki</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sinulla on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> lukematon sivu}other{Sinulla on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lukematonta sivua}}</translation>
 <translation id="7882131421121961860">Historiaa ei löytynyt.</translation>
-<translation id="7884346424584885269">Chrome tarvitsee luvan lähellä olevien laitteiden hakemiseen. <ph name="BEGIN_LINK" />Päivitä luvat<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Käynnissä Chromessa</translation>
 <translation id="789763218334337857">Miten Chromea käytetään</translation>
 <translation id="7903184275147100332">Tämä voi kestää hetken</translation>
@@ -1160,7 +1151,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8349013245300336738">Lajittele käytetyn datan määrän mukaan</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> latausta palautettu</translation>
 <translation id="8364299278605033898">Katso suositut sivustot</translation>
-<translation id="8368027906805972958">Tuntematon tai ei-tuettu laite (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> on valmis.</translation>
 <translation id="8387617938027387193">Todenna henkilöllisyytesi</translation>
 <translation id="8393700583063109961">Lähetä viesti</translation>
@@ -1221,7 +1211,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="867767487203716855">Seuraava päivitys</translation>
 <translation id="8683039184091909753">kuva</translation>
 <translation id="8683081248374354009">Nollaa ryhmä</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Signaalin voimakkuus: # palkki}other{Signaalin voimakkuus: # palkkia}}</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
@@ -1287,7 +1276,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9108312223223904744">Ohjeet puhelimen käyttöön suojausavaimena</translation>
 <translation id="9108808586816295166">Suojattu DNS ei välttämättä ole koko ajan käytettävissä</translation>
 <translation id="9133397713400217035">Tutki offline-tilassa</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Näytä alkuperäinen</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9155898266292537608">Voit hakea myös napauttamalla sanaa nopeasti.</translation>

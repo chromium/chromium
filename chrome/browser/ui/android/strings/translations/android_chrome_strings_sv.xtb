@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Flytta till annat fönster</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
-<translation id="1569387923882100876">Ansluten enhet</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
 <translation id="1592864538817356322">Standardskydd:</translation>
-<translation id="1612196535745283361">Chrome behöver åtkomst till platsinformation för att kunna söka efter enheter. Platsåtkomst är <ph name="BEGIN_LINK" />inaktiverat för enheten<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ta bort 1 markerat objekt}other{Ta bort # markerade objekt}}</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1986685561493779662">Namnet finns redan</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> – knapp för <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> vill kopplas</translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2017836877785168846">Rensar historik och autoslutföranden i adressfältet.</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3518985090088779359">Godkänn och fortsätt</translation>
 <translation id="3522247891732774234">Det finns en tillgänglig uppdatering. Fler alternativ</translation>
 <translation id="3524138585025253783">Utvecklargränssnitt</translation>
+<translation id="3524334353996115845">Tillåt att <ph name="ORIGIN" /> verifierar din identitet</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB tillgängligt</translation>
 <translation id="3549657413697417275">Sök i historik</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3771033907050503522">Inkognitoflikar</translation>
 <translation id="3771290962915251154">Inställningen är inaktiverad eftersom föräldrakontroller används</translation>
 <translation id="3771694256347217732">Googles användarvillkor</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Aktivera Bluetooth<ph name="END_LINK" /> om du vill tillåta koppling</translation>
 <translation id="3773856050682458546">Grundläggande data samt information om webbplatser du besöker och appar du använder</translation>
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3778956594442850293">Tillagd på startskärmen</translation>
@@ -604,7 +601,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4913161338056004800">Återställ statistik</translation>
 <translation id="4913169188695071480">Sluta uppdatera</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /> under sökningen efter enheter …</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# sida}other{# sidor}}</translation>
 <translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
@@ -653,7 +649,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5215116848420601511">Betalningsmetoder och adresser som används med Google Pay</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5227554086496586518">Tryck för att visa sökresultat</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> vill söka efter Bluetooth-enheter i närheten. Följande enheter har hittats:</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5250483651202458397">Skärmbild. Tryck och stäng.</translation>
 <translation id="5262378156578470238">Du får en avisering när nedladdningen startas den <ph name="DATE" />.</translation>
@@ -672,6 +667,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> flik öppen, tryck här om du vill byta flik}other{<ph name="OPEN_TABS_MANY" /> flikar öppna, tryck här om du vill byta flik}}</translation>
 <translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Tillåt endast vissa webbplatser</translation>
+<translation id="5409881200985013443">Vill du skicka <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
 <translation id="5423934151118863508">Dina mest besökta sidor visas här</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tillgängligt</translation>
@@ -695,7 +691,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5515439363601853141">Lås upp om du vill visa lösenordet</translation>
 <translation id="5517095782334947753">Du har bokmärken, historik, lösenord och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Omdirigeringen blockerades.</translation>
-<translation id="5527082711130173040">Chrome behöver tillgång till platsinformation för att kunna söka efter enheter. <ph name="BEGIN_LINK1" />Uppdatera behörigheter<ph name="END_LINK1" />. Platsåtkomst är dessutom <ph name="BEGIN_LINK2" />inaktiverat för enheten<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Webbplatsen har kopierats</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
@@ -743,14 +738,12 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="5810864297166300463">Webbhjälp</translation>
 <translation id="5814131985548525293">Börja genom att skriva här eller trycka på mikrofonikonen</translation>
-<translation id="5817918615728894473">Koppla</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5836192821815272682">Uppdatering för Chrome laddas ned …</translation>
 <translation id="5853623416121554550">pausad</translation>
 <translation id="5854512288214985237">Varken statistik eller felrapporter skickas till Google</translation>
 <translation id="5855546874025048181">Finjustera: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Det gick inte att aktivera Bluetooth-adaptern i Chrome</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5862731021271217234">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
@@ -895,7 +888,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6643649862576733715">Sortera efter databesparing</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
 <translation id="6649642165559792194">Förhandsgranska bild <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome behöver platsåtkomst för att söka efter enheter. <ph name="BEGIN_LINK" />Uppdatera behörigheter<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="666731172850799929">Öppna i <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7583262514280211622">Du hittar läslistan här</translation>
 <translation id="7588219262685291874">Aktivera mörkt tema när enhetens batterisparläge är på</translation>
 <translation id="7593557518625677601">Återaktivera synkronisering i Android-inställningarna så börjar Chrome synkas</translation>
+<translation id="7594687499944811403">Tillåt att <ph name="EMBEDDED_ORIGIN" /> verifierar din identitet för <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativsystem</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
 <translation id="7606077192958116810">Begränsat läge har aktiverats. Hantera detta i inställningarna.</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7619072057915878432">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av nätverksfel.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Få hjälp<ph name="END_LINK1" /> eller <ph name="BEGIN_LINK2" />sök igen<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7630202231528827509">Leverantörens webbadress</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
@@ -1081,7 +1073,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7876243839304621966">Ta bort alla</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> oläst sida}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> olästa sidor}}</translation>
 <translation id="7882131421121961860">Ingen historik hittades</translation>
-<translation id="7884346424584885269">Chrome behöver behörighet att söka efter enheter i närheten. <ph name="BEGIN_LINK" />Uppdatera behörigheter<ph name="END_LINK" />.</translation>
 <translation id="7886917304091689118">Körs i Chrome</translation>
 <translation id="789763218334337857">Så här använder du Chrome</translation>
 <translation id="7903184275147100332">Det här kan ta någon minut</translation>
@@ -1160,7 +1151,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
 <translation id="8364299278605033898">Visa populära webbplatser</translation>
-<translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> är klart.</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
@@ -1221,7 +1211,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="867767487203716855">Nästa uppdatering</translation>
 <translation id="8683039184091909753">bild</translation>
 <translation id="8683081248374354009">Återställ gruppen</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrka: # streck}other{Signalstyrka: # streck}}</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
@@ -1287,7 +1276,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9108312223223904744">Telefonen som säkerhetsnyckel</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9133397713400217035">Utforska offline</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>

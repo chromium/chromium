@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Oppføringer utover dette blir forkastet.</translation>
 <translation id="1101672080107056897">Feilhandling</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Hvis det er merket av for dette alternativet, lagrer Chrome en kopi av kortet ditt på denne enheten, slik at det går raskere å fylle ut skjemaer.</translation>
 <translation id="1110994991967754504">Velg tillatelse for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Angre omorganiseringen</translation>
 <translation id="1123753900084781868">Direkteteksting er ikke tilgjengelig akkurat nå</translation>
@@ -435,7 +434,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2491414235131909199">Denne siden er blokkert av en utvidelse</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
-<translation id="2495093607237746763">Hvis det er merket av for dette alternativet, lagrer Chromium en kopi av kortet ditt på denne enheten, slik at det går raskere å fylle ut skjemaer.</translation>
 <translation id="2498091847651709837">Skann nytt kort</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2505268675989099013">Beskytt kontoen</translation>
@@ -712,7 +710,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3531780078352352885">Jobbark</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ber om å bruke mikrofonen din</translation>
 <translation id="3533328374079021623">Postkasse 5</translation>
-<translation id="3539171420378717834">Lagre en kopi av dette kortet på denne enheten</translation>
 <translation id="3552297013052089404">Sans-serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="3566021033012934673">Tilkoblingen din er ikke privat</translation>
@@ -1952,6 +1949,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8100588592594801589">De ugyldige kortene er fjernet</translation>
 <translation id="8103161714697287722">Betalingsmåte</translation>
 <translation id="8105368624971345109">Slå av</translation>
+<translation id="810875025413331850">Fant ingen enheter i nærheten.</translation>
 <translation id="8118489163946903409">Betalingsmåte</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» er ikke riktig installert på datamaskinen eller på nettverket. Be IT-administratoren din om å løse problemet.</translation>
 <translation id="8128526133099929547">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du går til <ph name="WEBSITE_1" />, samt andre nettsteder der du bruker dette passordet, og bytter det nå.</translation>

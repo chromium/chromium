@@ -366,6 +366,9 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Not: Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="1502843533062797703">Üçüncü taraf yazılımı yerleştirme engellemesini etkinleştirin</translation>
+<translation id="1503969899251962413">Politikanın ayarlanması, bu cihaz için <ph name="PLUGIN_VM_NAME" /> lisans anahtarını belirtir.
+
+      Bu politika M94'te kaldırıldı.</translation>
 <translation id="150857982247452081">Protokol listesi ayarlamanıza ve ayarladığınız her protokol için izin verilen kaynak kalıplarının ilişkilendirilmiş bir listesini oluşturmanıza izin verir. Bu kalıplar kullanıcıya sormadan harici bir uygulama başlatabilir. Protokol listelenirken sondaki ayırıcı dahil edilmemelidir, o yüzden listeye "skype:" ya da "skype://" yerine doğrudan "skype" olarak ekleyin.
 
       Bu politika ayarlanırsa protokol, listelendiği ve protokolü başlatmaya çalışan sitenin kaynağı protokolün izin_verilen_kaynaklar listesindeki kaynak kalıplarından biriyle eşleştiği takdirde politika tarafından sorulmadan yalnızca harici uygulamaları başlatma iznine sahip olur. İki koşul da yanlış ise harici protokol başlatma istemi politika tarafından atlanmaz.
@@ -4597,11 +4600,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="69525503251220566">Varsayılan arama sağlayıcısı için resme göre arama özelliği sağlayan parametre</translation>
 <translation id="6953102253399571439">Varsayılan olarak PIN ile yazdırmayı etkinleştir</translation>
 <translation id="6956272732789158625">Hiçbir sitenin anahtar oluşturma işlevini kullanmasına izin verme</translation>
-<translation id="6959021201443139119">Bu kalıplara uyan alan adları için ayarlanan çerezler eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri döner. Eski davranışa geri dönmek, <ph name="ATTRIBUTE_SAMESITE_NAME" /> özelliği belirtmeyen çerezlerin "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" gibi değerlendirilmesine neden olur, "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" çerezlerinin "<ph name="ATTRIBUTE_SECURE_NAME" />" özelliğini taşıma şartını ortadan kaldırır ve iki sitenin aynı URL'yi paylaşması durumunda, değerlendirirken şema karşılaştırmasını atlar. Tam açıklama için https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies adresine bakın.
-
-          Burada belirtilen kalıpların dışında kalan alan adlarındaki çerezler ya da bu politika ayarlanmazsa tüm çerezler için kullanıcının kişisel yapılandırması genel varsayılan değer olarak kullanılır.
-
-          Burada listelediğiniz kalıpların URL değil alan adı olarak değerlendirildiğini, bu yüzden bir şema veya bağlantı noktası belirtmemeniz gerektiğini unutmayın.</translation>
 <translation id="6961602002757991199">Politika geçerli bir URL'ye ayarlanırsa <ph name="PRODUCT_NAME" />, site listesini o URL'den indirir ve kuralları, <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" /> politikasıyla yapılandırılmışlar gibi uygular. Bu politikalar <ph name="PRODUCT_NAME" /> ve alternatif tarayıcının birbirini açmasını engeller.
 
       Politika ayarlanmadan bırakılırsa (veya geçersiz bir URL'ye ayarlanırsa) <ph name="PRODUCT_NAME" />, politikayı tarayıcılar arasında geçiş yapmamak için bir kural kaynağı olarak kullanmaz.

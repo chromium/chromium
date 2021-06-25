@@ -15,6 +15,7 @@
 <translation id="1052916631016577720">আইটেম স্ক্যান</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">ব্যাটারিটি বদলান বা রিচার্জ করুন</translation>
 <translation id="108486256082349153">সেলুলার: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">শুভ অপরাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">আমি বোর হয়ে গেছি</translation>
@@ -307,6 +308,7 @@
 <translation id="3430396595145920809">ফিরে যেতে আপনার স্ক্রিনের ডান দিক থেকে সোয়াইপ করুন</translation>
 <translation id="343571671045587506">রিমাইন্ডার এডিট করুন</translation>
 <translation id="3435967511775410570">আঙুলের ছাপ শনাক্ত করা হয়েছে</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3454224730401036106">আপনার নেটওয়ার্ক সংযোগটি আরও সুরক্ষিত নেটওয়ার্কে পরিবর্তিত হয়েছে</translation>
@@ -318,6 +320,7 @@
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="3552189655002856821">ওয়াই-ফাই বন্ধ করা আছে</translation>
+<translation id="3560866052109807830">মার্কার ড্রয়িং টুল</translation>
 <translation id="3563775809269155755">হটস্পট চালু করুন</translation>
 <translation id="3571734092741541777">সেট-আপ</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" তে ফেরান (পুনর্সূচনা প্রয়োজন)</translation>
@@ -412,6 +415,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4285498937028063278">আনপিন</translation>
+<translation id="429402653707266969">টুলবার লোকেশন টগল করুন</translation>
 <translation id="4294319844246081198">সুপ্রভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />টি বিজ্ঞপ্তি মুছে ফেলুন</translation>
 <translation id="4302592941791324970">উপলভ্য নেই</translation>
@@ -429,6 +433,7 @@
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4379531060876907730">এগুলি হল আপনার স্টাইলাস টুল</translation>
 <translation id="4389184120735010762">ডক করা ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
+<translation id="439598569299422042">পজ করা হয়েছে, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4421231901400348175">রিমোট সহায়কের মাধ্যমে <ph name="HELPER_NAME" />-এর সাথে আপনার স্ক্রিন নিয়ন্ত্রন ভাগ করুন৷</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
@@ -546,6 +551,7 @@
 <translation id="5286194356314741248">স্ক্যান হচ্ছে</translation>
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5302048478445481009">ভাষা</translation>
+<translation id="5308380583665731573">সংযুক্ত করুন</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
 <translation id="5322611492012084517">আপনার ফোন খুঁজে পাওয়া যায়নি</translation>

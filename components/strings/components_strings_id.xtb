@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Kolom ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri lanjutan akan dibuang.</translation>
 <translation id="1101672080107056897">Tindakan error</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Apabila dicentang, Chrome akan menyimpan salinan kartu Anda pada perangkat ini untuk pengisian formulir yang lebih cepat.</translation>
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
 <translation id="1123753900084781868">Teks Otomatis tidak tersedia untuk saat ini</translation>
@@ -431,7 +430,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2491414235131909199">Halaman ini telah diblokir oleh ekstensi</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Pengurai JSON</translation>
-<translation id="2495093607237746763">Jika dicentang, Chromium akan menyimpan salinan kartu Anda di perangkat ini untuk pengisian formulir yang lebih cepat.</translation>
 <translation id="2498091847651709837">Pindai kartu baru</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2505268675989099013">Lindungi Akun</translation>
@@ -707,7 +705,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3531780078352352885">Lembar tugas</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ingin menggunakan mikrofon Anda</translation>
 <translation id="3533328374079021623">Kotak surat 5</translation>
-<translation id="3539171420378717834">Menyimpan salinan kartu ini di perangkat ini</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">Siang hari</translation>
 <translation id="3566021033012934673">Koneksi Anda tidak pribadi</translation>
@@ -1580,6 +1577,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Ekstensi</translation>
+<translation id="678982761784843853">ID konten yang dilindungi</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="679355240208270552">Diabaikan karena penelusuran default tidak diaktifkan menurut kebijakan.</translation>
 <translation id="6794951432696553238">Mulai sekarang, konfirmasikan kartu dengan lebih cepat menggunakan Windows Hello</translation>
@@ -1941,6 +1939,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8100588592594801589">Kartu yang tidak valid telah dihapus</translation>
 <translation id="8103161714697287722">Metode Pembayaran</translation>
 <translation id="8105368624971345109">Nonaktifkan</translation>
+<translation id="810875025413331850">Tidak ditemukan perangkat di sekitar.</translation>
 <translation id="8118489163946903409">Metode pembayaran</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak diinstal dengan benar di komputer atau jaringan Anda. Mintalah administrator IT untuk menyelesaikan masalah ini.</translation>
 <translation id="8128526133099929547">Anda baru saja memasukkan sandi ke situs penipuan. Chrome merekomendasikan Anda untuk membuka <ph name="WEBSITE_1" /> serta situs lain tempat Anda menggunakan sandi ini dan mengubahnya sekarang.</translation>

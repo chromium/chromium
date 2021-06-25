@@ -2472,7 +2472,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
 <translation id="3668801437375206837">To better diagnose Bluetooth issues, Googlers can include additional Bluetooth logs with their feedback reports. When this option is ticked, your report will include btsnoop and HCI logs from your current session, sanitised to remove as much PII as possible. Access to these logs will be restricted to managers of the Chrome OS product group in Listnr. Logs will be purged after 90 days.</translation>
-<translation id="3668823961463113931">Handlers</translation>
 <translation id="3670113805793654926">Devices from any vendor</translation>
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
 <translation id="3672681487849735243">A factory error has been detected</translation>
@@ -3867,7 +3866,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5227679487546032910">Default teal avatar</translation>
 <translation id="5228579091201413441">Enable sync</translation>
 <translation id="5230516054153933099">Window</translation>
-<translation id="523271575098439435">Add your preferred website languages. The top language from the list will be used for translations.</translation>
 <translation id="5233019165164992427">NaCl debug port</translation>
 <translation id="5233231016133573565">Process ID</translation>
 <translation id="5233638681132016545">New tab</translation>
@@ -4676,7 +4674,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6141988275892716286">Confirm download</translation>
 <translation id="6143186082490678276">Get Help</translation>
 <translation id="6143366292569327983">Choose the page language to translate from</translation>
-<translation id="6144938890088808325">Help Us Improve Chromebooks</translation>
+<translation id="6144938890088808325">Help us improve Chromebooks</translation>
 <translation id="6146409560350811147">Sync isn't working. Try signing in again.</translation>
 <translation id="6147020289383635445">Print preview failed.</translation>
 <translation id="6148576794665275391">Open now</translation>
@@ -5765,6 +5763,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7371490947952970241">You can turn off location by turning off the main location setting on this device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.</translation>
 <translation id="7371917887111892735">Tabs shrink to pinned tab width</translation>
 <translation id="7374376573160927383">Manage USB devices</translation>
+<translation id="7374461526650987610">Protocol Handlers</translation>
 <translation id="7375235221357833624">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
 <translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
@@ -5874,6 +5873,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7488682689406685343">This site may be trying to trick you into allowing intrusive notifications.</translation>
 <translation id="7489761397368794366">Call from your device</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
+<translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -6477,7 +6477,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8107015733319732394">Installing the Google Play Store on your <ph name="DEVICE_TYPE" />. This could take a few minutes.</translation>
 <translation id="810728361871746125">Display resolution</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{No third-party cookies}=1{1 third-party cookie is blocked}other{# third-party cookies are blocked}}</translation>
-<translation id="810875025413331850">No nearby devices found.</translation>
 <translation id="8109109153262930486">Default avatar</translation>
 <translation id="8110489095782891123">Downloading contact list…</translation>
 <translation id="8113476325385351118">Continue blocking this site from having full control of MIDI devices</translation>
@@ -7223,7 +7222,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="893298445929867520">Baskets hidden. They'll reappear when you make changes.</translation>
 <translation id="8933960630081805351">&amp;Show in Finder</translation>
 <translation id="8934732568177537184">Continue</translation>
-<translation id="8938306522009698937">handlers</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8940081510938872932">Your computer is doing too many things right now.  Try again later.</translation>
 <translation id="8941173171815156065">Revoke the permission '<ph name="PERMISSION" />'</translation>

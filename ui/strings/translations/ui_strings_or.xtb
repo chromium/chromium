@@ -80,6 +80,7 @@
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ବର୍ଷ ପୂର୍ବେ}other{# ବର୍ଷ ପୂର୍ବେ}}</translation>
 <translation id="2878511608894704031">ସବୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ଦିନରେ}other{# ଦିନରେ}}</translation>
+<translation id="2922712708897119705">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" />କୁ ବଡ଼ରୁ ସାନ କ୍ରମରେ ସର୍ଟ୍ କରାଯାଇଛି।</translation>
 <translation id="2931838996092594335">କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="2981684127883932071">ପ୍ରସ୍ତାବଗୁଡ଼ିକ ଡିସପ୍ଲେ ହେଉଛି</translation>
 <translation id="3036649622769666520">ଓପନ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
@@ -115,6 +116,7 @@
 <translation id="3897092660631435901">ମେନୁ</translation>
 <translation id="3909791450649380159">&amp;ଛେଦନ କରନ୍ତୁ</translation>
 <translation id="3990502903496589789">ଠିକ୍ ଧାର</translation>
+<translation id="3994749195054421561">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" /> ସାନରୁ ବଡ଼ କ୍ରମରେ ସର୍ଟ୍ କରାଯାଇଛି।</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}other{#ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="4202807286478387388">ଲମ୍ଫ ଦିଅନ୍ତୁ</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
@@ -216,6 +218,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ମିନିଟ୍‍ ବାକି ଅଛି}other{# ମିନିଟ୍‍ ବାକି ଅଛି}}</translation>
 <translation id="7430878839542012341">ଆପଣଙ୍କର ଇତିହାସରୁ ଏହି ସନ୍ଧାନ ବିଲୋପ କରିବେ?</translation>
+<translation id="7437971918971306061">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" /> ସର୍ଟ୍ କରାଯାଇନାହିଁ।</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ଇମୋଜି</translation>
 <translation id="7620655452534002301">କାଢ଼ି ଦିଆଯାଇଛି।</translation>

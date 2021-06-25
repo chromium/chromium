@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">ಈ ಕ್ಷೇತ್ರವು <ph name="MAX_ITEMS_LIMIT" /> ಗಿಂತ ಹೆಚ್ಚು ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ. ಮುಂದಿನ ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ತ್ಯಜಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1101672080107056897">ದೋಷ ಕ್ರಿಯೆ</translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">ಪರಿಶೀಲಿಸಿದರೆ, ವೇಗವಾಗಿ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಲು Chrome ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಪ್ರತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ಗಾಗಿ ಅನುಮತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1113869188872983271">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="1123753900084781868">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -432,7 +431,6 @@
 <translation id="2491414235131909199">ವಿಸ್ತರಣೆಯಿಂದ ಈ ಪುಟವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON ವಿಶ್ಲೇಷಕ</translation>
-<translation id="2495093607237746763">ಪರಿಶೀಲಿಸಿದರೆ, ವೇಗವಾಗಿ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಲು Chromium ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಪ್ರತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.</translation>
 <translation id="2498091847651709837">ಹೊಸ ಕಾರ್ಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2505268675989099013">ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಿ</translation>
@@ -704,7 +702,6 @@
 <translation id="3531780078352352885">ಜಾಬ್ ಶೀಟ್‌ಗಳು</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3533328374079021623">ಮೇಲ್‌ಬಾಕ್ಸ್ 5</translation>
-<translation id="3539171420378717834">ಈ ಸಾಧನದಲ್ಲಿ ಈ ಕಾರ್ಡ್‌ನ ನಕಲನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
 <translation id="3566021033012934673">ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಲ್ಲ</translation>
@@ -1933,6 +1930,7 @@
 <translation id="8100588592594801589">ಅಮಾನ್ಯ ಕಾರ್ಡ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="8103161714697287722">ಪಾವತಿ ವಿಧಾನ</translation>
 <translation id="8105368624971345109">ಆಫ್ ಮಾಡು</translation>
+<translation id="810875025413331850">ಯಾವುದೇ ಹತ್ತಿರದ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="8118489163946903409">ಪಾವತಿ ವಿಧಾನ</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ನೆಟ್‌ವರ್ಕ್ ನಲ್ಲಿ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿಲ್ಲ: ಈ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ನಿಮ್ಮ IT ನಿರ್ವಾಹಕರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="8128526133099929547">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. <ph name="WEBSITE_1" /> ಹಾಗೂ ಈ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸುವ ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈಗಲೇ ಬದಲಾಯಿಸಲು Chrome ನಿಮಗೆ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>

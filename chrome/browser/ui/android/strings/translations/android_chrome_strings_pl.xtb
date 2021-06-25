@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">Przenieś do innego okna</translation>
 <translation id="1553358976309200471">Zaktualizuj Chrome</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
-<translation id="1569387923882100876">Połączone urządzenie</translation>
 <translation id="1571304935088121812">Kopiuj nazwę użytkownika</translation>
 <translation id="1592864538817356322">Standardowa ochrona:</translation>
-<translation id="1612196535745283361">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. Dostęp jest <ph name="BEGIN_LINK" />wyłączony na tym urządzeniu<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1986685561493779662">Nazwa już istnieje</translation>
 <translation id="1987739130650180037">Przycisk <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> chce się sparować</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="2017836877785168846">Usuwa historię i wpisy autouzupełniania w pasku adresu.</translation>
@@ -399,6 +396,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
 <translation id="3522247891732774234">Dostępna jest aktualizacja. Więcej opcji</translation>
 <translation id="3524138585025253783">Interfejs dewelopera</translation>
+<translation id="3524334353996115845">Pozwól stronie <ph name="ORIGIN" /> sprawdzać Twoją tożsamość</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775">Dostępne: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Przeszukaj historię</translation>
@@ -431,7 +429,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3771033907050503522">Karty incognito</translation>
 <translation id="3771290962915251154">To ustawienie jest wyłączone, ponieważ włączona jest kontrola rodzicielska</translation>
 <translation id="3771694256347217732">Warunki korzystania z usług Google</translation>
-<translation id="3773755127849930740"><ph name="BEGIN_LINK" />Włącz Bluetooth<ph name="END_LINK" />, by umożliwić parowanie</translation>
 <translation id="3773856050682458546">Podstawowe dane oraz informacje na temat odwiedzanych stron i używanych aplikacji</translation>
 <translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
 <translation id="3778956594442850293">Dodano do ekranu głównego</translation>
@@ -604,7 +601,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4913161338056004800">Resetuj statystyki</translation>
 <translation id="4913169188695071480">Zatrzymaj odświeżanie</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />Pomoc<ph name="END_LINK" /> w trakcie wyszukiwania urządzeń…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# strona}few{# strony}many{# stron}other{# strony}}</translation>
 <translation id="4925120120285606924">Zrzut ekranu <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Twoje hasła zostaną wyeksportowane i pobrane jako plik tekstowy. Twoje hasła będą widoczne dla każdej osoby i aplikacji, która ma dostęp do folderu docelowego.</translation>
@@ -653,7 +649,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5215116848420601511">Formy płatności i adresy z Google Pay</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5227554086496586518">Kliknij, aby zobaczyć wyniki wyszukiwania</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> chce wyszukać urządzenia Bluetooth w pobliżu. Znaleziono te urządzenia:</translation>
 <translation id="5233638681132016545">Nowa karta</translation>
 <translation id="5250483651202458397">Zrzut ekranu. Kliknij, by zamknąć.</translation>
 <translation id="5262378156578470238">Gdy to pobieranie rozpocznie się <ph name="DATE" />, zobaczysz powiadomienie.</translation>
@@ -672,6 +667,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> otwarta karta. Kliknij, by przełączyć się między kartami}few{<ph name="OPEN_TABS_MANY" /> otwarte karty. Kliknij, by przełączyć się między kartami}many{<ph name="OPEN_TABS_MANY" /> otwartych kart. Kliknij, by przełączyć się między kartami}other{<ph name="OPEN_TABS_MANY" /> otwartej karty. Kliknij, by przełączyć się między kartami}}</translation>
 <translation id="5375577065097716013">Szukaj grafiki za pomocą Obiektywu Google <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Pozwól na otwieranie tylko wybranych stron</translation>
+<translation id="5409881200985013443">Przesłać <ph name="ONE_TIME_CODE" /> na: <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Weryfikuję…</translation>
 <translation id="5423934151118863508">Tu pojawią się strony, na które najczęściej wchodzisz</translation>
 <translation id="5424588387303617268">Dostępne <ph name="GIGABYTES" /> GB</translation>
@@ -695,7 +691,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5515439363601853141">Odblokuj, by wyświetlić hasło</translation>
 <translation id="5517095782334947753">Masz zakładki, historię, hasła i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
-<translation id="5527082711130173040">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. <ph name="BEGIN_LINK1" />Zwiększ uprawnienia<ph name="END_LINK1" />. Dostęp do lokalizacji jest <ph name="BEGIN_LINK2" />wyłączony na tym urządzeniu<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -743,14 +738,12 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="5810864297166300463">Pomoc dotycząca sieci</translation>
 <translation id="5814131985548525293">Wpisz coś tutaj lub kliknij ikonę mikrofonu, by wyszukiwać głosem</translation>
-<translation id="5817918615728894473">Sparuj</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5833984609253377421">Udostępnij link</translation>
 <translation id="5836192821815272682">Pobieram aktualizację Chrome…</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
 <translation id="5854512288214985237">Statystyki ani raporty o awariach nie są przesyłane do Google</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome nie może włączyć adaptera Bluetooth</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862731021271217234">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
@@ -895,7 +888,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6643649862576733715">Sortuj według ilości zaoszczędzonych danych</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Wyświetl podgląd obrazu <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Aby wyszukać urządzenia, Chrome potrzebuje dostępu do lokalizacji. <ph name="BEGIN_LINK" />Zwiększ uprawnienia<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="666731172850799929">Otwórz w <ph name="APP_NAME" /></translation>
@@ -1031,12 +1023,12 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7583262514280211622">Tu znajdziesz swoją listę Do przeczytania</translation>
 <translation id="7588219262685291874">Włącz ciemny motyw, gdy na urządzeniu jest aktywne oszczędzanie baterii</translation>
 <translation id="7593557518625677601">Otwórz ustawienia Androida i ponownie włącz jego synchronizację, by uruchomić Synchronizację Chrome</translation>
+<translation id="7594687499944811403">Pozwól stronie <ph name="EMBEDDED_ORIGIN" /> sprawdzać Twoją tożsamość, gdy korzystasz ze strony <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">System operacyjny</translation>
 <translation id="7605594153474022051">Synchronizacja nie działa</translation>
 <translation id="7606077192958116810">Wersja uproszczona jest włączona. Możesz nią zarządzać w Ustawieniach.</translation>
 <translation id="7612619742409846846">Jesteś zalogowany w Google jako</translation>
 <translation id="7619072057915878432">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z siecią.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Skorzystaj z pomocy<ph name="END_LINK1" /> lub <ph name="BEGIN_LINK2" />skanuj ponownie<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">Witamy w Chrome</translation>
 <translation id="7630202231528827509">Adres URL dostawcy</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło</translation>
@@ -1081,7 +1073,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7876243839304621966">Usuń wszystkie</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nieprzeczytaną stronę}few{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nieprzeczytane strony}many{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nieprzeczytanych stron}other{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nieprzeczytanej strony}}</translation>
 <translation id="7882131421121961860">Brak historii</translation>
-<translation id="7884346424584885269">Chrome potrzebuje uprawnień do wyszukiwania urządzeń w pobliżu. <ph name="BEGIN_LINK" />Zmień uprawnienia<ph name="END_LINK" /></translation>
 <translation id="7886917304091689118">Otwarta w Chrome</translation>
 <translation id="789763218334337857">Korzystanie z Chrome</translation>
 <translation id="7903184275147100332">To może chwilę potrwać</translation>
@@ -1160,7 +1151,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8349013245300336738">Sortuj według ilości wykorzystanych danych</translation>
 <translation id="835847953965672673">Przywrócone pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Zobacz najpopularniejsze strony</translation>
-<translation id="8368027906805972958">Nieznane lub nieobsługiwane urządzenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Język <ph name="LANG" /> jest gotowy.</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
@@ -1221,7 +1211,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8683039184091909753">obraz</translation>
 <translation id="8683081248374354009">Resetuj grupę</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Poziom siły sygnału: # słupek}few{Poziom siły sygnału: # słupki}many{Poziom siły sygnału: # słupków}other{Poziom siły sygnału: # słupka}}</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
@@ -1287,7 +1276,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9108312223223904744">Telefon jako klucz bezpieczeństwa</translation>
 <translation id="9108808586816295166">Bezpieczny DNS może nie być dostępny przez cały czas</translation>
 <translation id="9133397713400217035">Przeglądaj offline</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9155898266292537608">Możesz też wyszukiwać szybkim kliknięciem słowa</translation>

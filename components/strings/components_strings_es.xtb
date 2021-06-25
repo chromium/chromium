@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Las entradas adicionales se descartarán.</translation>
 <translation id="1101672080107056897">Acción de error</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
-<translation id="1107591249535594099">Si se selecciona, Chrome almacenará una copia de tu tarjeta en este dispositivo para completar formularios más rápidamente.</translation>
 <translation id="1110994991967754504">Seleccionar permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">&amp;Deshacer reorganización</translation>
 <translation id="1123753900084781868">Subtítulos automáticos no está disponible en estos momentos</translation>
@@ -435,7 +434,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2491414235131909199">Una extensión ha bloqueado esta página</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizador de archivos JSON</translation>
-<translation id="2495093607237746763">Si se activa esta opción, Chromium guardará una copia de tu tarjeta en este dispositivo para completar formularios más rápidamente.</translation>
 <translation id="2498091847651709837">Escanear nueva tarjeta</translation>
 <translation id="2501278716633472235">Volver</translation>
 <translation id="2505268675989099013">Proteger cuenta</translation>
@@ -712,7 +710,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3531780078352352885">Hojas de tarea</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> quiere usar el micrófono</translation>
 <translation id="3533328374079021623">Buzón de correo 5</translation>
-<translation id="3539171420378717834">Guardar una copia de la tarjeta en este dispositivo</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
 <translation id="3558573058928565255">Día y hora</translation>
 <translation id="3566021033012934673">La conexión no es privada</translation>
@@ -1590,6 +1587,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
+<translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679355240208270552">Se ha ignorado el valor porque se ha establecido una política que inhabilita la búsqueda predeterminada.</translation>
 <translation id="6794951432696553238">A partir de ahora, puedes confirmar tus tarjetas más rápido con Windows Hello</translation>
@@ -1953,6 +1951,7 @@ Más información:
 <translation id="8100588592594801589">Se han eliminado las tarjetas no válidas</translation>
 <translation id="8103161714697287722">Método de pago</translation>
 <translation id="8105368624971345109">Desactivar</translation>
+<translation id="810875025413331850">No se ha encontrado ningún dispositivo cerca.</translation>
 <translation id="8118489163946903409">Método de pago</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se ha instalado correctamente en tu ordenador o red. Ponte en contacto con el administrador de TI para resolver el problema.</translation>
 <translation id="8128526133099929547">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome te recomienda que accedas a <ph name="WEBSITE_1" /> y a otros sitios web en los que uses esa contraseña y que la cambies ahora.</translation>

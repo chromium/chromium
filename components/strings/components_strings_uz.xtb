@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
 <translation id="1101672080107056897">Xato amali</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
-<translation id="1107591249535594099">Chrome shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ruxsatini tanlang</translation>
 <translation id="1113869188872983271">&amp;Qayta tartiblashni qaytarish</translation>
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
@@ -434,7 +433,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2491414235131909199">Bu sahifa kengaytma tomonidan bloklandi</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON tahlil qilish dasturi</translation>
-<translation id="2495093607237746763">Chromium shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
 <translation id="2498091847651709837">Yangi kartani skanerlash</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2505268675989099013">Hisobni himoyalash</translation>
@@ -708,7 +706,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3531780078352352885">Vazifa varaqlari</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofoningizdan foydalanmoqchi</translation>
 <translation id="3533328374079021623">Pochta qutisi 5</translation>
-<translation id="3539171420378717834">Karta ma’lumotlarini bu qurilmada saqlash</translation>
 <translation id="3552297013052089404">Sans-serif shrifti</translation>
 <translation id="3558573058928565255">Kunduzi</translation>
 <translation id="3566021033012934673">Ulanishingiz himoyalanmagan</translation>
@@ -1584,6 +1581,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Siyohrang</translation>
 <translation id="6786747875388722282">Kengaytmalar</translation>
+<translation id="678982761784843853">Himoyalangan kontent identifikatori</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="679355240208270552">E’tiborsiz qoldiriladi, chunki qoidada asosiy qidiruv tizimi berilmagan</translation>
 <translation id="6794951432696553238">Windows Hello yordamida kartalaringizni tezda tasdiqlang</translation>
@@ -1947,6 +1945,7 @@ Batafsil axborot:
 <translation id="8100588592594801589">Yaroqsiz kartalar olib tashlandi</translation>
 <translation id="8103161714697287722">To‘lov usuli</translation>
 <translation id="8105368624971345109">O‘chirib qo‘yish</translation>
+<translation id="810875025413331850">Yaqin-atrofda hech qanday qurilma topilmadi.</translation>
 <translation id="8118489163946903409">To‘lov usuli</translation>
 <translation id="8127301229239896662">Kompyuter yoki tarmog‘ingizda “<ph name="SOFTWARE_NAME" />” dasturi noto‘g‘ri o‘rnatilgan. Muammo yechimini administratordan so‘rang.</translation>
 <translation id="8128526133099929547">Hozirgina shubhali saytda parol kiritdingiz. Chrome hoziroq <ph name="WEBSITE_1" /> va boshqa saytlardagi shu parolingizni yangilashni tavsiya qiladi.</translation>

@@ -94,6 +94,7 @@
 <translation id="1813414402673211292">ব্ৰাউজিং ডেটা মচক</translation>
 <translation id="1815941218935345331">পাছক’ড</translation>
 <translation id="1820259098641718022">পঢ়িবলগীয়া তালিকাত যোগ কৰা হ'ল</translation>
+<translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1894205589103145703">ছাইন ইন কৰি থাকোঁতে কিবা ভুল হ’ল।</translation>
@@ -113,6 +114,7 @@
 <translation id="209018056901015185">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="2103075008456228677">history.google.com খোলক</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টা বস্তু স্থানান্তৰ কৰা হ’ল</translation>
+<translation id="212623074644302906">পঢ়াৰ সূচীত যোগ দিবলৈ কওক</translation>
 <translation id="2139867232736819575">আপুনি প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="214201757571129614">ছাইন ইন কৰক…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
@@ -435,6 +437,7 @@
 ছেটিংসমূহ-ৰ সাধাৰণ শাখাটোত Handoff সক্ষম কৰা থাকিব লাগিব আৰু আপোনাৰ ডিভাইচকেইটাত একেটা iCloud একাউণ্ট ব্যৱহাৰ হৈ থাকিব লাগিব।</translation>
 <translation id="5551897871312988470">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
+<translation id="5580834567471114021">পৰৱৰ্তী সময়ৰ বাবে পঢ়াৰ সূচীত যোগ দিবনে?</translation>
 <translation id="5592679540098330836"><ph name="NAME" />ৰ ছিংক অন কৰক</translation>
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5626245204502895507">এই মুহূৰ্তত ফাইলটো ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
@@ -588,6 +591,7 @@
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
 <translation id="6830804042318138535">অধিক পঢ়ক</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6842136130964845393">আপুনি নিজৰ ছেভ কৰি ৰখা পাছৱৰ্ডসমূহ যিকোনো সময়তে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="6851516051005285358">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="6858855187367714033">স্কেন কৰা হ’ল</translation>
 <translation id="6859944681507688231">কোনো QR ক’ড অথবা ক্ৰেডিট কাৰ্ড স্কেন কৰিবলৈ ছেটিংসমূহৰ পৰা কেমেৰা সক্ষম কৰক।</translation>
@@ -618,6 +622,7 @@
 <translation id="7102005569666697658">ডাউনল’ড কৰি থকা হৈছে… <ph name="FILE_SIZE" /></translation>
 <translation id="7133798577887235672">সম্পূৰ্ণ নাম</translation>
 <translation id="7136892417564438900">কেমেৰা উপলব্ধ নহয়</translation>
+<translation id="7153999225810839758">পঢ়িবলৈ আনুমানিক <ph name="TIME" /> মিনিট লাগে</translation>
 <translation id="7159472599653637159">ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ৰ জৰিয়তে ইনক’গনিট’ টেব আনলক কৰক</translation>
 <translation id="7172852049901402487">আপোনাৰ পাছৱর্ডসমূহক সুৰক্ষা সম্পর্কীয় সমস্যাসমূহৰ পৰা নিৰাপদে ৰাখক</translation>
@@ -665,6 +670,7 @@
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="7607521702806708809">পাছৱৰ্ড মচক</translation>
+<translation id="7616830195948464104"><ph name="TIME" /> মিনিট</translation>
 <translation id="7638584964844754484">ভুল পাছফ্ৰেজ</translation>
 <translation id="7646772052135772216">পাছৱৰ্ড ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="7649070708921625228">সহায়</translation>

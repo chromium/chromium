@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal weggegooi word.</translation>
 <translation id="1101672080107056897">Fouthandeling</translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
-<translation id="1107591249535594099">Indien gemerk, sal Chrome 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
 <translation id="1123753900084781868">Intydse Onderskrifte is nie nou onmiddellik beskikbaar nie</translation>
@@ -435,7 +434,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2491414235131909199">Hierdie bladsy is deur 'n uitbreiding geblokkeer</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-ontleder</translation>
-<translation id="2495093607237746763">As dit gemerk is, sal Chromium 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
 <translation id="2498091847651709837">Skandeer nuwe kaart</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2505268675989099013">Beskerm rekening</translation>
@@ -712,7 +710,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3531780078352352885">Taakbladsye</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> wil jou mikrofoon gebruik</translation>
 <translation id="3533328374079021623">Posbus 5</translation>
-<translation id="3539171420378717834">Hou 'n kopie van hierdie kaart op hierdie toestel</translation>
 <translation id="3552297013052089404">Sans serif-lettertipe</translation>
 <translation id="3558573058928565255">Dag</translation>
 <translation id="3566021033012934673">Jou verbinding is nie privaat nie</translation>
@@ -1590,6 +1587,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Pers</translation>
 <translation id="6786747875388722282">Uitbreidings</translation>
+<translation id="678982761784843853">ID's van beskermde inhoud</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="679355240208270552">Geïgnoreer, want versteksoektog is nie deur beleid geaktiveer nie.</translation>
 <translation id="6794951432696553238">Gebruik van nou af Windows Hello om jou kaarte vinniger te bevestig</translation>
@@ -1953,6 +1951,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8100588592594801589">Die ongeldige kaarte is verwyder</translation>
 <translation id="8103161714697287722">Betaalmetode</translation>
 <translation id="8105368624971345109">Skakel af</translation>
+<translation id="810875025413331850">Geen nabygeleë toestelle gevind nie.</translation>
 <translation id="8118489163946903409">Betalingmetode</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" is nie behoorlik op jou rekenaar of netwerk geïnstalleer nie. Vra jou IT-administrateur om hierdie probleem op te los.</translation>
 <translation id="8128526133099929547">Jy het sopas jou wagwoord op 'n misleidende werf ingevoer. Chrome beveel aan dat jy gaan na <ph name="WEBSITE_1" /> en ander werwe waarop jy hierdie wagwoord gebruik en dit nou verander.</translation>

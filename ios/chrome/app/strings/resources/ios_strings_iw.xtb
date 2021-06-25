@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1449835205994625556">הסתרת סיסמה</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
+<translation id="149095475893949513">האתר הזה מנסה להוריד פרופיל של הגדרות אישיות.</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1509486075633541495">כניסה לאתר</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">נתוני מילוי אוטומטי</translation>
 <translation id="3609785682760573515">הסנכרון מתבצע...</translation>
 <translation id="3638472932233958418">טעינה מראש של דפי אינטרנט</translation>
+<translation id="3661160521073045932">יש פרופיל של הגדרות אישיות</translation>
 <translation id="3670030362669914947">מספר</translation>
 <translation id="3691593122358196899">התווסף לסימניות ב-<ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">סימון כפריט שלא נקרא</translation>

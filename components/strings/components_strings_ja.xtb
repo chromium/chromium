@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">このフィールドに入力できる件数は <ph name="MAX_ITEMS_LIMIT" /> 件までです。この件数を超える部分は破棄されます。</translation>
 <translation id="1101672080107056897">エラー アクション</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
-<translation id="1107591249535594099">チェックボックスをオンにすると、Chrome はフォームに迅速に入力するために、カード情報のコピーをこのデバイスに保存します。</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1113869188872983271">順序変更の取り消し（&amp;U）</translation>
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">このページは拡張機能によってブロックされています</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
-<translation id="2495093607237746763">チェックボックスをオンにすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
 <translation id="2498091847651709837">新しいカードをスキャン</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2505268675989099013">アカウントを保護</translation>
@@ -708,7 +706,6 @@
 <translation id="3531780078352352885">ジョブシート</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
-<translation id="3539171420378717834">このデバイスにこのカード情報のコピーを保存する</translation>
 <translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
@@ -1581,6 +1578,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">バイオレット</translation>
 <translation id="6786747875388722282">拡張機能</translation>
+<translation id="678982761784843853">保護されたコンテンツ ID</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="679355240208270552">ポリシーによって既定の検索エンジンが有効になっていないため、無視されました。</translation>
 <translation id="6794951432696553238">今後 Windows Hello を使用して、カードの確認をより迅速に行います</translation>
@@ -1944,6 +1942,7 @@
 <translation id="8100588592594801589">無効なカードを削除しました</translation>
 <translation id="8103161714697287722">お支払い方法</translation>
 <translation id="8105368624971345109">オフにする</translation>
+<translation id="810875025413331850">近くにデバイスは見つかりませんでした。</translation>
 <translation id="8118489163946903409">お支払い方法</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」がパソコンまたはネットワークに正しくインストールされていません。管理者にこの問題を解決するよう依頼してください。</translation>
 <translation id="8128526133099929547">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" /> のほか、このパスワードを使用しているサイトで、パスワードを今すぐ変更することをおすすめします。</translation>

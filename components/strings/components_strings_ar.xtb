@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. سيتم تجاهل جميع الإدخالات الأخرى.</translation>
 <translation id="1101672080107056897">خطأ في الإجراء</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
-<translation id="1107591249535594099">‏إذا تم وضع علامة على هذا الخيار، سيخزّن Chrome نسخة من هذه البطاقة على هذا الجهاز لتعبئة النماذج بشكل أسرع.</translation>
 <translation id="1110994991967754504">اختيار إذن لـ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113869188872983271">تراجع عن إعادة الت&amp;رتيب</translation>
 <translation id="1123753900084781868">لا تتوفّر ميزة "النسخ النصي التلقائي" في الوقت الحالي.</translation>
@@ -432,7 +431,6 @@
 <translation id="2491414235131909199">تم حظر هذه الصفحة بواسطة إحدى الإضافات.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">‏محلل JSON اللغوي</translation>
-<translation id="2495093607237746763">‏عند وضع علامة على هذا الخيار، سيخزّن Chromium نسخة من بطاقتك على هذا الجهاز لتعبئة النماذج بشكل أسرع.</translation>
 <translation id="2498091847651709837">فحص بطاقة جديدة</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2505268675989099013">حماية الحساب</translation>
@@ -709,7 +707,6 @@
 <translation id="3531780078352352885">أوراق المهمة</translation>
 <translation id="3532844647053365774">يريد <ph name="HOST" /> استخدام الميكروفون.</translation>
 <translation id="3533328374079021623">صندوق البريد الإلكتروني 5</translation>
-<translation id="3539171420378717834">الاحتفاظ بنسخة من هذه البطاقة على هذا الجهاز</translation>
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
 <translation id="3558573058928565255">خلال النهار</translation>
 <translation id="3566021033012934673">الاتصال بهذا الموقع الإلكتروني ليس خاصًا</translation>
@@ -1584,6 +1581,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786747875388722282">الإضافات</translation>
+<translation id="678982761784843853">معرّفات المحتوى المحمي</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="679355240208270552">تم التجاهل نظرًا لأنه لم يتم تفعيل البحث التلقائي بواسطة السياسة.</translation>
 <translation id="6794951432696553238">‏التأكد من بطاقاتك بشكلٍ أسرع باستخدام Windows Hello من الآن فصاعدًا</translation>
@@ -1946,6 +1944,7 @@
 <translation id="8100588592594801589">تمت إزالة البطاقات غير الصالحة</translation>
 <translation id="8103161714697287722">طريقة الدفع</translation>
 <translation id="8105368624971345109">إيقاف</translation>
+<translation id="810875025413331850">لم يتم العثور على أجهزة مجاورة.</translation>
 <translation id="8118489163946903409">طريقة الدفع</translation>
 <translation id="8127301229239896662">لم يتم تثبيت "<ph name="SOFTWARE_NAME" />" بطريقة صحيحة على جهاز الكمبيوتر أو الشبكة. اطلب من مشرف تقنية المعلومات حل هذه المشكلة.</translation>
 <translation id="8128526133099929547">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. لذا ينصح Chrome بالانتقال إلى <ph name="WEBSITE_1" />، وأيّ مواقع إلكترونية أخرى تستخدم فيها كلمة المرور هذه، وبتغيير الكلمة الآن.</translation>

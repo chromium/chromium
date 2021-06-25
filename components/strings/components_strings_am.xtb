@@ -35,7 +35,6 @@
 <translation id="1096545575934602868">ይህመስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሌሎች ተጨማሪ ግቤቶች ሁሉ ይወገዳሉ።</translation>
 <translation id="1101672080107056897">የስህተት እርምጃ</translation>
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
-<translation id="1107591249535594099">ምልክት ከተደረገበት፣ Chrome ለተሻለ ፈጣን የቅጽ አሞላል የካርድዎን ቅጂ በዚህ መሣሪያ ላይ ያከማቻል።</translation>
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
 <translation id="1123753900084781868">የቀጥታ መግለጫ ጽሑፍ አሁን ላይ አይገኝም</translation>
@@ -431,7 +430,6 @@
 <translation id="2491414235131909199">ይህ ገጽ በቅጥያ ታግዷል</translation>
 <translation id="2493640343870896922">ደብዳቤ-ፕላስ</translation>
 <translation id="2495083838625180221">JSON ተንታኝ</translation>
-<translation id="2495093607237746763">ምልክት ከተደረገበት Chromium ለተሻለ የቅጽ አሞላል ፍጥነት የካርድዎን ቅጂ በዚህ መሣሪያ ላይ ያከማቻል።</translation>
 <translation id="2498091847651709837">አዲስ ካርድ ቃኝ</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
 <translation id="2505268675989099013">መለያን ጠብቅ</translation>
@@ -707,7 +705,6 @@
 <translation id="3531780078352352885">የስራ ሉሆች</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ማይክሮፎንዎን መጠቀም ይፈልጋል</translation>
 <translation id="3533328374079021623">የመልዕክት ሳጥን 5</translation>
-<translation id="3539171420378717834">የዚህን ካርድ ቅጂ በዚህ መሣሪያ ላይ አቆይ</translation>
 <translation id="3552297013052089404">Sans-Serif ቅርጸ ቁምፊ</translation>
 <translation id="3558573058928565255">የቀን ሰዓት</translation>
 <translation id="3566021033012934673">ግንኙነትዎ የግል አይደለም</translation>
@@ -1582,6 +1579,7 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ወይን ጠጅ</translation>
 <translation id="6786747875388722282">ቅጥያዎች</translation>
+<translation id="678982761784843853">የተጠበቁ የይዘት መታወቂያዎች</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="679355240208270552">ነባሪው ፍለጋ በመምሪያ ስላልነቃ ችላ ተብሏል።</translation>
 <translation id="6794951432696553238">ከአሁን በኋላ Windows Helloን በመጠቀም የእርስዎን ካርዶች በበለጠ ፍጥነት ያረጋግጡ</translation>
@@ -1945,6 +1943,7 @@
 <translation id="8100588592594801589">ልክ ያልኾኑት ካርዶች ተወግደዋል</translation>
 <translation id="8103161714697287722">የክፍያ ስልት</translation>
 <translation id="8105368624971345109">አጥፋ</translation>
+<translation id="810875025413331850">በአቅራቢያ ያሉ ምንም መሣሪያዎች አልተገኙም።</translation>
 <translation id="8118489163946903409">የመክፈያ ዘዴ</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» በእርስዎ ኮምፒውተር ወይም አውታረ መረብ ላይ በአግባቡ አልተጫነም። አስተዳዳሪዎ ይህን ችግር እንዲፈታ ይጠይቁ።</translation>
 <translation id="8128526133099929547">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chrome ወደ <ph name="WEBSITE_1" /> እና ይህን ይለፍ ቃል በሚጠቀሙባቸው ሌላ ጣቢያዎች መሄድን እና አሁኑኑ እንዲለውጡት ይመክራል።</translation>

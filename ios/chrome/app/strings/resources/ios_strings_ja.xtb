@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
+<translation id="149095475893949513">このウェブサイトが設定プロファイルをダウンロードしようとしています。</translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
 <translation id="1509486075633541495">ウェブサイトにログイン</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">自動入力のデータ</translation>
 <translation id="3609785682760573515">同期しています...</translation>
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
+<translation id="3661160521073045932">設定プロファイルを使用できます</translation>
 <translation id="3670030362669914947">番号</translation>
 <translation id="3691593122358196899">「<ph name="FOLDER_TITLE" />」にブックマークしました</translation>
 <translation id="3709582977625132201">未読にする</translation>

@@ -92,10 +92,8 @@
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
-<translation id="1569387923882100876">已連接的裝置</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1592864538817356322">標準保護功能：</translation>
-<translation id="1612196535745283361">Chrome 需要位置資訊存取權才能掃描裝置，而系統已<ph name="BEGIN_LINK" />關閉此裝置<ph name="END_LINK" />的位置存取權。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
@@ -146,7 +144,6 @@
 <translation id="1984417487208496350">無保護功能 (不建議)</translation>
 <translation id="1986685561493779662">此名稱已有人使用</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" />，<ph name="LINK_NAME" />按鈕</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2017836877785168846">清除網址列中的記錄和自動完成資料。</translation>
@@ -399,6 +396,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3522247891732774234">有可用的更新。更多選項</translation>
 <translation id="3524138585025253783">開發人員使用者介面</translation>
+<translation id="3524334353996115845">讓 <ph name="ORIGIN" /> 驗證你的身分</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">搜尋你的記錄</translation>
@@ -431,7 +429,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3771290962915251154">已啟用家長監控設定，因此這項設定已停用</translation>
 <translation id="3771694256347217732">Google 服務條款</translation>
-<translation id="3773755127849930740">請<ph name="BEGIN_LINK" />開啟藍牙功能<ph name="END_LINK" />以允許配對</translation>
 <translation id="3773856050682458546">基本資料，以及您瀏覽的網站和所用應用程式的資料</translation>
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3778956594442850293">已新增至主畫面</translation>
@@ -604,7 +601,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4913161338056004800">重設統計資料</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
-<translation id="4915549754973153784">正在掃描裝置…<ph name="BEGIN_LINK" />查看說明<ph name="END_LINK" /></translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# 個網頁}other{# 個網頁}}</translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系統會匯出您的密碼並下載為文字檔案。任何能存取目的地資料夾的使用者和應用程式都可看到您的密碼。</translation>
@@ -653,7 +649,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5215116848420601511">使用 Google Pay 儲存的付款方法和地址</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5227554086496586518">輕按以查看搜尋結果</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5250483651202458397">螢幕截圖。輕按以關閉。</translation>
 <translation id="5262378156578470238">下載於 <ph name="DATE" />開始時，系統會顯示通知。</translation>
@@ -672,6 +667,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 個開啟的分頁，輕按即可切換分頁}other{<ph name="OPEN_TABS_MANY" /> 個開啟的分頁，輕按即可切換分頁}}</translation>
 <translation id="5375577065097716013">使用「Google 智能鏡頭」搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">只允許瀏覽部分網站</translation>
+<translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">正在驗證…</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
@@ -695,7 +691,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5524843473235508879">已禁止重新導向。</translation>
-<translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。系統已<ph name="BEGIN_LINK2" />關閉此裝置<ph name="END_LINK2" />的位置存取權。</translation>
 <translation id="5534640966246046842">已複製網站</translation>
 <translation id="5548606607480005320">安全檢查</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -743,14 +738,12 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="5810864297166300463">網絡協助</translation>
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
-<translation id="5817918615728894473">配對</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5836192821815272682">正在下載 Chrome 更新…</translation>
 <translation id="5853623416121554550">已暫停</translation>
 <translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
 <translation id="5855546874025048181">修正搜尋：<ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome 無法開啟藍牙適配器</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5862731021271217234">如要取得其他裝置上的分頁，請開啟同步處理功能</translation>
@@ -895,7 +888,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6643649862576733715">依節省數據量排序</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
 <translation id="6649642165559792194">預覽圖片<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
-<translation id="6656545060687952787">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK" />更新權限<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
@@ -1031,12 +1023,12 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7583262514280211622">這裡會顯示您的閱讀清單</translation>
 <translation id="7588219262685291874">在裝置開啟「省電模式」後啟用深色主題背景</translation>
 <translation id="7593557518625677601">如要啟動 Chrome 同步功能，請開啟 Android 設定並重新啟用 Android 系統同步處理功能</translation>
+<translation id="7594687499944811403">讓 <ph name="EMBEDDED_ORIGIN" /> 驗證你在 <ph name="TOP_ORIGIN" /> 的身分</translation>
 <translation id="7596558890252710462">作業系統</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
 <translation id="7606077192958116810">精簡模式已開啟。您可在「設定」中管理此模式。</translation>
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7619072057915878432">無法連線至網絡，因此無法下載 <ph name="FILE_NAME" />。</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />查看說明<ph name="END_LINK1" />或<ph name="BEGIN_LINK2" />重新掃描<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7630202231528827509">供應商網址</translation>
 <translation id="7638584964844754484">複雜密碼不正確</translation>
@@ -1081,7 +1073,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個未讀頁面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個未讀頁面}}</translation>
 <translation id="7882131421121961860">找不到任何記錄</translation>
-<translation id="7884346424584885269">Chrome 需要掃瞄附近裝置的權限。<ph name="BEGIN_LINK" />更新權限<ph name="END_LINK" />。</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
 <translation id="789763218334337857">如何使用 Chrome</translation>
 <translation id="7903184275147100332">請稍候片刻</translation>
@@ -1160,7 +1151,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8349013245300336738">依使用數據量排序</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
-<translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />已準備就緒。</translation>
 <translation id="8387617938027387193">驗證您的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
@@ -1221,7 +1211,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="867767487203716855">下一個更新項目</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8683081248374354009">重設群組</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{訊號強度等級：# 格}other{訊號強度等級：# 格}}</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8712637175834984815">我知道了</translation>
@@ -1287,7 +1276,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="9108312223223904744">支援「讓手機作為安全密鑰」</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9133397713400217035">離線探索</translation>
-<translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
