@@ -62,6 +62,8 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.site_isolation_enabled =
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
   info.built_in_dns_client_enabled = GetBuiltInDnsClientEnabled();
+  info.password_protection_warning_trigger =
+      GetPasswordProtectionWarningTrigger();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
@@ -117,6 +119,17 @@ ContextInfoFetcher::GetSafeBrowsingProtectionLevel() {
 bool ContextInfoFetcher::GetBuiltInDnsClientEnabled() {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kBuiltInDnsClientEnabled);
+}
+
+absl::optional<safe_browsing::PasswordProtectionTrigger>
+ContextInfoFetcher::GetPasswordProtectionWarningTrigger() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (!profile->GetPrefs()->HasPrefPath(
+          prefs::kPasswordProtectionWarningTrigger))
+    return absl::nullopt;
+  return static_cast<safe_browsing::PasswordProtectionTrigger>(
+      profile->GetPrefs()->GetInteger(
+          prefs::kPasswordProtectionWarningTrigger));
 }
 
 }  // namespace enterprise_signals

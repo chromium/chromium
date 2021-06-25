@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
     chrome.enterprise.reportingPrivate.getContextInfo((info) => {
       chrome.test.assertNoLastError();
 
-      chrome.test.assertEq(11, Object.keys(info).length);
+      chrome.test.assertEq(12, Object.keys(info).length);
       chrome.test.assertTrue(info.browserAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.profileAffiliationIds instanceof Array);
       chrome.test.assertTrue(info.onFileAttachedProviders instanceof Array);
@@ -269,6 +269,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq(typeof info.safeBrowsingProtectionLevel, 'string');
       chrome.test.assertEq(typeof info.siteIsolationEnabled, 'boolean');
       chrome.test.assertEq(typeof info.builtInDnsClientEnabled, 'boolean');
+      chrome.test.assertEq
+        (typeof info.passwordProtectionWarningTrigger, 'string');
 
       chrome.test.notifyPass();
     });)");

@@ -84,6 +84,31 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED;
       break;
   }
+  if (!signals.password_protection_warning_trigger.has_value()) {
+    info.password_protection_warning_trigger = extensions::api::
+        enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET;
+  } else {
+    switch (signals.password_protection_warning_trigger.value()) {
+      case safe_browsing::PASSWORD_PROTECTION_OFF:
+        info.password_protection_warning_trigger =
+            extensions::api::enterprise_reporting_private::
+                PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF;
+        break;
+      case safe_browsing::PASSWORD_REUSE:
+        info.password_protection_warning_trigger =
+            extensions::api::enterprise_reporting_private::
+                PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE;
+        break;
+      case safe_browsing::PHISHING_REUSE:
+        info.password_protection_warning_trigger =
+            extensions::api::enterprise_reporting_private::
+                PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE;
+        break;
+      case safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX:
+        NOTREACHED();
+        break;
+    }
+  }
 
   return info;
 }

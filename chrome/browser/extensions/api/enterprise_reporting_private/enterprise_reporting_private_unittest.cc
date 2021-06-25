@@ -411,6 +411,9 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
 }
 
 class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
@@ -452,6 +455,9 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
   }
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -485,12 +491,75 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest, Test) {
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
   EXPECT_EQ(policyValue, info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest,
     testing::Bool());
+
+class EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger
+    : public EnterpriseReportingPrivateGetContextInfoTest,
+      public testing::WithParamInterface<
+          enterprise_reporting_private::PasswordProtectionTrigger> {
+ public:
+  safe_browsing::PasswordProtectionTrigger MapPasswordProtectionTriggerToPolicy(
+      enterprise_reporting_private::PasswordProtectionTrigger enumValue) {
+    switch (enumValue) {
+      case enterprise_reporting_private::
+          PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF:
+        return safe_browsing::PASSWORD_PROTECTION_OFF;
+      case enterprise_reporting_private::
+          PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE:
+        return safe_browsing::PASSWORD_REUSE;
+      case enterprise_reporting_private::
+          PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE:
+        return safe_browsing::PHISHING_REUSE;
+      default:
+        NOTREACHED();
+        return safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX;
+    }
+  }
+};
+
+TEST_P(EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
+       Test) {
+  enterprise_reporting_private::PasswordProtectionTrigger passwordTriggerValue =
+      GetParam();
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kPasswordProtectionWarningTrigger,
+      MapPasswordProtectionTriggerToPolicy(passwordTriggerValue));
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
+  EXPECT_EQ(passwordTriggerValue, info.password_protection_warning_trigger);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger,
+    testing::Values(enterprise_reporting_private::
+                        PASSWORD_PROTECTION_TRIGGER_PASSWORD_PROTECTION_OFF,
+                    enterprise_reporting_private::
+                        PASSWORD_PROTECTION_TRIGGER_PASSWORD_REUSE,
+                    enterprise_reporting_private::
+                        PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE));
 
 class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -539,6 +608,9 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
 }
 
 }  // namespace extensions

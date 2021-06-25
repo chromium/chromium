@@ -50,6 +50,14 @@ namespace enterprise.reportingPrivate {
   // Possible states for the SafeBrowsingProtectionLevel policy.
   enum SafeBrowsingLevel { DISABLED, STANDARD, ENHANCED };
 
+  // Possible states for the PasswordProtectionWarningTrigger policy
+  enum PasswordProtectionTrigger {
+    PASSWORD_PROTECTION_OFF,
+    PASSWORD_REUSE,
+    PHISHING_REUSE,
+    POLICY_UNSET
+  };
+
   // Context info fields returned by the getContextInfo API.
   dictionary ContextInfo {
     DOMString[] browserAffiliationIds;
@@ -63,6 +71,7 @@ namespace enterprise.reportingPrivate {
     SafeBrowsingLevel safeBrowsingProtectionLevel;
     boolean siteIsolationEnabled;
     boolean builtInDnsClientEnabled;
+    PasswordProtectionTrigger passwordProtectionWarningTrigger;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

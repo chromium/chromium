@@ -40,6 +40,8 @@ struct ContextInfo {
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
   bool built_in_dns_client_enabled;
+  absl::optional<safe_browsing::PasswordProtectionTrigger>
+      password_protection_warning_trigger;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -86,6 +88,9 @@ class ContextInfoFetcher {
   safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
 
   bool GetBuiltInDnsClientEnabled();
+
+  absl::optional<safe_browsing::PasswordProtectionTrigger>
+  GetPasswordProtectionWarningTrigger();
 
   content::BrowserContext* browser_context_;
 
