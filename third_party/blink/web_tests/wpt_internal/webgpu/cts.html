@@ -250,6 +250,7 @@
 <meta name=variant content='?q=webgpu:api,operation,resource_init,buffer:copy_buffer_to_buffer_copy_source:*'>
 <meta name=variant content='?q=webgpu:api,operation,resource_init,buffer:copy_buffer_to_texture:*'>
 <meta name=variant content='?q=webgpu:api,operation,resource_init,buffer:resolve_query_set_to_partial_buffer:*'>
+<meta name=variant content='?q=webgpu:api,operation,resource_init,buffer:copy_texture_to_partial_buffer:*'>
 <meta name=variant content='?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="r8unorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="r8snorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="r8uint";*'>
@@ -476,6 +477,8 @@
 <meta name=variant content='?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,depth_format:*'>
 <meta name=variant content='?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,sample_count:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,create:size:*'>
+<meta name=variant content='?q=webgpu:api,validation,buffer,destroy:all_usages:*'>
+<meta name=variant content='?q=webgpu:api,validation,buffer,destroy:error_buffer:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,destroy:twice:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,destroy:while_mapped:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,mapping:mapAsync,usage:*'>

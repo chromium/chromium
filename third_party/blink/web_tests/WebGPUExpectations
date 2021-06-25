@@ -31,6 +31,9 @@ crbug.com/sawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_st
 ### Untriaged failures
 ###
 
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,destroy:error_buffer:* [ Failure ]
+wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validation,buffer,destroy:* [ Failure ]
+
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc5-rg-snorm";* [ Crash ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rg8unorm";* [ Crash ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="src-alpha-saturated";* [ Crash ]
