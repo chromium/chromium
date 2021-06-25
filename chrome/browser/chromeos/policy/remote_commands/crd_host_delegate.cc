@@ -17,7 +17,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
-#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
@@ -147,13 +146,7 @@ void CRDHostDelegate::TerminateSession(base::OnceClosure callback) {
 }
 
 bool CRDHostDelegate::AreServicesReady() const {
-  return ui::UserActivityDetector::Get() != nullptr &&
-         oauth_service() != nullptr;
-}
-
-base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
-  return base::TimeTicks::Now() -
-         ui::UserActivityDetector::Get()->last_activity_time();
+  return oauth_service() != nullptr;
 }
 
 void CRDHostDelegate::FetchOAuthToken(

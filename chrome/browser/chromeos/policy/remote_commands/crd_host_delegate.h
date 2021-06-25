@@ -39,7 +39,6 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
   bool AreServicesReady() const override;
-  base::TimeDelta GetIdlenessPeriod() const override;
   void FetchOAuthToken(
       DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;

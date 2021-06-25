@@ -62,9 +62,6 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     // Check if required system services are ready.
     virtual bool AreServicesReady() const = 0;
 
-    // Return current user idleness period.
-    virtual base::TimeDelta GetIdlenessPeriod() const = 0;
-
     // Attempts to get OAuth token for CRD Host.
     virtual void FetchOAuthToken(OAuthTokenCallback success_callback,
                                  ErrorCallback error_callback) = 0;
@@ -100,6 +97,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
   // Finishes command with error code and optional message.
   void FinishWithError(ResultCode result_code, const std::string& message);
+  void FinishWithNotIdleError();
 
   void OnOAuthTokenReceived(const std::string& token);
   void OnAccessCodeReceived(const std::string& access_code);

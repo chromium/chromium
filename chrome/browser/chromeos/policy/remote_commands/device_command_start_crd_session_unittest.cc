@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
@@ -72,7 +73,6 @@ class StubCRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
  public:
   StubCRDHostDelegate(bool has_active_session,
                       bool are_services_ready,
-                      base::TimeDelta idleness_period,
                       bool oauth_token_success,
                       bool access_code_success);
   ~StubCRDHostDelegate() override;
@@ -81,7 +81,6 @@ class StubCRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
   void TerminateSession(base::OnceClosure callback) override;
 
   bool AreServicesReady() const override;
-  base::TimeDelta GetIdlenessPeriod() const override;
 
   void FetchOAuthToken(
       DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback,
@@ -96,7 +95,6 @@ class StubCRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
  private:
   bool has_active_session_;
   bool are_services_ready_;
-  base::TimeDelta idleness_period_;
   bool oauth_token_success_;
   bool access_code_success_;
 
@@ -105,16 +103,14 @@ class StubCRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
 
 StubCRDHostDelegate::StubCRDHostDelegate(bool has_active_session,
                                          bool are_services_ready,
-                                         base::TimeDelta idleness_period,
                                          bool oauth_token_success,
                                          bool access_code_success)
     : has_active_session_(has_active_session),
       are_services_ready_(are_services_ready),
-      idleness_period_(idleness_period),
       oauth_token_success_(oauth_token_success),
       access_code_success_(access_code_success) {}
 
-StubCRDHostDelegate::~StubCRDHostDelegate() {}
+StubCRDHostDelegate::~StubCRDHostDelegate() = default;
 
 bool StubCRDHostDelegate::HasActiveSession() const {
   return has_active_session_;
@@ -127,10 +123,6 @@ void StubCRDHostDelegate::TerminateSession(base::OnceClosure callback) {
 
 bool StubCRDHostDelegate::AreServicesReady() const {
   return are_services_ready_;
-}
-
-base::TimeDelta StubCRDHostDelegate::GetIdlenessPeriod() const {
-  return idleness_period_;
 }
 
 void StubCRDHostDelegate::FetchOAuthToken(
@@ -168,7 +160,9 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
                      std::string expected_payload);
 
  protected:
-  DeviceCommandStartCRDSessionJobTest();
+  DeviceCommandStartCRDSessionJobTest()
+      : ash::DeviceSettingsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // ash::DeviceSettingsTestBase implementation:
   void SetUp() override {
@@ -232,20 +226,25 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
         ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
   }
 
+  void SetDeviceIdleTime(base::TimeDelta idle_time) {
+    user_activity_detector_.set_last_activity_time_for_test(
+        base::TimeTicks::Now() - idle_time);
+  }
+
  private:
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
   std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
 
+  // Automatically installed as a singleton upon creation.
+  ui::UserActivityDetector user_activity_detector_;
+
  protected:
   base::TimeTicks test_start_time_;
 
   base::RunLoop run_loop_;
 };
-
-DeviceCommandStartCRDSessionJobTest::DeviceCommandStartCRDSessionJobTest() =
-    default;
 
 void DeviceCommandStartCRDSessionJobTest::InitializeJob(
     RemoteCommandJob* job,
@@ -314,7 +313,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
   LogInAsAutoLaunchedKioskAppUser();
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -336,7 +334,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, SuccessOldSessionWasRunning) {
   LogInAsAutoLaunchedKioskAppUser();
   StubCRDHostDelegate delegate(
       true /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -357,7 +354,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, SuccessOldSessionWasRunning) {
 TEST_F(DeviceCommandStartCRDSessionJobTest, FailureServicesAreNotReady) {
   StubCRDHostDelegate delegate(
       false /* has_active_session */, false /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -383,7 +379,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForNonKioskUser) {
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -412,7 +407,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -441,7 +435,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -468,7 +461,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -497,7 +489,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -524,7 +515,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -553,7 +543,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -571,24 +560,56 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
   run_loop_.Run();
 }
 
-TEST_F(DeviceCommandStartCRDSessionJobTest, FailureNotIdle) {
+TEST_F(DeviceCommandStartCRDSessionJobTest,
+       ShouldFailIfDeviceIdleTimeIsLessThanIdlenessCutoffValue) {
+  const auto idleness_cutoff = base::TimeDelta::FromSeconds(10);
+  const auto device_idle_time = base::TimeDelta::FromSeconds(9);
+
   LogInAsAutoLaunchedKioskAppUser();
+
+  SetDeviceIdleTime(device_idle_time);
+
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromSeconds(1) /* idleness_period */,
       true /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandStartCRDSessionJob>(&delegate);
-  InitializeJob(job.get(), kUniqueID, test_start_time_,
-                base::TimeDelta::FromSeconds(30),
+  InitializeJob(job.get(), kUniqueID, test_start_time_, idleness_cutoff,
                 false /* terminate_upon_input */);
   bool success = job->Run(
       base::Time::Now(), base::TimeTicks::Now(),
       base::BindOnce(&DeviceCommandStartCRDSessionJobTest::VerifyResults,
                      base::Unretained(this), base::Unretained(job.get()),
                      RemoteCommandJob::FAILED,
-                     CreateNotIdlePayload(base::TimeDelta::FromSeconds(1))));
+                     CreateNotIdlePayload(device_idle_time)));
+  EXPECT_TRUE(success);
+  run_loop_.Run();
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobTest,
+       ShouldSucceedIfDeviceIdleTimeIsMoreThanIdlenessCutoffValue) {
+  const auto idleness_cutoff = base::TimeDelta::FromSeconds(10);
+  const auto device_idle_time = base::TimeDelta::FromSeconds(11);
+
+  LogInAsAutoLaunchedKioskAppUser();
+
+  SetDeviceIdleTime(device_idle_time);
+
+  StubCRDHostDelegate delegate(
+      false /* has_active_session */, true /* are_services_ready */,
+      true /* oauth_token_success */, true /* access_code_success */);
+
+  std::unique_ptr<RemoteCommandJob> job =
+      std::make_unique<DeviceCommandStartCRDSessionJob>(&delegate);
+  InitializeJob(job.get(), kUniqueID, test_start_time_, idleness_cutoff,
+                false /* terminate_upon_input */);
+  bool success = job->Run(
+      base::Time::Now(), base::TimeTicks::Now(),
+      base::BindOnce(&DeviceCommandStartCRDSessionJobTest::VerifyResults,
+                     base::Unretained(this), base::Unretained(job.get()),
+                     RemoteCommandJob::SUCCEEDED,
+                     CreateSuccessPayload(kTestAccessCode)));
   EXPECT_TRUE(success);
   run_loop_.Run();
 }
@@ -597,7 +618,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, TestNoOauthToken) {
   LogInAsAutoLaunchedKioskAppUser();
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       false /* oauth_token_success */, true /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =
@@ -622,7 +642,6 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, TestErrorRunningCRDHost) {
   LogInAsAutoLaunchedKioskAppUser();
   StubCRDHostDelegate delegate(
       false /* has_active_session */, true /* are_services_ready */,
-      base::TimeDelta::FromHours(1) /* idleness_period */,
       true /* oauth_token_success */, false /* access_code_success */);
 
   std::unique_ptr<RemoteCommandJob> job =

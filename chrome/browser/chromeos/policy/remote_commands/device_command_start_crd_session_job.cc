@@ -20,6 +20,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
@@ -179,6 +180,7 @@ bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
 
 bool DeviceCommandStartCRDSessionJob::AreServicesReady() const {
   return user_manager::UserManager::IsInitialized() &&
+         ui::UserActivityDetector::Get() != nullptr &&
          delegate_->AreServicesReady();
 }
 
@@ -193,12 +195,13 @@ bool DeviceCommandStartCRDSessionJob::IsRunningAutoLaunchedKiosk() const {
 }
 
 bool DeviceCommandStartCRDSessionJob::IsDeviceIdle() const {
-  return delegate_->GetIdlenessPeriod() >= idleness_cutoff_;
+  return GetDeviceIdlenessPeriod() >= idleness_cutoff_;
 }
 
 base::TimeDelta DeviceCommandStartCRDSessionJob::GetDeviceIdlenessPeriod()
     const {
-  return delegate_->GetIdlenessPeriod();
+  return base::TimeTicks::Now() -
+         ui::UserActivityDetector::Get()->last_activity_time();
 }
 
 void DeviceCommandStartCRDSessionJob::FinishWithError(
@@ -211,6 +214,13 @@ void DeviceCommandStartCRDSessionJob::FinishWithError(
       FROM_HERE,
       base::BindOnce(std::move(failed_callback_),
                      ResultPayload::CreateErrorPayload(result_code, message)));
+}
+
+void DeviceCommandStartCRDSessionJob::FinishWithNotIdleError() {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(failed_callback_),
+                                ResultPayload::CreateNonIdlePayload(
+                                    GetDeviceIdlenessPeriod())));
 }
 
 void DeviceCommandStartCRDSessionJob::RunImpl(
@@ -242,10 +252,7 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
   }
 
   if (!IsDeviceIdle()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                  ResultPayload::CreateNonIdlePayload(
-                                      GetDeviceIdlenessPeriod())));
+    FinishWithNotIdleError();
     return;
   }
 
