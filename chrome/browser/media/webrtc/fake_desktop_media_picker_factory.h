@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -49,8 +50,8 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
       content::WebContents* web_contents) override;
 
  private:
-  FakeDesktopMediaPicker* picker_;
-  TestFlags* test_flags_;
+  CheckedPtr<FakeDesktopMediaPicker> picker_;
+  CheckedPtr<TestFlags> test_flags_;
   int tests_count_;
   int current_test_;
 

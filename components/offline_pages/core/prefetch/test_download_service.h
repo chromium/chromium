@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
@@ -46,7 +47,7 @@ class TestDownloadService : public download::DownloadService {
   void FinishDownload(const std::string& guid);
 
   base::ScopedTempDir download_dir_;
-  TestDownloadClient* client_ = nullptr;
+  CheckedPtr<TestDownloadClient> client_ = nullptr;
   int next_file_id_ = 0;
   std::string test_file_data_;
   DISALLOW_COPY_AND_ASSIGN(TestDownloadService);

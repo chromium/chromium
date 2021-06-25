@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/observers/metrics_collector.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -41,7 +42,7 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
   void SetUp() override {
     Super::SetUp();
     metrics_collector_ = new MetricsCollector();
-    graph()->PassToGraph(base::WrapUnique(metrics_collector_));
+    graph()->PassToGraph(base::WrapUnique(metrics_collector_.get()));
   }
 
   void TearDown() override {
@@ -57,7 +58,7 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
   base::HistogramTester histogram_tester_;
 
  private:
-  MetricsCollector* metrics_collector_ = nullptr;
+  CheckedPtr<MetricsCollector> metrics_collector_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MAYBE_MetricsCollectorTest);
 };

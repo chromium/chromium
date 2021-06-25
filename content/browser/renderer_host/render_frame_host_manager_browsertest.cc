@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
@@ -187,7 +188,7 @@ class RenderFrameHostDestructionObserver : public WebContentsObserver {
  private:
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
   bool deleted_;
-  RenderFrameHost* render_frame_host_;
+  CheckedPtr<RenderFrameHost> render_frame_host_;
 };
 
 // A NavigationThrottle implementation that blocks all outgoing navigation

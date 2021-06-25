@@ -70,7 +70,9 @@ public class ImmersiveModeControllerTest {
         doAnswer(invocation -> {
             mSystemUiVisibility = invocation.getArgument(0);
             return null;
-        }).when(mDecorView).setSystemUiVisibility(anyInt());
+        })
+                .when(mDecorView)
+                .setSystemUiVisibility(anyInt());
 
         mController = new ImmersiveModeController(mLifecycleDispatcher, mActivity);
     }

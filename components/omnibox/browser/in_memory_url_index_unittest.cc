@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -178,7 +179,7 @@ class InMemoryURLIndexTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<history::HistoryService> history_service_;
-  history::HistoryDatabase* history_database_ = nullptr;
+  CheckedPtr<history::HistoryDatabase> history_database_ = nullptr;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<InMemoryURLIndex> url_index_;
 };

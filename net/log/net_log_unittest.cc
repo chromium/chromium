@@ -4,6 +4,7 @@
 
 #include "net/log/net_log.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -258,12 +259,12 @@ class NetLogTestThread : public base::SimpleThread {
   virtual void RunTestThread() = 0;
 
  protected:
-  NetLog* net_log_;
+  CheckedPtr<NetLog> net_log_;
 
  private:
   // Only triggered once all threads have been created, to make it less likely
   // each thread completes before the next one starts.
-  base::WaitableEvent* start_event_;
+  CheckedPtr<base::WaitableEvent> start_event_;
 
   DISALLOW_COPY_AND_ASSIGN(NetLogTestThread);
 };

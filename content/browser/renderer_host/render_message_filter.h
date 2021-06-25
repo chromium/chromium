@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
@@ -98,7 +99,7 @@ class CONTENT_EXPORT RenderMessageFilter
 
   int render_process_id_;
 
-  MediaInternals* media_internals_;
+  CheckedPtr<MediaInternals> media_internals_;
 
   base::WeakPtrFactory<RenderMessageFilter> weak_ptr_factory_{this};
 

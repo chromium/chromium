@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 
@@ -117,7 +118,7 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  SigninClient* signin_client_;
+  CheckedPtr<SigninClient> signin_client_;
   bool migration_completed_;
 
   // Last known "first account". Used when cookies are lost as a best guess.

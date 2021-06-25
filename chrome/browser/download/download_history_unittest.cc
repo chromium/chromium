@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
@@ -482,9 +483,9 @@ class DownloadHistoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   std::unique_ptr<content::MockDownloadManager> manager_;
-  FakeHistoryAdapter* history_ = nullptr;
+  CheckedPtr<FakeHistoryAdapter> history_ = nullptr;
   std::unique_ptr<DownloadHistory> download_history_;
-  content::DownloadManager::Observer* manager_observer_ = nullptr;
+  CheckedPtr<content::DownloadManager::Observer> manager_observer_ = nullptr;
   size_t download_created_index_ = 0;
   base::test::ScopedFeatureList feature_list_;
 
@@ -535,7 +536,7 @@ TEST_F(DownloadHistoryTest, DownloadHistoryTest_OnHistoryQueryComplete_Pre) {
       *query_callback_ = std::move(callback);
     }
 
-    history::HistoryService::DownloadQueryCallback* query_callback_;
+    CheckedPtr<history::HistoryService::DownloadQueryCallback> query_callback_;
   };
 
   TestDownloadHistoryObserver observer;

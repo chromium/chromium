@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"
@@ -49,7 +50,7 @@ class SSLCertReporterCallback {
   GetLatestChromeChannelReported() const;
 
  private:
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::RunLoop> run_loop_;
   std::string latest_hostname_reported_;
   chrome_browser_ssl::CertLoggerRequest::ChromeChannel chrome_channel_;
 

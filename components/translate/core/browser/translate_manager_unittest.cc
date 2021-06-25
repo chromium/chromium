@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -221,7 +222,7 @@ class TranslateManagerTest : public ::testing::Test {
   ProfilePrefRegistration registration_;
   // TODO(groby): request TranslatePrefs from |mock_translate_client_| instead.
   TranslatePrefs translate_prefs_;
-  TranslateDownloadManager* manager_;
+  CheckedPtr<TranslateDownloadManager> manager_;
 
   TestNetworkChangeNotifier network_notifier_;
   translate::testing::MockTranslateDriver driver_;

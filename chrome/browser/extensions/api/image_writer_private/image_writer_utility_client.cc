@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/service_sandbox_type.h"
@@ -64,7 +65,7 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
   mojo::Receiver<chrome::mojom::RemovableStorageWriterClient> receiver_;
 
   // |image_writer_utility_client_| owns |this|.
-  ImageWriterUtilityClient* const image_writer_utility_client_;
+  const CheckedPtr<ImageWriterUtilityClient> image_writer_utility_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriterClientImpl);
 };

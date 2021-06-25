@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
@@ -169,7 +170,7 @@ class FlakyIterator : public leveldb::Iterator {
  private:
   // The raw pointer is safe because iterators must be deleted before their
   // databases.
-  FlakyDB* const db_;
+  const CheckedPtr<FlakyDB> db_;
 
   // The current flake is cleared & optionally set on every call to Seek*, Next,
   // and Prev.

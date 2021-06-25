@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -445,7 +446,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
   const HostPortPair host_port_pair_;
   std::unique_ptr<SequencedSocketData> sequenced_data_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  MockTaggingClientSocketFactory* socket_factory_;
+  CheckedPtr<MockTaggingClientSocketFactory> socket_factory_;
 
  private:
   SSLSocketDataProvider ssl_data_;

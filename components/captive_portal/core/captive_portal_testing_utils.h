@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -46,7 +47,7 @@ class CaptivePortalDetectorTestBase {
   const GURL& get_probe_url() { return detector_->probe_url_; }
 
  protected:
-  CaptivePortalDetector* detector_;
+  CheckedPtr<CaptivePortalDetector> detector_;
   network::TestURLLoaderFactory test_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetectorTestBase);

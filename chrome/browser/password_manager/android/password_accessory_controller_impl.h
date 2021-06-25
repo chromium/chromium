@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
@@ -155,17 +156,18 @@ class PasswordAccessoryControllerImpl
   void AllPasswordsSheetDismissed();
 
   // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  password_manager::CredentialCache* credential_cache_ = nullptr;
+  CheckedPtr<password_manager::CredentialCache> credential_cache_ = nullptr;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
-  password_manager::PasswordManagerClient* password_client_ = nullptr;
+  CheckedPtr<password_manager::PasswordManagerClient> password_client_ =
+      nullptr;
 
   // Information about the currently focused field. This is the only place
   // allowed to store frame-specific data. If a new field is focused or focus is

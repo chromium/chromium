@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -406,7 +407,7 @@ class MediaEngagementContentsObserverTest
 
  private:
   // contents_observer_ auto-destroys when WebContents is destroyed.
-  MediaEngagementContentsObserver* contents_observer_;
+  CheckedPtr<MediaEngagementContentsObserver> contents_observer_;
 
   std::unique_ptr<MediaEngagementService> service_;
 

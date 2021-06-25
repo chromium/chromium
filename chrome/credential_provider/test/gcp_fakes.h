@@ -13,6 +13,7 @@
 #include <thread>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/scoped_handle.h"
@@ -70,7 +71,7 @@ class FakeOSProcessManager : public OSProcessManager {
       base::win::ScopedProcessInformation* procinfo) override;
 
  private:
-  OSProcessManager* original_manager_;
+  CheckedPtr<OSProcessManager> original_manager_;
   DWORD next_rid_ = 0;
 };
 
@@ -212,7 +213,7 @@ class FakeOSUserManager : public OSUserManager {
   void RestoreOperation(FAILEDOPERATIONS op) { failure_reasons_.erase(op); }
 
  private:
-  OSUserManager* original_manager_;
+  CheckedPtr<OSUserManager> original_manager_;
   DWORD next_rid_ = 0;
   std::map<std::wstring, UserInfo> username_to_info_;
   bool is_device_domain_joined_ = false;
@@ -269,7 +270,7 @@ class FakeScopedLsaPolicy : public ScopedLsaPolicy {
     return factory_->private_data();
   }
 
-  FakeScopedLsaPolicyFactory* factory_;
+  CheckedPtr<FakeScopedLsaPolicyFactory> factory_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -413,7 +414,7 @@ class FakeWinHttpUrlFetcher : public WinHttpUrlFetcher {
   std::string response_;
   HANDLE send_response_event_handle_;
   HRESULT response_hr_ = S_OK;
-  RequestData* request_data_ = nullptr;
+  CheckedPtr<RequestData> request_data_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,7 +429,7 @@ class FakeAssociatedUserValidator : public AssociatedUserValidator {
   using AssociatedUserValidator::IsUserAccessBlockedForTesting;
 
  private:
-  AssociatedUserValidator* original_validator_ = nullptr;
+  CheckedPtr<AssociatedUserValidator> original_validator_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -449,7 +450,7 @@ class FakeChromeAvailabilityChecker : public ChromeAvailabilityChecker {
   void SetHasSupportedChrome(HasSupportedChromeCheckType has_supported_chrome);
 
  private:
-  ChromeAvailabilityChecker* original_checker_ = nullptr;
+  CheckedPtr<ChromeAvailabilityChecker> original_checker_ = nullptr;
 
   // Used during tests to force the credential provider to believe if a
   // supported Chrome version is installed or not. In production a real
@@ -472,7 +473,7 @@ class FakeInternetAvailabilityChecker : public InternetAvailabilityChecker {
       HasInternetConnectionCheckType has_internet_connection);
 
  private:
-  InternetAvailabilityChecker* original_checker_ = nullptr;
+  CheckedPtr<InternetAvailabilityChecker> original_checker_ = nullptr;
 
   // Used during tests to force the credential provider to believe if an
   // internet connection is possible or not.  In production the value is
@@ -495,7 +496,7 @@ class FakePasswordRecoveryManager : public PasswordRecoveryManager {
   using PasswordRecoveryManager::SetRequestTimeoutForTesting;
 
  private:
-  PasswordRecoveryManager* original_validator_ = nullptr;
+  CheckedPtr<PasswordRecoveryManager> original_validator_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -512,7 +513,7 @@ class FakeGemDeviceDetailsManager : public GemDeviceDetailsManager {
   using GemDeviceDetailsManager::SetRequestTimeoutForTesting;
 
  private:
-  GemDeviceDetailsManager* original_manager_ = nullptr;
+  CheckedPtr<GemDeviceDetailsManager> original_manager_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -576,7 +577,7 @@ class FakeEventLoggingApiManager : public EventLoggingApiManager {
   ~FakeEventLoggingApiManager() override;
 
  private:
-  EventLoggingApiManager* original_manager_ = nullptr;
+  CheckedPtr<EventLoggingApiManager> original_manager_ = nullptr;
 
   const std::vector<EventLogEntry>& logs_;
   EVT_HANDLE query_handle_, publisher_metadata_, render_context_;
@@ -601,7 +602,7 @@ class FakeEventLogsUploadManager : public EventLogsUploadManager {
   uint64_t GetNumLogsUploaded();
 
  private:
-  EventLogsUploadManager* original_manager_ = nullptr;
+  CheckedPtr<EventLogsUploadManager> original_manager_ = nullptr;
   FakeEventLoggingApiManager api_manager_;
 };
 
@@ -633,7 +634,7 @@ class FakeUserPoliciesManager : public UserPoliciesManager {
   int GetNumTimesFetchAndStoreCalled() const;
 
  private:
-  UserPoliciesManager* original_manager_ = nullptr;
+  CheckedPtr<UserPoliciesManager> original_manager_ = nullptr;
   std::map<std::wstring, UserPolicies> user_policies_;
   int num_times_fetch_called_ = 0;
   std::map<std::wstring, bool> user_policies_stale_;
@@ -652,7 +653,7 @@ class FakeDevicePoliciesManager : public DevicePoliciesManager {
   void GetDevicePolicies(DevicePolicies* device_policies) override;
 
  private:
-  DevicePoliciesManager* original_manager_ = nullptr;
+  CheckedPtr<DevicePoliciesManager> original_manager_ = nullptr;
   DevicePolicies device_policies_;
 };
 
@@ -666,7 +667,7 @@ class FakeGCPWFiles : public GCPWFiles {
   std::vector<base::FilePath::StringType> GetEffectiveInstallFiles() override;
 
  private:
-  GCPWFiles* original_files = nullptr;
+  CheckedPtr<GCPWFiles> original_files = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -724,7 +725,7 @@ class FakeOSServiceManager : public extension::OSServiceManager {
   std::condition_variable cv;
 
   // Original instance of OSServiceManager.
-  extension::OSServiceManager* os_service_manager_ = nullptr;
+  CheckedPtr<extension::OSServiceManager> os_service_manager_ = nullptr;
   std::map<std::wstring, ServiceInfo> service_lookup_from_name_;
 };
 
@@ -744,7 +745,7 @@ class FakeTaskManager : public extension::TaskManager {
                    const std::string& task_name) override;
 
   // Original instance of TaskManager.
-  extension::TaskManager* task_manager_ = nullptr;
+  CheckedPtr<extension::TaskManager> task_manager_ = nullptr;
 
   // Counts the number of execution per task.
   std::map<std::string, int> num_of_times_executed_;
@@ -762,7 +763,7 @@ class FakeTokenGenerator : public TokenGenerator {
   void SetTokensForTesting(const std::vector<std::string>& test_tokens);
 
  private:
-  TokenGenerator* token_generator_ = nullptr;
+  CheckedPtr<TokenGenerator> token_generator_ = nullptr;
   std::vector<std::string> test_tokens_;
 };
 

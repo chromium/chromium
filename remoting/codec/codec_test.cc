@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "remoting/base/util.h"
 #include "remoting/codec/video_decoder.h"
@@ -164,9 +165,9 @@ class VideoDecoderTester {
  private:
   bool strict_;
   DesktopRegion expected_region_;
-  VideoDecoder* decoder_;
+  CheckedPtr<VideoDecoder> decoder_;
   std::unique_ptr<DesktopFrame> frame_;
-  DesktopFrame* expected_frame_;
+  CheckedPtr<DesktopFrame> expected_frame_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoDecoderTester);
 };
@@ -194,7 +195,7 @@ class VideoEncoderTester {
   }
 
  private:
-  VideoDecoderTester* decoder_tester_;
+  CheckedPtr<VideoDecoderTester> decoder_tester_;
   int data_available_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoEncoderTester);

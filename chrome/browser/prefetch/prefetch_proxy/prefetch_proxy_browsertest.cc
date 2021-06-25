@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -266,7 +267,7 @@ class TestTabHelperObserver : public PrefetchProxyTabHelper::Observer {
   }
 
  private:
-  PrefetchProxyTabHelper* tab_helper_;
+  CheckedPtr<PrefetchProxyTabHelper> tab_helper_;
 
   base::OnceClosure on_decoy_prefetch_closure_;
 

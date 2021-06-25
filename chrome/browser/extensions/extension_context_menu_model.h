@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -156,14 +157,14 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  ExtensionAction* extension_action_;
+  CheckedPtr<ExtensionAction> extension_action_;
 
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The delegate which handles the 'inspect popup' menu command (or NULL).
-  PopupDelegate* delegate_;
+  CheckedPtr<PopupDelegate> delegate_;
 
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 
@@ -86,7 +87,7 @@ class BrokerPermissionList {
   const std::vector<BrokerFilePermission> permissions_;
   // permissions_array_ is set up to point to the backing store of
   // permissions_ and is used in async signal safe methods.
-  const BrokerFilePermission* permissions_array_;
+  CheckedPtr<const BrokerFilePermission> permissions_array_;
   const size_t num_of_permissions_;
 
   DISALLOW_COPY_AND_ASSIGN(BrokerPermissionList);

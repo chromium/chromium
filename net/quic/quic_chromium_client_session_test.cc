@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -300,7 +301,7 @@ class QuicChromiumClientSessionTest
   NetworkChangeNotifier::NetworkHandle default_network_;
   std::unique_ptr<QuicConnectivityMonitor> connectivity_monitor_;
   TestServerPushDelegate test_push_delegate_;
-  quic::QuicConnectionVisitorInterface* visitor_;
+  CheckedPtr<quic::QuicConnectionVisitorInterface> visitor_;
   TestCompletionCallback callback_;
   QuicTestPacketMaker client_maker_;
   QuicTestPacketMaker server_maker_;

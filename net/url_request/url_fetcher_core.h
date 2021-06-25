@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "net/base/chunked_upload_data_stream.h"
@@ -234,12 +235,12 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   // Check if any upload data is set or not.
   void AssertHasNoUploadData() const;
 
-  URLFetcher* fetcher_;              // Corresponding fetcher object
+  CheckedPtr<URLFetcher> fetcher_;   // Corresponding fetcher object
   GURL original_url_;                // The URL we were asked to fetch
   GURL url_;                         // The URL we eventually wound up at
   URLFetcher::RequestType request_type_;  // What type of request is this?
   Error error_;                           // Error from the request
-  URLFetcherDelegate* delegate_;     // Object to notify on completion
+  CheckedPtr<URLFetcherDelegate> delegate_;  // Object to notify on completion
   // Task runner for the creating sequence. Used to interact with the delegate.
   const scoped_refptr<base::SequencedTaskRunner> delegate_task_runner_;
   // Task runner for network operations.
@@ -257,7 +258,7 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
                                      // Cookie/cache info for the request
   base::Optional<url::Origin> initiator_;  // The request's initiator
   // The user data to add to each newly-created URLRequest.
-  const void* url_request_data_key_;
+  CheckedPtr<const void> url_request_data_key_;
   URLFetcher::CreateDataCallback url_request_create_data_callback_;
   HttpRequestHeaders extra_request_headers_;
   scoped_refptr<HttpResponseHeaders> response_headers_;

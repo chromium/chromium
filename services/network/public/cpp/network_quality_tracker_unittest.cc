@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -76,7 +77,7 @@ class TestEffectiveConnectionTypeObserver
 
  private:
   size_t num_notifications_;
-  NetworkQualityTracker* tracker_;
+  CheckedPtr<NetworkQualityTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   net::EffectiveConnectionType expected_effective_connection_type_;
@@ -152,7 +153,7 @@ class TestRTTAndThroughputEstimatesObserver
 
  private:
   size_t num_notifications_;
-  NetworkQualityTracker* tracker_;
+  CheckedPtr<NetworkQualityTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   base::TimeDelta http_rtt_;

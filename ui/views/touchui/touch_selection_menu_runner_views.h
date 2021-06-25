@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
@@ -32,7 +33,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
     Widget* GetWidget();
 
    private:
-    TouchSelectionMenuRunnerViews* menu_runner_;
+    CheckedPtr<TouchSelectionMenuRunnerViews> menu_runner_;
 
     DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
@@ -61,7 +62,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
 
   // A pointer to the currently running menu, or |nullptr| if no menu is
   // running. The menu manages its own lifetime and deletes itself when closed.
-  TouchSelectionMenuViews* menu_ = nullptr;
+  CheckedPtr<TouchSelectionMenuViews> menu_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViews);
 };

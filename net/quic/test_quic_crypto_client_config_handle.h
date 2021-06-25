@@ -6,6 +6,7 @@
 #define NET_QUIC_TEST_QUIC_CRYPTO_CLIENT_CONFIG_HANDLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 
 namespace quic {
@@ -24,7 +25,7 @@ class TestQuicCryptoClientConfigHandle : public QuicCryptoClientConfigHandle {
   quic::QuicCryptoClientConfig* GetConfig() const override;
 
  private:
-  quic::QuicCryptoClientConfig* const crypto_config_;
+  const CheckedPtr<quic::QuicCryptoClientConfig> crypto_config_;
 
   DISALLOW_ASSIGN(TestQuicCryptoClientConfigHandle);
 };

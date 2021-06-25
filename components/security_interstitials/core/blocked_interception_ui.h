@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_BLOCKED_INTERCEPTION_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/ssl_errors/error_classification.h"
@@ -30,7 +31,7 @@ class BlockedInterceptionUI {
   const GURL request_url_;
   const int cert_error_;
   const net::SSLInfo ssl_info_;
-  ControllerClient* controller_;
+  CheckedPtr<ControllerClient> controller_;
   bool user_made_decision_;
 
   DISALLOW_COPY_AND_ASSIGN(BlockedInterceptionUI);

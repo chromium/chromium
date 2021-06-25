@@ -22,6 +22,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
@@ -173,12 +174,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     return primary_account_info_;
   }
 
-  SigninClient* client_;
+  CheckedPtr<SigninClient> client_;
 
   // The ProfileOAuth2TokenService instance associated with this object. Must
   // outlive this object.
-  ProfileOAuth2TokenService* token_service_ = nullptr;
-  AccountTrackerService* account_tracker_service_ = nullptr;
+  CheckedPtr<ProfileOAuth2TokenService> token_service_ = nullptr;
+  CheckedPtr<AccountTrackerService> account_tracker_service_ = nullptr;
 
   bool initialized_ = false;
 

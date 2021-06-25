@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
@@ -80,7 +81,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // entire ancestor chain. |origin| is the origin of the frame being checked.
   bool IsSameOriginWithAncestors(const url::Origin& origin);
 
-  RenderFrameHost* render_frame_host_;
+  CheckedPtr<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

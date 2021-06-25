@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
+#include "base/memory/checked_ptr.h"
 
 #include <map>
 #include <memory>
@@ -71,7 +72,7 @@ class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
   }
 
  private:
-  TestHostFrameSinkManager* host_client_ = nullptr;
+  CheckedPtr<TestHostFrameSinkManager> host_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestFrameSinkManagerImpl);
 };

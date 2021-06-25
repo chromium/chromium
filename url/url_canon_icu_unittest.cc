@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
@@ -38,7 +39,7 @@ class UConvScoper {
   UConverter* converter() const { return converter_; }
 
  private:
-  UConverter* converter_;
+  CheckedPtr<UConverter> converter_;
 };
 
 TEST(URLCanonIcuTest, ICUCharsetConverter) {

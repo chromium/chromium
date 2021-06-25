@@ -5,6 +5,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -43,7 +44,7 @@ class BroadcastChannelProvider::Connection
   mojo::AssociatedReceiver<blink::mojom::BroadcastChannelClient> receiver_;
   mojo::AssociatedRemote<blink::mojom::BroadcastChannelClient> client_;
 
-  BroadcastChannelProvider* service_;
+  CheckedPtr<BroadcastChannelProvider> service_;
   url::Origin origin_;
   std::string name_;
 };

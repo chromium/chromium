@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
@@ -45,7 +46,7 @@ class SaveAddressProfileView : public AutofillBubbleBase,
   void AddedToWidget() override;
 
  private:
-  SaveAddressProfileBubbleController* controller_;
+  CheckedPtr<SaveAddressProfileBubbleController> controller_;
 };
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -86,7 +87,7 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<AwSafeBrowsingUIManager> ui_manager_;
   safe_browsing::SBThreatTypeSet threat_types_;
-  AwSafeBrowsingAllowlistManager* allowlist_manager_;
+  CheckedPtr<AwSafeBrowsingAllowlistManager> allowlist_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(AwUrlCheckerDelegateImpl);
 };

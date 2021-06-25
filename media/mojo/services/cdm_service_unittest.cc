@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -60,7 +61,7 @@ class CdmFactoryWrapper : public CdmFactory {
   }
 
  private:
-  CdmFactory* const cdm_factory_;
+  const CheckedPtr<CdmFactory> cdm_factory_;
 };
 
 class MockCdmServiceClient : public media::CdmService::Client {
@@ -82,7 +83,7 @@ class MockCdmServiceClient : public media::CdmService::Client {
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
  private:
-  CdmFactory* const cdm_factory_;
+  const CheckedPtr<CdmFactory> cdm_factory_;
 };
 
 class CdmServiceTest : public testing::Test {
@@ -167,7 +168,7 @@ class CdmServiceTest : public testing::Test {
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));
   }
   std::unique_ptr<CdmService> service_;
-  MockCdmServiceClient* mock_cdm_service_client_ = nullptr;
+  CheckedPtr<MockCdmServiceClient> mock_cdm_service_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CdmServiceTest);
 };

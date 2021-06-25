@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
@@ -46,7 +47,7 @@ class WorkletLoader {
   void OnDownloadComplete(std::unique_ptr<std::string> body);
 
   const GURL script_source_url_;
-  AuctionV8Helper* const v8_helper_;
+  const CheckedPtr<AuctionV8Helper> v8_helper_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;

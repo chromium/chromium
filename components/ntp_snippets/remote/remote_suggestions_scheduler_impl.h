@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
@@ -142,16 +143,16 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
 
   // Interface for scheduling hard fetches, OS dependent. Not owned, may be
   // null.
-  PersistentScheduler* persistent_scheduler_;
+  CheckedPtr<PersistentScheduler> persistent_scheduler_;
 
   // Interface for doing all the actual work (apart from scheduling). Not owned.
-  RemoteSuggestionsProvider* provider_;
+  CheckedPtr<RemoteSuggestionsProvider> provider_;
 
   FetchingSchedule schedule_;
   bool background_fetch_in_progress_;
 
   // Used to adapt the schedule based on usage activity of the user. Not owned.
-  const UserClassifier* user_classifier_;
+  CheckedPtr<const UserClassifier> user_classifier_;
 
   // Request throttlers for limiting requests for different classes of users.
   RequestThrottler request_throttler_rare_ntp_user_;
@@ -166,8 +167,8 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
   // We should not fetch in background before EULA gets accepted.
   std::unique_ptr<EulaState> eula_state_;
 
-  PrefService* profile_prefs_;
-  base::Clock* clock_;
+  CheckedPtr<PrefService> profile_prefs_;
+  CheckedPtr<base::Clock> clock_;
   std::set<TriggerType> enabled_triggers_;
   std::set<TriggerType> queued_triggers_;
 

@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -287,10 +288,10 @@ class UpgradeDetector {
   void CheckIdle();
 
   // A provider of Time to the detector.
-  const base::Clock* const clock_;
+  const CheckedPtr<const base::Clock> clock_;
 
   // A provider of TimeTicks to the detectors' timers.
-  const base::TickClock* const tick_clock_;
+  const CheckedPtr<const base::TickClock> tick_clock_;
 
   // Observes changes to the browser.relaunch_notification_period Local State
   // preference.

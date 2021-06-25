@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/background_fetch/background_fetch_test_browser_context.h"
 #include "content/browser/background_fetch/background_fetch_test_service_worker.h"
@@ -90,13 +91,13 @@ class BackgroundFetchTestBase : public ::testing::Test {
  private:
   BackgroundFetchTestBrowserContext browser_context_;
 
-  MockBackgroundFetchDelegate* delegate_;
+  CheckedPtr<MockBackgroundFetchDelegate> delegate_;
 
   EmbeddedWorkerTestHelper embedded_worker_test_helper_;
 
   url::Origin origin_;
 
-  StoragePartition* storage_partition_;
+  CheckedPtr<StoragePartition> storage_partition_;
 
   int next_pattern_id_ = 0;
 

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_recorder.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -90,7 +91,7 @@ class COMPOSITOR_EXPORT PaintContext {
   // Returns the given rect translated by the layer space offset.
   gfx::Rect ToLayerSpaceRect(const gfx::Rect& rect) const;
 
-  cc::DisplayItemList* list_;
+  CheckedPtr<cc::DisplayItemList> list_;
   // The device scale of the frame being painted. Used to determine which bitmap
   // resources to use in the frame.
   float device_scale_factor_;

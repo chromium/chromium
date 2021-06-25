@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
 #include "ui/base/ui_base_types.h"
@@ -50,7 +51,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
 
   // Parent download item view.
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
-  DownloadItemView* download_item_view_ = nullptr;
+  CheckedPtr<DownloadItemView> download_item_view_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 

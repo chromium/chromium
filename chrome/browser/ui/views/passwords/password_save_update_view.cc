@@ -414,7 +414,7 @@ void PasswordSaveUpdateView::ReplaceWithPromo() {
       views::TEXT, views::TEXT));
   if (controller_.state() == password_manager::ui::CHROME_SIGN_IN_PROMO_STATE) {
     sign_in_promo_ = new PasswordSignInPromoView(controller_.GetWebContents());
-    AddChildView(sign_in_promo_);
+    AddChildView(sign_in_promo_.get());
   } else {
     NOTREACHED();
   }

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
@@ -69,7 +70,7 @@ class DialogClientView::ButtonRowContainer : public View {
   }
 
  private:
-  DialogClientView* const owner_;
+  const CheckedPtr<DialogClientView> owner_;
 };
 
 BEGIN_METADATA(DialogClientView, ButtonRowContainer, View)
@@ -298,7 +299,7 @@ int DialogClientView::GetExtraViewSpacing() const {
 
 std::array<View*, DialogClientView::kNumButtons>
 DialogClientView::GetButtonRowViews() {
-  View* first = ShouldShow(extra_view_) ? extra_view_ : nullptr;
+  View* first = ShouldShow(extra_view_) ? extra_view_.get() : nullptr;
   View* second = cancel_button_;
   View* third = ok_button_;
   if (PlatformStyle::kIsOkButtonLeading)
@@ -325,9 +326,9 @@ void DialogClientView::SetupLayout() {
   // So add it, hidden, to |this| so it can be observed.
   if (extra_view_) {
     if (!views[0])
-      AddChildView(extra_view_);
+      AddChildView(extra_view_.get());
     else
-      button_row_container_->AddChildViewAt(extra_view_, 0);
+      button_row_container_->AddChildViewAt(extra_view_.get(), 0);
   }
 
   GridLayout* layout = button_row_container_->SetLayoutManager(

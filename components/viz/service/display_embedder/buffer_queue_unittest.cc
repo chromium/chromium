@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
@@ -77,7 +78,7 @@ class StubGpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       uint64_t tracing_process_id,
       int importance) const override {}
 
-  size_t* set_color_space_count_;
+  CheckedPtr<size_t> set_color_space_count_;
 };
 
 class StubGpuMemoryBufferManager : public TestGpuMemoryBufferManager {
@@ -262,11 +263,11 @@ class BufferQueueMockedSharedImageInterfaceTest : public BufferQueueTest {
   void SetUp() override {
     sii_ = new MockedSharedImageInterface();
     InitWithSharedImageInterface(
-        base::WrapUnique<TestSharedImageInterface>(sii_));
+        base::WrapUnique<TestSharedImageInterface>(sii_.get()));
   }
 
  protected:
-  MockedSharedImageInterface* sii_;
+  CheckedPtr<MockedSharedImageInterface> sii_;
 };
 
 scoped_refptr<TestContextProvider> CreateMockedSharedImageInterfaceProvider(

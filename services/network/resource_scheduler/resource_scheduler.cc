@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -344,7 +345,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     ScheduledResourceRequestImpl* get() const { return pointer_; }
 
    private:
-    ScheduledResourceRequestImpl* const pointer_;
+    const CheckedPtr<ScheduledResourceRequestImpl> pointer_;
 
     DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };

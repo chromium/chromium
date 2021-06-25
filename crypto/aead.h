@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
@@ -85,7 +86,7 @@ class CRYPTO_EXPORT Aead {
             size_t max_output_length) const;
 
   base::Optional<base::span<const uint8_t>> key_;
-  const evp_aead_st* aead_;
+  CheckedPtr<const evp_aead_st> aead_;
 };
 
 }  // namespace crypto

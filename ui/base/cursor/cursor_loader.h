@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -60,7 +61,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
   const bool use_platform_cursors_;
 
   std::map<mojom::CursorType, PlatformCursor> image_cursors_;
-  CursorFactory* factory_ = nullptr;
+  CheckedPtr<CursorFactory> factory_ = nullptr;
 
   // The current scale of the mouse cursor icon.
   float scale_ = 1.0f;

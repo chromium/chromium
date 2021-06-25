@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/focus/focus_search.h"
@@ -39,7 +40,7 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
   }
 
  private:
-  AccessiblePaneView* accessible_pane_view_;
+  CheckedPtr<AccessiblePaneView> accessible_pane_view_;
   DISALLOW_COPY_AND_ASSIGN(AccessiblePaneViewFocusSearch);
 };
 

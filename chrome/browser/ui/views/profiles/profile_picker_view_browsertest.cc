@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -121,7 +122,7 @@ class BrowserAddedWaiter : public BrowserListObserver {
   }
 
   const size_t total_count_;
-  Browser* browser_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAddedWaiter);
@@ -221,8 +222,8 @@ class TestTabDialogs : public TabDialogs {
   void HideManagePasswordsBubble() override {}
 
  private:
-  content::WebContents* contents_;
-  base::RunLoop* run_loop_;
+  CheckedPtr<content::WebContents> contents_;
+  CheckedPtr<base::RunLoop> run_loop_;
 };
 
 std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
@@ -45,7 +46,7 @@ class VideoEncodeAcceleratorClient
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
-  VideoEncodeAccelerator::Client* client_;
+  CheckedPtr<VideoEncodeAccelerator::Client> client_;
   mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoEncodeAcceleratorClient);
