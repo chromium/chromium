@@ -29,6 +29,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client_impl.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
@@ -1805,7 +1806,10 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
 
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
   InvalidateAdvertisingState();
-  // TODO(b/161889067) InvalidateFastInitScan();
+  if (base::FeatureList::IsEnabled(
+          features::kNearbySharingBackgroundScanning)) {
+    InvalidateBackgroundScanning();
+  }
 }
 
 void NearbySharingServiceImpl::InvalidateAdvertisingState() {
@@ -2046,6 +2050,111 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
     StopAdvertising();
 
   InvalidateSurfaceState();
+}
+
+void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
+  // TODO(hansenmichael): This method is in a prototype state and essentially
+  // duplicates the checks from InvalidateAdvertisingState(). This should be
+  // vetted further and updated specifically for background scanning. This is
+  // not invoked unless the background scanning feature flag is enabled.
+
+  // Nothing to do if we're shutting down the profile.
+  if (!profile_)
+    return;
+
+  if (power_client_->IsSuspended()) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping background scanning because the system is suspended.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  // Screen is off. Do no work.
+  if (is_screen_locked_) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping background scanning because the screen is locked.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  if (!HasAvailableConnectionMediums()) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because both bluetooth "
+                       "and wifi are disabled.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  // Nearby Sharing is disabled. Don't scan.
+  if (!settings_.GetEnabled()) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping background scanning because Nearby Sharing is disabled.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  // We're scanning for other nearby devices. Don't background scan.
+  if (is_scanning_) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because we're scanning "
+                       "for other devices.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  if (is_transferring_) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because we're currently "
+                       "in the midst of "
+                       "a transfer.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  if (foreground_receive_callbacks_.empty() &&
+      background_receive_callbacks_.empty()) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because no receive "
+                       "surface is registered.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  if (!IsVisibleInBackground(settings_.GetVisibility()) &&
+      foreground_receive_callbacks_.empty()) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because no high power "
+                       "receive surface "
+                       "is registered and device is visible to NO_ONE.";
+    StopBackgroundScanning();
+    return;
+  }
+
+  process_shutdown_pending_timer_.Stop();
+
+  if (is_background_scanning_) {
+    NS_LOG(VERBOSE) << __func__ << ": Ignoring, already background scanning.";
+    return;
+  }
+
+  StartBackgroundScanning();
+}
+
+void NearbySharingServiceImpl::StartBackgroundScanning() {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  NS_LOG(INFO) << __func__ << ": Starting background scanning.";
+  is_background_scanning_ = true;
+}
+
+void NearbySharingServiceImpl::StopBackgroundScanning() {
+  // TODO(hansenmichael): This method is in a prototype state and unimplemented.
+  // This is not invoked unless the background scanning feature flag is enabled.
+  NS_LOG(INFO) << __func__ << ": Stopping background scanning.";
+  is_background_scanning_ = false;
 }
 
 void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {

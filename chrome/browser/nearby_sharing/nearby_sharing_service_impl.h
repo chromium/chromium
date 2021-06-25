@@ -229,6 +229,11 @@ class NearbySharingServiceImpl
   void StartScanning();
   StatusCodes StopScanning();
   void StopAdvertisingAndInvalidateSurfaceState();
+
+  void InvalidateBackgroundScanning();
+  void StartBackgroundScanning();
+  void StopBackgroundScanning();
+
   void ScheduleRotateBackgroundAdvertisementTimer();
   void OnRotateBackgroundAdvertisementTimerFired();
   void RemoveOutgoingShareTargetWithEndpointId(const std::string& endpoint_id);
@@ -488,6 +493,9 @@ class NearbySharingServiceImpl
   // The current advertising power level. PowerLevel::kUnknown while not
   // advertising.
   PowerLevel advertising_power_level_ = PowerLevel::kUnknown;
+  // True if we are background scanning for remote devices that are attempting
+  // to share.
+  bool is_background_scanning_ = false;
   // True if we are currently scanning for remote devices.
   bool is_scanning_ = false;
   // True if we're currently sending or receiving a file.
