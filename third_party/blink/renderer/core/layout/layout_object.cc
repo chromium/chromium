@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/core/frame/deprecated_schedule_style_recalc_during_layout.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -615,13 +614,7 @@ void LayoutObject::NotifyOfSubtreeChange() {
     return;
   if (bitfields_.NotifiedOfSubtreeChange())
     return;
-
   NotifyAncestorsOfSubtreeChange();
-
-  // We can modify the layout tree during layout which means that we may
-  // try to schedule this during performLayout. This should no longer
-  // happen when crbug.com/370457 is fixed.
-  DeprecatedScheduleStyleRecalcDuringLayout marker(GetDocument().Lifecycle());
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 

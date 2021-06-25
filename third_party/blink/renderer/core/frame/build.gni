@@ -33,8 +33,6 @@ blink_core_sources_frame = [
   "dactyloscoper.h",
   "frame_content_as_text.h",
   "frame_content_as_text.cc",
-  "deprecated_schedule_style_recalc_during_layout.cc",
-  "deprecated_schedule_style_recalc_during_layout.h",
   "deprecation.cc",
   "deprecation.h",
   "deprecation_report_body.cc",
