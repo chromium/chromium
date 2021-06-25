@@ -13,9 +13,14 @@ import android.widget.LinearLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -27,6 +32,8 @@ import java.util.List;
  * user select an account.
  */
 public class AccountSelectionCoordinator implements AccountSelectionComponent {
+    private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
+
     private Context mContext;
     private BottomSheetController mBottomSheetController;
     private AccountSelectionBottomSheetContent mBottomSheetContent;
@@ -51,8 +58,15 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         // TODO(majidvp): This is currently using the regular profile which is incorrect if the
         // API is being used in an incognito tabs. We should instead use the profile associated
         // with the RP's web contents. https://crbug.com/1199088
+        Profile profile = Profile.getLastUsedRegularProfile();
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY, profile,
+                        GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+
         mMediator = new AccountSelectionMediator(delegate, sheetItems, mBottomSheetController,
-                mBottomSheetContent, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                mBottomSheetContent, imageFetcher,
+                context.getResources().getDimensionPixelSize(R.dimen.account_selection_avatar_size),
+                new LargeIconBridge(profile),
                 context.getResources().getDimensionPixelSize(
                         R.dimen.account_selection_favicon_size));
     }

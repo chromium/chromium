@@ -13,10 +13,9 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/favicon"
-        android:layout_width="@dimen/account_selection_favicon_size"
-        android:layout_height="@dimen/account_selection_favicon_size"
-        android:layout_marginStart="12dp"
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/account_selection_avatar_size"
+        android:layout_height="@dimen/account_selection_avatar_size"
         android:importantForAccessibility="no"
         android:layout_gravity="center"/>
     <LinearLayout

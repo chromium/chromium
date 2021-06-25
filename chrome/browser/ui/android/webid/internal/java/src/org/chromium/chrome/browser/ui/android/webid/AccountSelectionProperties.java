@@ -26,6 +26,19 @@ class AccountSelectionProperties {
      * Properties for an account entry in AccountSelection sheet.
      */
     static class AccountProperties {
+        static class Avatar {
+            // Name is used to create a fallback monogram Icon.
+            final String mName;
+            final Bitmap mAvatar;
+            final int mAvatarSize;
+
+            Avatar(String name, @Nullable Bitmap avatar, int avatarSize) {
+                mName = name;
+                mAvatar = avatar;
+                mAvatarSize = avatarSize;
+            }
+        }
+
         static class FaviconOrFallback {
             final GURL mUrl;
             final @Nullable Bitmap mIcon;
@@ -40,6 +53,9 @@ class AccountSelectionProperties {
                 mIconSize = iconSize;
             }
         }
+
+        static final PropertyModel.WritableObjectPropertyKey<Avatar> AVATAR =
+                new PropertyModel.WritableObjectPropertyKey<>("avatar");
         static final PropertyModel
                 .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
                 new PropertyModel.WritableObjectPropertyKey<>("favicon");
@@ -48,7 +64,8 @@ class AccountSelectionProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {
+                AVATAR, FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
 
         private AccountProperties() {}
     }

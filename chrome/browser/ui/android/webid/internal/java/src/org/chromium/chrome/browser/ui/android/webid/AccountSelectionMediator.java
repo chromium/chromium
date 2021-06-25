@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
@@ -36,7 +37,9 @@ class AccountSelectionMediator {
     private boolean mVisible;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final ModelList mSheetItems;
+    private final ImageFetcher mImageFetcher;
     private final LargeIconBridge mLargeIconBridge;
+    private final @Px int mDesiredAvatarSize;
     private final @Px int mDesiredIconSize;
 
     private final BottomSheetController mBottomSheetController;
@@ -45,11 +48,14 @@ class AccountSelectionMediator {
 
     AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, ModelList sheetItems,
             BottomSheetController bottomSheetController, BottomSheetContent bottomSheetContent,
-            LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
+            ImageFetcher imageFetcher, @Px int desiredAvatarSize, LargeIconBridge largeIconBridge,
+            @Px int desiredIconSize) {
         assert delegate != null;
         mVisible = false;
         mDelegate = delegate;
         mSheetItems = sheetItems;
+        mImageFetcher = imageFetcher;
+        mDesiredAvatarSize = desiredAvatarSize;
         mLargeIconBridge = largeIconBridge;
         mDesiredIconSize = desiredIconSize;
         mBottomSheetController = bottomSheetController;
@@ -87,7 +93,7 @@ class AccountSelectionMediator {
             final PropertyModel model = createAccountItem(account);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
             requestIconOrFallbackImage(model);
-
+            requestAvatarImage(model);
             // If there is only a single account we need to show the continue button.
             if (accounts.size() == 1) {
                 final PropertyModel continueBtnModel = createContinueBtnItem(account);
@@ -119,6 +125,26 @@ class AccountSelectionMediator {
     void hideContent() {
         mVisible = false;
         mBottomSheetController.hideContent(mBottomSheetContent, true);
+    }
+
+    private void requestAvatarImage(PropertyModel accountModel) {
+        Account account = accountModel.get(AccountProperties.ACCOUNT);
+        final String name = account.getName();
+        final String avatarURL = account.getPictureUrl().getSpec();
+
+        if (!avatarURL.isEmpty()) {
+            ImageFetcher.Params params = ImageFetcher.Params.create(avatarURL,
+                    ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, mDesiredAvatarSize,
+                    mDesiredAvatarSize);
+
+            mImageFetcher.fetchImage(params, bitmap -> {
+                accountModel.set(AccountProperties.AVATAR,
+                        new AccountProperties.Avatar(name, bitmap, mDesiredAvatarSize));
+            });
+        } else {
+            accountModel.set(AccountProperties.AVATAR,
+                    new AccountProperties.Avatar(name, null, mDesiredAvatarSize));
+        }
     }
 
     private void requestIconOrFallbackImage(PropertyModel accountModel) {

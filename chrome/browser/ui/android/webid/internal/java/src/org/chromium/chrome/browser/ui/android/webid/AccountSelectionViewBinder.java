@@ -4,7 +4,15 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +24,8 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.util.AvatarGenerator;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,6 +34,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * to the suitable method in {@link AccountSelectionView}.
  */
 class AccountSelectionViewBinder {
+    private static RoundedIconGenerator sRoundedIconGenerator;
+
+    static RoundedIconGenerator getRoundedIconGenerator(Resources resources) {
+        if (sRoundedIconGenerator == null) {
+            sRoundedIconGenerator = FaviconUtils.createCircularIconGenerator(resources);
+        }
+        return sRoundedIconGenerator;
+    }
+
     /**
      * Called whenever an account is bound to this view.
      * @param model The model containing the data for the view.
@@ -32,14 +51,16 @@ class AccountSelectionViewBinder {
      */
     static void bindAccountView(PropertyModel model, View view, PropertyKey key) {
         Account account = model.get(AccountProperties.ACCOUNT);
-        if (key == AccountProperties.FAVICON_OR_FALLBACK) {
-            ImageView imageView = view.findViewById(R.id.favicon);
-            AccountProperties.FaviconOrFallback data =
+        if (key == AccountProperties.AVATAR || key == AccountProperties.FAVICON_OR_FALLBACK) {
+            AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
+            AccountProperties.FaviconOrFallback faviconData =
                     model.get(AccountProperties.FAVICON_OR_FALLBACK);
-            imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
-                    data.mUrl, data.mFallbackColor,
-                    FaviconUtils.createCircularIconGenerator(view.getResources()),
-                    view.getResources(), data.mIconSize));
+            // Wait for both avatar and favicon to be available before drawing them to avoid
+            // unnecessary flashing.
+            if (avatarData == null || faviconData == null) return;
+            Drawable badgedAvatar = overlayIdpFaviconOnAvatar(view, avatarData, faviconData);
+            ImageView avatarView = view.findViewById(R.id.avatar);
+            avatarView.setImageDrawable(badgedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(clickedView -> {
                 model.get(AccountProperties.ON_CLICK_LISTENER).onResult(account);
@@ -52,6 +73,77 @@ class AccountSelectionViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    /**
+     * Creates a drawable that is a combination of the User's avatar and the Identity Provider's
+     * (IdP) favicon. The final drawable is a square with avatarData.mAvatarSize dimension that
+     * contains two rounded images overlayed on top of each other like so:
+     * +------------+
+     * |            |
+     * |   Avatar   |
+     * |       +----+
+     * |       |Favi|
+     * |       |con |
+     * +-------+----+
+     *
+     * @param view The view to be bound.
+     * @param avatarData The data for the avatar. If the bitmap is null then we generate a
+     *                   placeholder monogram avatar using the name.
+     * @param faviconData The data for the favicon including its bitmap and size.
+     */
+    static Drawable overlayIdpFaviconOnAvatar(View view, AccountProperties.Avatar avatarData,
+            AccountProperties.FaviconOrFallback faviconData) {
+        int avatarSize = avatarData.mAvatarSize;
+        int badgeSize = faviconData.mIconSize;
+        int frameSize = avatarSize;
+        // Avatar touches the top/left sides of frame, badge touches bottom/right sides of the
+        // frame.
+        int avatarX = 0;
+        int avatarY = 0;
+        int badgeX = frameSize - badgeSize;
+        int badgeY = frameSize - badgeSize;
+
+        RoundedIconGenerator roundedIconGenerator = getRoundedIconGenerator(view.getResources());
+
+        // Prepare avatar or its fallback monogram.
+        Bitmap avatar = avatarData.mAvatar;
+        if (avatar == null) {
+            // TODO(majidvp): Consult UI team to determine the background color we need to use here.
+            roundedIconGenerator.setBackgroundColor(Color.GRAY);
+            avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
+        }
+        Drawable croppedAvatar =
+                AvatarGenerator.makeRoundAvatar(view.getResources(), avatar, avatarSize);
+        Bitmap badgedAvatar = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(badgedAvatar);
+
+        // Draw the avatar.
+        croppedAvatar.setBounds(avatarX, avatarY, avatarSize, avatarSize);
+        croppedAvatar.draw(canvas);
+
+        // Cut a transparent hole through the avatar image. This will serve as a border to the badge
+        // being overlaid.
+        int badgeRadius = badgeSize / 2;
+        int badgeCenterX = badgeX + badgeRadius;
+        int badgeCenterY = badgeY + badgeRadius;
+        int badgeBorderSize = view.getResources().getDimensionPixelSize(
+                R.dimen.account_selection_favicon_border_size);
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius + badgeBorderSize, paint);
+
+        // Prepare the IDP favicon as the badge.
+        Drawable favicon = FaviconUtils.getIconDrawableWithoutFilter(faviconData.mIcon,
+                faviconData.mUrl, faviconData.mFallbackColor, roundedIconGenerator,
+                view.getResources(), badgeSize);
+
+        // Draw the badge.
+        favicon.setBounds(badgeX, badgeY, badgeX + badgeSize, badgeY + badgeSize);
+        favicon.draw(canvas);
+        return new BitmapDrawable(view.getResources(), badgedAvatar);
     }
 
     /**

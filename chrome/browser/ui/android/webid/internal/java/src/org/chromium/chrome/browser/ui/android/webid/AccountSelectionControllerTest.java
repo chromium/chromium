@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.AVATAR;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_URL;
@@ -35,8 +36,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -74,6 +78,7 @@ public class AccountSelectionControllerTest {
     private static final Account CARL =
             new Account("Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL_3);
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
+    private static final @Px int DESIRED_AVATAR_SIZE = 100;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -83,6 +88,8 @@ public class AccountSelectionControllerTest {
     private AccountSelectionComponent.Delegate mMockDelegate;
     @Mock
     private LargeIconBridge mMockIconBridge;
+    @Mock
+    private ImageFetcher mMockImageFetcher;
     @Mock
     private BottomSheetController mMockBottomSheetController;
 
@@ -104,7 +111,8 @@ public class AccountSelectionControllerTest {
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
         mMediator = new AccountSelectionMediator(mMockDelegate, mSheetItems,
-                mMockBottomSheetController, null, mMockIconBridge, DESIRED_FAVICON_SIZE);
+                mMockBottomSheetController, null, mMockImageFetcher, DESIRED_AVATAR_SIZE,
+                mMockIconBridge, DESIRED_FAVICON_SIZE);
     }
 
     @Test
@@ -151,6 +159,21 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
+    public void testShowAccountsSetsAccountListAndRequestsAvatar() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
+        assertEquals("Incorrect item sheet count", 3, mSheetItems.size());
+        assertNull(mSheetItems.get(1).model.get(AVATAR));
+        assertNull(mSheetItems.get(2).model.get(AVATAR));
+
+        // Both accounts have the same profile pic URL
+        ImageFetcher.Params expected_params = ImageFetcher.Params.create(TEST_PROFILE_PIC.getSpec(),
+                ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, DESIRED_AVATAR_SIZE,
+                DESIRED_AVATAR_SIZE);
+
+        verify(mMockImageFetcher, times(2)).fetchImage(eq(expected_params), any());
+    }
+
+    @Test
     public void testFetchFaviconUpdatesModel() {
         mMediator.showAccounts(TEST_URL, Collections.singletonList(CARL));
         assertEquals("Incorrect item sheet count", 3,
@@ -171,6 +194,31 @@ public class AccountSelectionControllerTest {
         assertEquals("incorrect favicon url", TEST_URL_3, iconData.mUrl);
         assertEquals("incorrect favicon size", DESIRED_FAVICON_SIZE, iconData.mIconSize);
         assertEquals("incorrect favicon fallback color", 333, iconData.mFallbackColor);
+    }
+
+    @Test
+    public void testFetchAvatarUpdatesModel() {
+        mMediator.showAccounts(TEST_URL, Collections.singletonList(CARL));
+        assertEquals("Incorrect item sheet count", 3, mSheetItems.size());
+        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect account", CARL, mSheetItems.get(1).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(1).model.get(AVATAR));
+
+        ImageFetcher.Params expected_params = ImageFetcher.Params.create(TEST_PROFILE_PIC.getSpec(),
+                ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, DESIRED_AVATAR_SIZE,
+                DESIRED_AVATAR_SIZE);
+
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        verify(mMockImageFetcher).fetchImage(eq(expected_params), callback.capture());
+
+        Bitmap bitmap = Bitmap.createBitmap(
+                DESIRED_AVATAR_SIZE, DESIRED_AVATAR_SIZE, Bitmap.Config.ARGB_8888);
+        callback.getValue().onResult(bitmap);
+
+        Avatar avatarData = mSheetItems.get(1).model.get(AVATAR);
+        assertEquals("incorrect avatar bitmap", bitmap, avatarData.mAvatar);
+        assertEquals("incorrect avatar name", CARL.getName(), avatarData.mName);
+        assertEquals("incorrect avatar size", DESIRED_AVATAR_SIZE, avatarData.mAvatarSize);
     }
 
     @Test
