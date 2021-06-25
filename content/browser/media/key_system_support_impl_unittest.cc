@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/token.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/browser/plugin_service.h"
@@ -143,6 +144,16 @@ class KeySystemSupportImplTest : public testing::Test {
     return is_supported;
   }
 
+  gpu::GpuFeatureInfo ALLOW_UNUSED_TYPE
+  GetGpuFeatureInfoWithOneDisabled(gpu::GpuFeatureType disabled_feature) {
+    gpu::GpuFeatureInfo gpu_feature_info;
+    for (auto& status : gpu_feature_info.status_values)
+      status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
+    gpu_feature_info.status_values[disabled_feature] =
+        gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
+    return gpu_feature_info;
+  }
+
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
   base::MockCallback<KeySystemSupportImpl::HardwareSecureCapabilityCB>
       hw_secure_capability_cb_;
@@ -182,6 +193,12 @@ TEST_F(KeySystemSupportImplTest,
 TEST_F(KeySystemSupportImplTest, HardwareSecureCapability) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
   Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
+
+  // Simulate GPU process initialization completing with GL unavailable.
+  gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
+  GpuDataManagerImpl::GetInstance()->UpdateGpuFeatureInfo(gpu_feature_info,
+                                                          absl::nullopt);
 
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_->sw_secure_capability);
@@ -232,6 +249,12 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
+  // Simulate GPU process initialization completing with GL unavailable.
+  gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
+  GpuDataManagerImpl::GetInstance()->UpdateGpuFeatureInfo(gpu_feature_info,
+                                                          absl::nullopt);
+
   EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
       .WillOnce(RunOnceCallback<1>(TestCdmCapability()));
   EXPECT_TRUE(IsSupported("KeySystem"));
@@ -245,6 +268,12 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
 TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
   Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
+
+  // Simulate GPU process initialization completing with GL unavailable.
+  gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
+  GpuDataManagerImpl::GetInstance()->UpdateGpuFeatureInfo(gpu_feature_info,
+                                                          absl::nullopt);
 
   EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
       .WillOnce(RunOnceCallback<1>(absl::nullopt));

@@ -27,7 +27,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 #if defined(OS_WIN)
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/key_system_support_win.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #endif
 
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
@@ -156,6 +158,19 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
                 "video decode disabled";
     return absl::nullopt;
   }
+
+#if defined(OS_WIN)
+  DCHECK(GpuDataManagerImpl::GetInstance()->IsGpuFeatureInfoAvailable());
+  if (GpuDataManagerImpl::GetInstance()
+          ->GetGpuFeatureInfo()
+          .IsWorkaroundEnabled(
+              gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY)) {
+    DVLOG(1) << "Disable Media Foundation Hardware security due to GPU "
+                "workarounds";
+
+    return absl::nullopt;
+  }
+#endif  // defined(OS_WIN)
 
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
