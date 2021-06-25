@@ -16,7 +16,9 @@
 class Profile;
 
 namespace chromeos {
+class CupsPrinterStatus;
 class PpdProvider;
+class Printer;
 class PrinterConfigurer;
 struct PrintServersConfig;
 }  // namespace chromeos
@@ -32,8 +34,20 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
   LocalPrinterAsh& operator=(const LocalPrinterAsh&) = delete;
   ~LocalPrinterAsh() override;
 
+  // The mojom PrintServersConfig object contains all information in the
+  // PrintServersConfig object.
   static mojom::PrintServersConfigPtr ConfigToMojom(
       const chromeos::PrintServersConfig& config);
+
+  // The mojom LocalDestinationInfo object is a subset of the chromeos Printer
+  // object.
+  static mojom::LocalDestinationInfoPtr PrinterToMojom(
+      const chromeos::Printer& printer);
+
+  // The mojom PrinterStatus object contains all information in the
+  // CupsPrinterStatus object.
+  static mojom::PrinterStatusPtr StatusToMojom(
+      const chromeos::CupsPrinterStatus& status);
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
 

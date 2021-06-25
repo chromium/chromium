@@ -87,33 +87,6 @@ class Observer : public chromeos::PrintServersManager::Observer {
   chromeos::PrintServersManager* const print_servers_manager_;
 };
 
-// The mojom LocalDestinationInfo object is a subset of the chromeos Printer
-// object.
-mojom::LocalDestinationInfoPtr PrinterToMojom(
-    const chromeos::Printer& printer) {
-  VLOG(1) << "Found printer " << printer.display_name() << " with device name "
-          << printer.id();
-  return mojom::LocalDestinationInfo::New(
-      printer.id(), printer.display_name(), printer.description(),
-      printer.source() == chromeos::Printer::SRC_POLICY);
-}
-
-// The mojom PrinterStatus object contains all information in the
-// CupsPrinterStatus object.
-mojom::PrinterStatusPtr StatusToMojom(
-    const chromeos::CupsPrinterStatus& status) {
-  mojom::PrinterStatusPtr ptr = mojom::PrinterStatus::New();
-  ptr->printer_id = status.GetPrinterId();
-  ptr->timestamp = status.GetTimestamp();
-  for (const auto& reason : status.GetStatusReasons()) {
-    if (reason.GetReason() == mojom::StatusReason::Reason::kNoError)
-      continue;
-    ptr->status_reasons.push_back(
-        mojom::StatusReason::New(reason.GetReason(), reason.GetSeverity()));
-  }
-  return ptr;
-}
-
 // Generates and returns a url for a PPD license which is empty if
 // an error occurs e.g. the ppd provider callback failed.
 // When bound to a ppd provider scoped refptr, the reference count
@@ -137,8 +110,8 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
     const chromeos::Printer& printer,
     const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   return mojom::CapabilitiesResponse::New(
-      PrinterToMojom(printer), printer.HasSecureProtocol(), caps,
-      prefs->GetInteger(prefs::kPrintingAllowedColorModes),
+      LocalPrinterAsh::PrinterToMojom(printer), printer.HasSecureProtocol(),
+      caps, prefs->GetInteger(prefs::kPrintingAllowedColorModes),
       prefs->GetInteger(prefs::kPrintingAllowedDuplexModes),
       static_cast<printing::mojom::PinModeRestriction>(
           prefs->GetInteger(prefs::kPrintingAllowedPinModes)),
@@ -156,6 +129,7 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
 LocalPrinterAsh::LocalPrinterAsh() = default;
 LocalPrinterAsh::~LocalPrinterAsh() = default;
 
+// static
 mojom::PrintServersConfigPtr LocalPrinterAsh::ConfigToMojom(
     const chromeos::PrintServersConfig& config) {
   mojom::PrintServersConfigPtr ptr = mojom::PrintServersConfig::New();
@@ -163,6 +137,29 @@ mojom::PrintServersConfigPtr LocalPrinterAsh::ConfigToMojom(
   for (const chromeos::PrintServer& server : config.print_servers) {
     ptr->print_servers.push_back(mojom::PrintServer::New(
         server.GetId(), server.GetUrl(), server.GetName()));
+  }
+  return ptr;
+}
+
+// static
+mojom::LocalDestinationInfoPtr LocalPrinterAsh::PrinterToMojom(
+    const chromeos::Printer& printer) {
+  return mojom::LocalDestinationInfo::New(
+      printer.id(), printer.display_name(), printer.description(),
+      printer.source() == chromeos::Printer::SRC_POLICY);
+}
+
+// static
+mojom::PrinterStatusPtr LocalPrinterAsh::StatusToMojom(
+    const chromeos::CupsPrinterStatus& status) {
+  mojom::PrinterStatusPtr ptr = mojom::PrinterStatus::New();
+  ptr->printer_id = status.GetPrinterId();
+  ptr->timestamp = status.GetTimestamp();
+  for (const auto& reason : status.GetStatusReasons()) {
+    if (reason.GetReason() == mojom::StatusReason::Reason::kNoError)
+      continue;
+    ptr->status_reasons.push_back(
+        mojom::StatusReason::New(reason.GetReason(), reason.GetSeverity()));
   }
   return ptr;
 }
@@ -183,8 +180,11 @@ void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
   for (chromeos::PrinterClass pc :
        {chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
         chromeos::PrinterClass::kAutomatic}) {
-    for (const chromeos::Printer& p : printers_manager->GetPrinters(pc))
+    for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
+      VLOG(1) << "Found printer " << p.display_name() << " with device name "
+              << p.id();
       printers.push_back(PrinterToMojom(p));
+    }
   }
   std::move(callback).Run(std::move(printers));
 }
@@ -314,7 +314,6 @@ void LocalPrinterAsh::AddObserver(
 
 void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
   Profile* profile = GetActiveUserProfile();
-  DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
   mojom::PoliciesPtr policies = mojom::Policies::New();
   if (prefs->HasPrefPath(prefs::kPrintHeaderFooter)) {
@@ -348,15 +347,14 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
 
 void LocalPrinterAsh::GetUsernamePerPolicy(
     GetUsernamePerPolicyCallback callback) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  PrefService* prefs = profile->GetPrefs();
+  Profile* profile = GetActiveUserProfile();
   const std::string username = chromeos::ProfileHelper::Get()
                                    ->GetUserByProfile(profile)
                                    ->display_email();
-  std::move(callback).Run(
-      prefs->GetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled)
-          ? absl::optional<std::string>(username)
-          : absl::nullopt);
+  std::move(callback).Run(profile->GetPrefs()->GetBoolean(
+                              prefs::kPrintingSendUsernameAndFilenameEnabled)
+                              ? absl::make_optional(username)
+                              : absl::nullopt);
 }
 
 Profile* LocalPrinterAsh::GetActiveUserProfile() {

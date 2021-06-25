@@ -18,17 +18,25 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_provider.h"
+#include "chromeos/printing/printer_configuration.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/print_backend.h"
@@ -36,6 +44,8 @@
 #include "printing/backend/test_print_backend.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 using chromeos::CupsPrintersManager;
@@ -132,6 +142,24 @@ class FakePpdProvider : public chromeos::PpdProvider {
   ~FakePpdProvider() override = default;
 };
 
+class FakeUser : public user_manager::User {
+ public:
+  FakeUser()
+      : user_manager::User(
+            AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName)) {
+  }
+  FakeUser(const FakeUser&) = delete;
+  FakeUser& operator=(const FakeUser&) = delete;
+  ~FakeUser() override = default;
+
+  using user_manager::User::set_display_email;
+
+  // User:
+  user_manager::UserType GetType() const override {
+    return user_manager::USER_TYPE_REGULAR;
+  }
+};
+
 class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
  public:
   TestLocalPrinterAshWithPrinterConfigurer(
@@ -176,6 +204,10 @@ class LocalPrinterAshTestBase : public testing::Test {
     return unsandboxed_test_backend_.get();
   }
 
+  void SetUsername(const std::string& username) {
+    user_.set_display_email(username);
+  }
+
   // Indicate if calls to print backend should be made using a service instead
   // of a local task runner.
   virtual bool UseService() = 0;
@@ -184,7 +216,13 @@ class LocalPrinterAshTestBase : public testing::Test {
   // when using a service for print backend calls.
   virtual bool SupportFallback() = 0;
 
+  sync_preferences::TestingPrefServiceSyncable* GetPrefs() {
+    return profile_.GetTestingPrefService();
+  }
+
   void SetUp() override {
+    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+
     // Choose between running with local test runner or via a service.
     feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
                                        UseService());
@@ -226,7 +264,11 @@ class LocalPrinterAshTestBase : public testing::Test {
     }
   }
 
-  void TearDown() override { PrintBackendServiceManager::ResetForTesting(); }
+  void TearDown() override {
+    PrintBackendServiceManager::ResetForTesting();
+    chromeos::ProfileHelper::Get()->RemoveUserFromListForTesting(
+        user_.GetAccountId());
+  }
 
  protected:
   void AddPrinter(const std::string& id,
@@ -282,6 +324,7 @@ class LocalPrinterAshTestBase : public testing::Test {
  private:
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
+
   // Must outlive `printers_manager_`.
   TestingProfile profile_;
   scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
@@ -297,6 +340,8 @@ class LocalPrinterAshTestBase : public testing::Test {
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
+
+  FakeUser user_;
 };
 
 // Testing class to cover `LocalPrinterAsh` handling using a local
@@ -397,6 +442,22 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
+  auto* prefs = GetPrefs();
+  // printing::mojom::ColorModeRestriction::kMonochrome |
+  // printing::mojom::ColorModeRestriction::kColor
+  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
+  // printing::mojom::DuplexModeRestriction::kSimplex |
+  // printing::mojom::DuplexModeRestriction::kDuplex
+  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
+  // printing::mojom::PinModeRestriction::kPin
+  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
+  // printing::mojom::ColorModeRestriction::kColor
+  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
+  // printing::mojom::DuplexModeRestriction::kSimplex
+  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
+  // printing::mojom::PinModeRestriction::kNoPin
+  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
+
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
@@ -417,6 +478,22 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   EXPECT_EQ(crosapi::mojom::LocalDestinationInfo("printer1", "saved",
                                                  "description1", false),
             *fetched_caps->basic_info);
+
+  // printing::mojom::ColorModeRestriction::kMonochrome |
+  // printing::mojom::ColorModeRestriction::kColor
+  EXPECT_EQ(3, fetched_caps->allowed_color_modes);
+  // printing::mojom::DuplexModeRestriction::kSimplex |
+  // printing::mojom::DuplexModeRestriction::kDuplex
+  EXPECT_EQ(7, fetched_caps->allowed_duplex_modes);
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
+            fetched_caps->allowed_pin_modes);
+  EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
+            fetched_caps->default_color_mode);
+  EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
+            fetched_caps->default_duplex_mode);
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kNoPin,
+            fetched_caps->default_pin_mode);
+
   ASSERT_TRUE(fetched_caps->capabilities);
   EXPECT_EQ(kPapers, fetched_caps->capabilities->papers);
 }
@@ -607,6 +684,220 @@ TEST_F(LocalPrinterAshTest, FetchEulaUrlOnNonExistantPrinter) {
   RunUntilIdle();
 
   EXPECT_TRUE(fetched_eula_url.is_empty());
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  EXPECT_EQ(crosapi::mojom::Policies::New(), policies);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
+  auto* prefs = GetPrefs();
+  base::Value paper_size(base::Value::Type::DICTIONARY);
+  paper_size.SetStringKey(kPaperSizeName, "iso_a4_210x297mm");
+  prefs->Set("printing.paper_size_default", std::move(paper_size));
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(gfx::Size(210000, 297000), policies->paper_size_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_BackgroundGraphics) {
+  auto* prefs = GetPrefs();
+  // crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kDisabled
+  prefs->SetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes, 2);
+  // crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kEnabled
+  prefs->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 1);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kDisabled,
+      policies->allowed_background_graphics_modes);
+  EXPECT_EQ(
+      crosapi::mojom::Policies::BackgroundGraphicsModeRestriction::kEnabled,
+      policies->background_graphics_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 5);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_TRUE(policies->max_sheets_allowed_has_value);
+  EXPECT_EQ(5, policies->max_sheets_allowed);
+}
+
+// Zero sheets allowed is a valid policy.
+TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 0);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  ASSERT_TRUE(policies);
+  EXPECT_TRUE(policies->max_sheets_allowed_has_value);
+  EXPECT_EQ(0, policies->max_sheets_allowed);
+}
+
+// Negative sheets allowed is not a valid policy.
+TEST_F(LocalPrinterAshTest, GetPolicies_NegativeMaxSheets) {
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, -1);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  ASSERT_TRUE(policies);
+  EXPECT_FALSE(policies->max_sheets_allowed_has_value);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_UnmanagedDisabled) {
+  auto* prefs = GetPrefs();
+  prefs->SetBoolean(prefs::kPrintHeaderFooter, false);
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
+            policies->print_header_footer_allowed);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kFalse,
+            policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_UnmanagedEnabled) {
+  auto* prefs = GetPrefs();
+  prefs->SetBoolean(prefs::kPrintHeaderFooter, true);
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
+            policies->print_header_footer_allowed);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kTrue,
+            policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedDisabled) {
+  auto* prefs = GetPrefs();
+  prefs->SetManagedPref(prefs::kPrintHeaderFooter,
+                        std::make_unique<base::Value>(false));
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kFalse,
+            policies->print_header_footer_allowed);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
+            policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedEnabled) {
+  auto* prefs = GetPrefs();
+  prefs->SetManagedPref(prefs::kPrintHeaderFooter,
+                        std::make_unique<base::Value>(true));
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  ASSERT_TRUE(policies);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kTrue,
+            policies->print_header_footer_allowed);
+  EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
+            policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {
+  SetUsername("user@email.com");
+  GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, true);
+  absl::optional<std::string> username;
+  local_printer_ash()->GetUsernamePerPolicy(base::BindOnce(
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& uname) {
+        username = uname;
+      })));
+  ASSERT_TRUE(username);
+  EXPECT_EQ("user@email.com", *username);
+}
+
+TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Denied) {
+  SetUsername("user@email.com");
+  GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, false);
+  absl::optional<std::string> username;
+  local_printer_ash()->GetUsernamePerPolicy(base::BindOnce(
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& uname) {
+        username = uname;
+      })));
+  EXPECT_EQ(absl::nullopt, username);
+}
+
+TEST(LocalPrinterAsh, ConfigToMojom) {
+  chromeos::PrintServersConfig config;
+  config.fetching_mode = crosapi::mojom::PrintServersConfig::
+      ServerPrintersFetchingMode::kSingleServerOnly;
+  config.print_servers.push_back(
+      chromeos::PrintServer("id", GURL("http://localhost"), "name"));
+  crosapi::mojom::PrintServersConfigPtr mojom =
+      crosapi::LocalPrinterAsh::ConfigToMojom(config);
+  ASSERT_TRUE(mojom);
+  EXPECT_EQ(crosapi::mojom::PrintServersConfig::ServerPrintersFetchingMode::
+                kSingleServerOnly,
+            mojom->fetching_mode);
+  ASSERT_EQ(1u, mojom->print_servers.size());
+  EXPECT_EQ("id", mojom->print_servers[0]->id);
+  EXPECT_EQ(GURL("http://localhost"), mojom->print_servers[0]->url);
+  EXPECT_EQ("name", mojom->print_servers[0]->name);
+}
+
+TEST(LocalPrinterAsh, PrinterToMojom) {
+  Printer printer("id");
+  printer.set_display_name("name");
+  printer.set_description("description");
+  crosapi::mojom::LocalDestinationInfoPtr mojom =
+      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+  ASSERT_TRUE(mojom);
+  EXPECT_EQ("id", mojom->device_name);
+  EXPECT_EQ("name", mojom->printer_name);
+  EXPECT_EQ("description", mojom->printer_description);
+  EXPECT_FALSE(mojom->configured_via_policy);
+}
+
+TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {
+  Printer printer("id");
+  printer.set_source(Printer::SRC_POLICY);
+  crosapi::mojom::LocalDestinationInfoPtr mojom =
+      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+  ASSERT_TRUE(mojom);
+  EXPECT_EQ("id", mojom->device_name);
+  EXPECT_TRUE(mojom->configured_via_policy);
+}
+
+TEST(LocalPrinterAsh, StatusToMojom) {
+  chromeos::CupsPrinterStatus status("id");
+  status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
+                         crosapi::mojom::StatusReason::Severity::kWarning);
+  crosapi::mojom::PrinterStatusPtr mojom =
+      crosapi::LocalPrinterAsh::StatusToMojom(status);
+  ASSERT_TRUE(mojom);
+  EXPECT_EQ("id", mojom->printer_id);
+  EXPECT_EQ(status.GetTimestamp(), mojom->timestamp);
+  ASSERT_EQ(1u, mojom->status_reasons.size());
+  EXPECT_EQ(crosapi::mojom::StatusReason::Reason::kOutOfInk,
+            mojom->status_reasons[0]->reason);
+  EXPECT_EQ(crosapi::mojom::StatusReason::Severity::kWarning,
+            mojom->status_reasons[0]->severity);
 }
 
 }  // namespace printing
