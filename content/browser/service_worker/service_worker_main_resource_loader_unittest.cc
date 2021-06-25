@@ -498,9 +498,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
-        container_host_,
-        base::WrapRefCounted<URLLoaderFactoryGetter>(
-            helper_->context()->loader_factory_getter()));
+        container_host_);
 
     // Load |request.url|.
     loader_->StartRequest(*request, loader_remote_.BindNewPipeAndPassReceiver(),

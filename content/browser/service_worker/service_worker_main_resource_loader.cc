@@ -77,11 +77,9 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host,
-    scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter)
+    base::WeakPtr<ServiceWorkerContainerHost> container_host)
     : fallback_callback_(std::move(fallback_callback)),
-      container_host_(std::move(container_host)),
-      url_loader_factory_getter_(std::move(url_loader_factory_getter)) {
+      container_host_(std::move(container_host)) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader", this,
@@ -175,7 +173,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   if (container_host_->IsContainerForWindowClient()) {
     did_navigation_preload_ = fetch_dispatcher_->MaybeStartNavigationPreload(
-        resource_request_, url_loader_factory_getter_.get(), std::move(context),
+        resource_request_, std::move(context),
         container_host_->frame_tree_node_id());
   }
 

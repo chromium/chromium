@@ -121,8 +121,7 @@ void ServiceWorkerOfflineCapabilityChecker::DidFindRegistration(
       /*is_offline_capability_check=*/true);
 
   fetch_dispatcher_->MaybeStartNavigationPreload(
-      resource_request, context->loader_factory_getter(),
-      context->wrapper(), /*frame_tree_node_id=*/-1);
+      resource_request, context->wrapper(), /*frame_tree_node_id=*/-1);
 
   fetch_dispatcher_->Run();
 }

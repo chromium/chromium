@@ -15,7 +15,6 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -67,8 +66,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // is used instead of NavigationURLLoaderImpl.
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host,
-      scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter);
+      base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
   ~ServiceWorkerMainResourceLoader() override;
 
@@ -163,7 +161,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
 
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<StreamWaiter> stream_waiter_;
   // The blob needs to be held while it's read to keep it alive.

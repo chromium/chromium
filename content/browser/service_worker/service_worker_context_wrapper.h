@@ -53,7 +53,6 @@ class BrowserContext;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextObserver;
 class StoragePartitionImpl;
-class URLLoaderFactoryGetter;
 
 // A refcounted wrapper class for ServiceWorkerContextCore. Higher level content
 // lib classes keep references to this class on multiple threads. The inner core
@@ -96,8 +95,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void Init(const base::FilePath& user_data_directory,
             storage::QuotaManagerProxy* quota_manager_proxy,
             storage::SpecialStoragePolicy* special_storage_policy,
-            ChromeBlobStorageContext* blob_context,
-            URLLoaderFactoryGetter* url_loader_factory_getter);
+            ChromeBlobStorageContext* blob_context);
   void Shutdown();
 
   // Deletes all files on disk and restarts the system asynchronously. This
@@ -391,7 +389,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
       ChromeBlobStorageContext* blob_context,
-      URLLoaderFactoryGetter* loader_factory_getter,
       BrowserContext* browser_context);
 
   // If `include_installing_version` is true, `callback` is called if there is

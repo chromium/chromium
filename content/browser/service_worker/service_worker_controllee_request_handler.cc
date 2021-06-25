@@ -412,8 +412,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   // ServiceWorkerMainResourceLoader which does that work.
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), container_host_,
-          base::WrapRefCounted(context_->loader_factory_getter())));
+          std::move(fallback_callback_), container_host_));
 
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker",

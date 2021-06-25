@@ -36,7 +36,6 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -280,7 +279,6 @@ void ServiceWorkerContextCore::ContainerHostIterator::
 ServiceWorkerContextCore::ServiceWorkerContextCore(
     storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy,
-    URLLoaderFactoryGetter* url_loader_factory_getter,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         non_network_pending_loader_factory_bundle_for_update_check,
     base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>*
@@ -295,7 +293,6 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
                                                   quota_manager_proxy,
                                                   special_storage_policy)),
       job_coordinator_(std::make_unique<ServiceWorkerJobCoordinator>(this)),
-      loader_factory_getter_(url_loader_factory_getter),
       force_update_on_page_load_(false),
       was_service_worker_registered_(false),
       observer_list_(observer_list),
@@ -336,7 +333,6 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
           std::make_unique<ServiceWorkerRegistry>(this,
                                                   old_context->registry())),
       job_coordinator_(std::make_unique<ServiceWorkerJobCoordinator>(this)),
-      loader_factory_getter_(old_context->loader_factory_getter()),
       loader_factory_bundle_for_update_check_(
           std::move(old_context->loader_factory_bundle_for_update_check_)),
       was_service_worker_registered_(

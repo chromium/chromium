@@ -30,7 +30,6 @@ namespace content {
 
 class ServiceWorkerContextWrapper;
 class ServiceWorkerVersion;
-class URLLoaderFactoryGetter;
 
 // A helper class to dispatch fetch event to a service worker.
 class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
@@ -65,7 +64,6 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   // |preload_handle_|. Returns true if it started navigation preload.
   bool MaybeStartNavigationPreload(
       const network::ResourceRequest& original_request,
-      URLLoaderFactoryGetter* url_loader_factory_getter,
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int frame_tree_node_id);
 

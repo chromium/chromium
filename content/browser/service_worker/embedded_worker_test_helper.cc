@@ -56,7 +56,6 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
       &EmbeddedWorkerTestHelper::BindStorageControl, base::Unretained(this)));
   wrapper_->InitInternal(quota_manager_proxy_.get(), special_storage_policy,
                          /*blob_context=*/nullptr,
-                         url_loader_factory_getter_.get(),
                          browser_context_.get());
   wrapper_->process_manager()->SetProcessIdForTest(mock_render_process_id());
   wrapper_->process_manager()->SetNewProcessIdForTest(new_render_process_id());

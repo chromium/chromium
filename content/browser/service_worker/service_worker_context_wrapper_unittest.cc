@@ -16,7 +16,6 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +46,6 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
     wrapper_ = base::MakeRefCounted<ServiceWorkerContextWrapper>(
         browser_context_.get());
-    url_loader_factory_getter_ = base::MakeRefCounted<URLLoaderFactoryGetter>();
     // Set up a mojo connection binder which binds a connection to a
     // ServiceWorkerStorageControlImpl instance owned by `this`. This is needed
     // to work around strange situations (e.g. nested
@@ -61,8 +59,7 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
             browser_context_->GetStoragePartitionForUrl(
                 GURL("https://example.com")));
     wrapper_->set_storage_partition(storage_partition);
-    wrapper_->Init(user_data_directory_.GetPath(), nullptr, nullptr, nullptr,
-                   url_loader_factory_getter_.get());
+    wrapper_->Init(user_data_directory_.GetPath(), nullptr, nullptr, nullptr);
     // Init() posts a couple tasks to the IO thread. Let them finish.
     base::RunLoop().RunUntilIdle();
   }
@@ -112,7 +109,6 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
   BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
   base::ScopedTempDir user_data_directory_;
   std::unique_ptr<TestBrowserContext> browser_context_;
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 

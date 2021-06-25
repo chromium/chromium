@@ -45,7 +45,6 @@ class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
-class URLLoaderFactoryGetter;
 
 // This class manages data associated with service workers.
 // The class is single threaded and should only be used on the UI thread.
@@ -105,7 +104,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   ServiceWorkerContextCore(
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
-      URLLoaderFactoryGetter* url_loader_factory_getter,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           non_network_pending_loader_factory_bundle_for_update_check,
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>*
@@ -353,10 +351,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // have been deleted for a particular `key`.
   void NotifyAllRegistrationsDeletedForStorageKey(const blink::StorageKey& key);
 
-  URLLoaderFactoryGetter* loader_factory_getter() {
-    return loader_factory_getter_.get();
-  }
-
   const scoped_refptr<blink::URLLoaderFactoryBundle>&
   loader_factory_bundle_for_update_check() {
     return loader_factory_bundle_for_update_check_;
@@ -444,8 +438,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::map<int64_t, scoped_refptr<ServiceWorkerVersion>> protected_versions_;
 
   std::map<int64_t /* version_id */, FailureInfo> failure_counts_;
-
-  scoped_refptr<URLLoaderFactoryGetter> loader_factory_getter_;
 
   scoped_refptr<blink::URLLoaderFactoryBundle>
       loader_factory_bundle_for_update_check_;

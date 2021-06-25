@@ -226,8 +226,7 @@ void ServiceWorkerContextWrapper::Init(
     const base::FilePath& user_data_directory,
     storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy,
-    ChromeBlobStorageContext* blob_context,
-    URLLoaderFactoryGetter* loader_factory_getter) {
+    ChromeBlobStorageContext* blob_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(storage_partition_);
 
@@ -237,14 +236,13 @@ void ServiceWorkerContextWrapper::Init(
   quota_manager_proxy_ = quota_manager_proxy;
 
   InitInternal(quota_manager_proxy, special_storage_policy, blob_context,
-               loader_factory_getter, storage_partition_->browser_context());
+               storage_partition_->browser_context());
 }
 
 void ServiceWorkerContextWrapper::InitInternal(
     storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy,
     ChromeBlobStorageContext* blob_context,
-    URLLoaderFactoryGetter* loader_factory_getter,
     BrowserContext* browser_context) {
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       non_network_pending_loader_factory_bundle_for_update_check;
@@ -253,7 +251,7 @@ void ServiceWorkerContextWrapper::InitInternal(
           browser_context);
 
   context_core_ = std::make_unique<ServiceWorkerContextCore>(
-      quota_manager_proxy, special_storage_policy, loader_factory_getter,
+      quota_manager_proxy, special_storage_policy,
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
 

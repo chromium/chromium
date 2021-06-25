@@ -1276,8 +1276,7 @@ void StoragePartitionImpl::Initialize(
 
   service_worker_context_->Init(path, quota_manager_proxy.get(),
                                 browser_context_->GetSpecialStoragePolicy(),
-                                blob_context.get(),
-                                url_loader_factory_getter_.get());
+                                blob_context.get());
 
   BlobRegistryWrapper* fallback_blob_registry =
       fallback_for_blob_urls ? fallback_for_blob_urls->GetBlobRegistry()
