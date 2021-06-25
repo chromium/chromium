@@ -272,6 +272,17 @@ android_library("app_hooks_java") {
   jacoco_never_instrument = true
 }
 
+java_group("delegate_public_impl_java") {
+  deps = [
+    ":app_hooks_java",
+    "//chrome/browser/lens:delegate_public_impl_java",
+    "//chrome/browser/locale:delegate_public_impl_java",
+    "//chrome/browser/policy/android:delegate_public_impl_java",
+    "//chrome/browser/ui/android/theme:delegate_public_impl_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
+  ]
+}
+
 java_cpp_template("vr_build_config") {
   sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/VrBuildConfig.template" ]
   if (enable_vr) {
@@ -858,11 +869,11 @@ junit_binary("chrome_junit_tests") {
   android_manifest = chrome_public_android_manifest
 
   deps = [
-    ":app_hooks_java",
     ":base_module_java",
     ":chrome_app_java_resources",
     ":chrome_java",
     ":chrome_public_android_manifest",
+    ":delegate_public_impl_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
@@ -918,9 +929,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/image_descriptions:java",
     "//chrome/browser/image_editor/public:java",
     "//chrome/browser/image_fetcher:java",
-    "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/lens:java",
-    "//chrome/browser/locale:delegate_public_impl_java",
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/notifications:junit_tests",
@@ -931,7 +940,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/password_entry_edit/android/internal:junit",
     "//chrome/browser/payments/android:junit",
     "//chrome/browser/performance_hints/android:java",
-    "//chrome/browser/policy/android:delegate_public_impl_java",
     "//chrome/browser/policy/android:java",
     "//chrome/browser/policy/android:junit",
     "//chrome/browser/preferences:java",
@@ -1003,7 +1011,6 @@ junit_binary("chrome_junit_tests") {
     "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:junit_test_support",
     "//components/embedder_support/android:util_java",
-    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//components/externalauth/android:junit",
     "//components/favicon/android:java",
@@ -1165,6 +1172,7 @@ android_library("chrome_test_java") {
     ":chrome_app_java_resources",
     ":chrome_test_util_java",
     ":chrome_test_util_jni",
+    ":delegate_public_impl_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
@@ -1178,7 +1186,6 @@ android_library("chrome_test_java") {
     "//base/test:test_support_java",
     "//build/config/android/test/resource_overlay:javatests",
     "//cc:cc_java",
-    "//chrome/android:app_hooks_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/android/features/start_surface/internal:java",
@@ -1225,7 +1232,6 @@ android_library("chrome_test_java") {
     "//chrome/browser/language/android:java",
     "//chrome/browser/language/android:javatests",
     "//chrome/browser/lens:java",
-    "//chrome/browser/locale:delegate_public_impl_java",
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/notifications:javatests",
@@ -1340,7 +1346,6 @@ android_library("chrome_test_java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
     "//components/external_intents/android:javatests",
-    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
@@ -1538,8 +1543,8 @@ if (enable_vr || enable_arcore) {
     ":chrome_test_util_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:app_hooks_java",
     "//chrome/android:chrome_java",
+    "//chrome/android:delegate_public_impl_java",
     "//chrome/android/features/vr:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
@@ -1548,7 +1553,6 @@ if (enable_vr || enable_arcore) {
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/embedder_support/android:util_java",
-    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/permissions/android:java",
     "//components/policy/android:policy_java",
     "//content/public/android:content_java",
@@ -2142,12 +2146,8 @@ if (!android_64bit_target_cpu ||
 # target that contain exactly the grouped java libraries.
 java_group("chrome_public_base_module_java") {
   deps = [
-    ":app_hooks_java",
     ":chrome_all_java",
-    "//chrome/browser/lens:delegate_public_impl_java",
-    "//chrome/browser/locale:delegate_public_impl_java",
-    "//chrome/browser/policy/android:delegate_public_impl_java",
-    "//components/externalauth/android:google_delegate_public_impl_java",
+    ":delegate_public_impl_java",
   ]
 }
 
@@ -2573,13 +2573,7 @@ template("monochrome_public_apk_or_module_tmpl") {
     if (_is_bundle) {
       deps += [ "//chrome/android:chrome_base_module_resources" ]
     } else {
-      deps += [
-        "//chrome/android:app_hooks_java",
-        "//chrome/browser/lens:delegate_public_impl_java",
-        "//chrome/browser/locale:delegate_public_impl_java",
-        "//chrome/browser/policy/android:delegate_public_impl_java",
-        "//components/externalauth/android:google_delegate_public_impl_java",
-      ]
+      deps += [ ":delegate_public_impl_java" ]
     }
     if (!_is_trichrome) {
       deps += [
@@ -3235,13 +3229,7 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
     min_sdk_version = _min_sdk_version
     module_descs = _module_descs
     version_code = _version_code
-    chrome_deps = [
-      "//chrome/android:app_hooks_java",
-      "//chrome/browser/lens:delegate_public_impl_java",
-      "//chrome/browser/locale:delegate_public_impl_java",
-      "//chrome/browser/policy/android:delegate_public_impl_java",
-      "//components/externalauth/android:google_delegate_public_impl_java",
-    ]
+    chrome_deps = [ ":delegate_public_impl_java" ]
     if (!_is_trichrome) {
       chrome_deps += [ "//chrome/android:monochrome_java" ]
     }
