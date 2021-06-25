@@ -6,7 +6,6 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -254,10 +253,10 @@ class MenuModelAdapterTest : public ViewEventTestBase {
                             ui::MENU_SOURCE_NONE);
   }
 
-  CheckedPtr<views::MenuButton> button_ = nullptr;
+  views::MenuButton* button_ = nullptr;
   TopMenuModel top_menu_model_;
   views::MenuModelAdapter menu_model_adapter_{&top_menu_model_};
-  CheckedPtr<views::MenuItemView> menu_ = nullptr;
+  views::MenuItemView* menu_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 

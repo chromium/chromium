@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -70,7 +69,7 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
   }
 
  private:
-  CheckedPtr<ServiceWorkerMainResourceLoader> owner_;
+  ServiceWorkerMainResourceLoader* owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(StreamWaiter);

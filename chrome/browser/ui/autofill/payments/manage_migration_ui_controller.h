@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_MANAGE_MIGRATION_UI_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
@@ -95,10 +94,8 @@ class ManageMigrationUiController
 
   void ShowFeedbackDialog();
 
-  CheckedPtr<LocalCardMigrationBubbleControllerImpl> bubble_controller_ =
-      nullptr;
-  CheckedPtr<LocalCardMigrationDialogControllerImpl> dialog_controller_ =
-      nullptr;
+  LocalCardMigrationBubbleControllerImpl* bubble_controller_ = nullptr;
+  LocalCardMigrationDialogControllerImpl* dialog_controller_ = nullptr;
 
   // This indicates what step the migration flow is currently in and
   // what should be shown next.

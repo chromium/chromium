@@ -6,7 +6,6 @@
 
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -107,7 +106,7 @@ class BulkLeakCheckServiceTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   BulkLeakCheckService service_;
-  CheckedPtr<MockLeakDetectionCheckFactory> factory_;
+  MockLeakDetectionCheckFactory* factory_;
 };
 
 void BulkLeakCheckServiceTest::ConductLeakCheck(

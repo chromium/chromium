@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -41,7 +40,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
 
  private:
   // The metadata store to store metadata in; always outlives |this|.
-  CheckedPtr<SyncMetadataStore> store_;
+  SyncMetadataStore* store_;
 
   // The sync model type for this metadata.
   syncer::ModelType type_;

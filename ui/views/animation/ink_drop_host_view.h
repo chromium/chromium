@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -212,7 +211,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
 
    private:
     // The host view.
-    const CheckedPtr<InkDropHostView> host_view_;
+    InkDropHostView* const host_view_;
   };
 
   const InkDropEventHandler* GetEventHandler() const;
@@ -229,7 +228,7 @@ class VIEWS_EXPORT InkDropHostView : public View {
   InkDropHostViewEventHandlerDelegate ink_drop_event_handler_delegate_;
   InkDropEventHandler ink_drop_event_handler_;
 
-  CheckedPtr<InkDropEventHandler> ink_drop_event_handler_override_ = nullptr;
+  InkDropEventHandler* ink_drop_event_handler_override_ = nullptr;
 
   float ink_drop_visible_opacity_ = 0.175f;
 

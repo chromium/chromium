@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_STARTER_PLATFORM_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -39,7 +38,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
 
-  CheckedPtr<WebsiteLoginManager> website_login_manager_ = nullptr;
+  WebsiteLoginManager* website_login_manager_ = nullptr;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool feature_module_installed_ = true;
   Metrics::FeatureModuleInstallation feature_module_installation_result_ =

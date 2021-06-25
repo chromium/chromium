@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -43,7 +42,7 @@ class PageLoadMetricsObserverContentTestHarness
  private:
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  CheckedPtr<content::ContentBrowserClient> original_browser_client_ = nullptr;
+  content::ContentBrowserClient* original_browser_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverContentTestHarness);
 };

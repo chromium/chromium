@@ -13,7 +13,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -115,7 +114,7 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   friend class base::RefCountedThreadSafe<FakeGdiObject>;
   ~FakeGdiObject() {}
 
-  CheckedPtr<void> handle_;
+  void* handle_;
   uint32_t magic_;
   sk_sp<SkTypeface> typeface_;
 

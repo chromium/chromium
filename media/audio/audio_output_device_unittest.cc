@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -107,7 +106,7 @@ class AudioOutputDeviceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AudioParameters default_audio_parameters_;
   StrictMock<MockRenderCallback> callback_;
-  CheckedPtr<MockAudioOutputIPC> audio_output_ipc_;  // owned by audio_device_
+  MockAudioOutputIPC* audio_output_ipc_;  // owned by audio_device_
   scoped_refptr<AudioOutputDevice> audio_device_;
   OutputDeviceStatus device_status_;
 
@@ -141,8 +140,7 @@ void AudioOutputDeviceTest::CreateDevice(const std::string& device_id,
 
   audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_.get()),
-      task_env_.GetMainThreadTaskRunner(),
+      base::WrapUnique(audio_output_ipc_), task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), device_id), timeout);
 }
 
@@ -299,8 +297,7 @@ TEST_F(AudioOutputDeviceTest, AuthorizationFailsBeforeInitialize_NoError) {
   StopAudioDevice();
   audio_output_ipc_ = new NiceMock<MockAudioOutputIPC>();
   audio_device_ = new AudioOutputDevice(
-      base::WrapUnique(audio_output_ipc_.get()),
-      task_env_.GetMainThreadTaskRunner(),
+      base::WrapUnique(audio_output_ipc_), task_env_.GetMainThreadTaskRunner(),
       AudioSinkParameters(base::UnguessableToken(), kDefaultDeviceId),
       kAuthTimeout);
   EXPECT_CALL(

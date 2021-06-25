@@ -100,11 +100,8 @@ public class PageInfoDiscoverabilityTest {
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
                     mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    ()
-                            -> mTemplateUrlService,
-                    ()
-                            -> mProfile,
-                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid());
+                    () -> mTemplateUrlService, () -> mProfile, mPageInfoIPHController,
+                    sPermissionTestRule.getActivity().getWindowAndroid());
         });
     }
 

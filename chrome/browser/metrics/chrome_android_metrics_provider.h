@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -35,7 +34,7 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeAndroidMetricsProvider);
 };

@@ -14,7 +14,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -61,7 +60,7 @@ class USBDeviceManagerImplTest : public testing::Test {
   ~USBDeviceManagerImplTest() override = default;
 
  protected:
-  CheckedPtr<MockUsbService> mock_usb_service_;
+  MockUsbService* mock_usb_service_;
   std::unique_ptr<DeviceManagerImpl> device_manager_instance_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
@@ -147,11 +146,11 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
       blink::mojom::BackgroundFetchFailureReason failure_reason);
 
   // |background_fetch_context_| indirectly owns |this|.
-  CheckedPtr<BackgroundFetchContext> background_fetch_context_;
+  BackgroundFetchContext* background_fetch_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
   // Owned by BackgroundFetchContext.
-  CheckedPtr<DevToolsBackgroundServicesContextImpl> devtools_context_;
+  DevToolsBackgroundServicesContextImpl* devtools_context_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchEventDispatcher);
 };

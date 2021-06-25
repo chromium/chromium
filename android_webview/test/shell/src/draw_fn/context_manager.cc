@@ -13,7 +13,6 @@
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
 #include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
@@ -417,7 +416,7 @@ class VkFunctorDrawHandler : public SkDrawable::GpuDrawHandler {
   }
 
  private:
-  CheckedPtr<OverlaysManager> overlays_manager_;
+  OverlaysManager* overlays_manager_;
   int functor_;
   int scroll_x_;
   int scroll_y_;
@@ -457,7 +456,7 @@ class FunctorDrawable : public SkDrawable {
   }
 
  private:
-  CheckedPtr<OverlaysManager> overlays_manager_;
+  OverlaysManager* overlays_manager_;
   int functor_;
   int scroll_x_;
   int scroll_y_;

@@ -9,7 +9,6 @@
 #include <list>
 
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -157,7 +156,7 @@ class NativeImageBufferEGL : public NativeImageBuffer {
     bool needs_wait_before_read;
   };
   std::list<ClientInfo> client_infos_;
-  CheckedPtr<gl::GLImage> write_client_;
+  gl::GLImage* write_client_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeImageBufferEGL);
 };

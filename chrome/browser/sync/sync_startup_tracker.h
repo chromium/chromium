@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 // SyncStartupTracker provides a centralized way for observers to detect when
@@ -55,10 +54,10 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
   void CheckServiceState();
 
   // The SyncService we should track.
-  CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
 
   // Weak pointer to the observer to notify.
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncStartupTracker);
 };

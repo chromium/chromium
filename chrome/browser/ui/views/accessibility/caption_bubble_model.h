@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
-
 namespace captions {
 
 class CaptionBubble;
@@ -78,7 +76,7 @@ class CaptionBubbleModel {
   bool has_error_ = false;
 
   // The CaptionBubble observing changes to this model.
-  CheckedPtr<CaptionBubble> observer_ = nullptr;
+  CaptionBubble* observer_ = nullptr;
 };
 }  // namespace captions
 

@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/single_thread_task_runner.h"
@@ -134,7 +133,7 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
     CloseBalloon(extension_id, profile);
   }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool is_hosted_app_;
   bool is_platform_app_;
   std::string extension_id_;

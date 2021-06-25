@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -94,7 +93,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   network::mojom::NetworkContext* GetNetworkContext();
 
-  CheckedPtr<RenderFrameHost> frame_host_;
+  RenderFrameHost* frame_host_;
 };
 
 }  // namespace content

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -127,7 +126,7 @@ class HidHapticGamepadTest : public testing::Test {
   int second_callback_count_;
   mojom::GamepadHapticsResult first_callback_result_;
   mojom::GamepadHapticsResult second_callback_result_;
-  CheckedPtr<FakeHidWriter> fake_hid_writer_;
+  FakeHidWriter* fake_hid_writer_;
   std::unique_ptr<HidHapticGamepad> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -37,7 +36,7 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<MoveToAccountStoreBubbleView> view_;
+  MoveToAccountStoreBubbleView* view_;
 };
 
 void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {

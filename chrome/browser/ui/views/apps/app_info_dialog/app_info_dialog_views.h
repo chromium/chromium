@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -57,14 +56,14 @@ class AppInfoDialog : public views::View,
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // UI elements of the dialog.
-  CheckedPtr<views::View> dialog_header_ = nullptr;
-  CheckedPtr<views::ScrollView> dialog_body_ = nullptr;
-  CheckedPtr<views::View> dialog_footer_ = nullptr;
-  CheckedPtr<views::View> arc_app_info_links_ = nullptr;
+  views::View* dialog_header_ = nullptr;
+  views::ScrollView* dialog_body_ = nullptr;
+  views::View* dialog_footer_ = nullptr;
+  views::View* arc_app_info_links_ = nullptr;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::string app_id_;
-  CheckedPtr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
+  extensions::ExtensionRegistry* extension_registry_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoDialog, views::View)

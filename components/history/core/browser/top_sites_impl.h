@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -195,11 +194,11 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   const PrepopulatedPageList prepopulated_pages_;
 
   // PrefService holding the set of blocked urls. Must outlive TopSitesImpl.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // HistoryService that TopSitesImpl can query. May be null, but if defined it
   // must outlive TopSitesImpl.
-  CheckedPtr<HistoryService> history_service_;
+  HistoryService* history_service_;
 
   // Can URL be added to the history?
   CanAddURLToHistoryFn can_add_url_to_history_;

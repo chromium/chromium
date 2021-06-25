@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -78,10 +77,10 @@ class GamepadServiceTestConstructor : public GamepadTestHelper {
 
  private:
   // Owning pointer (can't be a scoped_ptr due to private destructor).
-  CheckedPtr<GamepadService> gamepad_service_;
+  GamepadService* gamepad_service_;
 
   // Pointer owned by the provider (which is owned by the gamepad service).
-  CheckedPtr<MockGamepadDataFetcher> data_fetcher_;
+  MockGamepadDataFetcher* data_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadServiceTestConstructor);
 };

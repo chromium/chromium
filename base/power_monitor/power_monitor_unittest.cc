@@ -5,7 +5,6 @@
 #include "base/power_monitor/power_monitor.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +27,7 @@ class PowerMonitorTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment_;
-  CheckedPtr<PowerMonitorTestSource> power_monitor_source_;
+  PowerMonitorTestSource* power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };

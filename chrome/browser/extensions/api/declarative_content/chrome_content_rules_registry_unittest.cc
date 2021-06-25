@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -35,7 +34,7 @@ class TestPredicate : public ContentPredicate {
   }
 
  private:
-  CheckedPtr<ContentPredicateEvaluator> evaluator_;
+  ContentPredicateEvaluator* evaluator_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPredicate);
 };
@@ -107,8 +106,8 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
     contents_for_next_operation_evaluation_ = nullptr;
   }
 
-  CheckedPtr<ContentPredicateEvaluator::Delegate> delegate_;
-  CheckedPtr<content::WebContents> contents_for_next_operation_evaluation_;
+  ContentPredicateEvaluator::Delegate* delegate_;
+  content::WebContents* contents_for_next_operation_evaluation_;
   mutable bool next_evaluation_result_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPredicateEvaluator);

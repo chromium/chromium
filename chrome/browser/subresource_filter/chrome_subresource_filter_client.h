@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
 namespace content {
@@ -39,7 +38,7 @@ class ChromeSubresourceFilterClient
   GetSafeBrowsingDatabaseManager() override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;

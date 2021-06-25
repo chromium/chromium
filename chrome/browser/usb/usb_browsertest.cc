@@ -6,7 +6,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -184,7 +183,7 @@ class WebUsbTest : public InProcessBrowserTest {
   FakeUsbDeviceManager device_manager_;
   UsbDeviceInfoPtr fake_device_info_;
   TestContentBrowserClient test_content_browser_client_;
-  CheckedPtr<content::ContentBrowserClient> original_content_browser_client_;
+  content::ContentBrowserClient* original_content_browser_client_;
   GURL origin_;
 };
 

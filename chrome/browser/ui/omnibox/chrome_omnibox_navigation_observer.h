@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
@@ -132,7 +131,7 @@ class ChromeOmniboxNavigationObserver : public OmniboxNavigationObserver,
   const std::u16string text_;
   const AutocompleteMatch match_;
   const AutocompleteMatch alternate_nav_match_;
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;  // NULL in incognito.
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_testing_;

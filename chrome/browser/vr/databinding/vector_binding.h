@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/databinding/vector_element_binding.h"
@@ -73,7 +72,7 @@ class VectorBinding : public BindingBase {
   }
 
  private:
-  CheckedPtr<std::vector<M>> models_ = nullptr;
+  std::vector<M>* models_ = nullptr;
   std::vector<std::unique_ptr<ElementBinding>> bindings_;
   base::Optional<size_t> last_size_;
   ModelAddedCallback added_callback_;

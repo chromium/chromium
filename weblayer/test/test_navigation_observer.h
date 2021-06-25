@@ -6,7 +6,6 @@
 #define WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "url/gurl.h"
@@ -47,7 +46,7 @@ class TestNavigationObserver : public NavigationObserver {
   const GURL url_;
   base::Optional<NavigationEvent> observed_event_;
   NavigationEvent target_event_;
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   bool done_loading_ = false;
   base::RunLoop run_loop_;
 

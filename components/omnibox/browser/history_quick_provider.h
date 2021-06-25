@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -73,8 +72,7 @@ class HistoryQuickProvider : public HistoryProvider {
                                         int score);
 
   AutocompleteInput autocomplete_input_;
-  CheckedPtr<InMemoryURLIndex>
-      in_memory_url_index_;  // Not owned by this class.
+  InMemoryURLIndex* in_memory_url_index_;  // Not owned by this class.
 
   // This provider is disabled when true.
   static bool disabled_;

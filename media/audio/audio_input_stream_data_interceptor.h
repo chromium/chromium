@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/base/media_export.h"
@@ -59,8 +58,8 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
  private:
   const CreateDebugRecorderCB create_debug_recorder_cb_;
   std::unique_ptr<AudioDebugRecorder> debug_recorder_;
-  const CheckedPtr<AudioInputStream> stream_;
-  CheckedPtr<AudioInputStream::AudioInputCallback> callback_;
+  AudioInputStream* const stream_;
+  AudioInputStream::AudioInputCallback* callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(AudioInputStreamDataInterceptor);

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -21,7 +20,7 @@ namespace {
 // An option struct to simplify setting up a specific navigation throttle.
 struct NavigationThrottleOptions {
   GURL url;
-  CheckedPtr<content::RenderFrameHost> rfh = nullptr;
+  content::RenderFrameHost* rfh = nullptr;
   ui::PageTransition page_transition = ui::PAGE_TRANSITION_FROM_API;
   base::Optional<url::Origin> initiator_origin;
 };
@@ -43,8 +42,8 @@ class WellKnownChangePasswordNavigationThrottleTest
 
   std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
   CreateNavigationThrottle(NavigationThrottleOptions opts) {
-    content::MockNavigationHandle handle(
-        opts.url, opts.rfh ? opts.rfh.get() : main_rfh());
+    content::MockNavigationHandle handle(opts.url,
+                                         opts.rfh ? opts.rfh : main_rfh());
     handle.set_page_transition(opts.page_transition);
     if (opts.initiator_origin)
       handle.set_initiator_origin(*opts.initiator_origin);
@@ -53,7 +52,7 @@ class WellKnownChangePasswordNavigationThrottleTest
   }
 
  private:
-  CheckedPtr<content::RenderFrameHost> subframe_ = nullptr;
+  content::RenderFrameHost* subframe_ = nullptr;
 };
 
 TEST_F(WellKnownChangePasswordNavigationThrottleTest,

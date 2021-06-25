@@ -5,7 +5,6 @@
 #include "components/sync/engine/cancelation_signal.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -44,7 +43,7 @@ class BlockingTask : public CancelationSignal::Observer {
  private:
   base::WaitableEvent event_;
   base::Thread exec_thread_;
-  CheckedPtr<CancelationSignal> cancel_signal_;
+  CancelationSignal* cancel_signal_;
   bool was_started_;
 };
 

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -129,7 +128,7 @@ class CONTENT_EXPORT SpeechRecognitionEngine
   friend class speech::UpstreamLoaderClient;
   friend class speech::DownstreamLoader;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Response status codes from the speech recognition webservice.
   static const int kWebserviceStatusNoError;

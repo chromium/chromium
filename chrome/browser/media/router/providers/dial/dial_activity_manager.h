@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -192,7 +191,7 @@ class DialActivityManager {
 
   base::flat_map<MediaRoute::Id, std::unique_ptr<Record>> records_;
 
-  const CheckedPtr<DialAppDiscoveryService> app_discovery_service_;
+  DialAppDiscoveryService* const app_discovery_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(DialActivityManager);

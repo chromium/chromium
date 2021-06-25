@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -58,8 +57,8 @@ class ReopenTabInProductHelp : public BrowserListObserver, public KeyedService {
   // Callback passed to |ReopenTabInProductHelpTrigger|.
   void OnShowHelp();
 
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<const base::TickClock> clock_;
+  Profile* const profile_;
+  const base::TickClock* const clock_;
 
   // Tracks active tab durations and notifies us when an active tab is closed.
   ActiveTabTracker active_tab_tracker_;

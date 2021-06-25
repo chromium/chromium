@@ -19,7 +19,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -234,7 +233,7 @@ class SyncerTest : public testing::Test,
   CancelationSignal cancelation_signal_;
   std::map<ModelType, MockModelTypeProcessor> mock_model_type_processors_;
 
-  CheckedPtr<Syncer> syncer_;
+  Syncer* syncer_;
 
   std::unique_ptr<SyncCycle> cycle_;
   MockNudgeHandler mock_nudge_handler_;

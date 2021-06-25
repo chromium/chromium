@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -87,7 +86,7 @@ class CredentialManagerPendingRequestTask
 
   void ProcessForms(std::vector<std::unique_ptr<PasswordForm>> results);
 
-  CheckedPtr<CredentialManagerPendingRequestTaskDelegate> delegate_;  // Weak;
+  CredentialManagerPendingRequestTaskDelegate* delegate_;  // Weak;
   SendCredentialCallback send_callback_;
   const CredentialMediationRequirement mediation_;
   const url::Origin origin_;

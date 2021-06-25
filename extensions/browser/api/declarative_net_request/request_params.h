@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "content/public/browser/global_routing_id.h"
@@ -37,7 +36,7 @@ struct RequestParams {
   ~RequestParams();
 
   // This is a pointer to a GURL. Hence the GURL must outlive this struct.
-  CheckedPtr<const GURL> url = nullptr;
+  const GURL* url = nullptr;
   url::Origin first_party_origin;
   url_pattern_index::flat::ElementType element_type =
       url_pattern_index::flat::ElementType_OTHER;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
@@ -68,7 +67,7 @@ class OfferNotificationBubbleViewsTestBase
   PersonalDataManager* personal_data() { return personal_data_; }
 
  private:
-  CheckedPtr<PersonalDataManager> personal_data_;
+  PersonalDataManager* personal_data_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

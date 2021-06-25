@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
@@ -208,13 +207,13 @@ class UpdateInstallGateTest : public testing::Test {
   // and RenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
-  CheckedPtr<TestingProfile> profile_ = nullptr;
+  TestingProfile* profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  CheckedPtr<TestExtensionSystem> system_ = nullptr;
-  CheckedPtr<ExtensionService> service_ = nullptr;
-  CheckedPtr<ExtensionRegistry> registry_ = nullptr;
-  CheckedPtr<EventRouter> event_router_ = nullptr;
+  TestExtensionSystem* system_ = nullptr;
+  ExtensionService* service_ = nullptr;
+  ExtensionRegistry* registry_ = nullptr;
+  EventRouter* event_router_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Needed for creating ExtensionService.

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_udp.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -98,7 +97,7 @@ class SocketsUdpSetPausedFunction : public UDPSocketAsyncApiFunction {
 
  private:
   std::unique_ptr<sockets_udp::SetPaused::Params> params_;
-  CheckedPtr<UDPSocketEventDispatcher> socket_event_dispatcher_;
+  UDPSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsUdpBindFunction : public UDPSocketAsyncApiFunction {
@@ -117,7 +116,7 @@ class SocketsUdpBindFunction : public UDPSocketAsyncApiFunction {
 
  private:
   std::unique_ptr<sockets_udp::Bind::Params> params_;
-  CheckedPtr<UDPSocketEventDispatcher> socket_event_dispatcher_;
+  UDPSocketEventDispatcher* socket_event_dispatcher_;
 };
 
 class SocketsUdpSendFunction : public UDPSocketExtensionWithDnsLookupFunction {

@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -181,7 +180,7 @@ class Worker : public Listener, public Sender {
   }
 
   base::Thread* ListenerThread() {
-    return overrided_thread_ ? overrided_thread_.get() : &listener_thread_;
+    return overrided_thread_ ? overrided_thread_ : &listener_thread_;
   }
 
   const base::Thread& ipc_thread() const { return ipc_thread_; }
@@ -248,7 +247,7 @@ class Worker : public Listener, public Sender {
   std::unique_ptr<SyncChannel> channel_;
   base::Thread ipc_thread_;
   base::Thread listener_thread_;
-  CheckedPtr<base::Thread> overrided_thread_;
+  base::Thread* overrided_thread_;
 
   base::WaitableEvent shutdown_event_;
 
@@ -461,7 +460,7 @@ class NoHangServer : public Worker {
     Done();
   }
 
-  CheckedPtr<WaitableEvent> got_first_reply_;
+  WaitableEvent* got_first_reply_;
 };
 
 class NoHangClient : public Worker {
@@ -483,7 +482,7 @@ class NoHangClient : public Worker {
     Done();
   }
 
-  CheckedPtr<WaitableEvent> got_first_reply_;
+  WaitableEvent* got_first_reply_;
 };
 
 void NoHang() {
@@ -895,7 +894,7 @@ class TestSyncMessageFilter : public SyncMessageFilter {
  private:
   ~TestSyncMessageFilter() override = default;
 
-  CheckedPtr<Worker> worker_;
+  Worker* worker_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
@@ -1029,8 +1028,8 @@ class RestrictedDispatchServer : public Worker {
   }
 
   void OnNoArgs() { }
-  CheckedPtr<WaitableEvent> sent_ping_event_;
-  CheckedPtr<WaitableEvent> wait_event_;
+  WaitableEvent* sent_ping_event_;
+  WaitableEvent* wait_event_;
 };
 
 class NonRestrictedDispatchServer : public Worker {
@@ -1058,7 +1057,7 @@ class NonRestrictedDispatchServer : public Worker {
   }
 
   void OnNoArgs() { }
-  CheckedPtr<WaitableEvent> signal_event_;
+  WaitableEvent* signal_event_;
 };
 
 class RestrictedDispatchClient : public Worker {
@@ -1086,7 +1085,7 @@ class RestrictedDispatchClient : public Worker {
 
     server_->ListenerThread()->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&RestrictedDispatchServer::OnDoPing,
-                                  base::Unretained(server_.get()), 1));
+                                  base::Unretained(server_), 1));
     sent_ping_event_->Wait();
     Send(new SyncChannelTestMsg_NoArgs);
     if (ping_ == 1)
@@ -1101,7 +1100,7 @@ class RestrictedDispatchClient : public Worker {
 
     server_->ListenerThread()->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&RestrictedDispatchServer::OnDoPing,
-                                  base::Unretained(server_.get()), 2));
+                                  base::Unretained(server_), 2));
     sent_ping_event_->Wait();
     // Check that the incoming message is *not* dispatched when sending on the
     // non restricted channel.
@@ -1127,7 +1126,7 @@ class RestrictedDispatchClient : public Worker {
     // dispatched when sending on the restricted channel.
     server2_->ListenerThread()->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&NonRestrictedDispatchServer::OnDoPingTTL,
-                                  base::Unretained(server2_.get()), 3));
+                                  base::Unretained(server2_), 3));
     int value = 0;
     Send(new SyncChannelTestMsg_PingTTL(4, &value));
     if (ping_ == 3 && value == 4)
@@ -1163,10 +1162,10 @@ class RestrictedDispatchClient : public Worker {
   }
 
   int ping_;
-  CheckedPtr<RestrictedDispatchServer> server_;
-  CheckedPtr<NonRestrictedDispatchServer> server2_;
-  CheckedPtr<int> success_;
-  CheckedPtr<WaitableEvent> sent_ping_event_;
+  RestrictedDispatchServer* server_;
+  NonRestrictedDispatchServer* server2_;
+  int* success_;
+  WaitableEvent* sent_ping_event_;
   std::unique_ptr<SyncChannel> non_restricted_channel_;
   mojo::ScopedMessagePipeHandle non_restricted_channel_handle_;
 };
@@ -1275,9 +1274,9 @@ class RestrictedDispatchDeadlockServer : public Worker {
   }
 
   int server_num_;
-  CheckedPtr<WaitableEvent> server_ready_event_;
-  CheckedPtr<WaitableEvent*> events_;
-  CheckedPtr<RestrictedDispatchDeadlockServer> peer_;
+  WaitableEvent* server_ready_event_;
+  WaitableEvent** events_;
+  RestrictedDispatchDeadlockServer* peer_;
 };
 
 class RestrictedDispatchDeadlockClient2 : public Worker {
@@ -1333,8 +1332,8 @@ class RestrictedDispatchDeadlockClient2 : public Worker {
     }
   }
 
-  CheckedPtr<WaitableEvent> server_ready_event_;
-  CheckedPtr<WaitableEvent*> events_;
+  WaitableEvent* server_ready_event_;
+  WaitableEvent** events_;
   bool received_msg_;
   bool received_noarg_reply_;
   bool done_issued_;
@@ -1362,11 +1361,11 @@ class RestrictedDispatchDeadlockClient1 : public Worker {
     server_->ListenerThread()->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&RestrictedDispatchDeadlockServer::OnDoServerTask,
-                       base::Unretained(server_.get())));
+                       base::Unretained(server_)));
     peer_->ListenerThread()->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&RestrictedDispatchDeadlockClient2::OnDoClient2Task,
-                       base::Unretained(peer_.get())));
+                       base::Unretained(peer_)));
     events_[0]->Wait();
     events_[1]->Wait();
     DCHECK(received_msg_ == false);
@@ -1400,10 +1399,10 @@ class RestrictedDispatchDeadlockClient1 : public Worker {
     }
   }
 
-  CheckedPtr<RestrictedDispatchDeadlockServer> server_;
-  CheckedPtr<RestrictedDispatchDeadlockClient2> peer_;
-  CheckedPtr<WaitableEvent> server_ready_event_;
-  CheckedPtr<WaitableEvent*> events_;
+  RestrictedDispatchDeadlockServer* server_;
+  RestrictedDispatchDeadlockClient2* peer_;
+  WaitableEvent* server_ready_event_;
+  WaitableEvent** events_;
   bool received_msg_;
   bool received_noarg_reply_;
   bool done_issued_;
@@ -1536,11 +1535,11 @@ class RestrictedDispatchPipeWorker : public Worker {
   }
 
   std::unique_ptr<SyncChannel> other_channel_;
-  CheckedPtr<WaitableEvent> event1_;
-  CheckedPtr<WaitableEvent> event2_;
+  WaitableEvent* event1_;
+  WaitableEvent* event2_;
   mojo::ScopedMessagePipeHandle other_channel_handle_;
   int group_;
-  CheckedPtr<int> success_;
+  int* success_;
 };
 
 #if defined(OS_ANDROID)
@@ -1628,7 +1627,7 @@ class ReentrantReplyServer1 : public Worker {
     LOG(FATAL) << "Reply message was dispatched";
   }
 
-  CheckedPtr<WaitableEvent> server_ready_;
+  WaitableEvent* server_ready_;
   std::unique_ptr<SyncChannel> server2_channel_;
   mojo::ScopedMessagePipeHandle other_channel_handle_;
 };
@@ -1663,7 +1662,7 @@ class ReentrantReplyServer2 : public Worker {
     Done();
   }
 
-  CheckedPtr<Message> reply_;
+  Message* reply_;
 };
 
 class ReentrantReplyClient : public Worker {
@@ -1680,7 +1679,7 @@ class ReentrantReplyClient : public Worker {
   }
 
  private:
-  CheckedPtr<WaitableEvent> server_ready_;
+  WaitableEvent* server_ready_;
 };
 
 TEST_F(IPCSyncChannelTest, ReentrantReply) {

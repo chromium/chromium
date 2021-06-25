@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "gin/array_buffer.h"
@@ -71,7 +70,7 @@ class Request {
  private:
   void OnRequestDone(const SkBitmap& result_image) { bitmap_ = result_image; }
 
-  CheckedPtr<ImageDecoderImpl> decoder_;
+  ImageDecoderImpl* decoder_;
   SkBitmap bitmap_;
 };
 

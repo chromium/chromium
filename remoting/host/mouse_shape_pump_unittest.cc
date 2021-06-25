@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -58,7 +57,7 @@ class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
   }
 
  private:
-  CheckedPtr<Callback> callback_;
+  Callback* callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TestMouseCursorMonitor);
 };

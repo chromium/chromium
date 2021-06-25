@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
@@ -389,7 +388,7 @@ class MEDIA_EXPORT SourceBufferStream {
 
   // Used to report log messages that can help the web developer figure out what
   // is wrong with the content.
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   // List of disjoint buffered ranges, ordered by start time.
   RangeList ranges_;
@@ -426,7 +425,7 @@ class MEDIA_EXPORT SourceBufferStream {
   // Pointer to the seeked-to Range. This is the range from which
   // GetNextBuffer() calls are fulfilled after the |track_buffer_| has been
   // emptied.
-  CheckedPtr<SourceBufferRange> selected_range_ = nullptr;
+  SourceBufferRange* selected_range_ = nullptr;
 
   // Queue of the next buffers to be returned from calls to GetNextBuffer(). If
   // |track_buffer_| is empty, return buffers from |selected_range_|.

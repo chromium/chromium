@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -77,7 +76,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
     NOTREACHED();
   }
 
-  CheckedPtr<mojom::PaymentShippingOption> shipping_option_;
+  mojom::PaymentShippingOption* shipping_option_;
 
   DISALLOW_COPY_AND_ASSIGN(ShippingOptionItem);
 };

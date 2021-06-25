@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -146,7 +145,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
   void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
 
  private:
-  CheckedPtr<EditorViewController> controller_;
+  EditorViewController* controller_;
   const std::string app_locale_;
   bool initially_valid_;
 

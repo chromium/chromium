@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -340,7 +339,7 @@ class MockHostResolverBase::MdnsListenerImpl
   const HostPortPair host_;
   const DnsQueryType query_type_;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Use a WeakPtr as the resolver may be destroyed while there are still
   // outstanding listener objects.

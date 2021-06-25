@@ -10,7 +10,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,7 +108,7 @@ class IndexedLessThan {
   }
 
  private:
-  CheckedPtr<const T> values_;
+  const T* values_;
   LessThan less_than_;
 };
 

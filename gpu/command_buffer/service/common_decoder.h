@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
@@ -216,8 +215,8 @@ class GPU_EXPORT CommonDecoder {
 
   #undef COMMON_COMMAND_BUFFER_CMD_OP
 
-  CheckedPtr<CommandBufferServiceBase> command_buffer_service_;
-  CheckedPtr<DecoderClient> client_;
+  CommandBufferServiceBase* command_buffer_service_;
+  DecoderClient* client_;
   size_t max_bucket_size_;
 
   typedef std::map<uint32_t, std::unique_ptr<Bucket>> BucketMap;
