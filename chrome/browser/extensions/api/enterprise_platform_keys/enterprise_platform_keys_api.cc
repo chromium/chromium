@@ -15,21 +15,95 @@
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace extensions {
 
 namespace {
+
 namespace api_epk = api::enterprise_platform_keys;
 namespace api_epki = api::enterprise_platform_keys_internal;
+using crosapi::mojom::KeystoreService;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+crosapi::mojom::KeystoreService* GetKeystoreService(
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  (void)browser_context;
+  return chromeos::LacrosService::Get()->GetRemote<KeystoreService>().get();
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
+      browser_context);
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or empty string on success. |min_version| is the minimum version of
+// the ash implementation of KeystoreService necessary to support this
+// extension. |context| is the browser context in which the extension is hosted.
+std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int version = chromeos::LacrosService::Get()->GetInterfaceVersion(
+      KeystoreService::Uuid_);
+  if (version < min_version)
+    return kUnsupportedByAsh;
+
+  // These APIs are used in security-sensitive contexts. We need to ensure that
+  // the user for ash is the same as the user for lacros. We do this by
+  // restricting the API to the default profile, which is guaranteed to be the
+  // same user.
+  if (!Profile::FromBrowserContext(context)->IsMainProfile())
+    return kUnsupportedProfile;
+#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return "";
+}
+
+absl::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
+    const std::string& input) {
+  if (input == "user")
+    return crosapi::mojom::KeystoreType::kUser;
+  if (input == "system")
+    return crosapi::mojom::KeystoreType::kDevice;
+  return absl::nullopt;
+}
+
+// Validates that |token_id| is well-formed. Converts |token_id| into the output
+// parameter |keystore|. Only populated on success. Returns an empty string on
+// success and an error message on error. A validation error should result in
+// extension termination.
+std::string ValidateInput(const std::string& token_id,
+                          crosapi::mojom::KeystoreType* keystore) {
+  absl::optional<crosapi::mojom::KeystoreType> keystore_type =
+      KeystoreTypeFromString(token_id);
+  if (!keystore_type)
+    return platform_keys::kErrorInvalidToken;
+
+  *keystore = keystore_type.value();
+  return "";
+}
+
 }  // namespace
 
 namespace platform_keys {
@@ -121,5 +195,48 @@ void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
 }
 
 //------------------------------------------------------------------------------
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysGetCertificatesFunction::Run() {
+  std::unique_ptr<api_epk::GetCertificates::Params> params(
+      api_epk::GetCertificates::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error = ValidateCrosapi(
+      KeystoreService::kGetCertificatesMinVersion, browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(error));
+  }
+
+  crosapi::mojom::KeystoreType keystore;
+  error = ValidateInput(params->token_id, &keystore);
+  if (!error.empty()) {
+    return RespondNow(Error(error));
+  }
+
+  auto c = base::BindOnce(
+      &EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates, this);
+  GetKeystoreService(browser_context())
+      ->GetCertificates(keystore, std::move(c));
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
+    crosapi::mojom::GetCertificatesResultPtr result) {
+  if (result->is_error_message()) {
+    Respond(Error(result->get_error_message()));
+    return;
+  }
+  DCHECK(result->is_certificates());
+
+  auto client_certs = std::make_unique<base::ListValue>();
+  for (std::vector<uint8_t>& cert : result->get_certificates()) {
+    client_certs->Append(std::make_unique<base::Value>(std::move(cert)));
+  }
+
+  auto results = std::make_unique<base::ListValue>();
+  results->Append(std::move(client_certs));
+  Respond(ArgumentList(std::move(results)));
+}
 
 }  // namespace extensions

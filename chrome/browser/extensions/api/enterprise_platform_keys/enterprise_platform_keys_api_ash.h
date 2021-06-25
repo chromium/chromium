@@ -22,20 +22,6 @@ using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 
 namespace extensions {
 
-class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysGetCertificatesFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the list of certificates was determined. If an error occurred,
-  // |certs| will be nullptr.
-  void OnGotCertificates(std::unique_ptr<net::CertificateList> certs,
-                         chromeos::platform_keys::Status status);
-
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
-                             ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
-};
-
 class EnterprisePlatformKeysImportCertificateFunction
     : public ExtensionFunction {
  private:

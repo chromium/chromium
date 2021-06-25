@@ -98,52 +98,6 @@ ExtensionFunction::ResponseAction LacrosNotImplementedExtensionFunction::Run() {
 //------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
-EnterprisePlatformKeysGetCertificatesFunction::Run() {
-  std::unique_ptr<api_epk::GetCertificates::Params> params(
-      api_epk::GetCertificates::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error = ValidateCrosapi(
-      KeystoreService::kGetCertificatesMinVersion, browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
-  crosapi::mojom::KeystoreType keystore;
-  error = ValidateInput(params->token_id, &keystore);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
-
-  auto c = base::BindOnce(
-      &EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->GetCertificates(keystore, std::move(c));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
-    ResultPtr result) {
-  using Result = crosapi::mojom::GetCertificatesResult;
-  switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::CERTIFICATES:
-      auto client_certs = std::make_unique<base::ListValue>();
-      for (std::vector<uint8_t>& cert : result->get_certificates()) {
-        client_certs->Append(std::make_unique<base::Value>(std::move(cert)));
-      }
-
-      auto results = std::make_unique<base::ListValue>();
-      results->Append(std::move(client_certs));
-      Respond(ArgumentList(std::move(results)));
-      return;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction
 EnterprisePlatformKeysImportCertificateFunction::Run() {
   std::unique_ptr<api_epk::ImportCertificate::Params> params(
       api_epk::ImportCertificate::Params::Create(*args_));

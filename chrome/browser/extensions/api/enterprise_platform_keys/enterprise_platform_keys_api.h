@@ -13,6 +13,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,6 +53,16 @@ class EnterprisePlatformKeysInternalGenerateKeyFunction
 
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
+};
+
+class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnGetCertificates(crosapi::mojom::GetCertificatesResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
+                             ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
 };
 
 }  // namespace extensions

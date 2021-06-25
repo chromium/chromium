@@ -49,55 +49,6 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 
 //------------------------------------------------------------------------------
 
-EnterprisePlatformKeysGetCertificatesFunction::
-    ~EnterprisePlatformKeysGetCertificatesFunction() {}
-
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysGetCertificatesFunction::Run() {
-  std::unique_ptr<api_epk::GetCertificates::Params> params(
-      api_epk::GetCertificates::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id =
-      platform_keys::ApiIdToPlatformKeysTokenId(params->token_id);
-  if (!platform_keys_token_id)
-    return RespondNow(Error(platform_keys::kErrorInvalidToken));
-
-  chromeos::platform_keys::PlatformKeysService* platform_keys_service =
-      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  platform_keys_service->GetCertificates(
-      platform_keys_token_id.value(),
-      base::BindOnce(
-          &EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates,
-          this));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates(
-    std::unique_ptr<net::CertificateList> certs,
-    chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status != chromeos::platform_keys::Status::kSuccess) {
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
-    return;
-  }
-
-  std::unique_ptr<base::ListValue> client_certs(new base::ListValue());
-  for (net::CertificateList::const_iterator it = certs->begin();
-       it != certs->end(); ++it) {
-    base::StringPiece cert_der =
-        net::x509_util::CryptoBufferAsStringPiece((*it)->cert_buffer());
-    client_certs->Append(std::make_unique<base::Value>(
-        base::Value::BlobStorage(cert_der.begin(), cert_der.end())));
-  }
-
-  std::unique_ptr<base::ListValue> results(new base::ListValue());
-  results->Append(std::move(client_certs));
-  Respond(ArgumentList(std::move(results)));
-}
-
-//------------------------------------------------------------------------------
-
 EnterprisePlatformKeysImportCertificateFunction::
     ~EnterprisePlatformKeysImportCertificateFunction() {}
 

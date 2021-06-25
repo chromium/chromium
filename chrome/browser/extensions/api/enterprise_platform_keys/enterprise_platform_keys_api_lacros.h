@@ -20,17 +20,6 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
-  ResponseAction Run() override;
-
-  using ResultPtr = crosapi::mojom::GetCertificatesResultPtr;
-  void OnGetCertificates(ResultPtr result);
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
-                             ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
-};
-
 class EnterprisePlatformKeysImportCertificateFunction
     : public ExtensionFunction {
  private:
