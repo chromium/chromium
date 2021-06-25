@@ -92,28 +92,24 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
-// Returns the impression to attribute for a particular conversion.
-// `impressions` is the list of all impressions which matched the
-// conversion, and is guaranteed to be non-empty.
-const StorableImpression& GetImpressionToAttribute(
-    const std::vector<StorableImpression>& impressions) {
-  DCHECK(!impressions.empty());
+bool ShouldReplaceImpressionToAttribute(
+    const absl::optional<StorableImpression>& impression_to_attribute,
+    int64_t candidate_priority,
+    base::Time candidate_impression_time) {
+  if (!impression_to_attribute.has_value())
+    return true;
 
   // Chooses the impression with the largest priority value. In the case of
-  // ties, impression_time is used to tie break.
+  // ties, most recent impression_time is used to tie break.
   //
   // Note that impressions which do not get a priority get defaulted to 0,
   // meaning they can be attributed over impressions which set a negative
   // priority.
-  return *std::max_element(
-      impressions.begin(), impressions.end(),
-      [](const StorableImpression& a, const StorableImpression& b) {
-        if (a.priority() < b.priority())
-          return true;
-        if (a.priority() > b.priority())
-          return false;
-        return a.impression_time() < b.impression_time();
-      });
+  if (impression_to_attribute->priority() < candidate_priority)
+    return true;
+  if (impression_to_attribute->priority() > candidate_priority)
+    return false;
+  return impression_to_attribute->impression_time() < candidate_impression_time;
 }
 
 }  // namespace
@@ -261,11 +257,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   statement.BindString(1, SerializeOrigin(reporting_origin));
   statement.BindTime(2, current_time);
 
-  std::vector<StorableImpression> impressions;
-
-  // Store attribution logic for ease of lookup in conversion-storage below.
-  base::flat_map<int64_t, StorableImpression::AttributionLogic>
-      attribution_logics;
+  absl::optional<StorableImpression> impression_to_attribute;
+  StorableImpression::AttributionLogic attribution_logic_to_use =
+      StorableImpression::AttributionLogic::kNever;
+  std::vector<int64_t> impression_ids_to_delete;
 
   while (statement.Step()) {
     int64_t impression_id = statement.ColumnInt64(0);
@@ -289,28 +284,31 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
 
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, source_type,
-                                  attribution_source_priority, impression_id);
-    impressions.push_back(std::move(impression));
-    attribution_logics.insert_or_assign(impression_id, attribution_logic);
+    // Select the row to attribute to the conversion. All other matching rows
+    // will be deleted by the attribution logic.
+    if (ShouldReplaceImpressionToAttribute(impression_to_attribute,
+                                           attribution_source_priority,
+                                           impression_time)) {
+      impression_to_attribute = StorableImpression(
+          impression_data, std::move(impression_origin),
+          std::move(conversion_origin), reporting_origin, impression_time,
+          expiry_time, source_type, attribution_source_priority, impression_id);
+      attribution_logic_to_use = attribution_logic;
+    } else
+      impression_ids_to_delete.push_back(impression_id);
   }
 
   // Exit early if the last statement wasn't valid or if we have no impressions.
-  if (!statement.Succeeded() || impressions.empty())
+  if (!statement.Succeeded() || !impression_to_attribute.has_value())
     return false;
 
-  const StorableImpression& impression_to_attribute =
-      GetImpressionToAttribute(impressions);
-
   const uint64_t conversion_data =
-      impression_to_attribute.source_type() ==
+      impression_to_attribute->source_type() ==
               StorableImpression::SourceType::kEvent
           ? conversion.event_source_trigger_data()
           : conversion.conversion_data();
 
-  ConversionReport report(impression_to_attribute, conversion_data,
+  ConversionReport report(std::move(*impression_to_attribute), conversion_data,
                           /*conversion_time=*/current_time,
                           /*report_time=*/current_time,
                           /*conversion_id=*/absl::nullopt);
@@ -327,9 +325,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
-  const bool create_report =
-      attribution_logics[*report.impression.impression_id()] ==
-      StorableImpression::AttributionLogic::kTruthfully;
+  const bool create_report = attribution_logic_to_use ==
+                             StorableImpression::AttributionLogic::kTruthfully;
 
   if (create_report) {
     const char kStoreConversionSql[] =
@@ -381,11 +378,9 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   sql::Statement delete_impression_statement(db_->GetCachedStatement(
       SQL_FROM_HERE, kDeleteUnattributedImpressionsSql));
 
-  for (const StorableImpression& impression : impressions) {
-    if (impression.impression_id() == *impression_to_attribute.impression_id())
-      continue;
+  for (int64_t impression_id : impression_ids_to_delete) {
     delete_impression_statement.Reset(/*clear_bound_vars=*/true);
-    delete_impression_statement.BindInt64(0, *impression.impression_id());
+    delete_impression_statement.BindInt64(0, impression_id);
     if (!delete_impression_statement.Run())
       return false;
     // Based on the deletion logic here and the fact that we delete impressions
@@ -462,9 +457,10 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
 
     // Create the impression and ConversionReport objects from the retrieved
     // columns.
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, source_type,
+    StorableImpression impression(impression_data, std::move(impression_origin),
+                                  std::move(conversion_origin),
+                                  std::move(reporting_origin), impression_time,
+                                  expiry_time, source_type,
                                   attribution_source_priority, impression_id);
 
     ConversionReport report(std::move(impression), conversion_data,
@@ -835,9 +831,10 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(7));
     int64_t attribution_source_priority = statement.ColumnInt64(8);
 
-    StorableImpression impression(impression_data, impression_origin,
-                                  conversion_origin, reporting_origin,
-                                  impression_time, expiry_time, source_type,
+    StorableImpression impression(impression_data, std::move(impression_origin),
+                                  std::move(conversion_origin),
+                                  std::move(reporting_origin), impression_time,
+                                  expiry_time, source_type,
                                   attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
   }

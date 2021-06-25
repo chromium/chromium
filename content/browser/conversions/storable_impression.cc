@@ -8,20 +8,19 @@
 
 namespace content {
 
-StorableImpression::StorableImpression(
-    uint64_t impression_data,
-    const url::Origin& impression_origin,
-    const url::Origin& conversion_origin,
-    const url::Origin& reporting_origin,
-    base::Time impression_time,
-    base::Time expiry_time,
-    SourceType source_type,
-    int64_t priority,
-    const absl::optional<int64_t>& impression_id)
+StorableImpression::StorableImpression(uint64_t impression_data,
+                                       url::Origin impression_origin,
+                                       url::Origin conversion_origin,
+                                       url::Origin reporting_origin,
+                                       base::Time impression_time,
+                                       base::Time expiry_time,
+                                       SourceType source_type,
+                                       int64_t priority,
+                                       absl::optional<int64_t> impression_id)
     : impression_data_(impression_data),
-      impression_origin_(impression_origin),
-      conversion_origin_(conversion_origin),
-      reporting_origin_(reporting_origin),
+      impression_origin_(std::move(impression_origin)),
+      conversion_origin_(std::move(conversion_origin)),
+      reporting_origin_(std::move(reporting_origin)),
       impression_time_(impression_time),
       expiry_time_(expiry_time),
       source_type_(source_type),
@@ -35,6 +34,14 @@ StorableImpression::StorableImpression(
 }
 
 StorableImpression::StorableImpression(const StorableImpression& other) =
+    default;
+
+StorableImpression& StorableImpression::operator=(
+    const StorableImpression& other) = default;
+
+StorableImpression::StorableImpression(StorableImpression&& other) = default;
+
+StorableImpression& StorableImpression::operator=(StorableImpression&& other) =
     default;
 
 StorableImpression::~StorableImpression() = default;

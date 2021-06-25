@@ -26,7 +26,9 @@ class CONTENT_EXPORT StorableConversion {
                      url::Origin reporting_origin,
                      uint64_t event_source_trigger_data);
   StorableConversion(const StorableConversion& other);
-  StorableConversion& operator=(const StorableConversion& other) = delete;
+  StorableConversion& operator=(const StorableConversion& other);
+  StorableConversion(StorableConversion&& other);
+  StorableConversion& operator=(StorableConversion&& other);
   ~StorableConversion();
 
   uint64_t conversion_data() const { return conversion_data_; }

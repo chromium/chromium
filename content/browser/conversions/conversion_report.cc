@@ -4,22 +4,28 @@
 
 #include "content/browser/conversions/conversion_report.h"
 
-#include <tuple>
-
 namespace content {
 
-ConversionReport::ConversionReport(const StorableImpression& impression,
+ConversionReport::ConversionReport(StorableImpression impression,
                                    uint64_t conversion_data,
                                    base::Time conversion_time,
                                    base::Time report_time,
-                                   const absl::optional<int64_t>& conversion_id)
-    : impression(impression),
+                                   absl::optional<int64_t> conversion_id)
+    : impression(std::move(impression)),
       conversion_data(conversion_data),
       conversion_time(conversion_time),
       report_time(report_time),
       conversion_id(conversion_id) {}
 
 ConversionReport::ConversionReport(const ConversionReport& other) = default;
+
+ConversionReport& ConversionReport::operator=(const ConversionReport& other) =
+    default;
+
+ConversionReport::ConversionReport(ConversionReport&& other) = default;
+
+ConversionReport& ConversionReport::operator=(ConversionReport&& other) =
+    default;
 
 ConversionReport::~ConversionReport() = default;
 

@@ -42,18 +42,19 @@ class CONTENT_EXPORT StorableImpression {
     kMaxValue = kTruthfully,
   };
 
-  // If |impression_id| is not available, 0 should be provided.
   StorableImpression(uint64_t impression_data,
-                     const url::Origin& impression_origin,
-                     const url::Origin& conversion_origin,
-                     const url::Origin& reporting_origin,
+                     url::Origin impression_origin,
+                     url::Origin conversion_origin,
+                     url::Origin reporting_origin,
                      base::Time impression_time,
                      base::Time expiry_time,
                      SourceType source_type,
                      int64_t priority,
-                     const absl::optional<int64_t>& impression_id);
+                     absl::optional<int64_t> impression_id);
   StorableImpression(const StorableImpression& other);
-  StorableImpression& operator=(const StorableImpression& other) = delete;
+  StorableImpression& operator=(const StorableImpression& other);
+  StorableImpression(StorableImpression&& other);
+  StorableImpression& operator=(StorableImpression&& other);
   ~StorableImpression();
 
   uint64_t impression_data() const { return impression_data_; }

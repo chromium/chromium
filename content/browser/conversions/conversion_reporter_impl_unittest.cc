@@ -44,9 +44,9 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
  public:
   MockNetworkSender() = default;
 
-  void SendReport(ConversionReport* conversion_report,
+  void SendReport(const ConversionReport& conversion_report,
                   ReportSentCallback sent_callback) override {
-    last_sent_report_id_ = *conversion_report->conversion_id;
+    last_sent_report_id_ = *conversion_report.conversion_id;
     num_reports_sent_++;
     std::move(sent_callback).Run({.http_response_code = 200});
   }

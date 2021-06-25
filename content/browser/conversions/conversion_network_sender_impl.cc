@@ -46,11 +46,9 @@ enum class Status {
 };
 
 // Called when a network request is started for |report|, for logging metrics.
-void LogMetricsOnReportSend(ConversionReport* report) {
-  DCHECK(report);
-
+void LogMetricsOnReportSend(const ConversionReport& report) {
   // Reports sent from the WebUI should not log metrics.
-  if (report->report_time == base::Time::Min())
+  if (report.report_time == base::Time::Min())
     return;
 
   // Use a large time range to capture users that might not open the browser for
@@ -61,14 +59,14 @@ void LogMetricsOnReportSend(ConversionReport* report) {
   // whose |report_time| changes due to additional startup delay.
   base::Time now = base::Time::Now();
   base::TimeDelta time_since_original_report_time =
-      (now - report->report_time) + report->extra_delay;
+      (now - report.report_time) + report.extra_delay;
   base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay",
                                 time_since_original_report_time,
                                 base::TimeDelta::FromSeconds(1),
                                 base::TimeDelta::FromDays(7), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
-      report->report_time - report->conversion_time;
+      report.report_time - report.conversion_time;
   UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                             time_from_conversion_to_report_send.InHours());
 }
@@ -108,7 +106,7 @@ ConversionNetworkSenderImpl::ConversionNetworkSenderImpl(
 
 ConversionNetworkSenderImpl::~ConversionNetworkSenderImpl() = default;
 
-void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
+void ConversionNetworkSenderImpl::SendReport(const ConversionReport& report,
                                              ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -117,12 +115,12 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  GURL report_url = GetReportUrl(*report);
+  GURL report_url = GetReportUrl(report);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = report_url;
   resource_request->referrer =
-      GURL(report->impression.ConversionDestination().Serialize());
+      GURL(report.impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
@@ -164,7 +162,7 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
 
-  std::string report_body = GetReportPostBody(*report);
+  std::string report_body = GetReportPostBody(report);
   simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");
 
   // Retry once on network change. A network change during DNS resolution

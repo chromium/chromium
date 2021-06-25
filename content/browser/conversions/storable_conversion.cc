@@ -26,6 +26,14 @@ StorableConversion::StorableConversion(
 StorableConversion::StorableConversion(const StorableConversion& other) =
     default;
 
+StorableConversion& StorableConversion::operator=(
+    const StorableConversion& other) = default;
+
+StorableConversion::StorableConversion(StorableConversion&& other) = default;
+
+StorableConversion& StorableConversion::operator=(StorableConversion&& other) =
+    default;
+
 StorableConversion::~StorableConversion() = default;
 
 }  // namespace content

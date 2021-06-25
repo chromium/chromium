@@ -32,23 +32,17 @@ void ConversionReporterImpl::AddReportsToQueue(
         report_sent_callback) {
   DCHECK(!reports.empty());
 
-  std::vector<std::unique_ptr<ConversionReport>> swappable_reports;
-  for (ConversionReport& report : reports) {
-    swappable_reports.push_back(
-        std::make_unique<ConversionReport>(std::move(report)));
-  }
-
   // Shuffle new reports to provide plausible deniability on the ordering of
   // reports that share the same |report_time|. This is important because
   // multiple conversions for the same impression share the same report time if
   // they are within the same reporting window, and we do not want to allow
   // ordering on their conversion metadata bits.
-  base::RandomShuffle(swappable_reports.begin(), swappable_reports.end());
+  base::RandomShuffle(reports.begin(), reports.end());
 
-  for (std::unique_ptr<ConversionReport>& report : swappable_reports) {
+  for (ConversionReport& report : reports) {
     // If the given report is already being processed, ignore it.
     bool inserted = conversion_report_callbacks_
-                        .emplace(*(report->conversion_id), report_sent_callback)
+                        .emplace(*report.conversion_id, report_sent_callback)
                         .second;
     if (inserted)
       report_queue_.push(std::move(report));
@@ -62,26 +56,28 @@ void ConversionReporterImpl::SetNetworkSenderForTesting(
 }
 
 void ConversionReporterImpl::SendNextReport() {
+  DCHECK(!report_queue_.empty());
+
   // Send the next report and remove it from the queue. Bind the conversion id
   // to the sent callback so we know which conversion report has finished
   // sending.
-  ConversionReport* report = report_queue_.top().get();
+  const ConversionReport& report = report_queue_.top();
+  DCHECK(report.conversion_id.has_value());
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
-          &report->impression.impression_origin(),
-          &report->impression.conversion_origin(),
-          &report->impression.reporting_origin())) {
+          &report.impression.impression_origin(),
+          &report.impression.conversion_origin(),
+          &report.impression.reporting_origin())) {
     network_sender_->SendReport(
-        report_queue_.top().get(),
-        base::BindOnce(&ConversionReporterImpl::OnReportSentWithInfo,
-                       base::Unretained(this), report->conversion_id.value()));
+        report, base::BindOnce(&ConversionReporterImpl::OnReportSentWithInfo,
+                               base::Unretained(this), *report.conversion_id));
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    OnReportSent(*report_queue_.top()->conversion_id, /*info=*/absl::nullopt);
+    OnReportSent(*report.conversion_id, /*info=*/absl::nullopt);
   }
   report_queue_.pop();
   MaybeScheduleNextReport();
@@ -93,7 +89,7 @@ void ConversionReporterImpl::MaybeScheduleNextReport() {
 
   send_report_timer_.Stop();
   base::Time current_time = clock_->Now();
-  base::Time report_time = report_queue_.top()->report_time;
+  base::Time report_time = report_queue_.top().report_time;
 
   // Start a timer to wait until the next report is ready to be sent. This
   // purposefully yields the thread for every report that gets scheduled.
@@ -121,12 +117,12 @@ void ConversionReporterImpl::OnReportSentWithInfo(int64_t conversion_id,
 }
 
 bool ConversionReporterImpl::ReportComparator::operator()(
-    const std::unique_ptr<ConversionReport>& a,
-    const std::unique_ptr<ConversionReport>& b) const {
+    const ConversionReport& a,
+    const ConversionReport& b) const {
   // Returns whether a should appear before b in ordering. Because
   // std::priority_queue is max priority queue, we used greater then to make a
   // min priority queue.
-  return a->report_time > b->report_time;
+  return a.report_time > b.report_time;
 }
 
 }  // namespace content

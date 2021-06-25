@@ -88,7 +88,7 @@ class ConversionNetworkSenderTest : public testing::Test {
 TEST_F(ConversionNetworkSenderTest,
        ConversionReportReceived_NetworkRequestMade) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, std::move(base::DoNothing()));
+  network_sender_->SendReport(report, std::move(base::DoNothing()));
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
@@ -96,7 +96,7 @@ TEST_F(ConversionNetworkSenderTest,
 
 TEST_F(ConversionNetworkSenderTest, ReportSent_CallbackFired) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
@@ -111,7 +111,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_CallbackFired) {
 
 TEST_F(ConversionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   network_sender_.reset();
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -121,7 +121,7 @@ TEST_F(ConversionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
 
 TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
   // The request should time out after 30 seconds.
@@ -148,7 +148,7 @@ TEST_F(ConversionNetworkSenderTest,
     base::HistogramTester histograms;
 
     auto report = GetReport(/*conversion_id=*/1);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
     // Simulate the request failing due to network change.
@@ -179,7 +179,7 @@ TEST_F(ConversionNetworkSenderTest,
     base::HistogramTester histograms;
 
     auto report = GetReport(/*conversion_id=*/2);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
     // Simulate the request failing due to network change.
@@ -209,7 +209,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
                           /*conversion_id=*/1);
-  network_sender_->SendReport(&report, base::DoNothing());
+  network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
@@ -231,7 +231,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
                           /*conversion_time=*/base::Time(),
                           /*report_time=*/base::Time(),
                           /*conversion_id=*/1);
-  network_sender_->SendReport(&report, base::DoNothing());
+  network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;
   std::string expected_report_url(
@@ -250,7 +250,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
 
 TEST_F(ConversionNetworkSenderTest, ReportResultsInHttpError_SentCallbackRuns) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   EXPECT_TRUE(SentReportInfosEqual({}, sent_reports_));
 
   // We should run the sent callback even if there is an http error.
@@ -268,7 +268,7 @@ TEST_F(ConversionNetworkSenderTest, ReportResultsInHttpError_SentCallbackRuns) {
 TEST_F(ConversionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
   for (int i = 0; i < 10; i++) {
     auto report = GetReport(/*conversion_id=*/i);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
   }
   EXPECT_EQ(10, test_url_loader_factory_.NumPending());
 
@@ -286,7 +286,7 @@ TEST_F(ConversionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
 
 TEST_F(ConversionNetworkSenderTest, LoadFlags) {
   auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   int load_flags =
       test_url_loader_factory_.GetPendingRequest(0)->request.load_flags;
   EXPECT_TRUE(load_flags & net::LOAD_BYPASS_CACHE);
@@ -298,7 +298,7 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = GetReport(/*conversion_id=*/1);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
     // kOk = 0.
@@ -310,7 +310,7 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = GetReport(/*conversion_id=*/2);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
     network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         GURL(kReportUrl), completion_status,
@@ -323,7 +323,7 @@ TEST_F(ConversionNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = GetReport(/*conversion_id=*/3);
-    network_sender_->SendReport(&report, GetSentCallback());
+    network_sender_->SendReport(report, GetSentCallback());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, std::string(), net::HTTP_UNAUTHORIZED));
     // kExternalError = 2.
@@ -338,7 +338,7 @@ TEST_F(ConversionNetworkSenderTest, TimeFromConversionToReportSendHistogram) {
   base::HistogramTester histograms;
   auto report = GetReport(/*conversion_id=*/1);
   report.report_time = base::Time() + base::TimeDelta::FromHours(5);
-  network_sender_->SendReport(&report, GetSentCallback());
+  network_sender_->SendReport(report, GetSentCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
   histograms.ExpectUniqueSample("Conversions.TimeFromConversionToReportSend", 5,

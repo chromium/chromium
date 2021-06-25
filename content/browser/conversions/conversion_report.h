@@ -21,23 +21,26 @@ namespace content {
 // impression.
 struct CONTENT_EXPORT ConversionReport {
   // The conversion_id may not be set for a conversion report.
-  ConversionReport(const StorableImpression& impression,
+  ConversionReport(StorableImpression impression,
                    uint64_t conversion_data,
                    base::Time conversion_time,
                    base::Time report_time,
-                   const absl::optional<int64_t>& conversion_id);
+                   absl::optional<int64_t> conversion_id);
   ConversionReport(const ConversionReport& other);
+  ConversionReport& operator=(const ConversionReport& other);
+  ConversionReport(ConversionReport&& other);
+  ConversionReport& operator=(ConversionReport&& other);
   ~ConversionReport();
 
   // Impression associated with this conversion report.
-  const StorableImpression impression;
+  StorableImpression impression;
 
   // Data provided at reporting time by the reporting origin. Depending on the
   // source type, this contains the associated data in the trigger redirect.
   uint64_t conversion_data;
 
   // The time the conversion occurred.
-  const base::Time conversion_time;
+  base::Time conversion_time;
 
   // The time this conversion report should be sent.
   base::Time report_time;
@@ -48,7 +51,7 @@ struct CONTENT_EXPORT ConversionReport {
 
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
-  const absl::optional<int64_t> conversion_id;
+  absl::optional<int64_t> conversion_id;
 
   // When adding new members, the `ReportsEqual()` testing utility in
   // `conversion_test_utils.h` should also be updated.
