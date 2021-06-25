@@ -374,11 +374,12 @@ AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;
 AnnotatedVisit::~AnnotatedVisit() = default;
 
 Cluster::Cluster() = default;
-Cluster::Cluster(int64_t cluster_id,
-                 std::vector<AnnotatedVisit> annotated_visits,
-                 std::vector<std::u16string> keywords)
+Cluster::Cluster(
+    int64_t cluster_id,
+    const std::vector<ScoredAnnotatedVisit>& scored_annotated_visits,
+    const std::vector<std::u16string>& keywords)
     : cluster_id(cluster_id),
-      annotated_visits(annotated_visits),
+      scored_annotated_visits(scored_annotated_visits),
       keywords(keywords) {}
 Cluster::Cluster(const Cluster&) = default;
 Cluster& Cluster::operator=(const Cluster&) = default;

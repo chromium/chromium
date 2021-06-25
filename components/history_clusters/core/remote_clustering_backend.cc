@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/proto/clusters.pb.h"
 #include "net/base/net_errors.h"
@@ -105,8 +106,10 @@ std::vector<history::Cluster> ParseResponseProto(
       const auto visits_it = base::ranges::find(
           visits, cluster_visit.visit_id(),
           [](const auto& visit) { return visit.visit_row.visit_id; });
-      if (visits_it != visits.end())
-        cluster.annotated_visits.push_back(*visits_it);
+      if (visits_it != visits.end()) {
+        cluster.scored_annotated_visits.push_back(
+            {*visits_it, cluster_visit.score()});
+      }
     }
     clusters.push_back(cluster);
   }

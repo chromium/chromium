@@ -82,13 +82,13 @@ void HistoryClustersHandler::QueryClusters(
     query_task_tracker_.TryCancelAll();
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-    history_clusters_service->QueryMemories(
+    history_clusters_service->QueryClusters(
         std::move(query_params),
         base::BindOnce(
             [](base::OnceCallback<void(
                    history_clusters::mojom::QueryParamsPtr,
                    std::vector<history_clusters::mojom::ClusterPtr>)> callback,
-               history_clusters::HistoryClustersService::QueryMemoriesResponse
+               history_clusters::HistoryClustersService::QueryClustersResponse
                    response) {
               std::move(callback).Run(std::move(response.query_params),
                                       std::move(response.clusters));

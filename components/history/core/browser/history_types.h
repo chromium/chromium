@@ -733,18 +733,24 @@ struct AnnotatedVisitRow {
   VisitContentAnnotations content_annotations;
 };
 
-// A cluster of `AnnotatedVisit`s with associated `keywords`.
+// An `AnnotatedVisit` associated with a score.
+struct ScoredAnnotatedVisit {
+  AnnotatedVisit annotated_visit;
+  float score;
+};
+
+// A cluster of `ScoredAnnotatedVisit`s with associated `keywords`.
 struct Cluster {
   Cluster();
   Cluster(int64_t cluster_id,
-          std::vector<AnnotatedVisit> annotated_visits,
-          std::vector<std::u16string> keywords);
+          const std::vector<ScoredAnnotatedVisit>& scored_annotated_visits,
+          const std::vector<std::u16string>& keywords);
   Cluster(const Cluster&);
   Cluster& operator=(const Cluster&);
   ~Cluster();
 
   int64_t cluster_id;
-  std::vector<AnnotatedVisit> annotated_visits;
+  std::vector<ScoredAnnotatedVisit> scored_annotated_visits;
   // TODO(manukh): retrieve and persist `keywords`.
   std::vector<std::u16string> keywords;
 };

@@ -197,8 +197,11 @@ class HistoryClustersServiceTest : public testing::Test {
     proto::GetClustersResponse response;
     for (auto visit_ids : clustered_visit_ids) {
       auto* cluster = response.add_clusters();
-      for (auto visit_id : visit_ids)
-        cluster->add_cluster_visits()->set_visit_id(visit_id);
+      for (auto visit_id : visit_ids) {
+        auto* visit = cluster->add_cluster_visits();
+        visit->set_visit_id(visit_id);
+        visit->set_score(0.66);
+      }
     }
     if (!clustered_visit_ids.empty()) {
       response.mutable_clusters(0)->mutable_keywords()->Add("apples");
@@ -248,10 +251,10 @@ TEST_F(HistoryClustersServiceTest, VerifyRemoteEndpointRequest) {
   EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
   AddHardcodedTestDataToHistoryService();
 
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Ignore the response. We are just testing the request.
             run_loop_quit_.Run();
           }),
@@ -265,7 +268,67 @@ TEST_F(HistoryClustersServiceTest, VerifyRemoteEndpointRequest) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
+TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  AddHardcodedTestDataToHistoryService();
+
+  auto query_params = mojom::QueryParams::New();
+  history_clusters_service_->QueryClusters(
+      mojom::QueryParams::New(),
+      // This "expect" block is not run until after the fake response is sent
+      // further down in this method.
+      base::BindLambdaForTesting(
+          [&](HistoryClustersService::QueryClustersResponse response) {
+            const auto& clusters = response.clusters;
+            ASSERT_EQ(clusters.size(), 2u);
+
+            ASSERT_EQ(clusters[0]->visits.size(), 1u);
+            EXPECT_EQ(clusters[0]->visits[0]->normalized_url,
+                      "https://github.com/");
+            EXPECT_FLOAT_EQ(clusters[0]->visits[0]->score, 0.1);
+
+            ASSERT_EQ(clusters[1]->visits.size(), 2u);
+            EXPECT_EQ(clusters[1]->visits[0]->normalized_url,
+                      "https://google.com/");
+            EXPECT_FLOAT_EQ(clusters[1]->visits[0]->score, 0.9);
+            EXPECT_EQ(clusters[1]->visits[1]->normalized_url,
+                      "https://github.com/");
+            EXPECT_FLOAT_EQ(clusters[1]->visits[1]->score, 0.5);
+
+            run_loop_quit_.Run();
+          }),
+      &task_tracker_);
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  VerifyHardcodedTestDataInUrlLoaderRequest();
+
+  proto::GetClustersResponse response;
+  // This first cluster is meant to validate that the higher scoring "visit 1"
+  // gets sorted to the top, even though "visit 1" is older in the hardcoded
+  // test data. It's to validate the within-cluster sorting.
+  auto* cluster = response.add_clusters();
+  auto* visit = cluster->add_cluster_visits();
+  visit->set_visit_id(2);
+  visit->set_score(0.5);
+  visit = cluster->add_cluster_visits();
+  visit->set_visit_id(1);
+  visit->set_score(0.9);
+  // This second cluster is meant to validate that this one gets sorted above
+  // the first cluster, since the top visit is newer, even though the visit
+  // score is lower. It's to validate the between-cluster sorting.
+  cluster = response.add_clusters();
+  visit = cluster->add_cluster_visits();
+  visit->set_visit_id(2);
+  visit->set_score(0.1);
+
+  test_url_loader_factory_.AddResponse(kFakeEndpoint,
+                                       response.SerializeAsString());
+
+  // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
   AddHardcodedTestDataToHistoryService();
 
@@ -302,12 +365,12 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
 
     auto query_params = mojom::QueryParams::New();
     query_params->query = test_data[i].query;
-    history_clusters_service_->QueryMemories(
+    history_clusters_service_->QueryClusters(
         std::move(query_params),
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
         base::BindLambdaForTesting(
-            [&](HistoryClustersService::QueryMemoriesResponse response) {
+            [&](HistoryClustersService::QueryClustersResponse response) {
               // Verify that the continuation query params is nullptr.
               ASSERT_FALSE(!!response.query_params);
 
@@ -319,29 +382,33 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
                 const auto& cluster = response.clusters[0];
                 ASSERT_EQ(cluster->visits.size(), 2u);
                 EXPECT_EQ(cluster->visits[0]->normalized_url,
-                          "https://google.com/");
-                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
-                EXPECT_EQ(cluster->visits[0]->last_visit_time, visit_1_time_);
-                EXPECT_EQ(cluster->visits[0]->first_visit_time, visit_1_time_);
-                EXPECT_EQ(cluster->visits[0]->page_title, "Google title");
-                EXPECT_TRUE(base::Contains(
-                    cluster->visits[0]->annotations,
-                    history_clusters::mojom::Annotation::kBookmarked));
-                EXPECT_FALSE(base::Contains(
-                    cluster->visits[0]->annotations,
-                    history_clusters::mojom::Annotation::kTabGrouped));
-                EXPECT_EQ(cluster->visits[1]->normalized_url,
                           "https://github.com/");
-                EXPECT_EQ(cluster->visits[1]->raw_urls.size(), 1u);
-                EXPECT_EQ(cluster->visits[1]->last_visit_time, visit_2_time_);
-                EXPECT_EQ(cluster->visits[1]->first_visit_time, visit_2_time_);
-                EXPECT_EQ(cluster->visits[1]->page_title, "Github title");
+                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
+                EXPECT_EQ(cluster->visits[0]->last_visit_time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[0]->first_visit_time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[0]->page_title, "Github title");
                 EXPECT_FALSE(base::Contains(
-                    cluster->visits[1]->annotations,
+                    cluster->visits[0]->annotations,
                     history_clusters::mojom::Annotation::kBookmarked));
                 EXPECT_TRUE(base::Contains(
+                    cluster->visits[0]->annotations,
+                    history_clusters::mojom::Annotation::kTabGrouped));
+                EXPECT_FLOAT_EQ(cluster->visits[0]->score, 0.66);
+
+                EXPECT_EQ(cluster->visits[1]->normalized_url,
+                          "https://google.com/");
+                EXPECT_EQ(cluster->visits[1]->raw_urls.size(), 1u);
+                EXPECT_EQ(cluster->visits[1]->last_visit_time, visit_1_time_);
+                EXPECT_EQ(cluster->visits[1]->first_visit_time, visit_1_time_);
+                EXPECT_EQ(cluster->visits[1]->page_title, "Google title");
+                EXPECT_TRUE(base::Contains(
+                    cluster->visits[1]->annotations,
+                    history_clusters::mojom::Annotation::kBookmarked));
+                EXPECT_FALSE(base::Contains(
                     cluster->visits[1]->annotations,
                     history_clusters::mojom::Annotation::kTabGrouped));
+                EXPECT_FLOAT_EQ(cluster->visits[1]->score, 0.66);
+
                 ASSERT_EQ(cluster->keywords.size(), 2u);
                 EXPECT_EQ(cluster->keywords[0], u"apples");
                 EXPECT_EQ(cluster->keywords[1], u"Red Oranges");
@@ -374,14 +441,14 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyVisits) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyVisits) {
   EnableMemoriesWithEndpoint();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
@@ -397,15 +464,15 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyVisits) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyEndpoint) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyEndpoint) {
   EnableMemoriesWithEndpoint("");
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the empty response.
@@ -421,15 +488,15 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyEndpoint) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyResponse) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyResponse) {
   EnableMemoriesWithEndpoint();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
@@ -451,15 +518,15 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithInvalidJsonResponse) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithInvalidJsonResponse) {
   EnableMemoriesWithEndpoint();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
@@ -481,15 +548,15 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyJsonResponse) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyJsonResponse) {
   EnableMemoriesWithEndpoint();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
@@ -511,15 +578,15 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
+TEST_F(HistoryClustersServiceTest, QueryClustersWithPendingRequest) {
   EnableMemoriesWithEndpoint();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.
@@ -532,10 +599,10 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesWithPendingRequest) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
-  history_clusters_service_->QueryMemories(
+  history_clusters_service_->QueryClusters(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryMemoriesResponse response) {
+          [&](HistoryClustersService::QueryClustersResponse response) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!response.query_params);
             // Verify the parsed response.

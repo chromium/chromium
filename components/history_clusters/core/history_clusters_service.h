@@ -35,11 +35,11 @@ class HistoryClustersService : public KeyedService {
     virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
   };
 
-  struct QueryMemoriesResponse {
-    QueryMemoriesResponse(mojom::QueryParamsPtr query_params,
+  struct QueryClustersResponse {
+    QueryClustersResponse(mojom::QueryParamsPtr query_params,
                           std::vector<mojom::ClusterPtr> clusters);
-    QueryMemoriesResponse(QueryMemoriesResponse&& other);
-    ~QueryMemoriesResponse();
+    QueryClustersResponse(QueryClustersResponse&& other);
+    ~QueryClustersResponse();
     mojom::QueryParamsPtr query_params;
     std::vector<mojom::ClusterPtr> clusters;
   };
@@ -80,14 +80,15 @@ class HistoryClustersService : public KeyedService {
   // have been recorded. References retrieved prior will no longer be valid.
   void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
-  // Returns the freshest Memories created from the user visit history, in
-  // reverse chronological order, based on the parameters in `query_params`
-  // along with continuation query params meant to be used in the follow-up
-  // request to load older Memories.
-  // Note: At the moment, this method asks `remote_model_helper_` to construct
-  // Memories.
-  void QueryMemories(mojom::QueryParamsPtr query_params,
-                     base::OnceCallback<void(QueryMemoriesResponse)> callback,
+  // Returns the freshest Memories created from the user visit history based on
+  // the parameters in `query_params` along with continuation query params meant
+  // to be used in the follow-up request to load older Memories.
+  //
+  // The returned clusters are sorted in reverse-chronological order based on
+  // their highest scoring visit. The visits within each cluster are are sorted
+  // by score, from highest to lowest.
+  void QueryClusters(mojom::QueryParamsPtr query_params,
+                     base::OnceCallback<void(QueryClustersResponse)> callback,
                      base::CancelableTaskTracker* task_tracker);
   // Removes all visits to the specified URLs in the specified time ranges in
   // `expire_list`. Calls `closure` when done.
@@ -107,12 +108,12 @@ class HistoryClustersService : public KeyedService {
   using IncompleteVisitMap =
       std::map<int64_t, IncompleteVisitContextAnnotations>;
 
-  // This is a callback used for the `QueryMemories()` call from
+  // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
   // clusters in `response`.
   // TODO(tommycli): Make this callback only take a vector of clusters after
-  //  we refactor the `QueryMemories()` interface.
-  void PopulateClusterKeywordCache(QueryMemoriesResponse response);
+  //  we refactor the `QueryClusters()` interface.
+  void PopulateClusterKeywordCache(QueryClustersResponse response);
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history

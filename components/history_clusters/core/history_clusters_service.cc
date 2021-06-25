@@ -25,7 +25,7 @@ namespace history_clusters {
 namespace {
 
 // Filter `clusters` matching `query`. There are additional filters (e.g.
-// `recency_threshold`) used when requesting `QueryMemories()`, but this
+// `recency_threshold`) used when requesting `QueryClusters()`, but this
 // function is only responsible for matching `query`.
 std::vector<history::Cluster> FilterClustersMatchingQuery(
     std::string query,
@@ -65,27 +65,28 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
 history_clusters::mojom::URLVisitPtr VisitToMojom(
-    const history::AnnotatedVisit& visit) {
+    const history::ScoredAnnotatedVisit& scored_annotated_visit) {
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->normalized_url = visit.url_row.url();
-  visit_mojom->raw_urls.push_back(visit.url_row.url());
-  visit_mojom->last_visit_time = visit.visit_row.visit_time;
-  visit_mojom->first_visit_time = visit.visit_row.visit_time;
-  visit_mojom->page_title = base::UTF16ToUTF8(visit.url_row.title());
+  auto& annotated_visit = scored_annotated_visit.annotated_visit;
+  visit_mojom->normalized_url = annotated_visit.url_row.url();
+  visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
+  visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
+  visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
+  visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
   visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - visit.visit_row.visit_time));
-  if (visit.context_annotations.is_existing_part_of_tab_group ||
-      visit.context_annotations.is_placed_in_tab_group) {
+      base::Time::Now() - annotated_visit.visit_row.visit_time));
+  if (annotated_visit.context_annotations.is_existing_part_of_tab_group ||
+      annotated_visit.context_annotations.is_placed_in_tab_group) {
     visit_mojom->annotations.push_back(
         history_clusters::mojom::Annotation::kTabGrouped);
   }
-  if (visit.context_annotations.is_existing_bookmark ||
-      visit.context_annotations.is_new_bookmark) {
+  if (annotated_visit.context_annotations.is_existing_bookmark ||
+      annotated_visit.context_annotations.is_new_bookmark) {
     visit_mojom->annotations.push_back(
         history_clusters::mojom::Annotation::kBookmarked);
   }
-  visit_mojom->score = 1;  // Non-zero score until the model produces real ones.
+  visit_mojom->score = scored_annotated_visit.score;
   return visit_mojom;
 }
 
@@ -98,66 +99,72 @@ std::vector<history_clusters::mojom::ClusterPtr> ClustersToMojom(
     cluster_mojom->id = cluster.cluster_id;
     for (const auto& keyword : cluster.keywords)
       cluster_mojom->keywords.push_back(keyword);
-    for (const auto& visit : cluster.annotated_visits)
+    for (const auto& visit : cluster.scored_annotated_visits)
       cluster_mojom->visits.push_back(VisitToMojom(visit));
     clusters_mojom.emplace_back(std::move(cluster_mojom));
   }
   return clusters_mojom;
 }
 
-// Form a `QueryMemoriesResponse` containing `clusters` and continuation query
+// Form a `QueryClustersResponse` containing `clusters` and continuation query
 // params meant to be used in a follow-up request. `query_params` are the params
 // used to get `clusters` from `QueryClusters()`.
 // TODO(tommycli): At the moment, the recency threshold of `query_params` is
 //  ignored and continuation query params is set to nullptr. The service does
 //  not support paging.
-HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
+HistoryClustersService::QueryClustersResponse FormQueryClustersResponse(
     mojom::QueryParamsPtr query_params,
     std::vector<history::Cluster> clusters) {
-  // First sort the clusters by the most recent visit in each cluster,
-  // in reverse chronological order. We must do this to fulfill the contract of
-  // QueryMemories.
-  // TODO(tommycli): Once clusters are persisted we should investigate sorting
-  //  this in SQL rather than in-application.
-  auto get_max_visit_time = [](const history::Cluster& cluster) {
-    // TODO(tommycli): Replace this with a DCHECK once we can use the SQL to
-    // guarantee that we will never get an empty cluster back.
-    if (cluster.annotated_visits.empty())
-      return base::Time();
+  // Within each cluster, sort visits from best to worst using score.
+  // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
+  //  this sort step, if they are stored in-order.
+  for (auto& cluster : clusters) {
+    base::ranges::sort(cluster.scored_annotated_visits, [](auto& v1, auto& v2) {
+      if (v1.score != v2.score) {
+        // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
+        return v1.score > v2.score;
+      }
 
-    // TODO(tommycli): Once cluster persistence is done, we no longer need to
-    //  search for the max_element, as visits will be ordered by SQL.
-    const history::AnnotatedVisit& representative_visit = *std::max_element(
-        cluster.annotated_visits.begin(), cluster.annotated_visits.end(),
-        [](auto& v1, auto& v2) {
-          // TODO(tommycli): Use the highest scoring element rather that the
-          //  most recent element once `score` is available.
-          return v1.visit_row.visit_time < v2.visit_row.visit_time;
-        });
-    return representative_visit.visit_row.visit_time;
-  };
+      // Use v1 > v2 to get more recent visits BEFORE older visits.
+      return v1.annotated_visit.visit_row.visit_time >
+             v2.annotated_visit.visit_row.visit_time;
+    });
+  }
 
-  std::sort(clusters.begin(), clusters.end(),
-            [&](auto& clusters_a, auto& clusters_b) {
-              // Note we return a > b to get REVERSE chronological order.
-              return get_max_visit_time(clusters_a) >
-                     get_max_visit_time(clusters_b);
-            });
+  // After that, sort clusters reverse-chronologically based on their highest
+  // scored visit.
+  base::ranges::sort(clusters, [&](auto& c1, auto& c2) {
+    // TODO(tommycli): If we can establish an invariant that no backend will
+    //  ever return an empty cluster, we can simplify the below code.
+    base::Time c1_time;
+    if (!c1.scored_annotated_visits.empty()) {
+      c1_time = c1.scored_annotated_visits.front()
+                    .annotated_visit.visit_row.visit_time;
+    }
+    base::Time c2_time;
+    if (!c1.scored_annotated_visits.empty()) {
+      c2_time = c2.scored_annotated_visits.front()
+                    .annotated_visit.visit_row.visit_time;
+    }
+
+    // Use c1 > c2 to get more recent clusters BEFORE older clusters.
+    return c1_time > c2_time;
+  });
 
   return {nullptr, ClustersToMojom(clusters)};
 }
 
 }  // namespace
 
-HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(
+HistoryClustersService::QueryClustersResponse::QueryClustersResponse(
     mojom::QueryParamsPtr query_params,
     std::vector<mojom::ClusterPtr> clusters)
     : query_params(std::move(query_params)), clusters(std::move(clusters)) {}
 
-HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(
-    QueryMemoriesResponse&& other) = default;
+HistoryClustersService::QueryClustersResponse::QueryClustersResponse(
+    QueryClustersResponse&& other) = default;
 
-HistoryClustersService::QueryMemoriesResponse::~QueryMemoriesResponse() =
+HistoryClustersService::QueryClustersResponse::~QueryClustersResponse() =
     default;
 
 HistoryClustersService::HistoryClustersService(
@@ -235,11 +242,11 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
   }
 }
 
-void HistoryClustersService::QueryMemories(
+void HistoryClustersService::QueryClusters(
     mojom::QueryParamsPtr query_params,
-    base::OnceCallback<void(QueryMemoriesResponse)> callback,
+    base::OnceCallback<void(QueryClustersResponse)> callback,
     base::CancelableTaskTracker* task_tracker) {
-  // `QueryMemories` has 4 steps:
+  // `QueryClusters` has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
   //    from `visits_`.
   // 2. Ask `backend_` to convert the visits to memories.
@@ -251,7 +258,7 @@ void HistoryClustersService::QueryMemories(
   auto on_visits_callback = base::BindOnce(
       &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
       base::BindOnce(&FilterClustersMatchingQuery, query_string)
-          .Then(base::BindOnce(&FormQueryMemoriesResponse,
+          .Then(base::BindOnce(&FormQueryClustersResponse,
                                std::move(query_params)))
           .Then(std::move(callback)));
 
@@ -309,7 +316,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
       !cache_query_task_tracker_.HasTrackedTasks()) {
     // TODO(tommycli): Make sure we are hitting the local database, and not the
     //  remote model service once cluster persistence is ready.
-    QueryMemories(
+    QueryClusters(
         mojom::QueryParams::New(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -332,7 +339,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
-    QueryMemoriesResponse response) {
+    QueryClustersResponse response) {
   all_keywords_cache_.clear();
   for (auto& cluster : response.clusters) {
     for (auto& keyword : cluster->keywords) {
