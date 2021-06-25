@@ -82,29 +82,18 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
     return NavigationThrottle::DEFER;
   } else if (IsFederationResponse(navigation_url)) {
-    request_dialog_controller_ =
-        GetContentClient()->browser()->CreateIdentityRequestDialogController();
-
-    // Token exchange dialog is skipped if this RP/IdP pair already have the
-    // Identity Sharing permission.
-    auto* sharing_permission_delegate =
-        navigation_handle()
-            ->GetWebContents()
-            ->GetBrowserContext()
-            ->GetFederatedIdentitySharingPermissionContext();
-    const auto initiator_origin = navigation_handle()->GetInitiatorOrigin();
-    if (sharing_permission_delegate && initiator_origin &&
-        sharing_permission_delegate->HasSharingPermission(
-            *initiator_origin, url::Origin::Create(navigation_url))) {
-      return NavigationThrottle::PROCEED;
-    }
-
-    request_dialog_controller_->ShowTokenExchangePermissionDialog(
-        navigation_handle()->GetWebContents(), navigation_url,
-        base::BindOnce(
-            &FederatedAuthNavigationThrottle::OnTokenProvisionApproved,
-            weak_ptr_factory_.GetWeakPtr()));
-    return NavigationThrottle::DEFER;
+    // TODO(kenrb): Currently no action, this may proceed. Two things to
+    // change here:
+    //     1) Check the redirect_uri and verify we are going back to the
+    //        original source, from which the user consented to login.
+    //        Set the session management permission if the IdP wants it.
+    //        First, that permission has to be created.
+    //        https://crbug.com/1223570.
+    //     2) (In the eventual future where directed identifiers are
+    //        important) Prompt the user for permission to share personalized
+    //        identifiers and store the FEDERATED_IDENTITY_SHARING
+    //        setting. https://crbug.com/1141125.
+    return NavigationThrottle::PROCEED;
   }
 
   return NavigationThrottle::PROCEED;
