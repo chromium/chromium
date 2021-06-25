@@ -261,9 +261,16 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
         blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
       break;
     case device::mojom::XRSessionMode::kImmersiveAr:
+      // Prefer Alpha Blend when both Alpha Blend and Additive modes are
+      // supported. This only concerns video see through devices with an
+      // Additive compatibility mode
       if (base::Contains(supported_blend_modes,
-                         XR_ENVIRONMENT_BLEND_MODE_ADDITIVE))
+                         XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND)) {
+        blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND;
+      } else if (base::Contains(supported_blend_modes,
+                                XR_ENVIRONMENT_BLEND_MODE_ADDITIVE)) {
         blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_ADDITIVE;
+      }
       break;
     case device::mojom::XRSessionMode::kInline:
       NOTREACHED();
@@ -636,6 +643,11 @@ XrResult OpenXrApiWrapper::EndFrame() {
 
   XrFrameEndInfo end_frame_info = {XR_TYPE_FRAME_END_INFO};
   end_frame_info.environmentBlendMode = blend_mode_;
+  if (blend_mode_ == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND) {
+    multi_projection_layer.layerFlags |=
+        XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+  }
+
   end_frame_info.layerCount = 1;
   end_frame_info.layers =
       reinterpret_cast<const XrCompositionLayerBaseHeader* const*>(

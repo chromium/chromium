@@ -463,7 +463,10 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   DCHECK_EQ(runtime->GetId(), request.runtime_id);
 
 #if defined(OS_WIN)
-  DCHECK_NE(request.options->mode, device::mojom::XRSessionMode::kImmersiveAr);
+  if (request.options->mode == device::mojom::XRSessionMode::kImmersiveAr) {
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kOpenXrExtendedFeatureSupport));
+  }
 #endif
 
   PermissionControllerImpl* permission_controller =
