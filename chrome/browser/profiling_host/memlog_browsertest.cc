@@ -56,9 +56,15 @@ class MemlogBrowserTest : public PlatformBrowserTest,
   }
 };
 
+// Flaky on Android: crbug.com/1223739.
+#if defined(OS_ANDROID)
+#define MAYBE_EndToEnd DISABLED_EndToEnd
+#else
+#define MAYBE_EndToEnd EndToEnd
+#endif
 // Ensure invocations via TracingController can generate a valid JSON file with
 // expected data.
-IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, EndToEnd) {
+IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, MAYBE_EndToEnd) {
   LOG(INFO) << "Memlog mode: " << static_cast<int>(GetParam().mode);
   LOG(INFO) << "Memlog stack mode: " << static_cast<int>(GetParam().stack_mode);
   LOG(INFO) << "Started via command line flag: "
