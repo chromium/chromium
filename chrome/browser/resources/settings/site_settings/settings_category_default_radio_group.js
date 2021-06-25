@@ -39,8 +39,19 @@ Polymer({
   behaviors: [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
 
   properties: {
-    header: String,
-    description: String,
+    header: {
+      type: String,
+      value() {
+        return this.i18n('siteSettingsDefaultBehavior');
+      },
+    },
+
+    description: {
+      type: String,
+      value() {
+        return this.i18n('siteSettingsDefaultBehaviorDescription');
+      },
+    },
 
     allowOptionLabel: String,
     allowOptionSubLabel: String,
@@ -130,24 +141,6 @@ Polymer({
         assertNotReached('Invalid category: ' + this.category);
         return ContentSetting.ALLOW;
     }
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getHeader_() {
-    return this.header ? this.header : this.i18n('siteSettingsDefaultBehavior');
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getDescription_() {
-    return this.description ?
-        this.description :
-        this.i18n('siteSettingsDefaultBehaviorDescription');
   },
 
   /**
