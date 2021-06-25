@@ -160,7 +160,6 @@ public class ChromeCachedFlags {
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFeatureFlags.cacheFieldTrialParameters(fieldTrialsToCache);
 
-        CachedFeatureFlags.onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }
 
