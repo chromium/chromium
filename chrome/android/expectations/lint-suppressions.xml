@@ -263,6 +263,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_menu_edit_shortcut` appears to be unused"/>
 
+    <!-- 3: TODO(crbug.com/1208528) Backup strings until implementation is ready. -->
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph_settings` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
