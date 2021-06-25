@@ -56,10 +56,13 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                     .SetMainAxisAlignment(MainAxisAlignment::kCenter)
                     .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
                     .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-                    .AddChild(views::Builder<views::ImageView>()
-                                  .CopyAddressTo(play_icon)
-                                  .SetID(kHoldingSpaceScreenCapturePlayIconId)
-                                  .SetPreferredSize(kPlayIconSize))
+                    .AddChild(
+                        views::Builder<views::ImageView>()
+                            .CopyAddressTo(play_icon)
+                            .SetID(kHoldingSpaceScreenCapturePlayIconId)
+                            .SetPreferredSize(kPlayIconSize)
+                            .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
+                                                    kHoldingSpaceIconSize)))
                     .Build();
               },
               &play_icon_))
