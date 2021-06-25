@@ -137,6 +137,9 @@ extern const base::Feature kCryptohomeUserDataAuthKillswitch;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDataLeakPreventionPolicy;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kDataLeakPreventionFilesRestriction;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

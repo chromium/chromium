@@ -185,6 +185,11 @@ const base::Feature kCryptohomeUserDataAuthKillswitch{
 // for confidential content.
 const base::Feature kDataLeakPreventionPolicy{"DataLeakPreventionPolicy",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables starting of Data Leak Prevention Files Daemon by sending the
+// DLP policy there. The daemond might restrict access to some protected files.
+const base::Feature kDataLeakPreventionFilesRestriction{
+    "DataLeakPreventionFilesRestriction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

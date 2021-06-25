@@ -481,7 +481,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   }
 
   // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
-  if (request_to_daemon.rules_size() > 0) {
+  if (request_to_daemon.rules_size() > 0 &&
+      base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
     DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
