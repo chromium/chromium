@@ -139,25 +139,16 @@ class PasswordGenerationPopupViewPrerenderingTest
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
-// Tests that the prerendering doesn't delete
-// PasswordGenerationPopupControllerImpl.
-// Flaky on Linux/Win.  http://crbug.com/1222978
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
-  DISABLED_PasswordGenerationPopupControllerInPrerendering
-#else
-#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
-  PasswordGenerationPopupControllerInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
-                       MAYBE_PasswordGenerationPopupControllerInPrerendering) {
+                       PasswordGenerationPopupControllerInPrerendering) {
   GURL url =
       embedded_test_server()->GetURL("/password/nonplaceholder_username.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(400, 600), /*max_length=*/20, u"element",
-      autofill::FieldRendererId(100),
+      /*bounds=*/gfx::RectF(GetWebContents()->GetContainerBounds().x(),
+                            GetWebContents()->GetContainerBounds().y(), 10, 10),
+      /*max_length=*/20, u"element", autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
