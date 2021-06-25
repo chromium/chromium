@@ -201,7 +201,7 @@ void AccelerometerSamplesObserver::UpdateSensorDeviceFrequency() {
   sensor_device_remote_->SetFrequency(
       enabled_ ? kReadFrequencyInHz : 0.0,
       base::BindOnce(&AccelerometerSamplesObserver::SetFrequencyCallback,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), enabled_));
 }
 
 mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
@@ -227,8 +227,15 @@ void AccelerometerSamplesObserver::OnObserverDisconnect() {
 }
 
 void AccelerometerSamplesObserver::SetFrequencyCallback(
+    bool enabled,
     double result_frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (enabled != enabled_) {
+    // As the current configuration (required frequency) is different now,
+    // ignore the result of this deprecated |SensorDevice::SetFrequency|.
+    return;
+  }
 
   if ((result_frequency > 0.0 && enabled_) ||
       (result_frequency == 0.0 && !enabled_)) {

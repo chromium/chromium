@@ -65,7 +65,7 @@ class ASH_EXPORT AccelerometerSamplesObserver
   GetPendingRemote();
 
   void OnObserverDisconnect();
-  void SetFrequencyCallback(double result_frequency);
+  void SetFrequencyCallback(bool enabled, double result_frequency);
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 
   int iio_device_id_;
