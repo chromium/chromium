@@ -169,6 +169,7 @@ crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Ski
 crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
 crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
+crbug.com/1220766 [ android android-chromium android-nexus-5x ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 # Frequently fails on Nexus 5X
 crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
