@@ -54,7 +54,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records if CET (Control-flow Enforcement Technology / Hardware Enforced
     Shadow Stack) is enabled or if it has been disabled by IFEO. Reported only
-    if CetAvailable is true, once per browser session, on startup.
+    if CetAvailable is true, once per browser session, on startup. Note: This
+    was recorded incorrectly in M91.
   </summary>
 </histogram>
 

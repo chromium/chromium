@@ -13,4 +13,9 @@
 // to the lifetime of the returned Remote.
 mojo::Remote<chrome::mojom::UtilWin> LaunchUtilWinServiceInstance();
 
+// Spawns a new isolated instance of the Windows processor metrics service and
+// returns a remote interface to it. The lifetime of the service process is tied
+// strictly to the lifetime of the returned Remote.
+mojo::Remote<chrome::mojom::ProcessorMetrics> LaunchProcessorMetricsService();
+
 #endif  // CHROME_BROWSER_WIN_UTIL_WIN_SERVICE_H_

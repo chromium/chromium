@@ -210,11 +210,12 @@ void DetectFaultTolerantHeap() {
 }
 
 void DelayedRecordProcessorMetrics() {
-  mojo::Remote<chrome::mojom::UtilWin> remote_util_win =
-      LaunchUtilWinServiceInstance();
+  mojo::Remote<chrome::mojom::ProcessorMetrics> remote_util_win =
+      LaunchProcessorMetricsService();
   auto* remote_util_win_ptr = remote_util_win.get();
-  remote_util_win_ptr->RecordProcessorMetrics(base::BindOnce(
-      [](mojo::Remote<chrome::mojom::UtilWin>) {}, std::move(remote_util_win)));
+  remote_util_win_ptr->RecordProcessorMetrics(
+      base::BindOnce([](mojo::Remote<chrome::mojom::ProcessorMetrics>) {},
+                     std::move(remote_util_win)));
 }
 
 // Initializes the ModuleDatabase on its owning sequence. Also starts the

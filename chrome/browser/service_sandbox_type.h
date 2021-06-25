@@ -79,6 +79,21 @@ content::GetServiceSandboxType<chrome::mojom::UtilWin>() {
 }
 #endif  // defined(OS_WIN)
 
+// chrome::mojom::ProcessorMetrics
+#if defined(OS_WIN)
+namespace chrome {
+namespace mojom {
+class ProcessorMetrics;
+}
+}  // namespace chrome
+
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<chrome::mojom::ProcessorMetrics>() {
+  return sandbox::policy::SandboxType::kNoSandbox;
+}
+#endif  // defined(OS_WIN)
+
 // chrome::mojom::ProfileImport
 namespace chrome {
 namespace mojom {

@@ -20,7 +20,7 @@ TEST(ProcessorMetricsTest, TestRecordProcessorMetrics) {
   base::win::ScopedCOMInitializer scoped_com_initializer;
   base::HistogramTester histogram_tester;
 
-  RecordProcessorMetrics();
+  RecordProcessorMetricsForTesting();
 
   histogram_tester.ExpectTotalCount("Windows.ProcessorFamily", 1);
   histogram_tester.ExpectTotalCount(
