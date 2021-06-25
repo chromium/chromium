@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_WEBAPK_WEBAPK_METRICS_H_
 
+#include "components/arc/mojom/webapk.mojom-forward.h"
+
 namespace apps {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -33,8 +35,14 @@ enum class WebApkInstallStatus {
 
 extern const char kWebApkInstallResultHistogram[];
 extern const char kWebApkUpdateResultHistogram[];
+extern const char kWebApkArcInstallResultHistogram[];
+extern const char kWebApkArcUpdateResultHistogram[];
 
+// Records the overall result of installing/updating a WebAPK to UMA.
 void RecordWebApkInstallResult(bool is_update, WebApkInstallStatus result);
+// Records the detailed result of installing/updating a WebAPK in ARC to UMA.
+void RecordWebApkArcResult(bool is_update,
+                           arc::mojom::WebApkInstallResult result);
 
 }  // namespace apps
 

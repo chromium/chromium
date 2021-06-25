@@ -498,9 +498,11 @@ void WebApkInstallTask::OnInstallComplete(
     arc::mojom::WebApkInstallResult result) {
   VLOG(1) << "WebAPK installation finished with result " << result;
 
-  bool success = result == arc::mojom::WebApkInstallResult::kSuccess;
+  const bool success = result == arc::mojom::WebApkInstallResult::kSuccess;
+  const bool is_update = package_name_to_update_.has_value();
+  RecordWebApkArcResult(is_update, result);
   if (success) {
-    if (package_name_to_update_.has_value()) {
+    if (is_update) {
       webapk_prefs::SetUpdateNeededForApp(profile_, app_id_,
                                           /* update_needed= */ false);
     } else {

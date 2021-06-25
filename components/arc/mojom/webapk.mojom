@@ -6,6 +6,8 @@
 
 module arc.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 [Extensible]
 enum WebApkInstallResult {
   kSuccess = 0,
