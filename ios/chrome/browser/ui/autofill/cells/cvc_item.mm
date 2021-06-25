@@ -6,6 +6,9 @@
 
 #import <MaterialComponents/MaterialTypography.h>
 
+#import "base/feature_list.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -30,6 +33,8 @@ const CGFloat kUICVCSpacing = 20;
 const CGFloat kTextFieldHeight = 50;
 // Width of the date text fields.
 const CGFloat kDateTextFieldWidth = 40;
+// Height of the Google pay badge.
+const CGFloat kGooglePayBadgeHeight = 22;
 }
 
 @interface CVCCell ()<UITextFieldDelegate>
@@ -115,6 +120,16 @@ const CGFloat kDateTextFieldWidth = 40;
     _instructionsTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_instructionsTextLabel];
 
+    UIImageView* googlePayBadge = nil;
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableAccountWalletStorage)) {
+      googlePayBadge = [[UIImageView alloc] init];
+      googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
+      googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
+      googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+      [contentView addSubview:googlePayBadge];
+    }
+
     _errorLabel = [[UILabel alloc] init];
     _errorLabel.font = [[MDCTypography fontLoader] regularFontOfSize:12];
     _errorLabel.textColor = [UIColor colorNamed:kRedColor];
@@ -180,6 +195,27 @@ const CGFloat kDateTextFieldWidth = 40;
     _buttonForNewCard.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_buttonForNewCard];
 
+    if (googlePayBadge) {
+      [NSLayoutConstraint activateConstraints:@[
+        [_dateContainerView.topAnchor
+            constraintEqualToAnchor:googlePayBadge.bottomAnchor
+                           constant:kUISpacing],
+        [googlePayBadge.topAnchor
+            constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
+                           constant:kUISpacing],
+        [googlePayBadge.leadingAnchor
+            constraintEqualToAnchor:_instructionsTextLabel.leadingAnchor],
+        [googlePayBadge.heightAnchor
+            constraintEqualToConstant:kGooglePayBadgeHeight],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [_dateContainerView.topAnchor
+            constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
+                           constant:kUISpacing],
+      ]];
+    }
+
     [NSLayoutConstraint activateConstraints:@[
       // Text label
       [_instructionsTextLabel.topAnchor
@@ -193,9 +229,6 @@ const CGFloat kDateTextFieldWidth = 40;
                          constant:-kHorizontalPadding],
 
       // Date container
-      [_dateContainerView.topAnchor
-          constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
-                         constant:kUISpacing],
       [_dateContainerView.leadingAnchor
           constraintEqualToAnchor:_instructionsTextLabel.leadingAnchor],
       [_dateContainerView.heightAnchor
