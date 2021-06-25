@@ -1232,6 +1232,26 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1223423
+TEST_F(LayoutNGTextCombineTest, WithTab) {
+  InsertStyleElement(
+      "c { text-combine-upright: all; white-space: pre; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>ab<c id=combine>X\tY</c>de</div>");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutText #text "ab"
+  +--LayoutInline C id="combine"
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "X\tY"
+  +--LayoutText #text "de"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, WithWordBreak) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
