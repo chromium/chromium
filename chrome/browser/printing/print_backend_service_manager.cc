@@ -180,6 +180,32 @@ void PrintBackendServiceManager::FetchCapabilities(
                      saved_callback_id));
 }
 
+void PrintBackendServiceManager::GetDefaultPrinterName(
+    const std::string& locale,
+    mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
+  // Need to be able to run the callback either after a successful return from
+  // the service or after the remote was disconnected, so save it here for
+  // either eventuality.
+  // Get a callback ID to represent this command.
+  auto saved_callback_id = base::UnguessableToken::Create();
+
+  // Note that `GetService()` will set state internally if this is sandboxed.
+  std::string remote_id =
+      GetRemoteIdForPrinterName(/*printer_name=*/std::string());
+  auto& service = GetService(locale, /*printer_name=*/std::string());
+
+  SaveCallback(
+      GetRemoteSavedGetDefaultPrinterNameCallbacks(is_sandboxed_service_),
+      remote_id, saved_callback_id, std::move(callback));
+
+  DVLOG(1) << "Sending GetDefaultPrinterName on remote `" << remote_id
+           << "`, saved callback ID of " << saved_callback_id;
+  service->GetDefaultPrinterName(
+      base::BindOnce(&PrintBackendServiceManager::GetDefaultPrinterNameDone,
+                     base::Unretained(this), is_sandboxed_service_, remote_id,
+                     saved_callback_id));
+}
+
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
@@ -279,6 +305,10 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
                     remote_id,
                     mojom::PrinterCapsAndInfoResult::NewResultCode(
                         mojom::ResultCode::kFailed));
+  RunSavedCallbacks(GetRemoteSavedGetDefaultPrinterNameCallbacks(sandboxed),
+                    remote_id,
+                    mojom::DefaultPrinterNameResult::NewResultCode(
+                        mojom::ResultCode::kFailed));
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -293,6 +323,13 @@ PrintBackendServiceManager::GetRemoteSavedFetchCapabilitiesCallbacks(
     bool sandboxed) {
   return sandboxed ? sandboxed_saved_fetch_capabilities_callbacks_
                    : unsandboxed_saved_fetch_capabilities_callbacks_;
+}
+
+PrintBackendServiceManager::RemoteSavedGetDefaultPrinterNameCallbacks&
+PrintBackendServiceManager::GetRemoteSavedGetDefaultPrinterNameCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_get_default_printer_name_callbacks_
+                   : unsandboxed_saved_get_default_printer_name_callbacks_;
 }
 
 template <class T>
@@ -348,6 +385,18 @@ void PrintBackendServiceManager::FetchCapabilitiesDone(
   ServiceCallbackDone(GetRemoteSavedFetchCapabilitiesCallbacks(sandboxed),
                       remote_id, saved_callback_id,
                       std::move(printer_caps_and_info));
+}
+
+void PrintBackendServiceManager::GetDefaultPrinterNameDone(
+    bool sandboxed,
+    const std::string& remote_id,
+    const base::UnguessableToken& saved_callback_id,
+    mojom::DefaultPrinterNameResultPtr printer_name) {
+  DVLOG(1) << "GetDefaultPrinterName completed for remote `" << remote_id
+           << "` saved callback ID " << saved_callback_id;
+
+  ServiceCallbackDone(GetRemoteSavedGetDefaultPrinterNameCallbacks(sandboxed),
+                      remote_id, saved_callback_id, std::move(printer_name));
 }
 
 template <class T>

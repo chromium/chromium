@@ -229,10 +229,10 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
 
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Getting default printer via service";
-    auto& service = PrintBackendServiceManager::GetInstance().GetService(
+    PrintBackendServiceManager& service_mgr =
+        PrintBackendServiceManager::GetInstance();
+    service_mgr.GetDefaultPrinterName(
         g_browser_process->GetApplicationLocale(),
-        /*printer_name=*/std::string());
-    service->GetDefaultPrinterName(
         base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
   } else {
     VLOG(1) << "Getting default printer in-process";

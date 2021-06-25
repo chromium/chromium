@@ -286,14 +286,7 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
 
   RunUntilIdle();
 
-  // TODO(crbug.com/1214139) A terminated print backend service causes
-  // outstanding calls to be dropped, and without disconnect handling specific
-  // to this type then no callback will be made.  Testing infrastructure
-  // automatically recovers so control returns here, with `default_printer`
-  // unchanged.  This test should be updated to show an empty string is
-  // provided for the default printer once service disconnects are better
-  // handled and a proper callback occurs.
-  EXPECT_EQ(default_printer, "dummy");
+  EXPECT_TRUE(default_printer.empty());
 }
 
 TEST_P(LocalPrinterHandlerDefaultTestProcess, GetPrinters) {
