@@ -193,6 +193,7 @@ src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts
 src/webgpu/shader/validation/wgsl/basic.spec.ts
+src/webgpu/util/copyToTexture.ts
 src/webgpu/util/texture/texel_data.spec.ts
 src/webgpu/web_platform/canvas/configureSwapChain.spec.ts
 src/webgpu/web_platform/canvas/context_creation.spec.ts

@@ -22,9 +22,23 @@
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format:* [ Slow ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,compute,basic:large_dispatch:* [ Slow ]
 
+crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:buffersWithVaryingStepMode:* [ Crash Failure ]
+crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:* [ Crash Failure ]
+crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:* [ Crash Failure ]
+crbug.com/sawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:* [ Crash Timeout ]
+
 ###
 ### Untriaged failures
 ###
+
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc5-rg-snorm";* [ Crash ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rg8unorm";* [ Crash ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="src-alpha-saturated";* [ Crash ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg8unorm";* [ Crash ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="stencil8";* [ Crash ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="CopyToBuffer";format="rg8unorm";* [ Crash ]
+
+wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_canvas:* [ Timeout ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc7-rgba-unorm";* [ Failure ]
@@ -206,8 +220,8 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachme
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,depth_format:encoderFormat="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,depth_format:pipelineFormat="stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,depth_format:pipelineFormat="depth16unorm";* [ Failure ]
-crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createRenderPipeline:color_formats_must_be_renderable:format="stencil8" [ Failure ]
-crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createRenderPipeline:color_formats_must_be_renderable:format="depth16unorm" [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createRenderPipeline:color_formats_must_be_renderable:format="stencil8";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createRenderPipeline:color_formats_must_be_renderable:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_aspects:format="stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_aspects:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:depth_stencil_copy_restrictions:format="stencil8";* [ Failure ]
