@@ -1119,9 +1119,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL,
           base::ASCIIToUTF16(chrome::kSyncLearnMoreURL)));
-  // TODO(crbug.com/1202088): Add the correct URL here when that's available.
   html_source->AddString("trustedVaultOptInUrl",
-                         google_password_manager_url.spec());
+                         chrome::kSyncTrustedVaultOptInURL);
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
