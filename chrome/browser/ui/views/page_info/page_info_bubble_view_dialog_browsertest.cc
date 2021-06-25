@@ -331,10 +331,11 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
+// Disabled because of flakiness: crbug.com/1208502.
 // Shows the Page Info bubble for an admin-provided cert when the page is
 // secure, but has a form that submits to an insecure url.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
-                       InvokeUi_MixedContentForm) {
+                       DISABLED_InvokeUi_MixedContentForm) {
   ShowAndVerifyUi();
 }
 
