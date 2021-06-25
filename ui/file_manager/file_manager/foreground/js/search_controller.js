@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {TaskController} from './task_controller.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {LocationLine} from './ui/location_line.js';
-// #import {str, strf} from '../../common/js/util.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {SearchBox} from './ui/search_box.js';
-// clang-format on
+import {str, strf} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {TaskController} from './task_controller.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {LocationLine} from './ui/location_line.js';
+import {SearchBox} from './ui/search_box.js';
 
 /**
  * Controller for searching.
  */
-/* #export */ class SearchController {
+export class SearchController {
   /**
    * @param {!SearchBox} searchBox Search box UI element.
    * @param {!LocationLine} locationLine Location line UI element.

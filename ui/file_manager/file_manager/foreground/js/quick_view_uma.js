@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileTasks} from './file_tasks.m.js';
-// #import {FileType} from '../../common/js/file_type.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DialogType} from './dialog_type.m.js';
+import {FileTasks} from './file_tasks.m.js';
 
 /**
  * UMA exporter for Quick View.
  */
-/* #export */ class QuickViewUma {
+export class QuickViewUma {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!DialogType} dialogType

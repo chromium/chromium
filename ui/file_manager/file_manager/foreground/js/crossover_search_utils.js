@@ -9,7 +9,7 @@
 
 // clang-format off
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.m.js';
+// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.js';
 // clang-format on
 
 /**

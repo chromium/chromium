@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LaunchParam} from './launch_param.js';
-// #import {NamingController} from './naming_controller.m.js';
+// #import {NamingController} from './naming_controller.js';
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';

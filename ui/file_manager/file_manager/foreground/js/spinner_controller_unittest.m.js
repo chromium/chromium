@@ -7,7 +7,7 @@ import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 
-import {SpinnerController} from './spinner_controller.m.js';
+import {SpinnerController} from './spinner_controller.js';
 
 /**
  * @type {Element}

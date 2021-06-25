@@ -12,7 +12,7 @@
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 // #import {str, strf} from '../../common/js/util.js';
-// #import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.m.js';
+// #import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 // #import {constants} from './constants.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on

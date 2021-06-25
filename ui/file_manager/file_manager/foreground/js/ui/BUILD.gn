@@ -136,7 +136,7 @@ js_unittest("actions_submenu_unittest.m") {
     ":actions_submenu",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/js:mock_actions_model.m",
+    "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
   ]
@@ -225,7 +225,7 @@ js_library("directory_tree") {
     "//ui/file_manager/file_manager/foreground/js:constants.m",
     "//ui/file_manager/file_manager/foreground/js:directory_contents.m",
     "//ui/file_manager/file_manager/foreground/js:directory_model.m",
-    "//ui/file_manager/file_manager/foreground/js:navigation_list_model.m",
+    "//ui/file_manager/file_manager/foreground/js:navigation_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -255,7 +255,7 @@ js_unittest("directory_tree_unittest.m") {
     "//ui/file_manager/file_manager/foreground/js:mock_directory_model.m",
     "//ui/file_manager/file_manager/foreground/js:mock_folder_shortcut_data_model.m",
     "//ui/file_manager/file_manager/foreground/js:mock_navigation_list_model.m",
-    "//ui/file_manager/file_manager/foreground/js:navigation_list_model.m",
+    "//ui/file_manager/file_manager/foreground/js:navigation_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -359,7 +359,7 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
     "//ui/file_manager/file_manager/foreground/js:launch_param",
-    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
+    "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
@@ -556,7 +556,7 @@ js_library("location_line") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
-    "//ui/file_manager/file_manager/foreground/js:path_component.m",
+    "//ui/file_manager/file_manager/foreground/js:path_component",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -610,7 +610,7 @@ js_library("providers_menu") {
   deps = [
     ":files_menu",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
+    "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
