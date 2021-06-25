@@ -33,7 +33,7 @@ class TestChromeTrustedVaultService : public ChromeTrustedVaultService {
                         UIViewController* presentingViewController,
                         void (^callback)(BOOL success,
                                          NSError* error)) override {}
-  void CancelReauthentication(BOOL animated, void (^callback)(void)) override {}
+  void CancelDialog(BOOL animated, void (^callback)(void)) override {}
 };
 
 class MockObserver : public syncer::TrustedVaultClient::Observer {

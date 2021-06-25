@@ -28,7 +28,7 @@ class FakeChromeTrustedVaultService : public ChromeTrustedVaultService {
       ChromeIdentity* chrome_identity,
       UIViewController* presenting_view_controller,
       void (^callback)(BOOL success, NSError* error)) override;
-  void CancelReauthentication(BOOL animated, void (^callback)(void)) override;
+  void CancelDialog(BOOL animated, void (^callback)(void)) override;
 
   // Simulates user cancel the reauth dialog.
   void SimulateUserCancel();

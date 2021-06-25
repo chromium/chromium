@@ -77,7 +77,7 @@ using l10n_util::GetNSStringF;
       completion();
     }
   };
-  trustedVaultService->CancelReauthentication(animated, cancelCompletion);
+  trustedVaultService->CancelDialog(animated, cancelCompletion);
 }
 
 #pragma mark - ChromeCoordinator

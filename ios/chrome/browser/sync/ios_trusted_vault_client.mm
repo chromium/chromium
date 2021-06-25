@@ -80,8 +80,8 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
   ios::ChromeTrustedVaultService* trusted_vault_service =
       browser_provider->GetChromeTrustedVaultService();
   DCHECK(trusted_vault_service);
-  trusted_vault_service->GetIsRecoverabilityDegraded(identity,
-                                                     std::move(callback));
+  trusted_vault_service->GetDegradedRecoverabilityStatus(identity,
+                                                         std::move(callback));
 }
 
 void IOSTrustedVaultClient::AddTrustedRecoveryMethod(

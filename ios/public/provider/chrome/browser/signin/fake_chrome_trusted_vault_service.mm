@@ -71,9 +71,8 @@ void FakeChromeTrustedVaultService::ReauthenticationForFetchKeys(
                  completion:nil];
 }
 
-void FakeChromeTrustedVaultService::CancelReauthentication(
-    BOOL animated,
-    void (^callback)(void)) {}
+void FakeChromeTrustedVaultService::CancelDialog(BOOL animated,
+                                                 void (^callback)(void)) {}
 
 void FakeChromeTrustedVaultService::SimulateUserCancel() {
   DCHECK(trusted_vault_view_controller_);
