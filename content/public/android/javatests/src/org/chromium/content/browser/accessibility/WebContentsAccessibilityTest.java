@@ -6,6 +6,8 @@ package org.chromium.content.browser.accessibility;
 
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT;
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_ACCESSIBILITY_FOCUS;
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_LONG_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN;
@@ -497,6 +499,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1223574")
     public void testEventIndices_SelectionOFF_CharacterGranularity() throws Throwable {
         // Build a simple web page with an input and the text "Testing"
         setupTestWithHTML("<input id=\"fn\" type=\"text\" value=\"Testing\">");
@@ -544,6 +547,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1223574")
     public void testEventIndices_SelectionON_CharacterGranularity() throws Throwable {
         // Build a simple web page with an input and the text "Testing"
         setupTestWithHTML("<input id=\"fn\" type=\"text\" value=\"Testing\">");
@@ -623,6 +627,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1223574")
     public void testEventIndices_SelectionOFF_WordGranularity() throws Throwable {
         // Build a simple web page with an input and the text "Testing this output is correct"
         setupTestWithHTML(
@@ -674,6 +679,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1223574")
     public void testEventIndices_SelectionON_WordGranularity() throws Throwable {
         setupTestWithHTML(
                 "<input id=\"fn\" type=\"text\" value=\"Testing this output is correct\">");
@@ -756,6 +762,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1223574")
     public void testEventIndices_contenteditable_SelectionON_CharacterGranularity()
             throws Throwable {
         setupTestWithHTML("<div contenteditable>Testing</div>");
@@ -1172,6 +1179,62 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(nodeInfoDiv.getActionList().contains(ACTION_SCROLL_DOWN));
         assertActionsContainNoScrolls(nodeInfoP1);
         assertActionsContainNoScrolls(nodeInfoP2);
+    }
+
+    /**
+     * Test our internal cache of |AccessibilityNodeInfo| objects for proper focus/action updates.
+     */
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    public void testNodeInfoCache_AccessibilityFocusAndActions() throws Throwable {
+        // Build a simple web page with two paragraphs that can be focused.
+        setupTestWithHTML("<div>\n"
+                + "  <p>Example Paragraph 1</p>\n"
+                + "  <p>Example Paragraph 2</p>\n"
+                + "</div>");
+
+        // Define our root node and paragraph node IDs by looking for their text.
+        int vvIdP1 = waitForNodeMatching(sTextMatcher, "Example Paragraph 1");
+        int vvIdP2 = waitForNodeMatching(sTextMatcher, "Example Paragraph 2");
+
+        // Get the |AccessibilityNodeInfo| objects for our nodes.
+        AccessibilityNodeInfo nodeInfoP1 = createAccessibilityNodeInfo(vvIdP1);
+        AccessibilityNodeInfo nodeInfoP2 = createAccessibilityNodeInfo(vvIdP2);
+
+        // Assert we have the correct nodes.
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfoP1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfoP2);
+
+        // Assert neither node has been focused, and both have a accessibility focusable action.
+        Assert.assertFalse(nodeInfoP1.isAccessibilityFocused());
+        Assert.assertFalse(nodeInfoP2.isAccessibilityFocused());
+        Assert.assertTrue(nodeInfoP1.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertFalse(nodeInfoP1.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+        Assert.assertTrue(nodeInfoP2.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertFalse(nodeInfoP2.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+
+        // Now focus each paragraph in turn and check available actions.
+        focusNode(vvIdP1);
+        nodeInfoP1 = createAccessibilityNodeInfo(vvIdP1);
+        nodeInfoP2 = createAccessibilityNodeInfo(vvIdP2);
+        Assert.assertTrue(nodeInfoP1.isAccessibilityFocused());
+        Assert.assertFalse(nodeInfoP1.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertTrue(nodeInfoP1.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+        Assert.assertFalse(nodeInfoP2.isAccessibilityFocused());
+        Assert.assertTrue(nodeInfoP2.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertFalse(nodeInfoP2.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+
+        // Focus second paragraph to confirm proper cache updates.
+        focusNode(vvIdP2);
+        nodeInfoP1 = createAccessibilityNodeInfo(vvIdP1);
+        nodeInfoP2 = createAccessibilityNodeInfo(vvIdP2);
+        Assert.assertFalse(nodeInfoP1.isAccessibilityFocused());
+        Assert.assertTrue(nodeInfoP1.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertFalse(nodeInfoP1.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+        Assert.assertTrue(nodeInfoP2.isAccessibilityFocused());
+        Assert.assertFalse(nodeInfoP2.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
+        Assert.assertTrue(nodeInfoP2.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
