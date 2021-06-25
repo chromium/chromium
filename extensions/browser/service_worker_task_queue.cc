@@ -342,6 +342,10 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   DCHECK(!base::Contains(worker_state_map_, context_id));
   WorkerState& worker_state = worker_state_map_[context_id];
 
+  content::ServiceWorkerContext* service_worker_context =
+      GetServiceWorkerContext(extension->id());
+  StartObserving(service_worker_context);
+
   // Note: version.IsValid() = false implies we didn't have any prefs stored.
   base::Version version = RetrieveRegisteredServiceWorkerVersion(extension_id);
   const bool service_worker_already_registered =
@@ -366,15 +370,11 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
       BackgroundServiceWorkerType::kModule)
     option.type = blink::mojom::ScriptType::kModule;
   option.scope = extension->url();
-  content::ServiceWorkerContext* service_worker_context =
-      GetServiceWorkerContext(extension->id());
-
   service_worker_context->RegisterServiceWorker(
       script_url, option,
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
                      weak_factory_.GetWeakPtr(), context_id,
                      base::Time::Now()));
-  StartObserving(service_worker_context);
 }
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
