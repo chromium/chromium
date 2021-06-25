@@ -4725,9 +4725,6 @@ domain Network
       # Set for requests when the TrustToken API is used. Contains the parameters
       # passed by the developer (e.g. via "fetch") as understood by the backend.
       experimental optional TrustTokenParams trustTokenParams
-      # True if this resource request is considered to be the 'same site' as the
-      # request correspondinfg to the main frame.
-      experimental optional boolean isSameSite
 
   # Details of a signed certificate timestamp (SCT).
   type SignedCertificateTimestamp extends object
