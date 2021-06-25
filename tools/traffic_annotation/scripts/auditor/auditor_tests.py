@@ -14,9 +14,11 @@ import unittest
 
 from auditor import *
 
-# Absolute path to chrome/src.
+# Path to this script's dir.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-TESTS_DIR = os.path.join(SCRIPT_DIR, "test_data")
+
+# Path to the test_data/ dir.
+TESTS_DIR = os.path.join(SCRIPT_DIR, "../test_data")
 
 # TODO(nicolaso): Move these to tools/traffic_annotation/scripts/test_data/ once
 # the Python auditor has fully replaced the C++ one.
@@ -29,8 +31,10 @@ class AuditorTest(unittest.TestCase):
   def setUp(self):
     unittest.TestCase.setUp(self)
 
-    path_filters = [os.path.relpath(
-      os.path.join(TESTS_DIR, "test_sample_annotations.cc"), SRC_DIR)]
+    path_filters = [
+        os.path.relpath(os.path.join(TESTS_DIR, "test_sample_annotations.cc"),
+                        SRC_DIR)
+    ]
     all_annotations = Auditor.run_extractor(path_filters)
 
     self.auditor_ui = AuditorUI(build_path, path_filters, False)
@@ -617,7 +621,9 @@ class AuditorTest(unittest.TestCase):
     """|self.sample_annotations| should include all those inside
     test_data/test_sample_annotations.cc"""
     expected = [
-      "ok_annotation", "syntax_error_annotation", "incomplete_error_annotation"]
+        "ok_annotation", "syntax_error_annotation",
+        "incomplete_error_annotation"
+    ]
     self.assertCountEqual(expected, self.sample_annotations.keys())
 
   def test_ensure_errors(self) -> None:
@@ -634,7 +640,7 @@ class AuditorTest(unittest.TestCase):
 
   def test_result_ok(self) -> None:
     self.auditor.parse_extractor_output(
-      [self.sample_annotations["ok_annotation"]])
+        [self.sample_annotations["ok_annotation"]])
 
     # Assert that correct annotation has been extracted and is OK (no errors).
     self.assertTrue(self.auditor.extracted_annotations)
@@ -642,17 +648,16 @@ class AuditorTest(unittest.TestCase):
 
   def test_syntax_error(self) -> None:
     self.auditor.parse_extractor_output(
-      [self.sample_annotations["syntax_error_annotation"]])
+        [self.sample_annotations["syntax_error_annotation"]])
 
     self.assertTrue(self.auditor.errors)
     result = self.auditor.errors[0]
     self.assertEqual(AuditorError.Type.SYNTAX, result.type)
-    self.assertTrue(
-      "sender: \"Cloud Policy\"': Expected \"{\"" in str(result))
+    self.assertTrue("sender: \"Cloud Policy\"': Expected \"{\"" in str(result))
 
   def test_incomplete_error(self) -> None:
     self.auditor.parse_extractor_output(
-      [self.sample_annotations["incomplete_error_annotation"]])
+        [self.sample_annotations["incomplete_error_annotation"]])
 
     self.assertTrue(self.auditor.extracted_annotations)
     self.auditor.run_all_checks()
@@ -661,16 +666,16 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(AuditorError.Type.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
-      "sender", "chrome_policy", "cookies_store",
-      "policy_exception_justification"]
-    missing_fields = str(result).split(
-      "missing fields:", 1)[1].lstrip().split(", ")
+        "sender", "chrome_policy", "cookies_store",
+        "policy_exception_justification"
+    ]
+    missing_fields = str(result).split("missing fields:",
+                                       1)[1].lstrip().split(", ")
     self.assertCountEqual(expected_missing_fields, missing_fields)
 
 
 if __name__ == "__main__":
-  args_parser = argparse.ArgumentParser(
-    description="Unittests for auditor.py")
+  args_parser = argparse.ArgumentParser(description="Unittests for auditor.py")
   args_parser.add_argument("--build-path",
                            help="Path to the build directory.",
                            required=True)

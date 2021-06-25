@@ -15,6 +15,15 @@ from functools import reduce
 from google.protobuf import text_format
 from typing import NewType, TYPE_CHECKING, List, Dict
 
+# Path to the directory where this script is.
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# Absolute path to chrome/src.
+SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../../../.."))
+
+# TODO(nicolaso): Move extractor.py to this folder once the C++ auditor doesn't
+# depend on it anymore.
+sys.path.insert(0, os.path.join(SCRIPT_DIR, ".."))
 import extractor
 
 if TYPE_CHECKING:
@@ -28,10 +37,6 @@ if TYPE_CHECKING:
 
 UniqueId = NewType('UniqueId', str)
 HashCode = NewType('HashCode', int)
-
-# Absolute path to chrome/src.
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
 
 # Reserved annotation unique IDs that should only be used in untracked files
 # (e.g., test files or files that aren't compiled on this platform).
@@ -149,8 +154,8 @@ class AnnotationInstance(object):
 
     source_free_proto = copy.deepcopy(self.proto)
     source_free_proto.ClearField("source")
-    source_free_proto = text_format.MessageToString(
-      source_free_proto, as_utf8=True)
+    source_free_proto = text_format.MessageToString(source_free_proto,
+                                                    as_utf8=True)
     return Auditor.compute_hash_value(source_free_proto)
 
   def deserialize(self, serialized_annotation: extractor.Annotation):
@@ -306,7 +311,7 @@ class AuditorUI:
     as a part of compiling Chrome."""
     # Use the build path to import the compiled traffic annotation proto.
     traffic_annotation_proto_path = os.path.join(
-      self.build_path, "pyproto/tools/traffic_annotation")
+        self.build_path, "pyproto/tools/traffic_annotation")
     sys.path.insert(0, traffic_annotation_proto_path)
 
     try:
@@ -340,7 +345,7 @@ class AuditorUI:
     if self.auditor.errors:
       print("[Errors]")
       for i, error in enumerate(self.auditor.errors):
-        print("  ({})\t{}".format(i+1, str(error)))
+        print("  ({})\t{}".format(i + 1, str(error)))
       return 1
 
     print("traffic annotations are all OK.\n")
@@ -349,37 +354,46 @@ class AuditorUI:
 
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(
-    description="Traffic Annotation Auditor: Extracts network traffic"
-    " annotations from the repository, audits them for errors and coverage,"
-    " produces reports, and updates related files.", prog="auditor.py",
-    usage="%(prog)s [OPTION] ... [path_filters]")
+      description="Traffic Annotation Auditor: Extracts network traffic"
+      " annotations from the repository, audits them for errors and coverage,"
+      " produces reports, and updates related files.",
+      prog="auditor.py",
+      usage="%(prog)s [OPTION] ... [path_filters]")
+  args_parser.add_argument("--build-path",
+                           help="Path to the build directory.",
+                           required=True)
   args_parser.add_argument(
-    "--build-path", help="Path to the build directory.", required=True)
+      "--no-filtering",
+      action="store_true",
+      help="Optional flag asking the tool"
+      " to run on the whole repository without text filtering files.")
   args_parser.add_argument(
-    "--no-filtering", action="store_true", help="Optional flag asking the tool"
-    " to run on the whole repository without text filtering files.")
+      "--test-only",
+      help="Optional flag to request just running tests and not"
+      " updating any file. If not specified,"
+      " 'tools/traffic_annotation/summary/annotations.xml' might get updated.",
+      action="store_true")
   args_parser.add_argument(
-    "--test-only", help="Optional flag to request just running tests and not"
-    " updating any file. If not specified,"
-    " 'tools/traffic_annotation/summary/annotations.xml' might get updated.",
-    action="store_true")
+      "--error-resilient",
+      help="Optional flag, stating not to return error in"
+      " exit code if auditor fails to perform the tests. This flag can be used"
+      " for trybots to avoid spamming when tests cannot run.",
+      action="store_true")
+  args_parser.add_argument("--limit",
+                           default=5,
+                           help="Limit for the maximum number of returned "
+                           " errors. Use 0 for unlimited.")
+  args_parser.add_argument("--annotations-file",
+                           help="Optional path to a TSV output file with all"
+                           " annotations.")
   args_parser.add_argument(
-    "--error-resilient", help="Optional flag, stating not to return error in"
-    " exit code if auditor fails to perform the tests. This flag can be used"
-    " for trybots to avoid spamming when tests cannot run.",
-    action="store_true")
-  args_parser.add_argument(
-    "--limit", default=5, help="Limit for the maximum number of returned "
-    " errors. Use 0 for unlimited.")
-  args_parser.add_argument(
-    "--annotations-file", help="Optional path to a TSV output file with all"
-    " annotations.")
-  args_parser.add_argument(
-    "path_filters", nargs="*", help="Optional paths to filter which files the"
-    " tool is run on. It can also include deleted files names when auditor is"
-    " run on a partial repository. These are ignored if all of the following"
-    " are true: Not using --extractor-input, using -no-filtering OR"
-    " --all-files, using the python extractor.")
+      "path_filters",
+      nargs="*",
+      help="Optional paths to filter which files the"
+      " tool is run on. It can also include deleted files names when auditor is"
+      " run on a partial repository. These are ignored if all of the following"
+      " are true: Not using --extractor-input, using -no-filtering OR"
+      " --all-files, using the python extractor.")
 
   args = args_parser.parse_args()
   build_path = args.build_path
