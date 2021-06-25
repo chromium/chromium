@@ -30,8 +30,11 @@ class ClientSideDetectionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {}
 };
 
+// TODO(crbug.com/1217128): Re-enable this test, once we have a more reliable
+// method of ensuring the SetPhishingModel IPC comes before the
+// StartPhishingDetection IPC.
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       NewHostGetsModel) {
+                       DISABLED_NewHostGetsModel) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
                                                false);
   ClientSideModel model;

@@ -262,12 +262,28 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
+  class WebContentsObserver : public content::WebContentsObserver {
+   public:
+    WebContentsObserver(ClientSideDetectionHostTestBase* harness,
+                        content::WebContents* contents)
+        : content::WebContentsObserver(contents), harness_(harness) {}
+
+    void RenderFrameCreated(
+        content::RenderFrameHost* render_frame_host) override {
+      harness_->InitTestApi(render_frame_host);
+    }
+
+   private:
+    // The raw pointer is safe because `harness_` owns this.
+    ClientSideDetectionHostTestBase* harness_;
+  };
+
   explicit ClientSideDetectionHostTestBase(bool is_incognito)
       : is_incognito_(is_incognito) {}
 
-  void InitTestApi() {
+  void InitTestApi(content::RenderFrameHost* rfh) {
     service_manager::InterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteInterfaces();
+        rfh->GetRemoteInterfaces();
 
     service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
 
@@ -280,6 +296,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    observer_ = std::make_unique<WebContentsObserver>(this, web_contents());
+
     if (is_incognito_) {
       auto incognito_web_contents =
           content::WebContentsTester::CreateTestWebContents(
@@ -291,7 +309,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     // Initiate the connection to a (pretend) renderer process.
     NavigateAndCommit(GURL("about:blank"));
 
-    InitTestApi();
+    InitTestApi(web_contents()->GetMainFrame());
 
     // Inject service classes.
     csd_service_ = std::make_unique<MockClientSideDetectionService>();
@@ -406,6 +424,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<WebContentsObserver> observer_;
 };
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
@@ -938,9 +957,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
   ExpectPreClassificationChecks(url2, &kFalse, &kFalse, &kFalse, &kFalse,
                                 &kFalse);
   NavigateAndKeepLoading(web_contents(), url2);
-  // Re-override the binder for PhishingDetector because navigation causes
-  // a new web InterfaceProvider to be created
-  InitTestApi();
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url2);

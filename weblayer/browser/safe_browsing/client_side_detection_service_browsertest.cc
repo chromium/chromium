@@ -51,8 +51,11 @@ class ClientSideDetectionServiceBrowserTest : public WebLayerBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1217128): Re-enable this test, once we have a more reliable
+// method of ensuring the SetPhishingModel IPC comes before the
+// StartPhishingDetection IPC.
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
-                       NewHostGetsModel) {
+                       DISABLED_NewHostGetsModel) {
   PrefService* prefs = GetProfile()->GetBrowserContext()->pref_service();
   prefs->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 

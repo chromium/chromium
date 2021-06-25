@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -100,6 +101,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // From content::WebContentsObserver.
   void WebContentsDestroyed() override;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // Used for testing.
   void set_ui_manager(BaseUIManager* ui_manager);
@@ -118,8 +120,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // classifiers.
   void OnPhishingPreClassificationDone(bool should_classify);
 
-  // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
-  // the outcome of the renderer classification.
+  // |verdict| is an encoded ClientPhishingRequest protocol message, |result|
+  // is the outcome of the renderer classification.
   void PhishingDetectionDone(mojom::PhishingDetectorResult result,
                              const std::string& verdict);
 
@@ -158,12 +160,13 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
     account_signed_in_callback_ = account_signed_in_callback;
   }
 
-  // Check if CSD can get an access Token. Should be enabled only for ESB users,
-  // who are signed in and not in incognito mode.
+  // Check if CSD can get an access Token. Should be enabled only for ESB
+  // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
 
   // Set phishing model in PhishingDetector in renderers.
-  void SetPhishingModel();
+  void SetPhishingModel(
+      const mojo::Remote<mojom::PhishingDetector>& phishing_detector);
 
   // Send the client report to CSD server.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
@@ -173,7 +176,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         const std::string& access_token);
 
-  // This pointer may be nullptr if client-side phishing detection is disabled.
+  // This pointer may be nullptr if client-side phishing detection is
+  // disabled.
   ClientSideDetectionService* csd_service_;
   // The WebContents that the class is observing.
   content::WebContents* tab_;
@@ -185,8 +189,12 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
-  // The currently active message pipe to the renderer PhishingDetector.
-  mojo::Remote<mojom::PhishingDetector> phishing_detector_;
+  // A map from the live RenderFrameHosts to their PhishingDetector. These
+  // correspond to the `phishing_detector_receiver_` in the
+  // PhishingClassifierDelegate.
+  base::flat_map<content::RenderFrameHost*,
+                 mojo::Remote<mojom::PhishingDetector>>
+      phishing_detectors_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
