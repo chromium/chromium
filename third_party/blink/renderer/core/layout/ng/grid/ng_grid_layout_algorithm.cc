@@ -3685,6 +3685,9 @@ void NGGridLayoutAlgorithm::ComputeGridItemOffsetAndSize(
     } else {
       *size = set_geometry.sets[end_index].offset - *start_offset -
               set_geometry.gutter_size;
+
+      if (size->MightBeSaturated())
+        *size = LayoutUnit();
     }
   }
   DCHECK(!size->MightBeSaturated());
