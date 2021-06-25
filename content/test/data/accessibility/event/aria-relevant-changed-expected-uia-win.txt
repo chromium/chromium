@@ -1,4 +1,6 @@
+AriaProperties changed on role=group, name=Div1
 === Start Continuation ===
+AriaProperties changed on role=group, name=Div2
 === Start Continuation ===
 AriaProperties changed on role=group, name=Div3
 === Start Continuation ===
@@ -7,7 +9,3 @@ AriaProperties changed on role=group, name=Div4
 AriaProperties changed on role=group, name=Div5
 === Start Continuation ===
 AriaProperties changed on role=group, name=Div6
-=== Start Continuation ===
-AriaProperties changed on role=group, name=Div7
-=== Start Continuation ===
-AriaProperties changed on role=group, name=Div8

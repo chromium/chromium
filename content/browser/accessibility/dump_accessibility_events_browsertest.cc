@@ -368,6 +368,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaRelevantChanged2) {
+  RunEventTest(FILE_PATH_LITERAL("aria-relevant-changed2.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaSetSizeChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-setsize-changed.html"));
 }
