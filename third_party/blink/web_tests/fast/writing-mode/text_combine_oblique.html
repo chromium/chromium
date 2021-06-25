@@ -1,0 +1,22 @@
+<!doctype html>
+<style>
+div {
+ writing-mode: vertical-rl;
+ font-size: 50px;
+ font-style: oblique -15deg;
+}
+tcy { text-combine-upright: all; }
+.d { text-decoration: underline; }
+.e {
+    -webkit-text-emphasis: dot;
+    text-emphasis: dot;
+    x-webkit-text-emphasis-position: under right;
+}
+
+</style>
+<div>
+<p>西暦<tcy>1982</tcy>年<tcy>11</tcy>月<tcy>2</tcy>日</p>
+<p class="d">西暦<tcy>1982</tcy>年<tcy>11</tcy>月<tcy>2</tcy>日</p>
+<p class="e">西暦<tcy>1982</tcy>年<tcy>11</tcy>月<tcy>2</tcy>日</p>
+<p class="d e">西暦<tcy>1982</tcy>年<tcy>11</tcy>月<tcy>2</tcy>日</p>
+</div>
