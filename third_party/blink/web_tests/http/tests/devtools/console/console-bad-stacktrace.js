@@ -26,9 +26,10 @@
   var badStackTraceMessage = new SDK.ConsoleMessage(
       TestRunner.runtimeModel,
       SDK.ConsoleMessage.FrontendMessageSource.ConsoleAPI,
-      Protocol.Log.LogEntryLevel.Error, 'This should be visible',
-      Protocol.Runtime.ConsoleAPICalledEventType.Error, null, undefined,
-      undefined, undefined, badStackTrace);
+      Protocol.Log.LogEntryLevel.Error, 'This should be visible', {
+        type: Protocol.Runtime.ConsoleAPICalledEventType.Error,
+        stackTrace: badStackTrace,
+      });
   SDK.consoleModel.addMessage(badStackTraceMessage);
 
   await ConsoleTestRunner.dumpConsoleMessages();

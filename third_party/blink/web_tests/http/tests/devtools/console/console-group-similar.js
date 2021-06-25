@@ -46,7 +46,7 @@
   function addViolationMessage(text, url, level) {
     var message = new SDK.ConsoleMessage(
         null, Protocol.Log.LogEntrySource.Violation, level, text,
-        Protocol.Runtime.ConsoleAPICalledEventType.Log, url);
+        {type: Protocol.Runtime.ConsoleAPICalledEventType.Log, url});
     SDK.consoleModel.addMessage(message);
   }
 
@@ -58,7 +58,7 @@
     var message = new SDK.ConsoleMessage(
         null, SDK.ConsoleMessage.FrontendMessageSource.ConsoleAPI,
         Protocol.Log.LogEntryLevel.Info, text,
-        Protocol.Runtime.ConsoleAPICalledEventType.Log, url);
+        {type: Protocol.Runtime.ConsoleAPICalledEventType.Log, url});
     SDK.consoleModel.addMessage(message);
   }
 })();
