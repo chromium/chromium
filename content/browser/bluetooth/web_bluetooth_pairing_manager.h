@@ -44,9 +44,21 @@ class CONTENT_EXPORT WebBluetoothPairingManager
   // failure |read_callback| will be run with the appropriate result.
   void PairForCharacteristicReadValue(
       const std::string& characteristic_instance_id,
-      int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
           read_callback);
+
+  // Initiate pairing for writing the characteristic |value| identified by
+  // |characteristic_instance_id|. |num_pair_attempts| represents the number of
+  // attempts at pairing that have been made so far for this write operation.
+  //
+  // If pairing is successful the characteristic value will be written.
+  // |callback| will be run with the status.
+  void PairForCharacteristicWriteValue(
+      const std::string& characteristic_instance_id,
+      const std::vector<uint8_t>& value,
+      blink::mojom::WebBluetoothWriteType write_type,
+      blink::mojom::WebBluetoothService::RemoteCharacteristicWriteValueCallback
+          callback);
 
   // Initiate pairing for the descriptor value specified by
   // |descriptor_instance_id|. |num_pair_attempts| represents the number of
@@ -56,25 +68,26 @@ class CONTENT_EXPORT WebBluetoothPairingManager
   // failure |read_callback| will be run with the appropriate result.
   void PairForDescriptorReadValue(
       const std::string& descriptor_instance_id,
-      int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
           read_callback);
 
  private:
-  void OnReadCharacteristicValuePair(
-      std::string characteristic_instance_id,
-      blink::WebBluetoothDeviceId device_id,
-      int num_pair_attempts,
-      blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
-          read_callback,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+  // Pair the Bluetooth device identified by |device_id|. |num_pair_attempts|
+  // represents the number of pairing attempts for the specified device which
+  // have been made so for in the current attempt to pair. When done |callback|
+  // will be called with the pair status.
+  void PairDevice(blink::WebBluetoothDeviceId device_id,
+                  int num_pair_attempts,
+                  device::BluetoothDevice::ConnectCallback callback);
 
-  void OnReadDescriptorValuePair(
-      std::string descriptor_instance_id,
+  // Callback for PairDevice above. If failed due to insufficient
+  // authentication another pairing attempt will be performed if the maximum
+  // number of pairing attempts has not been reached. Otherwise |callback|
+  // will be called.
+  void OnPairDevice(
       blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
-      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
-          read_callback,
+      device::BluetoothDevice::ConnectCallback callback,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // device::BluetoothPairingDelegate implementation:

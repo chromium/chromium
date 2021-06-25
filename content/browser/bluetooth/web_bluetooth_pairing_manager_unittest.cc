@@ -18,14 +18,13 @@
 using blink::WebBluetoothDeviceId;
 using blink::mojom::WebBluetoothResult;
 using blink::mojom::WebBluetoothService;
+using blink::mojom::WebBluetoothWriteType;
 using device::BluetoothDevice;
 
 namespace content {
 
 namespace {
-constexpr int kStartingPairAttemptCount = 0;
 constexpr char kValidDeviceID[] = "000000000000000000000A==";
-const std::vector<uint8_t> kTestValue = {1, 2, 3, 5};
 }  // namespace
 
 class BluetoothPairingManagerTest : public testing::Test,
@@ -41,7 +40,9 @@ class BluetoothPairingManagerTest : public testing::Test,
   };
 
   BluetoothPairingManagerTest()
-      : valid_device_id(kValidDeviceID),
+      : characteristic_value_{1, 2, 3, 5},
+        descriptor_value_{4, 8, 15, 16, 23, 42},
+        valid_device_id(kValidDeviceID),
         pairing_manager_(std::make_unique<WebBluetoothPairingManager>(this)) {}
   ~BluetoothPairingManagerTest() override = default;
 
@@ -128,11 +129,12 @@ class BluetoothPairingManagerTest : public testing::Test,
       override {
     if (characteristic_instance_id != characteristic_instance_id_) {
       std::move(callback).Run(WebBluetoothResult::CHARACTERISTIC_NOT_FOUND,
-                              kTestValue);
+                              characteristic_value_);
       return;
     }
     if (device_paired_) {
-      std::move(callback).Run(WebBluetoothResult::SUCCESS, kTestValue);
+      std::move(callback).Run(WebBluetoothResult::SUCCESS,
+                              characteristic_value_);
       return;
     }
 
@@ -146,16 +148,35 @@ class BluetoothPairingManagerTest : public testing::Test,
       override {
     if (descriptor_instance_id != descriptor_instance_id_) {
       std::move(callback).Run(WebBluetoothResult::DESCRIPTOR_NOT_FOUND,
-                              kTestValue);
+                              descriptor_value_);
       return;
     }
     if (device_paired_) {
-      std::move(callback).Run(WebBluetoothResult::SUCCESS, kTestValue);
+      std::move(callback).Run(WebBluetoothResult::SUCCESS, descriptor_value_);
       return;
     }
 
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED,
                             absl::nullopt);
+  }
+
+  void RemoteCharacteristicWriteValue(
+      const std::string& characteristic_instance_id,
+      const std::vector<uint8_t>& value,
+      WebBluetoothWriteType write_type,
+      WebBluetoothService::RemoteCharacteristicWriteValueCallback callback)
+      override {
+    if (characteristic_instance_id != characteristic_instance_id_) {
+      std::move(callback).Run(WebBluetoothResult::CHARACTERISTIC_NOT_FOUND);
+      return;
+    }
+    if (device_paired_) {
+      characteristic_value_ = value;
+      std::move(callback).Run(WebBluetoothResult::SUCCESS);
+      return;
+    }
+
+    std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED);
   }
 
   const std::string& characteristic_instance_id() const {
@@ -180,6 +201,14 @@ class BluetoothPairingManagerTest : public testing::Test,
 
   int num_pair_attempts() const { return num_pair_attempts_; }
 
+  const std::vector<uint8_t>& characteristic_value() const {
+    return characteristic_value_;
+  }
+
+  const std::vector<uint8_t>& descriptor_value() const {
+    return descriptor_value_;
+  }
+
   void DeletePairingManager() { pairing_manager_.reset(); }
 
   WebBluetoothPairingManager* pairing_manager() {
@@ -187,6 +216,8 @@ class BluetoothPairingManagerTest : public testing::Test,
   }
 
  private:
+  std::vector<uint8_t> characteristic_value_;
+  std::vector<uint8_t> descriptor_value_;
   int num_pair_attempts_ = 0;
   bool device_paired_ = false;
   BluetoothDevice::ConnectCallback pair_callback_;
@@ -204,14 +235,17 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthFirstSuccess) {
   base::test::SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedFirst);
 
+  const std::vector<uint8_t> expected_value = characteristic_value();
   base::RunLoop loop;
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
-          [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+          [&loop, &expected_value](
+              WebBluetoothResult result,
+              const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect characteristic value";
+            EXPECT_EQ(value, expected_value)
+                << "Incorrect characteristic value";
             loop.Quit();
           }));
 
@@ -223,14 +257,17 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthSecondSuccess) {
   base::test::SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedSecond);
 
+  const std::vector<uint8_t> expected_value = characteristic_value();
   base::RunLoop loop;
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
-          [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+          [&loop, &expected_value](
+              WebBluetoothResult result,
+              const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect characteristic value";
+            EXPECT_EQ(value, expected_value)
+                << "Incorrect characteristic value";
             loop.Quit();
           }));
 
@@ -244,11 +281,12 @@ TEST_F(BluetoothPairingManagerTest, ReadFailAllAuthsFail) {
 
   base::RunLoop loop;
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
+            EXPECT_FALSE(value.has_value());
             loop.Quit();
           }));
 
@@ -262,11 +300,12 @@ TEST_F(BluetoothPairingManagerTest, ReadInvalidCharacteristicId) {
 
   base::RunLoop loop;
   pairing_manager()->PairForCharacteristicReadValue(
-      invalid_characteristic_instance_id(), kStartingPairAttemptCount,
+      invalid_characteristic_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_UNKNOWN_ERROR, result);
+            EXPECT_FALSE(value.has_value());
             loop.Quit();
           }));
 
@@ -280,11 +319,12 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDeleteDelegate) {
 
   base::RunLoop loop;
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
+            EXPECT_FALSE(value.has_value());
             loop.Quit();
           }));
 
@@ -301,14 +341,15 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDoublePair) {
 
   int callback_count = 0;
   base::RunLoop loop;
+  const std::vector<uint8_t> expected_value = characteristic_value();
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
-          [&loop, &callback_count](
+          [&loop, &callback_count, &expected_value](
               WebBluetoothResult result,
               const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect characteristic value";
+            EXPECT_EQ(value, expected_value);
             if (++callback_count == 2)
               loop.Quit();
           }));
@@ -316,7 +357,7 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDoublePair) {
   // Now try to pair for reading a second time. This should fail due to an
   // in-progress pairing.
   pairing_manager()->PairForCharacteristicReadValue(
-      characteristic_instance_id(), kStartingPairAttemptCount,
+      characteristic_instance_id(),
       base::BindLambdaForTesting(
           [&loop, &callback_count](
               WebBluetoothResult result,
@@ -332,18 +373,167 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDoublePair) {
   EXPECT_EQ(1, num_pair_attempts()) << "Only the first operation should pair";
 }
 
+TEST_F(BluetoothPairingManagerTest,
+       WriteCharacteristicSuccessfulAuthFirstSuccess) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kSucceedFirst);
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  EXPECT_NE(kWriteValue, characteristic_value());
+
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting([&loop](WebBluetoothResult result) {
+        EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
+        loop.Quit();
+      }));
+
+  loop.Run();
+  EXPECT_EQ(1, num_pair_attempts());
+  EXPECT_EQ(kWriteValue, characteristic_value());
+}
+
+TEST_F(BluetoothPairingManagerTest, WriteSuccessfulAuthSecondSuccess) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kSucceedSecond);
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  EXPECT_NE(kWriteValue, characteristic_value());
+
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting([&loop](WebBluetoothResult result) {
+        EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
+        loop.Quit();
+      }));
+
+  loop.Run();
+  EXPECT_EQ(2, num_pair_attempts());
+  EXPECT_EQ(kWriteValue, characteristic_value());
+}
+
+TEST_F(BluetoothPairingManagerTest, WriteFailAllAuthsFail) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kFailAll);
+
+  const std::vector<uint8_t> default_test_characteristic_value =
+      characteristic_value();
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  EXPECT_NE(kWriteValue, default_test_characteristic_value);
+
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting([&loop](WebBluetoothResult result) {
+        EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
+        loop.Quit();
+      }));
+
+  loop.Run();
+  EXPECT_EQ(WebBluetoothPairingManager::kMaxPairAttempts, num_pair_attempts());
+  EXPECT_EQ(default_test_characteristic_value, characteristic_value());
+}
+
+TEST_F(BluetoothPairingManagerTest, WriteInvalidCharacteristicID) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kFailAll);
+
+  const std::vector<uint8_t> default_test_characteristic_value =
+      characteristic_value();
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  EXPECT_NE(kWriteValue, default_test_characteristic_value);
+
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      invalid_characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting([&loop](WebBluetoothResult result) {
+        EXPECT_EQ(WebBluetoothResult::CONNECT_UNKNOWN_ERROR, result);
+        loop.Quit();
+      }));
+
+  loop.Run();
+  EXPECT_EQ(0, num_pair_attempts());
+  EXPECT_EQ(default_test_characteristic_value, characteristic_value());
+}
+
+TEST_F(BluetoothPairingManagerTest, WriteCharacteristicDeleteDelegate) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kSuspend);
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting([&loop](WebBluetoothResult result) {
+        EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
+        loop.Quit();
+      }));
+
+  // Verify that deleting the pairing manager will cancel all pending device
+  // pairing.
+  DeletePairingManager();
+  loop.Run();
+  EXPECT_EQ(1, num_pair_attempts());
+}
+
+TEST_F(BluetoothPairingManagerTest, WriteCharacteristicDoublePair) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  SetAuthBehavior(AuthBehavior::kFirstSuspend);
+
+  const std::vector<uint8_t> kWriteValue = {8, 9, 10, 11};
+  int callback_count = 0;
+  base::RunLoop loop;
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting(
+          [&loop, &callback_count](WebBluetoothResult result) {
+            EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
+            if (++callback_count == 2)
+              loop.Quit();
+          }));
+
+  // Now try to pair for writing a second time. This should fail due to an
+  // in-progress pairing.
+  pairing_manager()->PairForCharacteristicWriteValue(
+      characteristic_instance_id(), kWriteValue,
+      WebBluetoothWriteType::kWriteWithResponse,
+      base::BindLambdaForTesting(
+          [&loop, &callback_count](WebBluetoothResult result) {
+            EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
+            if (++callback_count == 2)
+              loop.Quit();
+          }));
+
+  ResumeSuspendedPairingWithSuccess();
+  loop.Run();
+
+  EXPECT_EQ(1, num_pair_attempts()) << "Only the first operation should pair";
+}
+
 TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthFirstSuccess) {
   base::test::SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedFirst);
 
+  const std::vector<uint8_t> expected_value = descriptor_value();
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
-          [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+          [&loop, &expected_value](
+              WebBluetoothResult result,
+              const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect descriptor value";
+            EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             loop.Quit();
           }));
 
@@ -355,14 +545,16 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthSecondSuccess) {
   base::test::SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedSecond);
 
+  const std::vector<uint8_t> expected_value = descriptor_value();
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
-          [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+          [&loop, &expected_value](
+              WebBluetoothResult result,
+              const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect descriptor value";
+            EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             loop.Quit();
           }));
 
@@ -376,11 +568,12 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadFailAllAuthsFail) {
 
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
+            EXPECT_FALSE(value.has_value());
             loop.Quit();
           }));
 
@@ -394,7 +587,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadInvalidDescriptorId) {
 
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      invalid_descriptor_instance_id(), kStartingPairAttemptCount,
+      invalid_descriptor_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
@@ -412,7 +605,7 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDeleteDelegate) {
 
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
                   const absl::optional<std::vector<uint8_t>>& value) {
@@ -431,16 +624,17 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDoublePair) {
   base::test::SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFirstSuspend);
 
+  const std::vector<uint8_t> expected_value = descriptor_value();
   int callback_count = 0;
   base::RunLoop loop;
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
-          [&loop, &callback_count](
+          [&loop, &callback_count, &expected_value](
               WebBluetoothResult result,
               const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
-            EXPECT_EQ(value, kTestValue) << "Incorrect descriptor value";
+            EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             if (++callback_count == 2)
               loop.Quit();
           }));
@@ -448,12 +642,13 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDoublePair) {
   // Now try to pair for reading a second time. This should fail due to an
   // in-progress pairing.
   pairing_manager()->PairForDescriptorReadValue(
-      descriptor_instance_id(), kStartingPairAttemptCount,
+      descriptor_instance_id(),
       base::BindLambdaForTesting(
           [&loop, &callback_count](
               WebBluetoothResult result,
               const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
+            EXPECT_FALSE(value.has_value());
             if (++callback_count == 2)
               loop.Quit();
           }));
