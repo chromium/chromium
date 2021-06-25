@@ -555,6 +555,7 @@ static_library("test_support") {
     ":affiliation",
     "//base",
     "//components/autofill/core/common",
+    "//components/password_manager/core/common",
     "//net:net",
   ]
 }

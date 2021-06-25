@@ -248,8 +248,7 @@ void PasswordReuseManager::SetPasswordStoreSigninNotifier(
   DCHECK(!notifier_);
   DCHECK(notifier);
   notifier_ = std::move(notifier);
-  // TODO(crbug.bom/715987): Uncomment when PasswordReuseManager is used to
-  // monitor Signin events. notifier_->SubscribeToSigninEvents(this);
+  notifier_->SubscribeToSigninEvents(this);
 }
 
 void PasswordReuseManager::SchedulePasswordHashUpdate(

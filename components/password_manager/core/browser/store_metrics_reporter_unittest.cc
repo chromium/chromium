@@ -8,11 +8,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -46,7 +50,16 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
  public:
-  StoreMetricsReporterTest() {
+  StoreMetricsReporterTest() = default;
+
+  void SetUp() override {
+    // Mock OSCrypt. There is a call to OSCrypt inside HashPasswordManager so it
+    // should be mocked.
+    OSCryptMocker::SetUp();
+
+    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
+                                   {});
+
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            false);
     prefs_.registry()->RegisterBooleanPref(
@@ -55,9 +68,12 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
                                            false);
   }
 
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
   ~StoreMetricsReporterTest() override = default;
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   MockPasswordManagerClient client_;
   TestingPrefServiceSimple prefs_;
 };
@@ -122,6 +138,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
   profile_store->Init(&prefs_);
   account_store->Init(&prefs_);
+  profile_store->GetPasswordReuseManager()->Init(&prefs_, profile_store.get());
+  account_store->GetPasswordReuseManager()->Init(&prefs_, account_store.get());
 
   EXPECT_CALL(client_, GetPasswordSyncState())
       .WillRepeatedly(Return(password_manager::SyncState::
@@ -230,6 +248,56 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   // Make sure the PasswordStore destruction parts on the background sequence
   // finish, otherwise we get memory leak reports.
   RunUntilIdle();
+}
+
+TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
+  prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
+                                      PrefRegistry::NO_REGISTRATION_FLAGS);
+  ASSERT_FALSE(prefs_.HasPrefPath(prefs::kSyncPasswordHash));
+
+  auto store = base::MakeRefCounted<MockPasswordStore>();
+  store->Init(&prefs_);
+  store->GetPasswordReuseManager()->Init(&prefs_, store.get());
+
+  const std::string username = "test@google.com";
+
+  store->GetPasswordReuseManager()->SaveGaiaPasswordHash(
+      username, u"password",
+      /*is_primary_account=*/true,
+      GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
+
+  SetSyncingPasswords(true);
+  FakeSigninAs(username);
+
+  EXPECT_CALL(client_, GetPasswordSyncState())
+      .WillRepeatedly(Return(password_manager::SyncState::
+                                 kAccountPasswordsActiveNormalEncryption));
+  EXPECT_CALL(client_, IsUnderAdvancedProtection())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, GetProfilePasswordStore())
+      .WillRepeatedly(Return(store.get()));
+  EXPECT_CALL(client_, GetAccountPasswordStore())
+      .WillRepeatedly(Return(nullptr));
+
+  EXPECT_CALL(*store, ReportMetrics(username, false, true));
+
+  base::HistogramTester histogram_tester;
+
+  StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
+                                &prefs_);
+
+  // Wait for the metrics to get reported. This is delayed by 30 seconds, and
+  // then involves queries to the stores, i.e. to background task runners.
+  FastForwardBy(base::TimeDelta::FromSeconds(30));
+  RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.IsSyncPasswordHashSaved",
+      metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser",
+      metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
+  store->ShutdownOnUIThread();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

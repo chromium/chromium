@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
@@ -195,6 +196,10 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
     LOG(WARNING) << "Could not initialize password store.";
     return nullptr;
   }
+
+  // TODO(crbug.com/715987): Delete this after ReuseManager is no longer a part
+  // of the PasswordStore.
+  ps->GetPasswordReuseManager()->Init(profile->GetPrefs(), ps.get());
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

@@ -54,6 +54,15 @@ absl::optional<PasswordHashData> GetPasswordFromPref(
   return hash_password_manager.RetrievePasswordHash(username, is_gaia_password);
 }
 
+class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
+ public:
+  MOCK_METHOD(void,
+              SubscribeToSigninEvents,
+              (PasswordReuseManager * manager),
+              (override));
+  MOCK_METHOD(void, UnsubscribeFromSigninEvents, (), (override));
+};
+
 class PasswordReuseManagerTest : public testing::Test {
  public:
   PasswordReuseManagerTest() = default;
@@ -73,7 +82,7 @@ class PasswordReuseManagerTest : public testing::Test {
 
     store_ = base::MakeRefCounted<TestPasswordStore>();
     store_->Init(&prefs_);
-    reuse_manager_.Init(&prefs(), store());
+    reuse_manager()->Init(&prefs(), store());
     RunUntilIdle();
   }
 
@@ -87,7 +96,9 @@ class PasswordReuseManagerTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   TestPasswordStore* store() { return store_.get(); }
-  PasswordReuseManager* reuse_manager() { return &reuse_manager_; }
+  PasswordReuseManager* reuse_manager() {
+    return store_->GetPasswordReuseManager();
+  }
   TestingPrefServiceSimple& prefs() { return prefs_; }
 
  protected:
@@ -95,7 +106,6 @@ class PasswordReuseManagerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   scoped_refptr<TestPasswordStore> store_;
-  PasswordReuseManager reuse_manager_;
 };
 
 TEST_F(PasswordReuseManagerTest, CheckPasswordReuse) {
@@ -356,6 +366,21 @@ TEST_F(PasswordReuseManagerTest, ReportMetrics) {
   histogram_tester.ExpectBucketCount(
       "PasswordManager.NonSyncPasswordHashChange",
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE, 1);
+}
+
+TEST_F(PasswordReuseManagerTest,
+       SubscriptionAndUnsubscriptionFromSignInEvents) {
+  std::unique_ptr<MockPasswordStoreSigninNotifier> notifier =
+      std::make_unique<MockPasswordStoreSigninNotifier>();
+  MockPasswordStoreSigninNotifier* notifier_weak = notifier.get();
+
+  // Check that |reuse_manager| is subscribed to sign-in events.
+  EXPECT_CALL(*notifier_weak, SubscribeToSigninEvents(reuse_manager()));
+  reuse_manager()->SetPasswordStoreSigninNotifier(std::move(notifier));
+  testing::Mock::VerifyAndClearExpectations(reuse_manager());
+
+  // Check that |reuse_manager| is unsubscribed from sign-in events on shutdown.
+  EXPECT_CALL(*notifier_weak, UnsubscribeFromSigninEvents());
 }
 
 }  // namespace

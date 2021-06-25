@@ -28,7 +28,7 @@ class PasswordStoreSigninNotifierImpl
       const PasswordStoreSigninNotifierImpl&) = delete;
 
   // PasswordStoreSigninNotifier implementations.
-  void SubscribeToSigninEvents(PasswordStore* store) override;
+  void SubscribeToSigninEvents(PasswordReuseManager* reuse_manager) override;
   void UnsubscribeFromSigninEvents() override;
 
   // IdentityManager::Observer implementations.
@@ -42,7 +42,7 @@ class PasswordStoreSigninNotifierImpl
 
   signin::IdentityManager* identity_manager_ = nullptr;
 
-  PasswordStore* store_ = nullptr;  // weak
+  PasswordReuseManager* reuse_manager_ = nullptr;  // weak
 };
 
 }  // namespace password_manager

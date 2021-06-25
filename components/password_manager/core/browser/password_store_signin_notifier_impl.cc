@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
@@ -19,8 +19,8 @@ PasswordStoreSigninNotifierImpl::PasswordStoreSigninNotifierImpl(
 PasswordStoreSigninNotifierImpl::~PasswordStoreSigninNotifierImpl() = default;
 
 void PasswordStoreSigninNotifierImpl::SubscribeToSigninEvents(
-    PasswordStore* store) {
-  store_ = store;
+    PasswordReuseManager* reuse_manager) {
+  reuse_manager_ = reuse_manager;
   identity_manager_->AddObserver(this);
 }
 
@@ -31,19 +31,19 @@ void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
 void PasswordStoreSigninNotifierImpl::NotifySignedOut(
     const std::string& username,
     bool primary_account) {
-  if (!store_)
+  if (!reuse_manager_)
     return;
 
   if (primary_account) {
     metrics_util::LogGaiaPasswordHashChange(
         metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
         /*is_sync_password=*/true);
-    store_->ClearAllGaiaPasswordHash();
+    reuse_manager_->ClearAllGaiaPasswordHash();
   } else {
     metrics_util::LogGaiaPasswordHashChange(
         metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
         /*is_sync_password=*/false);
-    store_->ClearGaiaPasswordHash(username);
+    reuse_manager_->ClearGaiaPasswordHash(username);
   }
 }
 

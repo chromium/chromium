@@ -7,9 +7,10 @@
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordReuseManager;
 
 // Abstract class for notifying PasswordStore about sign-in events.
+// TODO(crbug.bom/715987): Rename into PasswordReuseManagerSigninNotifier.
 class PasswordStoreSigninNotifier {
  public:
   PasswordStoreSigninNotifier() = default;
@@ -19,7 +20,7 @@ class PasswordStoreSigninNotifier {
   PasswordStoreSigninNotifier& operator=(const PasswordStoreSigninNotifier&) =
       delete;
 
-  virtual void SubscribeToSigninEvents(PasswordStore* store) = 0;
+  virtual void SubscribeToSigninEvents(PasswordReuseManager* reuse_manager) = 0;
   virtual void UnsubscribeFromSigninEvents() = 0;
 };
 

@@ -13,12 +13,23 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
+#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace password_manager {
+
+namespace {
+
+bool IsPasswordReuseDetectionEnabled() {
+  return base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled);
+}
+
+}  // namespace
 
 // This template allows creating methods with signature conforming to
 // TestingFactory of the appropriate platform instance of KeyedServiceFactory.
@@ -29,6 +40,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(new Store);
   if (!store->Init(nullptr))
     return nullptr;
+  if (IsPasswordReuseDetectionEnabled()) {
+    store->GetPasswordReuseManager()->Init(nullptr, store.get());
+  }
   return store;
 }
 
@@ -44,6 +58,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
       new Store(std::forward<Args>(args)...));
   if (!store->Init(nullptr))
     return nullptr;
+  if (IsPasswordReuseDetectionEnabled()) {
+    store->GetPasswordReuseManager()->Init(nullptr, store.get());
+  }
   return store;
 }
 
