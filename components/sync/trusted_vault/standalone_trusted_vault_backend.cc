@@ -24,6 +24,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "components/sync/trusted_vault/trusted_vault_switches.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -563,12 +564,15 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys() {
 
   const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(*ongoing_fetch_keys_gaia_id_);
-
   std::vector<std::vector<uint8_t>> vault_keys;
   if (per_user_vault) {
     for (const sync_pb::LocalTrustedVaultKey& key :
          per_user_vault->vault_key()) {
-      vault_keys.emplace_back(ProtoStringToBytes(key.key_material()));
+      const std::vector<uint8_t> key_bytes =
+          ProtoStringToBytes(key.key_material());
+      if (key_bytes != GetConstantTrustedVaultKey()) {
+        vault_keys.emplace_back(key_bytes);
+      }
     }
   }
 

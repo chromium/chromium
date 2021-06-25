@@ -21,6 +21,7 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "components/sync/trusted_vault/trusted_vault_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -261,6 +262,32 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const std::vector<uint8_t> kKey = {1, 2, 3, 4};
+
+  sync_pb::LocalTrustedVault initial_data;
+  sync_pb::LocalTrustedVaultPerUser* user_data = initial_data.add_user();
+  user_data->set_gaia_id(account_info.gaia);
+  user_data->add_vault_key()->set_key_material(
+      GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
+  user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
+
+  std::string encrypted_data;
+  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
+                                     &encrypted_data));
+  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
+                                encrypted_data.size()));
+
+  backend()->ReadDataFromDisk();
+
+  // Keys should be fetched immediately, constant key must be filtered out.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
