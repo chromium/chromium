@@ -42,7 +42,9 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
@@ -257,7 +259,10 @@ CompositorElementId HitTestResult::GetScrollableContainer() const {
           cur_box->UniqueId(), CompositorElementIdNamespace::kScroll);
     }
 
-    cur_box = cur_box->ContainingBlock();
+    if (IsA<LayoutView>(cur_box))
+      cur_box = cur_box->GetFrame()->OwnerLayoutObject();
+    else
+      cur_box = cur_box->ContainingBlock();
   }
 
   return InnerNode()
