@@ -5,6 +5,7 @@
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
@@ -82,11 +83,8 @@ struct FunctorCollectIdentities : Functor<FunctorCollectIdentities> {
 }  // anonymous namespace
 
 namespace {
-// Supported capabilities.
-NSString* kCanOfferExtendedChromeSyncPromos =
-    @"CanOfferExtendedChromeSyncPromos";
-
 ChromeIdentityCapabilityResult CapabilityResultFromNSNumber(NSNumber* result) {
+  DCHECK(result);
   int resultInt = [result intValue];
   DCHECK_GE(resultInt,
             static_cast<int>(ChromeIdentityCapabilityResult::kFalse));
@@ -212,14 +210,16 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
 void ChromeIdentityService::CanOfferExtendedSyncPromos(
     ChromeIdentity* identity,
     CapabilitiesCallback completion) {
+  NSString* canOfferExtendedChromeSyncPromos = [NSString
+      stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
   FetchCapabilities(
-      @[ kCanOfferExtendedChromeSyncPromos ], identity,
+      @[ canOfferExtendedChromeSyncPromos ], identity,
       ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
         if (!completion) {
           return;
         }
         completion(CapabilityResultFromNSNumber(
-            [capabilities objectForKey:kCanOfferExtendedChromeSyncPromos]));
+            [capabilities objectForKey:canOfferExtendedChromeSyncPromos]));
       });
 }
 

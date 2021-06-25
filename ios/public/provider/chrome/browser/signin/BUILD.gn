@@ -22,6 +22,7 @@ source_set("signin") {
   ]
   deps = [
     "//base",
+    "//components/signin/internal/identity_manager",
     "//components/sync/driver",
     "//google_apis",
   ]
