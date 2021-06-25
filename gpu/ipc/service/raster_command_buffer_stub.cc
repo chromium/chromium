@@ -101,17 +101,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
     return result;
   }
 
-  if (!shared_context_state->IsGLInitialized()) {
-    if (!shared_context_state->MakeCurrent(nullptr, true /* needs_gl */) ||
-        !shared_context_state->InitializeGL(
-            manager->gpu_preferences(),
-            base::MakeRefCounted<gles2::FeatureInfo>(
-                manager->gpu_driver_bug_workarounds(),
-                manager->gpu_feature_info()))) {
-      LOG(ERROR) << "Failed to Initialize GL for SharedContextState";
-      return ContextResult::kFatalFailure;
-    }
-  }
+  DCHECK(shared_context_state->IsGLInitialized());
 
   surface_ = shared_context_state->surface();
   share_group_ = shared_context_state->share_group();

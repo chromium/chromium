@@ -829,6 +829,17 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       metal_context_provider_, dawn_context_provider_,
       peak_memory_monitor_.GetWeakPtr());
 
+  // Initialize GL context, so Vulkan and GL interop can work properly.
+  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
+    gpu_driver_bug_workarounds(), gpu_feature_info());
+  if (!shared_context_state->InitializeGL(gpu_preferences_,
+                                          feature_info.get())) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize GL for "
+        " SharedContextState";
+    *result = ContextResult::kFatalFailure;
+    return nullptr;
+  }
+
   // OOP-R needs GrContext for raster tiles.
   bool need_gr_context =
       gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
@@ -842,17 +853,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   need_gr_context |= GpuMemoryAblationExperiment::ExperimentSupported();
 
   if (need_gr_context) {
-    if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGL) {
-      auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-          gpu_driver_bug_workarounds(), gpu_feature_info());
-      if (!shared_context_state->InitializeGL(gpu_preferences_,
-                                              feature_info.get())) {
-        LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize GL "
-                      "for SharedContextState";
-        *result = ContextResult::kFatalFailure;
-        return nullptr;
-      }
-    }
     if (!shared_context_state->InitializeGrContext(
             gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
             &activity_flags_, watchdog_)) {
