@@ -735,7 +735,7 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   if (context() != destination->context()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        "cannot connect to a destination "
+        "cannot connect to an AudioNode "
         "belonging to a different audio context.");
     return nullptr;
   }
@@ -801,7 +801,7 @@ void AudioNode::connect(AudioParam* param,
 
   if (context() != param->Context()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
+        DOMExceptionCode::kInvalidAccessError,
         "cannot connect to an AudioParam "
         "belonging to a different audio context.");
     return;
@@ -888,6 +888,15 @@ void AudioNode::disconnect(unsigned output_index,
 void AudioNode::disconnect(AudioNode* destination,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  if (context() != destination->context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "cannot disconnect from an AudioNode "
+        "belonging to a different audio context.");
+    return;
+  }
+
   BaseAudioContext::GraphAutoLocker locker(context());
 
   unsigned number_of_disconnections = 0;
@@ -921,6 +930,15 @@ void AudioNode::disconnect(AudioNode* destination,
                            unsigned output_index,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  if (context() != destination->context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "cannot disconnect from an AudioNode "
+        "belonging to a different audio context.");
+    return;
+  }
+
   BaseAudioContext::GraphAutoLocker locker(context());
 
   if (output_index >= numberOfOutputs()) {
@@ -962,6 +980,15 @@ void AudioNode::disconnect(AudioNode* destination,
                            unsigned input_index,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  if (context() != destination->context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "cannot disconnect from an AudioNode "
+        "belonging to a different audio context.");
+    return;
+  }
+
   BaseAudioContext::GraphAutoLocker locker(context());
 
   if (output_index >= numberOfOutputs()) {
@@ -1004,6 +1031,15 @@ void AudioNode::disconnect(AudioNode* destination,
 void AudioNode::disconnect(AudioParam* destination_param,
                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
+  if (context() != destination_param->Context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "cannot disconnect from an AudioParam "
+        "belonging to a different audio context.");
+    return;
+  }
+
   BaseAudioContext::GraphAutoLocker locker(context());
 
   // The number of disconnection made.
