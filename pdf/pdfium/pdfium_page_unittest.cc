@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -20,6 +19,7 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/test/test_client.h"
+#include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,13 +86,7 @@ base::FilePath GetThumbnailTestData(const std::string& expectation_file_prefix,
   std::string file_dir = base::StringPrintf("%.1fx", device_pixel_ratio);
   std::string file_name = base::StringPrintf(
       "%s_expected.pdf.%zu.png", expectation_file_prefix.c_str(), page_index);
-  base::FilePath root_path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
-    return base::FilePath();
-  return root_path.Append(FILE_PATH_LITERAL("pdf"))
-      .Append(FILE_PATH_LITERAL("test"))
-      .Append(FILE_PATH_LITERAL("data"))
-      .Append(FILE_PATH_LITERAL("thumbnail"))
+  return base::FilePath(FILE_PATH_LITERAL("thumbnail"))
       .AppendASCII(file_dir)
       .AppendASCII(file_name);
 }
@@ -743,8 +737,10 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
     base::FilePath expectation_png_file_path = GetThumbnailTestData(
         expectation_file_prefix, page_index, device_pixel_ratio);
 
-    cc::MatchesPNGFile(thumbnail.bitmap(), expectation_png_file_path,
-                       cc::ExactPixelComparator(/*discard_alpha=*/false));
+    EXPECT_TRUE(cc::MatchesPNGFile(
+        thumbnail.bitmap(), GetTestDataFilePath(expectation_png_file_path),
+        cc::ExactPixelComparator(/*discard_alpha=*/false)))
+        << "Reference: " << expectation_png_file_path;
   }
 };
 
