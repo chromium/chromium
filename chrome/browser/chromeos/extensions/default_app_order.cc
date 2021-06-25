@@ -86,6 +86,8 @@ const char* const kDefaultAppOrder[] = {
     arc::kPlayMusicAppId,
     extension_misc::kGooglePlayMusicAppId,
 
+    arc::kPlayGamesAppId,
+
     arc::kPlayBooksAppId,
     extension_misc::kGooglePlayBooksAppId,
     web_app::kPlayBooksAppId,

@@ -97,7 +97,7 @@ constexpr char kAndroidContactsAppId[] = "kipfkokfekalckplgaikemhghlbkgpfl";
 
 constexpr char const* kAppIdsHiddenInLauncher[] = {
     kAndroidClockAppId, kSettingsAppId, kAndroidFilesAppId,
-    kAndroidContactsAppId, kPlayGamesAppId};
+    kAndroidContactsAppId};
 
 // Returns true if |event_flags| came from a mouse or touch event.
 bool IsMouseOrTouchEventFromFlags(int event_flags) {
