@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
+
 struct WebApplicationInfo;
 class Browser;
 class BrowserNonClientFrameView;
@@ -37,10 +39,10 @@ class WebAppFrameToolbarTestHelper {
   }
 
  private:
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  BrowserNonClientFrameView* frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
+  CheckedPtr<BrowserView> browser_view_ = nullptr;
+  CheckedPtr<BrowserNonClientFrameView> frame_view_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

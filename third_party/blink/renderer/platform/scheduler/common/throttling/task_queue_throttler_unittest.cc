@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/bind.h"
@@ -162,8 +163,8 @@ class TaskQueueThrottlerTest : public testing::Test {
   scoped_refptr<MainThreadTaskQueue> timer_queue_;
 
   scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_;
-  TaskQueueThrottler* task_queue_throttler_ = nullptr;
-  WakeUpBudgetPool* wake_up_budget_pool_ = nullptr;
+  CheckedPtr<TaskQueueThrottler> task_queue_throttler_ = nullptr;
+  CheckedPtr<WakeUpBudgetPool> wake_up_budget_pool_ = nullptr;
 };
 
 // Advances mock clock every time we call NowTicks() from the scheduler.

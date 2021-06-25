@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
 
@@ -152,7 +153,7 @@ class UnfilteredEventListeners final : public APIEventListeners {
   // The listener tracker to notify of added or removed listeners. This may be
   // null if this is a set of listeners for an unmanaged event. If
   // non-null, required to outlive this object.
-  ListenerTracker* listener_tracker_ = nullptr;
+  CheckedPtr<ListenerTracker> listener_tracker_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UnfilteredEventListeners);
 };
@@ -218,7 +219,7 @@ class FilteredEventListeners final : public APIEventListeners {
 
   // The listener tracker to notify of added or removed listeners. Required to
   // outlive this object. Must be non-null.
-  ListenerTracker* listener_tracker_ = nullptr;
+  CheckedPtr<ListenerTracker> listener_tracker_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FilteredEventListeners);
 };

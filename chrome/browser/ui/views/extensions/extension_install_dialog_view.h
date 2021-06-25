@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -89,7 +90,7 @@ class ExtensionInstallDialogView
   // Updates the histogram that holds installation accepted/aborted data.
   void UpdateInstallResultHistogram(bool accepted) const;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
@@ -100,7 +101,7 @@ class ExtensionInstallDialogView
 
   // The scroll view containing all the details for the dialog (including all
   // collapsible/expandable sections).
-  views::ScrollView* scroll_view_;
+  CheckedPtr<views::ScrollView> scroll_view_;
 
   // Used to record time between dialog creation and acceptance, cancellation,
   // or dismissal.
@@ -113,7 +114,7 @@ class ExtensionInstallDialogView
   bool install_button_enabled_;
 
   // Checkbox used to indicate if permissions should be withheld on install.
-  views::Checkbox* withhold_permissions_checkbox_;
+  CheckedPtr<views::Checkbox> withhold_permissions_checkbox_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

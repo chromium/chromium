@@ -450,7 +450,7 @@ void GamepadProvider::SendChangeEvents(
   }
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GamepadChangeClient::OnGamepadChange,
-                                base::Unretained(gamepad_change_client_),
+                                base::Unretained(gamepad_change_client_.get()),
                                 std::move(gamepad_changes)));
 }
 
@@ -489,8 +489,8 @@ void GamepadProvider::OnGamepadConnectionChange(bool connected,
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GamepadChangeClient::OnGamepadConnectionChange,
-                       base::Unretained(gamepad_change_client_), connected,
-                       index, pad));
+                       base::Unretained(gamepad_change_client_.get()),
+                       connected, index, pad));
   }
 }
 

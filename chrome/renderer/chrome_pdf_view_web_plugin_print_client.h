@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
 #define CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ class ChromePdfViewWebPluginPrintClient
   void Print(const blink::WebElement& element) override;
 
  private:
-  content::RenderFrame* const render_frame_;
+  const CheckedPtr<content::RenderFrame> render_frame_;
 };
 
 #endif  // CHROME_RENDERER_CHROME_PDF_VIEW_WEB_PLUGIN_PRINT_CLIENT_H_

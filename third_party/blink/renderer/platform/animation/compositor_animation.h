@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
@@ -87,7 +88,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
       absl::optional<base::TimeDelta> local_time) override;
 
   scoped_refptr<cc::Animation> animation_;
-  CompositorAnimationDelegate* delegate_;
+  CheckedPtr<CompositorAnimationDelegate> delegate_;
 };
 
 }  // namespace blink

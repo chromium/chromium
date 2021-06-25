@@ -917,7 +917,8 @@ static void UpdateNonFastScrollableRegion(
   // pre-CompositeAfterPaint does not paint scroll hit test data for
   // composited scrollers.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (const auto* scroll_translation = hit_test_data.scroll_translation) {
+    if (const auto* scroll_translation =
+            hit_test_data.scroll_translation.get()) {
       const auto& scroll_node = *scroll_translation->ScrollNode();
       auto scroll_element_id = scroll_node.GetCompositorElementId();
       if (layer.element_id() == scroll_element_id)

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/shared_impl/media_stream_buffer_manager.h"
@@ -64,7 +65,7 @@ class PepperMediaStreamTrackHostBase
   // Message handlers:
   int32_t OnHostMsgClose(ppapi::host::HostMessageContext* context);
 
-  RendererPpapiHost* host_;
+  CheckedPtr<RendererPpapiHost> host_;
 
   ppapi::MediaStreamBufferManager buffer_manager_;
 

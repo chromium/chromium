@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -29,7 +30,7 @@ class AutoSignal {
   ~AutoSignal() { event_->Signal(); }
 
  private:
-  base::WaitableEvent* event_;
+  CheckedPtr<base::WaitableEvent> event_;
 };
 }  // namespace
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_BUBBLE_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Profile;
@@ -42,13 +43,13 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   void Hide();
 
   // The button that owns |this|.
-  SendTabToSelfToolbarButtonView* toolbar_button_;
+  CheckedPtr<SendTabToSelfToolbarButtonView> toolbar_button_;
 
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
   bool opened_ = false;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   std::string title_;
   GURL url_;

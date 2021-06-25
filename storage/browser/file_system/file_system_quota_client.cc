@@ -111,7 +111,8 @@ void FileSystemQuotaClient::GetOriginUsage(
       // It is safe to pass Unretained(quota_util) since context owns it.
       base::BindOnce(&FileSystemQuotaUtil::GetOriginUsageOnFileTaskRunner,
                      base::Unretained(quota_util),
-                     base::RetainedRef(file_system_context_), origin, type),
+                     base::RetainedRef(file_system_context_.get()), origin,
+                     type),
       std::move(callback));
 }
 
@@ -124,7 +125,8 @@ void FileSystemQuotaClient::GetOriginsForType(
   file_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetOriginsForTypeOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_type),
+                     base::RetainedRef(file_system_context_.get()),
+                     storage_type),
       std::move(callback));
 }
 
@@ -138,8 +140,8 @@ void FileSystemQuotaClient::GetOriginsForHost(
   file_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetOriginsForHostOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_type,
-                     host),
+                     base::RetainedRef(file_system_context_.get()),
+                     storage_type, host),
       std::move(callback));
 }
 
@@ -156,7 +158,8 @@ void FileSystemQuotaClient::DeleteOriginData(
   file_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DeleteOriginOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), origin, fs_type),
+                     base::RetainedRef(file_system_context_.get()), origin,
+                     fs_type),
       std::move(callback));
 }
 
@@ -171,7 +174,7 @@ void FileSystemQuotaClient::PerformStorageCleanup(
   file_task_runner()->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&PerformStorageCleanupOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), fs_type),
+                     base::RetainedRef(file_system_context_.get()), fs_type),
       std::move(callback));
 }
 

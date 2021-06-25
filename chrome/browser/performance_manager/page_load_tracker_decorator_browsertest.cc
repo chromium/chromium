@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -97,7 +98,7 @@ class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
   std::vector<PageNode::LoadingState> observed_loading_states_;
 
   // Set when registering |this| as a PageNodeObserver. Used to unregister.
-  GraphImpl* graph_ = nullptr;
+  CheckedPtr<GraphImpl> graph_ = nullptr;
 };
 
 }  // namespace

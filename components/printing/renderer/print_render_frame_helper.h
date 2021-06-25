@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -80,8 +81,8 @@ class FrameReference {
   blink::WebView* view();
 
  private:
-  blink::WebView* view_;
-  blink::WebLocalFrame* frame_;
+  CheckedPtr<blink::WebView> view_;
+  CheckedPtr<blink::WebLocalFrame> frame_;
 };
 
 // PrintRenderFrameHelper handles most of the printing grunt work for

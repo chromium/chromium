@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/simple_task_executor.h"
 #include "base/threading/thread_checker.h"
@@ -132,14 +133,15 @@ class PLATFORM_EXPORT SchedulerHelper
   }
 
   THREAD_CHECKER(thread_checker_);
-  base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
+  CheckedPtr<base::sequence_manager::SequenceManager>
+      sequence_manager_;  // NOT OWNED
 
  private:
   friend class SchedulerHelperTest;
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
-  Observer* observer_;  // NOT OWNED
+  CheckedPtr<Observer> observer_;  // NOT OWNED
 
   UkmTaskSampler ukm_task_sampler_;
   absl::optional<base::SimpleTaskExecutor> simple_task_executor_;

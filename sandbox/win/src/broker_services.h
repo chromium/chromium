@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -65,7 +66,7 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
-  ThreadPool* thread_pool_ = nullptr;
+  CheckedPtr<ThreadPool> thread_pool_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BrokerServicesBase);
 };

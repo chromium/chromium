@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -81,7 +82,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
-  MockHatsService* mock_hats_service_;
+  CheckedPtr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(TrustSafetySentimentServiceTest, Eligibility_NtpOpens) {

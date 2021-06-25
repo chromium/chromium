@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -45,7 +46,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                             std::u16string* error) const override;
 
  private:
-  const ExtensionManagement* settings_;
+  CheckedPtr<const ExtensionManagement> settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
                        std::u16string* error) const;
 };

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -196,8 +197,8 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
   void EndTest() { run_loop_->Quit(); }
 
  private:
-  FakeLayerTreeViewDelegate* delegate_;
-  base::RunLoop* run_loop_ = nullptr;
+  CheckedPtr<FakeLayerTreeViewDelegate> delegate_;
+  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
   int expected_successes_ = 0;
   int expected_requests_ = 0;
   FailureMode failure_mode_ = NO_FAILURE;
@@ -316,7 +317,7 @@ class VisibilityTestLayerTreeView : public LayerTreeView {
 
  private:
   int num_requests_sent_ = 0;
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::RunLoop> run_loop_;
 };
 
 TEST(LayerTreeViewTest, VisibilityTest) {

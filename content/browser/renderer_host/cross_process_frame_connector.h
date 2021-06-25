@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/input/touch_action.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -359,7 +360,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       bool include_visual_properties);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
-  RenderWidgetHostViewChildFrame* view_ = nullptr;
+  CheckedPtr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // This is here rather than in the implementation class so that
   // intersection_state() can return a reference.
@@ -389,7 +390,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The RenderFrameProxyHost that routes messages to the parent frame's
   // renderer process.
   // Can be nullptr in tests.
-  RenderFrameProxyHost* frame_proxy_in_parent_renderer_;
+  CheckedPtr<RenderFrameProxyHost> frame_proxy_in_parent_renderer_;
 
   bool is_inert_ = false;
   cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;

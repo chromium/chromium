@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -313,7 +314,7 @@ class ScopedStoreTransaction {
   }
 
  private:
-  PasswordStoreSync* store_;
+  CheckedPtr<PasswordStoreSync> store_;
   bool committed_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedStoreTransaction);

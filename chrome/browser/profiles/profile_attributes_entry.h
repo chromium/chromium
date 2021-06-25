@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -325,8 +326,8 @@ class ProfileAttributesEntry {
   // notifications.
   void SetIsOmittedInternal(bool is_omitted);
 
-  ProfileInfoCache* profile_info_cache_ = nullptr;
-  PrefService* prefs_ = nullptr;
+  CheckedPtr<ProfileInfoCache> profile_info_cache_ = nullptr;
+  CheckedPtr<PrefService> prefs_ = nullptr;
   base::FilePath profile_path_;
   std::string storage_key_;
   std::u16string last_name_to_display_;

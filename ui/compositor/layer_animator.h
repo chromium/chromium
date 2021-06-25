@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -392,7 +393,7 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   AnimationQueue animation_queue_;
 
   // The target of all layer animations.
-  LayerAnimationDelegate* delegate_;
+  CheckedPtr<LayerAnimationDelegate> delegate_;
 
   // Plays CC animations.
   scoped_refptr<cc::Animation> animation_;

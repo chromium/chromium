@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -87,7 +88,7 @@ class EnterpriseProfileWelcomeHandler
                           ProfileAttributesStorage::Observer>
       observed_profile_{this};
 
-  Browser* browser_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const std::string domain_name_;
   SkColor profile_color_;

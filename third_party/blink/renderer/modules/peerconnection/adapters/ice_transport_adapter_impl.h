@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
@@ -61,7 +62,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
       absl::optional<rtc::NetworkRoute> new_network_route);
   void OnRoleConflict(cricket::IceTransportInternal* transport);
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
   std::unique_ptr<cricket::PortAllocator> port_allocator_;
   std::unique_ptr<webrtc::AsyncResolverFactory> async_resolver_factory_;
   rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;

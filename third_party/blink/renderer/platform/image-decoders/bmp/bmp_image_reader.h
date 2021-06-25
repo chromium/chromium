@@ -33,6 +33,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -313,7 +314,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   void ColorCorrectCurrentRow();
 
   // The decoder that owns us.
-  ImageDecoder* parent_;
+  CheckedPtr<ImageDecoder> parent_;
 
   // The destination for the pixel data.
   ImageFrame* buffer_ = nullptr;

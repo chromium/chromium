@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -343,7 +344,7 @@ class CapturingProxyResolverFactory : public ProxyResolverFactory {
   }
 
  private:
-  ProxyResolver* resolver_;
+  CheckedPtr<ProxyResolver> resolver_;
 };
 
 std::unique_ptr<HttpNetworkSession> CreateSession(
@@ -16237,7 +16238,7 @@ class UrlRecordingHttpAuthHandlerMock : public HttpAuthHandlerMock {
   }
 
  private:
-  GURL* url_;
+  CheckedPtr<GURL> url_;
 };
 
 // Test that if we cancel the transaction as the connection is completing, that
@@ -19998,7 +19999,7 @@ class HttpNetworkTransactionReportingTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestReportingContext* test_reporting_context_;
+  CheckedPtr<TestReportingContext> test_reporting_context_;
 };
 
 TEST_P(HttpNetworkTransactionReportingTest,
@@ -20151,7 +20152,8 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
   int reporting_upload_depth_ = 0;
 
  private:
-  TestNetworkErrorLoggingService* test_network_error_logging_service_;
+  CheckedPtr<TestNetworkErrorLoggingService>
+      test_network_error_logging_service_;
 };
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,

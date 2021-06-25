@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 #define COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 
+#include "base/memory/checked_ptr.h"
+
 class PrefService;
 
 namespace feed {
@@ -41,7 +43,7 @@ class NoticeCardTracker {
   void MaybeUpdateNoticeCardViewsCount(int index);
   void MaybeUpdateNoticeCardClicksCount(int index);
 
-  PrefService* profile_prefs_;
+  CheckedPtr<PrefService> profile_prefs_;
 
   // The number of views of the notice card.
   int views_count_;

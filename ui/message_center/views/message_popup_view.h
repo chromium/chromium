@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/widget/widget.h"
@@ -80,10 +81,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   bool IsWidgetValid() const;
 
   // Owned by views hierarchy.
-  MessageView* message_view_;
+  CheckedPtr<MessageView> message_view_;
 
   // Unowned.
-  MessagePopupCollection* const popup_collection_;
+  const CheckedPtr<MessagePopupCollection> popup_collection_;
 
   const bool a11y_feedback_on_init_;
   bool is_hovered_ = false;

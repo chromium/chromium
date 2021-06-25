@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -87,7 +88,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void RecordFormFactorMetric();
 
   // Owns this class.
-  ::sharesheet::SharesheetServiceDelegate* delegate_;
+  CheckedPtr<::sharesheet::SharesheetServiceDelegate> delegate_;
   std::u16string active_target_;
   apps::mojom::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;
@@ -102,20 +103,20 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   size_t keyboard_highlighted_target_ = 0;
 
-  views::View* main_view_ = nullptr;
-  SharesheetHeaderView* header_view_ = nullptr;
-  views::View* footer_view_ = nullptr;
-  views::View* default_view_ = nullptr;
-  views::View* expanded_view_ = nullptr;
-  views::View* share_action_view_ = nullptr;
+  CheckedPtr<views::View> main_view_ = nullptr;
+  CheckedPtr<SharesheetHeaderView> header_view_ = nullptr;
+  CheckedPtr<views::View> footer_view_ = nullptr;
+  CheckedPtr<views::View> default_view_ = nullptr;
+  CheckedPtr<views::View> expanded_view_ = nullptr;
+  CheckedPtr<views::View> share_action_view_ = nullptr;
   // Separator that appears between the |header_view_| and the |body_view|.
-  views::Separator* header_body_separator_ = nullptr;
+  CheckedPtr<views::Separator> header_body_separator_ = nullptr;
   // Separator that appears between the |body_view| and the |footer_view_|.
-  views::Separator* body_footer_separator_ = nullptr;
+  CheckedPtr<views::Separator> body_footer_separator_ = nullptr;
   // Separator between the default_view and the expanded_view.
-  views::Separator* expanded_view_separator_ = nullptr;
-  views::View* parent_view_ = nullptr;
-  SharesheetExpandButton* expand_button_ = nullptr;
+  CheckedPtr<views::Separator> expanded_view_separator_ = nullptr;
+  CheckedPtr<views::View> parent_view_ = nullptr;
+  CheckedPtr<SharesheetExpandButton> expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };

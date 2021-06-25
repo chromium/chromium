@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8.h"
 
@@ -48,7 +49,7 @@ class GuestViewRequest {
   v8::Isolate* isolate() const { return isolate_; }
 
  private:
-  GuestViewContainer* const container_;
+  const CheckedPtr<GuestViewContainer> container_;
   v8::Global<v8::Function> callback_;
   v8::Isolate* const isolate_;
 
