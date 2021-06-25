@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin.ui;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management.
@@ -134,14 +137,19 @@ public class ConfirmSyncDataStateMachineDelegate {
 
     private static final String PROGRESS_DIALOG_TAG = "ConfirmSyncTimeoutDialog";
     private static final String TIMEOUT_DIALOG_TAG = "ConfirmSyncProgressDialog";
-    private static final String CONFIRM_IMPORT_SYNC_DATA_DIALOG_TAG = "ConfirmImportSyncDataDialog";
     private static final String CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG =
             "ConfirmManagedSyncDataDialog";
 
     private final FragmentManager mFragmentManager;
+    private final ModalDialogManager mModalDialogManager;
+    private final Context mContext;
+    private ConfirmImportSyncDataDialogCoordinator mConfirmImportSyncDataDialogCoordinator;
 
-    public ConfirmSyncDataStateMachineDelegate(FragmentManager fragmentManager) {
+    public ConfirmSyncDataStateMachineDelegate(Context context, FragmentManager fragmentManager,
+            ModalDialogManager modalDialogManager) {
+        mContext = context;
         mFragmentManager = fragmentManager;
+        mModalDialogManager = modalDialogManager;
     }
 
     /**
@@ -167,19 +175,19 @@ public class ConfirmSyncDataStateMachineDelegate {
     /**
      * Shows ConfirmImportSyncDataDialog that gives the user the option to
      * merge data between the account they are attempting to sign in to and the
-     * account they were previously signed into, or to keep the data separate.
+     * account they are currently signed into, or to keep the data separate.
+     * This dialog is shown before signing out the current sync account.
      *
      * @param listener        Callback to be called if the user completes the dialog (as opposed to
      *                        hitting cancel).
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
      */
-    void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialog.Listener listener,
+    void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialogCoordinator.Listener listener,
             String oldAccountName, String newAccountName) {
         dismissAllDialogs();
-        ConfirmImportSyncDataDialog dialog =
-                ConfirmImportSyncDataDialog.create(listener, oldAccountName, newAccountName);
-        showAllowingStateLoss(dialog, CONFIRM_IMPORT_SYNC_DATA_DIALOG_TAG);
+        mConfirmImportSyncDataDialogCoordinator = new ConfirmImportSyncDataDialogCoordinator(
+                mContext, mModalDialogManager, listener, oldAccountName, newAccountName);
     }
 
     /**
@@ -207,7 +215,10 @@ public class ConfirmSyncDataStateMachineDelegate {
     void dismissAllDialogs() {
         dismissDialog(PROGRESS_DIALOG_TAG);
         dismissDialog(TIMEOUT_DIALOG_TAG);
-        dismissDialog(CONFIRM_IMPORT_SYNC_DATA_DIALOG_TAG);
+        if (mConfirmImportSyncDataDialogCoordinator != null) {
+            mConfirmImportSyncDataDialogCoordinator.dismissDialog();
+            mConfirmImportSyncDataDialogCoordinator = null;
+        }
         dismissDialog(CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG);
     }
 

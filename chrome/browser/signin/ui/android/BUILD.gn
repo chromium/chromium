@@ -37,7 +37,7 @@ android_library("java") {
     "//ui/android:ui_utils_java",
   ]
   sources = [
-    "java/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialog.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialog.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachine.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegate.java",
@@ -134,6 +134,7 @@ android_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/prefs/android:java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
@@ -144,6 +145,7 @@ android_library("junit") {
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",

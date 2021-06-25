@@ -26,6 +26,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * Tests for {@link ConfirmManagedSyncDataDialog}.
@@ -47,8 +50,9 @@ public class ConfirmManagedSyncDataDialogTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(FragmentActivity.class);
-        mStateMachineDelegate =
-                new ConfirmSyncDataStateMachineDelegate(mActivity.getSupportFragmentManager());
+        mStateMachineDelegate = new ConfirmSyncDataStateMachineDelegate(mActivity,
+                mActivity.getSupportFragmentManager(),
+                new ModalDialogManager(new AppModalPresenter(mActivity), ModalDialogType.APP));
     }
 
     @Test

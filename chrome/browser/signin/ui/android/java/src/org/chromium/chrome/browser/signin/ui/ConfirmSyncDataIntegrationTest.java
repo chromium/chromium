@@ -40,7 +40,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
@@ -85,8 +88,9 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        mDelegate =
-                new ConfirmSyncDataStateMachineDelegate(getActivity().getSupportFragmentManager());
+        mDelegate = new ConfirmSyncDataStateMachineDelegate(getActivity(),
+                getActivity().getSupportFragmentManager(),
+                new ModalDialogManager(new AppModalPresenter(getActivity()), ModalDialogType.APP));
     }
 
     @Test

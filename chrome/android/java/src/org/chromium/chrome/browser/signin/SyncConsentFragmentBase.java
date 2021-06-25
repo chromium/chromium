@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.signin.ui.SigninView;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -50,7 +49,6 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -98,16 +96,16 @@ public abstract class SyncConsentFragmentBase
     private boolean mAccountSelectionPending;
     private @Nullable String mRequestedAccountName;
 
+    private final ProfileDataCache.Observer mProfileDataCacheObserver;
+    private final ModalDialogManager mModalDialogManager;
     private String mSelectedAccountName;
     private boolean mIsDefaultAccountSelected;
-    private final ProfileDataCache.Observer mProfileDataCacheObserver;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
     private boolean mIsSigninInProgress;
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
     protected @SigninAccessPoint int mSigninAccessPoint;
-    private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
     private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
@@ -165,10 +163,11 @@ public abstract class SyncConsentFragmentBase
         return result;
     }
 
-    protected SyncConsentFragmentBase() {
+    protected SyncConsentFragmentBase(ModalDialogManager modalDialogManager) {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mProfileDataCacheObserver = this::updateProfileData;
         mCanUseGooglePlayServices = true;
+        mModalDialogManager = modalDialogManager;
     }
 
     /** The sign-in was refused. */
@@ -196,9 +195,6 @@ public abstract class SyncConsentFragmentBase
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
-
-        mModalDialogManager = new ModalDialogManager(
-                new AppModalPresenter(requireContext()), ModalDialogType.APP);
 
         // Don't have a selected account now, onResume will trigger the selection.
         mAccountSelectionPending = true;
@@ -430,7 +426,8 @@ public abstract class SyncConsentFragmentBase
 
     private void runStateMachineAndSignin(boolean settingsClicked) {
         mConfirmSyncDataStateMachine = new ConfirmSyncDataStateMachine(
-                new ConfirmSyncDataStateMachineDelegate(getChildFragmentManager()),
+                new ConfirmSyncDataStateMachineDelegate(
+                        requireContext(), getChildFragmentManager(), mModalDialogManager),
                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                         .getString(Pref.GOOGLE_SERVICES_LAST_USERNAME),
                 mSelectedAccountName, new ConfirmSyncDataStateMachine.Listener() {

@@ -14,6 +14,9 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * Allows the user to pick an account, sign in and enable sync. Started from Settings and various
@@ -36,10 +39,15 @@ public class SyncConsentActivity extends ChromeBaseAppCompatActivity {
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
-            fragment = new SyncConsentFragment();
+            fragment = new SyncConsentFragment(getModalDialogManagerSupplier().get());
             fragment.setArguments(fragmentArgs);
             fragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
+    }
+
+    @Override
+    protected ModalDialogManager createModalDialogManager() {
+        return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
     }
 
     /**

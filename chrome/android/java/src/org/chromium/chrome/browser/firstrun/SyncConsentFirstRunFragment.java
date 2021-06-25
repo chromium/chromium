@@ -18,6 +18,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
@@ -26,12 +27,26 @@ import java.util.List;
  */
 public class SyncConsentFirstRunFragment
         extends SyncConsentFragmentBase implements FirstRunFragment {
+    /** FRE page that instantiates this fragment. */
+    public static class Page implements FirstRunPage<SyncConsentFirstRunFragment> {
+        private final ModalDialogManager mModalDialogManager;
+
+        public Page(ModalDialogManager modalDialogManager) {
+            mModalDialogManager = modalDialogManager;
+        }
+
+        @Override
+        public SyncConsentFirstRunFragment instantiateFragment() {
+            return new SyncConsentFirstRunFragment(mModalDialogManager);
+        }
+    }
     // Per-page parameters:
     // TODO(crbug/1168516): Remove CHILD_ACCOUNT_STATUS
     public static final String CHILD_ACCOUNT_STATUS = "ChildAccountStatus";
 
-    // Every fragment must have a public default constructor.
-    public SyncConsentFirstRunFragment() {}
+    public SyncConsentFirstRunFragment(ModalDialogManager modalDialogManager) {
+        super(modalDialogManager);
+    }
 
     @Override
     public void onAttach(Context context) {

@@ -40,14 +40,14 @@ import java.lang.annotation.RetentionPolicy;
  * E - Action: show Switching from Managed Account Dialog.
  * F - Decision: progress to G if we are switching to a managed account, H otherwise.
  * G - Action: show Switching to Managed Account Dialog.
- * H - End: perform {@link ConfirmImportSyncDataDialog.Listener#onConfirm} with the result of the
- *     Import Data Dialog, if displayed or true if switching from a managed account.
+ * H - End: perform {@link ConfirmImportSyncDataDialogCoordinator.Listener#onConfirm} with the
+ * result of the Import Data Dialog, if displayed or true if switching from a managed account.
  *
  * At any dialog, the user can cancel the dialog and end the whole process (resulting in
- * {@link ConfirmImportSyncDataDialog.Listener#onCancel}).
+ * {@link ConfirmImportSyncDataDialogCoordinator.Listener#onCancel}).
  */
-public class ConfirmSyncDataStateMachine
-        implements ConfirmImportSyncDataDialog.Listener, ConfirmManagedSyncDataDialog.Listener {
+public class ConfirmSyncDataStateMachine implements ConfirmImportSyncDataDialogCoordinator.Listener,
+                                                    ConfirmManagedSyncDataDialog.Listener {
     @IntDef({State.BEFORE_OLD_ACCOUNT_DIALOG, State.BEFORE_NEW_ACCOUNT_DIALOG,
             State.AFTER_NEW_ACCOUNT_DIALOG, State.DONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -245,7 +245,7 @@ public class ConfirmSyncDataStateMachine
                 });
     }
 
-    // ConfirmImportSyncDataDialog.Listener implementation.
+    // ConfirmImportSyncDataDialogCoordinator.Listener implementation.
     @Override
     public void onConfirm(boolean wipeData) {
         mWipeData = wipeData;
@@ -258,7 +258,8 @@ public class ConfirmSyncDataStateMachine
         progress();
     }
 
-    // ConfirmImportSyncDataDialog.Listener & ConfirmManagedSyncDataDialog.Listener implementation.
+    // ConfirmImportSyncDataDialogCoordinator.Listener & ConfirmManagedSyncDataDialog.Listener
+    // implementation.
     @Override
     public void onCancel() {
         cancel(false);

@@ -74,7 +74,8 @@ public class ConfirmSyncDataStateMachineTest {
         ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
                 mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
-                .showConfirmImportSyncDataDialog(any(ConfirmImportSyncDataDialog.Listener.class),
+                .showConfirmImportSyncDataDialog(
+                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class),
                         eq(mOldAccountName), eq(mNewAccountName));
     }
 
@@ -85,7 +86,8 @@ public class ConfirmSyncDataStateMachineTest {
                 oldAndNewAccountName, oldAndNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showConfirmImportSyncDataDialog(
-                        any(ConfirmImportSyncDataDialog.Listener.class), anyString(), anyString());
+                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class), anyString(),
+                        anyString());
         verify(mDelegateMock)
                 .showFetchManagementPolicyProgressDialog(
                         any(ConfirmSyncDataStateMachineDelegate.ProgressDialogListener.class));
@@ -97,7 +99,8 @@ public class ConfirmSyncDataStateMachineTest {
                 mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showConfirmImportSyncDataDialog(
-                        any(ConfirmImportSyncDataDialog.Listener.class), anyString(), anyString());
+                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class), anyString(),
+                        anyString());
         verify(mDelegateMock)
                 .showFetchManagementPolicyProgressDialog(
                         any(ConfirmSyncDataStateMachineDelegate.ProgressDialogListener.class));
