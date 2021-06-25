@@ -20,6 +20,14 @@
     <dimen name="payments_request_bottom_bar_vertical_padding">10dp</dimen>
     <dimen name="payments_request_bottom_bar_horizontal_padding">16dp</dimen>
 
+    <!-- Secure Payment Confirmation authentication UI spacing -->
+    <dimen name="secure_payment_confirmation_authn_ui_horizontal_padding">20dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_vertical_padding">16dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_label_size">78dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_icon_size">16dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_payment_icon_label_spacing">4dp</dimen>
+
     <!-- Payment minimal UI spacing -->
     <dimen name="payment_minimal_ui_amount_currency_spacing">4dp</dimen>
     <dimen name="payment_minimal_ui_app_icon_bottom_spacing">20dp</dimen>
