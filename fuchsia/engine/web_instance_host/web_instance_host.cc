@@ -564,14 +564,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     VLOG(1) << "Enabling Vulkan GPU acceleration.";
     // Vulkan requires use of SkiaRenderer, configured to a use Vulkan context.
     launch_args.AppendSwitch(switches::kUseVulkan);
-    const std::vector<base::StringPiece> enabled_features = {
-        features::kUseSkiaRenderer.name, features::kVulkan.name};
-    AppendToSwitch(switches::kEnableFeatures,
-                   base::JoinString(enabled_features, ","), &launch_args);
-
-    // SkiaRenderer requires out-of-process rasterization be enabled.
-    launch_args.AppendSwitch(switches::kEnableOopRasterization);
-
+    AppendToSwitch(switches::kEnableFeatures, features::kVulkan.name,
+                   &launch_args);
     launch_args.AppendSwitchASCII(switches::kUseGL,
                                   gl::kGLImplementationANGLEName);
   } else {
