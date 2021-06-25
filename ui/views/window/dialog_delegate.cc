@@ -72,7 +72,7 @@ Widget* DialogDelegate::CreateDialogWidget(
     std::unique_ptr<WidgetDelegate> delegate,
     gfx::NativeWindow context,
     gfx::NativeView parent) {
-  CHECK(delegate->owned_by_widget());
+  DCHECK(delegate->owned_by_widget());
   return CreateDialogWidget(delegate.release(), context, parent);
 }
 
@@ -159,21 +159,21 @@ bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
 }
 
 bool DialogDelegate::Cancel() {
-  CHECK(!already_started_close_);
+  DCHECK(!already_started_close_);
   if (cancel_callback_)
     RunCloseCallback(std::move(cancel_callback_));
   return true;
 }
 
 bool DialogDelegate::Accept() {
-  CHECK(!already_started_close_);
+  DCHECK(!already_started_close_);
   if (accept_callback_)
     RunCloseCallback(std::move(accept_callback_));
   return true;
 }
 
 void DialogDelegate::RunCloseCallback(base::OnceClosure callback) {
-  CHECK(!already_started_close_);
+  DCHECK(!already_started_close_);
   already_started_close_ = true;
   std::move(callback).Run();
 }
@@ -231,7 +231,7 @@ void DialogDelegate::WindowWillClose() {
     return;
 
   // This is set here instead of before the invocations of Accept()/Cancel() so
-  // that those methods can CHECK that !already_started_close_. Otherwise,
+  // that those methods can DCHECK that !already_started_close_. Otherwise,
   // client code could (eg) call Accept() from inside the cancel callback, which
   // could lead to multiple callbacks being delivered from this class.
   already_started_close_ = true;
@@ -393,25 +393,21 @@ void DialogDelegate::SetButtonRowInsets(const gfx::Insets& insets) {
 }
 
 void DialogDelegate::AcceptDialog() {
-  // https://crbug.com/1215247 is a crash in this function, possibly a
-  // use-after-free on `this`. Empirically the steady state instance count with
-  // no dialogs open is 0. If it's still 0, someone deleted `this` before
-  // calling AcceptDialog().
-  CHECK_GT(g_instance_count, 0);
-
-  // This line might trigger a crash if `this` is deleted.
-  Widget* widget = GetWidget();
-
   // Copy the dialog widget name onto the stack so it appears in crash dumps.
-  DEBUG_ALIAS_FOR_CSTR(last_widget_name, widget->GetName().c_str(), 64);
+  DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
 
-  CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   if (already_started_close_ || !Accept())
     return;
 
-  // Check for Accept() deleting `this` but returning false.
-  // https://crbug.com/1215247
-  CHECK_GT(g_instance_count, 0);
+  // Check for Accept() deleting `this` but returning false. Empirically the
+  // steady state instance count with no dialogs open is zero, so if it's back
+  // to zero `this` is deleted https://crbug.com/1215247
+  if (g_instance_count <= 0) {
+    // LOG(FATAL) instead of CHECK() to put the widget name into a crash key.
+    // See "Product Data" in the crash tool if a crash report shows this line.
+    LOG(FATAL) << last_widget_name;
+  }
 
   already_started_close_ = true;
   GetWidget()->CloseWithReason(
@@ -419,7 +415,7 @@ void DialogDelegate::AcceptDialog() {
 }
 
 void DialogDelegate::CancelDialog() {
-  // Note: don't CHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
+  // Note: don't DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
   // CancelDialog() is *always* reachable via Esc closing the dialog, even if
   // the cancel button is disabled or there is no cancel button at all.
   if (already_started_close_ || !Cancel())
