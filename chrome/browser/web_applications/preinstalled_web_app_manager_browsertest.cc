@@ -76,19 +76,15 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
 }  // namespace
 
 class PreinstalledWebAppManagerBrowserTest
-    : public extensions::ExtensionBrowserTest {
+    : virtual public InProcessBrowserTest {
  public:
   PreinstalledWebAppManagerBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kRecordWebAppDebugInfo);
     PreinstalledWebAppManager::SkipStartupForTesting();
   }
 
-  void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
-  }
-
   void TearDownOnMainThread() override {
-    url_loader_interceptor_.reset();
+    ResetInterceptor();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -127,12 +123,11 @@ class PreinstalledWebAppManagerBrowserTest
   }
 
   const AppRegistrar& registrar() {
-    return WebAppProvider::Get(browser()->profile())->registrar();
+    return WebAppProvider::Get(profile())->registrar();
   }
 
   const PreinstalledWebAppManager& manager() {
-    return WebAppProvider::Get(browser()->profile())
-        ->preinstalled_web_app_manager();
+    return WebAppProvider::Get(profile())->preinstalled_web_app_manager();
   }
 
   void SyncEmptyConfigs() {
@@ -140,7 +135,7 @@ class PreinstalledWebAppManagerBrowserTest
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::RunLoop run_loop;
-    WebAppProvider::Get(browser()->profile())
+    WebAppProvider::Get(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -184,7 +179,7 @@ class PreinstalledWebAppManagerBrowserTest
 
     absl::optional<InstallResultCode> code;
     base::RunLoop sync_run_loop;
-    WebAppProvider::Get(browser()->profile())
+    WebAppProvider::Get(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -205,6 +200,11 @@ class PreinstalledWebAppManagerBrowserTest
   }
 
   ~PreinstalledWebAppManagerBrowserTest() override = default;
+
+  Profile* profile() { return browser()->profile(); }
+
+ protected:
+  void ResetInterceptor() { url_loader_interceptor_.reset(); }
 
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
@@ -353,11 +353,23 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       launch_url);
 }
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+class PreinstalledWebAppManagerExtensionBrowserTest
+    : public extensions::ExtensionBrowserTest,
+      public PreinstalledWebAppManagerBrowserTest {
+ public:
+  PreinstalledWebAppManagerExtensionBrowserTest() = default;
+  ~PreinstalledWebAppManagerExtensionBrowserTest() override = default;
+
+  void TearDownOnMainThread() override {
+    ResetInterceptor();
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerExtensionBrowserTest,
                        UninstallAndReplace) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
-  Profile* profile = browser()->profile();
 
   // Install Chrome app to be replaced.
   const char kChromeAppDirectory[] = "app";
@@ -370,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   // Start listening for Chrome app uninstall.
   extensions::TestExtensionRegistryObserver uninstall_observer(
-      extensions::ExtensionRegistry::Get(profile));
+      extensions::ExtensionRegistry::Get(browser()->profile()));
 
   constexpr char kAppConfigTemplate[] =
       R"({
@@ -553,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
+  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLUE);
 }
@@ -649,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
+  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLUE);
 }
@@ -701,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
+  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLUE);
 }
@@ -728,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   {
     base::RunLoop run_loop;
     WebAppPolicyManager& policy_manager =
-        WebAppProvider::Get(browser()->profile())->policy_manager();
+        WebAppProvider::Get(profile())->policy_manager();
     policy_manager.SetOnAppsSynchronizedCompletedCallbackForTesting(
         run_loop.QuitClosure());
     const char kWebAppPolicy[] = R"([{
