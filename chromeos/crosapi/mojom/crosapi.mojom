@@ -19,6 +19,7 @@ import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
+import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
@@ -65,8 +66,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 37
-// Next method id: 42
+// Next version: 38
+// Next method id: 43
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -148,6 +149,11 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=16]
   BindIdleService@21(pending_receiver<IdleService> receiver);
+
+  // Binds the ImageWriter interface for managing removable storage devices.
+  // Added in M93.
+  [MinVersion=37]
+  BindImageWriter@42(pending_receiver<ImageWriter> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.

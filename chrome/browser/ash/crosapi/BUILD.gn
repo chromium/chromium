@@ -53,6 +53,8 @@ source_set("crosapi") {
     "file_manager_ash.h",
     "idle_service_ash.cc",
     "idle_service_ash.h",
+    "image_writer_ash.cc",
+    "image_writer_ash.h",
     "keystore_service_ash.cc",
     "keystore_service_ash.h",
     "keystore_service_factory_ash.cc",

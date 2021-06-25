@@ -1017,6 +1017,8 @@ static_library("extensions") {
         "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.cc",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h",
+        "api/image_writer_private/image_writer_controller_lacros.cc",
+        "api/image_writer_private/image_writer_controller_lacros.h",
         "api/messaging/native_message_host_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.h",

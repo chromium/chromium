@@ -8,6 +8,10 @@
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "extensions/browser/extension_function.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/image_writer.mojom.h"
+#endif
+
 namespace extensions {
 
 class ImageWriterPrivateBaseFunction : public ExtensionFunction {
@@ -69,6 +73,9 @@ class ImageWriterPrivateDestroyPartitionsFunction
  private:
   ~ImageWriterPrivateDestroyPartitionsFunction() override;
   ResponseAction Run() override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnDestroyPartitionsDone(const absl::optional<std::string>& error);
+#endif
 };
 
 class ImageWriterPrivateListRemovableStorageDevicesFunction
@@ -82,6 +89,11 @@ class ImageWriterPrivateListRemovableStorageDevicesFunction
   ~ImageWriterPrivateListRemovableStorageDevicesFunction() override;
   ResponseAction Run() override;
   void OnDeviceListReady(scoped_refptr<StorageDeviceList> device_list);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnCrosapiDeviceListReady(
+      absl::optional<std::vector<crosapi::mojom::RemovableStorageDevicePtr>>
+          devices);
+#endif
 };
 
 }  // namespace extensions

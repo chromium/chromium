@@ -2530,7 +2530,6 @@ if (!is_android) {
         "../browser/extensions/api/idle/idle_get_auto_lock_delay_apitest.cc",
         "../browser/extensions/api/idltest/idltest_apitest.cc",
         "../browser/extensions/api/image_writer_private/extractor_browsertest.cc",
-        "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
         "../browser/extensions/api/image_writer_private/test_utils.cc",
         "../browser/extensions/api/image_writer_private/test_utils.h",
         "../browser/extensions/api/instance_id/instance_id_apitest.cc",
@@ -2731,6 +2730,9 @@ if (!is_android) {
         ]
       }
 
+      if (!is_chromeos_lacros) {
+        sources += ["../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
+      }
       if (is_chromeos_ash || is_chromeos_lacros) {
         sources +=
             [ "../browser/extensions/clipboard_extension_apitest_chromeos.cc" ]

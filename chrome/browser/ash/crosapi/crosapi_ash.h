@@ -30,6 +30,7 @@ class DriveIntegrationServiceAsh;
 class FeedbackAsh;
 class FileManagerAsh;
 class IdleServiceAsh;
+class ImageWriterAsh;
 class KeystoreServiceAsh;
 class LocalPrinterAsh;
 class MessageCenterAsh;
@@ -89,6 +90,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
   void BindIdleService(
       mojo::PendingReceiver<mojom::IdleService> receiver) override;
+  void BindImageWriter(
+      mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindKeystoreService(
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindLocalPrinter(
@@ -158,6 +161,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return web_page_info_factory_ash_.get();
   }
 
+  ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
+
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
   KeystoreServiceAsh* keystore_service_ash() {
@@ -180,6 +185,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
+  std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
