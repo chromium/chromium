@@ -173,6 +173,9 @@ class OmniboxClient {
   // Opens an Incognito clear browsing data dialog.
   virtual void OpenIncognitoClearBrowsingDataDialog() {}
 
+  // Closes incognito browser windows.
+  virtual void CloseIncognitoWindows() {}
+
   // Presents translation prompt for current tab web contents.
   virtual void PromptPageTranslation() {}
 

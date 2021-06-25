@@ -480,6 +480,23 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 
 // =============================================================================
 
+class OmniboxPedalCloseIncognito : public OmniboxPedal {
+ public:
+  OmniboxPedalCloseIncognito()
+      : OmniboxPedal(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS,
+                     LabelStrings(),
+                     GURL()) {}
+
+  void Execute(ExecutionContext& context) const override {
+    context.client_.CloseIncognitoWindows();
+  }
+
+ protected:
+  ~OmniboxPedalCloseIncognito() override = default;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool with_branding, bool incognito) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -512,6 +529,11 @@ GetPedalImplementations(bool with_branding, bool incognito) {
       add(new OmniboxPedalCreateGoogleForm());
       add(new OmniboxPedalManageGoogleAccount());
       add(new OmniboxPedalChangeGooglePassword());
+    }
+  }
+  if (OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
+    if (incognito) {
+      add(new OmniboxPedalCloseIncognito());
     }
   }
   return pedals;
