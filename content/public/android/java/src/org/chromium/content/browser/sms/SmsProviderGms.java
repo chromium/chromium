@@ -129,18 +129,18 @@ public class SmsProviderGms {
      *
      * @param isLocalRequest Represents whether this request is from local device or not
      */
-    public void destoryUserConsentReceiver(boolean isLocalRequest) {
+    public void verificationReceiverSucceeded(boolean isLocalRequest) {
         if (!isLocalRequest) return;
         Log.d(TAG, "DestroyUserConsentReceiver");
         if (mUserConsentReceiver != null) mUserConsentReceiver.destroy();
     }
 
     /**
-     * Destroys the verification receiver if the verification receiver failed with a local request.
+     * Destroys the verification receiver if it failed with a local request.
      *
      * @param isLocalRequest Represents whether this request is from local device or not
      */
-    public void destoryVerificationReceiver(boolean isLocalRequest) {
+    public void verificationReceiverFailed(boolean isLocalRequest) {
         if (!isLocalRequest) return;
         Log.d(TAG, "DestroyVerificationReceiver");
         if (mVerificationReceiver != null) mVerificationReceiver.destroy();

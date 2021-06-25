@@ -185,11 +185,11 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
 
         task.addOnSuccessListener(unused -> {
             this.reportBackendAvailability(BackendAvailability.AVAILABLE);
-            mProvider.destoryUserConsentReceiver(isLocalRequest);
+            mProvider.verificationReceiverSucceeded(isLocalRequest);
         });
         task.addOnFailureListener((Exception e) -> {
             this.onRetrieverTaskFailure(window, isLocalRequest, e);
-            mProvider.destoryVerificationReceiver(isLocalRequest);
+            mProvider.verificationReceiverFailed(isLocalRequest);
         });
 
         if (DEBUG) Log.d(TAG, "Installed task");

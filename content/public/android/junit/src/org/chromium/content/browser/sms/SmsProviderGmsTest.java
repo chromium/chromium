@@ -132,7 +132,7 @@ public class SmsProviderGmsTest {
     public void testDestroyUserConsentReceiverWithLocalRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = true;
-        mProvider.destoryUserConsentReceiver(isLocalRequest);
+        mProvider.verificationReceiverSucceeded(isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(1)).destroy();
     }
 
@@ -140,7 +140,7 @@ public class SmsProviderGmsTest {
     public void testNotDestroyUserConsentReceiverWithRemoteRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = false;
-        mProvider.destoryUserConsentReceiver(isLocalRequest);
+        mProvider.verificationReceiverSucceeded(isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).destroy();
     }
 
@@ -148,7 +148,7 @@ public class SmsProviderGmsTest {
     public void testDestroyVerificationReceiverWithLocalRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = true;
-        mProvider.destoryVerificationReceiver(isLocalRequest);
+        mProvider.verificationReceiverFailed(isLocalRequest);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1)).destroy();
     }
 
@@ -156,7 +156,7 @@ public class SmsProviderGmsTest {
     public void testNotDestroyVerificationReceiverWithRemoteRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = false;
-        mProvider.destoryVerificationReceiver(isLocalRequest);
+        mProvider.verificationReceiverFailed(isLocalRequest);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(0)).destroy();
     }
 
