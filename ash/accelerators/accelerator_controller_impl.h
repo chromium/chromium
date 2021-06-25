@@ -127,6 +127,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     // Accessor to accelerator confirmation dialog.
     AccessibilityConfirmationDialog* GetConfirmationDialog();
 
+    // Provides access to the ExitWarningHandler.
+    ExitWarningHandler* GetExitWarningHandler();
+
     AcceleratorControllerImpl::SideVolumeButtonLocation
     side_volume_button_location() {
       return controller_->side_volume_button_location_;

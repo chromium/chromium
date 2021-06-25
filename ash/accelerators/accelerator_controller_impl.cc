@@ -1763,6 +1763,11 @@ AcceleratorControllerImpl::TestApi::GetConfirmationDialog() {
   return controller_->confirmation_dialog_.get();
 }
 
+ExitWarningHandler*
+AcceleratorControllerImpl::TestApi::GetExitWarningHandler() {
+  return &controller_->exit_warning_handler_;
+}
+
 void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonFilePath(
     base::FilePath path) {
   controller_->side_volume_button_location_file_path_ = path;

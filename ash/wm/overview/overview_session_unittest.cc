@@ -1671,7 +1671,8 @@ TEST_F(OverviewSessionTest, DisplayOrientationChanged) {
 TEST_F(OverviewSessionTest, AcceleratorInOverviewSession) {
   ToggleOverview();
   auto* accelerator_controller = Shell::Get()->accelerator_controller();
-  auto* ewh = accelerator_controller->GetExitWarningHandlerForTest();
+  auto* ewh = AcceleratorControllerImpl::TestApi(accelerator_controller)
+                  .GetExitWarningHandler();
   ASSERT_TRUE(ewh);
   StubForTest(ewh);
   EXPECT_FALSE(is_ui_shown(ewh));
