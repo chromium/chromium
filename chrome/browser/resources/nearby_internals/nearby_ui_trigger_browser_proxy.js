@@ -118,6 +118,27 @@ export class NearbyUiTriggerBrowserProxy {
   getState() {
     return sendWithPromise('getStates');
   }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair error notification.
+   */
+  notifyFastPairError() {
+    chrome.send('notifyFastPairError');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair discovery notification.
+   */
+  notifyFastPairDiscovery() {
+    chrome.send('notifyFastPairDiscovery');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair pairing notification.
+   */
+  notifyFastPairPairing() {
+    chrome.send('notifyFastPairPairing');
+  }
 }
 
 addSingletonGetter(NearbyUiTriggerBrowserProxy);

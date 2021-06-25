@@ -117,6 +117,18 @@ Polymer({
     this.prefsBrowserProxy_.clearNearbyPrefs();
   },
 
+  onFastPairErrorNotificationClicked_() {
+    this.browserProxy_.notifyFastPairError();
+  },
+
+  onFastPairDiscoveryNotificationClicked_() {
+    this.browserProxy_.notifyFastPairDiscovery();
+  },
+
+  onFastPairPairingNotificationClicked_() {
+    this.browserProxy_.notifyFastPairPairing();
+  },
+
   /**
    * Triggers RegisterReceiveSurface with Foreground as Receive state.
    * @private

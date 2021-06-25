@@ -39,6 +39,11 @@ class QuickPairHandler : public content::WebUIMessageHandler,
   // Message handler callback that clears the Log Buffer.
   void ClearLogBuffer(const base::ListValue* args);
 
+  // Fast Pair UI Triggers.
+  void NotifyFastPairError(const base::ListValue* args);
+  void NotifyFastPairDiscovery(const base::ListValue* args);
+  void NotifyFastPairPairing(const base::ListValue* args);
+
   base::ScopedObservation<chromeos::quick_pair::LogBuffer,
                           chromeos::quick_pair::LogBuffer::Observer>
       observation_{this};

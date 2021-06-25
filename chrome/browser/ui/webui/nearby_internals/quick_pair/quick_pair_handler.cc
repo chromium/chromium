@@ -42,6 +42,18 @@ void QuickPairHandler::RegisterMessages() {
       "getQuickPairLogMessages",
       base::BindRepeating(&QuickPairHandler::HandleGetLogMessages,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "notifyFastPairError",
+      base::BindRepeating(&QuickPairHandler::NotifyFastPairError,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "notifyFastPairDiscovery",
+      base::BindRepeating(&QuickPairHandler::NotifyFastPairDiscovery,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "notifyFastPairPairing",
+      base::BindRepeating(&QuickPairHandler::NotifyFastPairPairing,
+                          base::Unretained(this)));
 }
 
 void QuickPairHandler::OnJavascriptAllowed() {
@@ -72,3 +84,9 @@ void QuickPairHandler::OnLogMessageAdded(
   FireWebUIListener("quick-pair-log-message-added",
                     LogMessageToDictionary(log_message));
 }
+
+void QuickPairHandler::NotifyFastPairError(const base::ListValue* args) {}
+
+void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue* args) {}
+
+void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {}
