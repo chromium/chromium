@@ -495,8 +495,10 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
   apps::AppLaunchParams params(
       app_id, container, ui::DispositionFromEventFlags(event_flags),
       apps::GetAppLaunchSource(launch_source), display::kDefaultDisplayId);
-  for (const auto& file_path : file_paths->file_paths) {
-    params.launch_files.push_back(file_path);
+  if (file_paths) {
+    for (const auto& file_path : file_paths->file_paths) {
+      params.launch_files.push_back(file_path);
+    }
   }
 
   // The app will be launched for the currently active profile.
@@ -538,18 +540,21 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Save all launch information for system web apps, because the browser
   // session restore can't restore system web apps.
-  const WebApp* web_app = GetWebApp(params_for_restore.app_id);
-  const bool is_system_web_app = web_app && web_app->IsSystemApp();
   int session_id = apps::GetSessionIdForRestoreFromWebContents(web_contents);
-  if (is_system_web_app && SessionID::IsValidValue(session_id)) {
-    std::unique_ptr<full_restore::AppLaunchInfo> launch_info =
-        std::make_unique<full_restore::AppLaunchInfo>(
-            params_for_restore.app_id, session_id, params_for_restore.container,
-            params_for_restore.disposition, params_for_restore.display_id,
-            std::move(params_for_restore.launch_files),
-            std::move(params_for_restore.intent));
-    full_restore::SaveAppLaunchInfo(profile()->GetPath(),
-                                    std::move(launch_info));
+  if (SessionID::IsValidValue(session_id)) {
+    const WebApp* web_app = GetWebApp(params_for_restore.app_id);
+    const bool is_system_web_app = web_app && web_app->IsSystemApp();
+    if (is_system_web_app) {
+      std::unique_ptr<full_restore::AppLaunchInfo> launch_info =
+          std::make_unique<full_restore::AppLaunchInfo>(
+              params_for_restore.app_id, session_id,
+              params_for_restore.container, params_for_restore.disposition,
+              params_for_restore.display_id,
+              std::move(params_for_restore.launch_files),
+              std::move(params_for_restore.intent));
+      full_restore::SaveAppLaunchInfo(profile()->GetPath(),
+                                      std::move(launch_info));
+    }
   }
 #endif
 

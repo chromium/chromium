@@ -205,6 +205,7 @@ void AppServiceImpl::LaunchAppWithFiles(apps::mojom::AppType app_type,
                                         int32_t event_flags,
                                         apps::mojom::LaunchSource launch_source,
                                         apps::mojom::FilePathsPtr file_paths) {
+  CHECK(file_paths);
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
