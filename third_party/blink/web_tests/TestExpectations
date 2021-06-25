@@ -6207,7 +6207,6 @@ crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-d
 crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 
 crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Timeout ]
-crbug.com/1168785 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Pass Timeout ]
 
 # flaky test
 crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
@@ -7073,3 +7072,7 @@ crbug.com/1222097 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Skip ]
 crbug.com/1222097 virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Skip ]
 
+# Sheriff 2021-06-25
+# Flaky on Webkit Linux Leak
+crbug.com/1223601 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Skip ]
+crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Skip ]
