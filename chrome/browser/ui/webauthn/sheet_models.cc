@@ -524,7 +524,7 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetAcceptButtonLabel() const {
 }
 
 void AuthenticatorOffTheRecordInterstitialSheetModel::OnAccept() {
-  dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
+  dialog_model()->OnOffTheRecordInterstitialAccepted();
 }
 
 std::u16string

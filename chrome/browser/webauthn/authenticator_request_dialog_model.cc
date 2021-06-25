@@ -251,6 +251,7 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||
+         current_step() == Step::kOffTheRecordInterstitial ||
          current_step() == Step::kNotStarted);
   Step cable_step;
   if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
@@ -312,31 +313,19 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
   if (transport_availability_.request_type ==
           device::FidoRequestType::kMakeCredential &&
       transport_availability_.is_off_the_record_context) {
-    SetCurrentStep(Step::kPlatformAuthenticatorOffTheRecordInterstitial);
+    after_off_the_record_interstitial_ =
+        base::BindOnce(&AuthenticatorRequestDialogModel::
+                           HideDialogAndDispatchToPlatformAuthenticator,
+                       weak_factory_.GetWeakPtr());
+    SetCurrentStep(Step::kOffTheRecordInterstitial);
     return;
   }
 
   HideDialogAndDispatchToPlatformAuthenticator();
 }
 
-void AuthenticatorRequestDialogModel::
-    HideDialogAndDispatchToPlatformAuthenticator() {
-  HideDialog();
-
-  auto& authenticators =
-      ephemeral_state_.saved_authenticators_.authenticator_list();
-  auto platform_authenticator_it =
-      std::find_if(authenticators.begin(), authenticators.end(),
-                   [](const auto& authenticator) {
-                     return authenticator.transport ==
-                            device::FidoTransportProtocol::kInternal;
-                   });
-
-  if (platform_authenticator_it == authenticators.end()) {
-    return;
-  }
-
-  DispatchRequestAsync(&*platform_authenticator_it);
+void AuthenticatorRequestDialogModel::OnOffTheRecordInterstitialAccepted() {
+  std::move(after_off_the_record_interstitial_).Run();
 }
 
 void AuthenticatorRequestDialogModel::ShowCableUsbFallback() {
@@ -762,6 +751,23 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
 void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name,
                                                    size_t mechanism_index) {
   current_mechanism_ = mechanism_index;
+
+  if (transport_availability_.request_type ==
+          device::FidoRequestType::kMakeCredential &&
+      transport_availability_.is_off_the_record_context) {
+    after_off_the_record_interstitial_ =
+        base::BindOnce(&AuthenticatorRequestDialogModel::
+                           ContactPhoneAfterOffTheRecordInterstitial,
+                       weak_factory_.GetWeakPtr(), name);
+    SetCurrentStep(Step::kOffTheRecordInterstitial);
+    return;
+  }
+
+  ContactPhoneAfterOffTheRecordInterstitial(name);
+}
+
+void AuthenticatorRequestDialogModel::ContactPhoneAfterOffTheRecordInterstitial(
+    std::string name) {
   ContactNextPhoneByName(name);
   EnsureBleAdapterIsPoweredAndContinueWithCable();
 }
@@ -926,4 +932,24 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   DCHECK_LE(std::count_if(mechanisms_.begin(), mechanisms_.end(),
                           [](const Mechanism& m) { return m.priority; }),
             1);
+}
+
+void AuthenticatorRequestDialogModel::
+    HideDialogAndDispatchToPlatformAuthenticator() {
+  HideDialog();
+
+  auto& authenticators =
+      ephemeral_state_.saved_authenticators_.authenticator_list();
+  auto platform_authenticator_it =
+      std::find_if(authenticators.begin(), authenticators.end(),
+                   [](const auto& authenticator) {
+                     return authenticator.transport ==
+                            device::FidoTransportProtocol::kInternal;
+                   });
+
+  if (platform_authenticator_it == authenticators.end()) {
+    return;
+  }
+
+  DispatchRequestAsync(&*platform_authenticator_it);
 }

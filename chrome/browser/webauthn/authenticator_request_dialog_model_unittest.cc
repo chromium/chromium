@@ -296,6 +296,93 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   EXPECT_CALL(mock_observer, OnModelDestroyed(&model));
 }
 
+TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
+  enum class BLEPower {
+    ON,
+    OFF,
+  };
+  enum class Profile {
+    NORMAL,
+    INCOGNITO,
+  };
+
+  const auto mc = RequestType::kMakeCredential;
+  const auto ga = RequestType::kGetAssertion;
+  const auto on_ = BLEPower::ON;
+  const auto off = BLEPower::OFF;
+  const auto normal = Profile::NORMAL;
+  const auto otr___ = Profile::INCOGNITO;
+  const auto activate = Step::kCableActivate;
+  const auto interstitial = Step::kOffTheRecordInterstitial;
+  const auto power = Step::kBlePowerOnAutomatic;
+
+  const struct {
+    RequestType request_type;
+    BLEPower ble_power;
+    Profile profile;
+    std::vector<Step> steps;
+  } kTests[] = {
+      //               | Expected UI steps in order.
+      {mc, on_, normal, {activate}},
+      {mc, on_, otr___, {interstitial, activate}},
+      {mc, off, normal, {power, activate}},
+      {mc, off, otr___, {interstitial, power, activate}},
+      {ga, on_, normal, {activate}},
+      {ga, on_, otr___, {activate}},
+      {ga, off, normal, {power, activate}},
+      {ga, off, otr___, {power, activate}},
+  };
+
+  unsigned test_num = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test_num++);
+
+    TransportAvailabilityInfo transports_info;
+    transports_info.is_ble_powered = test.ble_power == BLEPower::ON;
+    transports_info.can_power_on_ble_adapter = true;
+    transports_info.request_type = test.request_type;
+    transports_info.available_transports = {
+        AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+    transports_info.is_off_the_record_context =
+        test.profile == Profile::INCOGNITO;
+
+    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+
+    std::array<uint8_t, device::kP256X962Length> public_key = {0};
+    std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones(
+        {{"phone", /*contact_id=*/0, public_key}});
+    model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+                                   std::move(phones), base::DoNothing(),
+                                   absl::nullopt);
+
+    model.StartFlow(std::move(transports_info),
+                    /*use_location_bar_bubble=*/false);
+    ASSERT_EQ(model.mechanisms().size(), 1u);
+
+    for (const auto step : test.steps) {
+      ASSERT_EQ(step, model.current_step())
+          << static_cast<int>(step)
+          << " != " << static_cast<int>(model.current_step());
+
+      switch (step) {
+        case Step::kBlePowerOnAutomatic:
+          model.OnBluetoothPoweredStateChanged(/*powered=*/true);
+          break;
+
+        case Step::kOffTheRecordInterstitial:
+          model.OnOffTheRecordInterstitialAccepted();
+          break;
+
+        case Step::kCableActivate:
+          break;
+
+        default:
+          NOTREACHED();
+      }
+    }
+  }
+}
+
 TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
   const struct {
     void (AuthenticatorRequestDialogModel::*event)();

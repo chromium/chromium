@@ -80,8 +80,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorRequestDialogModel::Step::kBlePowerOnManual);
     } else if (name == "touchid_incognito") {
       model->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::
-              kPlatformAuthenticatorOffTheRecordInterstitial);
+          AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
     } else if (name == "cable_activate" ||
                name == "cable_server_link_activate") {
       model->set_cable_transport_info(

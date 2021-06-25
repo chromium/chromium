@@ -83,9 +83,11 @@ class AuthenticatorRequestDialogModel {
     kBlePowerOnAutomatic,
     kBlePowerOnManual,
 
-    // Let the user confirm that they want to create a platform credential in an
-    // off-the-record browsing context.
-    kPlatformAuthenticatorOffTheRecordInterstitial,
+    // Let the user confirm that they want to create a credential in an
+    // off-the-record browsing context. Used for platform and caBLE credentials,
+    // where we feel that it's perhaps not obvious that something will be
+    // recorded.
+    kOffTheRecordInterstitial,
 
     // Phone as a security key.
     kCableActivate,
@@ -321,10 +323,10 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at all steps.
   void StartPlatformAuthenticatorFlow();
 
-  // Proceeds straight to the platform authenticator prompt.
-  //
-  // Valid action when at all steps.
-  void HideDialogAndDispatchToPlatformAuthenticator();
+  // OnOffTheRecordInterstitialAccepted is called when the user accepts the
+  // interstitial that warns that platform/caBLE authenticators may record
+  // information even in incognito mode.
+  void OnOffTheRecordInterstitialAccepted();
 
   // Show guidance about caBLE USB fallback.
   void ShowCableUsbFallback();
@@ -568,6 +570,7 @@ class AuthenticatorRequestDialogModel {
 
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
+  void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
 
   void StartLocationBarBubbleRequest();
 
@@ -576,6 +579,11 @@ class AuthenticatorRequestDialogModel {
 
   void ContactNextPhoneByName(const std::string& name);
   void PopulateMechanisms();
+
+  // Proceeds straight to the platform authenticator prompt.
+  //
+  // Valid action when at all steps.
+  void HideDialogAndDispatchToPlatformAuthenticator();
 
   EphemeralState ephemeral_state_;
 
@@ -597,6 +605,11 @@ class AuthenticatorRequestDialogModel {
   // powered. Only set while the |current_step_| is either kBlePowerOnManual,
   // kBlePowerOnAutomatic.
   absl::optional<Step> next_step_once_ble_powered_;
+
+  // after_off_the_record_interstitial_ contains the closure to run if the user
+  // accepts the interstitial that warns that platform/caBLE authenticators may
+  // record information even in incognito mode.
+  base::OnceClosure after_off_the_record_interstitial_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

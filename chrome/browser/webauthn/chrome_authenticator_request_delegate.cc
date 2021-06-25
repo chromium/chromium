@@ -864,7 +864,14 @@ GetCablePairingsFromSyncedDevices(Profile* profile) {
 
 std::vector<std::unique_ptr<device::cablev2::Pairing>>
 ChromeAuthenticatorRequestDelegate::GetCablePairings() {
-  Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (profile->IsOffTheRecord()) {
+    // For Incognito windows we collect the devices from the parent profile.
+    // The |AuthenticatorRequestDialogModel| will notice that it's an OTR
+    // profile and display a confirmation interstitial for makeCredential calls.
+    profile = profile->GetOriginalProfile();
+  }
+
   std::vector<std::unique_ptr<device::cablev2::Pairing>> ret =
       GetCablePairingsFromSyncedDevices(profile);
   std::sort(ret.begin(), ret.end(),
