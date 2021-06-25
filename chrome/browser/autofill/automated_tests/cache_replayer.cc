@@ -782,8 +782,19 @@ AutofillQueryResponse ConvertResponse<LegacyEnv>(
       const auto& in_field = in.field(in_field_index);
       auto* out_field = out_form->add_field_suggestions();
       out_field->set_field_signature(query_field.signature());
-      for (const auto& in_prediction : in_field.predictions())
-        out_field->add_predictions()->set_type(in_prediction.type());
+      int starting_index = 0;
+      // LegacyEnv Response is inconsistent on the overall type being in the
+      // predictions list, so first add the overall_type, and then address any
+      // additional predictions.
+      if (in_field.has_overall_type_prediction()) {
+        out_field->add_predictions()->set_type(
+            in_field.overall_type_prediction());
+        starting_index = 1;
+      }
+      for (int i = starting_index; i < in_field.predictions_size(); i++) {
+        out_field->add_predictions()->set_type(
+            in_field.predictions()[i].type());
+      }
       if (in_field.predictions().size() > 0 &&
           in_field.predictions(0).has_may_use_prefilled_placeholder()) {
         out_field->set_may_use_prefilled_placeholder(
