@@ -85,13 +85,15 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                           const WGPUExtent3D& copy_size,
                           const WGPUTextureCopyView& destination,
                           const WGPUTextureFormat dest_texture_format,
-                          bool premultiplied_alpha);
+                          bool premultiplied_alpha,
+                          bool flipY = false);
   bool CopyContentFromGPU(StaticBitmapImage* image,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
                           const WGPUTextureCopyView& destination,
                           const WGPUTextureFormat dest_texture_format,
-                          bool premultiplied_alpha);
+                          bool premultiplied_alpha,
+                          bool flipY = false);
   void WriteBufferImpl(GPUBuffer* buffer,
                        uint64_t buffer_offset,
                        uint64_t data_byte_length,

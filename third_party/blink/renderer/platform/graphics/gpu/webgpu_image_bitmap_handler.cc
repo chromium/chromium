@@ -76,7 +76,8 @@ bool CopyBytesFromImageBitmapForWebGPU(
     base::span<uint8_t> dst,
     const IntRect& rect,
     const WGPUTextureFormat destination_format,
-    bool premultipliedAlpha) {
+    bool premultipliedAlpha,
+    bool flipY) {
   DCHECK(image);
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
   DCHECK(image->width() - rect.X() >= rect.Width());
@@ -102,11 +103,24 @@ bool CopyBytesFromImageBitmapForWebGPU(
       premultipliedAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       paint_image.GetSkImageInfo().refColorSpace());
 
-  bool read_pixels_successful = paint_image.readPixels(
-      info, dst.data(), wgpu_info.wgpu_bytes_per_row, rect.X(), rect.Y());
-
-  if (!read_pixels_successful) {
-    return false;
+  if (!flipY) {
+    return paint_image.readPixels(
+        info, dst.data(), wgpu_info.wgpu_bytes_per_row, rect.X(), rect.Y());
+  } else {
+    // Do flipY for the bottom left image.
+    std::vector<uint8_t> flipped;
+    flipped.resize(wgpu_info.wgpu_bytes_per_row * rect.Height());
+    if (!paint_image.readPixels(info, flipped.data(),
+                                wgpu_info.wgpu_bytes_per_row, rect.X(),
+                                rect.Y())) {
+      return false;
+    }
+    for (int i = 0; i < rect.Height(); ++i) {
+      memcpy(
+          dst.data() + (rect.Height() - 1 - i) * wgpu_info.wgpu_bytes_per_row,
+          flipped.data() + i * wgpu_info.wgpu_bytes_per_row,
+          wgpu_info.wgpu_bytes_per_row);
+    }
   }
 
   return true;

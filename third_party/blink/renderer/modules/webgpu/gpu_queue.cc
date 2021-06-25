@@ -76,6 +76,44 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
   return dawn_origin;
 }
 
+bool IsExternalImageWebGLCanvas(
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    const V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas* external_image
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+    const ImageBitmapOrHTMLCanvasElementOrOffscreenCanvas& external_image
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+) {
+  CanvasRenderingContextHost* canvas = nullptr;
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  switch (external_image->GetContentType()) {
+    case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
+        kHTMLCanvasElement:
+      canvas = external_image->GetAsHTMLCanvasElement();
+      break;
+    case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
+        kOffscreenCanvas:
+      canvas = external_image->GetAsOffscreenCanvas();
+      break;
+    default:
+      canvas = nullptr;
+  }
+#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+  if (external_image.IsHTMLCanvasElement()) {
+    canvas = external_image.GetAsHTMLCanvasElement();
+  } else if (external_image.IsOffscreenCanvas()) {
+    canvas = external_image.GetAsOffscreenCanvas();
+  } else {
+    canvas = nullptr;
+  }
+#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+
+  if (canvas && canvas->IsWebGL()) {
+    return true;
+  }
+
+  return false;
+}
+
 bool IsValidExternalImageDestinationFormat(
     WGPUTextureFormat dawn_texture_format) {
   switch (dawn_texture_format) {
@@ -398,6 +436,7 @@ void GPUQueue::copyExternalImageToTexture(
     ExceptionState& exception_state) {
   // "srgb" is the only valid color space for now.
   DCHECK_EQ(destination->colorSpace(), "srgb");
+  bool is_webgl = IsExternalImageWebGLCanvas(copyImage->source());
 
   scoped_refptr<Image> image =
       GetImageFromExternalImage(copyImage->source(), exception_state);
@@ -490,24 +529,35 @@ void GPUQueue::copyExternalImageToTexture(
         "({width|height|depthOrArrayLayers} equals to 0).");
   }
 
+  // NOTE: IsOriginTopLeft for AcceleratedStaticBitmapImage
+  // will provide the correct orientation info.
+  // TODO(crbug.com/1221110): WebGL canvas image orientation seems
+  // opposite with the orientation attributes. Need to figure out whether
+  // this is expected.
+  bool is_origin_top_left = static_bitmap_image->IsOriginTopLeft();
+  bool flipY =
+      (!is_origin_top_left && !is_webgl) || (is_origin_top_left && is_webgl);
+
   // Try GPU path first and delegate noop copy to CPU path.
   if (static_bitmap_image->IsTextureBacked() &&
       !isNoopCopy) {  // Try GPU uploading path.
     if (CopyContentFromGPU(static_bitmap_image.get(), origin_in_external_image,
                            dawn_copy_size, dawn_destination,
                            destination->texture()->Format(),
-                           destination->premultipliedAlpha())) {
+                           destination->premultipliedAlpha(), flipY)) {
       return;
     }
   }
   // GPU path failed, fallback to CPU path
   static_bitmap_image = static_bitmap_image->MakeUnaccelerated();
+  DCHECK_EQ(static_bitmap_image->IsOriginTopLeft(), true);
+  flipY = is_webgl;
 
   // CPU path is the fallback path and should always work.
   if (!CopyContentFromCPU(static_bitmap_image.get(), origin_in_external_image,
                           dawn_copy_size, dawn_destination,
                           destination->texture()->Format(),
-                          destination->premultipliedAlpha())) {
+                          destination->premultipliedAlpha(), flipY)) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -602,7 +652,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination,
                                   const WGPUTextureFormat dest_texture_format,
-                                  bool premultiplied_alpha) {
+                                  bool premultiplied_alpha,
+                                  bool flipY) {
   // Prepare for uploading CPU data.
   IntRect image_data_rect(origin.x, origin.y, copy_size.width,
                           copy_size.height);
@@ -634,7 +685,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 
     if (!CopyBytesFromImageBitmapForWebGPU(
             image, base::span<uint8_t>(static_cast<uint8_t*>(data), size),
-            image_data_rect, dest_texture_format, premultiplied_alpha)) {
+            image_data_rect, dest_texture_format, premultiplied_alpha, flipY)) {
       // Release the buffer.
       GetProcs().bufferRelease(buffer);
       return false;
@@ -676,7 +727,8 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination,
                                   const WGPUTextureFormat dest_texture_format,
-                                  bool premultiplied_alpha) {
+                                  bool premultiplied_alpha,
+                                  bool flipY) {
   // Check src/dst texture formats are supported by CopyTextureForBrowser
   SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
   if (!IsValidCopyTextureForBrowserFormats(image_info.colorType(),
@@ -702,11 +754,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
 
   WGPUCopyTextureForBrowserOptions options = {};
 
-  // In Chromium, all the GPU-based GL textures have
-  // opposite y-coordinates, so we need to correct them
-  // in CopyTextureForBrowser().
-  if (image->CurrentFrameOrientation().Orientation() ==
-      ImageOrientationEnum::kOriginTopLeft) {
+  if (flipY) {
     options.flipY = true;
   }
 
