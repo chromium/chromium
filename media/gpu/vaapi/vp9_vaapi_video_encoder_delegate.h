@@ -36,12 +36,6 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // Framerate in FPS.
     uint32_t framerate;
 
-    // Bitrate window size in ms.
-    unsigned int cpb_window_size_ms;
-
-    // Coded picture buffer size in bits.
-    unsigned int cpb_size_bits;
-
     // Quantization parameter. They are vp9 ac/dc indices and their ranges are
     // 0-255.
     uint8_t initial_qp;
@@ -72,6 +66,8 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   friend class VaapiVideoEncodeAcceleratorTest;
 
   void set_rate_ctrl_for_testing(std::unique_ptr<VP9RateControl> rate_ctrl);
+
+  bool ApplyPendingUpdateRates();
 
   Vp9FrameHeader GetDefaultFrameHeader(const bool keyframe) const;
   void SetFrameHeader(bool keyframe,
@@ -104,6 +100,9 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   Vp9ReferenceFrameVector reference_frames_;
   std::unique_ptr<VP9SVCLayers> svc_layers_;
+
+  absl::optional<std::pair<VideoBitrateAllocation, uint32_t>>
+      pending_update_rates_;
 
   std::unique_ptr<VP9RateControl> rate_ctrl_;
 

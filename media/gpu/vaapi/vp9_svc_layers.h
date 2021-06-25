@@ -13,6 +13,7 @@
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
+class VideoBitrateAllocation;
 class VP9Picture;
 struct Vp9Metadata;
 
@@ -46,6 +47,10 @@ class VP9SVCLayers {
   // Returns true if EncodeJob needs to produce key frame.
   bool UpdateEncodeJob(bool is_key_frame_requested, size_t kf_period_frames);
 
+  // Activate/Deactivate spatial layers via |bitrate_allocation|.
+  // Returns whether (de)updating is successful.
+  bool MaybeUpdateActiveLayer(VideoBitrateAllocation* bitrate_allocation);
+
   // Sets |picture|'s used reference frames and |ref_frames_used| so that they
   // structure valid temporal layers. This also fills |picture|'s
   // |metadata_for_encoding|.
@@ -54,6 +59,9 @@ class VP9SVCLayers {
       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
 
   size_t num_temporal_layers() const { return num_temporal_layers_; }
+  const std::vector<gfx::Size>& active_spatial_layer_resolutions() const {
+    return active_spatial_layer_resolutions_;
+  }
 
  private:
   // Useful functions to construct refresh flag and detect reference frames
@@ -76,10 +84,17 @@ class VP9SVCLayers {
   const size_t temporal_pattern_size_;
   size_t spatial_idx_ = 0;
   size_t frame_num_ = 0;
+  bool force_key_frame_ = false;
 
   // Resolutions for all spatial layers and active spatial layers.
   std::vector<gfx::Size> spatial_layer_resolutions_;
   std::vector<gfx::Size> active_spatial_layer_resolutions_;
+
+  // Stores the active layer range, only used to judge whether active range has
+  // changed in |MaybeUpdateActiveLayer|, then
+  // |active_spatial_layer_resolutions_| needs update.
+  size_t begin_active_layer_;
+  size_t end_active_layer_;
 
   // The pattern index used for reference frames slots.
   uint8_t pattern_index_of_ref_frames_slots_[kMaxNumUsedReferenceFrames] = {};

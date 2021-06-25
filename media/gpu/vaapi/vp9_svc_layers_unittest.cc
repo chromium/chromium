@@ -178,6 +178,93 @@ void VP9SVCLayersTest::VerifyRefFrames(
   }
 }
 
+// This test verifies the bitrate check in MaybeUpdateActiveLayer().
+TEST_F(VP9SVCLayersTest, MaybeUpdateActiveLayer) {
+  constexpr size_t kNumSpatialLayers = 3;
+  constexpr size_t kNumTemporalLayers = 3;
+  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
+      GetDefaultSVCLayers(kNumSpatialLayers, kNumTemporalLayers);
+  VP9SVCLayers svc_layers(spatial_layers);
+
+  // Set Default bitrate allocation.
+  int layer_rate = 1;
+  VideoBitrateAllocation allocation;
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
+         ++tid) {
+      allocation.SetBitrate(sid, tid, layer_rate++);
+    }
+  }
+  DCHECK_LT(kNumSpatialLayers, VideoBitrateAllocation::kMaxSpatialLayers);
+  DCHECK_LT(kNumTemporalLayers, VideoBitrateAllocation::kMaxTemporalLayers);
+  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+
+  // Set unsupported temporal layer bitrate to 0.
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = kNumTemporalLayers;
+         tid < VideoBitrateAllocation::kMaxTemporalLayers; ++tid) {
+      allocation.SetBitrate(sid, tid, 0);
+    }
+  }
+  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+
+  // Set unsupported spatial layer bitrate to 0.
+  for (size_t sid = kNumSpatialLayers;
+       sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
+         ++tid) {
+      allocation.SetBitrate(sid, tid, 0);
+    }
+  }
+  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+
+  // Set lower temporal layer bitrate to zero, e.g. {0, 2, 3}.
+  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 0);
+  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+
+  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/0, 1);
+  // Set upper temporal layer bitrate to 0, e.g. {1, 2, 0}.
+  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 0);
+  EXPECT_FALSE(svc_layers.MaybeUpdateActiveLayer(&allocation));
+
+  allocation.SetBitrate(/*spatial_index=*/0, /*temporal_index=*/2, 3);
+  // Deactivate SL0 and SL1 and verify the new bitrate allocation.
+  constexpr int kNumDeactivatedLowerSpatialLayer = 2;
+  VideoBitrateAllocation new_allocation = allocation;
+  for (size_t sid = 0; sid < kNumDeactivatedLowerSpatialLayer; ++sid) {
+    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid)
+      new_allocation.SetBitrate(sid, tid, 0);
+  }
+  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
+  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
+      if (sid + kNumDeactivatedLowerSpatialLayer <
+          VideoBitrateAllocation::kMaxSpatialLayers)
+        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
+                  allocation.GetBitrateBps(
+                      sid + kNumDeactivatedLowerSpatialLayer, tid));
+      else
+        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0);
+    }
+  }
+
+  // Deactivate SL2 and verify the new bitrate allocation.
+  new_allocation = allocation;
+  constexpr int kNumActiveSpatialLayer = 2;
+  for (size_t tid = 0; tid < kNumTemporalLayers; ++tid)
+    new_allocation.SetBitrate(/*spatial_index=*/2, tid, 0);
+  EXPECT_TRUE(svc_layers.MaybeUpdateActiveLayer(&new_allocation));
+  for (size_t sid = 0; sid < kNumSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < kNumTemporalLayers; ++tid) {
+      if (sid < kNumActiveSpatialLayer)
+        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid),
+                  allocation.GetBitrateBps(sid, tid));
+      else
+        EXPECT_EQ(new_allocation.GetBitrateBps(sid, tid), 0);
+    }
+  }
+}
+
 TEST_P(VP9SVCLayersTest, ) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());

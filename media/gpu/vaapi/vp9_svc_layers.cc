@@ -168,6 +168,8 @@ VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers)
         gfx::Size(spatial_layer.width, spatial_layer.height));
   }
   active_spatial_layer_resolutions_ = spatial_layer_resolutions_;
+  begin_active_layer_ = 0;
+  end_active_layer_ = active_spatial_layer_resolutions_.size();
   DCHECK_LE(num_temporal_layers_, kMaxSupportedTemporalLayers);
   DCHECK(!spatial_layer_resolutions_.empty());
   DCHECK_LE(spatial_layer_resolutions_.size(), kMaxSpatialLayers);
@@ -177,9 +179,10 @@ VP9SVCLayers::~VP9SVCLayers() = default;
 
 bool VP9SVCLayers::UpdateEncodeJob(bool is_key_frame_requested,
                                    size_t kf_period_frames) {
-  if (is_key_frame_requested) {
+  if (force_key_frame_ || is_key_frame_requested) {
     frame_num_ = 0;
     spatial_idx_ = 0;
+    force_key_frame_ = false;
   }
 
   if (spatial_idx_ == active_spatial_layer_resolutions_.size()) {
@@ -191,10 +194,111 @@ bool VP9SVCLayers::UpdateEncodeJob(bool is_key_frame_requested,
   return frame_num_ == 0 && spatial_idx_ == 0;
 }
 
+bool VP9SVCLayers::MaybeUpdateActiveLayer(
+    VideoBitrateAllocation* bitrate_allocation) {
+  // Don't update active layer if current picture haven't completed SVC
+  // encoding. Since the |spatial_idx_| is updated in the beginning of next
+  // encoding, so the |spatial_idx_| equals 0 (only for the first frame) or the
+  // number of active spatial layers indicates the complement of SVC picture
+  // encoding.
+  if (spatial_idx_ != 0 &&
+      spatial_idx_ != active_spatial_layer_resolutions_.size()) {
+    return false;
+  }
+
+  size_t begin_active_layer = kMaxSpatialLayers;
+  size_t end_active_layer = spatial_layer_resolutions_.size();
+  for (size_t sid = 0; sid < spatial_layer_resolutions_.size(); ++sid) {
+    size_t sum = 0;
+    for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
+      const int tl_bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
+      // A bitrate of a temporal layer must be zero if the bitrates of lower
+      // temporal layers are zero, e.g. {0, 0, 100}.
+      if (tid > 0 && tl_bitrate > 0 && sum == 0)
+        return false;
+      // A bitrate of a temporal layer must not be zero if the bitrates of lower
+      // temporal layers are not zero, e.g. {100, 0, 0}.
+      if (tid > 0 && tl_bitrate == 0 && sum != 0)
+        return false;
+
+      sum += static_cast<size_t>(tl_bitrate);
+    }
+
+    // Check if the temporal layers larger than |num_temporal_layers_| are zero.
+    for (size_t tid = num_temporal_layers_;
+         tid < VideoBitrateAllocation::kMaxTemporalLayers; ++tid) {
+      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0)
+        return false;
+    }
+
+    if (sum == 0) {
+      // This is the first non-active spatial layer in the end side.
+      if (begin_active_layer != kMaxSpatialLayers) {
+        end_active_layer = sid;
+        break;
+      }
+      // No active spatial layer is found yet. Try the upper spatial layer.
+      continue;
+    }
+    // This is the lowest active layer.
+    if (begin_active_layer == kMaxSpatialLayers)
+      begin_active_layer = sid;
+  }
+  // Check if all the bitrates of unsupported temporal and spatial layers are
+  // zero.
+  for (size_t sid = end_active_layer;
+       sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
+         ++tid) {
+      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0)
+        return false;
+    }
+  }
+  // No active layer is found.
+  if (begin_active_layer == kMaxSpatialLayers)
+    return false;
+
+  DCHECK_LT(begin_active_layer_, end_active_layer_);
+  DCHECK_LE(end_active_layer_ - begin_active_layer_,
+            spatial_layer_resolutions_.size());
+
+  // Remove non active spatial layer bitrate if |begin_active_layer| > 0.
+  if (begin_active_layer > 0) {
+    for (size_t sid = begin_active_layer; sid < end_active_layer; ++sid) {
+      for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
+        int bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
+        bitrate_allocation->SetBitrate(sid - begin_active_layer, tid, bitrate);
+        bitrate_allocation->SetBitrate(sid, tid, 0);
+      }
+    }
+  }
+
+  // Reset SVC parameters and force to produce key frame if active layer
+  // changed.
+  if (begin_active_layer != begin_active_layer_ ||
+      end_active_layer != end_active_layer_) {
+    // Update the stored active layer range.
+    begin_active_layer_ = begin_active_layer;
+    end_active_layer_ = end_active_layer;
+    active_spatial_layer_resolutions_ = {
+        spatial_layer_resolutions_.begin() + begin_active_layer,
+        spatial_layer_resolutions_.begin() + end_active_layer};
+    force_key_frame_ = true;
+  }
+
+  return true;
+}
+
 void VP9SVCLayers::FillUsedRefFramesAndMetadata(
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
   DCHECK(picture->frame_hdr);
+  // Update the spatial layer size for VP9FrameHeader.
+  gfx::Size updated_size = active_spatial_layer_resolutions_[spatial_idx_];
+  picture->frame_hdr->render_width = updated_size.width();
+  picture->frame_hdr->render_height = updated_size.height();
+  picture->frame_hdr->frame_width = updated_size.width();
+  picture->frame_hdr->frame_height = updated_size.height();
 
   // Initialize |metadata_for_encoding| with default values.
   picture->metadata_for_encoding.emplace();
