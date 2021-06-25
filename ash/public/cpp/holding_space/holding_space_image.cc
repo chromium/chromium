@@ -9,59 +9,23 @@
 
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/image_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ash {
-
 namespace {
 
 // Appearance.
 constexpr int kFileTypeIconSize = 20;
 
-// Whether image invalidation should be done without a delay. May be set in
-// tests.
+// Whether image invalidation should be done without delay.
 bool g_use_zero_invalidation_delay_for_testing = false;
-
-// EmptyImageSkiaSource --------------------------------------------------------
-
-class EmptyImageSkiaSource : public gfx::CanvasImageSource {
- public:
-  explicit EmptyImageSkiaSource(const gfx::Size& size)
-      : gfx::CanvasImageSource(size) {}
-
-  EmptyImageSkiaSource(const EmptyImageSkiaSource&) = delete;
-  EmptyImageSkiaSource& operator=(const EmptyImageSkiaSource&) = delete;
-  ~EmptyImageSkiaSource() override = default;
-
- private:
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {}  // Draw nothing.
-};
-
-// Helpers ---------------------------------------------------------------------
-
-// Creates an empty image of the specified `size`.
-gfx::ImageSkia CreateEmptyImageSkia(const gfx::Size& size) {
-  return gfx::ImageSkia(std::make_unique<EmptyImageSkiaSource>(size), size);
-}
-
-// Creates an image to represent the file type of the specified `file_path`.
-gfx::ImageSkia CreateFileTypeImageSkia(const base::FilePath& file_path,
-                                       bool is_folder,
-                                       const gfx::Size& size,
-                                       bool dark_background) {
-  const gfx::ImageSkia file_type_icon =
-      is_folder ? GetIconFromType(IconType::kFolder, dark_background)
-                : GetIconForPath(file_path, dark_background);
-  return HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon, size);
-}
 
 }  // namespace
 
@@ -93,36 +57,64 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
 
 // HoldingSpaceImage -----------------------------------------------------------
 
+HoldingSpaceImage::HoldingSpaceImage(const gfx::Size& max_size,
+                                     const base::FilePath& backing_file_path,
+                                     AsyncBitmapResolver async_bitmap_resolver)
+    : HoldingSpaceImage(max_size,
+                        backing_file_path,
+                        async_bitmap_resolver,
+                        CreateDefaultPlaceholderImageSkiaResolver()) {}
+
 HoldingSpaceImage::HoldingSpaceImage(
     const gfx::Size& max_size,
     const base::FilePath& backing_file_path,
     AsyncBitmapResolver async_bitmap_resolver,
-    absl::optional<gfx::ImageSkia> file_type_icon)
+    PlaceholderImageSkiaResolver placeholder_image_skia_resolver)
     : max_size_(max_size),
       backing_file_path_(backing_file_path),
       async_bitmap_resolver_(async_bitmap_resolver),
-      file_type_icon_(std::move(file_type_icon)) {
-  // If there is no supplied `file_type_icon`, use an empty `placeholder_` until
-  // a bitmap is asynchronously returned.
-  placeholder_ = file_type_icon_.value_or(CreateEmptyImageSkia(max_size_));
+      placeholder_image_skia_resolver_(placeholder_image_skia_resolver) {
+  placeholder_ = placeholder_image_skia_resolver_.Run(
+      backing_file_path_, max_size_, /*dark_background=*/absl::nullopt,
+      /*is_folder=*/absl::nullopt);
   CreateImageSkia();
 }
 
 HoldingSpaceImage::~HoldingSpaceImage() = default;
 
 // static
-void HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(bool value) {
-  g_use_zero_invalidation_delay_for_testing = value;
+HoldingSpaceImage::PlaceholderImageSkiaResolver
+HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver(
+    bool use_light_mode_as_default) {
+  return base::BindRepeating(
+      [](bool use_light_mode_as_default,
+         const base::FilePath& backing_file_path, const gfx::Size& size,
+         const absl::optional<bool>& dark_background,
+         const absl::optional<bool>& is_folder) {
+        // The requested image `size` should be >= `kFileTypeIconSize` to
+        // give the `file_type_icon` generated below enough space to fully
+        // paint.
+        DCHECK_GE(size.height(), kFileTypeIconSize);
+        DCHECK_GE(size.width(), kFileTypeIconSize);
+
+        const gfx::ImageSkia file_type_icon =
+            is_folder.value_or(false)
+                ? GetIconFromType(
+                      IconType::kFolder,
+                      dark_background.value_or(!use_light_mode_as_default))
+                : GetIconForPath(
+                      backing_file_path,
+                      dark_background.value_or(!use_light_mode_as_default));
+
+        return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+            image_util::CreateEmptyImage(size), file_type_icon);
+      },
+      use_light_mode_as_default);
 }
 
 // static
-gfx::ImageSkia HoldingSpaceImage::SuperimposeOverEmptyImage(
-    const gfx::ImageSkia& icon,
-    const gfx::Size& size) {
-  // Superimpose the `icon` over an empty image in order to center it
-  // within the image at a fixed size.
-  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateEmptyImageSkia(size), icon);
+void HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(bool value) {
+  g_use_zero_invalidation_delay_for_testing = value;
 }
 
 bool HoldingSpaceImage::operator==(const HoldingSpaceImage& rhs) const {
@@ -191,20 +183,13 @@ gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
   DCHECK_LE(size.height(), max_size_.height());
   DCHECK_LE(size.width(), max_size_.width());
 
-  // Requested `size` must be greater than the file type icon size in order for
-  // the image representing file type to render correctly.
-  DCHECK_GT(size.height(), kFileTypeIconSize);
-  DCHECK_GT(size.width(), kFileTypeIconSize);
-
-  // When an error occurs, fallback to an image representing file type.
+  // When an error occurs, fallback to a resolved placeholder image.
   if (async_bitmap_resolver_error_ &&
       async_bitmap_resolver_error_ != base::File::FILE_OK) {
-    if (file_type_icon_)
-      return file_type_icon_.value();
-    const bool is_folder =
-        async_bitmap_resolver_error_ == base::File::FILE_ERROR_NOT_A_FILE;
-    return CreateFileTypeImageSkia(backing_file_path_, is_folder, size,
-                                   dark_background);
+    return placeholder_image_skia_resolver_.Run(
+        backing_file_path_, size, dark_background,
+        /*is_folder=*/async_bitmap_resolver_error_ ==
+            base::File::FILE_ERROR_NOT_A_FILE);
   }
 
   // Short-circuit resizing logic.
@@ -236,7 +221,7 @@ void HoldingSpaceImage::Invalidate() {
   // Schedule an invalidation task with a delay to reduce number of image loads
   // when multiple image invalidations are requested in quick succession. The
   // delay is selected somewhat arbitrarily to be non trivial but still not
-  // easily noticable by the user.
+  // easily noticeable by the user.
   invalidate_timer_.Start(FROM_HERE,
                           g_use_zero_invalidation_delay_for_testing
                               ? base::TimeDelta()
@@ -262,9 +247,7 @@ void HoldingSpaceImage::OnInvalidateTimer() {
   //     requesting bitmap loads.
   // *   Prevent pending bitmap request callbacks from running.
   weak_factory_.InvalidateWeakPtrs();
-
   CreateImageSkia();
-
   callback_list_.Notify();
 }
 

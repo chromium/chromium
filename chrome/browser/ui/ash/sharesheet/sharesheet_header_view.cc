@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -39,6 +40,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -57,8 +59,8 @@ const std::u16string ConcatenateFileNames(
 
 gfx::ImageSkia CreateMimeTypeIcon(const gfx::ImageSkia& file_type_icon,
                                   const gfx::Size& image_size) {
-  return ash::HoldingSpaceImage::SuperimposeOverEmptyImage(file_type_icon,
-                                                           image_size);
+  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      ash::image_util::CreateEmptyImage(image_size), file_type_icon);
 }
 
 gfx::Size GetImagePreviewSize(size_t index, int grid_icon_count) {
@@ -416,11 +418,8 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
       size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
                           weak_ptr_factory_.GetWeakPtr()),
-      // We pass our own icon in here because we want the icon to appear
-      // while an image has not been loaded. If we didn't pass our own icon in,
-      // the container is left blank while we wait for an image to load.
-      absl::optional<gfx::ImageSkia>(CreateMimeTypeIcon(
-          GetIconForPath(file_path, /* dark_background= */ false), size)));
+      HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver(
+          /*use_light_mode_as_default=*/true));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
   // TODO(crbug.com/2896003) Here and above, update this to check whether we're

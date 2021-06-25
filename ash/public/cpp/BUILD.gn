@@ -141,6 +141,8 @@ component("cpp") {
     "holding_space/holding_space_util.h",
     "image_downloader.cc",
     "image_downloader.h",
+    "image_util.cc",
+    "image_util.h",
     "ime_controller.cc",
     "ime_controller.h",
     "ime_controller_client.h",

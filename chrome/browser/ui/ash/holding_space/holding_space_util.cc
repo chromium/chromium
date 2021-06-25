@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/image_util.h"
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -152,12 +153,15 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
   return file_system_url;
 }
 
+// TODO(crbug.com/1184438): Provide a placeholder for in-progress downloads
+// which corresponds to the target file path instead of the backing file path.
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
     ThumbnailLoader* thumbnail_loader,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
       GetMaxImageSizeForType(type), file_path,
+      /*async_bitmap_resolver=*/
       base::BindRepeating(
           [](const base::WeakPtr<ThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
@@ -165,7 +169,22 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
             if (thumbnail_loader)
               thumbnail_loader->Load({file_path, size}, std::move(callback));
           },
-          thumbnail_loader->GetWeakPtr()));
+          thumbnail_loader->GetWeakPtr()),
+      /*placeholder_image_skia_resolver=*/
+      base::BindRepeating([](const base::FilePath& file_path,
+                             const gfx::Size& size,
+                             const absl::optional<bool>& dark_background,
+                             const absl::optional<bool>& is_folder) {
+        // When the initial placeholder is being created during construction,
+        // `dark_background` and `is_folder` will be absent. In that case, don't
+        // show a placeholder to minimize jank.
+        if (!dark_background.has_value() && !is_folder.has_value())
+          return image_util::CreateEmptyImage(size);
+        // Otherwise, fallback to default behavior which is to create an image
+        // corresponding to the file type of the associated backing file.
+        return HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver()
+            .Run(file_path, size, dark_background, is_folder);
+      }));
 }
 
 void SetNowForTesting(absl::optional<base::Time> now) {

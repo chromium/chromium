@@ -16,36 +16,55 @@
 
 namespace ash {
 
+// TODO(crbug.com/1189945): Rename and move to more generic location.
 // A wrapper around a `gfx::ImageSkia` that supports dynamic updates.
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
  public:
   using CallbackList = base::RepeatingClosureList;
 
-  // Returns a bitmap.
+  // Returns an `SkBitmap`.
   using BitmapCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  // Returns a bitmap asynchronously for a given size.
+  // Returns an `SkBitmap` asynchronously for a given `file_path` and `size`.
   using AsyncBitmapResolver =
       base::RepeatingCallback<void(const base::FilePath& file_path,
                                    const gfx::Size& size,
                                    BitmapCallback callback)>;
 
-  // TODO(crbug.com/1189945): Rename to FilesThumbnailImage and create a
-  // PlaceholderImage factory that is passed in which generates/sets images.
+  // Returns a `gfx::ImageSkia` to be used as a placeholder prior to the async
+  // `SkBitmap` being resolved or when async `SkBitmap` resolution fails.
+  // NOTE: The placeholder resolver will be invoked during `HoldingSpaceImage`
+  // construction, at which time `dark_background` and `is_folder` are absent.
+  using PlaceholderImageSkiaResolver = base::RepeatingCallback<gfx::ImageSkia(
+      const base::FilePath& file_path,
+      const gfx::Size& size,
+      const absl::optional<bool>& dark_background,
+      const absl::optional<bool>& is_folder)>;
+
+  HoldingSpaceImage(const gfx::Size& max_size,
+                    const base::FilePath& backing_file_path,
+                    AsyncBitmapResolver async_bitmap_resolver);
+
   HoldingSpaceImage(
       const gfx::Size& max_size,
       const base::FilePath& backing_file_path,
       AsyncBitmapResolver async_bitmap_resolver,
-      absl::optional<gfx::ImageSkia> file_type_icon = absl::nullopt);
+      PlaceholderImageSkiaResolver placeholder_image_skia_resolver);
+
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
 
-  static void SetUseZeroInvalidationDelayForTesting(bool value);
+  // Returns a placeholder resolver which creates an image corresponding to the
+  // file type of the provided `file_path`.
+  static PlaceholderImageSkiaResolver CreateDefaultPlaceholderImageSkiaResolver(
+      bool use_light_mode_as_default = false);
 
-  static gfx::ImageSkia SuperimposeOverEmptyImage(const gfx::ImageSkia& icon,
-                                                  const gfx::Size& size);
+  // Sets whether image invalidation should be done without delay. This makes it
+  // possible to disable invalidation throttling that reduces the number of
+  // async bitmap requests in production.
+  static void SetUseZeroInvalidationDelayForTesting(bool value);
 
   bool operator==(const HoldingSpaceImage& rhs) const;
 
@@ -103,10 +122,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   base::FilePath backing_file_path_;
   AsyncBitmapResolver async_bitmap_resolver_;
   absl::optional<base::File::Error> async_bitmap_resolver_error_;
+  PlaceholderImageSkiaResolver placeholder_image_skia_resolver_;
 
   gfx::ImageSkia image_skia_;
   gfx::ImageSkia placeholder_;
-  absl::optional<gfx::ImageSkia> file_type_icon_;
 
   // Timer used to throttle image invalidate requests.
   base::OneShotTimer invalidate_timer_;
