@@ -12,13 +12,6 @@ html:not([subframe]) #sub-frame-error {
   display: none;
 }
 
-#diagnose-button {
-  float: none;
-  margin-bottom: 10px;
-  margin-inline-start: 0;
-  margin-top: 20px;
-}
-
 h1 {
   margin-top: 0;
   word-wrap: break-word;
@@ -26,13 +19,6 @@ h1 {
 
 h1 span {
   font-weight: 500;
-}
-
-h2 {
-  color: var(--heading-color);
-  font-size: 1.2em;
-  font-weight: normal;
-  margin: 10px 0;
 }
 
 a {
@@ -45,10 +31,8 @@ a {
 }
 
 .icon-generic {
-  /**
-   * Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
-   * renderer process, so embed the resource manually.
-   */
+  /* Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
+   * renderer process, so embed the resource manually. */
   content: -webkit-image-set(
       url(../../resources/default_100_percent/neterror/error_network_generic.png) 1x,
       url(../../resources/default_200_percent/neterror/error_network_generic.png) 2x);
@@ -68,29 +52,8 @@ a {
   width: 112px;
 }
 
-.error-code {
-  display: block;
-  font-size: .8em;
-}
-
-#content-top {
-  margin: 20px;
-}
-
-#help-box-inner {
-  background-color: #f9f9f9;
-  border-top: 1px solid #EEE;
-  color: #444;
-  padding: 20px;
-  text-align: start;
-}
-
 .hidden {
   display: none;
-}
-
-#suggestion {
-  margin-top: 15px;
 }
 
 #suggestions-list a {
@@ -108,10 +71,6 @@ a {
 .single-suggestion {
   list-style-type: none;
   padding-inline-start: 0;
-}
-
-#short-suggestion {
-  margin-top: 5px;
 }
 
 #error-information-button {
@@ -198,46 +157,6 @@ a {
   overflow-wrap: break-word;
 }
 
-#search-container {
-  /* Prevents a space between controls. */
-  display: flex;
-  margin-top: 20px;
-}
-
-#search-box {
-  border: 1px solid #cdcdcd;
-  flex-grow: 1;
-  font-size: 1em;
-  height: 26px;
-  margin-inline-end: 0;
-  padding: 1px 9px;
-}
-
-#search-box:focus {
-  border: 1px solid rgb(93, 154, 255);
-  outline: none;
-}
-
-#search-button {
-  border: none;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-  box-shadow: none;
-  display: flex;
-  height: 30px;
-  margin: 0;
-  padding: 0;
-  width: 60px;
-}
-
-#search-image {
-  content:
-      -webkit-image-set(
-          url(../../resources/default_100_percent/neterror/search_glass.png) 1x,
-          url(../../resources/default_200_percent/neterror/search_glass.png) 2x);
-  margin: auto;
-}
-
 .secondary-button {
   background: #d9d9d9;
   color: #696969;
@@ -299,23 +218,10 @@ a {
   color: #777;
 }
 
-/* Increase line height at higher resolutions. */
-@media (min-width: 641px) and (min-height: 641px) {
-  #help-box-inner {
-    line-height: 18px;
-  }
-}
-
 /* Decrease padding at low sizes. */
 @media (max-width: 640px), (max-height: 640px) {
   h1 {
     margin: 0 0 15px;
-  }
-  #content-top {
-    margin: 15px;
-  }
-  #help-box-inner {
-    padding: 20px;
   }
   .suggestions {
     margin-top: 10px;
@@ -765,22 +671,6 @@ html[subframe] body {
 #download-button:disabled {
   background: rgb(180, 206, 249);
   color: rgb(255, 255, 255);
-}
-
-/*
-TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
-*/
-.suggested-thumbnail {
-  height: 25vw;
-  width: 25vw;
-}
-
-/* Alternate dino page button styles */
-#control-buttons .reload-button-alternate:disabled {
-  background: #ccc;
-  color: #fff;
-  font-size: 14px;
-  height: 48px;
 }
 
 #buttons::after {

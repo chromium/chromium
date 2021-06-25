@@ -82,7 +82,7 @@ button:active {
 
 .error-code {
   color: var(--error-code-color);
-  font-size: .86667em;
+  font-size: .8em;
   text-transform: uppercase;
   margin-top: 12px;
 }

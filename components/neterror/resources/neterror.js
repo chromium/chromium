@@ -78,7 +78,9 @@ function updateForDnsProbe(strings) {
 }
 
 // Given the classList property of an element, adds an icon class to the list
-// and removes the previously-
+// and removes the icon class previously set with this method. Previous value
+// stored in 'last_icon_class' property of passed classList for future reference.
+// Initializes Dino Runner instance in case 'icon-offline' class was set.
 function updateIconClass(classList, newClass) {
   let oldClass;
 
@@ -102,13 +104,6 @@ function updateIconClass(classList, newClass) {
   } else {
     document.body.classList.add('neterror');
   }
-}
-
-// Does a search using |baseSearchUrl| and the text in the search box.
-function search(baseSearchUrl) {
-  const searchTextNode = document.getElementById('search-box');
-  document.location = baseSearchUrl + searchTextNode.value;
-  return false;
 }
 
 // Implements button clicks.  This function is needed during the transition
