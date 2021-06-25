@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
 namespace content {
 class RenderFrameHost;
@@ -55,10 +56,20 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   void RemoveSession();
 
   void SetTitle(const std::u16string& title);
+  void UpdateFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, RenderFrameHostGone);
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, TitleUpdateTaskDelay);
+  FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, ConvertFaviconURLToJSON);
+
+  static std::string ToJSON(
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates);
+
+  // Retrieve favicon url from WebContents, the result is set to
+  // |frame_content_capture_data_|.favicon.
+  void RetrieveFaviconURL();
 
   void NotifyTitleUpdate();
 

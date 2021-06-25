@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 namespace content_capture {
 namespace {
@@ -211,6 +212,18 @@ void OnscreenContentProvider::DidUpdateTitle(
 
   for (auto* consumer : consumers_)
     consumer->DidUpdateTitle(*session.begin());
+}
+
+void OnscreenContentProvider::DidUpdateFaviconURL(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  // Only set the favicons for the mainframe.
+  if (render_frame_host != web_contents()->GetMainFrame())
+    return;
+
+  if (auto* receiver = ContentCaptureReceiverForFrame(render_frame_host)) {
+    receiver->UpdateFaviconURL(candidates);
+  }
 }
 
 void OnscreenContentProvider::BuildContentCaptureSession(

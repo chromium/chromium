@@ -65,6 +65,9 @@ class OnscreenContentProvider : public content::WebContentsObserver,
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
+  void DidUpdateFaviconURL(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
   size_t GetFrameMapSizeForTesting() const { return frame_map_.size(); }
 

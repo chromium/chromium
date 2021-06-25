@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +21,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content_capture {
 namespace {
@@ -722,6 +725,47 @@ TEST_P(ContentCaptureReceiverTest, SameDocumentSameSession) {
   // Verifies the session wasn't removed for the same document navigation.
   EXPECT_TRUE(content_capture_consumer_helper()->removed_sessions().empty());
 }
+
+TEST_P(ContentCaptureReceiverTest, ConvertFaviconURLToJSON) {
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  EXPECT_TRUE(ContentCaptureReceiver::ToJSON(favicon_urls).empty());
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"https://a.com"}, blink::mojom::FaviconIconType::kFavicon,
+      std::vector<gfx::Size>{gfx::Size(10, 10)}));
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"https://b.com"}, blink::mojom::FaviconIconType::kTouchIcon,
+      std::vector<gfx::Size>{gfx::Size(100, 100), gfx::Size(20, 20)}));
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"https://c.com"},
+      blink::mojom::FaviconIconType::kTouchPrecomposedIcon,
+      std::vector<gfx::Size>{}));
+  std::string actual_json = ContentCaptureReceiver::ToJSON(favicon_urls);
+  absl::optional<base::Value> actual = base::JSONReader::Read(actual_json);
+  std::string expected_json =
+      R"JSON(
+      [
+        {
+          "sizes":[{"height":10,"width":10}],
+          "type":"favicon",
+          "url":"https://a.com/"
+        },
+        {
+          "sizes":[{"height":100,"width":100},
+                     {"height":20,"width":20}],
+          "type":"touch icon",
+          "url":"https://b.com/"
+        },
+        {
+          "type":"touch precomposed icon",
+          "url":"https://c.com/"
+        }
+      ]
+      )JSON";
+  absl::optional<base::Value> expected = base::JSONReader::Read(expected_json);
+  EXPECT_TRUE(actual);
+  EXPECT_EQ(expected, actual);
+}
+
 class ContentCaptureReceiverMultipleFrameTest
     : public ContentCaptureReceiverTest {
  public:

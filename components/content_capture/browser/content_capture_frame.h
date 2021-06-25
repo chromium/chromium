@@ -30,6 +30,39 @@ struct ContentCaptureFrame {
   std::vector<ContentCaptureData> children;
   // The title of a page.
   std::u16string title;
+  // The json that represents std::vector<blink::mojom::FaviconURLPtr>.
+  // The below example has two favicons, the second favicon files has two
+  // images.
+  // [
+  //    {
+  //      "sizes" :
+  //      [
+  //        {
+  //          "height" : 192,
+  //          "width" : 192
+  //        }
+  //      ],
+  //      "type" : "favicon",
+  //      "url" : "https://www.abc.com/appicon-192.png"
+  //    },
+  //    {
+  //      "sizes" :
+  //      [
+  //        {
+  //          "height" : 144,
+  //          "width" : 144
+  //        }
+  //       {
+  //          "height" : 192,
+  //          "width" : 192
+  //        }
+  //      ],
+  //      "type" : "touch icon",
+  //      "url" : "https://www.abc.com/appicon.png"
+  //    }
+  //  ]
+  // The 'type' could be 'favicon', 'touch icon' and 'touch precomposed icon'.
+  std::string favicon;
 
   bool operator==(const ContentCaptureFrame& other) const;
 
