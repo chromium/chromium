@@ -7,7 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 class PrefService;
 
@@ -19,6 +21,23 @@ class ChromeAccountManagerService : public KeyedService {
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
       delete;
+
+  // Returns true if there is at least one identity known by the service.
+  bool HasIdentities();
+
+  // Returns whether |identity| is valid and known by the service.
+  bool IsValidIdentity(ChromeIdentity* identity);
+
+  // Returns the ChromeIdentity with gaia ID equals to |gaia_id| or nil if
+  // no matching identity is found. There are two overloads to reduce the
+  // need to convert between NSString* and std::string.
+  ChromeIdentity* GetIdentityWithGaiaID(NSString* gaia_id);
+  ChromeIdentity* GetIdentityWithGaiaID(base::StringPiece gaia_id);
+
+  // Returns all ChromeIdentity objects, sorted by the ordering used in the
+  // account manager, which is typically based on the keychain ordering of
+  // accounts.
+  NSArray<ChromeIdentity*>* GetAllIdentities();
 
   // KeyedService implementation.
   void Shutdown() override;
