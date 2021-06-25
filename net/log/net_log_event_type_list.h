@@ -3922,3 +3922,15 @@ EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION)
 EVENT_TYPE(TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION)
 
 EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_SIGNING)
+
+// Temporarily added to for https://crbug.com/1186863. Logged at
+// net::URLRequestJob::NotifyHeadersComplete.
+EVENT_TYPE(URL_REQUEST_JOB_NOTIFY_HEADERS_COMPLETE_NEEDS_AUTH)
+
+// Temporarily added to for https://crbug.com/1186863. Logged at
+// net::URLRequestHttpJob::NotifyHeadersComplete.
+// The following parameters are attached:
+//   {
+//     "ready_to_restart_for_auth": <boolean>,
+//   }
+EVENT_TYPE(URL_REQUEST_HTTP_JOB_NOTIFY_HEADERS_COMPLETE)

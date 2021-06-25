@@ -343,6 +343,10 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
   DCHECK(!response_info_);
   DCHECK_EQ(0, num_cookie_lines_left_);
   DCHECK(request_->maybe_stored_cookies().empty());
+  request_->net_log().AddEntryWithBoolParams(
+      NetLogEventType::URL_REQUEST_HTTP_JOB_NOTIFY_HEADERS_COMPLETE,
+      NetLogEventPhase::NONE, "ready_to_restart_for_auth",
+      transaction_->IsReadyToRestartForAuth());
 
   response_info_ = transaction_->GetResponseInfo();
 
@@ -710,7 +714,9 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
 void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   DCHECK(set_cookie_access_result_list_.empty());
-  DCHECK_EQ(0, num_cookie_lines_left_);
+  // TODO(crbug.com/1186863): Turn this CHECK into DCHECK once the investigation
+  // is done.
+  CHECK_EQ(0, num_cookie_lines_left_);
 
   // End of the call started in OnStartCompleted.
   OnCallToDelegateComplete();
