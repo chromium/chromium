@@ -209,11 +209,7 @@ TEST(PendingLayerTest, MergeSparseInNonCompositedEffect) {
   PaintChunkSubset chunks(artifact.Build());
 
   PendingLayer pending_layer(chunks, chunks.begin());
-  ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(20, 25, 1030, 1035), pending_layer.Bounds());
-  EXPECT_EQ(PropertyTreeState(t0(), c0(), *e1),
-            pending_layer.GetPropertyTreeState());
-  EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1));
+  EXPECT_FALSE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
 }
 
 TEST(PendingLayerTest, KnownOpaque) {
