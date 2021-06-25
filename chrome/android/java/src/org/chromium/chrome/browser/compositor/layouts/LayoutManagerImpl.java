@@ -473,9 +473,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProviderSupplier,
                 mTopUiThemeColorProvider);
 
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(true);
-
         setNextLayout(null);
 
         // Initialize Layouts

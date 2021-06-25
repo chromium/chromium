@@ -65,9 +65,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
         super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
 
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(false);
-
         // Initialize Layouts
         TabContentManager tabContentManager = mTabContentManagerSupplier.get();
         assert tabContentManager != null;
