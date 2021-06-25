@@ -1,0 +1,77 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_STORE_INTERFACE_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_STORE_INTERFACE_H_
+
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace password_manager {
+
+class MockPasswordStoreInterface : public PasswordStoreInterface {
+ public:
+  MockPasswordStoreInterface();
+
+  MOCK_METHOD(bool, IsAbleToSavePasswords, (), (const, override));
+  MOCK_METHOD(void, AddLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void, UpdateLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void,
+              UpdateLoginWithPrimaryKey,
+              (const PasswordForm&, const PasswordForm&),
+              (override));
+  MOCK_METHOD(void, RemoveLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void,
+              RemoveLoginsByURLAndTime,
+              (const base::RepeatingCallback<bool(const GURL&)>&,
+               base::Time,
+               base::Time,
+               base::OnceClosure,
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLoginsCreatedBetween,
+              (base::Time, base::Time, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              DisableAutoSignInForOrigins,
+              (const base::RepeatingCallback<bool(const GURL&)>&,
+               base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              Unblocklist,
+              (const PasswordFormDigest&, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              GetLogins,
+              (const PasswordFormDigest&, PasswordStoreConsumer*),
+              (override));
+
+  MOCK_METHOD(void,
+              GetLoginsByPassword,
+              (const std::u16string&, PasswordStoreConsumer*),
+              (override));
+  MOCK_METHOD(void,
+              GetAutofillableLogins,
+              (PasswordStoreConsumer*),
+              (override));
+  MOCK_METHOD(void, GetAllLogins, (PasswordStoreConsumer*), (override));
+  MOCK_METHOD(void,
+              GetAllLoginsWithAffiliationAndBrandingInformation,
+              (PasswordStoreConsumer*),
+              (override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
+
+  // RefcountedKeyedService:
+  void ShutdownOnUIThread() override;
+
+ protected:
+  ~MockPasswordStoreInterface() override;
+};
+
+}  // namespace password_manager
+
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_STORE_INTERFACE_H_

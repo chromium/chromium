@@ -14,7 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,7 +67,7 @@ enum class SaveOperation {
 class FormSaverImplTest : public testing::Test {
  public:
   FormSaverImplTest()
-      : mock_store_(new StrictMock<MockPasswordStore>()),
+      : mock_store_(new StrictMock<MockPasswordStoreInterface>()),
         form_saver_(mock_store_.get()) {}
 
   ~FormSaverImplTest() override { mock_store_->ShutdownOnUIThread(); }
@@ -75,7 +75,7 @@ class FormSaverImplTest : public testing::Test {
  protected:
   // For the MockPasswordStore.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<StrictMock<MockPasswordStore>> mock_store_;
+  scoped_refptr<StrictMock<MockPasswordStoreInterface>> mock_store_;
   FormSaverImpl form_saver_;
 
  private:
