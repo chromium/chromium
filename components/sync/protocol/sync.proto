@@ -686,7 +686,7 @@ message GetUpdatesMessage {
 
   // Indicates whether the response should be sent in chunks.  This may be
   // needed for devices with limited memory resources.  If true, the response
-  // will include one or more ClientToServerResponses, with the frist one
+  // will include one or more ClientToServerResponses, with the first one
   // containing GetUpdatesMetadataResponse, and the remaining ones, if any,
   // containing GetUpdatesStreamingResponse.  These ClientToServerResponses are
   // delimited by a length prefix, which is encoded as a varint.
