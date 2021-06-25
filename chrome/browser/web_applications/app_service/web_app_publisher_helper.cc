@@ -684,12 +684,6 @@ WebAppRegistrar& WebAppPublisherHelper::registrar() const {
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1194709): Consider moving this into install finalizer.
-  provider_->registry_controller().SetAppIsDisabled(
-      app_id, IsWebAppInDisabledList(app_id));
-#endif
-
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
     delegate_->PublishWebApp(ConvertWebApp(web_app));
@@ -799,7 +793,7 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
     // previously disabled app, OnWebAppDisabledStateChanged() method will be
     // called and this method will update visibility and readiness of the newly
     // enabled app.
-    if (IsWebAppInDisabledList(id)) {
+    if (provider_->policy_manager().IsWebAppInDisabledList(id)) {
       const WebApp* web_app = GetWebApp(id);
       if (!web_app || !Accepts(id)) {
         continue;
@@ -1068,12 +1062,6 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
             : apps::mojom::OptionalBool::kFalse;
   }
 #endif
-}
-
-bool WebAppPublisherHelper::IsWebAppInDisabledList(
-    const std::string& app_id) const {
-  return base::Contains(provider_->policy_manager().GetDisabledWebAppsIds(),
-                        app_id);
 }
 
 bool WebAppPublisherHelper::MaybeAddNotification(

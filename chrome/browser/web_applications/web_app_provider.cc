@@ -251,8 +251,8 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
       profile, *registrar, std::make_unique<FileUtilsWrapper>());
-  install_finalizer_ =
-      std::make_unique<WebAppInstallFinalizer>(profile, icon_manager.get());
+  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
+      profile, icon_manager.get(), web_app_policy_manager_.get());
 
   if (g_os_integration_manager_factory_for_testing) {
     os_integration_manager_ =

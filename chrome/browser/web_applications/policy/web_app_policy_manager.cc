@@ -194,6 +194,10 @@ const std::set<AppId>& WebAppPolicyManager::GetDisabledWebAppsIds() const {
   return disabled_web_apps_;
 }
 
+bool WebAppPolicyManager::IsWebAppInDisabledList(const AppId& app_id) const {
+  return base::Contains(GetDisabledWebAppsIds(), app_id);
+}
+
 bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* const local_state = g_browser_process->local_state();

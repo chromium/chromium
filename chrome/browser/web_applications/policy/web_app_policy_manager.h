@@ -73,6 +73,9 @@ class WebAppPolicyManager {
   // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
   const std::set<AppId>& GetDisabledWebAppsIds() const;
 
+  // Checks if web app is disabled by SystemFeaturesDisableList policy.
+  bool IsWebAppInDisabledList(const AppId& app_id) const;
+
   // Checks if UI mode of disabled web apps is hidden.
   bool IsDisabledAppsModeHidden() const;
 

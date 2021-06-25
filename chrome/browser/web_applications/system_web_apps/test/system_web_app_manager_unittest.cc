@@ -139,12 +139,12 @@ class SystemWebAppManagerTest : public WebAppTest {
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     icon_manager_ = std::make_unique<WebAppIconManager>(
         profile(), controller().registrar(), std::make_unique<TestFileUtils>());
-    install_finalizer_ =
-        std::make_unique<WebAppInstallFinalizer>(profile(), &icon_manager());
+    web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
+    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
+        profile(), &icon_manager(), web_app_policy_manager_.get());
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_externally_managed_app_manager_impl_ =
         std::make_unique<TestExternallyManagedAppManagerImpl>(profile());
-    web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
@@ -184,10 +184,10 @@ class SystemWebAppManagerTest : public WebAppTest {
     // The reverse order of creation:
     test_ui_manager_.reset();
     test_system_web_app_manager_.reset();
-    web_app_policy_manager_.reset();
     test_externally_managed_app_manager_impl_.reset();
     install_manager_.reset();
     install_finalizer_.reset();
+    web_app_policy_manager_.reset();
     icon_manager_.reset();
     externally_installed_app_prefs_.reset();
     test_registry_controller_.reset();
@@ -283,13 +283,13 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<TestExternallyManagedAppManagerImpl>
       test_externally_managed_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
-  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
 };
 
 // Test that System Apps do install with the feature enabled.

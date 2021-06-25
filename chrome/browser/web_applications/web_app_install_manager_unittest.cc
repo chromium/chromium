@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
@@ -176,8 +177,10 @@ class WebAppInstallManagerTest
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
                                                         std::move(file_utils));
 
+    policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
+
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-        profile(), icon_manager_.get());
+        profile(), icon_manager_.get(), policy_manager_.get());
 
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     install_manager_->SetSubsystems(&registrar(),
@@ -420,6 +423,7 @@ class WebAppInstallManagerTest
     ui_manager_.reset();
     install_manager_.reset();
     install_finalizer_.reset();
+    policy_manager_.reset();
     icon_manager_.reset();
     test_registry_controller_.reset();
     externally_installed_app_prefs_.reset();
@@ -443,7 +447,7 @@ class WebAppInstallManagerTest
 
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
-
+  std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<TestWebAppUiManager> ui_manager_;

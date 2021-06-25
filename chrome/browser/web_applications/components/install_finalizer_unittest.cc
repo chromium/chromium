@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
@@ -53,9 +54,10 @@ class InstallFinalizerUnitTest : public WebAppTest {
     auto file_utils = std::make_unique<TestFileUtils>();
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
                                                         std::move(file_utils));
+    policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     ui_manager_ = std::make_unique<TestWebAppUiManager>();
-    finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile(),
-                                                          icon_manager_.get());
+    finalizer_ = std::make_unique<WebAppInstallFinalizer>(
+        profile(), icon_manager_.get(), policy_manager_.get());
 
     finalizer_->SetSubsystems(
         &registrar(), ui_manager_.get(),
@@ -68,6 +70,7 @@ class InstallFinalizerUnitTest : public WebAppTest {
   void TearDown() override {
     finalizer_.reset();
     ui_manager_.reset();
+    policy_manager_.reset();
     icon_manager_.reset();
     test_registry_controller_.reset();
     WebAppTest::TearDown();
@@ -99,6 +102,7 @@ class InstallFinalizerUnitTest : public WebAppTest {
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<InstallFinalizer> finalizer_;
 };

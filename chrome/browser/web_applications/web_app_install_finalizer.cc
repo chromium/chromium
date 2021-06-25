@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
@@ -104,9 +105,13 @@ webapps::WebappUninstallSource ConvertSourceTypeToWebAppUninstallSource(
 
 }  // namespace
 
-WebAppInstallFinalizer::WebAppInstallFinalizer(Profile* profile,
-                                               WebAppIconManager* icon_manager)
-    : profile_(profile), icon_manager_(icon_manager) {}
+WebAppInstallFinalizer::WebAppInstallFinalizer(
+    Profile* profile,
+    WebAppIconManager* icon_manager,
+    WebAppPolicyManager* policy_manager)
+    : profile_(profile),
+      icon_manager_(icon_manager),
+      policy_manager_(policy_manager) {}
 
 WebAppInstallFinalizer::~WebAppInstallFinalizer() = default;
 
@@ -179,6 +184,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // caller provided a new value.
   if (options.chromeos_data.has_value())
     web_app->SetWebAppChromeOsData(options.chromeos_data.value());
+
+  if (policy_manager_->IsWebAppInDisabledList(app_id) &&
+      web_app->chromeos_data().has_value() &&
+      !web_app->chromeos_data()->is_disabled) {
+    absl::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
+    cros_data->is_disabled = true;
+    web_app->SetWebAppChromeOsData(std::move(cros_data));
+  }
 
   // `WebApp::system_web_app_data` has a default value already. Only override if
   // the caller provided a new value.

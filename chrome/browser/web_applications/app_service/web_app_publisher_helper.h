@@ -181,13 +181,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                blink::mojom::DisplayMode display_mode,
                                bool in_experimental_tabbed_window);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1194709): Make this method private, move
-  // WebAppsChromeOs::OnWebAppInstalled() logic into this class.
-  // Checks whether the |app_id| is in the disabled list.
-  bool IsWebAppInDisabledList(const std::string& app_id) const;
-#endif
-
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }

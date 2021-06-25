@@ -29,12 +29,15 @@ namespace web_app {
 
 class WebApp;
 class WebAppIconManager;
+class WebAppPolicyManager;
 class WebAppRegistrar;
 
 class WebAppInstallFinalizer final : public InstallFinalizer,
                                      public content_settings::Observer {
  public:
-  WebAppInstallFinalizer(Profile* profile, WebAppIconManager* icon_manager);
+  WebAppInstallFinalizer(Profile* profile,
+                         WebAppIconManager* icon_manager,
+                         WebAppPolicyManager* policy_manager);
   WebAppInstallFinalizer(const WebAppInstallFinalizer&) = delete;
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
   ~WebAppInstallFinalizer() override;
@@ -165,6 +168,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer,
 
   Profile* const profile_;
   WebAppIconManager* const icon_manager_;
+  WebAppPolicyManager* policy_manager_;
   bool started_ = false;
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
