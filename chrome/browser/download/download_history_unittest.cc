@@ -17,6 +17,7 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
+#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_utils.h"

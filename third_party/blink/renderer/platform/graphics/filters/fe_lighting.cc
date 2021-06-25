@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/distant_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/point_light_source.h"

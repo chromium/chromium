@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"

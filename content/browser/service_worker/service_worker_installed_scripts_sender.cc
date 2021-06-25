@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"

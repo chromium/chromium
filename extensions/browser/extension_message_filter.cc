@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/stl_util.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"

@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 
 #include <memory>
+
 #include "base/bind.h"
+#include "base/stl_util.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"

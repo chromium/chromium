@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 

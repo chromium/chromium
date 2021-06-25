@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"

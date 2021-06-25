@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "net/base/url_util.h"

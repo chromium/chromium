@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/android/chrome_jni_headers/SaveAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"

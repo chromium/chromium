@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 

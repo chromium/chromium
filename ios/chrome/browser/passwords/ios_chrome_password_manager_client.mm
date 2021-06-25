@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/logging/log_manager.h"

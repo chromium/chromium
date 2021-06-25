@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/paint/svg_inline_text_box_painter.h"
 
 #include <memory>
+
+#include "base/stl_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"

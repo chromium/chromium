@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/hash/md5.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"

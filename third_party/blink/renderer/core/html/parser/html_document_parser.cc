@@ -30,6 +30,7 @@
 
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/stl_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"

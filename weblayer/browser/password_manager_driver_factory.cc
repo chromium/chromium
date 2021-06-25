@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/password_manager_driver_factory.h"
 
+#include "base/stl_util.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"

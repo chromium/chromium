@@ -27,6 +27,7 @@
 #include <memory>
 
 #include "base/numerics/checked_math.h"
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 

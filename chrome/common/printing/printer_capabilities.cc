@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
