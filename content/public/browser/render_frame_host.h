@@ -786,6 +786,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // received by the other end. For test use only.
   virtual void FlushNetworkAndNavigationInterfacesForTesting() = 0;
 
+  // Retrieve the back/forward cache CanStoreNow debug string.
+  virtual std::string GetBackForwardCanStoreNowDebugStringForTesting() = 0;
+
   using PrepareForInnerWebContentsAttachCallback =
       base::OnceCallback<void(RenderFrameHost*)>;
   // This API is used to provide the caller with a RenderFrameHost which is safe

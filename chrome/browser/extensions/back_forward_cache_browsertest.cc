@@ -90,6 +90,17 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
                      kMessagingBucket));
   }
 
+  void ExpectInCache(content::RenderFrameHost* rfh) {
+    if (rfh->GetLifecycleState() !=
+        content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
+      LOG(ERROR) << "Can store result "
+                 << rfh->GetBackForwardCanStoreNowDebugStringForTesting();
+    }
+
+    EXPECT_EQ(rfh->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -395,8 +406,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ExpectInCache(rfh_a);
 
   std::u16string expected_title = u"foo";
   auto title_watcher = std::make_unique<content::TitleWatcher>(
@@ -413,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(
   // `rfh_a` should still be in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ExpectInCache(rfh_a);
 
   // Expect the original title when going back to A.
   expected_title = u"Title Of Awesomeness";
@@ -431,8 +440,7 @@ IN_PROC_BROWSER_TEST_F(
   // `rfh_b` should still be in the cache.
   EXPECT_FALSE(delete_observer_rfh_b.deleted());
   EXPECT_NE(rfh_a, rfh_b);
-  EXPECT_EQ(rfh_b->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ExpectInCache(rfh_b);
 
   // Now go forward to B, and expect that it is what was set before it
   // went into the back forward cache.
