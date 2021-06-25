@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -2976,6 +2977,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCrashData) {
     GTEST_SKIP();
   }
 #endif
+  base::ScopedPathOverride override_crash_dumps(chrome::DIR_CRASH_DUMPS);
   base::FilePath crash_dir_path;
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =
