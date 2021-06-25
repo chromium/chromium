@@ -11,9 +11,6 @@
       'resources/breakpoint-manager-listeners-count.html');
 
   SourcesTestRunner.runDebuggerTestSuite([function testSourceFramesCount(next) {
-    var panel = UI.panels.sources;
-    var sourceFrameCount = 0;
-
     SourcesTestRunner.showScriptSource('script1.js', didShowScriptSources);
 
     function didShowScriptSources() {
@@ -26,13 +23,13 @@
     }
 
     function didShowScriptSourceAgain() {
-      var listeners = Bindings.breakpointManager._listeners.get(
+      var listeners = Bindings.breakpointManager.listeners.get(
           Bindings.BreakpointManager.Events.BreakpointAdded);
       // There should be 3 breakpoint-added event listeners:
       //  - BreakpointsSidebarPane
       //  - 2 shown tabs
       TestRunner.addResult(
-          'Number of breakpoint-added event listeners is ' + listeners.length);
+          'Number of breakpoint-added event listeners is ' + listeners.size);
 
       function dumpListener(listener) {
         if (!(listener.thisObject instanceof Sources.DebuggerPlugin))
@@ -43,7 +40,7 @@
 
       TestRunner.addResult(
           'Dumping SourceFrames listening for breakpoint-added event:');
-      listeners.map(dumpListener);
+      [...listeners].map(dumpListener);
 
       next();
     }
