@@ -765,6 +765,143 @@ TEST_F(PolicyServiceTest, IsInitializationComplete) {
   policy_service_->RemoveObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
 }
 
+using DomainParameters = std::tuple<bool,  // provider initialized
+                                    bool,  // first policy fetched
+                                    bool   // observer present
+                                    >;
+using ObserverTestParameters = std::tuple<DomainParameters,  // CHROME
+                                          DomainParameters,  // EXTENSIONS
+                                          DomainParameters  // SIGNIN_EXTENSIONS
+                                          >;
+
+class PolicyServiceTestForObservers
+    : public testing::Test,
+      public testing::WithParamInterface<ObserverTestParameters> {
+ public:
+  PolicyServiceTestForObservers() = default;
+  PolicyServiceTestForObservers(const PolicyServiceTestForObservers& other) =
+      delete;
+  PolicyServiceTestForObservers& operator=(
+      const PolicyServiceTestForObservers& other) = delete;
+  ~PolicyServiceTestForObservers() override = default;
+
+  void SetUp() override {
+    SetupDomain<POLICY_DOMAIN_CHROME>();
+    SetupDomain<POLICY_DOMAIN_EXTENSIONS>();
+    SetupDomain<POLICY_DOMAIN_SIGNIN_EXTENSIONS>();
+
+    provider_.Init();
+  }
+
+  void AddObservers(PolicyService* service) {
+    AddObserver<POLICY_DOMAIN_CHROME>(service);
+    AddObserver<POLICY_DOMAIN_EXTENSIONS>(service);
+    AddObserver<POLICY_DOMAIN_SIGNIN_EXTENSIONS>(service);
+  }
+
+  void RemoveObservers(PolicyService* service) {
+    RemoveObserver<POLICY_DOMAIN_CHROME>(service);
+    RemoveObserver<POLICY_DOMAIN_EXTENSIONS>(service);
+    RemoveObserver<POLICY_DOMAIN_SIGNIN_EXTENSIONS>(service);
+  }
+
+  void TearDown() override { provider_.Shutdown(); }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  MockConfigurationPolicyProvider provider_;
+  MockPolicyServiceObserver observer_;
+
+ private:
+  template <PolicyDomain domain>
+  void SetupDomain() {
+    DomainParameters params = std::get<domain>(GetParam());
+
+    EXPECT_CALL(provider_, IsInitializationComplete(domain))
+        .WillRepeatedly(Return(std::get<0>(params)));
+    EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(domain))
+        .WillRepeatedly(Return(std::get<1>(params)));
+  }
+  template <PolicyDomain domain>
+  void AddObserver(PolicyService* service) {
+    DomainParameters params = std::get<domain>(GetParam());
+
+    const bool isInitialized = std::get<0>(params);
+    const bool isPolicyFetched = std::get<1>(params);
+    const bool hasObserver = std::get<2>(params);
+    if (hasObserver)
+      service->AddObserver(domain, &observer_);
+    EXPECT_CALL(observer_, OnPolicyServiceInitialized(domain))
+        .Times(isInitialized && hasObserver);
+    EXPECT_CALL(observer_, OnFirstPoliciesLoaded(domain))
+        .Times(isInitialized && isPolicyFetched && hasObserver);
+  }
+  template <PolicyDomain domain>
+  void RemoveObserver(PolicyService* service) {
+    DomainParameters params = std::get<domain>(GetParam());
+
+    const bool hasObserver = std::get<2>(params);
+    if (hasObserver)
+      service->RemoveObserver(domain, &observer_);
+  }
+};
+
+TEST_P(PolicyServiceTestForObservers, MaybeNotifyPolicyDomainStatusChange) {
+  auto local_policy_service =
+      PolicyServiceImpl::CreateWithThrottledInitialization(
+          PolicyServiceImpl::Providers{&provider_});
+
+  AddObservers(local_policy_service.get());
+
+  local_policy_service->UnthrottleInitialization();
+
+  Mock::VerifyAndClearExpectations(&observer_);
+  Mock::VerifyAndClearExpectations(&provider_);
+
+  RemoveObservers(local_policy_service.get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllDomains,
+    PolicyServiceTestForObservers,
+    testing::Combine(
+        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool())));
+
+TEST_F(PolicyServiceTest, IsInitializationCompleteMightDestroyThis) {
+  Mock::VerifyAndClearExpectations(&provider0_);
+  EXPECT_CALL(provider0_, IsInitializationComplete(_))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(provider0_, IsFirstPolicyLoadComplete(_))
+      .WillRepeatedly(Return(true));
+  PolicyServiceImpl::Providers providers;
+  providers.push_back(&provider0_);
+  auto local_policy_service =
+      PolicyServiceImpl::CreateWithThrottledInitialization(
+          std::move(providers));
+  EXPECT_FALSE(
+      local_policy_service->IsInitializationComplete(POLICY_DOMAIN_CHROME));
+
+  MockPolicyServiceObserver observer;
+  local_policy_service->AddObserver(POLICY_DOMAIN_CHROME, &observer);
+
+  // Now initialize policy domains on provider0.
+  // One of our observers destroys the policy service.
+  // This happens in the wild: https://crbug.com/747817
+  EXPECT_CALL(observer, OnPolicyServiceInitialized(POLICY_DOMAIN_CHROME))
+      .WillOnce([&local_policy_service, &observer](auto) {
+        local_policy_service->RemoveObserver(POLICY_DOMAIN_CHROME, &observer);
+        local_policy_service.reset();
+      });
+
+  local_policy_service->UnthrottleInitialization();
+  EXPECT_FALSE(local_policy_service);
+
+  Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&provider0_);
+}
+
 // Tests initialization throttling of PolicyServiceImpl.
 // This actually tests two cases:
 // (1) A domain was initialized before UnthrottleInitialization is called.

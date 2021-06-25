@@ -64,13 +64,15 @@ class POLICY_EXPORT PolicyService {
 
   class POLICY_EXPORT ProviderUpdateObserver : public base::CheckedObserver {
    public:
-    // Invoked when a policy update signaled by |provider| has been propagated
-    // to the PolicyService's Observers and its contents are now available
-    // through PolicyService::GetPolicies. This is intentionally also called if
-    // the policy update signaled by |provider| did not change the effective
-    // policy values. Note that multiple policy updates by |provider| can result
-    // in a single call to this function, e.g. if a subsequent policy update is
-    // signaled before the previous one has been processed by the PolicyService.
+    // Invoked when the contents of a policy update signaled by |provider| are
+    // available through PolicyService::GetPolicies.
+    // This is intentionally also called if the policy update signaled by
+    // |provider| did not change the effective policy values. Note that multiple
+    // policy updates by |provider| can result in a single call to this
+    // function, e.g. if a subsequent policy update is signaled before the
+    // previous one has been processed by the PolicyService.
+    // Also note that when this is called, PolicyService's Observers may not
+    // have been called with the update that triggered this call yet.
     virtual void OnProviderUpdatePropagated(
         ConfigurationPolicyProvider* provider) = 0;
   };

@@ -204,7 +204,6 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers,
 
   for (auto* provider : providers_)
     provider->AddObserver(this);
-  CheckPolicyDomainStatus();
   // There are no observers yet, but calls to GetPolicies() should already get
   // the processed policy values.
   MergeAndTriggerUpdates();
@@ -319,8 +318,10 @@ void PolicyServiceImpl::UnthrottleInitialization() {
     return;
 
   initialization_throttled_ = false;
+  std::vector<PolicyDomain> updated_domains;
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
-    MaybeNotifyPolicyDomainStatusChange(static_cast<PolicyDomain>(domain));
+    updated_domains.push_back(static_cast<PolicyDomain>(domain));
+  MaybeNotifyPolicyDomainStatusChange(updated_domains);
 }
 
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
@@ -468,13 +469,18 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   for (; it_old != end_old; ++it_old)
     NotifyNamespaceUpdated(it_old->first, it_old->second, kEmpty);
 
-  CheckPolicyDomainStatus();
+  const std::vector<PolicyDomain> updated_domains = UpdatePolicyDomainStatus();
   CheckRefreshComplete();
   NotifyProviderUpdatesPropagated();
+  // This has to go last as one of the observers might actually destroy `this`.
+  // See https://crbug.com/747817
+  MaybeNotifyPolicyDomainStatusChange(updated_domains);
 }
 
-void PolicyServiceImpl::CheckPolicyDomainStatus() {
+std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  std::vector<PolicyDomain> updated_domains;
 
   // Check if all the providers just became initialized for each domain; if so,
   // notify that domain's observers. If they were initialized, check if they had
@@ -499,25 +505,45 @@ void PolicyServiceImpl::CheckPolicyDomainStatus() {
       continue;
 
     policy_domain_status_[domain] = new_status;
-    MaybeNotifyPolicyDomainStatusChange(policy_domain);
+    updated_domains.push_back(static_cast<PolicyDomain>(domain));
   }
+  return updated_domains;
 }
+
 void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
-    PolicyDomain policy_domain) {
-  if (initialization_throttled_ || policy_domain_status_[policy_domain] ==
-                                       PolicyDomainStatus::kUninitialized) {
-    return;
-  }
-
-  auto iter = observers_.find(policy_domain);
-  if (iter == observers_.end())
+    const std::vector<PolicyDomain>& updated_domains) {
+  if (initialization_throttled_)
     return;
 
-  for (auto& observer : iter->second) {
-    observer.OnPolicyServiceInitialized(policy_domain);
+  for (const auto policy_domain : updated_domains) {
     if (policy_domain_status_[policy_domain] ==
-        PolicyDomainStatus::kPolicyReady)
-      observer.OnFirstPoliciesLoaded(policy_domain);
+        PolicyDomainStatus::kUninitialized) {
+      continue;
+    }
+
+    auto iter = observers_.find(policy_domain);
+    if (iter == observers_.end())
+      continue;
+
+    // If and when crbug.com/1221454 gets fixed, we should drop the WeakPtr
+    // construction and checks here.
+    const auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    for (auto& observer : iter->second) {
+      observer.OnPolicyServiceInitialized(policy_domain);
+      if (!weak_this) {
+        VLOG(1) << "PolicyService destroyed while notifying observers.";
+        return;
+      }
+      if (policy_domain_status_[policy_domain] ==
+          PolicyDomainStatus::kPolicyReady) {
+        observer.OnFirstPoliciesLoaded(policy_domain);
+        // If this gets hit, it implies that some OnFirstPoliciesLoaded()
+        // observer was changed to trigger the deletion of |this|. See
+        // crbug.com/1221454 for a similar problem with
+        // OnPolicyServiceInitialized().
+        CHECK(weak_this);
+      }
+    }
   }
 }
 

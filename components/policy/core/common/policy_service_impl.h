@@ -109,16 +109,18 @@ class POLICY_EXPORT PolicyServiceImpl
   void MergeAndTriggerUpdates();
 
   // Checks if all providers are initialized or have loaded their policies and
-  // sets |policy_domain_status_| accordingly. If initialization is not
-  // throttled, will also notify the observers of the appropriate status.
-  void CheckPolicyDomainStatus();
+  // sets |policy_domain_status_| accordingly.
+  // Returns the updated domains. The returned domains should be passed to
+  // MaybeNotifyPolicyDomainStatusChange.
+  std::vector<PolicyDomain> UpdatePolicyDomainStatus();
 
-  // If initialization is not throttled, observers of |policy_domain| of the
+  // If initialization is not throttled, observers of |updated_domains| of the
   // initialization will be notified of the domains' initialization and of the
   // first policies being loaded. This function should only be called when
-  // |policy_domain| just became initialized, just got its first policies or
+  // |updated_domains| just became initialized, just got its first policies or
   // when initialization has been unthrottled.
-  void MaybeNotifyPolicyDomainStatusChange(PolicyDomain policy_domain);
+  void MaybeNotifyPolicyDomainStatusChange(
+      const std::vector<PolicyDomain>& updated_domains);
 
   // Invokes all the refresh callbacks if there are no more refreshes pending.
   void CheckRefreshComplete();
@@ -173,7 +175,11 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Used to create tasks to delay new policy updates while we may be already
   // processing previous policy updates.
+  // All WeakPtrs will be reset in |RefreshPolicies| and |OnUpdatePolicy|.
   base::WeakPtrFactory<PolicyServiceImpl> update_task_ptr_factory_{this};
+
+  // Used to protect against crbug.com/747817 until crbug.com/1221454 is done.
+  base::WeakPtrFactory<PolicyServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyServiceImpl);
 };
