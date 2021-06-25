@@ -325,10 +325,8 @@ void PreloadPepperPlugins() {
       base::NativeLibraryLoadError error;
       base::NativeLibrary library =
           base::LoadNativeLibrary(plugin.path, &error);
-      VLOG_IF(1, !library) << "Unable to load plugin " << plugin.path.value()
-                           << " " << error.ToString();
-
-      ignore_result(library);  // Prevent release-mode warning.
+      LOG_IF(ERROR, !library) << "Unable to load plugin " << plugin.path.value()
+                              << " " << error.ToString();
     }
   }
 }
@@ -343,9 +341,8 @@ void PreloadLibraryCdms() {
   for (const auto& cdm : cdms) {
     base::NativeLibraryLoadError error;
     base::NativeLibrary library = base::LoadNativeLibrary(cdm.path, &error);
-    VLOG_IF(1, !library) << "Unable to load CDM " << cdm.path.value()
-                         << " (error: " << error.ToString() << ")";
-    ignore_result(library);  // Prevent release-mode warning.
+    LOG_IF(ERROR, !library) << "Unable to load CDM " << cdm.path.value()
+                            << " (error: " << error.ToString() << ")";
   }
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
