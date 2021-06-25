@@ -350,7 +350,8 @@ void CartService::OnGetDiscountURL(
     return;
   }
   auto& cart_proto = proto_pairs[0].second;
-  if (cart_proto.discount_info().discount_info().empty()) {
+  if (!IsCartDiscountEnabled() ||
+      cart_proto.discount_info().discount_info().empty()) {
     std::move(callback).Run(default_cart_url);
     return;
   }
