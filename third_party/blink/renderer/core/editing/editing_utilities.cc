@@ -787,6 +787,14 @@ int FindNextBoundaryOffset(const String& str, int current) {
   return current + machine.FinalizeAndGetBoundaryOffset();
 }
 
+// Explicit instantiation to avoid link error for the usage in EditContext.
+template int FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
+    const String& str,
+    int current);
+template int FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
+    const String& str,
+    int current);
+
 int PreviousGraphemeBoundaryOf(const Node& node, int current) {
   // TODO(yosin): Need to support grapheme crossing |Node| boundary.
   DCHECK_GE(current, 0);

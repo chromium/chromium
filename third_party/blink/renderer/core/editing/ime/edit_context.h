@@ -175,6 +175,11 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // For English typing.
   bool InsertText(const WebString& text);
 
+  void DeleteBackward();
+  void DeleteForward();
+  void DeleteWordBackward();
+  void DeleteWordForward();
+
   bool IsVirtualKeyboardPolicyManual() const override;
   bool IsEditContextActive() const override;
   // Returns whether show()/hide() API is called from virtualkeyboard or not.
@@ -198,6 +203,8 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   WebTextInputMode GetInputModeOfEditContext() const;
 
   InputMethodController& GetInputMethodController() const;
+
+  void DeleteCurrentSelection();
 
   // Events fired to JS.
   // Fires compositionstart event to JS whenever user starts a composition.
