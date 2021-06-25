@@ -5454,7 +5454,6 @@ crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-r
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-and-fixpos.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-and-inline.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
-crbug.com/1008483 virtual/transform-interop/compositing/geometry/require-own-backing-recalc-order.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/transforms/3d/point-mapping/3d-point-mapping-2.html [ Failure ]
 
@@ -5467,7 +5466,6 @@ crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-trans
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/3d-rendering-context-and-fixpos.html [ Pass ]
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/3d-rendering-context-and-inline.html [ Pass ]
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
-crbug.com/1008483 virtual/backface-visibility-interop/compositing/geometry/require-own-backing-recalc-order.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/compositing/overflow/scroll-parent-with-non-stacking-context-composited-ancestor.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/stacking-context-lost.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/multicol/multicol-as-paint-container.html [ Failure ]
