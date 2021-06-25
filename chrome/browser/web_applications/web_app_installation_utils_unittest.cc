@@ -163,7 +163,8 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_LimitFileHandlers) {
       std::map<std::u16string, std::vector<std::u16string>> accept;
       accept[UTF8ToUTF16(mime_type(i))] = {UTF8ToUTF16(extension(i))};
       web_app_info.file_handlers.push_back(
-          {action_url(i), name, std::move(accept)});
+          {action_url(i), name, std::vector<blink::Manifest::ImageResource>(),
+           std::move(accept)});
     }
     EXPECT_GT(web_app_info.file_handlers.size(), kMaxFileHandlers);
   }

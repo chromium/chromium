@@ -283,6 +283,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
   if (!web_app_icons.empty())
     web_app_info->icon_infos = std::move(web_app_icons);
 
+  // TODO(crbug.com/1218210): Confirm incoming icons to write to web_app_info.
   web_app_info->file_handlers = manifest.file_handlers;
 
   web_app_info->share_target = ToWebAppShareTarget(manifest.share_target);

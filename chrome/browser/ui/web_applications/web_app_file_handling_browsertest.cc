@@ -410,7 +410,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
       accept[base::UTF8ToUTF16(mime_type(i))] = {
           base::UTF8ToUTF16(extension(i))};
       web_app_info->file_handlers.push_back(
-          {action_url(i), name, std::move(accept)});
+          {action_url(i), name, std::vector<blink::Manifest::ImageResource>(),
+           std::move(accept)});
     }
 
     app_id =

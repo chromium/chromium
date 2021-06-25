@@ -353,6 +353,11 @@ struct BLINK_COMMON_EXPORT
     return entry.name;
   }
 
+  static const std::vector<::blink::Manifest::ImageResource>& icons(
+      const ::blink::Manifest::FileHandler& entry) {
+    return entry.icons;
+  }
+
   static const std::map<std::u16string, std::vector<std::u16string>>& accept(
       const ::blink::Manifest::FileHandler& entry) {
     return entry.accept;

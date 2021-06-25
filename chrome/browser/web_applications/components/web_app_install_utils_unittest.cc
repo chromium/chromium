@@ -39,8 +39,10 @@ constexpr unsigned int kNumTestIcons = 30;
 }  // namespace
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kWebAppNoteTaking);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kWebAppNoteTaking, blink::features::kFileHandlingIcons},
+      {});
 
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
@@ -56,11 +58,18 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppShortName;
 
+  const GURL kFileHandlingIcon("fav1.png");
   {
     blink::Manifest::FileHandler handler;
     handler.action = GURL("http://example.com/open-files");
     handler.accept[u"image/png"].push_back(u".png");
     handler.name = u"Images";
+    {
+      blink::Manifest::ImageResource icon;
+      icon.src = kFileHandlingIcon;
+      icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
+      handler.icons.push_back(icon);
+    }
     manifest.file_handlers.push_back(handler);
   }
 
@@ -146,15 +155,20 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[3].url);
   EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
 
-  // Check file handlers were updated
+  // Check file handlers were updated.
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
   ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
   EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
   EXPECT_EQ(file_handler[0].name, u"Images");
+  EXPECT_EQ(file_handler[0].icons.size(), 1u);
+  // TODO(https://crbug.com/1218210): Consider having WebApplicationInfo's
+  // file handlers use WebApplicationIconInfo, like used for other icons in
+  // this layer, rather than ImageResource.
+  EXPECT_EQ(file_handler[0].icons[0].src, kFileHandlingIcon);
 
-  // Check protocol handlers were updated
+  // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, u"mailto");
@@ -304,8 +318,10 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
 
 // Tests that WebAppInfo is correctly updated when Manifest contains Shortcuts.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
-  base::test::ScopedFeatureList feature_list(
-      features::kDesktopPWAsAppIconShortcutsMenu);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kDesktopPWAsAppIconShortcutsMenu,
+                                 blink::features::kFileHandlingIcons},
+                                {});
 
   WebApplicationInfo web_app_info;
   web_app_info.title = kAlternativeAppTitle;
@@ -339,11 +355,18 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppShortName;
 
+  const GURL kFileHandlingIcon("fav1.png");
   {
     blink::Manifest::FileHandler handler;
     handler.action = GURL("http://example.com/open-files");
     handler.accept[u"image/png"].push_back(u".png");
     handler.name = u"Images";
+    {
+      blink::Manifest::ImageResource icon;
+      icon.src = kFileHandlingIcon;
+      icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
+      handler.icons.push_back(icon);
+    }
     manifest.file_handlers.push_back(handler);
   }
 
@@ -463,21 +486,26 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
           IconPurpose::MONOCHROME)[0];
   EXPECT_EQ(kIconUrl3, web_app_shortcut_icon.url);
 
-  // Check file handlers were updated
+  // Check file handlers were updated.
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
   ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
   EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
   EXPECT_EQ(file_handler[0].name, u"Images");
+  EXPECT_EQ(file_handler[0].icons.size(), 1u);
+  // TODO(https://crbug.com/1218210): Consider having WebApplicationInfo's
+  // file handlers use WebApplicationIconInfo, like used for other icons in
+  // this layer, rather than ImageResource.
+  EXPECT_EQ(file_handler[0].icons[0].src, kFileHandlingIcon);
 
-  // Check protocol handlers were updated
+  // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, u"mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
-  // Check URL handlers were updated
+  // Check URL handlers were updated.
   EXPECT_EQ(1u, web_app_info.url_handlers.size());
   auto url_handler = web_app_info.url_handlers[0];
   EXPECT_EQ(url_handler.origin,

@@ -227,7 +227,10 @@ struct ManifestShareTarget {
 struct ManifestFileHandler {
   // The URL that will be opened when the file handler is invoked.
   url.mojom.Url action;
+  // Human-readable name for the file handler. May be displayed in file manager.
   mojo_base.mojom.String16 name;
+  // Icon representing the file handler. May be displayed in file manager.
+  array<ManifestImageResource> icons;
   // A mapping of a MIME types to a corresponding list of file extensions.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
 };

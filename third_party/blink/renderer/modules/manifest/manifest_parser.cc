@@ -912,17 +912,17 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
 
 Vector<mojom::blink::ManifestFileHandlerPtr> ManifestParser::ParseFileHandlers(
     const JSONObject* object) {
-  Vector<mojom::blink::ManifestFileHandlerPtr> result;
 
   if (!object->Get("file_handlers"))
-    return result;
+    return {};
 
   JSONArray* entry_array = object->GetArray("file_handlers");
   if (!entry_array) {
     AddErrorInfo("property 'file_handlers' ignored, type array expected.");
-    return result;
+    return {};
   }
 
+  Vector<mojom::blink::ManifestFileHandlerPtr> result;
   for (wtf_size_t i = 0; i < entry_array->size(); ++i) {
     JSONObject* json_entry = JSONObject::Cast(entry_array->at(i));
     if (!json_entry) {
@@ -953,6 +953,12 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   }
 
   entry->name = ParseString(file_handler, "name", Trim).value_or("");
+  const bool feature_enabled =
+      base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons) ||
+      RuntimeEnabledFeatures::FileHandlingIconsEnabled(feature_context_);
+  if (feature_enabled) {
+    entry->icons = ParseIcons(file_handler);
+  }
 
   entry->accept = ParseFileHandlerAccept(file_handler->GetJSONObject("accept"));
   if (entry->accept.IsEmpty()) {
@@ -1125,7 +1131,7 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
 Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
     const JSONObject* from) {
   Vector<mojom::blink::ManifestUrlHandlerPtr> url_handlers;
-  bool feature_enabled =
+  const bool feature_enabled =
       base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
       RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(feature_context_);
   if (!feature_enabled || !from->Get("url_handlers")) {

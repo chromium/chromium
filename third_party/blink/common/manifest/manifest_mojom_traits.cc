@@ -307,6 +307,9 @@ bool StructTraits<blink::mojom::ManifestFileHandlerDataView,
   if (!data.ReadName(&out->name))
     return false;
 
+  if (!data.ReadIcons(&out->icons))
+    return false;
+
   if (!data.ReadAccept(&out->accept))
     return false;
 

@@ -107,6 +107,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // The URL which will be opened when the file handler is invoked.
     GURL action;
     std::u16string name;
+    std::vector<ImageResource> icons;
     std::map<std::u16string, std::vector<std::u16string>> accept;
   };
 
