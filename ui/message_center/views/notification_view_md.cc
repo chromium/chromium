@@ -583,8 +583,12 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
   views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](NotificationViewMD* host) -> std::unique_ptr<views::InkDrop> {
-        return std::make_unique<NotificationInkDropImpl>(
+        auto ink_drop = std::make_unique<NotificationInkDropImpl>(
             views::InkDrop::Get(host), host->size());
+        // This code assumes that `ink_drop`'s observer list is unchecked, and
+        // that `host` outlives `ink_drop`.
+        ink_drop->AddObserver(host);
+        return ink_drop;
       },
       this));
   views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
@@ -602,7 +606,6 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
             ui::NativeTheme::kColorId_NotificationBackgroundActive);
       },
       this));
-
   AddChildView(ink_drop_container_);
 
   // |header_row_| contains app_icon, app_name, control buttons, etc...
@@ -684,16 +687,16 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
 }
 
 NotificationViewMD::~NotificationViewMD() {
-  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
-  // access the non-override versions in ~View.
+  // InkDrop is explicitly removed as it can have `this` as an observer
+  // installed. This is currently also required because RemoveLayerBeneathView()
+  // gets called in the destructor of InkDrop which would've called the wrong
+  // override if it destroys in a parent destructor.
   views::InkDrop::Remove(this);
 
   RemovePreTargetHandler(click_activator_.get());
 }
 
 void NotificationViewMD::AddLayerBeneathView(ui::Layer* layer) {
-  views::InkDrop::Get(this)->GetInkDrop()->AddObserver(this);
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();
     child->layer()->SetFillsBoundsOpaquely(false);
@@ -705,7 +708,6 @@ void NotificationViewMD::RemoveLayerBeneathView(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerBeneathView(layer);
   for (auto* child : GetChildrenForLayerAdjustment())
     child->DestroyLayer();
-  views::InkDrop::Get(this)->GetInkDrop()->RemoveObserver(this);
 }
 
 void NotificationViewMD::Layout() {
