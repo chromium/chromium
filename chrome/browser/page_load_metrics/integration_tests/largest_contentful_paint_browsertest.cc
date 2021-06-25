@@ -67,7 +67,13 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
+// Flaky on Linux: https://crbug.com/1223602.
+#if defined(OS_LINUX)
+#define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
+#else
+#define MAYBE_LargestContentfulPaint LargestContentfulPaint
+#endif
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
   Start();
   StartTracing({"loading"});
   Load("/largest_contentful_paint.html");
