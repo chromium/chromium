@@ -2341,21 +2341,6 @@ void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
   }
 }
 
-bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
-  // We are only interested in checking requests that have been assigned a
-  // SiteInstance.
-  if (state() < WILL_PROCESS_RESPONSE)
-    return false;
-
-  // This origin conversion won't be correct for about:blank, but origin
-  // isolation shouldn't need to care about that case because a previous
-  // instance of the origin would already have determined its isolation status
-  // in that BrowsingInstance.
-  // TODO(https://crbug.com/888079): Use the computed origin here just to be
-  // safe.
-  return origin == url::Origin::Create(GetURL());
-}
-
 bool NavigationRequest::IsOptInIsolationRequested() {
   if (!response())
     return false;
@@ -2451,6 +2436,21 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
             "placed in an origin-keyed agent cluster. Update your headers to "
             "uniformly request origin-keying for all pages on the origin.",
             origin.Serialize().c_str()));
+}
+
+bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
+  // We are only interested in checking requests that have been assigned a
+  // SiteInstance.
+  if (state() < WILL_PROCESS_RESPONSE)
+    return false;
+
+  // This origin conversion won't be correct for about:blank, but origin
+  // isolation shouldn't need to care about that case because a previous
+  // instance of the origin would already have determined its isolation status
+  // in that BrowsingInstance.
+  // TODO(https://crbug.com/888079): Use the computed origin here just to be
+  // safe.
+  return origin == url::Origin::Create(GetURL());
 }
 
 bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
@@ -4105,22 +4105,6 @@ void NavigationRequest::CommitPageActivation() {
                 : MakeDidCommitProvisionalLoadParamsForBFCacheRestore());
 }
 
-void NavigationRequest::ResetExpectedProcess() {
-  if (expected_render_process_host_id_ == ChildProcessHost::kInvalidUniqueID) {
-    // No expected process is set, nothing to update.
-    return;
-  }
-  RenderProcessHost* process =
-      RenderProcessHost::FromID(expected_render_process_host_id_);
-  if (process) {
-    RenderProcessHostImpl::RemoveExpectedNavigationToSite(
-        frame_tree_node()->navigator().controller().GetBrowserContext(),
-        process, site_info_);
-    process->RemoveObserver(this);
-  }
-  expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
-}
-
 void NavigationRequest::SetExpectedProcess(
     RenderProcessHost* expected_process) {
   if (expected_process &&
@@ -4142,6 +4126,22 @@ void NavigationRequest::SetExpectedProcess(
   RenderProcessHostImpl::AddExpectedNavigationToSite(
       frame_tree_node()->navigator().controller().GetBrowserContext(),
       expected_process, site_info_);
+}
+
+void NavigationRequest::ResetExpectedProcess() {
+  if (expected_render_process_host_id_ == ChildProcessHost::kInvalidUniqueID) {
+    // No expected process is set, nothing to update.
+    return;
+  }
+  RenderProcessHost* process =
+      RenderProcessHost::FromID(expected_render_process_host_id_);
+  if (process) {
+    RenderProcessHostImpl::RemoveExpectedNavigationToSite(
+        frame_tree_node()->navigator().controller().GetBrowserContext(),
+        process, site_info_);
+    process->RemoveObserver(this);
+  }
+  expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
 }
 
 void NavigationRequest::RenderProcessHostDestroyed(RenderProcessHost* host) {

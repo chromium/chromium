@@ -173,6 +173,16 @@ class CONTENT_EXPORT NavigationRequest
     SPECULATIVE,
   };
 
+  // This enum is used in UMA histograms, so existing values should neither be
+  // reordered or removed.
+  enum class OriginAgentClusterEndResult {
+    kNotRequestedAndNotOriginKeyed,
+    kNotRequestedButOriginKeyed,
+    kRequestedButNotOriginKeyed,
+    kRequestedAndOriginKeyed,
+    kMaxValue = kRequestedAndOriginKeyed
+  };
+
   // Creates a request for a browser-initiated navigation.
   // Note: this is sometimes called for renderer-initiated navigations going
   // through the OpenURL path. |browser_initiated| should be false in that case.
@@ -251,25 +261,6 @@ class CONTENT_EXPORT NavigationRequest
   // Returns true if this request's URL matches |origin| and the request state
   // is at (or past) WILL_PROCESS_RESPONSE.
   bool HasCommittingOrigin(const url::Origin& origin);
-
-  // Returns whether this navigation request is requesting opt-in
-  // origin-isolation.
-  bool IsOptInIsolationRequested();
-
-  // The Origin-Agent-Cluster end result is determined early in the lifecycle of
-  // a NavigationRequest, but used late. In particular, we want to trigger use
-  // counters and console warnings once navigation has committed.
-  // This enum is used in UMA histograms, so existing values should neither be
-  // reordered or removed.
-  enum class OriginAgentClusterEndResult {
-    kNotRequestedAndNotOriginKeyed,
-    kNotRequestedButOriginKeyed,
-    kRequestedButNotOriginKeyed,
-    kRequestedAndOriginKeyed,
-    kMaxValue = kRequestedAndOriginKeyed
-  };
-  void DetermineOriginAgentClusterEndResult(bool is_requested);
-  void ProcessOriginAgentClusterEndResult();
 
   // Returns true if this navigation's COOP header implies that the destination
   // site of this navigation should be site-isolated.  In addition to checking
@@ -462,11 +453,6 @@ class CONTENT_EXPORT NavigationRequest
       base::OnceClosure closure) {
     on_start_checks_complete_closure_ = std::move(closure);
   }
-
-  // Sets ID of the RenderProcessHost we expect the navigation to commit in.
-  // This is used to inform the RenderProcessHost to expect a navigation to the
-  // url we're navigating to.
-  void SetExpectedProcess(RenderProcessHost* expected_process);
 
   // Updates the destination SiteInfo for this navigation. This is called on
   // redirects. |post_redirect_process| is the renderer process that should
@@ -976,6 +962,16 @@ class CONTENT_EXPORT NavigationRequest
       const IsolationContext& isolation_context,
       const GURL& url);
 
+  // Returns whether this navigation request is requesting opt-in
+  // origin-isolation.
+  bool IsOptInIsolationRequested();
+
+  // The Origin-Agent-Cluster end result is determined early in the lifecycle of
+  // a NavigationRequest, but used late. In particular, we want to trigger use
+  // counters and console warnings once navigation has committed.
+  void DetermineOriginAgentClusterEndResult(bool is_requested);
+  void ProcessOriginAgentClusterEndResult();
+
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
@@ -1165,6 +1161,11 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(ahemery): remove this function when NavigationRequest properly handles
   // interface disconnection in all cases.
   void IgnoreInterfaceDisconnection();
+
+  // Sets ID of the RenderProcessHost we expect the navigation to commit in.
+  // This is used to inform the RenderProcessHost to expect a navigation to the
+  // url we're navigating to.
+  void SetExpectedProcess(RenderProcessHost* expected_process);
 
   // Inform the RenderProcessHost to no longer expect a navigation.
   void ResetExpectedProcess();
