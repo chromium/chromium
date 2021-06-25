@@ -2041,7 +2041,7 @@ public class CustomTabActivityTest {
         });
 
         if (allowMetrics) {
-            largestContentfulPaintCallback.waitForCallback(0);
+            largestContentfulPaintCallback.waitForCallback(0, 1, 15, TimeUnit.SECONDS);
             assertTrue((long) largestContentfulPaintCallback.getValue() > 0);
 
             layoutShiftScoreCallback.waitForCallback(0);
