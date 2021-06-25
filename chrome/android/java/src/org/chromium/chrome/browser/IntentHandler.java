@@ -58,6 +58,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -686,17 +687,17 @@ public class IntentHandler {
             return null;
         }
         String query = results.get(0);
-        String url = AutocompleteCoordinator.qualifyPartialURLQuery(query);
-        if (url == null) {
-            List<String> urls = IntentUtils.safeGetStringArrayListExtra(
-                    intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
-            if (urls != null && urls.size() > 0) {
-                url = urls.get(0);
-            } else {
-                url = TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query).getSpec();
-            }
+        AutocompleteMatch match =
+                AutocompleteCoordinator.classify(Profile.getLastUsedRegularProfile(), query);
+        if (!match.isSearchSuggestion()) return match.getUrl().getSpec();
+
+        List<String> urls = IntentUtils.safeGetStringArrayListExtra(
+                intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
+        if (urls != null && urls.size() > 0) {
+            return urls.get(0);
+        } else {
+            return TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query).getSpec();
         }
-        return url;
     }
 
     public boolean handleWebSearchIntent(Intent intent) {

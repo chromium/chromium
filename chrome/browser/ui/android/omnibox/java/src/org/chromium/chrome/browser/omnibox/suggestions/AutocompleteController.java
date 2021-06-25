@@ -110,7 +110,8 @@ public class AutocompleteController {
      * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May
      *         be null if the input is invalid.
      */
-    AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
         if (mNativeController == 0) return null;
         return AutocompleteControllerJni.get().classify(
                 mNativeController, text, focusedFromFakebox);
@@ -323,16 +324,6 @@ public class AutocompleteController {
         Tab findMatchingTabWithUrl(long nativeAutocompleteControllerAndroid, GURL url);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
-        /**
-         * Given a search query, this will attempt to see if the query appears to be portion of a
-         * properly formed URL.  If it appears to be a URL, this will return the fully qualified
-         * version (i.e. including the scheme, etc...).  If the query does not appear to be a URL,
-         * this will return null.
-         *
-         * @param query The query to be expanded into a fully qualified URL if appropriate.
-         * @return The fully qualified URL or null.
-         */
-        String qualifyPartialURLQuery(String query);
 
         /**
          * Sends a zero suggest request to the server in order to pre-populate the result cache.

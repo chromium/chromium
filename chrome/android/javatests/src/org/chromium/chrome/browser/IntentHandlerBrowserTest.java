@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 
 import android.content.Intent;
 import android.speech.RecognizerResultsIntent;
@@ -33,7 +34,8 @@ public class IntentHandlerBrowserTest {
     public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
     private static final String VOICE_SEARCH_QUERY = "VOICE_QUERY";
-    private static final String VOICE_SEARCH_QUERY_URL = "http://www.google.com/?q=VOICE_QUERY";
+    private static final String VOICE_SEARCH_QUERY_URL =
+            "https://www.google.com/search?q=VOICE_QUERY";
 
     private static final String VOICE_URL_QUERY = "www.google.com";
     private static final String VOICE_URL_QUERY_URL = "INVALID_URLZ";
@@ -49,7 +51,7 @@ public class IntentHandlerBrowserTest {
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
                 new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY_URL)));
         String query = IntentHandler.getUrlFromVoiceSearchResult(intent);
-        Assert.assertEquals(VOICE_SEARCH_QUERY_URL, query);
+        Assert.assertThat(query, startsWith(VOICE_SEARCH_QUERY_URL));
     }
 
     @Test

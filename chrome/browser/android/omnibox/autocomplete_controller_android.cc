@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -541,35 +540,6 @@ static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
       AutocompleteControllerAndroid::Factory::GetForProfile(
           ProfileAndroid::FromProfileAndroid(jprofile));
   return native_bridge->GetJavaObject();
-}
-
-static ScopedJavaLocalRef<jstring>
-JNI_AutocompleteController_QualifyPartialURLQuery(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jquery) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
-    return ScopedJavaLocalRef<jstring>();
-  AutocompleteMatch match;
-  std::u16string query_string(ConvertJavaStringToUTF16(env, jquery));
-  AutocompleteClassifierFactory::GetForProfile(profile)->Classify(
-      query_string,
-      false,
-      false,
-      OmniboxEventProto::INVALID_SPEC,
-      &match,
-      nullptr);
-  if (!match.destination_url.is_valid())
-    return ScopedJavaLocalRef<jstring>();
-
-  // Only return a URL if the match is a URL type.
-  if (match.type != AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
-      match.type != AutocompleteMatchType::HISTORY_URL &&
-      match.type != AutocompleteMatchType::NAVSUGGEST)
-    return ScopedJavaLocalRef<jstring>();
-
-  // As we are returning to Java, it is fine to call Release().
-  return ConvertUTF8ToJavaString(env, match.destination_url.spec());
 }
 
 static void JNI_AutocompleteController_PrefetchZeroSuggestResults(JNIEnv* env) {

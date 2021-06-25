@@ -19,16 +19,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.net.MalformedURLException;
@@ -319,7 +315,6 @@ class UrlBarMediator
         }
 
         String stringToPaste = sanitizeTextForPaste(builder.toString());
-        recordPasteMetrics(stringToPaste);
         return stringToPaste;
     }
 
@@ -376,22 +371,6 @@ class UrlBarMediator
     public void afterTextChanged(Editable editable) {
         for (int i = 0; i < mTextChangedListeners.size(); i++) {
             mTextChangedListeners.get(i).afterTextChanged(editable);
-        }
-    }
-
-    private void recordPasteMetrics(String text) {
-        boolean isUrl = BrowserStartupController.getInstance().isFullBrowserStarted()
-                && AutocompleteCoordinator.qualifyPartialURLQuery(text) != null;
-
-        long age = System.currentTimeMillis() - Clipboard.getInstance().getLastModifiedTimeMs();
-        RecordHistogram.recordCustomTimesHistogram("MobileOmnibox.LongPressPasteAge", age,
-                MIN_TIME_MILLIS, MAX_TIME_MILLIS, NUM_OF_BUCKETS);
-        if (isUrl) {
-            RecordHistogram.recordCustomTimesHistogram("MobileOmnibox.LongPressPasteAge.URL", age,
-                    MIN_TIME_MILLIS, MAX_TIME_MILLIS, NUM_OF_BUCKETS);
-        } else {
-            RecordHistogram.recordCustomTimesHistogram("MobileOmnibox.LongPressPasteAge.TEXT", age,
-                    MIN_TIME_MILLIS, MAX_TIME_MILLIS, NUM_OF_BUCKETS);
         }
     }
 }

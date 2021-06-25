@@ -8,6 +8,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -38,6 +41,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -45,7 +49,9 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
@@ -64,6 +70,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -90,6 +97,8 @@ import java.util.concurrent.ExecutionException;
 public class VoiceRecognitionHandlerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     Intent mIntent;
@@ -103,6 +112,12 @@ public class VoiceRecognitionHandlerTest {
     Tab mTab;
     @Mock
     VoiceRecognitionHandler.Observer mObserver;
+    @Mock
+    AutocompleteController mController;
+    @Mock
+    AutocompleteController.Natives mControllerJniMock;
+    @Mock
+    AutocompleteMatch mMatch;
 
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
@@ -597,6 +612,11 @@ public class VoiceRecognitionHandlerTest {
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
+        doReturn(mController).when(mControllerJniMock).getForProfile(any());
+        doReturn(mMatch).when(mController).classify(any(), anyBoolean());
+        doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
+        doReturn(true).when(mMatch).isSearchSuggestion();
         mActivityTestRule.startMainActivityOnBlankPage();
         mLifecycleDispatcher = mActivityTestRule.getActivity().getLifecycleDispatcher();
 
@@ -1406,6 +1426,7 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testParseResults_VoiceResponseURLConversion() {
+        doReturn(false).when(mMatch).isSearchSuggestion();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             String[] texts =
                     new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};

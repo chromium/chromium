@@ -361,14 +361,25 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * version (i.e. including the scheme, etc...).  If the query does not appear to be a URL,
      * this will return null.
      *
-     * TODO(crbug.com/966424): Fix the dependency issue and remove this method.
+     * Note:
+     * 1) This call is expensive. Use only when it is absolutely necessary to get the exact
+     *    information about how a given query string will be interpreted. For less restrictive
+     *    URL vs text matching, please defer to GURL.
+     * 2) this updates the internal state of the autocomplete controller just as start() does.
+     *    Future calls that reference autocomplete results by index, e.g. onSuggestionSelected(),
+     *    should reference the returned suggestion by index 0.
      *
+     * TODO(crbug.com/966424): Fix the dependency issue and remove this method.
+     *                       Please don't use this in any new code.
+     *
+     * @param profile The profile to expand the query for.
      * @param query The query to be expanded into a fully qualified URL if appropriate.
-     * @return The fully qualified URL or null.
+     * @return The AutocompleteMatch for a default / top match. This may be either SEARCH
+     *         match built with the user's default search engine, or a NAVIGATION match.
      */
     @Deprecated
-    public static String qualifyPartialURLQuery(String query) {
-        return AutocompleteControllerJni.get().qualifyPartialURLQuery(query);
+    public static AutocompleteMatch classify(Profile profile, String query) {
+        return AutocompleteController.getForProfile(profile).classify(query, false);
     }
 
     /**

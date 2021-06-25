@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -527,23 +528,6 @@ public class VoiceRecognitionHandler {
                 return;
             }
 
-            String url = AutocompleteCoordinator.qualifyPartialURLQuery(topResultQuery);
-            if (url == null) {
-                url = TemplateUrlServiceFactory.get()
-                              .getUrlForVoiceSearchQuery(topResultQuery)
-                              .getSpec();
-
-                // If a language was returned to us from voice recognition, then use it. Currently,
-                // this is only returned when Google is the search engine. Since Google always has
-                // the query as a url parameter so appending this param will always be safe.
-                if (topResult.getLanguage() != null) {
-                    // TODO(crbug.com/1117271): Cleanup these assertions when Assistant launches.
-                    assert url.contains("?") : "URL must contain at least one URL param.";
-                    assert !url.contains("#") : "URL must not contain a fragment.";
-                    url += "&hl=" + topResult.getLanguage();
-                }
-            }
-
             // Since voice was used, we need to let the frame know that there was a user gesture.
             LocationBarDataProvider locationBarDataProvider =
                     mDelegate.getLocationBarDataProvider();
@@ -559,6 +543,26 @@ public class VoiceRecognitionHandler {
                             new VoiceSearchWebContentsObserver(currentTab.getWebContents());
                 }
             }
+
+            AutocompleteMatch match =
+                    AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+
+            String url = match.getUrl().getSpec();
+            if (match.isSearchSuggestion()) {
+                url = TemplateUrlServiceFactory.get()
+                              .getUrlForVoiceSearchQuery(topResultQuery)
+                              .getSpec();
+                // If a language was returned to us from voice recognition, then use it. Currently,
+                // this is only returned when Google is the search engine. Since Google always has
+                // the query as a url parameter so appending this param will always be safe.
+                if (topResult.getLanguage() != null) {
+                    // TODO(crbug.com/1117271): Cleanup these assertions when Assistant launches.
+                    assert url.contains("?") : "URL must contain at least one URL param.";
+                    assert !url.contains("#") : "URL must not contain a fragment.";
+                    url += "&hl=" + topResult.getLanguage();
+                }
+            }
+
             mDelegate.loadUrlFromVoice(url);
         }
     }
@@ -682,7 +686,9 @@ public class VoiceRecognitionHandler {
             // If the string appears to be a URL, then use it instead of the string returned from
             // the voice engine.
             String culledString = strings.get(i).replaceAll(" ", "");
-            String url = AutocompleteCoordinator.qualifyPartialURLQuery(culledString);
+            AutocompleteMatch match =
+                    AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            String url = match.isSearchSuggestion() ? null : match.getUrl().getSpec();
             String language = languages == null ? null : languages.get(i);
             results.add(new VoiceResult(
                     url == null ? strings.get(i) : culledString, confidences[i], language));
