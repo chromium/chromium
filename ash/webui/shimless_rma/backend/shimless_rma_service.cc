@@ -90,16 +90,40 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
 
 void ShimlessRmaService::GetCurrentChromeVersion(
     GetCurrentChromeVersionCallback callback) {
+  // TODO(gavindodd): Get actual Chrome version.
+  std::move(callback).Run("Chrome OS 0.0.0.0");
 }
 
 void ShimlessRmaService::CheckForChromeUpdates(
     CheckForChromeUpdatesCallback callback) {
+  // TODO(gavindodd): Get actual Chrome update available value.
+  std::move(callback).Run(false);
 }
 
 void ShimlessRmaService::UpdateChrome(UpdateChromeCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateChrome) {
+    LOG(ERROR) << "UpdateChrome called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_chrome()->set_update(
+      rmad::UpdateChromeState::RMAD_UPDATE_STATE_UPDATE);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::UpdateChromeSkipped(UpdateChromeCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateChrome) {
+    LOG(ERROR) << "UpdateChrome called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_chrome()->set_update(
+      rmad::UpdateChromeState::RMAD_UPDATE_STATE_SKIP);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetSameOwner(SetSameOwnerCallback callback) {
