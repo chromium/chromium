@@ -51,7 +51,7 @@ std::vector<std::string> GetKeysFromDict(const base::Value& dict) {
   DCHECK(dict.is_dict());
   std::vector<std::string> keys;
   keys.reserve(dict.DictSize());
-  for (const auto& value : dict.DictItems()) {
+  for (auto value : dict.DictItems()) {
     keys.push_back(value.first);
   }
   return keys;

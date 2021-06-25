@@ -75,7 +75,7 @@ bool WebAppShortcutIconsHandler::Parse(Extension* extension,
   }
 
   int shortcut_index = -1;
-  for (const auto& entry : shortcut_icons_val->DictItems()) {
+  for (auto entry : shortcut_icons_val->DictItems()) {
     ++shortcut_index;
     const base::DictionaryValue* shortcut_item_icons = nullptr;
     if (!entry.second.GetAsDictionary(&shortcut_item_icons)) {

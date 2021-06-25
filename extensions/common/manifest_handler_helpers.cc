@@ -49,7 +49,7 @@ bool LoadIconsFromDictionary(const base::Value* icons_value,
                              std::u16string* error) {
   DCHECK(icons);
   DCHECK(error);
-  for (const auto& entry : icons_value->DictItems()) {
+  for (auto entry : icons_value->DictItems()) {
     int size = 0;
     if (!base::StringToInt(entry.first, &size) || size <= 0 ||
         size > extension_misc::EXTENSION_ICON_GIGANTOR * 4) {

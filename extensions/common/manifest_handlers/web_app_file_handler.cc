@@ -101,7 +101,7 @@ bool LoadWebAppFileHandler(const std::string& manifest_entry_index,
     return false;
   }
 
-  for (const auto& manifest_accept_entry : accept->DictItems()) {
+  for (auto manifest_accept_entry : accept->DictItems()) {
     apps::FileHandler::AcceptEntry accept_entry;
     accept_entry.mime_type = manifest_accept_entry.first;
 

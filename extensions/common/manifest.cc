@@ -123,7 +123,7 @@ class AvailableValuesFilter {
     DCHECK(input_dict.is_dict());
     DCHECK(CanAccessFeature(manifest, current_path));
 
-    for (const auto& it : input_dict.DictItems()) {
+    for (auto it : input_dict.DictItems()) {
       std::string child_path = CombineKeys(current_path, it.first);
 
       // Unavailable key, skip it.

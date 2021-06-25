@@ -2519,7 +2519,7 @@ void ExtensionPrefs::LoadExtensionControlledPrefs(
   if (!source_dict->GetDictionary(key, &preferences))
     return;
 
-  for (const auto& pair : preferences->DictItems()) {
+  for (auto pair : preferences->DictItems()) {
     extension_pref_value_map_->SetExtensionPref(extension_id, pair.first, scope,
                                                 pair.second.Clone());
   }
@@ -2640,7 +2640,7 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // Added 2021-05, also used in unit test.
       "settings.privacy.drm_enabled"};
 
-  for (const auto& key_value : extensions_dictionary->DictItems()) {
+  for (auto key_value : extensions_dictionary->DictItems()) {
     if (!crx_file::id_util::IdIsValid(key_value.first))
       continue;
     ScopedExtensionPrefUpdate update(prefs_, key_value.first);
@@ -2711,7 +2711,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
     return;
 
   std::vector<std::string> uninstalled_ids;
-  for (const auto& item : extensions->DictItems()) {
+  for (auto item : extensions->DictItems()) {
     if (!crx_file::id_util::IdIsValid(item.first) || !item.second.is_dict()) {
       continue;
     }

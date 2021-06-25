@@ -144,7 +144,7 @@ bool LoadFileHandler(const std::string& handler_id,
   file_handlers->push_back(handler);
 
   // Check for unknown keys.
-  for (const auto& entry : handler_info.DictItems()) {
+  for (auto entry : handler_info.DictItems()) {
     if (entry.first != keys::kFileHandlerExtensions &&
         entry.first != keys::kFileHandlerTypes &&
         entry.first != keys::kFileHandlerIncludeDirectories &&
@@ -179,7 +179,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   }
 
   std::vector<InstallWarning> install_warnings;
-  for (const auto& entry : all_handlers->DictItems()) {
+  for (auto entry : all_handlers->DictItems()) {
     if (!entry.second.is_dict()) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
       return false;
