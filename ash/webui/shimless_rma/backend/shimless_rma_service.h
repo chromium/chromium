@@ -75,8 +75,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetSku(GetSkuCallback callback) override;
   void SetSku(int8_t sku_index, SetSkuCallback callback) override;
 
-  void FinalizeAndReboot(CutoffBatteryCallback callback) override;
-  void FinalizeAndShutdown(CutoffBatteryCallback callback) override;
+  void FinalizeAndReboot(FinalizeAndRebootCallback callback) override;
+  void FinalizeAndShutdown(FinalizeAndShutdownCallback callback) override;
   void CutoffBattery(CutoffBatteryCallback callback) override;
 
   void ObserveError(

@@ -330,13 +330,44 @@ void ShimlessRmaService::GetSku(GetSkuCallback callback) {
 void ShimlessRmaService::SetSku(int8_t sku_index, SetSkuCallback callback) {
 }
 
-void ShimlessRmaService::FinalizeAndReboot(CutoffBatteryCallback callback) {
+void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "FinalizeAndReboot called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_finalize()->set_shutdown(
+      rmad::FinalizeState::RMAD_FINALIZE_REBOOT);
+  GetNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::FinalizeAndShutdown(CutoffBatteryCallback callback) {
+void ShimlessRmaService::FinalizeAndShutdown(
+    FinalizeAndShutdownCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "FinalizeAndShutdown called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_finalize()->set_shutdown(
+      rmad::FinalizeState::RMAD_FINALIZE_SHUTDOWN);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::CutoffBattery(CutoffBatteryCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "CutoffBattery called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_finalize()->set_shutdown(
+      rmad::FinalizeState::RMAD_FINALIZE_BATERY_CUTOFF);
+  GetNextStateGeneric(std::move(callback));
 }
 
 ////////////////////////////////
