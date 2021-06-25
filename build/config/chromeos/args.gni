@@ -24,4 +24,7 @@ declare_args() {
   # https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
   # https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
   is_chromeos_device = false
+
+  # Determines if we run the test in skylab, aka the CrOS labs.
+  is_skylab = false
 }

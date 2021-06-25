@@ -491,24 +491,32 @@ template("test") {
         "$root_out_dir/gen.runtime/" + get_label_info(target_name, "dir") +
         "/" + get_label_info(target_name, "name") + ".runtime_deps"
 
-    generate_runner_script(_gen_runner_target) {
-      generated_script = "$root_build_dir/bin/run_" + invoker.target_name
-      test_exe = invoker.target_name
-      runtime_deps_file = _runtime_deps_file
-
-      if (is_chromeos_lacros) {
-        # At build time, Lacros tests don't know whether they'll run on VM or
-        # HW, and instead, these flags are specified at runtime when invoking
-        # the generated runner script.
-        skip_generating_board_args = true
+    _generated_script = "$root_build_dir/bin/run_" + invoker.target_name
+    if (is_skylab) {
+      generate_skylab_runner_script(_gen_runner_target) {
+        generated_script = _generated_script
+        test_exe = invoker.target_name
       }
+    } else {
+      generate_runner_script(_gen_runner_target) {
+        generated_script = _generated_script
+        test_exe = invoker.target_name
+        runtime_deps_file = _runtime_deps_file
 
-      if (tests_have_location_tags) {
-        data = [ "//testing/location_tags.json" ]
-      }
+        if (is_chromeos_lacros) {
+          # At build time, Lacros tests don't know whether they'll run on VM or
+          # HW, and instead, these flags are specified at runtime when invoking
+          # the generated runner script.
+          skip_generating_board_args = true
+        }
 
-      if (use_rts) {
-        data_deps = [ ":${invoker.target_name}__rts_filters" ]
+        if (tests_have_location_tags) {
+          data = [ "//testing/location_tags.json" ]
+        }
+
+        if (use_rts) {
+          data_deps = [ ":${invoker.target_name}__rts_filters" ]
+        }
       }
     }
 

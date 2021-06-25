@@ -474,3 +474,37 @@ template("lacros_tast_tests") {
     ]
   }
 }
+
+template("generate_skylab_runner_script") {
+  forward_variables_from(invoker,
+                         [
+                           "generated_script",
+                           "test_exe",
+                         ])
+
+  action(target_name) {
+    script = "//build/chromeos/gen_skylab_runner.py"
+    outputs = [ generated_script ]
+    args = [
+      "--test-exe",
+      test_exe,
+      "--output",
+      rebase_path(generated_script, root_build_dir),
+    ]
+
+    deps = [ "//testing/buildbot/filters:chromeos_filters" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    data = []
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
+
+    data_deps = [ "//testing:test_scripts_shared" ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+  }
+}
