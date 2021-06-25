@@ -9354,15 +9354,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadOriginalRequest) {
   EXPECT_TRUE(ExecJs(shell(), "console.log('Success');"));
 }
 
-// This test shows that the initial "about:blank" URL is elided from the
-// navigation history of a subframe when it is loaded.
+// This test shows that the initial "about:blank" URL in a subframe is replaced
+// in all navigation entries when the subframe is navigated, even if a different
+// frame has created a new navigation entry since then.
 //
 // It also prevents regression for an same document navigation renderer kill
 // when going back after an in-page navigation in the main frame is followed by
 // an auto subframe navigation, due to a bug in
 // WebHistoryEntry::CloneAndReplace. See https://crbug.com/612713.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       BackToAboutBlankIframe) {
+                       InitialAboutBlankInIframeIsReplaced) {
   GURL original_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), original_url));
@@ -9396,8 +9397,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL blank_url(url::kAboutBlankURL);
   EXPECT_EQ(blank_url, frame->current_url());
 
-  // Now create a new navigation entry. Note that the old navigation entry has
-  // "about:blank" as the URL in the iframe.
+  // Now create a new navigation entry. The old navigation entry and the new
+  // navigation entry will share the same FrameNavigationEntry for the iframe,
+  // which will still be at about blank.
 
   script = "history.pushState({}, '', 'notarealurl.html')";
   EXPECT_TRUE(ExecJs(root, script));
@@ -9408,7 +9410,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
 
   // Load the iframe; the initial "about:blank" URL should be elided and thus we
-  // shouldn't get a new navigation entry.
+  // shouldn't get a new navigation entry. Because the FrameNavigationEntry for
+  // the iframe is shared, this will update the url for the iframe in both
+  // navigation entries.
 
   GURL frame_url = embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html");
@@ -9429,18 +9433,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     observer.Wait();
   }
 
+  // The iframe's url should not have changed.
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(2, EvalJs(shell(), "history.length"));
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-
-  // There is some open discussion over whether this should send the iframe
-  // back to the blank page, but for now it stays in place to preserve
-  // compatibility with existing sites. See
-  // NavigationControllerImpl::FindFramesToNavigate for more information, as
-  // well as http://crbug.com/542299, https://crbug.com/598043 (for the
-  // regressions caused by going back), and
-  // https://github.com/whatwg/html/issues/546.
-  // TODO(avi, creis): Figure out the correct behavior to use here.
   EXPECT_EQ(frame_url, frame->current_url());
 
   // Now test for https://crbug.com/612713 to prevent an NC_IN_PAGE_NAVIGATION
@@ -9455,9 +9451,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, EvalJs(shell(), "history.length"));
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
 
-  GURL frame_url_2 = embedded_test_server()->GetURL(
+  GURL frame_url_after_fragment_nav = embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html#foo");
-  EXPECT_EQ(frame_url_2, frame->current_url());
+  EXPECT_EQ(frame_url_after_fragment_nav, frame->current_url());
 
   // Go back.
   {
@@ -9472,11 +9468,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(ExecJs(root->current_frame_host(), "true;"));
   EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
 
-  // TODO(creis): We should probably go back to frame_url here instead of the
-  // initial blank page.  That might require updating all relevant NavEntries to
-  // know what the first committed URL is, so that we really elide the initial
-  // blank page from history.
-  EXPECT_EQ(blank_url, frame->current_url());
+  // The back navigation should still return to the first non-empty url the
+  // subframe had, not about:blank
+  EXPECT_EQ(frame_url, frame->current_url());
 }
 
 // This test is similar to "BackToAboutBlankIframe" above, except that a
@@ -9559,16 +9553,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(3, EvalJs(shell(), "history.length"));
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-
-  // There is some open discussion over whether this should send the iframe back
-  // to the original page, but for now it stays in place to preserve
-  // compatibility with existing sites.  See
-  // NavigationControllerImpl::FindFramesToNavigate for more information, as
-  // well as http://crbug.com/542299, https://crbug.com/598043 (for the
-  // regressions caused by going back), and
-  // https://github.com/whatwg/html/issues/546.
-  // TODO(avi, creis): Figure out the correct behavior to use here.
-  EXPECT_EQ(frame_url_2, frame->current_url());
+  EXPECT_EQ(frame_url_1, frame->current_url());
 
   // Now test for https://crbug.com/612713 to prevent an NC_IN_PAGE_NAVIGATION
   // renderer kill.
@@ -9688,16 +9673,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(4, EvalJs(shell(), "history.length"));
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(links_url, root->current_url());
-
-  // There is some open discussion over whether this should send the iframe back
-  // to the original page, but for now it stays in place to preserve
-  // compatibility with existing sites.  See
-  // NavigationControllerImpl::FindFramesToNavigate for more information, as
-  // well as http://crbug.com/542299, https://crbug.com/598043 (for the
-  // regressions caused by going back), and
-  // https://github.com/whatwg/html/issues/546.
-  // TODO(avi, creis): Figure out the correct behavior to use here.
-  EXPECT_EQ(frame_url_3, frame->current_url());
+  EXPECT_EQ(frame_url_2, frame->current_url());
 
   // Now test for https://crbug.com/612713 to prevent an NC_IN_PAGE_NAVIGATION
   // renderer kill.

@@ -448,6 +448,13 @@ void Navigator::DidNavigate(
     rvh->SetContentsMimeType(params.contents_mime_type);
   }
 
+  // RenderFrameHostImpl::DidNavigate will update the url, and may cause the
+  // node to consider itself no longer on the initial empty document. Record
+  // whether we're leaving the initial empty document before that.
+  bool was_on_initial_empty_document =
+      frame_tree_node
+          ->is_on_initial_empty_document_or_subsequent_empty_documents();
+
   // Navigations that activate an existing bfcached or prerendered document do
   // not create a new document.
   bool did_create_new_document =
@@ -460,7 +467,8 @@ void Navigator::DidNavigate(
   base::TimeTicks start = base::TimeTicks::Now();
   bool did_navigate = controller_.RendererDidNavigate(
       render_frame_host, params, &details, was_within_same_document,
-      previous_document_was_activated, navigation_request.get());
+      was_on_initial_empty_document, previous_document_was_activated,
+      navigation_request.get());
   if (!was_within_same_document) {
     base::UmaHistogramTimes(
         base::StrCat(

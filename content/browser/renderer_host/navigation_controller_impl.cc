@@ -1105,6 +1105,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     const mojom::DidCommitProvisionalLoadParams& params,
     LoadCommittedDetails* details,
     bool is_same_document_navigation,
+    bool was_on_initial_empty_document,
     bool previous_document_was_activated,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
@@ -1232,7 +1233,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
       break;
     case NAVIGATION_TYPE_AUTO_SUBFRAME:
       if (!RendererDidNavigateAutoSubframe(
-              rfh, params, details->is_same_document, navigation_request)) {
+              rfh, params, details->is_same_document,
+              was_on_initial_empty_document, navigation_request)) {
         // We don't send a notification about auto-subframe PageState during
         // UpdateStateForFrame, since it looks like nothing has changed.  Send
         // it here at commit time instead.
@@ -2002,6 +2004,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
+    bool was_on_initial_empty_document,
     NavigationRequest* request) {
   DCHECK(ui::PageTransitionCoreTypeIs(params.transition,
                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME));
@@ -2063,10 +2066,19 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   // related to the committed FrameNavigationEntry's document (cross-document,
   // not same url, not a reload, not a history traversal), we replace rather
   // than update.
+  //
   // In the case where we update, the FrameNavigationEntry will potentially be
   // shared across multiple NavigationEntries, and any updates will be reflected
   // in all of those NavigationEntries. In the replace case, any existing
   // sharing with other NavigationEntries will stop.
+  //
+  // When navigating away from the initial empty document, we also update rather
+  // than replace. Either update or replace will overwrite the initial empty
+  // document state for |last_committed|, but if the FrameNavigationEntry for
+  // the initial empty document is shared across multiple NavigationEntries (due
+  // to a navigation in another frame), we want to make sure we overwrite the
+  // initial empty document state everywhere this FrameNavigationEntry is used,
+  // which is accompished by updating the existing FrameNavigationEntry.
   FrameNavigationEntry* last_committed_frame_entry =
       last_committed->GetFrameEntry(rfh->frame_tree_node());
   NavigationEntryImpl::UpdatePolicy update_policy =
@@ -2074,7 +2086,8 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   if (request->common_params().navigation_type ==
           mojom::NavigationType::DIFFERENT_DOCUMENT &&
       last_committed_frame_entry &&
-      last_committed_frame_entry->url() != params.url) {
+      last_committed_frame_entry->url() != params.url &&
+      !was_on_initial_empty_document) {
     update_policy = NavigationEntryImpl::UpdatePolicy::kReplace;
   }
 
@@ -3034,21 +3047,6 @@ void NavigationControllerImpl::FindFramesToNavigate(
       // creation to fail in certain cases, e.g. when the URL is invalid.
       same_document_loads->push_back(std::move(navigation_request));
     }
-
-    // TODO(avi, creis): This is a bug; we should not return here. Rather, we
-    // should continue on and navigate all child frames which have also
-    // changed. This bug is the cause of <https://crbug.com/542299>, which is
-    // a NC_IN_PAGE_NAVIGATION renderer kill.
-    //
-    // However, this bug is a bandaid over a deeper and worse problem. Doing a
-    // pushState immediately after loading a subframe is a race, one that no
-    // web page author expects. If we fix this bug, many large websites break.
-    // For example, see <https://crbug.com/598043> and the spec discussion at
-    // <https://github.com/whatwg/html/issues/1191>.
-    //
-    // For now, we accept this bug, and hope to resolve the race in a
-    // different way that will one day allow us to fix this.
-    return;
   } else if (action == HistoryNavigationAction::kDifferentDocument) {
     std::unique_ptr<NavigationRequest> navigation_request =
         CreateNavigationRequestFromEntry(

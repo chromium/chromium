@@ -264,6 +264,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // In the case that nothing has changed, the details structure is undefined
   // and it will return false.
   //
+  // |was_on_initial_empty_document| indicates whether the document being
+  // navigated away from was an initial empty document.
+  //
   // |previous_document_was_activated| is true if the previous document had user
   // interaction. This is used for a new renderer-initiated navigation to decide
   // if the page that initiated the navigation should be skipped on
@@ -272,6 +275,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            const mojom::DidCommitProvisionalLoadParams& params,
                            LoadCommittedDetails* details,
                            bool is_same_document_navigation,
+                           bool was_on_initial_empty_document,
                            bool previous_document_was_activated,
                            NavigationRequest* navigation_request);
 
@@ -560,6 +564,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
+      bool was_on_initial_empty_document,
       NavigationRequest* request);
 
   // Allows the derived class to issue notifications that a load has been
