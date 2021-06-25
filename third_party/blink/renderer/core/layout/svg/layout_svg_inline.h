@@ -25,6 +25,8 @@
 
 namespace blink {
 
+class NGInlineCursor;
+
 class LayoutSVGInline : public LayoutInline {
  public:
   explicit LayoutSVGInline(Element*);
@@ -71,6 +73,9 @@ class LayoutSVGInline : public LayoutInline {
   void WillBeRemovedFromTree() override;
 
   bool IsObjectBoundingBoxValid() const;
+
+  static void ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+                                         FloatRect& bounds);
 };
 
 template <>

@@ -73,17 +73,25 @@ bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
   return FirstLineBox();
 }
 
+// static
+void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+                                                 FloatRect& bounds) {
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    const NGFragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == NGFragmentItem::kSvgText)
+      bounds.Unite(item.ObjectBoundingBox());
+    else if (NGInlineCursor descendants = cursor.CursorForDescendants())
+      ObjectBoundingBoxForCursor(descendants, bounds);
+  }
+}
+
 FloatRect LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
   FloatRect bounds;
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
-    for (cursor.MoveToIncludingCulledInline(*this); cursor;
-         cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSvgText)
-        bounds.Unite(item.ObjectBoundingBox());
-    }
+    cursor.MoveToIncludingCulledInline(*this);
+    ObjectBoundingBoxForCursor(cursor, bounds);
     return bounds;
   }
   for (InlineFlowBox* box : *LineBoxes())
