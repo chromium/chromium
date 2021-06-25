@@ -9,8 +9,10 @@ if (default_toolchain == "//build/toolchain/cros:target") {
     packages = [ "libffi" ]
   }
 } else {
-  # On Linux, make sure we link against libffi version 6.
+  # On Linux, statically link libffi.  This is necessary to prevent a situation
+  # where the runtime version of libffi is different from the build-time version
+  # from the sysroot.
   config("libffi") {
-    libs = [ ":libffi.so.6" ]
+    libs = [ ":libffi_pic.a" ]
   }
 }
