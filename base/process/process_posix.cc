@@ -313,6 +313,10 @@ void Process::Close() {
   // end up w/ a zombie when it does finally exit.
 }
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 #if !defined(OS_NACL_NONSFI)
 bool Process::Terminate(int exit_code, bool wait) const {
   // exit_code isn't supportable.
@@ -321,7 +325,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
 
   // When recording/replaying the child process is responsible for exiting
   // so that it can finish uploading any in progress recording.
-  if (getenv("RECORD_REPLAY_DRIVER")) {
+  if (MaybeRecordingOrReplaying()) {
     return false;
   }
 

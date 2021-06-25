@@ -94,6 +94,10 @@ int64_t ComputeCurrentTicks() {
 #endif  // defined(OS_IOS)
 }
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 int64_t ComputeThreadTicks() {
 #if defined(OS_IOS)
   NOTREACHED();
@@ -108,7 +112,7 @@ int64_t ComputeThreadTicks() {
   }
 
   // Calling thread_info is currently unsupported when recording/replaying.
-  if (getenv("RECORD_REPLAY_DRIVER")) {
+  if (MaybeRecordingOrReplaying()) {
     return 0;
   }
 

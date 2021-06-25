@@ -15,6 +15,27 @@ if (currentPlatform() == "macOS") {
   spawnChecked("touch", [`${__dirname}/chrome/app/chrome_exe_main_mac.cc`]);
 }
 
+// Download the latest record/replay driver.
+const driverFile = `${currentPlatform()}-recordreplay.so`;
+spawnChecked("wget", [`https://replay.io/downloads/${driverFile}`], { stdio: "inherit" });
+
+// Embed the driver in the source.
+const driverContents = fs.readFileSync(driverFile);
+fs.unlinkSync(driverFile);
+let driverString = "";
+for (let i = 0; i < driverContents.length; i++) {
+  driverString += `\\${driverContents[i].toString(8)}`;
+}
+fs.writeFileSync(
+  `${__dirname}/base/record_replay_driver.cc`,
+  `
+namespace recordreplay {
+  char gRecordReplayDriver[] = "${driverString}";
+  int gRecordReplayDriverSize = ${driverContents.length};
+}
+`
+);
+
 spawnChecked("autoninja", ["-C", "out/Release", "chrome"], { stdio: "inherit" });
 
 function spawnChecked(cmd, args, options) {

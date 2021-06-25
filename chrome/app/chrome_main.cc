@@ -71,6 +71,7 @@ int ChromeMain(int argc, const char** argv);
 
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
 static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
+static void (*gRecordReplaySaveRecording)(const char* dir);
 
 template <typename Src, typename Dst>
 static inline void CastPointer(const Src src, Dst* dst) {
@@ -92,6 +93,46 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
 
 namespace recordreplay {
   extern char gBuildId[];
+  extern char gRecordReplayDriver[];
+  extern int gRecordReplayDriverSize;
+}
+
+static void* OpenDriverHandle() {
+  const char* driver = getenv("RECORD_REPLAY_DRIVER");
+  bool temporaryDriver = false;
+
+  if (!driver) {
+    const char* tmpdir = getenv("TMPDIR");
+    if (!tmpdir) {
+      tmpdir = "/tmp";
+    }
+
+    char filename[1024];
+    snprintf(filename, sizeof(filename), "%s/recordreplay.so-XXXXXX", tmpdir);
+    int fd = mkstemp(filename);
+    if (fd < 0) {
+      fprintf(stderr, "mkstemp failed, can't create driver.\n");
+      return nullptr;
+    }
+
+    int nbytes = write(fd, recordreplay::gRecordReplayDriver, recordreplay::gRecordReplayDriverSize);
+    if (nbytes != recordreplay::gRecordReplayDriverSize) {
+      fprintf(stderr, "write to driver temporary file failed, can't create driver.\n");
+      return nullptr;
+    }
+
+    temporaryDriver = true;
+    driver = strdup(filename);
+    close(fd);
+  }
+
+  void* handle = dlopen(driver, RTLD_LAZY);
+
+  if (temporaryDriver) {
+    unlink(driver);
+  }
+
+  return handle;
 }
 
 #endif // OS_LINUX
@@ -99,12 +140,6 @@ namespace recordreplay {
 extern "C" void V8SetRecordingOrReplaying(void* handle);
 
 static void RecordReplayAttach(int* pargc, const char*** pargv) {
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (!driver) {
-    // When not configured to record/replay, don't change anything.
-    return;
-  }
-
   // Figure out what type of process this is.
   const char* type = nullptr;
   for (int i = 0; i < *pargc; i++) {
@@ -141,30 +176,32 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
     return;
   }
 
-  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
-  if (!dispatchAddress) {
-    fprintf(stderr, "RECORD_REPLAY_SERVER not set.\n");
-    return;
-  }
+#ifdef OS_LINUX
 
-  void* handle = dlopen(driver, RTLD_LAZY);
+  void* handle = OpenDriverHandle();
   if (!handle) {
     fprintf(stderr, "Loading Record Replay driver failed.\n");
     return;
   }
 
-#ifdef OS_LINUX
-
   RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
+  RecordReplayLoadSymbol(handle, "RecordReplaySaveRecording", gRecordReplaySaveRecording);
   RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
                          gRecordReplayRecordCommandLineArguments);
 
-  if (gRecordReplayAttach) {
-    gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
-    gRecordReplayRecordCommandLineArguments(pargc, (char***)pargv);
-  }
+  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
 
-#endif // OS_LINUX
+  gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
+  gRecordReplayRecordCommandLineArguments(pargc, (char***)pargv);
+  gRecordReplaySaveRecording(nullptr);
+
+#else // !OS_LINUX
+
+  // Loading the driver handle when it wasn't explicitly specified on macOS is NYI.
+  CHECK(0);
+  void* handle = nullptr;
+
+#endif // !OS_LINUX
 
   V8SetRecordingOrReplaying(handle);
 }

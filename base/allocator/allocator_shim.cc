@@ -368,12 +368,16 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 #if defined(OS_APPLE)
 namespace base {
 namespace allocator {
 void InitializeAllocatorShim() {
   // Don't alter memory allocation behavior when recording/replaying.
-  if (getenv("RECORD_REPLAY_DRIVER")) {
+  if (MaybeRecordingOrReplaying()) {
     return;
   }
 

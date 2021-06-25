@@ -385,6 +385,10 @@ SiteProcessMap* GetSiteProcessMapForBrowserContext(BrowserContext* context) {
   return new_map_ptr;
 }
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 // NOTE: changes to this class need to be reviewed by the security team.
 class RendererSandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
@@ -401,7 +405,7 @@ class RendererSandboxedProcessLauncherDelegate
         browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
     if (!renderer_prefix.empty())
       return nullptr;
-    if (getenv("RECORD_REPLAY_DRIVER")) {
+    if (MaybeRecordingOrReplaying()) {
       // Zygotes are not used to spawn recording processes.
       return nullptr;
     }
@@ -1736,7 +1740,7 @@ bool RenderProcessHostImpl::Init() {
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  int flags = (renderer_prefix.empty() && !getenv("RECORD_REPLAY_DRIVER"))
+  int flags = (renderer_prefix.empty() && !MaybeRecordingOrReplaying())
     ? ChildProcessHost::CHILD_ALLOW_SELF
     : ChildProcessHost::CHILD_NORMAL;
 #elif defined(OS_MAC)
@@ -3112,7 +3116,7 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   if (!base::CommandLine::ForCurrentProcess()
            ->GetSwitchValueNative(switches::kRendererCmdPrefix)
            .empty() ||
-      getenv("RECORD_REPLAY_DRIVER")) {
+      MaybeRecordingOrReplaying()) {
     command_line->AppendSwitch(switches::kNoZygote);
   }
 

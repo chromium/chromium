@@ -256,6 +256,10 @@ void ZombieObjectCrash(id object, SEL aSelector, SEL viaSelector) {
   *zero = 0;
 }
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 // Initialize our globals, returning YES on success.
 BOOL ZombieInit() {
   static BOOL initialized = NO;
@@ -263,7 +267,7 @@ BOOL ZombieInit() {
     return YES;
 
   // Don't alter internal classes when recording/replaying.
-  if (getenv("RECORD_REPLAY_DRIVER"))
+  if (MaybeRecordingOrReplaying())
     return NO;
 
   Class rootClass = [NSObject class];

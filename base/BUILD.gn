@@ -579,6 +579,7 @@ component("base") {
     "ranges/ranges.h",
     "record_replay.cc",
     "record_replay_build_id.cc",
+    "record_replay_driver.cc",
     "record_replay.h",
     "record_replay_ordered_atomic.h",
     "run_loop.cc",
