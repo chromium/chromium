@@ -32,7 +32,10 @@ class ASH_EXPORT FastPairNotificationController {
                                  gfx::Image device_image,
                                  base::OnceClosure on_connect_clicked,
                                  base::OnceCallback<void(bool)> on_close);
-  void ShowPairingNotification();
+  void ShowPairingNotification(const std::u16string& device_name,
+                               gfx::Image device_image,
+                               base::OnceClosure on_cancel_clicked,
+                               base::OnceCallback<void(bool)> on_close);
 };
 
 }  // namespace ash

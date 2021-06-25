@@ -24,6 +24,12 @@ const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
 const char kFastPairDiscoveryNotificationId[] =
     "cros_fast_pair_discovery_notification_id";
+const char kFastPairPairingNotificationId[] =
+    "cros_fast_pair_pairing_notification_id";
+
+// Values outside of the range (e.g. -1) will show an infinite loading
+// progress bar.
+const int kInfiniteLoadingProgressValue = -1;
 
 // Creates an empty Fast Pair notification with the given id and uses the
 // Bluetooth icon and FastPair notifierID.
@@ -137,6 +143,27 @@ void FastPairNotificationController::ShowDiscoveryNotification(
   MessageCenter::Get()->AddNotification(std::move(discovery_notification));
 }
 
-void FastPairNotificationController::ShowPairingNotification() {}
+void FastPairNotificationController::ShowPairingNotification(
+    const std::u16string& device_name,
+    gfx::Image device_image,
+    base::OnceClosure on_cancel_clicked,
+    base::OnceCallback<void(bool)> on_close) {
+  std::unique_ptr<message_center::Notification> pairing_notification =
+      CreateNotification(kFastPairPairingNotificationId);
+  pairing_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE, device_name));
+
+  message_center::ButtonInfo cancel_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_CANCEL_BUTTON));
+  pairing_notification->set_buttons({cancel_button});
+
+  pairing_notification->set_delegate(base::MakeRefCounted<NotificationDelegate>(
+      std::move(on_cancel_clicked), std::move(on_close)));
+  pairing_notification->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
+  pairing_notification->set_progress(kInfiniteLoadingProgressValue);
+  pairing_notification->set_image(device_image);
+
+  MessageCenter::Get()->AddNotification(std::move(pairing_notification));
+}
 
 }  // namespace ash

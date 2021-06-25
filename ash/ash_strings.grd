@@ -2693,6 +2693,12 @@ This file contains the strings for ash.
       <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE" desc="Notification message shown when there is a device discovered with Fast Pair.">
         Connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph> to this Chromebook
       </message>
+      <message name="IDS_FAST_PAIR_CANCEL_BUTTON" desc="Message on button to tell users to cancel bluetooth device connection with Fast Pair.">
+        Cancel
+      </message>
+      <message name="IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE" desc="Notification title shown when a there is a device being paired with Fast Pair.">
+        Connecting <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
+      </message>
 
       <!-- In-session auth dialog strings -->
       <message name="IDS_ASH_IN_SESSION_AUTH_TITLE" desc="Text shown in the auth dialog to indicate authentication is needed.">
