@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Test using large start offset.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+
+<style>
+  #htmlvar00007 { -webkit-writing-mode: vertical-lr; overflow-y: auto; }
+  .class1 { display: inline-grid; }
+  #htmlvar00002 {  margin-bottom: 89px; }
+  :not(fieldset) {
+    -webkit-border-before-style: dashed;
+    -webkit-justify-content: space-around }
+  .class1 { min-width: 2147483648px; }
+  </style>
+
+<meter id="htmlvar00002"></meter>
+<label id="htmlvar00006" class="class1" >
+<menu id="htmlvar00007" >abc</menu>
+
+<script>
+  var var00033 = document.createElement("area");
+  var00033.addEventListener("DOMSubtreeModified",
+    function() {
+      var var00020 = document.caretRangeFromPoint(233,160);
+    });
+  var00033.download = "";
+
+  test(function () {
+    testGridPositionDefinitionsValues(
+      document.getElementById("htmlvar00006"),
+      "auto", "auto", "auto", "auto");
+  },
+  "Test that 'caretRangeFromPoint' doesn't crash with various grid properties.");
+</script>

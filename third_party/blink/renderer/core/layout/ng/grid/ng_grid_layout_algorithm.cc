@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
@@ -1047,6 +1048,10 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
     if (is_for_columns && !is_parallel && has_block_size_dependent_item)
       *has_block_size_dependent_item = true;
+
+    absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+    if (!node.GetLayoutBox()->NeedsLayout())
+      disable_side_effects.emplace();
 
     scoped_refptr<const NGLayoutResult> result;
     if (!is_parallel && space.AvailableSize().inline_size == kIndefiniteSize) {
