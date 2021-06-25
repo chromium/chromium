@@ -21,13 +21,7 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 namespace extensions {
 namespace platform_keys {
 
-extern const char kErrorInvalidToken[];
 extern const char kErrorInvalidX509Cert[];
-
-// Returns a known token if |token_id| is valid and returns nullopt for both
-// empty or unknown |token_id|.
-absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id);
 
 // Converts a token id from ::chromeos::platform_keys to the platformKeys API
 // token id.

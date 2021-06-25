@@ -17,7 +17,6 @@
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -211,7 +210,7 @@ class ExtensionPlatformKeysService : public KeyedService {
                     platform_keys::Status status);
 
   content::BrowserContext* const browser_context_ = nullptr;
-  mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;
+  crosapi::mojom::KeystoreService* const keystore_service_ = nullptr;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};

@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
@@ -60,22 +61,10 @@ const struct NameValuePair {
 namespace platform_keys {
 
 const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
-const char kErrorInvalidToken[] = "The token is not valid.";
 const char kErrorInvalidX509Cert[] =
     "Certificate is not a valid X.509 certificate.";
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
-
-absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id) {
-  if (token_id == kTokenIdUser)
-    return chromeos::platform_keys::TokenId::kUser;
-
-  if (token_id == kTokenIdSystem)
-    return chromeos::platform_keys::TokenId::kSystem;
-
-  return absl::nullopt;
-}
 
 std::string PlatformKeysTokenIdToApiId(
     chromeos::platform_keys::TokenId platform_keys_token_id) {

@@ -40,8 +40,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -146,20 +146,34 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
   return KeystoreSigningScheme::kUnknown;
 }
 
-void BindKeystoreService(
-    content::BrowserContext* browser_context,
-    mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
+// Returns appropriate KeystoreService for |browser_context|.
+//
+// For Lacros-Chrome it returns a remote mojo implementation owned by
+// LacrosService (that is created before the start of the main loop and should
+// outlive ExtensionPlatformKeysService).
+//
+// For Ash-Chrome the factory can return:
+// * an instance owned by CrosapiManager (that is created before profiles and
+// should outlive ExtensionPlatformKeysService)
+// * or an appropriate keyed service that will always exist
+// during ExtensionPlatformKeysService lifetime (because of KeyedService
+// dependencies).
+crosapi::mojom::KeystoreService* GetKeystoreService(
+    content::BrowserContext* browser_context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  (void)browser_context;
-  crosapi::CrosapiManager::Get()->crosapi_ash()->BindKeystoreService(
-      std::move(receiver));
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
+      << "Attempted to use an incorrect profile. Please file a bug at "
+         "https://bugs.chromium.org/ if this happens.";
+  return chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
+      .get();
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::KeystoreServiceAsh* keystore_remote =
-      crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(browser_context);
-  CHECK(keystore_remote);
-  keystore_remote->BindReceiver(std::move(receiver));
+  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
+      browser_context);
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
@@ -872,11 +886,10 @@ ExtensionPlatformKeysService::SelectDelegate::~SelectDelegate() {}
 
 ExtensionPlatformKeysService::ExtensionPlatformKeysService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
+    : browser_context_(browser_context),
+      keystore_service_(GetKeystoreService(browser_context_)) {
   DCHECK(browser_context);
-
-  BindKeystoreService(browser_context,
-                      keystore_service_.BindNewPipeAndPassReceiver());
+  DCHECK(keystore_service_);
 }
 
 ExtensionPlatformKeysService::~ExtensionPlatformKeysService() {}

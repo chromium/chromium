@@ -47,9 +47,6 @@ absl::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
 const char kLacrosNotImplementedError[] = "Not implemented.";
 const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
-const char kUnsupportedSigning[] = "Unsupported signing algorithm.";
-const char kUnsupportedSigningInput[] =
-    "Unsupported input for signing algorithm.";
 const char kInvalidKeystoreType[] = "Invalid keystore type.";
 const char kExtensionDoesNotHavePermission[] =
     "The extension does not have permission to call this function.";
@@ -90,94 +87,15 @@ std::string ValidateInput(const std::string& token_id,
   return "";
 }
 
-// Similar to ValidateInput() above but also converts |signing_algorithm| into
-// the output parameter |out_signing|. Only populated on success. A validation
-// error should result in extension termination.
-std::string ValidateInput(
-    const std::string& token_id,
-    crosapi::mojom::KeystoreType* keystore,
-    const api_epki::Algorithm& signing_algorithm,
-    crosapi::mojom::KeystoreSigningAlgorithmPtr* out_signing) {
-  std::string error = ValidateInput(token_id, keystore);
-  if (!error.empty())
-    return error;
-
-  *out_signing = crosapi::mojom::KeystoreSigningAlgorithm::New();
-  if (signing_algorithm.name == "RSASSA-PKCS1-v1_5") {
-    if (!signing_algorithm.modulus_length ||
-        *signing_algorithm.modulus_length < 0) {
-      return kUnsupportedSigningInput;
-    }
-    crosapi::mojom::KeystorePKCS115ParamsPtr params =
-        crosapi::mojom::KeystorePKCS115Params::New();
-    if (!base::IsValueInRangeForNumericType<uint32_t>(
-            *(signing_algorithm.modulus_length))) {
-      return kUnsupportedSigningInput;
-    }
-    params->modulus_length =
-        static_cast<uint32_t>(*(signing_algorithm.modulus_length));
-    (*out_signing)->set_pkcs115(std::move(params));
-    return "";
-  } else if (signing_algorithm.name == "ECDSA") {
-    if (!signing_algorithm.named_curve) {
-      return kUnsupportedSigningInput;
-    }
-    crosapi::mojom::KeystoreECDSAParamsPtr params =
-        crosapi::mojom::KeystoreECDSAParams::New();
-    params->named_curve = *(signing_algorithm.named_curve);
-    (*out_signing)->set_ecdsa(std::move(params));
-    return "";
-  }
-
-  return kUnsupportedSigning;
-}
-
 }  // namespace
+
+//------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction LacrosNotImplementedExtensionFunction::Run() {
   return RespondNow(Error(kLacrosNotImplementedError));
 }
 
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
-  std::unique_ptr<api_epki::GenerateKey::Params> params(
-      api_epki::GenerateKey::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error = ValidateCrosapi(
-      KeystoreService::kExtensionGenerateKeyMinVersion, browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
-  crosapi::mojom::KeystoreType keystore;
-  crosapi::mojom::KeystoreSigningAlgorithmPtr signing;
-  error =
-      ValidateInput(params->token_id, &keystore, params->algorithm, &signing);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
-
-  auto c = base::BindOnce(
-      &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->ExtensionGenerateKey(keystore, std::move(signing), extension_id(),
-                             std::move(c));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey(
-    ResultPtr result) {
-  using Result = crosapi::mojom::ExtensionKeystoreBinaryResult;
-  switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::BLOB:
-      Respond(ArgumentList(
-          api_epki::GenerateKey::Results::Create(result->get_blob())));
-      return;
-  }
-}
+//------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysGetCertificatesFunction::Run() {
@@ -223,6 +141,8 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
   }
 }
 
+//------------------------------------------------------------------------------
+
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysImportCertificateFunction::Run() {
   std::unique_ptr<api_epk::ImportCertificate::Params> params(
@@ -255,6 +175,8 @@ void EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate(
     Respond(Error(error));
   }
 }
+
+//------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysRemoveCertificateFunction::Run() {
@@ -289,6 +211,8 @@ void EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate(
     Respond(Error(error));
   }
 }
+
+//------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGetTokensFunction::Run() {
@@ -337,6 +261,8 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores(
   }
 }
 
+//------------------------------------------------------------------------------
+
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
@@ -380,6 +306,8 @@ void EnterprisePlatformKeysChallengeMachineKeyFunction::
       return;
   }
 }
+
+//------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeUserKeyFunction::Run() {

@@ -20,18 +20,6 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class EnterprisePlatformKeysInternalGenerateKeyFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysInternalGenerateKeyFunction() override = default;
-  ResponseAction Run() override;
-
-  using ResultPtr = crosapi::mojom::ExtensionKeystoreBinaryResultPtr;
-  void OnGenerateKey(ResultPtr result);
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
-                             ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
-};
-
 class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysGetCertificatesFunction() override = default;

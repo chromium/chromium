@@ -9,7 +9,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 
+#include <string>
+
 #include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h"
@@ -25,13 +31,29 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace extensions {
+
 namespace platform_keys {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
 bool IsExtensionAllowed(Profile* profile, const Extension* extension);
 
 }  // namespace platform_keys
+
+class EnterprisePlatformKeysInternalGenerateKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysInternalGenerateKeyFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the key was generated. If an error occurred, |public_key_der|
+  // will be empty.
+  void OnGeneratedKey(const std::string& public_key_der,
+                      absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
+                             ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_

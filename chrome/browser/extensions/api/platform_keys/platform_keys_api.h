@@ -9,12 +9,29 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_
 
+#include <string>
+
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api_lacros.h"
 #else
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api_ash.h"
 #endif
+
+namespace extensions {
+namespace platform_keys {
+
+extern const char kErrorInvalidToken[];
+
+// Returns a known token if |token_id| is valid and returns nullopt for both
+// empty or unknown |token_id|.
+absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
+    const std::string& token_id);
+
+}  // namespace platform_keys
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_

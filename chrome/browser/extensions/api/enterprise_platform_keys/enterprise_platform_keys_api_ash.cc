@@ -47,62 +47,7 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 
 }  // namespace
 
-EnterprisePlatformKeysInternalGenerateKeyFunction::
-    ~EnterprisePlatformKeysInternalGenerateKeyFunction() = default;
-
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
-  std::unique_ptr<api_epki::GenerateKey::Params> params(
-      api_epki::GenerateKey::Params::Create(*args_));
-
-  EXTENSION_FUNCTION_VALIDATE(params);
-  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id =
-      platform_keys::ApiIdToPlatformKeysTokenId(params->token_id);
-  if (!platform_keys_token_id)
-    return RespondNow(Error(platform_keys::kErrorInvalidToken));
-
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  DCHECK(service);
-
-  if (params->algorithm.name == "RSASSA-PKCS1-v1_5") {
-    // TODO(pneubeck): Add support for unsigned integers to IDL.
-    EXTENSION_FUNCTION_VALIDATE(params->algorithm.modulus_length &&
-                                *(params->algorithm.modulus_length) >= 0);
-    service->GenerateRSAKey(
-        platform_keys_token_id.value(), *(params->algorithm.modulus_length),
-        extension_id(),
-        base::BindOnce(
-            &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
-            this));
-  } else if (params->algorithm.name == "ECDSA") {
-    EXTENSION_FUNCTION_VALIDATE(params->algorithm.named_curve);
-    service->GenerateECKey(
-        platform_keys_token_id.value(), *(params->algorithm.named_curve),
-        extension_id(),
-        base::BindOnce(
-            &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
-            this));
-  } else {
-    NOTREACHED();
-    EXTENSION_FUNCTION_VALIDATE(false);
-  }
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
-    const std::string& public_key_der,
-    absl::optional<crosapi::mojom::KeystoreError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!error) {
-    Respond(ArgumentList(api_epki::GenerateKey::Results::Create(
-        std::vector<uint8_t>(public_key_der.begin(), public_key_der.end()))));
-  } else {
-    Respond(
-        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
-  }
-}
+//------------------------------------------------------------------------------
 
 EnterprisePlatformKeysGetCertificatesFunction::
     ~EnterprisePlatformKeysGetCertificatesFunction() {}
@@ -151,6 +96,8 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates(
   Respond(ArgumentList(std::move(results)));
 }
 
+//------------------------------------------------------------------------------
+
 EnterprisePlatformKeysImportCertificateFunction::
     ~EnterprisePlatformKeysImportCertificateFunction() {}
 
@@ -195,6 +142,8 @@ void EnterprisePlatformKeysImportCertificateFunction::OnImportedCertificate(
   else
     Respond(Error(chromeos::platform_keys::StatusToString(status)));
 }
+
+//------------------------------------------------------------------------------
 
 EnterprisePlatformKeysRemoveCertificateFunction::
     ~EnterprisePlatformKeysRemoveCertificateFunction() {}
@@ -241,6 +190,8 @@ void EnterprisePlatformKeysRemoveCertificateFunction::OnRemovedCertificate(
     Respond(Error(chromeos::platform_keys::StatusToString(status)));
 }
 
+//------------------------------------------------------------------------------
+
 EnterprisePlatformKeysInternalGetTokensFunction::
     ~EnterprisePlatformKeysInternalGetTokensFunction() {}
 
@@ -282,6 +233,8 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens(
   Respond(ArgumentList(api_epki::GetTokens::Results::Create(token_ids)));
 }
 
+//------------------------------------------------------------------------------
+
 EnterprisePlatformKeysChallengeMachineKeyFunction::
     EnterprisePlatformKeysChallengeMachineKeyFunction() = default;
 
@@ -316,6 +269,8 @@ void EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKey(
     Respond(Error(result.GetErrorMessage()));
   }
 }
+
+//------------------------------------------------------------------------------
 
 EnterprisePlatformKeysChallengeUserKeyFunction::
     EnterprisePlatformKeysChallengeUserKeyFunction() = default;

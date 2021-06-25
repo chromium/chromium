@@ -999,6 +999,7 @@ static_library("extensions") {
       "api/messaging/native_message_built_in_host.h",
       "api/messaging/native_message_echo_host.cc",
       "api/messaging/native_message_echo_host.h",
+      "api/platform_keys/platform_keys_api.cc",
       "api/platform_keys/platform_keys_api.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",

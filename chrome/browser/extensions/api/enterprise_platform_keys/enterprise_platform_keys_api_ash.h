@@ -22,21 +22,6 @@ using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 
 namespace extensions {
 
-class EnterprisePlatformKeysInternalGenerateKeyFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysInternalGenerateKeyFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the key was generated. If an error occurred, |public_key_der|
-  // will be empty.
-  void OnGeneratedKey(const std::string& public_key_der,
-                      absl::optional<crosapi::mojom::KeystoreError> error);
-
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
-                             ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
-};
-
 class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysGetCertificatesFunction() override;

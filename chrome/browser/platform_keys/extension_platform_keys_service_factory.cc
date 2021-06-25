@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"

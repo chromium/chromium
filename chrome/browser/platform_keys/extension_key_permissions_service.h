@@ -14,7 +14,6 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -216,7 +215,7 @@ class ExtensionKeyPermissionsService {
   extensions::StateStore* extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   policy::PolicyService* const profile_policies_;
-  mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_;
+  crosapi::mojom::KeystoreService* const keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 
