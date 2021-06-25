@@ -5,8 +5,6 @@ Specification:
 https://tools.ietf.org/html/rfc8441
 """
 
-from __future__ import absolute_import
-
 from mod_pywebsocket import common
 
 from mod_pywebsocket.handshake.base import get_mandatory_header

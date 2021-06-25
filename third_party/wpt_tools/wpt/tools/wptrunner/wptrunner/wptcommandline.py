@@ -1,4 +1,3 @@
-from __future__ import absolute_import, print_function
 import argparse
 import os
 import sys
@@ -322,14 +321,17 @@ scheme host and port.""")
                              default=[], action="append", dest="user_stylesheets",
                              help="Inject a user CSS stylesheet into every test.")
 
-    servo_group = parser.add_argument_group("Chrome-specific")
-    servo_group.add_argument("--enable-mojojs", action="store_true", default=False,
+    chrome_group = parser.add_argument_group("Chrome-specific")
+    chrome_group.add_argument("--enable-mojojs", action="store_true", default=False,
                              help="Enable MojoJS for testing. Note that this flag is usally "
                              "enabled automatically by `wpt run`, if it succeeds in downloading "
                              "the right version of mojojs.zip or if --mojojs-path is specified.")
-    servo_group.add_argument("--mojojs-path",
+    chrome_group.add_argument("--mojojs-path",
                              help="Path to mojojs gen/ directory. If it is not specified, `wpt run` "
                              "will download and extract mojojs.zip into _venv2/mojojs/gen.")
+    chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
+                             help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
+                             "in environments with no hardware GPU available.")
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", dest="sauce_browser",

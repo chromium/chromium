@@ -217,6 +217,8 @@
 ./tools/webdriver/webdriver/error.py
 ./tools/webdriver/webdriver/protocol.py
 ./tools/webdriver/webdriver/transport.py
+./tools/webdriver/webdriver/bidi/__init__.py
+./tools/webdriver/webdriver/bidi/client.py
 ./tools/wpt/__init__.py
 ./tools/wpt/android.py
 ./tools/wpt/browser.py

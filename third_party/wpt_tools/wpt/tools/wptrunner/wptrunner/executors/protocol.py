@@ -371,21 +371,27 @@ class TestDriverProtocolPart(ProtocolPart):
         :param str message: Additional data to add to the message."""
         pass
 
-    def switch_to_window(self, wptrunner_id):
+    def switch_to_window(self, wptrunner_id, initial_window=None):
         """Switch to a window given a wptrunner window id
 
-        :param str wptrunner_id: window id"""
+        :param str wptrunner_id: Testdriver-specific id for the target window
+        :param str initial_window: WebDriver window id for the test window"""
         if wptrunner_id is None:
             return
 
+        if initial_window is None:
+            initial_window = self.parent.base.current_window
+
         stack = [str(item) for item in self.parent.base.window_handles()]
+        first = True
         while stack:
             item = stack.pop()
             if item is None:
                 self._switch_to_parent_frame()
                 continue
             elif isinstance(item, str):
-                self.parent.base.set_window(item)
+                if not first or item != initial_window:
+                    self.parent.base.set_window(item)
             else:
                 self._switch_to_frame(item)
 
@@ -396,10 +402,12 @@ class TestDriverProtocolPart(ProtocolPart):
             except Exception:
                 pass
             frame_count = self.parent.base.execute_script("return window.length")
-            # None here makes us switch back to the parent after we've processed all the subframes
-            stack.append(None)
             if frame_count:
-                stack.extend(reversed(range(0, frame_count)))
+                for frame_id in reversed(range(0, frame_count)):
+                    # None here makes us switch back to the parent after we've processed the frame
+                    stack.append(None)
+                    stack.append(frame_id)
+            first = False
 
         raise Exception("Window with id %s not found" % wptrunner_id)
 

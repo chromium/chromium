@@ -45,7 +45,7 @@ def get_free_port():
         s = socket.socket()
         try:
             s.bind(("127.0.0.1", 0))
-        except socket.error:
+        except OSError:
             continue
         else:
             return s.getsockname()[1]

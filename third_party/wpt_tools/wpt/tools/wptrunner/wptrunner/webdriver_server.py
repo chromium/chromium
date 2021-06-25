@@ -221,7 +221,7 @@ def get_free_port():
         s = socket.socket()
         try:
             s.bind(("127.0.0.1", 0))
-        except socket.error:
+        except OSError:
             continue
         else:
             return s.getsockname()[1]
@@ -232,7 +232,7 @@ def get_free_port():
 def wait_for_service(addr, timeout=60):
     """Waits until network service given as a tuple of (host, port) becomes
     available or the `timeout` duration is reached, at which point
-    ``socket.error`` is raised."""
+    ``socket.timeout`` is raised."""
     end = time.time() + timeout
     while end > time.time():
         so = socket.socket()
@@ -240,7 +240,7 @@ def wait_for_service(addr, timeout=60):
             so.connect(addr)
         except socket.timeout:
             pass
-        except socket.error as e:
+        except OSError as e:
             if e.errno != errno.ECONNREFUSED:
                 raise
         else:
@@ -248,4 +248,4 @@ def wait_for_service(addr, timeout=60):
         finally:
             so.close()
         time.sleep(0.5)
-    raise socket.error("Service is unavailable: %s:%i" % addr)
+    raise socket.timeout("Service is unavailable: %s:%i" % addr)

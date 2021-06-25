@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 import json
 import os
 import sys
@@ -238,7 +236,7 @@ def run_tests(config, test_paths, product, **kwargs):
             try:
                 test_environment.ensure_started()
             except env.TestEnvironmentError as e:
-                logger.critical("Error starting test environment: %s" % e.message)
+                logger.critical("Error starting test environment: %s" % e)
                 raise
 
             recording.set(["startup"])

@@ -223,7 +223,7 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
     def handle_error(self, request, client_address):
         error = sys.exc_info()[1]
 
-        if ((isinstance(error, socket.error) and
+        if ((isinstance(error, OSError) and
              isinstance(error.args, tuple) and
              error.args[0] in self.acceptable_errors) or
             (isinstance(error, IOError) and
@@ -285,7 +285,7 @@ class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
             try:
                 handler(request, response)
             except HTTPException as e:
-                response.set_error(e.code, e.message)
+                response.set_error(e.code, str(e))
             except Exception as e:
                 self.respond_with_error(response, e)
         self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
@@ -411,7 +411,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                         if isinstance(frame, StreamEnded) or (hasattr(frame, "stream_ended") and frame.stream_ended):
                             del stream_queues[frame.stream_id]
 
-        except (socket.timeout, socket.error) as e:
+        except OSError as e:
             self.logger.error('(%s) Closing Connection - \n%s' % (self.uid, str(e)))
             if not self.close_connection:
                 self.close_connection = True
@@ -620,7 +620,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         try:
             return handler.frame_handler(request)
         except HTTPException as e:
-            response.set_error(e.code, e.message)
+            response.set_error(e.code, str(e))
             response.write()
         except Exception as e:
             self.respond_with_error(response, e)
@@ -712,7 +712,7 @@ class Http1WebTestRequestHandler(BaseWebTestRequestHandler):
     def get_request_line(self):
         try:
             self.raw_requestline = self.rfile.readline(65537)
-        except socket.error:
+        except OSError:
             self.close_connection = True
             return False
         if len(self.raw_requestline) > 65536:

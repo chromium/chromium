@@ -1,4 +1,3 @@
-from __future__ import print_function
 import os
 from urllib.parse import urljoin, urlsplit
 from collections import namedtuple, defaultdict, deque

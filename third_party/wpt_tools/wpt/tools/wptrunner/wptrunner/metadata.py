@@ -1,4 +1,3 @@
-from __future__ import print_function
 import array
 import os
 from collections import defaultdict, namedtuple

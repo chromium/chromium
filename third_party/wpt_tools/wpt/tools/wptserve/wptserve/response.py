@@ -2,7 +2,6 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from io import BytesIO
 import json
-import socket
 import uuid
 
 from hpack.struct import HeaderTuple
@@ -782,7 +781,7 @@ class ResponseWriter(object):
         try:
             self._wfile.write(self.encode(data))
             return True
-        except socket.error:
+        except OSError:
             # This can happen if the socket got closed by the remote end
             return False
 
@@ -797,7 +796,7 @@ class ResponseWriter(object):
                 break
             try:
                 self._wfile.write(buf)
-            except socket.error:
+            except OSError:
                 success = False
                 break
         data.close()

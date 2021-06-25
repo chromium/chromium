@@ -237,20 +237,11 @@ def run_info_extras(**kwargs):
           "wasm": kwargs.get("wasm", True),
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
-          "sw-e10s": True,
           "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
           "sessionHistoryInParent": (kwargs.get("enable_fission") or
                                      get_bool_pref("fission.autostart") or
                                      get_bool_pref("fission.sessionHistoryInParent")),
           "swgl": get_bool_pref("gfx.webrender.software")}
-
-    # The value of `sw-e10s` defaults to whether the "parent_intercept"
-    # implementation is enabled for the current build. This value, however,
-    # can be overridden by explicitly setting the pref with the `--setpref` CLI
-    # flag, which is checked here.
-    sw_e10s_override = get_bool_pref_if_exists("dom.serviceWorkers.parent_intercept")
-    if sw_e10s_override is not None:
-        rv["sw-e10s"] = sw_e10s_override
 
     rv.update(run_info_browser_version(**kwargs))
 
@@ -272,7 +263,7 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return (["os", "debug", "webrender", "fission", "e10s", "sw-e10s", "processor", "swgl"],
+    return (["os", "debug", "webrender", "fission", "e10s", "processor", "swgl"],
             {"os": ["version"], "processor": ["bits"]})
 
 

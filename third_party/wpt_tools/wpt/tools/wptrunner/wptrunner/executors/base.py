@@ -852,7 +852,7 @@ class ActionContext(object):
 
         self.initial_window = self.protocol.base.current_window
         self.logger.debug("Switching to window %s" % self.context)
-        self.protocol.testdriver.switch_to_window(self.context)
+        self.protocol.testdriver.switch_to_window(self.context, self.initial_window)
 
     def __exit__(self, *args):
         if self.context is None:
@@ -860,5 +860,4 @@ class ActionContext(object):
 
         self.logger.debug("Switching back to initial window")
         self.protocol.base.set_window(self.initial_window)
-        self.protocol.testdriver._switch_to_frame(None)
         self.initial_window = None

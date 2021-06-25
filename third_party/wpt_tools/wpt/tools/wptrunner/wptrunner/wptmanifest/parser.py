@@ -12,8 +12,6 @@
 
 # TODO: keep comments in the tree
 
-from __future__ import unicode_literals
-
 from io import BytesIO
 
 from .node import (Node, AtomNode, BinaryExpressionNode, BinaryOperatorNode,

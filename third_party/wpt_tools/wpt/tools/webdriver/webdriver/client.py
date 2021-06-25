@@ -1,6 +1,7 @@
 from . import error
 from . import protocol
 from . import transport
+from .bidi.client import BidiSession
 
 from urllib import parse as urlparse
 
@@ -473,8 +474,16 @@ class Session(object):
                  host,
                  port,
                  url_prefix="/",
+                 enable_bidi=False,
                  capabilities=None,
                  extension=None):
+
+        if enable_bidi:
+            if capabilities is not None:
+                capabilities.setdefault("alwaysMatch", {}).update({"webSocketUrl": True})
+            else:
+                capabilities = {"alwaysMatch": {"webSocketUrl": True}}
+
         self.transport = transport.HTTPWireProtocol(host, port, url_prefix)
         self.requested_capabilities = capabilities
         self.capabilities = None
@@ -482,6 +491,8 @@ class Session(object):
         self.timeouts = None
         self.window = None
         self.find = None
+        self.enable_bidi = enable_bidi
+        self.bidi_session = None
         self.extension = None
         self.extension_cls = extension
 
@@ -532,6 +543,14 @@ class Session(object):
         value = self.send_command("POST", "session", body=body)
         self.session_id = value["sessionId"]
         self.capabilities = value["capabilities"]
+
+        if "webSocketUrl" in self.capabilities:
+            self.bidi_session = BidiSession.from_http(self.session_id,
+                                                      self.capabilities)
+        elif self.enable_bidi:
+            self.end()
+            raise error.SessionNotCreatedException(
+                "Requested bidi session, but webSocketUrl capability not found")
 
         if self.extension_cls:
             self.extension = self.extension_cls(self)

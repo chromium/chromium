@@ -140,7 +140,7 @@ class URLManifestItem(ManifestItem):
     @property
     def https(self):
         # type: () -> bool
-        return "https" in self._flags or "serviceworker" in self._flags
+        return "https" in self._flags or "serviceworker" in self._flags or "serviceworker-module" in self._flags
 
     @property
     def h2(self):
