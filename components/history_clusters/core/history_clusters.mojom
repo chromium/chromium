@@ -58,9 +58,6 @@ struct URLVisit {
   // Localized string of approximate `last_visit_time`, e.g., "2 days ago".
   string relative_date;
 
-  // Time of day of `last_visit_time`, e.g., "3:07 PM".
-  string time_of_day;
-
   // Annotations for this visit.
   array<Annotation> annotations;
 

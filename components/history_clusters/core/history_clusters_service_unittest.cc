@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
@@ -133,6 +134,7 @@ class HistoryClustersServiceTest : public testing::Test {
       visit.visit_row.visit_time = visit_1_time_;
       visit.visit_row.visit_duration = base::TimeDelta::FromMilliseconds(5600);
       visit.context_annotations.page_end_reason = 3;
+      visit.context_annotations.is_new_bookmark = true;
       AddVisit(visit);
     }
 
@@ -146,6 +148,7 @@ class HistoryClustersServiceTest : public testing::Test {
       visit.visit_row.visit_duration = base::TimeDelta::FromSeconds(20);
       visit.visit_row.referring_visit = 1;
       visit.context_annotations.page_end_reason = 5;
+      visit.context_annotations.is_existing_part_of_tab_group = true;
       AddVisit(visit);
     }
   }
@@ -321,12 +324,24 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
                 EXPECT_EQ(cluster->visits[0]->last_visit_time, visit_1_time_);
                 EXPECT_EQ(cluster->visits[0]->first_visit_time, visit_1_time_);
                 EXPECT_EQ(cluster->visits[0]->page_title, "Google title");
+                EXPECT_TRUE(base::Contains(
+                    cluster->visits[0]->annotations,
+                    history_clusters::mojom::Annotation::kBookmarked));
+                EXPECT_FALSE(base::Contains(
+                    cluster->visits[0]->annotations,
+                    history_clusters::mojom::Annotation::kTabGrouped));
                 EXPECT_EQ(cluster->visits[1]->normalized_url,
                           "https://github.com/");
                 EXPECT_EQ(cluster->visits[1]->raw_urls.size(), 1u);
                 EXPECT_EQ(cluster->visits[1]->last_visit_time, visit_2_time_);
                 EXPECT_EQ(cluster->visits[1]->first_visit_time, visit_2_time_);
                 EXPECT_EQ(cluster->visits[1]->page_title, "Github title");
+                EXPECT_FALSE(base::Contains(
+                    cluster->visits[1]->annotations,
+                    history_clusters::mojom::Annotation::kBookmarked));
+                EXPECT_TRUE(base::Contains(
+                    cluster->visits[1]->annotations,
+                    history_clusters::mojom::Annotation::kTabGrouped));
                 ASSERT_EQ(cluster->keywords.size(), 2u);
                 EXPECT_EQ(cluster->keywords[0], u"apples");
                 EXPECT_EQ(cluster->keywords[1], u"Red Oranges");

@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
-#include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -250,8 +249,6 @@ void HistoryClustersHandler::OnHistoryQueryResults(
     visit->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
         base::Time::Now() - visit->last_visit_time));
-    visit->time_of_day =
-        base::UTF16ToUTF8(base::TimeFormatTimeOfDay(visit->last_visit_time));
 
     // Check if the URL is a valid search URL.
     std::u16string search_terms;

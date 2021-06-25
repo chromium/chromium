@@ -5,4 +5,5 @@ include_rules = [
   "+net",
   "+services/network/public/cpp",
   "+services/network/test",
+  "+ui/base/l10n",
 ]

@@ -18,6 +18,7 @@
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace history_clusters {
 
@@ -71,6 +72,19 @@ history_clusters::mojom::URLVisitPtr VisitToMojom(
   visit_mojom->last_visit_time = visit.visit_row.visit_time;
   visit_mojom->first_visit_time = visit.visit_row.visit_time;
   visit_mojom->page_title = base::UTF16ToUTF8(visit.url_row.title());
+  visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+      base::Time::Now() - visit.visit_row.visit_time));
+  if (visit.context_annotations.is_existing_part_of_tab_group ||
+      visit.context_annotations.is_placed_in_tab_group) {
+    visit_mojom->annotations.push_back(
+        history_clusters::mojom::Annotation::kTabGrouped);
+  }
+  if (visit.context_annotations.is_existing_bookmark ||
+      visit.context_annotations.is_new_bookmark) {
+    visit_mojom->annotations.push_back(
+        history_clusters::mojom::Annotation::kBookmarked);
+  }
   visit_mojom->score = 1;  // Non-zero score until the model produces real ones.
   return visit_mojom;
 }
