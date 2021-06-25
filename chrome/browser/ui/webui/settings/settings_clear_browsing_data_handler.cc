@@ -198,12 +198,12 @@ void ClearBrowsingDataHandler::OnGotInstalledApps(
 
 std::unique_ptr<content::BrowsingDataFilterBuilder>
 ClearBrowsingDataHandler::ProcessInstalledApps(
-    const base::ListValue* installed_apps) {
+    base::Value::ConstListView installed_apps) {
   std::vector<std::string> excluded_domains;
   std::vector<int32_t> excluded_domain_reasons;
   std::vector<std::string> ignored_domains;
   std::vector<int32_t> ignored_domain_reasons;
-  for (const auto& item : installed_apps->GetList()) {
+  for (const auto& item : installed_apps) {
     const base::DictionaryValue* site = nullptr;
     CHECK(item.GetAsDictionary(&site));
     bool is_checked = false;
@@ -236,9 +236,9 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetSize());
-  std::string webui_callback_id;
-  CHECK(args->GetString(0, &webui_callback_id));
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(4U, args_list.size());
+  std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
 
@@ -250,9 +250,10 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   uint64_t remove_mask = 0;
   uint64_t origin_mask = 0;
   std::vector<BrowsingDataType> data_type_vector;
-  const base::ListValue* data_type_list = nullptr;
-  CHECK(args->GetList(1, &data_type_list));
-  for (const base::Value& type : data_type_list->GetList()) {
+
+  CHECK(args_list[1].is_list());
+  base::Value::ConstListView data_type_list = args_list[1].GetList();
+  for (const base::Value& type : data_type_list) {
     std::string pref_name;
     CHECK(type.GetAsString(&pref_name));
     BrowsingDataType data_type =
@@ -349,11 +350,9 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
                                ->GetScopedSyncDataDeletion();
   }
 
-  int period_selected;
-  CHECK(args->GetInteger(2, &period_selected));
+  int period_selected = args_list[2].GetInt();
 
-  const base::ListValue* installed_apps = nullptr;
-  CHECK(args->GetList(3, &installed_apps));
+  const base::Value::ConstListView installed_apps = args_list[3].GetList();
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       ProcessInstalledApps(installed_apps);
 

@@ -1055,22 +1055,21 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
-  CHECK(args->GetSize() == 2);
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(args_list.size(), 2u);
 
-  std::string dragged_app_id;
-  const base::ListValue* app_order;
-  CHECK(args->GetString(0, &dragged_app_id));
-  CHECK(args->GetList(1, &app_order));
+  std::string dragged_app_id = args_list[0].GetString();
+  base::Value::ConstListView app_order = args_list[1].GetList();
 
   std::string predecessor_to_moved_ext;
   std::string successor_to_moved_ext;
-  for (size_t i = 0; i < app_order->GetSize(); ++i) {
-    std::string value;
-    if (app_order->GetString(i, &value) && value == dragged_app_id) {
+  for (size_t i = 0; i < app_order.size(); ++i) {
+    const std::string* value = app_order[i].GetIfString();
+    if (value && *value == dragged_app_id) {
       if (i > 0)
-        CHECK(app_order->GetString(i - 1, &predecessor_to_moved_ext));
-      if (i + 1 < app_order->GetSize())
-        CHECK(app_order->GetString(i + 1, &successor_to_moved_ext));
+        predecessor_to_moved_ext = app_order[i - 1].GetString();
+      if (i + 1 < app_order.size())
+        successor_to_moved_ext = app_order[i + 1].GetString();
       break;
     }
   }

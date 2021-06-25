@@ -88,16 +88,14 @@ OfflineInternalsUIMessageHandler::~OfflineInternalsUIMessageHandler() {}
 
 void OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-
-  const base::ListValue* offline_ids_from_arg;
-  args->GetList(1, &offline_ids_from_arg);
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(2u, args_list.size());
+  std::string callback_id = args_list[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  for (size_t i = 0; i < offline_ids_from_arg->GetSize(); i++) {
-    std::string value;
-    offline_ids_from_arg->GetString(i, &value);
+  base::Value::ConstListView offline_ids_from_arg = args_list[1].GetList();
+  for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
+    std::string value = offline_ids_from_arg[i].GetString();
     int64_t int_value;
     base::StringToInt64(value, &int_value);
     offline_ids.push_back(int_value);
@@ -114,16 +112,14 @@ void OfflineInternalsUIMessageHandler::HandleDeleteSelectedPages(
 
 void OfflineInternalsUIMessageHandler::HandleDeleteSelectedRequests(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(2u, args_list.size());
+  std::string callback_id = args_list[0].GetString();
 
   std::vector<int64_t> offline_ids;
-  const base::ListValue* offline_ids_from_arg = nullptr;
-  args->GetList(1, &offline_ids_from_arg);
-
-  for (size_t i = 0; i < offline_ids_from_arg->GetSize(); i++) {
-    std::string value;
-    offline_ids_from_arg->GetString(i, &value);
+  base::Value::ConstListView offline_ids_from_arg = args_list[1].GetList();
+  for (size_t i = 0; i < offline_ids_from_arg.size(); i++) {
+    std::string value = offline_ids_from_arg[i].GetString();
     int64_t int_value;
     base::StringToInt64(value, &int_value);
     offline_ids.push_back(int_value);

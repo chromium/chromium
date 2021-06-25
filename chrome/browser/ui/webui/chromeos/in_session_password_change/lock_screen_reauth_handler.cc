@@ -29,13 +29,13 @@
 namespace chromeos {
 namespace {
 
-std::vector<std::string> ConvertToVector(const base::ListValue* list) {
+std::vector<std::string> ConvertToVector(const base::Value& list) {
   std::vector<std::string> string_list;
-  if (!list) {
+  if (!list.is_list()) {
     return string_list;
   }
 
-  for (const base::Value& value : list->GetList()) {
+  for (const base::Value& value : list.GetList()) {
     if (value.is_string()) {
       string_list.push_back(value.GetString());
     }
@@ -194,16 +194,14 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   CHECK_EQ(params->GetList().size(), 6);
   std::string gaia_id, email, password;
   bool using_saml;
-  const base::ListValue* servicesList;
   ::login::StringList services = ::login::StringList();
   const base::DictionaryValue* password_attributes;
   gaia_id = params->GetList()[0].GetString();
   email = params->GetList()[1].GetString();
   password = params->GetList()[2].GetString();
   using_saml = params->GetList()[3].GetBool();
-  params->GetList(4, &servicesList);
-  services = ConvertToVector(servicesList);
-  params->GetDictionary(5, &password_attributes);
+  services = ConvertToVector(params->GetList()[4]);
+  params->GetList()[5].GetAsDictionary(&password_attributes);
 
   if (gaia::CanonicalizeEmail(email) != gaia::CanonicalizeEmail(email_)) {
     // The authenticated user email doesn't match the current user's email.

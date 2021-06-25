@@ -390,21 +390,18 @@ base::ListValue WelcomeScreenHandler::GetTimezoneList() {
 
   base::ListValue timezone_list;
   std::unique_ptr<base::ListValue> timezones = system::GetTimezoneList();
-  for (size_t i = 0; i < timezones->GetSize(); ++i) {
-    const base::ListValue* timezone = NULL;
-    CHECK(timezones->GetList(i, &timezone));
+  base::Value::ConstListView timezones_view = timezones->GetList();
+  for (size_t i = 0; i < timezones_view.size(); ++i) {
+    CHECK(timezones_view[i].is_list());
+    base::Value::ConstListView timezone = timezones_view[i].GetList();
 
-    std::string timezone_id;
-    CHECK(timezone->GetString(0, &timezone_id));
+    std::string timezone_id = timezone[0].GetString();
+    std::string timezone_name = timezone[1].GetString();
 
-    std::string timezone_name;
-    CHECK(timezone->GetString(1, &timezone_name));
-
-    std::unique_ptr<base::DictionaryValue> timezone_option(
-        new base::DictionaryValue);
-    timezone_option->SetString("value", timezone_id);
-    timezone_option->SetString("title", timezone_name);
-    timezone_option->SetBoolean("selected", timezone_id == current_timezone_id);
+    base::Value timezone_option(base::Value::Type::DICTIONARY);
+    timezone_option.SetStringKey("value", timezone_id);
+    timezone_option.SetStringKey("title", timezone_name);
+    timezone_option.SetBoolKey("selected", timezone_id == current_timezone_id);
     timezone_list.Append(std::move(timezone_option));
   }
 

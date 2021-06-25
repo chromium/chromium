@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -19,10 +20,6 @@
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/sync/driver/sync_service.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class BrowsingDataFilterBuilder;
@@ -63,7 +60,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // based on whether installed apps were marked for deletion by the checkbox on
   // the installed apps warning dialog.
   std::unique_ptr<content::BrowsingDataFilterBuilder> ProcessInstalledApps(
-      const base::ListValue* installed_apps);
+      base::Value::ConstListView installed_apps);
 
   // Clears browsing data, called by Javascript.
   void HandleClearBrowsingData(const base::ListValue* value);

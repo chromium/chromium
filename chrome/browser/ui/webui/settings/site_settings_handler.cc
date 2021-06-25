@@ -994,20 +994,21 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(3U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  std::string origin;
-  CHECK(args->GetString(1, &origin));
-  const base::ListValue* types;
-  CHECK(args->GetList(2, &types));
+  base::Value::ConstListView args_list = args->GetList();
+  CHECK_EQ(3U, args_list.size());
+  const base::Value& callback_id = args_list[0];
+  std::string origin = args_list[1].GetString();
+  base::Value::ConstListView types = args_list[2].GetList();
 
   // Note: Invalid URLs will just result in default settings being shown.
   const GURL origin_url(origin);
-  auto exceptions = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < types->GetSize(); ++i) {
+  base::Value exceptions(base::Value::Type::LIST);
+  for (const auto& type_val : types) {
     std::string type;
-    types->GetString(i, &type);
+    DCHECK(type_val.is_string());
+    const std::string* maybe_type = type_val.GetIfString();
+    if (maybe_type)
+      type = *maybe_type;
     ContentSettingsType content_type =
         site_settings::ContentSettingsTypeFromGroupName(type);
     HostContentSettingsMap* map =
@@ -1022,23 +1023,23 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     std::string content_setting_string =
         content_settings::ContentSettingToString(content_setting);
 
-    auto raw_site_exception = std::make_unique<base::DictionaryValue>();
-    raw_site_exception->SetString(site_settings::kEmbeddingOrigin, origin);
-    raw_site_exception->SetBoolean(site_settings::kIncognito,
-                                   profile_->IsOffTheRecord());
-    raw_site_exception->SetString(site_settings::kOrigin, origin);
-    raw_site_exception->SetString(site_settings::kDisplayName, display_name);
-    raw_site_exception->SetString(site_settings::kSetting,
-                                  content_setting_string);
-    raw_site_exception->SetString(site_settings::kSettingDetail,
-                                  content_settings::GetPermissionDetailString(
-                                      profile_, content_type, origin_url));
-    raw_site_exception->SetString(site_settings::kSource, source_string);
+    base::Value raw_site_exception(base::Value::Type::DICTIONARY);
+    raw_site_exception.SetStringKey(site_settings::kEmbeddingOrigin, origin);
+    raw_site_exception.SetBoolKey(site_settings::kIncognito,
+                                  profile_->IsOffTheRecord());
+    raw_site_exception.SetStringKey(site_settings::kOrigin, origin);
+    raw_site_exception.SetStringKey(site_settings::kDisplayName, display_name);
+    raw_site_exception.SetStringKey(site_settings::kSetting,
+                                    content_setting_string);
+    raw_site_exception.SetStringKey(site_settings::kSettingDetail,
+                                    content_settings::GetPermissionDetailString(
+                                        profile_, content_type, origin_url));
+    raw_site_exception.SetStringKey(site_settings::kSource, source_string);
 
-    exceptions->Append(std::move(raw_site_exception));
+    exceptions.Append(std::move(raw_site_exception));
   }
 
-  ResolveJavascriptCallback(*callback_id, *exceptions);
+  ResolveJavascriptCallback(callback_id, exceptions);
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(

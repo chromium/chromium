@@ -316,22 +316,22 @@ void PolicyUITest::VerifyPolicies(
       content::ExecuteScriptAndExtractString(contents, javascript, &json));
   std::unique_ptr<base::Value> value_ptr =
       base::JSONReader::ReadDeprecated(json);
-  const base::ListValue* actual_policies = NULL;
   ASSERT_TRUE(value_ptr.get());
-  ASSERT_TRUE(value_ptr->GetAsList(&actual_policies));
+  ASSERT_TRUE(value_ptr->is_list());
+  base::Value::ConstListView actual_policies = value_ptr->GetList();
 
   // Verify that the cells contain the expected strings for all policies.
-  ASSERT_EQ(expected_policies.size(), actual_policies->GetSize());
+  ASSERT_EQ(expected_policies.size(), actual_policies.size());
   for (size_t i = 0; i < expected_policies.size(); ++i) {
     const std::vector<std::string> expected_policy = expected_policies[i];
-    const base::ListValue* actual_policy;
-    ASSERT_TRUE(actual_policies->GetList(i, &actual_policy));
-    ASSERT_EQ(expected_policy.size(), actual_policy->GetSize());
+    ASSERT_TRUE(actual_policies[i].is_list());
+    base::Value::ConstListView actual_policy = actual_policies[i].GetList();
+    ASSERT_EQ(expected_policy.size(), actual_policy.size());
     for (size_t j = 0; j < expected_policy.size(); ++j) {
-      std::string value;
-      ASSERT_TRUE(actual_policy->GetString(j, &value));
-      if (expected_policy[j] != value)
-        EXPECT_EQ(expected_policy[j], value);
+      const std::string* value = actual_policy[j].GetIfString();
+      ASSERT_TRUE(value);
+      if (expected_policy[j] != *value)
+        EXPECT_EQ(expected_policy[j], *value);
     }
   }
 }
