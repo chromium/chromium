@@ -211,6 +211,9 @@ class SharingDeviceRegistrationTest : public testing::Test {
     if (sharing_device_registration_.IsRemoteCopySupported())
       features.insert(sync_pb::SharingSpecificFields::REMOTE_COPY);
 
+    if (sharing_device_registration_.IsSmsFetcherSupported())
+      features.insert(sync_pb::SharingSpecificFields::SMS_FETCHER);
+
     return features;
   }
 

@@ -4822,6 +4822,10 @@ interface Notification : EventTarget
     setter onclose
     setter onerror
     setter onshow
+interface OTPCredential : Credential
+    attribute @@toStringTag
+    getter code
+    method constructor
 interface OfflineAudioCompletionEvent : Event
     attribute @@toStringTag
     getter renderedBuffer

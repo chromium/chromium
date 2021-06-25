@@ -47,27 +47,6 @@ url::Origin GetOriginForURL(const std::string url) {
   return url::Origin::Create(GURL(url));
 }
 
-TEST(SmsRemoteFetcherTest, DisabledByDefault) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
-  auto web_contents = content::WebContents::Create(create_params);
-
-  base::RunLoop loop;
-
-  FetchRemoteSms(
-      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
-      BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
-            ASSERT_FALSE(result);
-            loop.Quit();
-          }));
-
-  loop.Run();
-}
-
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   // This needs to be done before any tasks running on other threads check if a
   // feature is enabled.

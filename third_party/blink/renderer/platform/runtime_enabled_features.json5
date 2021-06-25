@@ -2363,12 +2363,12 @@
     },
     {
       name: "WebOTP",
-      status: {"default": "experimental", "Android": "stable"},
+      status: "stable",
     },
     {
       name: "WebOTPAssertionFeaturePolicy",
       depends_on: ["WebOTP"],
-      status: {"default": "experimental", "Android": "stable"},
+      status: "stable",
     },
     {
       name: "WebScheduler",
