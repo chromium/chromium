@@ -74,8 +74,6 @@ class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
   void SetUp() override;
 
  protected:
-  ScopedOsHooksSuppress os_hooks_suppress_;
-
   content::WebContents* OpenApplication(const AppId&);
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -96,6 +94,8 @@ class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
+
+  ScopedOsHooksSuppress os_hooks_suppress_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppControllerBrowserTest);
 };
