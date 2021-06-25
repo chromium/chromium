@@ -302,32 +302,54 @@ void ShimlessRmaService::GetSkuList(GetSkuListCallback callback) {}
 
 void ShimlessRmaService::GetOriginalSerialNumber(
     GetOriginalSerialNumberCallback callback) {
-}
-
-void ShimlessRmaService::GetSerialNumber(GetSerialNumberCallback callback) {
-}
-
-void ShimlessRmaService::SetSerialNumber(const std::string& serial_number,
-                                         SetSerialNumberCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetOriginalSerialNumber called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_serial_number());
 }
 
 void ShimlessRmaService::GetOriginalRegion(GetOriginalRegionCallback callback) {
-}
-
-void ShimlessRmaService::GetRegion(GetRegionCallback callback) {
-}
-
-void ShimlessRmaService::SetRegion(int8_t region_index,
-                                   SetRegionCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetOriginalRegion called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(0);
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_region_index());
 }
 
 void ShimlessRmaService::GetOriginalSku(GetOriginalSkuCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetOriginalSku called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(0);
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_sku_index());
 }
 
-void ShimlessRmaService::GetSku(GetSkuCallback callback) {
-}
-
-void ShimlessRmaService::SetSku(int8_t sku_index, SetSkuCallback callback) {
+void ShimlessRmaService::SetDeviceInformation(
+    const std::string& serial_number,
+    uint8_t region_index,
+    uint8_t sku_index,
+    SetDeviceInformationCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "SetDeviceInformation called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(StateTraits::ToMojom(state_proto_.state_case()),
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  state_proto_.mutable_update_device_info()->set_serial_number(serial_number);
+  state_proto_.mutable_update_device_info()->set_region_index(region_index);
+  state_proto_.mutable_update_device_info()->set_sku_index(sku_index);
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {

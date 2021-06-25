@@ -65,15 +65,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void GetSkuList(GetSkuListCallback callback) override;
   void GetOriginalSerialNumber(
       GetOriginalSerialNumberCallback callback) override;
-  void GetSerialNumber(GetSerialNumberCallback callback) override;
-  void SetSerialNumber(const std::string& serial_number,
-                       SetSerialNumberCallback callback) override;
   void GetOriginalRegion(GetOriginalRegionCallback callback) override;
-  void GetRegion(GetRegionCallback callback) override;
-  void SetRegion(int8_t region_index, SetRegionCallback callback) override;
   void GetOriginalSku(GetOriginalSkuCallback callback) override;
-  void GetSku(GetSkuCallback callback) override;
-  void SetSku(int8_t sku_index, SetSkuCallback callback) override;
+  void SetDeviceInformation(const std::string& serial_number,
+                            uint8_t region_index,
+                            uint8_t sku_index,
+                            SetDeviceInformationCallback callback) override;
 
   void FinalizeAndReboot(FinalizeAndRebootCallback callback) override;
   void FinalizeAndShutdown(FinalizeAndShutdownCallback callback) override;

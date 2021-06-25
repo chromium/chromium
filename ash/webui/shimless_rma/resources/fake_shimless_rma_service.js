@@ -33,44 +33,6 @@ export class FakeShimlessRmaService {
     this.components_ = [];
 
     /**
-     * The current device serial number.
-     * @private {string}
-     */
-    this.serialNumber_ = '';
-
-    /**
-     * The result of calling setSerialNumber.
-     * @private {!RmadErrorCode}
-     */
-    this.setSerialNumberResult_ = RmadErrorCode.kOk;
-
-    /**
-     * The current index into the regions provided by getRegionList().
-     * Use setGetRegionListResult([region,....]) to update the list of regions.
-     * @private {number}
-     */
-    this.regionIndex_ = 0;
-
-    /**
-     * The result of calling setRegion.
-     * @private {!RmadErrorCode}
-     */
-    this.setRegionResult_ = RmadErrorCode.kOk;
-
-    /**
-     * The current index into the skus provided by getSkuList().
-     * Use setGetSkuListResult([sku,....]) to update the list of skus.
-     * @private {number}
-     */
-    this.skuIndex_ = 0;
-
-    /**
-     * The result of calling setSku.
-     * @private {!RmadErrorCode}
-     */
-    this.setSkuResult_ = RmadErrorCode.kOk;
-
-    /**
      * Control automatically triggering a HWWP disable observation.
      * @private {boolean}
      */
@@ -384,37 +346,8 @@ export class FakeShimlessRmaService {
    * @param {string} serialNumber
    */
   setGetOriginalSerialNumberResult(serialNumber) {
-    this.serialNumber_ = serialNumber;
     this.methods_.setResult(
         'getOriginalSerialNumber', {serialNumber: serialNumber});
-  }
-
-  /**
-   * @return {!Promise<!{serialNumber: string}>}
-   */
-  getSerialNumber() {
-    this.methods_.setResult(
-        'getSerialNumber', {serialNumber: this.serialNumber_});
-    return this.methods_.resolveMethod('getSerialNumber');
-  }
-
-  /**
-   * @param {string} serialNumber
-   * @return {!Promise<!{error: !RmadErrorCode}>}
-   */
-  setSerialNumber(serialNumber) {
-    if (this.setSerialNumberResult_ === RmadErrorCode.kOk) {
-      this.serialNumber_ = serialNumber;
-    }
-    return this.methods_.resolveMethod('setSerialNumber');
-  }
-
-  /**
-   * @param {!RmadErrorCode} error
-   */
-  setSetSerialNumberResult(error) {
-    this.setSerialNumberResult_ = error;
-    this.methods_.setResult('setSerialNumber', {error: error});
   }
 
   /**
@@ -428,36 +361,7 @@ export class FakeShimlessRmaService {
    * @param {number} regionIndex
    */
   setGetOriginalRegionResult(regionIndex) {
-    this.regionIndex_ = regionIndex;
     this.methods_.setResult('getOriginalRegion', {regionIndex: regionIndex});
-  }
-
-  /**
-   * @return {!Promise<!{regionIndex: number}>}
-   */
-  getRegion() {
-    this.methods_.setResult('getRegion', {regionIndex: this.regionIndex_});
-    return this.methods_.resolveMethod('getRegion');
-  }
-
-  /**
-   * @param {number} regionIndex
-   * @return {!Promise<!{error: !RmadErrorCode}>}
-   */
-  setRegion(regionIndex) {
-    // TODO(gavindodd): Validate range of index.
-    if (this.setRegionResult_ === RmadErrorCode.kOk) {
-      this.regionIndex_ = regionIndex;
-    }
-    return this.methods_.resolveMethod('setRegion');
-  }
-
-  /**
-   * @param {!RmadErrorCode} error
-   */
-  setSetRegionResult(error) {
-    this.setRegionResult_ = error;
-    this.methods_.setResult('setRegion', {error: error});
   }
 
   /**
@@ -471,36 +375,19 @@ export class FakeShimlessRmaService {
    * @param {number} skuIndex
    */
   setGetOriginalSkuResult(skuIndex) {
-    this.skuIndex_ = skuIndex;
     this.methods_.setResult('getOriginalSku', {skuIndex: skuIndex});
   }
 
   /**
-   * @return {!Promise<!{skuIndex: number}>}
-   */
-  getSku() {
-    this.methods_.setResult('getSku', {skuIndex: this.skuIndex_});
-    return this.methods_.resolveMethod('getSku');
-  }
-
-  /**
+   * @param {string} serialNumber
+   * @param {number} regionIndex
    * @param {number} skuIndex
-   * @return {!Promise<!{error: !RmadErrorCode}>}
+   * @return {!Promise<!StateResult>}
    */
-  setSku(skuIndex) {
-    // TODO(gavindodd): Validate range of index.
-    if (this.setSkuResult_ === RmadErrorCode.kOk) {
-      this.skuIndex_ = skuIndex;
-    }
-    return this.methods_.resolveMethod('setSku');
-  }
-
-  /**
-   * @param {!RmadErrorCode} error
-   */
-  setSetSkuResult(error) {
-    this.setSkuResult_ = error;
-    this.methods_.setResult('setSku', {error: error});
+  setDeviceInformation(serialNumber, regionIndex, skuIndex) {
+    // TODO(gavindodd): Validate range of region and sku.
+    return this.getNextStateForMethod_(
+      'setDeviceInformation', RmaState.kUpdateDeviceInformation);
   }
 
   /**
@@ -690,12 +577,6 @@ export class FakeShimlessRmaService {
     // methods is a little different than other fakes in that they don't return
     // undefined by default.
     this.components_ = [];
-    this.serialNumber_ = '';
-    this.setSetSerialNumberResult(RmadErrorCode.kOk);
-    this.regionIndex_ = 0;
-    this.setSetRegionResult(RmadErrorCode.kOk);
-    this.skuIndex_ = 0;
-    this.setSetSkuResult(RmadErrorCode.kOk);
   }
 
   /**
@@ -735,14 +616,9 @@ export class FakeShimlessRmaService {
     this.methods_.register('getRegionList');
     this.methods_.register('getSkuList');
     this.methods_.register('getOriginalSerialNumber');
-    this.methods_.register('getSerialNumber');
-    this.methods_.register('setSerialNumber');
     this.methods_.register('getOriginalRegion');
-    this.methods_.register('getRegion');
-    this.methods_.register('setRegion');
     this.methods_.register('getOriginalSku');
-    this.methods_.register('getSku');
-    this.methods_.register('setSku');
+    this.methods_.register('setDeviceInformation');
 
     this.methods_.register('finalizeAndReboot');
     this.methods_.register('finalizeAndShutdown');

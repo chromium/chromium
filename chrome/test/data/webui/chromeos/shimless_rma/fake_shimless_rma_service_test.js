@@ -561,52 +561,6 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('GetSerialNumberDefaultEmpty', () => {
-    return service.getSerialNumber().then((serialNumber) => {
-      assertEquals(serialNumber.serialNumber, '');
-    });
-  });
-
-  test('SetGetOriginalSerialNumberResultUpdatesGetSerialNumberResult', () => {
-    let expected_serial_number = '123456789';
-    service.setGetOriginalSerialNumberResult(expected_serial_number);
-    return service.getSerialNumber().then((serial_number) => {
-      assertEquals(serial_number.serialNumber, expected_serial_number);
-    });
-  });
-
-  test('SetSerialNumberDefaultOk', () => {
-    return service.setSerialNumber('123456789').then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('SetSerialNumberOkUpdatesGetSerialNumberResult', () => {
-    let original_serial_number = '123456789';
-    let expected_serial_number = '987654321';
-    service.setGetOriginalSerialNumberResult(original_serial_number);
-    service.setSetSerialNumberResult(RmadErrorCode.kOk);
-    service.setSerialNumber(expected_serial_number).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-    return service.getSerialNumber().then((serial_number) => {
-      assertEquals(serial_number.serialNumber, expected_serial_number);
-    });
-  });
-
-  test('SetSerialNumberErrorDoesNotUpdateGetSerialNumberResult', () => {
-    let original_serial_number = '123456789';
-    let new_serial_number = '987654321';
-    service.setGetOriginalSerialNumberResult(original_serial_number);
-    service.setSetSerialNumberResult(RmadErrorCode.kRequestInvalid);
-    service.setSerialNumber(new_serial_number).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kRequestInvalid);
-    });
-    return service.getSerialNumber().then((serial_number) => {
-      assertEquals(serial_number.serialNumber, original_serial_number);
-    });
-  });
-
   test('GetOriginalRegionDefaultUndefined', () => {
     return service.getOriginalRegion().then((region) => {
       assertEquals(region, undefined);
@@ -618,52 +572,6 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setGetOriginalRegionResult(expected_region);
     return service.getOriginalRegion().then((region) => {
       assertEquals(region.regionIndex, expected_region);
-    });
-  });
-
-  test('GetRegionDefaultZero', () => {
-    return service.getRegion().then((region) => {
-      assertEquals(region.regionIndex, 0);
-    });
-  });
-
-  test('SetGetOriginalRegionResultUpdatesGetRegionResult', () => {
-    let expected_region = 1;
-    service.setGetOriginalRegionResult(expected_region);
-    return service.getRegion().then((region) => {
-      assertEquals(region.regionIndex, expected_region);
-    });
-  });
-
-  test('SetRegionDefaultOk', () => {
-    return service.setRegion(1).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('SetRegionOkUpdatesGetRegionResult', () => {
-    let original_region = 1;
-    let expected_region = 2;
-    service.setGetOriginalRegionResult(original_region);
-    service.setSetRegionResult(RmadErrorCode.kOk);
-    service.setRegion(expected_region).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-    return service.getRegion().then((region) => {
-      assertEquals(region.regionIndex, expected_region);
-    });
-  });
-
-  test('SetRegionErrorDoesNotUpdateGetRegionResult', () => {
-    let original_region = 1;
-    let expected_region = 2;
-    service.setGetOriginalRegionResult(original_region);
-    service.setSetRegionResult(RmadErrorCode.kRequestInvalid);
-    service.setRegion(expected_region).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kRequestInvalid);
-    });
-    return service.getRegion().then((region) => {
-      assertEquals(region.regionIndex, original_region);
     });
   });
 
@@ -681,49 +589,16 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('GetSkuDefaultZero', () => {
-    return service.getSku().then((sku) => {
-      assertEquals(sku.skuIndex, 0);
-    });
-  });
+  test('SetDeviceInformationOk', () => {
+    let states = [
+      {state: RmaState.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
 
-  test('SetGetOriginalSkuResultUpdatesGetSkuResult', () => {
-    let expected_sku = 1;
-    service.setGetOriginalSkuResult(expected_sku);
-    return service.getSku().then((sku) => {
-      assertEquals(sku.skuIndex, expected_sku);
-    });
-  });
-
-  test('SetSkuDefaultOk', () => {
-    return service.setSku(1).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-  });
-
-  test('SetSkuOkUpdatesGetSkuResult', () => {
-    let original_sku = 1;
-    let expected_sku = 2;
-    service.setGetOriginalSkuResult(original_sku);
-    service.setSetSkuResult(RmadErrorCode.kOk);
-    service.setSku(expected_sku).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kOk);
-    });
-    return service.getSku().then((sku) => {
-      assertEquals(sku.skuIndex, expected_sku);
-    });
-  });
-
-  test('SetSkuErrorDoesNotUpdateGetSkuResult', () => {
-    let original_sku = 1;
-    let expected_sku = 2;
-    service.setGetOriginalSkuResult(original_sku);
-    service.setSetSkuResult(RmadErrorCode.kRequestInvalid);
-    service.setSku(expected_sku).then((error) => {
-      assertEquals(error.error, RmadErrorCode.kRequestInvalid);
-    });
-    return service.getSku().then((sku) => {
-      assertEquals(sku.skuIndex, original_sku);
+    return service.setDeviceInformation('serial number', 1, 2).then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 

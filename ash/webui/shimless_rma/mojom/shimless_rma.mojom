@@ -345,22 +345,15 @@ interface ShimlessRmaService {
   GetSkuList() => (array<string> skus);
   // Get the device serial number at RMA start.
   GetOriginalSerialNumber() => (string serial_number);
-  // Get the current serial number.
-  GetSerialNumber() => (string serial_number);
-  // Update the current serial number.
-  SetSerialNumber(string serial_number) => (RmadErrorCode error);
   // Get the device region index at RMA start.
-  GetOriginalRegion() => (int8 region_index);
-  // Get the current region index.
-  GetRegion() => (int8 region_index);
-  // Update the current region for.
-  SetRegion(int8 regionIndex) => (RmadErrorCode error);
+  GetOriginalRegion() => (uint8 region_index);
   // Get the device SKU index at RMA start.
-  GetOriginalSku() => (int8 sku_index);
-  // Get the current SKU index.
-  GetSku() => (int8 sku_index);
-  // Update the current SKU index for this device.
-  SetSku(int8 sku_index) => (RmadErrorCode error);
+  GetOriginalSku() => (uint8 sku_index);
+  // Attempt to set device info and transition to the next state.
+  // Returns the next state to display and an error code.
+  SetDeviceInformation(
+      string serial_number, uint8 region_index, uint8 sku_index)
+          => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kRepairComplete state.
