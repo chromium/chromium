@@ -5382,6 +5382,13 @@ crbug.com/1038656 [ Win ] http/tests/devtools/coverage/coverage-view-unused.js [
 # Temporarily disabled to land Linkifier changes in DevTools
 crbug.com/963183 http/tests/devtools/jump-to-previous-editing-location.js [ Pass Failure ]
 
+# Temporarily disabled to land change in DevTools
+crbug.com/1213393 http/tests/devtools/console/console-bad-stacktrace.js [ Pass Failure Timeout ]
+crbug.com/1213393 http/tests/devtools/console/console-group-similar.js [ Pass Failure Timeout ]
+crbug.com/1213393 http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Pass Failure Timeout ]
+crbug.com/1213393 http/tests/devtools/console/console-preserve-log.js [ Pass Failure Timeout ]
+crbug.com/1213393 http/tests/devtools/console/console-timestamp.js [ Pass Failure Timeout ]
+
 # Broken in https://chromium-review.googlesource.com/c/chromium/src/+/1636716
 crbug.com/963183 http/tests/devtools/sources/debugger-breakpoints/disable-breakpoints.js [ Pass Failure Timeout ]
 
