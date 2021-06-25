@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_button_view.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/url_formatter/elide_url.h"
@@ -21,7 +21,7 @@ namespace send_tab_to_self {
 // static
 SendTabToSelfToolbarBubbleView* SendTabToSelfToolbarBubbleView::CreateBubble(
     Profile* profile,
-    SendTabToSelfToolbarButtonView* parent,
+    SendTabToSelfToolbarIconView* parent,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback) {
   SendTabToSelfToolbarBubbleView* bubble_view =
@@ -38,7 +38,7 @@ SendTabToSelfToolbarBubbleView::~SendTabToSelfToolbarBubbleView() = default;
 
 SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     Profile* profile,
-    SendTabToSelfToolbarButtonView* parent,
+    SendTabToSelfToolbarIconView* parent,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
     : views::BubbleDialogDelegateView(dynamic_cast<views::View*>(parent),
@@ -106,6 +106,13 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kEnd);
   AddChildView(std::move(button));
+
+  base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(10000);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kTimeoutMs);
 }
 
 void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
@@ -117,6 +124,10 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
 
   GetWidget()->Close();
   toolbar_button_->LogNotificationOpened();
+}
+
+void SendTabToSelfToolbarBubbleView::Timeout() {
+  GetWidget()->Close();
 }
 
 void SendTabToSelfToolbarBubbleView::Hide() {

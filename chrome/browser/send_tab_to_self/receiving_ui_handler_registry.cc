@@ -10,12 +10,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller.h"
 #include "components/send_tab_to_self/features.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -51,7 +51,7 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 #endif
 }
 
-SendTabToSelfToolbarButtonController*
+SendTabToSelfToolbarIconController*
 ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
     Profile* profile) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
@@ -59,15 +59,15 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
   for (const std::unique_ptr<ReceivingUiHandler>& handler :
        applicable_handlers_) {
     auto* button_controller =
-        static_cast<SendTabToSelfToolbarButtonController*>(handler.get());
+        static_cast<SendTabToSelfToolbarIconController*>(handler.get());
     if (button_controller && button_controller->profile() == profile) {
       return button_controller;
     }
   }
 
   applicable_handlers_.push_back(
-      std::make_unique<SendTabToSelfToolbarButtonController>(profile));
-  auto* button_controller = static_cast<SendTabToSelfToolbarButtonController*>(
+      std::make_unique<SendTabToSelfToolbarIconController>(profile));
+  auto* button_controller = static_cast<SendTabToSelfToolbarIconController*>(
       applicable_handlers_.back().get());
   return button_controller;
 #elif defined(OS_ANDROID)

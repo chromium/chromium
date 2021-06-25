@@ -13,7 +13,7 @@ struct NavigateParams;
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
-class SendTabToSelfToolbarButtonView;
+class SendTabToSelfToolbarIconView;
 
 class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
  public:
@@ -22,7 +22,7 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   // Creates and shows the bubble.
   static SendTabToSelfToolbarBubbleView* CreateBubble(
       Profile* profile,
-      SendTabToSelfToolbarButtonView* parent,
+      SendTabToSelfToolbarIconView* parent,
       const SendTabToSelfEntry& entry,
       base::OnceCallback<void(NavigateParams*)> navigate_callback);
 
@@ -33,16 +33,18 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
 
   SendTabToSelfToolbarBubbleView(
       Profile* profile,
-      SendTabToSelfToolbarButtonView* parent,
+      SendTabToSelfToolbarIconView* parent,
       const SendTabToSelfEntry& entry,
       base::OnceCallback<void(NavigateParams*)> navigate_callback);
 
   void OpenInNewTab();
 
+  void Timeout();
+
   void Hide();
 
   // The button that owns |this|.
-  SendTabToSelfToolbarButtonView* toolbar_button_;
+  SendTabToSelfToolbarIconView* toolbar_button_;
 
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
@@ -54,6 +56,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   GURL url_;
   std::string device_name_;
   std::string guid_;
+
+  base::WeakPtrFactory<SendTabToSelfToolbarBubbleView> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self
