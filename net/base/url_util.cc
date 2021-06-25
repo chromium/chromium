@@ -288,6 +288,17 @@ std::string CanonicalizeHost(base::StringPiece host,
   const url::Component raw_host_component(0, static_cast<int>(host.length()));
   std::string canon_host;
   url::StdStringCanonOutput canon_host_output(&canon_host);
+  // A url::StdStringCanonOutput starts off with a zero length buffer. The
+  // first time through Grow() immediately resizes it to 32 bytes, incurring
+  // a malloc. With libcxx a 22 byte or smaller request can be accommodated
+  // within the std::string itself (i.e. no malloc occurs). Start the buffer
+  // off at the max size to avoid a malloc on short strings.
+  // NOTE: To ensure the final size is correctly reflected, it's necessary
+  // to call Complete() which will adjust the size to the actual bytes written.
+  // This is handled below for success cases, while failure cases discard all
+  // the output.
+  const int kCxxMaxStringBufferSizeWithoutMalloc = 22;
+  canon_host_output.Resize(kCxxMaxStringBufferSizeWithoutMalloc);
   url::CanonicalizeHostVerbose(host.data(), raw_host_component,
                                &canon_host_output, host_info);
 
