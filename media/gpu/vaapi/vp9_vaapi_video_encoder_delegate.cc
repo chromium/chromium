@@ -230,13 +230,17 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
   size_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
     num_temporal_layers = config.spatial_layers[0].num_of_temporal_layers;
-    if (num_temporal_layers < VP9SVCLayers::kMinSupportedTemporalLayers ||
-        num_temporal_layers > VP9SVCLayers::kMaxSupportedTemporalLayers) {
+    if (num_temporal_layers == 1 && !config.HasSpatialLayer()) {
+      VLOGF(1) << "VP9SVCLayers only supports single temporal layer with more "
+                  "than one spatial layer encoding";
+      return false;
+    }
+    if (num_temporal_layers > VP9SVCLayers::kMaxSupportedTemporalLayers) {
       VLOGF(1) << "Unsupported amount of temporal layers: "
                << num_temporal_layers;
       return false;
     }
-    svc_layers_ = std::make_unique<VP9SVCLayers>(num_temporal_layers);
+    svc_layers_ = std::make_unique<VP9SVCLayers>(config.spatial_layers);
   }
   current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
 
@@ -270,14 +274,21 @@ size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
 bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (encode_job->IsKeyframeRequested())
-    frame_num_ = 0;
+  if (svc_layers_) {
+    if (svc_layers_->UpdateEncodeJob(encode_job->IsKeyframeRequested(),
+                                     current_params_.kf_period_frames)) {
+      encode_job->ProduceKeyframe();
+    }
+  } else {
+    if (encode_job->IsKeyframeRequested())
+      frame_num_ = 0;
 
-  if (frame_num_ == 0)
-    encode_job->ProduceKeyframe();
+    if (frame_num_ == 0)
+      encode_job->ProduceKeyframe();
 
-  frame_num_++;
-  frame_num_ %= current_params_.kf_period_frames;
+    frame_num_++;
+    frame_num_ %= current_params_.kf_period_frames;
+  }
 
   scoped_refptr<VP9Picture> picture = GetPicture(encode_job);
   DCHECK(picture);
@@ -347,7 +358,7 @@ bool VP9VaapiVideoEncoderDelegate::UpdateRates(
     return true;
 
   const size_t num_temporal_layers =
-      svc_layers_ ? svc_layers_->num_layers() : 1u;
+      svc_layers_ ? svc_layers_->num_temporal_layers() : 1u;
   rate_ctrl_->UpdateRateControl(CreateRateControlConfig(
       visible_size_, current_params_, bitrate_allocation, num_temporal_layers));
   return true;

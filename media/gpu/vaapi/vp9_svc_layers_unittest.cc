@@ -18,7 +18,41 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
-class VP9SVCLayersTest : public ::testing::TestWithParam<size_t> {
+
+namespace {
+
+constexpr gfx::Size kDefaultEncodeSize(1280, 720);
+constexpr int kSpatialLayerResolutionDenom[] = {4, 2, 1};
+
+std::vector<VP9SVCLayers::SpatialLayer> GetDefaultSVCLayers(
+    size_t num_spatial_layers,
+    size_t num_temporal_layers) {
+  std::vector<VP9SVCLayers::SpatialLayer> spatial_layers;
+  for (uint8_t i = 0; i < num_spatial_layers; ++i) {
+    VP9SVCLayers::SpatialLayer spatial_layer;
+    const int denom = kSpatialLayerResolutionDenom[i];
+    spatial_layer.width = kDefaultEncodeSize.width() / denom;
+    spatial_layer.height = kDefaultEncodeSize.height() / denom;
+    spatial_layer.num_of_temporal_layers = num_temporal_layers;
+    spatial_layers.push_back(spatial_layer);
+  }
+  return spatial_layers;
+}
+
+std::vector<gfx::Size> GetDefaultSVCResolutions(size_t num_spatial_layers) {
+  std::vector<gfx::Size> spatial_layer_resolutions;
+  for (size_t i = 0; i < num_spatial_layers; ++i) {
+    const int denom = kSpatialLayerResolutionDenom[i];
+    spatial_layer_resolutions.emplace_back(
+        gfx::Size(kDefaultEncodeSize.width() / denom,
+                  kDefaultEncodeSize.height() / denom));
+  }
+  return spatial_layer_resolutions;
+}
+}  // namespace
+
+class VP9SVCLayersTest
+    : public ::testing::TestWithParam<::testing::tuple<size_t, size_t>> {
  public:
   VP9SVCLayersTest() = default;
   ~VP9SVCLayersTest() = default;
@@ -28,41 +62,58 @@ class VP9SVCLayersTest : public ::testing::TestWithParam<size_t> {
       const Vp9FrameHeader& frame_hdr,
       const Vp9Metadata& metadata,
       const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-      const Vp9ReferenceFrameVector& ref_frames);
-  void VerifyTemporalLayersStructure(bool keyframe,
-                                     size_t num_layers,
-                                     const Vp9Metadata& metadata);
+      const Vp9ReferenceFrameVector& ref_frames,
+      const size_t num_spatial_layers,
+      const bool key_pic);
+  void VerifySVCStructure(bool keyframe,
+                          size_t num_temporal_layers,
+                          size_t num_spatial_layers,
+                          const Vp9Metadata& metadata);
 
  private:
-  std::vector<uint8_t> temporal_indices_;
+  std::vector<uint8_t> temporal_indices_[VP9SVCLayers::kMaxSpatialLayers];
+  uint8_t spatial_index_;
 };
 
-void VP9SVCLayersTest::VerifyTemporalLayersStructure(
-    bool keyframe,
-    size_t num_layers,
-    const Vp9Metadata& metadata) {
+void VP9SVCLayersTest::VerifySVCStructure(bool key_pic,
+                                          size_t num_temporal_layers,
+                                          size_t num_spatial_layers,
+                                          const Vp9Metadata& metadata) {
   const uint8_t temporal_index = metadata.temporal_idx;
-  if (keyframe) {
-    temporal_indices_.clear();
-    temporal_indices_.push_back(temporal_index);
+  const uint8_t spatial_index = metadata.spatial_idx;
+  // Spatial index monotonically increases modulo |num_spatial_layers|.
+  if (!key_pic || spatial_index != 0u)
+    EXPECT_EQ((spatial_index_ + 1) % num_spatial_layers, spatial_index);
+
+  spatial_index_ = spatial_index;
+  auto& temporal_indices = temporal_indices_[spatial_index];
+  if (key_pic) {
+    temporal_indices.clear();
+    temporal_indices.push_back(temporal_index);
     return;
   }
-
-  ASSERT_FALSE(temporal_indices_.empty());
-  EXPECT_NE(temporal_indices_.back(), temporal_index);
-
-  // Check that the number of temporal layer ids are expected.
-  temporal_indices_.push_back(temporal_index);
+  EXPECT_FALSE(temporal_indices.empty());
+  if (num_temporal_layers > 1)
+    EXPECT_NE(temporal_indices.back(), temporal_index);
+  else
+    EXPECT_EQ(temporal_indices.back(), temporal_index);
+  temporal_indices.push_back(temporal_index);
+  if (spatial_index != num_spatial_layers - 1)
+    return;
+  // Check if the temporal layer structures in all spatial layers are identical.
+  // Spatial index monotonically increases module |num_spatial_layers|.
+  for (size_t i = 0; i < num_spatial_layers - 1; ++i)
+    EXPECT_EQ(temporal_indices_[i], temporal_indices_[i + 1]);
   constexpr size_t kTemporalLayerCycle = 4u;
-  if (temporal_indices_.size() % kTemporalLayerCycle == 0) {
-    std::vector<size_t> count(num_layers, 0u);
-    for (const uint8_t index : temporal_indices_) {
-      ASSERT_LE(index, num_layers);
+  constexpr size_t kSVCLayerCycle = kTemporalLayerCycle;
+  if (temporal_indices.size() % kSVCLayerCycle == 0) {
+    std::vector<size_t> count(num_temporal_layers, 0u);
+    for (const uint8_t index : temporal_indices) {
+      ASSERT_LE(index, num_temporal_layers);
       count[index]++;
     }
-
-    // The number of frames in a higher layer is not less than one in a lower
-    // layer.
+    // The number of frames in a higher temporal layer is not less than one in a
+    // lower temporal layer.
     EXPECT_TRUE(std::is_sorted(count.begin(), count.end()));
   }
 }
@@ -71,21 +122,39 @@ void VP9SVCLayersTest::VerifyRefFrames(
     const Vp9FrameHeader& frame_hdr,
     const Vp9Metadata& metadata,
     const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
-    const Vp9ReferenceFrameVector& ref_frames) {
-  const uint8_t current_temporal_index = metadata.temporal_idx;
+    const Vp9ReferenceFrameVector& ref_frames,
+    const size_t num_spatial_layers,
+    const bool key_pic) {
+  const uint8_t temporal_index = metadata.temporal_idx;
+  const uint8_t spatial_index = metadata.spatial_idx;
   if (frame_hdr.IsKeyframe()) {
     EXPECT_EQ(frame_hdr.refresh_frame_flags, 0xff);
     EXPECT_FALSE(base::Contains(ref_frames_used, true));
-    EXPECT_EQ(current_temporal_index, 0u);
+    EXPECT_EQ(temporal_index, 0u);
+    EXPECT_EQ(spatial_index, 0u);
+    EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,
+              num_spatial_layers > 1);
+    EXPECT_FALSE(metadata.reference_lower_spatial_layers);
+    EXPECT_TRUE(metadata.p_diffs.empty());
+    EXPECT_EQ(metadata.spatial_layer_resolutions,
+              GetDefaultSVCResolutions(num_spatial_layers));
     return;
   }
 
-  // Two slots at most in the reference pool are used in temporal layer
+  // Six slots at most in the reference pool are used in spatial/temporal layer
   // encoding. Additionally, non-keyframe must reference some frames.
-  EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b11u), 0u);
-  EXPECT_FALSE(ref_frames_used[VP9SVCLayers::kMaxNumUsedReferenceFrames]);
+  EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b111111u), 0u);
   EXPECT_TRUE(base::Contains(ref_frames_used, true));
-  EXPECT_TRUE(metadata.has_reference);
+  EXPECT_EQ(metadata.has_reference, !metadata.p_diffs.empty());
+  EXPECT_EQ(metadata.has_reference, !key_pic);
+  if (key_pic) {
+    EXPECT_TRUE(metadata.reference_lower_spatial_layers);
+    EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,
+              spatial_index + 1 != num_spatial_layers);
+  } else {
+    EXPECT_FALSE(metadata.referenced_by_upper_spatial_layers);
+    EXPECT_FALSE(metadata.reference_lower_spatial_layers);
+  }
 
   // Check that the current frame doesn't reference upper layer frames.
   for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
@@ -97,44 +166,63 @@ void VP9SVCLayersTest::VerifyRefFrames(
     const auto& ref_metadata = ref_frame->metadata_for_encoding;
     ASSERT_TRUE(ref_metadata.has_value());
     const size_t ref_temporal_index = ref_metadata->temporal_idx;
-    EXPECT_LE(ref_temporal_index, current_temporal_index);
+    EXPECT_LE(ref_temporal_index, temporal_index);
+    const uint8_t ref_spatial_index = ref_metadata->spatial_idx;
+    EXPECT_LE(ref_spatial_index, spatial_index);
+    // In key picture, upper spatial layers must refer the lower spatial layer.
+    // Or referenced frames must be in the same spatial layer.
+    if (key_pic)
+      EXPECT_EQ(ref_spatial_index, spatial_index - 1);
+    else
+      EXPECT_EQ(ref_spatial_index, spatial_index);
   }
-  return;
 }
 
 TEST_P(VP9SVCLayersTest, ) {
-  const size_t num_temporal_layers = GetParam();
-  VP9SVCLayers temporal_layers(num_temporal_layers);
-  EXPECT_EQ(temporal_layers.num_layers(), num_temporal_layers);
+  const size_t num_spatial_layers = ::testing::get<0>(GetParam());
+  const size_t num_temporal_layers = ::testing::get<1>(GetParam());
+
+  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
+      GetDefaultSVCLayers(num_spatial_layers, num_temporal_layers);
+  VP9SVCLayers svc_layers(spatial_layers);
 
   constexpr size_t kNumFramesToEncode = 32;
   Vp9ReferenceFrameVector ref_frames;
-  constexpr size_t kKeyFrameInterval = 16;
-  for (size_t i = 0; i < kNumFramesToEncode; i++) {
-    const bool keyframe = i % kKeyFrameInterval == 0;
-    scoped_refptr<VP9Picture> picture(new VP9Picture);
-    picture->frame_hdr = std::make_unique<Vp9FrameHeader>();
-    picture->frame_hdr->frame_type =
-        keyframe ? Vp9FrameHeader::KEYFRAME : Vp9FrameHeader::INTERFRAME;
-    std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
-    temporal_layers.FillUsedRefFramesAndMetadata(picture.get(),
-                                                 &ref_frames_used);
-    ASSERT_TRUE(picture->metadata_for_encoding.has_value());
-    VerifyRefFrames(*picture->frame_hdr, *picture->metadata_for_encoding,
-                    ref_frames_used, ref_frames);
-    VerifyTemporalLayersStructure(keyframe, num_temporal_layers,
-                                  *picture->metadata_for_encoding);
-    ref_frames.Refresh(picture);
+  constexpr size_t kKeyFrameInterval = 10;
+  for (size_t frame_num = 0; frame_num < kNumFramesToEncode; ++frame_num) {
+    // True iff the picture in the bottom spatial layer is key frame.
+    bool key_pic = false;
+    for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+      scoped_refptr<VP9Picture> picture(new VP9Picture);
+      picture->frame_hdr = std::make_unique<Vp9FrameHeader>();
+      const bool keyframe = svc_layers.UpdateEncodeJob(
+          /*is_key_frame_requested=*/false, kKeyFrameInterval);
+      picture->frame_hdr->frame_type =
+          keyframe ? Vp9FrameHeader::KEYFRAME : Vp9FrameHeader::INTERFRAME;
+      if (sid == 0)
+        key_pic = keyframe;
+      std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
+      svc_layers.FillUsedRefFramesAndMetadata(picture.get(), &ref_frames_used);
+      ASSERT_TRUE(picture->metadata_for_encoding.has_value());
+      VerifyRefFrames(*picture->frame_hdr, *picture->metadata_for_encoding,
+                      ref_frames_used, ref_frames, num_spatial_layers, key_pic);
+      VerifySVCStructure(key_pic, num_temporal_layers, num_spatial_layers,
+                         *picture->metadata_for_encoding);
+      ref_frames.Refresh(picture);
+    }
   }
 }
 
-constexpr size_t kNumTemporalLayers[] = {
-    VP9SVCLayers::kMinSupportedTemporalLayers,
-    VP9SVCLayers::kMaxSupportedTemporalLayers,
-};
-
+// std::make_tuple(num_spatial_layers, num_temporal_layers)
 INSTANTIATE_TEST_SUITE_P(,
                          VP9SVCLayersTest,
-                         ::testing::ValuesIn(kNumTemporalLayers));
+                         ::testing::Values(std::make_tuple(1, 2),
+                                           std::make_tuple(1, 3),
+                                           std::make_tuple(2, 1),
+                                           std::make_tuple(2, 2),
+                                           std::make_tuple(2, 3),
+                                           std::make_tuple(3, 1),
+                                           std::make_tuple(3, 2),
+                                           std::make_tuple(3, 3)));
 
 }  // namespace media

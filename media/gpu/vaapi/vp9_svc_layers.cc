@@ -4,8 +4,11 @@
 
 #include "media/gpu/vaapi/vp9_svc_layers.h"
 
+#include <bitset>
+
+#include "base/logging.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/vp9_picture.h"
-#include "media/video/video_encode_accelerator.h"
 
 namespace media {
 namespace {
@@ -27,28 +30,41 @@ enum FrameFlags : uint8_t {
 }  // namespace
 
 struct VP9SVCLayers::FrameConfig {
-  static constexpr size_t kNumFrameFlags =
-      VP9SVCLayers::kMaxNumUsedReferenceFrames;
-  static_assert(kNumFrameFlags == 2u,
-                "FrameConfig is only defined for carrying 2 FrameFlags");
-
   FrameConfig(size_t layer_index, FrameFlags first, FrameFlags second)
       : layer_index_(layer_index), buffer_flags_{first, second} {}
   FrameConfig() = delete;
 
-  std::vector<uint8_t> GetReferenceIndices() const {
+  // VP9SVCLayers uses 2 reference frames for each spatial layer, and totally
+  // uses up to 6 reference frames. SL0 uses the first two (0, 1) reference
+  // frames, SL1 uses middle two (2, 3) reference frames, and SL2 used last two
+  // (4, 5) reference frames.
+  std::vector<uint8_t> GetRefFrameIndices(size_t spatial_idx,
+                                          size_t frame_num) const {
     std::vector<uint8_t> indices;
-    for (size_t i = 0; i < FrameConfig::kNumFrameFlags; ++i) {
-      if (buffer_flags_[i] & FrameFlags::kReference)
-        indices.push_back(i);
+    if (frame_num != 0) {
+      for (size_t i = 0; i < kMaxNumUsedRefFramesEachSpatialLayer; ++i) {
+        if (buffer_flags_[i] & FrameFlags::kReference) {
+          indices.push_back(i +
+                            kMaxNumUsedRefFramesEachSpatialLayer * spatial_idx);
+        }
+      }
+    } else {
+      // For the key picture (|frame_num| equals 0), the higher spatial layer
+      // reference the lower spatial layers. e.g. for frame_num 0, SL1 will
+      // reference SL0, and SL2 will reference SL1.
+      DCHECK_GT(spatial_idx, 0u);
+      indices.push_back((spatial_idx - 1) *
+                        kMaxNumUsedRefFramesEachSpatialLayer);
     }
     return indices;
   }
-  std::vector<uint8_t> GetUpdateIndices() const {
+  std::vector<uint8_t> GetUpdateIndices(size_t spatial_idx) const {
     std::vector<uint8_t> indices;
-    for (size_t i = 0; i < FrameConfig::kNumFrameFlags; ++i) {
-      if (buffer_flags_[i] & FrameFlags::kUpdate)
-        indices.push_back(i);
+    for (size_t i = 0; i < kMaxNumUsedRefFramesEachSpatialLayer; ++i) {
+      if (buffer_flags_[i] & FrameFlags::kUpdate) {
+        indices.push_back(i +
+                          kMaxNumUsedRefFramesEachSpatialLayer * spatial_idx);
+      }
     }
     return indices;
   }
@@ -57,7 +73,7 @@ struct VP9SVCLayers::FrameConfig {
 
  private:
   const size_t layer_index_;
-  const FrameFlags buffer_flags_[kNumFrameFlags];
+  const FrameFlags buffer_flags_[kMaxNumUsedRefFramesEachSpatialLayer];
 };
 
 namespace {
@@ -65,9 +81,8 @@ namespace {
 // following temporal layers.
 // 2 temporal layers structure: https://imgur.com/vBvHtdp.
 // 3 temporal layers structure: https://imgur.com/pURAGvp.
-constexpr size_t kTemporalLayersReferencePatternSize = 8;
 std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
-    size_t num_layers) {
+    size_t num_temporal_layers) {
   using FrameConfig = VP9SVCLayers::FrameConfig;
   // In a vp9 software encoder used in libwebrtc, each frame has only one
   // reference to the TL0 frame. It improves the encoding speed without reducing
@@ -75,7 +90,11 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
   // have as many references as possible for the sake of better quality,
   // assuming a hardware encoder is sufficiently fast. TODO(crbug.com/1030199):
   // Measure speed vs. quality changing these structures.
-  switch (num_layers) {
+  switch (num_temporal_layers) {
+    case 1:
+      // In this case, the number of spatial layers must great than 1.
+      // TL0 references and updates the 'first' buffer.
+      return {FrameConfig(0, kReferenceAndUpdate, kNone)};
     case 2:
       // TL0 references and updates the 'first' buffer.
       // TL1 references 'first' and references and updates 'second'.
@@ -110,7 +129,6 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
 // static
 std::vector<uint8_t> VP9SVCLayers::GetFpsAllocation(
     size_t num_temporal_layers) {
-  DCHECK_GT(num_temporal_layers, 1u);
   DCHECK_LT(num_temporal_layers, 4u);
   constexpr uint8_t kFullAllocation = 255;
   // The frame rate fraction is given as an 8 bit unsigned integer where 0 = 0%
@@ -126,6 +144,9 @@ std::vector<uint8_t> VP9SVCLayers::GetFpsAllocation(
   // fps_allocation[0][2] = kFullAllocation;
   //  For more information, see webrtc::VideoEncoderInfo::fps_allocation.
   switch (num_temporal_layers) {
+    case 1:
+      // In this case, the number of spatial layers must great than 1.
+      return {kFullAllocation};
     case 2:
       return {kFullAllocation / 2, kFullAllocation};
     case 3:
@@ -136,19 +157,39 @@ std::vector<uint8_t> VP9SVCLayers::GetFpsAllocation(
   }
 }
 
-VP9SVCLayers::VP9SVCLayers(size_t number_of_temporal_layers)
-    : num_layers_(number_of_temporal_layers),
+VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers)
+    : num_temporal_layers_(spatial_layers[0].num_of_temporal_layers),
       temporal_layers_reference_pattern_(
-          GetTemporalLayersReferencePattern(num_layers_)),
-      pool_slots_{0, 1},
-      pattern_index_(0u) {
-  DCHECK_LE(kMinSupportedTemporalLayers, number_of_temporal_layers);
-  DCHECK_LE(number_of_temporal_layers, kMaxSupportedTemporalLayers);
-  DCHECK_EQ(temporal_layers_reference_pattern_.size(),
-            kTemporalLayersReferencePatternSize);
+          GetTemporalLayersReferencePattern(num_temporal_layers_)),
+      pattern_index_(0u),
+      temporal_pattern_size_(temporal_layers_reference_pattern_.size()) {
+  for (const auto spatial_layer : spatial_layers) {
+    spatial_layer_resolutions_.emplace_back(
+        gfx::Size(spatial_layer.width, spatial_layer.height));
+  }
+  active_spatial_layer_resolutions_ = spatial_layer_resolutions_;
+  DCHECK_LE(num_temporal_layers_, kMaxSupportedTemporalLayers);
+  DCHECK(!spatial_layer_resolutions_.empty());
+  DCHECK_LE(spatial_layer_resolutions_.size(), kMaxSpatialLayers);
 }
 
 VP9SVCLayers::~VP9SVCLayers() = default;
+
+bool VP9SVCLayers::UpdateEncodeJob(bool is_key_frame_requested,
+                                   size_t kf_period_frames) {
+  if (is_key_frame_requested) {
+    frame_num_ = 0;
+    spatial_idx_ = 0;
+  }
+
+  if (spatial_idx_ == active_spatial_layer_resolutions_.size()) {
+    frame_num_++;
+    frame_num_ %= kf_period_frames;
+    spatial_idx_ = 0;
+  }
+
+  return frame_num_ == 0 && spatial_idx_ == 0;
+}
 
 void VP9SVCLayers::FillUsedRefFramesAndMetadata(
     VP9Picture* picture,
@@ -159,75 +200,128 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
   picture->metadata_for_encoding.emplace();
   ref_frames_used->fill(false);
   if (picture->frame_hdr->IsKeyframe()) {
+    DCHECK_EQ(spatial_idx_, 0u);
+    DCHECK_EQ(frame_num_, 0u);
     picture->frame_hdr->refresh_frame_flags = 0xff;
 
     // Start the pattern over from 0 and reset the buffer refresh states.
     pattern_index_ = 0;
-    UpdateRefFramesPatternIndex(FrameConfig(0, kUpdate, kUpdate));
+    // For key frame, its temporal_layers_config is (0, kUpdate, kUpdate), so
+    // its reference_frame_indices is empty, and refresh_frame_indices is {0, 1}
+    FillVp9MetadataForEncoding(&(*picture->metadata_for_encoding),
+                               /*reference_frame_indices=*/{});
+    UpdateRefFramesPatternIndex(/*refresh_frame_indices=*/{0, 1});
+
+    DVLOGF(4)
+        << "Frame num: " << frame_num_
+        << ", key frame: " << picture->frame_hdr->IsKeyframe()
+        << ", spatial_idx: " << spatial_idx_ << ", temporal_idx: "
+        << temporal_layers_reference_pattern_[pattern_index_].layer_index()
+        << ", pattern index: " << static_cast<int>(pattern_index_)
+        << ", refresh_frame_flags: "
+        << std::bitset<8>(picture->frame_hdr->refresh_frame_flags);
+
+    spatial_idx_++;
     return;
   }
 
-  pattern_index_ = (pattern_index_ + 1) % kTemporalLayersReferencePatternSize;
+  if (spatial_idx_ == 0)
+    pattern_index_ = (pattern_index_ + 1) % temporal_pattern_size_;
   const VP9SVCLayers::FrameConfig& temporal_layers_config =
       temporal_layers_reference_pattern_[pattern_index_];
 
   // Set the slots in reference frame pool that will be updated.
-  picture->frame_hdr->refresh_frame_flags =
-      RefreshFrameFlag(temporal_layers_config);
+  const std::vector<uint8_t> refresh_frame_indices =
+      temporal_layers_config.GetUpdateIndices(spatial_idx_);
+  for (const uint8_t i : refresh_frame_indices)
+    picture->frame_hdr->refresh_frame_flags |= 1u << i;
   // Set the slots of reference frames used for the current frame.
-  std::vector<uint8_t> ref_frame_pool_indices;
-  for (const uint8_t i : temporal_layers_config.GetReferenceIndices())
-    ref_frame_pool_indices.push_back(pool_slots_[i]);
-  for (size_t i = 0; i < ref_frame_pool_indices.size(); i++) {
+  const std::vector<uint8_t> reference_frame_indices =
+      temporal_layers_config.GetRefFrameIndices(spatial_idx_, frame_num_);
+
+  uint8_t ref_flags = 0;
+  for (size_t i = 0; i < reference_frame_indices.size(); i++) {
     (*ref_frames_used)[i] = true;
-    picture->frame_hdr->ref_frame_idx[i] = ref_frame_pool_indices[i];
+    picture->frame_hdr->ref_frame_idx[i] = reference_frame_indices[i];
+    ref_flags |= 1 << reference_frame_indices[i];
   }
 
+  DVLOGF(4) << "Frame num: " << frame_num_
+            << ", key frame: " << picture->frame_hdr->IsKeyframe()
+            << ", spatial_idx: " << spatial_idx_ << ", temporal_idx: "
+            << temporal_layers_reference_pattern_[pattern_index_].layer_index()
+            << ", pattern index: " << static_cast<int>(pattern_index_)
+            << ", refresh_frame_flags: "
+            << std::bitset<8>(picture->frame_hdr->refresh_frame_flags)
+            << " reference buffers: " << std::bitset<8>(ref_flags);
+
   FillVp9MetadataForEncoding(&(*picture->metadata_for_encoding),
-                             temporal_layers_config,
-                             !ref_frame_pool_indices.empty());
-  UpdateRefFramesPatternIndex(temporal_layers_config);
+                             reference_frame_indices);
+  UpdateRefFramesPatternIndex(refresh_frame_indices);
+  spatial_idx_++;
 }
 
 void VP9SVCLayers::FillVp9MetadataForEncoding(
     Vp9Metadata* metadata,
-    const VP9SVCLayers::FrameConfig& temporal_layers_config,
-    bool has_reference) const {
+    const std::vector<uint8_t>& reference_frame_indices) const {
+  metadata->end_of_picture =
+      spatial_idx_ == active_spatial_layer_resolutions_.size() - 1;
+  metadata->referenced_by_upper_spatial_layers =
+      frame_num_ == 0 &&
+      spatial_idx_ < active_spatial_layer_resolutions_.size() - 1;
+
+  // |spatial_layer_resolutions| has to be filled if and only if keyframe or the
+  // number of active spatial layers is changed. However, we fill in the case of
+  // keyframe, this works because if the number of active spatial layers is
+  // changed, keyframe is requested.
+  if (frame_num_ == 0 && spatial_idx_ == 0) {
+    metadata->spatial_layer_resolutions = active_spatial_layer_resolutions_;
+    return;
+  }
+
+  // Below parameters only needed to filled for non key frame.
   uint8_t temp_temporal_layers_id =
       temporal_layers_reference_pattern_[pattern_index_ %
-                                         kTemporalLayersReferencePatternSize]
+                                         temporal_pattern_size_]
           .layer_index();
-  metadata->has_reference = has_reference;
-  metadata->temporal_idx = temp_temporal_layers_id;
-
+  // If |frame_num_| is zero, it refers only lower spatial layer.
+  // |has_reference| is true if a frame in the same spatial layer is referred.
+  if (frame_num_ != 0)
+    metadata->has_reference = !reference_frame_indices.empty();
   metadata->temporal_up_switch = true;
-  for (const uint8_t i : temporal_layers_config.GetReferenceIndices()) {
-    metadata->p_diffs.push_back((pattern_index_ -
-                                 pattern_index_of_ref_frames_slots_[i] +
-                                 kTemporalLayersReferencePatternSize) %
-                                kTemporalLayersReferencePatternSize);
+  metadata->reference_lower_spatial_layers =
+      frame_num_ == 0 && (spatial_idx_ != 0);
+  metadata->temporal_idx = temp_temporal_layers_id;
+  metadata->spatial_idx = spatial_idx_;
+
+  for (const uint8_t i : reference_frame_indices) {
+    // If |frame_num_| is zero, it refers only lower spatial layer, there is no
+    // need to fill |p_diff|.
+    if (frame_num_ != 0) {
+      uint8_t p_diff = (pattern_index_ - pattern_index_of_ref_frames_slots_[i] +
+                        temporal_pattern_size_) %
+                       temporal_pattern_size_;
+      // For non-key picture, its |p_diff| must large than 0.
+      if (p_diff == 0)
+        p_diff = temporal_pattern_size_;
+      metadata->p_diffs.push_back(p_diff);
+    }
 
     const uint8_t ref_temporal_layers_id =
         temporal_layers_reference_pattern_
-            [pattern_index_of_ref_frames_slots_[i] %
-             kTemporalLayersReferencePatternSize]
+            [pattern_index_of_ref_frames_slots_[i] % temporal_pattern_size_]
                 .layer_index();
     metadata->temporal_up_switch &=
         (ref_temporal_layers_id != temp_temporal_layers_id);
   }
 }
 
-uint8_t VP9SVCLayers::RefreshFrameFlag(
-    const VP9SVCLayers::FrameConfig& temporal_layers_config) const {
-  uint8_t flag = 0;
-  for (const uint8_t i : temporal_layers_config.GetUpdateIndices())
-    flag |= 1 << pool_slots_[i];
-  return flag;
-}
-
+// Use current pattern index to update the reference frame's pattern index,
+// this is used to calculate |p_diffs|.
 void VP9SVCLayers::UpdateRefFramesPatternIndex(
-    const VP9SVCLayers::FrameConfig& temporal_layers_config) {
-  for (const uint8_t i : temporal_layers_config.GetUpdateIndices())
+    const std::vector<uint8_t>& refresh_frame_indices) {
+  for (const uint8_t i : refresh_frame_indices)
     pattern_index_of_ref_frames_slots_[i] = pattern_index_;
 }
+
 }  // namespace media

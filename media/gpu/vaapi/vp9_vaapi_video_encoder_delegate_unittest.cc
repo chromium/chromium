@@ -414,10 +414,10 @@ struct VP9VaapiVideoEncoderDelegateTestParam {
      1u},
     {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
          kConstantQuantizationParameter,
-     VP9SVCLayers::kMinSupportedTemporalLayers},
+     2u},
     {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
          kConstantQuantizationParameter,
-     VP9SVCLayers::kMaxSupportedTemporalLayers},
+     3u},
 };
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, Initialize) {

@@ -10,38 +10,41 @@
 #include <vector>
 
 #include "media/filters/vp9_parser.h"
+#include "media/video/video_encode_accelerator.h"
 
 namespace media {
 class VP9Picture;
 struct Vp9Metadata;
 
-// This class defines a set of fixed temporal layers configurations, for two and
-// three layers. It keeps a state of the current temporal index and is used to
-// update each frame with the correct encoder settings to realize the selected
-// pattern. NOTE: this class doesn't support spatial layers yet.
-// Temporal layers and spatial layers are described in
-// https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
+// This class manages a state of K-SVC encoding up to three spatial and temporal
+// layers. This supports activating/deactivating spatial layers while the
+// temporal layer sizes must be unchanged. The temporal layer sizes among
+// spatial layers must be identical. Temporal layers and spatial layers are
+// described in https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
 class VP9SVCLayers {
  public:
   struct FrameConfig;
 
-  // This class doesn't support spatial layers, but we have to
-  // take them into account in determining the maximum number of used reference
-  // frames for inter frames. It is because the maximum supported spatial layers
-  // is three and the number of slots in the vp9 reference frames pool is eight,
-  // the number of available reference frames is 2 (= 8/3).
-  constexpr static size_t kMinSupportedTemporalLayers = 2u;
   constexpr static size_t kMaxSupportedTemporalLayers = 3u;
   constexpr static size_t kMaxSpatialLayers = 3u;
-  constexpr static size_t kMaxNumUsedReferenceFrames =
+  constexpr static size_t kMaxNumUsedRefFramesEachSpatialLayer =
       kVp9NumRefFrames / kMaxSpatialLayers;
-  static_assert(kMaxNumUsedReferenceFrames == 2u,
-                "VP9SVCLayers uses two reference frames");
+  static_assert(
+      kMaxNumUsedRefFramesEachSpatialLayer == 2u,
+      "VP9SVCLayers uses two reference frames for each spatial layer");
+  constexpr static size_t kMaxNumUsedReferenceFrames =
+      kMaxNumUsedRefFramesEachSpatialLayer * kMaxSpatialLayers;
+  static_assert(kMaxNumUsedReferenceFrames == 6u,
+                "VP9SVCLayers uses six reference frames");
 
-  explicit VP9SVCLayers(size_t num_temporal_layers);
+  using SpatialLayer = VideoEncodeAccelerator::Config::SpatialLayer;
+  explicit VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers);
   ~VP9SVCLayers();
 
   static std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers);
+
+  // Returns true if EncodeJob needs to produce key frame.
+  bool UpdateEncodeJob(bool is_key_frame_requested, size_t kf_period_frames);
 
   // Sets |picture|'s used reference frames and |ref_frames_used| so that they
   // structure valid temporal layers. This also fills |picture|'s
@@ -50,32 +53,38 @@ class VP9SVCLayers {
       VP9Picture* picture,
       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used);
 
-  size_t num_layers() const { return num_layers_; }
+  size_t num_temporal_layers() const { return num_temporal_layers_; }
 
  private:
   // Useful functions to construct refresh flag and detect reference frames
   // from the flag.
-  uint8_t RefreshFrameFlag(const FrameConfig& temporal_layers_config) const;
-  void FillVp9MetadataForEncoding(Vp9Metadata* metadata,
-                                  const FrameConfig& temporal_layers_config,
-                                  bool has_reference) const;
-  void UpdateRefFramesPatternIndex(const FrameConfig& temporal_layers_config);
+  void FillVp9MetadataForEncoding(
+      Vp9Metadata* metadata,
+      const std::vector<uint8_t>& reference_frame_indices) const;
+  void UpdateRefFramesPatternIndex(
+      const std::vector<uint8_t>& refresh_frame_indices);
 
   // Following variables are configured upon construction, containing the amount
-  // of temporal layers, the associated temporal layers indices and the nature
-  // (reference, update, both, none) of each frame in the temporal group,
-  // respectively.
-  const size_t num_layers_;
+  // of temporal layers/spatial layers, the associated temporal layers indices
+  // and the nature (reference, update, both, none) of each frame in the
+  // temporal group, respectively.
+  const size_t num_temporal_layers_;
   const std::vector<FrameConfig> temporal_layers_reference_pattern_;
-
-  // The used slots of the vp9 reference pool.
-  const uint8_t pool_slots_[kMaxNumUsedReferenceFrames];
 
   // The current index into the |temporal_layers_reference_pattern_|.
   uint8_t pattern_index_;
+  const size_t temporal_pattern_size_;
+  size_t spatial_idx_ = 0;
+  size_t frame_num_ = 0;
+
+  // Resolutions for all spatial layers and active spatial layers.
+  std::vector<gfx::Size> spatial_layer_resolutions_;
+  std::vector<gfx::Size> active_spatial_layer_resolutions_;
 
   // The pattern index used for reference frames slots.
   uint8_t pattern_index_of_ref_frames_slots_[kMaxNumUsedReferenceFrames] = {};
 };
+
 }  // namespace media
+
 #endif  // MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
