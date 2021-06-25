@@ -95,7 +95,7 @@ class WebAppBrowserController : public AppBrowserController,
   // Invoked when the icon is loaded.
   void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
 
-  void OnReadIcon(const SkBitmap& bitmap);
+  void OnReadIcon(SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

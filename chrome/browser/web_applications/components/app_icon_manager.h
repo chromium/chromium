@@ -82,7 +82,7 @@ class AppIconManager {
                             ReadIconBitmapsCallback callback) const = 0;
 
   using ReadIconWithPurposeCallback =
-      base::OnceCallback<void(IconPurpose, const SkBitmap&)>;
+      base::OnceCallback<void(IconPurpose, SkBitmap)>;
   // For each of |purposes|, in the given order, looks for an icon with size at
   // least |min_icon_size|. Returns the first icon found, as a bitmap. Returns
   // an empty SkBitmap in |callback| if IO error.
@@ -91,7 +91,7 @@ class AppIconManager {
                                 SquareSizePx min_icon_size,
                                 ReadIconWithPurposeCallback callback) const = 0;
 
-  using ReadIconCallback = base::OnceCallback<void(const SkBitmap&)>;
+  using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
   // Convenience method for |ReadSmallestIcon| with IconPurpose::ANY only.
   void ReadSmallestIconAny(const AppId& app_id,
                            SquareSizePx min_icon_size,
@@ -124,8 +124,7 @@ class AppIconManager {
   static void WrapReadIconWithPurposeCallback(
       ReadIconWithPurposeCallback callback,
       IconPurpose purpose,
-      const SkBitmap& bitmap);
-
+      SkBitmap bitmap);
 };
 
 }  // namespace web_app

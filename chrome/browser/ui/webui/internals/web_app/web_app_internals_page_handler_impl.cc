@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -132,4 +133,22 @@ void WebAppInternalsPageHandlerImpl::GetExternallyInstalledWebAppPrefs(
     GetExternallyInstalledWebAppPrefsCallback callback) {
   std::move(callback).Run(ConvertToString(
       *profile_->GetPrefs()->GetDictionary(prefs::kWebAppsExtensionIDs)));
+}
+
+void WebAppInternalsPageHandlerImpl::GetIconErrorLog(
+    GetIconErrorLogCallback callback) {
+  auto* provider = web_app::WebAppProvider::Get(profile_);
+  if (!provider) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  const std::vector<std::string>* icon_error_log =
+      provider->icon_manager().AsWebAppIconManager()->error_log();
+  if (!icon_error_log) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::move(callback).Run(*icon_error_log);
 }

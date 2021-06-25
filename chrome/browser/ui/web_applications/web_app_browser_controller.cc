@@ -281,7 +281,7 @@ void WebAppBrowserController::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
     std::move(callback_for_testing_).Run();
 }
 
-void WebAppBrowserController::OnReadIcon(const SkBitmap& bitmap) {
+void WebAppBrowserController::OnReadIcon(SkBitmap bitmap) {
   if (bitmap.empty()) {
     DLOG(ERROR) << "Failed to read icon for web app";
     return;

@@ -14,8 +14,8 @@ namespace {
 
 void WrapReadIconCallback(AppIconManager::ReadIconCallback callback,
                           IconPurpose ignored,
-                          const SkBitmap& bitmap) {
-  std::move(callback).Run(bitmap);
+                          SkBitmap bitmap) {
+  std::move(callback).Run(std::move(bitmap));
 }
 
 void WrapReadCompressedIconCallback(
@@ -54,8 +54,8 @@ void AppIconManager::ReadSmallestCompressedIconAny(
 void AppIconManager::WrapReadIconWithPurposeCallback(
     ReadIconWithPurposeCallback callback,
     IconPurpose purpose,
-    const SkBitmap& bitmap) {
-  std::move(callback).Run(purpose, bitmap);
+    SkBitmap bitmap) {
+  std::move(callback).Run(purpose, std::move(bitmap));
 }
 
 }  // namespace web_app

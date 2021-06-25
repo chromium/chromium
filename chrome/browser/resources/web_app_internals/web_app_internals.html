@@ -49,6 +49,7 @@
   </template>
 
   <h3><a href="#external-prefs">Externally Installed Web App Prefs</a></h3>
+  <h3><a href="#icon-error-log">Icon Error Log</a></h3>
 </div>
 
 <div class="section">
@@ -75,13 +76,17 @@
   <template is="dom-if" if="[[!preinstalledWebAppDebugInfo_]]">
     <p>
       No debugging info available! Please enable
-      <a href="chrome://flags/#record-web-app-debug-info">chrome://flags/#record-web-app-debug-info</a>.
+      <a href="chrome://flags/#record-web-app-debug-info">
+        chrome://flags/#record-web-app-debug-info
+      </a>.
     </p>
   </template>
 
   <template is="dom-if" if="[[preinstalledWebAppDebugInfo_]]">
     <p>
-      <a href="chrome://flags/#record-web-app-debug-info">chrome://flags/#record-web-app-debug-info</a>
+      <a href="chrome://flags/#record-web-app-debug-info">
+        chrome://flags/#record-web-app-debug-info
+      </a>
       flag is enabled, debugging info is being captured.
     </p>
 
@@ -145,4 +150,33 @@
 <div class="section">
   <h2 id="external-prefs">Externally Installed Web App Prefs</h2>
   <pre>[[externallyInstalledWebAppPrefs_]]</pre>
+</div>
+
+<div class="section">
+  <h2 id="icon-error-log">Icon Error Log</h2>
+  <template is="dom-if" if="[[!iconErrorLog_]]">
+    <p>
+      Icon error log unavailable! Please enable
+      <a href="chrome://flags/#record-web-app-debug-info">
+        chrome://flags/#record-web-app-debug-info
+      </a>.
+    </p>
+  </template>
+
+  <template is="dom-if" if="[[iconErrorLog_]]">
+    <p>
+      <a href="chrome://flags/#record-web-app-debug-info">
+        chrome://flags/#record-web-app-debug-info
+      </a>
+      flag is enabled, icon error log is being captured.
+    </p>
+  </template>
+
+  <template is="dom-if" if="[[iconErrorLog_]]">
+    <ul>
+      <template is="dom-repeat" items="[[iconErrorLog_]]">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+  </template>
 </div>

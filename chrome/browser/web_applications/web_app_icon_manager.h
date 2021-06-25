@@ -119,6 +119,11 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
   void SetFaviconMonochromeReadCallbackForTesting(FaviconReadCallback callback);
 
+  // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
+  // flag is enabled to be used by: chrome://internals/web-app
+  const std::vector<std::string>* error_log() const { return error_log_.get(); }
+  std::vector<std::string>* error_log() { return error_log_.get(); }
+
  private:
   absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const AppId& app_id,
@@ -151,6 +156,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
 
   FaviconReadCallback favicon_read_callback_;
   FaviconReadCallback favicon_monochrome_read_callback_;
+
+  std::unique_ptr<std::vector<std::string>> error_log_;
 
   base::WeakPtrFactory<WebAppIconManager> weak_ptr_factory_{this};
 };

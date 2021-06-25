@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
         ->icon_manager()
         .ReadSmallestIconAny(
             synced_app_id, 192,
-            base::BindLambdaForTesting([&run_loop](const SkBitmap& bitmap) {
+            base::BindLambdaForTesting([&run_loop](SkBitmap bitmap) {
               EXPECT_EQ(bitmap.getColor(0, 0), SK_ColorBLUE);
               run_loop.Quit();
             }));

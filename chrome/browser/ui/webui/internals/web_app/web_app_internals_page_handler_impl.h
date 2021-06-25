@@ -32,6 +32,7 @@ class WebAppInternalsPageHandlerImpl
       GetPreinstalledWebAppDebugInfoCallback callback) override;
   void GetExternallyInstalledWebAppPrefs(
       GetExternallyInstalledWebAppPrefsCallback callback) override;
+  void GetIconErrorLog(GetIconErrorLogCallback callback) override;
 
  private:
   Profile* profile_ = nullptr;
