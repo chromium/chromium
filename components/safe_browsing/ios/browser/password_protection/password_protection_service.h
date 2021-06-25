@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/safe_browsing/core/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/password_protection/password_protection_service_base.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
 
 class GURL;
 

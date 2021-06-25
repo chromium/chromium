@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
 
 #include <memory>
 #include <string>
@@ -17,8 +17,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/password_protection/request_canceler.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 
 class GURL;
 
@@ -279,4 +279,4 @@ class PasswordProtectionRequest
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_

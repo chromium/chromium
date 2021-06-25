@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_IOS_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
 #define COMPONENTS_SAFE_BROWSING_IOS_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_IOS_H_
 
-#include "components/safe_browsing/core/password_protection/request_canceler.h"
+#include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {

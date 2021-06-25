@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/password_protection/request_canceler.h"
+#include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 
 namespace safe_browsing {
 

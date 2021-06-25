@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_REQUEST_CANCELER_CONTENT_H_
 
-#include "components/safe_browsing/core/password_protection/request_canceler.h"
+#include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace safe_browsing {

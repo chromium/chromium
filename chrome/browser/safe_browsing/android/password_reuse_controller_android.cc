@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
-#include "components/safe_browsing/core/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
