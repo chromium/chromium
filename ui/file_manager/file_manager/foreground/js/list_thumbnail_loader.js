@@ -12,7 +12,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {DirectoryModel} from './directory_model.m.js';
 import {FileListModel} from './file_list_model.m.js';
 import {ThumbnailModel} from './metadata/thumbnail_model.js';
-import {ThumbnailLoader} from './thumbnail_loader.js';
+import {ThumbnailLoader} from './thumbnail_loader.m.js';
 
 /**
  * A thumbnail loader for list style UI.

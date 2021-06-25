@@ -15,7 +15,7 @@
 // #import {FileWatcher} from './file_watcher.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
-// #import {constants} from './constants.js';
+// #import {constants} from './constants.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {util} from '../../common/js/util.js';

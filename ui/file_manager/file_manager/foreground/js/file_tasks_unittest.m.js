@@ -22,7 +22,7 @@ import {FileTasks} from './file_tasks.m.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {NamingController} from './naming_controller.js';
-import {TaskHistory} from './task_history.js';
+import {TaskHistory} from './task_history.m.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**

@@ -7,8 +7,10 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-import {DirectoryModel} from './directory_model.m.js';
-import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationModelVolumeItem} from './navigation_list_model.js';
+// clang-format off
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.js';
+// clang-format on
 
 /**
  * Namespace for crossover search utility functions.
@@ -67,4 +69,4 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-export {crossoverSearchUtils};
+/* #export */ {crossoverSearchUtils};

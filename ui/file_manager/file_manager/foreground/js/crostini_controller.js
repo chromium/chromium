@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
-import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {FilesMessage} from '../elements/files_message.js';
-import {FilesToast} from '../elements/files_toast.js';
-
-import {constants} from './constants.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
-import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
-import {DirectoryTree} from './ui/directory_tree.js';
+// clang-format off
+// #import {FilesToast} from '../elements/files_toast.js';
+// #import {DirectoryTree} from './ui/directory_tree.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {FilesMessage} from '../elements/files_message.js';
+// #import {Crostini} from '../../externs/background/crostini.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+// #import {str, strf} from '../../common/js/util.js';
+// #import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
+// #import {constants} from './constants.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
 
 /**
  * CrostiniController handles the foreground UI relating to crostini.
  */
-export class CrostiniController {
+/* #export */ class CrostiniController {
   /**
    * @param {!Crostini} crostini Crostini background object.
    * @param {!FilesMessage} filesMessage FilesMessage.

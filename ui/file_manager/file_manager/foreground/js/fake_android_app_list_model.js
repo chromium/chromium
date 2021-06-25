@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-
-import {AndroidAppListModel} from './android_app_list_model.js';
+// clang-format off
+// #import {AndroidAppListModel} from './android_app_list_model.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
 
 /**
  * @param {!Array<string>} appNames List app names to be added.
  * @returns {!AndroidAppListModel} fake for unittests.
  */
-export function createFakeAndroidAppListModel(appNames) {
+/* #export */ function createFakeAndroidAppListModel(appNames) {
   /**
    * AndroidAppListModel fake.
    */
-  class FakeAndroidAppListModel extends EventTarget {
+  class FakeAndroidAppListModel extends cr.EventTarget {
     /**
      * @param {!Array<string>} appNames List app names to be added.
      */

@@ -20,9 +20,9 @@
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 // #import {ProgressItemState} from '../../common/js/progress_center_common.js';
 // #import {xfm} from '../../common/js/xfm.js';
-// #import {crossoverSearchUtils} from './crossover_search_utils.js';
+// #import {crossoverSearchUtils} from './crossover_search_utils.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
-// #import {CrostiniController} from './crostini_controller.js';
+// #import {CrostiniController} from './crostini_controller.m.js';
 // #import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 // #import {DirectoryTree} from './ui/directory_tree.js';
 // #import {NavigationUma} from './navigation_uma.m.js';
@@ -34,11 +34,11 @@
 // #import {TaskController} from './task_controller.js';
 // #import {NamingController} from './naming_controller.js';
 // #import {MetadataUpdateController} from './metadata_update_controller.js';
-// #import {ColumnVisibilityController} from './column_visibility_controller.js';
+// #import {ColumnVisibilityController} from './column_visibility_controller.m.js';
 // #import {ListThumbnailLoader} from './list_thumbnail_loader.js';
 // #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
 // #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-// #import {AndroidAppListModel} from './android_app_list_model.js';
+// #import {AndroidAppListModel} from './android_app_list_model.m.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
@@ -66,7 +66,7 @@
 // #import {LastModifiedController} from './last_modified_controller.js';
 // #import {ActionsController} from './actions_controller.js';
 // #import {EmptyFolderController} from './empty_folder_controller.m.js';
-// #import {ToolbarController} from './toolbar_controller.js';
+// #import {ToolbarController} from './toolbar_controller.m.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {util, str} from '../../common/js/util.js';
 // #import {SelectionMenuController} from './selection_menu_controller.js';
@@ -75,7 +75,7 @@
 // #import {ScanController} from './scan_controller.js';
 // #import {DriveDialogController} from './drive_dialog_controller.m.js';
 // #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.js';
-// #import {AppStateController} from './app_state_controller.js';
+// #import {AppStateController} from './app_state_controller.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-
-import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-
-import {FileFilter} from './directory_contents.m.js';
-import {DirectoryModel} from './directory_model.m.js';
+// clang-format off
+// #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {FileFilter} from './directory_contents.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
 
 /**
  * @returns {!FileFilter} fake for unittests.
@@ -16,7 +16,7 @@ function createFakeFileFilter() {
   /**
    * FileFilter fake.
    */
-  class FakeFileFilter extends EventTarget {
+  class FakeFileFilter extends cr.EventTarget {
     /**
      * @param {Entry} entry File entry.
      * @return {boolean} True if the file should be shown.
@@ -33,11 +33,11 @@ function createFakeFileFilter() {
 /**
  * @returns {!DirectoryModel} fake for unittests.
  */
-export function createFakeDirectoryModel() {
+/* #export */ function createFakeDirectoryModel() {
   /**
    * DirectoryModel fake.
    */
-  class FakeDirectoryModel extends EventTarget {
+  class FakeDirectoryModel extends cr.EventTarget {
     constructor() {
       super();
 

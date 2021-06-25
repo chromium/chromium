@@ -19,7 +19,7 @@ import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {NamingController} from './naming_controller.js';
-import {TaskHistory} from './task_history.js';
+import {TaskHistory} from './task_history.m.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
 export class TaskController {

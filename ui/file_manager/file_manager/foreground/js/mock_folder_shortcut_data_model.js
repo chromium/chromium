@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format off
+// #import {MockEntry} from '../../common/js/mock_entry.js';
+// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format on
 
-import {MockEntry} from '../../common/js/mock_entry.js';
-
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
-
+/* #ignore */ 'use strict';
 
 /**
  * Mock FolderShortcutDataModel.
  */
-export class MockFolderShortcutDataModel extends ArrayDataModel {
+/* #export */ class MockFolderShortcutDataModel extends cr.ui.ArrayDataModel {
   /**
    * @param {!Array} array
    */

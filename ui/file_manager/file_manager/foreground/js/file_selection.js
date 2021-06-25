@@ -10,7 +10,7 @@
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 // #import {util} from '../../common/js/util.js';
-// #import {constants} from './constants.js';
+// #import {constants} from './constants.m.js';
 // #import {FileType} from '../../common/js/file_type.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';

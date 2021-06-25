@@ -18,7 +18,7 @@
 // #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 // #import {FileType} from '../../common/js/file_type.js';
-// #import {constants} from './constants.js';
+// #import {constants} from './constants.m.js';
 // #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 // #import {ActionsModel} from './actions_model.js';
 // #import {PathComponent} from './path_component.js';
@@ -34,7 +34,7 @@
 // #import {metrics} from '../../common/js/metrics.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import './webui_command_extender.js';
+// #import './webui_command_extender.m.js';
 // clang-format on
 
 

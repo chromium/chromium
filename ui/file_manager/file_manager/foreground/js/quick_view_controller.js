@@ -13,7 +13,7 @@ import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
-import {constants} from './constants.js';
+import {constants} from './constants.m.js';
 import {DialogType} from './dialog_type.m.js';
 import {CommandHandler} from './file_manager_commands.m.js';
 import {FileSelectionHandler} from './file_selection.m.js';
@@ -24,7 +24,7 @@ import {MetadataBoxController} from './metadata_box_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {QuickViewUma} from './quick_view_uma.js';
 import {TaskController} from './task_controller.js';
-import {ThumbnailLoader} from './thumbnail_loader.js';
+import {ThumbnailLoader} from './thumbnail_loader.m.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';

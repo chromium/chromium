@@ -8,7 +8,7 @@
 // #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.js';
-// #import {constants} from './constants.js';
+// #import {constants} from './constants.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {util} from '../../common/js/util.js';

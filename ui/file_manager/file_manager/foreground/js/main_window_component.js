@@ -8,7 +8,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {AppStateController} from './app_state_controller.js';
+import {AppStateController} from './app_state_controller.m.js';
 import {DialogType} from './dialog_type.m.js';
 import {FileFilter} from './directory_contents.m.js';
 import {DirectoryModel} from './directory_model.m.js';

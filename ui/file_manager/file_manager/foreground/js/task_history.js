@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-
-import {xfm} from '../../common/js/xfm.js';
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {xfm} from '../../common/js/xfm.js';
+// clang-format on
 
 /**
  * TaskHistory object keeps track of the history of task executions.
  * This is responsible for keeping the history in persistent xfm.storage, too.
  */
-export class TaskHistory extends EventTarget {
+/* #export */ class TaskHistory extends cr.EventTarget {
   constructor() {
     super();
 
@@ -82,7 +83,7 @@ export class TaskHistory extends EventTarget {
     for (const key in changes) {
       if (key == TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME) {
         this.lastExecutedTime_ = changes[key].newValue;
-        dispatchSimpleEvent(this, TaskHistory.EventType.UPDATE);
+        cr.dispatchSimpleEvent(this, TaskHistory.EventType.UPDATE);
       }
     }
   }
