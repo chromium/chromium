@@ -281,11 +281,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   void SetContentsMimeType(std::string mime_type);
   const std::string& contents_mime_type() { return contents_mime_type_; }
 
-  // Notifies that / returns whether main document's onload() handler was
-  // completed.
-  void DocumentOnLoadCompletedInMainFrame();
-  bool IsDocumentOnLoadCompletedInMainFrame();
-
   // Manual RTTI to ensure safe downcasts in tests.
   virtual bool IsTestRenderViewHost() const;
 
@@ -460,9 +455,6 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // BackForwardCache:
   bool is_in_back_forward_cache_ = false;
-
-  // True if the current main document finished executing onload() handler.
-  bool is_document_on_load_completed_in_main_frame_ = false;
 
   WillEnterBackForwardCacheCallbackForTesting
       will_enter_back_forward_cache_callback_for_testing_;

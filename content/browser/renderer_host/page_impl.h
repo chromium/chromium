@@ -39,9 +39,11 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   RenderFrameHostImpl& GetMainDocument() const;
 
-  bool is_on_load_completed() const { return is_on_load_completed_; }
-  void set_is_on_load_completed(bool completed) {
-    is_on_load_completed_ = completed;
+  bool is_on_load_completed_in_main_document() const {
+    return is_on_load_completed_in_main_document_;
+  }
+  void set_is_on_load_completed_in_main_document(bool completed) {
+    is_on_load_completed_in_main_document_ = completed;
   }
 
   const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls() const {
@@ -69,8 +71,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   RenderFrameHost& GetMainDocumentHelper() override;
 
   // True if we've received a notification that the onload() handler has
-  // run for main frame document.
-  bool is_on_load_completed_ = false;
+  // run for the main document.
+  bool is_on_load_completed_in_main_document_ = false;
 
   // Web application manifest URL for this page.
   // See https://w3c.github.io/manifest/#web-application-manifest.

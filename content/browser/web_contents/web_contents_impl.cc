@@ -1913,7 +1913,9 @@ bool WebContentsImpl::IsLoadingToDifferentDocument() {
 }
 
 bool WebContentsImpl::IsDocumentOnLoadCompletedInMainFrame() {
-  return GetRenderViewHost()->IsDocumentOnLoadCompletedInMainFrame();
+  // TODO(mparch): This should be moved to Page, and callers should use it
+  // directly.
+  return GetPrimaryPage().is_on_load_completed_in_main_document();
 }
 
 bool WebContentsImpl::IsWaitingForResponse() {
@@ -7355,8 +7357,6 @@ void WebContentsImpl::DocumentOnLoadCompleted(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DocumentOnLoadCompleted",
                         "render_frame_host", render_frame_host);
   ShowInsecureLocalhostWarningIfNeeded();
-
-  GetRenderViewHost()->DocumentOnLoadCompletedInMainFrame();
 
   observers_.NotifyObservers(
       &WebContentsObserver::DocumentOnLoadCompletedInMainFrame,

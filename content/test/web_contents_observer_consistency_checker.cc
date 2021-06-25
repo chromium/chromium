@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_handle.h"
@@ -298,7 +299,8 @@ void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame(
 
 void WebContentsObserverConsistencyChecker::DocumentOnLoadCompletedInMainFrame(
     RenderFrameHost* render_frame_host) {
-  CHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
+  CHECK(static_cast<PageImpl&>(render_frame_host->GetPage())
+            .is_on_load_completed_in_main_document());
   AssertMainFrameExists();
 }
 

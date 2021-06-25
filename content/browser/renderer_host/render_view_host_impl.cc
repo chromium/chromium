@@ -919,7 +919,6 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
 void RenderViewHostImpl::ResetPerPageState() {
   did_first_visually_non_empty_paint_ = false;
   main_frame_theme_color_.reset();
-  is_document_on_load_completed_in_main_frame_ = false;
 }
 
 void RenderViewHostImpl::OnThemeColorChanged(
@@ -954,14 +953,6 @@ void RenderViewHostImpl::DidChangeBackgroundColor(
 
 void RenderViewHostImpl::SetContentsMimeType(const std::string mime_type) {
   contents_mime_type_ = mime_type;
-}
-
-void RenderViewHostImpl::DocumentOnLoadCompletedInMainFrame() {
-  is_document_on_load_completed_in_main_frame_ = true;
-}
-
-bool RenderViewHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
-  return is_document_on_load_completed_in_main_frame_;
 }
 
 bool RenderViewHostImpl::IsTestRenderViewHost() const {

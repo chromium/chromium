@@ -636,7 +636,8 @@ void TestRenderFrameHost::SimulateLoadingCompleted(
 
     DidFinishDocumentLoad();
 
-    DocumentOnLoadCompleted();
+    if (frame_tree_node_->IsMainFrame())
+      DocumentOnLoadCompleted();
 
     DidFinishLoad(GetLastCommittedURL());
   }

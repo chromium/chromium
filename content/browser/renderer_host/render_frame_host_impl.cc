@@ -5240,7 +5240,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
 
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.
 void RenderFrameHostImpl::DocumentOnLoadCompleted() {
-  GetPage().set_is_on_load_completed(true);
+  GetPage().set_is_on_load_completed_in_main_document(true);
   // This message is only sent for top-level frames.
   //
   // TODO(avi): when frame tree mirroring works correctly, add a check here
@@ -11572,7 +11572,7 @@ void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
 }
 
 bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
-  return GetPage().is_on_load_completed();
+  return GetPage().is_on_load_completed_in_main_document();
 }
 
 // TODO(crbug.com/1192003): Move this method to content::Page when available.
