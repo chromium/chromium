@@ -136,6 +136,7 @@ mac_app_bundle("remoting_host_uninstaller") {
     "//base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/mac:constants",
+    "//remoting/resources:strings",
     "//ui/base:base",
   ]
   foreach(locale, remoting_locales_with_underscores) {
