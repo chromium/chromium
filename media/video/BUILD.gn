@@ -32,6 +32,8 @@ source_set("video") {
     "half_float_maker.h",
     "picture.cc",
     "picture.h",
+    "renderable_gpu_memory_buffer_video_frame_pool.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool.h",
     "trace_util.cc",
     "trace_util.h",
     "video_decode_accelerator.cc",
@@ -125,6 +127,7 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
   ]
