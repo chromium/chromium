@@ -72,10 +72,19 @@ bool IsNewDevice(base::TimeDelta new_device_threshold) {
          new_device_threshold;
 }
 
-// Returns true if the |kForceHappinessTrackingSystem| flag is enabled.
-bool IsTestingEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kForceHappinessTrackingSystem);
+// Returns true if the |kForceHappinessTrackingSystem| flag is enabled for the
+// current survey.
+bool IsTestingEnabled(const ash::HatsConfig& hats_config) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(
+          chromeos::switches::kForceHappinessTrackingSystem)) {
+    auto switch_value = command_line->GetSwitchValueASCII(
+        chromeos::switches::kForceHappinessTrackingSystem);
+    return switch_value.empty() || hats_config.feature.name == switch_value;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -110,7 +119,7 @@ HatsNotificationController::~HatsNotificationController() {
 void HatsNotificationController::Initialize(bool is_new_device) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (is_new_device && !IsTestingEnabled()) {
+  if (is_new_device && !IsTestingEnabled(hats_config_)) {
     // This device has been chosen for a survey, but it is too new. Instead
     // of showing the user the survey, just mark it as completed.
     UpdateLastInteractionTime();
@@ -130,7 +139,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
     const HatsConfig& hats_config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (IsTestingEnabled())
+  if (IsTestingEnabled(hats_config))
     return true;
 
   // Do not show the survey if the HaTS feature is disabled for the device. This
