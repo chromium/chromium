@@ -3,4 +3,4 @@
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # Expectations for EnableThreadedCompositing
-[ Linux Debug ] virtual/threaded/external/wpt/web-animations/timing-model/animations/update-playback-rate-zero.html [ Failure ]
+[ Debug Linux ] virtual/threaded/external/wpt/web-animations/timing-model/animations/update-playback-rate-zero.html [ Failure ]

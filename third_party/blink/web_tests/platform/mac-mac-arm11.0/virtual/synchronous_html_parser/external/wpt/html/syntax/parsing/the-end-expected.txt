@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS DOMContentLoaded
+PASS load
+FAIL pageshow assert_false: bubbles should be false expected false got true
+PASS order
+Harness: the test ran to completion.
+

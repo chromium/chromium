@@ -33,7 +33,7 @@ crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
 
-compositing/gestures/gesture-tapHighlight-composited-img.html [ Pass Failure ]
+compositing/gestures/gesture-tapHighlight-composited-img.html [ Failure Pass ]
 
 # Need to force the video to be composited in this case, or change pre-CAP
 # to match CAP behavior.

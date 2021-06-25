@@ -24,11 +24,9 @@ The most important sources of information and activity are:
   Internet-enabled browser of their choice
 - [wpt.fyi](https://wpt.fyi): an archive of test results collected from an
   array of web browsers on a regular basis
-- [Real-time chat room](http://irc.w3.org/?channels=testing): the
-  [IRC](http://www.irchelp.org/) chat room named `#testing` on
-  [irc.w3.org](https://www.w3.org/wiki/IRC); includes participants located
-  around the world, but busiest during the European working day; [all
-  discussion is archived here](https://w3.logbot.info/testing)
+- [Real-time chat room](https://app.element.io/#/room/#wpt:matrix.org): the
+  `wpt:matrix.org` matrix channel; includes participants located
+  around the world, but busiest during the European working day.
 - [Mailing list](https://lists.w3.org/Archives/Public/public-test-infra/): a
   public and low-traffic discussion list
 

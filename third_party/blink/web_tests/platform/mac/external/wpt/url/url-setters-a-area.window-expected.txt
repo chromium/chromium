@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 425 tests; 261 PASS, 164 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 435 tests; 263 PASS, 172 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -341,6 +341,16 @@ FAIL <a>: Setting <javascript://x/>.port = '12' assert_equals: expected "javascr
 FAIL <area>: Setting <javascript://x/>.port = '12' assert_equals: expected "javascript://x:12/" but got "javascript://x/"
 PASS <a>: Setting <mailto:me@example.net>.pathname = '/foo' Cannot-be-a-base don’t have a path
 PASS <area>: Setting <mailto:me@example.net>.pathname = '/foo' Cannot-be-a-base don’t have a path
+PASS <a>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
+PASS <area>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
+FAIL <a>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
+FAIL <area>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
+FAIL <a>: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased assert_equals: expected "foo://" but got "foo:///some/path"
+FAIL <area>: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased assert_equals: expected "foo://" but got "foo:///some/path"
+FAIL <a>: Setting <foo:/some/path>.pathname = '' Path-only URLs cannot have their paths erased assert_equals: expected "foo:/" but got "foo:/some/path"
+FAIL <area>: Setting <foo:/some/path>.pathname = '' Path-only URLs cannot have their paths erased assert_equals: expected "foo:/" but got "foo:/some/path"
+FAIL <a>: Setting <foo:/some/path>.pathname = 'test' Path-only URLs always have an initial slash assert_equals: expected "foo:/test" but got "foo:/some/path"
+FAIL <area>: Setting <foo:/some/path>.pathname = 'test' Path-only URLs always have an initial slash assert_equals: expected "foo:/test" but got "foo:/some/path"
 FAIL <a>: Setting <unix:/run/foo.socket?timeout=10>.pathname = '/var/log/../run/bar.socket' assert_equals: expected "unix:/var/run/bar.socket?timeout=10" but got "unix:/run/foo.socket?timeout=10"
 FAIL <area>: Setting <unix:/run/foo.socket?timeout=10>.pathname = '/var/log/../run/bar.socket' assert_equals: expected "unix:/var/run/bar.socket?timeout=10" but got "unix:/run/foo.socket?timeout=10"
 PASS <a>: Setting <https://example.net#nav>.pathname = 'home'

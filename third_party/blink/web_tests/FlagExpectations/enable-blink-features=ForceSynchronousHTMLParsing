@@ -11,7 +11,7 @@ crbug.com/901056 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 #
 # These timeouts are generally because of prefetching errors.
 ### http/tests/loading/sxg/
-crbug.com/901056 http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Timeout Failure ]
+crbug.com/901056 http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Failure Timeout ]
 
 ### http/tests/inspector-protocol/issues/
 crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
@@ -76,14 +76,14 @@ crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-
 
 ### These are ok, and just need to be rebaselined once the flag is enabled. The path
 ### names here are > 200 characters, so they can't be landed.
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-src-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source-expected.txt [ Pass Failure ]
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src-expected.txt [ Pass Failure ]
-external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse-expected.txt [ Pass Failure ]
-virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-src-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source-expected.txt [ Failure Pass ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src-expected.txt [ Failure Pass ]
+external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse-expected.txt [ Failure Pass ]
+virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029-expected.txt [ Failure Pass ]

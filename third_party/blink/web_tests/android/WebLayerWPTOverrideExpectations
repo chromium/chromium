@@ -2304,5 +2304,5 @@ crbug.com/1050754 external/wpt/video-rvfc/request-video-frame-callback.html [ Ti
 # update on 06/03/2021
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
-crbug.com/1050754 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Pass Failure ]
+crbug.com/1050754 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webcodecs/image-decoder.any.html [ Failure ]

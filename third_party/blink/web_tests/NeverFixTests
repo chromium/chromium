@@ -269,13 +269,13 @@ crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size-diff.html 
 crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size.html [ Skip ]
 
 # Debug rendering difference only on Win Debug
-crbug.com/484370 [ Win Debug ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ Skip ]
-crbug.com/552433 [ Win7 Debug ] svg/W3C-SVG-1.1/coords-units-02-b.svg [ Skip ]
-crbug.com/606302 [ Win7 Debug ] compositing/perpendicular-layer-sorting.html [ Skip ]
-crbug.com/606302 [ Win7 Debug ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Skip ]
-crbug.com/606302 [ Win7 Debug ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
-crbug.com/702176 [ Win7 Debug ] fast/table/border-collapsing/001-vertical.html [ Skip ]
-crbug.com/702176 [ Win7 Debug ] fast/table/border-collapsing/001.html [ Skip ]
+crbug.com/484370 [ Debug Win ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ Skip ]
+crbug.com/552433 [ Debug Win7 ] svg/W3C-SVG-1.1/coords-units-02-b.svg [ Skip ]
+crbug.com/606302 [ Debug Win7 ] compositing/perpendicular-layer-sorting.html [ Skip ]
+crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Skip ]
+crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
+crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001-vertical.html [ Skip ]
+crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001.html [ Skip ]
 
 # Only Windows supports Symbol CMAP encoded fonts.
 crbug.com/627953 [ Linux ] virtual/text-antialias/symbol-cmap.html [ Skip ]
@@ -1064,7 +1064,7 @@ virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream
 http/tests/ManualTests/* [ Skip ]
 
 # These test produce invisible different pixels on Win7 Debug.
-[ Win7 Debug ] fast/table/backgr_border-table-column-group-collapsed-border.html [ Skip ]
+[ Debug Win7 ] fast/table/backgr_border-table-column-group-collapsed-border.html [ Skip ]
 
 # Fails in debug mode, because in debug mode we recompute visual rects after
 # changes to subpixel offsets of composited layers to detect under-invalidation

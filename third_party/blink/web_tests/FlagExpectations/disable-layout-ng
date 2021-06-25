@@ -639,7 +639,7 @@ crbug.com/591099 virtual/dark-color-scheme/media/audio-focus-ring.html [ Failure
 crbug.com/591099 virtual/exotic-color-space/images/favicon-as-image.html [ Failure ]
 
 ### virtual/gpu-rasterization/images/
-crbug.com/591099 virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Slow Failure ]
+crbug.com/591099 virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Failure Slow ]
 crbug.com/591099 virtual/gpu-rasterization/images/favicon-as-image.html [ Failure ]
 
 ### virtual/layout_ng_block_frag/
@@ -1246,3 +1246,7 @@ crbug.com/591099 fast/forms/time/time-appearance-basic.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-media-auto-play-attribute.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-media-play.html [ Failure ]
+
+# unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-lr.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-rl.html [ Failure ]
