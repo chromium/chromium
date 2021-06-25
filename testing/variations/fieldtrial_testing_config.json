@@ -5395,6 +5395,21 @@
             ]
         }
     ],
+    "OfflinePageServiceTurndown": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "OfflinePagesPrefetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxAssistantVoiceSearch": [
         {
             "platforms": [

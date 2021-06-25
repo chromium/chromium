@@ -97,7 +97,7 @@ public class DownloadSettingsTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.DOWNLOAD_LATER)
+    @EnableFeatures({ChromeFeatureList.DOWNLOAD_LATER, ChromeFeatureList.OFFLINE_PAGES_PREFETCHING})
     public void testGeneralSettings() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
@@ -110,6 +110,7 @@ public class DownloadSettingsTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.DOWNLOAD_LATER)
+    @EnableFeatures(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING)
     public void testWithoutDownloadLater() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
