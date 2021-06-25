@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/test/task_environment.h"
 
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -59,11 +59,11 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
  public:
   GetLoginsWithAffiliationsRequestHandlerTest()
-      : store_(new MockPasswordStore()),
+      : store_(new MockPasswordStoreInterface()),
         consumer_(new MockPasswordStoreConsumer()) {}
 
   MockPasswordStoreConsumer* consumer() { return consumer_.get(); }
-  MockPasswordStore* store() { return store_.get(); }
+  MockPasswordStoreInterface* store() { return store_.get(); }
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> MakeRequestHandler() {
     return base::MakeRefCounted<GetLoginsWithAffiliationsRequestHandler>(
         consumer_->GetWeakPtr(), store_.get());
@@ -73,7 +73,7 @@ class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<MockPasswordStore> store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
   std::unique_ptr<MockPasswordStoreConsumer> consumer_;
 };
 

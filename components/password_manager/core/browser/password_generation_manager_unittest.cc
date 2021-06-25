@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -118,7 +118,7 @@ class PasswordGenerationManagerTest : public testing::Test {
   PasswordGenerationManagerTest();
   ~PasswordGenerationManagerTest() override;
 
-  MockPasswordStore& store() { return *mock_store_; }
+  MockPasswordStoreInterface& store() { return *mock_store_; }
   PasswordGenerationManager& manager() { return generation_manager_; }
   FormSaverImpl& form_saver() { return form_saver_; }
   MockPasswordManagerClient& client() { return client_; }
@@ -131,7 +131,7 @@ class PasswordGenerationManagerTest : public testing::Test {
  private:
   // For the MockPasswordStore.
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<MockPasswordStore> mock_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_store_;
   // Test with the real form saver for better robustness.
   FormSaverImpl form_saver_;
   MockPasswordManagerClient client_;
@@ -139,7 +139,7 @@ class PasswordGenerationManagerTest : public testing::Test {
 };
 
 PasswordGenerationManagerTest::PasswordGenerationManagerTest()
-    : mock_store_(new testing::StrictMock<MockPasswordStore>()),
+    : mock_store_(new testing::StrictMock<MockPasswordStoreInterface>()),
       form_saver_(mock_store_.get()),
       generation_manager_(&client_) {
   auto clock = std::make_unique<base::SimpleTestClock>();

@@ -24,7 +24,7 @@ constexpr int kCallsNumber = 2;
 GetLoginsWithAffiliationsRequestHandler::
     GetLoginsWithAffiliationsRequestHandler(
         base::WeakPtr<PasswordStoreConsumer> consumer,
-        PasswordStore* store)
+        PasswordStoreInterface* store)
     : consumer_(std::move(consumer)), store_(store) {
   forms_received_ = base::BarrierClosure(
       kCallsNumber,

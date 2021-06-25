@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains utilities related to PasswordStore.
-
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 
@@ -13,7 +11,7 @@
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 class PasswordStoreConsumer;
 struct PasswordForm;
 
@@ -27,7 +25,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   GetLoginsWithAffiliationsRequestHandler(
       base::WeakPtr<PasswordStoreConsumer> consumer,
-      PasswordStore* store);
+      PasswordStoreInterface* store);
 
   // Returns a OnceCallback that calls 'HandleLoginsForFormReceived()'.
   base::OnceCallback<void(LoginsResult)> LoginsForFormClosure();
@@ -50,7 +48,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  PasswordStore* store_;
+  PasswordStoreInterface* store_;
 
   // Closure which is released after being called 2 times.
   base::RepeatingClosure forms_received_;
