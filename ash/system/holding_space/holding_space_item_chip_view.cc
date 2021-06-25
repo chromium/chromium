@@ -182,17 +182,18 @@ std::unique_ptr<HoldingSpaceViewBuilder<views::Label>> CreateLabelBuilder(
 }
 
 // Returns a secondary action builder that invokes `callback` on press.
-std::unique_ptr<HoldingSpaceViewBuilder<views::ImageButton>>
+std::unique_ptr<views::Builder<views::ImageButton>>
 CreateSecondaryActionBuilder(views::ImageButton::PressedCallback callback) {
   using HorizontalAlignment = views::ImageButton::HorizontalAlignment;
   using VerticalAlignment = views::ImageButton::VerticalAlignment;
-  return std::make_unique<HoldingSpaceViewBuilder<views::ImageButton>>(
-      views::Builder<views::ImageButton>()
-          .SetCallback(std::move(callback))
-          .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-          .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
-          .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
-          .SetVisible(false));
+  auto secondary_action =
+      std::make_unique<views::Builder<views::ImageButton>>();
+  secondary_action->SetCallback(std::move(callback))
+      .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+      .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
+      .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
+      .SetVisible(false);
+  return secondary_action;
 }
 
 // TODO(crbug.com/1202796): Create ash colors.
@@ -261,7 +262,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                       .AddChild(CreateSecondaryActionBuilder(
                                     secondary_action_callback)
                                     ->CopyAddressTo(&secondary_action_resume_)
-                                    .SetID(kHoldingSpaceItemResumeButtonId))))
+                                    .SetID(kHoldingSpaceItemResumeButtonId)
+                                    .SetFlipCanvasOnPaintForRTLUI(false))))
       .AddChild(
           HoldingSpaceViewBuilder<views::View>(
               views::Builder<views::View>()
