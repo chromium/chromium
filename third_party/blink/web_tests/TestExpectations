@@ -7077,5 +7077,5 @@ crbug.com/1222097 virtual/gpu-rasterization/images/color-profile-background-imag
 
 # Sheriff 2021-06-25
 # Flaky on Webkit Linux Leak
-crbug.com/1223601 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Skip ]
-crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Skip ]
+crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Pass Failure ]
+crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Pass Failure ]
