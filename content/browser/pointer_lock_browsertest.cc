@@ -707,6 +707,18 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOutOfFocus) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOnDroppedElem) {
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/pointerlock_on_dropped_elem.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_TRUE(ExecJs(shell(), "document.body.click();"));
+
+  // The second ExecJS() call here delays test termination so that the first
+  // call's async tasks get a chance to run.
+  EXPECT_TRUE(ExecJs(shell(), "", EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
 IN_PROC_BROWSER_TEST_F(PointerLockBrowserTestWithOptions,
                        PointerLockRequestUnadjustedMovement) {
   GURL main_url(embedded_test_server()->GetURL(
