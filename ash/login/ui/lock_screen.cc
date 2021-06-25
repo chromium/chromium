@@ -15,6 +15,7 @@
 #include "ash/login/ui/login_detachable_base_model.h"
 #include "ash/public/cpp/lock_screen_widget_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -64,15 +65,21 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
   }
 
   tray_action_observation_.Observe(Shell::Get()->tray_action());
-  saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::LOGIN_SECONDARY) {
+    saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
+  }
 }
 
 LockScreen::~LockScreen() {
   widget_.reset();
 
-  ui::Clipboard::DestroyClipboardForCurrentThread();
-  if (saved_clipboard_)
-    ui::Clipboard::SetClipboardForCurrentThread(std::move(saved_clipboard_));
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::LOGIN_SECONDARY) {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    if (saved_clipboard_)
+      ui::Clipboard::SetClipboardForCurrentThread(std::move(saved_clipboard_));
+  }
 }
 
 std::unique_ptr<views::View> LockScreen::MakeContentsView() {

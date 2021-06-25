@@ -5,8 +5,11 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -32,6 +35,8 @@
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace ash {
 namespace system {
@@ -171,6 +176,75 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   for (size_t i = 0; i < users.size(); ++i) {
     EXPECT_EQ(users[i].account_id, manager->sessions()[i].user_account_id);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
+                       CheckPastingBehavior) {
+  const auto& users = login_manager_.users();
+  LoginUser(users[0].account_id);
+  auto* session_controller = ash::Shell::Get()->session_controller();
+
+  // Write a text in the clipboard during active session.
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+  const std::u16string session_clipboard_text = u"active session text";
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(session_clipboard_text);
+
+  // Reach the secondary login screen.
+  UserAddingScreen::Get()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(session_manager::SessionState::LOGIN_SECONDARY,
+            session_controller->GetSessionState());
+
+  // Check that the text can still be pasted: secondary login screen clipboard
+  // should be the same than the active session one since we can return to
+  // active session by selecting Cancel.
+  std::u16string clipboard_text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_EQ(clipboard_text, session_clipboard_text);
+
+  // Go back to active session, with another user.
+  UserAddingScreenWaiter waiter;
+  AddUser(users[1].account_id);
+  waiter.Wait();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+
+  // Check that the new active session clipboard is empty.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_TRUE(clipboard_text.empty());
+
+  // Write a text in the new active session clipboard.
+  const std::u16string other_session_clipboard_text =
+      u"other active session text";
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(other_session_clipboard_text);
+
+  // Lock the screen.
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+  EXPECT_EQ(session_manager::SessionState::LOCKED,
+            session_controller->GetSessionState());
+
+  // Check that the clipboard is empty, for security reasons.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_TRUE(clipboard_text.empty());
+
+  // Go back to the active session.
+  locker_tester.UnlockWithPassword(users[1].account_id, "password");
+  locker_tester.WaitForUnlock();
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_controller->GetSessionState());
+
+  // Check that the clipboard has been restored.
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_text);
+  EXPECT_EQ(clipboard_text, other_session_clipboard_text);
 }
 
 #if BUILDFLAG(ENABLE_RLZ)

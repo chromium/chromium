@@ -100,6 +100,11 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
 
   bool is_shown_ = false;
 
+  // Clipboard used to restore user session's clipboard, after having made a
+  // new one especially for the lock screen. We want two separate clipboards
+  // for security purposes: if a user leaves their session locked, with their
+  // password copied, it leaves the lock screen vulnerable. However, this is
+  // a desirable behavior for secondary login screen.
   std::unique_ptr<ui::Clipboard> saved_clipboard_;
 
   std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
