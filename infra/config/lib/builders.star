@@ -170,8 +170,8 @@ xcode = struct(
     x12e262 = xcode_enum("12e262"),
     # in use by ios-webkit-tot
     x12e262wk = xcode_enum("12e262wk"),
-    # Xcode 13.0 latest beta.
-    x13latestbeta = xcode_enum("13a5154hxc"),
+    # Xcode 13.0 beta 2.
+    x13latestbeta = xcode_enum("13a5155e"),
 )
 
 ################################################################################
