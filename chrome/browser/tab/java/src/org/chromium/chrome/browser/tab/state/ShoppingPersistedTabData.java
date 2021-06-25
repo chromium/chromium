@@ -601,7 +601,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public Supplier<byte[]> getSerializeSupplier() {
+    public Supplier<ByteBuffer> getSerializeSupplier() {
         ShoppingPersistedTabDataProto.Builder builder =
                 ShoppingPersistedTabDataProto.newBuilder()
                         .setPriceMicros(mPriceMicros)
@@ -613,7 +613,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         }
 
         return () -> {
-            return builder.build().toByteArray();
+            return builder.build().toByteString().asReadOnlyByteBuffer();
         };
     }
 

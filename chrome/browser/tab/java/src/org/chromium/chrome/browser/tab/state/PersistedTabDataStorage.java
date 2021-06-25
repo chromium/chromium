@@ -18,7 +18,7 @@ public interface PersistedTabDataStorage {
      * @param tabDataId unique identifier representing the type {@link PersistedTabData}
      * @param dataSupplier {@link Supplier} for serialized {@link PersistedTabData}
      */
-    void save(int tabId, String tabDataId, Supplier<byte[]> dataSupplier);
+    void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier);
 
     /**
      * @param tabId identifier for the {@link Tab}

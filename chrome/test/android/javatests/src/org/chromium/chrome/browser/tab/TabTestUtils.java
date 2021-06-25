@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab;
 import android.content.Context;
 import android.view.View;
 
+import org.junit.Assert;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.WebContents;
@@ -174,27 +176,14 @@ public class TabTestUtils {
     }
 
     /**
-     * Acquire copy of byte array from a ByteBuffer.
-     * @param buffer {@link ByteBuffer} copy of backing byte array will be acquired from.
+     * Verify a ByteBuffer is equal to a byte array.
+     * @param expected bytes expected in ByteBuffer, stored as a byte array.
+     * @param actual ByteBuffer found to be compared to the byte array.
      */
-    public static byte[] toByteArray(ByteBuffer buffer) {
-        if (buffer == null) {
-            return null;
+    public static void verifyByteBuffer(byte[] expected, ByteBuffer actual) {
+        Assert.assertEquals(expected.length, actual.limit());
+        for (int i = 0; i < actual.limit(); i++) {
+            Assert.assertEquals(expected[i], actual.get());
         }
-        if (buffer.hasArray() && buffer.arrayOffset() == 0) {
-            return buffer.array();
-        }
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes);
-        return bytes;
-    }
-
-    /**
-     * Create ByteBuffer backed by a byte array.
-     * @param bytes byte array to create ByteBuffer from.
-     */
-    public static ByteBuffer toByteBuffer(byte[] bytes) {
-        return ByteBuffer.wrap(bytes);
     }
 }

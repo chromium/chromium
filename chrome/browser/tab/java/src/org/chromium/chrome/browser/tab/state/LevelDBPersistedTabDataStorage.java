@@ -41,8 +41,23 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<byte[]> dataSupplier) {
-        mPersistedDataStorage.save(getKey(tabId, dataId), dataSupplier.get());
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
+        // TODO(crbug.com/1221571) update LevelDB storage in native to use ByteBuffer instead
+        // of byte[] to avoid conversion
+        mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(dataSupplier.get()));
+    }
+
+    private static byte[] toByteArray(ByteBuffer buffer) {
+        if (buffer == null) {
+            return null;
+        }
+        if (buffer.hasArray() && buffer.arrayOffset() == 0) {
+            return buffer.array();
+        }
+        byte[] bytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(bytes);
+        return bytes;
     }
 
     @MainThread

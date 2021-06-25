@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
@@ -49,7 +51,7 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<byte[]> dataSupplier) {
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
         save(tabId, dataId, dataSupplier, NO_OP_CALLBACK);
     }
 
@@ -57,7 +59,7 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
     @Override
     @VisibleForTesting
     protected void save(
-            int tabId, String dataId, Supplier<byte[]> data, Callback<Integer> callback) {
+            int tabId, String dataId, Supplier<ByteBuffer> data, Callback<Integer> callback) {
         addStorageRequestAndProcessNext(
                 new EncryptedFileSaveRequest(tabId, dataId, data, callback));
     }
@@ -83,14 +85,14 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
          * @param dataId identifier for the {@link PersistedTabData}
          * @param dataSupplier {@link Supplier} containing data to be saved
          */
-        EncryptedFileSaveRequest(int tabId, String dataId, Supplier<byte[]> dataSupplier,
+        EncryptedFileSaveRequest(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
                 Callback<Integer> callback) {
             super(tabId, dataId, dataSupplier, callback);
         }
 
         @Override
         public Void executeSyncTask() {
-            byte[] data = mDataSupplier.get();
+            ByteBuffer data = mDataSupplier.get();
             if (data == null) {
                 mDataSupplier = null;
                 return null;
@@ -112,8 +114,9 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
                 cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
                 dataOutputStream = new DataOutputStream(cipherOutputStream);
                 dataOutputStream.writeLong(KEY_CHECKER);
-                dataOutputStream.writeInt(data.length);
-                dataOutputStream.write(data);
+                dataOutputStream.writeInt(data.limit());
+                WritableByteChannel channel = Channels.newChannel(dataOutputStream);
+                channel.write(data);
                 success = true;
                 RecordHistogram.recordTimesHistogram(
                         String.format(Locale.US, "Tabs.PersistedTabData.Storage.SaveTime.%s",

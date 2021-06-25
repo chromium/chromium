@@ -243,12 +243,12 @@ public abstract class PersistedTabData implements UserData {
     /**
      * @return {@link Supplier} for {@link PersistedTabData} in serialized form.
      */
-    abstract Supplier<byte[]> getSerializeSupplier();
+    abstract Supplier<ByteBuffer> getSerializeSupplier();
 
     @VisibleForTesting
-    protected Supplier<byte[]> getOomAndMetricsWrapper(Supplier<byte[]> serializeSupplier) {
+    protected Supplier<ByteBuffer> getOomAndMetricsWrapper(Supplier<ByteBuffer> serializeSupplier) {
         return () -> {
-            byte[] res;
+            ByteBuffer res;
             try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
                 res = serializeSupplier.get();
             } catch (OutOfMemoryError oe) {

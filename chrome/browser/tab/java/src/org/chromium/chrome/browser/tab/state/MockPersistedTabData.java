@@ -64,10 +64,11 @@ public class MockPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public Supplier<byte[]> getSerializeSupplier() {
+    public Supplier<ByteBuffer> getSerializeSupplier() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(4).putInt(mField);
+        byteBuffer.rewind();
         return () -> {
-            return byteBuffer.array();
+            return byteBuffer;
         };
     }
 

@@ -369,7 +369,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     // TODO(crbug.com/1220678) Change PersistedTabData saves to use ByteBuffer instead of byte[]
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Override
-    public Supplier<byte[]> getSerializeSupplier() {
+    public Supplier<ByteBuffer> getSerializeSupplier() {
         CriticalPersistedTabDataProto.Builder builder;
         final WebContentsState webContentsState;
         final ByteBuffer byteBuffer;
@@ -396,7 +396,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                                         ? ByteString.EMPTY
                                         : ByteString.copyFrom(getContentStateByteArray(byteBuffer)))
                         .build()
-                        .toByteArray();
+                        .toByteString()
+                        .asReadOnlyByteBuffer();
             }
         };
     }

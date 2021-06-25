@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -20,11 +19,13 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -189,10 +190,11 @@ public class LevelDBPersistedDataStorageTest {
             LevelDBPersistedDataStorage persistedDataStorage) throws TimeoutException {
         LoadCallbackHelper ch = new LoadCallbackHelper();
         int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> { persistedDataStorage.load(key, (res) -> { ch.notifyCalled(res); }); });
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            persistedDataStorage.load(key, (res) -> { ch.notifyCalled(ByteBuffer.wrap(res)); });
+        });
         ch.waitForCallback(chCount);
-        Assert.assertArrayEquals(expected, ch.getRes());
+        TabTestUtils.verifyByteBuffer(expected, ch.getRes());
     }
 
     private void delete(String key, LevelDBPersistedDataStorage persistedDataStorage)
