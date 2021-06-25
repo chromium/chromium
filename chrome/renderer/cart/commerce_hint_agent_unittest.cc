@@ -969,7 +969,7 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
 
     elapsed_us = BenchmarkIsPurchase(basic_url, str);
     // Typical value is ~0.1us.
-    EXPECT_LT(elapsed_us, 1.0 * slow_factor);
+    EXPECT_LT(elapsed_us, 5.0 * slow_factor);
 
     elapsed_us = BenchmarkShouldSkip(str);
     // Typical value is ~10us.
