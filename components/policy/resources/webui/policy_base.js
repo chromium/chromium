@@ -608,8 +608,7 @@ export class Page {
                 name,
                 link: knownPolicyNames === policyNames.chrome.policyNames &&
                         knownPolicyNamesSet.has(name) ?
-                    `https://cloud.google.com/docs/chrome-enterprise/policies/?policy=${
-                        name}` :
+                    `https://chromeenterprise.google/policies/?policy=${name}` :
                     undefined,
               },
               value.policies[name]));
