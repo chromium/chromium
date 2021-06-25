@@ -65,6 +65,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -358,6 +359,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @EnableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
+    @FlakyTest(message = "https://crbug.com/1223695")
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         mAccountManagerTestRule.addAccount("test@gmail.com");
         mIsCachePopulatedInAccountManagerFacade = true;
