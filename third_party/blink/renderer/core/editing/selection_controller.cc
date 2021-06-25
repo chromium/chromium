@@ -477,25 +477,6 @@ bool SelectionController::HandleTapInsideSelection(
   return true;
 }
 
-// Returns true if selection starts from |SVGText| node and |target_node| is
-// not the containing block of |SVGText| node.
-// See https://bugs.webkit.org/show_bug.cgi?id=12334 for details.
-static bool ShouldRespectSVGTextBoundaries(
-    const Node& target_node,
-    const FrameSelection& frame_selection) {
-  const PositionInFlatTree& base =
-      frame_selection.ComputeVisibleSelectionInFlatTree().Base();
-  // TODO(editing-dev): We should use |ComputeContainerNode()|.
-  const Node* const base_node = base.AnchorNode();
-  if (!base_node)
-    return false;
-  LayoutObject* const base_layout_object = base_node->GetLayoutObject();
-  if (!base_layout_object || !base_layout_object->IsSVGText())
-    return false;
-  return target_node.GetLayoutObject()->ContainingBlock() !=
-         base_layout_object->ContainingBlock();
-}
-
 void SelectionController::UpdateSelectionForMouseDrag(
     const HitTestResult& hit_test_result,
     const PhysicalOffset& drag_start_pos,
@@ -528,11 +509,6 @@ void SelectionController::UpdateSelectionForMouseDrag(
   // Restart the selection if this is the first mouse move. This work is usually
   // done in handleMousePressEvent, but not if the mouse press was on an
   // existing selection.
-
-  // Special case to limit selection to the containing block for SVG text.
-  // TODO(editing_dev): Isn't there a better non-SVG-specific way to do this?
-  if (ShouldRespectSVGTextBoundaries(*target, Selection()))
-    return;
 
   if (selection_state_ == SelectionState::kHaveNotStartedSelection &&
       DispatchSelectStart(target) != DispatchEventResult::kNotCanceled)

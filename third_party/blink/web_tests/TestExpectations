@@ -4185,6 +4185,7 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/selection-dragging-outside
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/selection-dragging-outside-3.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/selection-styles.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/selection-tripleclick.svg [ Failure ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-across-text-elements.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-svg-text-with-collapsed-whitespace.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-textLength-spacingAndGlyphs-squeeze-1.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/select-textLength-spacingAndGlyphs-squeeze-2.svg [ Failure ]

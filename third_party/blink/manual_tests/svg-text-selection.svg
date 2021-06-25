@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-        <text x="0" y="100" fill="black" font-size="32">Selection will be constrained to this line.</text>
-        <text x="0" y="200" fill="black" font-size="32">You should be able
-        <tspan x="0" y="235">to select multiline here</tspan>
-        <tspan x="0" y="270">See bug 12334</tspan>
-        </text>
-</svg>
