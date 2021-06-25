@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
@@ -27,6 +28,8 @@ class WmHighlightItemBorder;
 class ASH_EXPORT WindowMiniView : public views::View,
                                   public aura::WindowObserver {
  public:
+  METADATA_HEADER(WindowMiniView);
+
   WindowMiniView(const WindowMiniView&) = delete;
   WindowMiniView& operator=(const WindowMiniView&) = delete;
   ~WindowMiniView() override;

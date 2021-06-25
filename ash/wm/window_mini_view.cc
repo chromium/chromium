@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
@@ -223,5 +224,8 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   title_label_->SetText(GetWindowTitle(window));
 }
+
+BEGIN_METADATA(WindowMiniView, views::View)
+END_METADATA
 
 }  // namespace ash

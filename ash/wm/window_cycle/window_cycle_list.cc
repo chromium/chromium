@@ -37,6 +37,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -169,6 +171,8 @@ aura::Window* GetRootWindowForCycleView() {
 // thumbnail of the window's contents.
 class WindowCycleItemView : public WindowMiniView {
  public:
+  METADATA_HEADER(WindowCycleItemView);
+
   explicit WindowCycleItemView(aura::Window* window) : WindowMiniView(window) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetNotifyEnterExitOnChild(true);
@@ -268,10 +272,15 @@ class WindowCycleItemView : public WindowMiniView {
   }
 };
 
+BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
+END_METADATA
+
 // A view that shows a collection of windows the user can tab through.
 class WindowCycleView : public views::WidgetDelegateView,
                         public ui::ImplicitAnimationObserver {
  public:
+  METADATA_HEADER(WindowCycleView);
+
   WindowCycleView(aura::Window* root_window,
                   const WindowCycleList::WindowList& windows)
       : root_window_(root_window) {
@@ -862,6 +871,9 @@ class WindowCycleView : public views::WidgetDelegateView,
   // active.
   std::unique_ptr<WmFlingHandler> fling_handler_;
 };
+
+BEGIN_METADATA(WindowCycleView, views::WidgetDelegateView)
+END_METADATA
 
 WindowCycleList::WindowCycleList(const WindowList& windows)
     : windows_(windows) {
