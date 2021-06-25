@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #include "components/infobars/core/infobar.h"
@@ -298,11 +299,14 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
   AccountInfo account_info;
   // AccountInfo data should be passed down only if the following conditions are
   // satisfied:
-  // 1) Sync is off or the
+  // 1) kAutofillEnableSaveCardInfoBarAccountIndicationFooter is on (main flag).
+  // 2) Sync is off or the
   //   kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers flag is on.
-  // 2) User has multiple accounts or the
+  // 3) User has multiple accounts or the
   //   kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers is on.
-  if ((sync_disabled_wallet_transport_enabled ||
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardInfoBarAccountIndicationFooter) &&
+      (sync_disabled_wallet_transport_enabled ||
        base::FeatureList::IsEnabled(
            features::
                kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
