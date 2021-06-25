@@ -12,6 +12,7 @@ import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_wp_disable_complete_page.js';
 import './reimaging_firmware_update_page.js';
+import './reimaging_provisioning_page.js';
 import './shimless_rma_shared_css.js';
 import './wrapup_repair_complete_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -112,6 +113,12 @@ const StateComponentMapping = {
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kProvisionDevice]: {
+    componentIs: 'reimaging-provisioning-page',
+    btnNext: ButtonState.VISIBLE,
+    btnCancel: ButtonState.HIDDEN,
+    btnBack: ButtonState.VISIBLE,
   },
   [RmaState.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',

@@ -48,6 +48,7 @@ const debug_suites_list = [
   'OnboardingUpdatePageTest',
   'OnboardingWaitForManualWpDisablePageTest',
   'ReimagingFirmwareUpdatePageTest',
+  'ReimagingProvisioningPageTest',
   'ShimlessRMAAppTest',
   'WrapupRepairCompletePageTest',
 ];

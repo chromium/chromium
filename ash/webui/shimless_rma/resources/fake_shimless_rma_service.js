@@ -38,6 +38,12 @@ export class FakeShimlessRmaService {
      */
     this.automaticallyTriggerDisableWriteProtectionObservation_ = false;
 
+    /**
+     * Control automatically triggering provisioning observations.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerProvisioningObservation_ = false;
+
     this.reset();
   }
 
@@ -449,6 +455,23 @@ export class FakeShimlessRmaService {
               /** @type {!ProvisioningStep} */ (step),
               /** @type {number} */ (progress));
         });
+    if (this.automaticallyTriggerProvisioningObservation_) {
+      // Fake progress over 4 seconds.
+      this.triggerProvisioningObserver(
+          ProvisioningStep.kInProgress, 0.25, 1000);
+      this.triggerProvisioningObserver(ProvisioningStep.kInProgress, 0.5, 2000);
+      this.triggerProvisioningObserver(
+          ProvisioningStep.kInProgress, 0.75, 3000);
+      this.triggerProvisioningObserver(
+          ProvisioningStep.kProvisioningComplete, 1.0, 4000);
+    }
+  }
+
+  /**
+   * Trigger provisioning observations when an observer is added.
+   */
+  automaticallyTriggerProvisioningObservation() {
+    this.automaticallyTriggerProvisioningObservation_ = true;
   }
 
   /**
@@ -468,7 +491,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * Trigger a disable write protection obseration when an observer is added.
+   * Trigger a disable write protection observation when an observer is added.
    */
   automaticallyTriggerDisableWriteProtectionObservation() {
     this.automaticallyTriggerDisableWriteProtectionObservation_ = true;

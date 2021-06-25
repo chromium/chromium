@@ -18,6 +18,7 @@ export const fakeStates = [
   {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
   {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},
+  {state: RmaState.kProvisionDevice, error: RmadErrorCode.kOk},
 ];
 
 /** @type {!Array<string>} */

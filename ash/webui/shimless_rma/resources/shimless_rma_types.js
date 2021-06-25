@@ -81,6 +81,20 @@ export let ProvisioningObserverRemote =
     ash.shimlessRma.mojom.ProvisioningObserverRemote;
 
 /**
+ * Type alias for ProvisioningObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ProvisioningObserverReceiver}
+ */
+export let ProvisioningObserverReceiver =
+    ash.shimlessRma.mojom.ProvisioningObserverReceiver;
+
+/**
+ * Type alias for ProvisioningObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ProvisioningObserverInterface}
+ */
+export let ProvisioningObserverInterface =
+    ash.shimlessRma.mojom.ProvisioningObserverInterface;
+
+/**
  * Type alias for HardwareWriteProtectionStateObserverRemote.
  * @typedef {ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverRemote}
  */

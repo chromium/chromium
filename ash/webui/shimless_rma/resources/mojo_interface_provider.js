@@ -28,6 +28,7 @@ function setupFakeShimlessRmaService_() {
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
   service.automaticallyTriggerDisableWriteProtectionObservation();
+  service.automaticallyTriggerProvisioningObservation();
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

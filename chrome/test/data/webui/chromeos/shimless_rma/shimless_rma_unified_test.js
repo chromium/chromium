@@ -13,6 +13,7 @@ import {onboardingSelectComponentsPageTest} from './onboarding_select_components
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
+import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
 
@@ -40,5 +41,6 @@ runSuite(
     'OnboardingWaitForManualWpDisablePageTest',
     onboardingWaitForManualWpDisablePageTest);
 runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
+runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
