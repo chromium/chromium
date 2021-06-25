@@ -175,8 +175,8 @@ Page* NavigationImpl::GetPage() {
   if (!safe_to_get_page_)
     return nullptr;
 
-  return PageImpl::GetForCurrentDocument(
-      navigation_handle_->GetRenderFrameHost());
+  return PageImpl::GetForPage(
+      navigation_handle_->GetRenderFrameHost()->GetPage());
 }
 
 int NavigationImpl::GetNavigationEntryOffset() {

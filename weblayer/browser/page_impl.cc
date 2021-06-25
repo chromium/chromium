@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/page_impl.h"
 
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/tab_impl.h"
@@ -18,12 +19,14 @@ using base::android::ScopedJavaLocalRef;
 #endif
 
 namespace weblayer {
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PageImpl)
+PAGE_USER_DATA_KEY_IMPL(PageImpl)
 
-PageImpl::PageImpl(content::RenderFrameHost* rfh) : rfh_(rfh) {}
+PageImpl::PageImpl(content::Page& page)
+    : content::PageUserData<PageImpl>(page) {}
 
 PageImpl::~PageImpl() {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh_);
+  auto* rfh = &(page().GetMainDocument());
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   auto* tab = TabImpl::FromWebContents(web_contents);
   if (tab) {
     auto* navigation_controller =

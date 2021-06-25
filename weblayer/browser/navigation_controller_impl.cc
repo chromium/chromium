@@ -497,7 +497,7 @@ void NavigationControllerImpl::DidFinishNavigation(
 
     auto* rfh = navigation_handle->GetRenderFrameHost();
     if (rfh)
-      PageImpl::GetOrCreateForCurrentDocument(rfh);
+      PageImpl::GetOrCreateForPage(rfh->GetPage());
   }
 
   if (navigation_handle->GetNetErrorCode() == net::OK &&

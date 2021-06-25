@@ -261,6 +261,7 @@ source_set("browser_sources") {
     "page.h",
     "page_navigator.cc",
     "page_navigator.h",
+    "page_user_data.h",
     "payment_app_provider.h",
     "payment_app_provider_util.h",
     "peak_gpu_memory_tracker.h",

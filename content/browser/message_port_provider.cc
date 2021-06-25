@@ -46,7 +46,8 @@ void PostMessageToFrameInternal(
   message.encoded_message = message.owned_encoded_message;
   message.ports = std::move(channels);
 
-  RenderFrameHostImpl* rfh = static_cast<PageImpl*>(&page)->main_document();
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(&page.GetMainDocument());
   rfh->PostMessageEvent(absl::nullopt, source_origin, target_origin,
                         std::move(message));
 }

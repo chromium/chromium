@@ -6,7 +6,9 @@
 #define CONTENT_PUBLIC_BROWSER_PAGE_H_
 
 #include "base/callback.h"
+#include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -53,9 +55,9 @@ namespace content {
 // part of a given content::Page in a given renderer process (note, however,
 // that like RenderFrameHosts, these objects at the moment can be reused for a
 // new content::Page for a cross-document same-site main-frame navigation).
-class CONTENT_EXPORT Page {
+class CONTENT_EXPORT Page : public base::SupportsUserData {
  public:
-  virtual ~Page() {}
+  ~Page() override = default;
 
   // The GURL for the page's web application manifest.
   // See https://w3c.github.io/manifest/#web-application-manifest
@@ -77,10 +79,21 @@ class CONTENT_EXPORT Page {
   // details.
   virtual bool IsPrimary() = 0;
 
+  // Returns the main RenderFrameHost associated with this Page.
+  RenderFrameHost& GetMainDocument() { return GetMainDocumentHelper(); }
+
  private:
+  // This method is needed to ensure that PageImpl can both implement a Page's
+  // method and define a new GetMainDocument() returning RenderFrameHostImpl.
+  // Covariant types can't be used here due to circular includes as
+  // RenderFrameHost::GetPage and RenderFrameHostImpl::GetPage already return
+  // Page& and PageImpl& respectively, which means that page_impl.h can't
+  // include render_frame_host_impl.h.
+  virtual RenderFrameHost& GetMainDocumentHelper() = 0;
+
   // This interface should only be implemented inside content.
   friend class PageImpl;
-  Page() {}
+  Page() = default;
 };
 
 }  // namespace content

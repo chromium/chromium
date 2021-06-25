@@ -37,7 +37,7 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void UpdateManifestUrl(const GURL& manifest_url);
 
-  RenderFrameHostImpl* main_document() const { return &main_document_; }
+  RenderFrameHostImpl& GetMainDocument() const;
 
   bool is_on_load_completed() const { return is_on_load_completed_; }
   void set_is_on_load_completed(bool completed) {
@@ -63,6 +63,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
 
  private:
+  // This method is needed to ensure that PageImpl can both implement a Page's
+  // method and define a new GetMainDocument(). Please refer to page.h for more
+  // details.
+  RenderFrameHost& GetMainDocumentHelper() override;
+
   // True if we've received a notification that the onload() handler has
   // run for main frame document.
   bool is_on_load_completed_ = false;

@@ -6,7 +6,7 @@
 #define WEBLAYER_BROWSER_PAGE_IMPL_H_
 
 #include "build/build_config.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/page_user_data.h"
 #include "weblayer/public/page.h"
 
 #if defined(OS_ANDROID)
@@ -15,8 +15,7 @@
 
 namespace weblayer {
 
-class PageImpl : public Page,
-                 public content::RenderDocumentHostUserData<PageImpl> {
+class PageImpl : public Page, public content::PageUserData<PageImpl> {
  public:
   ~PageImpl() override;
 
@@ -28,11 +27,9 @@ class PageImpl : public Page,
 #endif
 
  private:
-  explicit PageImpl(content::RenderFrameHost* rfh);
-  friend class content::RenderDocumentHostUserData<PageImpl>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-
-  content::RenderFrameHost* rfh_;
+  explicit PageImpl(content::Page& page);
+  friend class content::PageUserData<PageImpl>;
+  PAGE_USER_DATA_KEY_DECL();
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_page_;

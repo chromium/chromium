@@ -12,7 +12,14 @@
 namespace content {
 PageImpl::PageImpl(RenderFrameHostImpl& rfh) : main_document_(rfh) {}
 
-PageImpl::~PageImpl() = default;
+PageImpl::~PageImpl() {
+  // As SupportsUserData is a base class of PageImpl, Page members will be
+  // destroyed before running ~SupportsUserData, which would delete the
+  // associated PageUserData objects. Avoid this by calling ClearAllUserData
+  // explicitly here to ensure that the PageUserData destructors can access
+  // associated Page object.
+  ClearAllUserData();
+}
 
 const absl::optional<GURL>& PageImpl::GetManifestUrl() const {
   return manifest_url_;
@@ -41,6 +48,14 @@ void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {
     return;
 
   main_document_.delegate()->OnManifestUrlChanged(*this);
+}
+
+RenderFrameHost& PageImpl::GetMainDocumentHelper() {
+  return main_document_;
+}
+
+RenderFrameHostImpl& PageImpl::GetMainDocument() const {
+  return main_document_;
 }
 
 }  // namespace content

@@ -1715,10 +1715,10 @@ void WebContentsImpl::OnManifestUrlChanged(const PageImpl& page) {
     return;
 
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyManifestUrlChanged",
-                        "render_frame_host", page.main_document(),
+                        "render_frame_host", &page.GetMainDocument(),
                         "manifest_url", manifest_url);
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateWebManifestURL,
-                             page.main_document(), *manifest_url);
+                             &page.GetMainDocument(), *manifest_url);
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
