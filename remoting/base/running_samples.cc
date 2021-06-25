@@ -16,11 +16,11 @@ RunningSamples::RunningSamples(int window_size)
 }
 
 RunningSamples::~RunningSamples() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void RunningSamples::Record(int64_t value) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   data_points_.push_back(value);
   sum_ += value;
@@ -32,7 +32,7 @@ void RunningSamples::Record(int64_t value) {
 }
 
 double RunningSamples::Average() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data_points_.empty())
     return 0;
@@ -40,7 +40,7 @@ double RunningSamples::Average() const {
 }
 
 int64_t RunningSamples::Max() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data_points_.empty())
     return 0;
@@ -49,6 +49,8 @@ int64_t RunningSamples::Max() const {
 }
 
 bool RunningSamples::IsEmpty() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return data_points_.empty();
 }
 
