@@ -131,7 +131,6 @@ source_set("unit_tests") {
     "base/protobuf_unittest.cc",
     "base/sync_prefs_unittest.cc",
     "base/sync_util_unittest.cc",
-    "base/system_encryptor_unittest.cc",
     "base/unique_position_unittest.cc",
     "base/weak_handle_unittest.cc",
     "driver/backend_migrator_unittest.cc",

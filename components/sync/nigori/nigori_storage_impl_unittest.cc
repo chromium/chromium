@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "components/sync/base/fake_encryptor.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -26,9 +26,12 @@ class NigoriStorageImplTest : public testing::Test {
   NigoriStorageImplTest() = default;
   ~NigoriStorageImplTest() override = default;
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    OSCryptMocker::SetUp();
+  }
 
-  const Encryptor* encryptor() { return &encryptor_; }
+  void TearDown() override { OSCryptMocker::TearDown(); }
 
   base::FilePath GetFilePath() {
     return temp_dir_.GetPath().Append(
@@ -36,18 +39,17 @@ class NigoriStorageImplTest : public testing::Test {
   }
 
  private:
-  FakeEncryptor encryptor_;
   base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(NigoriStorageImplTest, ShouldBeAbleToRestoreAfterWrite) {
-  NigoriStorageImpl writer_storage(GetFilePath(), encryptor());
+  NigoriStorageImpl writer_storage(GetFilePath());
   sync_pb::NigoriLocalData write_data = MakeSomeNigoriLocalData();
   writer_storage.StoreData(write_data);
 
   // Use different NigoriStorageImpl when reading to avoid dependency on its
   // state and emulate browser restart.
-  NigoriStorageImpl reader_storage(GetFilePath(), encryptor());
+  NigoriStorageImpl reader_storage(GetFilePath());
   absl::optional<sync_pb::NigoriLocalData> read_data =
       reader_storage.RestoreData();
   EXPECT_NE(read_data, absl::nullopt);
@@ -55,12 +57,12 @@ TEST_F(NigoriStorageImplTest, ShouldBeAbleToRestoreAfterWrite) {
 }
 
 TEST_F(NigoriStorageImplTest, ShouldReturnNulloptWhenFileNotExists) {
-  NigoriStorageImpl storage(GetFilePath(), encryptor());
+  NigoriStorageImpl storage(GetFilePath());
   EXPECT_EQ(storage.RestoreData(), absl::nullopt);
 }
 
 TEST_F(NigoriStorageImplTest, ShouldRemoveFile) {
-  NigoriStorageImpl storage(GetFilePath(), encryptor());
+  NigoriStorageImpl storage(GetFilePath());
   sync_pb::NigoriLocalData data = MakeSomeNigoriLocalData();
   storage.StoreData(data);
   ASSERT_TRUE(base::PathExists(GetFilePath()));

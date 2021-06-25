@@ -11,12 +11,10 @@
 
 namespace syncer {
 
-class Encryptor;
-
 class NigoriStorageImpl : public NigoriStorage {
  public:
   // |encryptor| must be not null and must outlive this object.
-  NigoriStorageImpl(const base::FilePath& path, const Encryptor* encryptor);
+  explicit NigoriStorageImpl(const base::FilePath& path);
   ~NigoriStorageImpl() override;
 
   // NigoriStorage implementation.
@@ -27,7 +25,6 @@ class NigoriStorageImpl : public NigoriStorage {
 
  private:
   base::FilePath path_;
-  const Encryptor* const encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(NigoriStorageImpl);

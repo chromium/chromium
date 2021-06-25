@@ -9,15 +9,12 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "components/sync/base/encryptor.h"
+#include "components/os_crypt/os_crypt.h"
 
 namespace syncer {
 
-NigoriStorageImpl::NigoriStorageImpl(const base::FilePath& path,
-                                     const Encryptor* encryptor)
-    : path_(path), encryptor_(encryptor) {
-  DCHECK(encryptor_);
-}
+NigoriStorageImpl::NigoriStorageImpl(const base::FilePath& path)
+    : path_(path) {}
 
 NigoriStorageImpl::~NigoriStorageImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -33,7 +30,7 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   }
 
   std::string encrypted_data;
-  if (!encryptor_->EncryptString(serialized_data, &encrypted_data)) {
+  if (!OSCrypt::EncryptString(serialized_data, &encrypted_data)) {
     DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
     return;
   }
@@ -56,7 +53,7 @@ absl::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   }
 
   std::string serialized_data;
-  if (!encryptor_->DecryptString(encrypted_data, &serialized_data)) {
+  if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
     DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
     return absl::nullopt;
   }

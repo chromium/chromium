@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "components/sync/base/encryptor.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
@@ -240,8 +240,7 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
 
 // Packs explicit passphrase key in order to persist it. Returns empty string in
 // case of errors.
-std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
-                                      const CryptographerImpl& cryptographer) {
+std::string PackExplicitPassphraseKey(const CryptographerImpl& cryptographer) {
   DCHECK(cryptographer.CanEncrypt());
 
   // Explicit passphrase key should always be default one.
@@ -254,7 +253,7 @@ std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
   }
 
   std::string encrypted_key;
-  if (!encryptor.EncryptString(serialized_key, &encrypted_key)) {
+  if (!OSCrypt::EncryptString(serialized_key, &encrypted_key)) {
     DLOG(ERROR) << "Failed to encrypt explicit passphrase key.";
     return std::string();
   }
@@ -267,8 +266,7 @@ std::string PackExplicitPassphraseKey(const Encryptor& encryptor,
 // Unpacks explicit passphrase keys. Returns a populated sync_pb::NigoriKey if
 // successful, or an empty instance (i.e. default value) if |packed_key| is
 // empty or decoding/decryption errors occur.
-sync_pb::NigoriKey UnpackExplicitPassphraseKey(const Encryptor& encryptor,
-                                               const std::string& packed_key) {
+sync_pb::NigoriKey UnpackExplicitPassphraseKey(const std::string& packed_key) {
   if (packed_key.empty()) {
     return sync_pb::NigoriKey();
   }
@@ -280,7 +278,7 @@ sync_pb::NigoriKey UnpackExplicitPassphraseKey(const Encryptor& encryptor,
   }
 
   std::string decrypted_key;
-  if (!encryptor.DecryptString(decoded_key, &decrypted_key)) {
+  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
     DLOG(ERROR) << "Failed to decrypt expliciti passphrase key.";
     return sync_pb::NigoriKey();
   }
@@ -292,8 +290,7 @@ sync_pb::NigoriKey UnpackExplicitPassphraseKey(const Encryptor& encryptor,
 
 // Returns Base64 encoded keystore keys or empty vector if errors occur.
 std::vector<std::string> UnpackKeystoreKeys(
-    const std::string& packed_keystore_keys,
-    const Encryptor& encryptor) {
+    const std::string& packed_keystore_keys) {
   DCHECK(!packed_keystore_keys.empty());
 
   std::string base64_decoded_packed_keys;
@@ -301,8 +298,8 @@ std::vector<std::string> UnpackKeystoreKeys(
     return std::vector<std::string>();
   }
   std::string decrypted_packed_keys;
-  if (!encryptor.DecryptString(base64_decoded_packed_keys,
-                               &decrypted_packed_keys)) {
+  if (!OSCrypt::DecryptString(base64_decoded_packed_keys,
+                              &decrypted_packed_keys)) {
     return std::vector<std::string>();
   }
 
@@ -415,25 +412,20 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     std::unique_ptr<NigoriLocalChangeProcessor> processor,
     std::unique_ptr<NigoriStorage> storage,
-    const Encryptor* encryptor,
     const base::RepeatingCallback<std::string()>& random_salt_generator,
     const std::string& packed_explicit_passphrase_key,
     const std::string& packed_keystore_keys)
-    : encryptor_(encryptor),
-      processor_(std::move(processor)),
+    : processor_(std::move(processor)),
       storage_(std::move(storage)),
       random_salt_generator_(random_salt_generator),
       explicit_passphrase_key_(
-          UnpackExplicitPassphraseKey(*encryptor,
-                                      packed_explicit_passphrase_key)),
+          UnpackExplicitPassphraseKey(packed_explicit_passphrase_key)),
       broadcasting_observer_(std::make_unique<BroadcastingObserver>(
           // base::Unretained() legit because the observer gets destroyed
           // together with |this|.
           base::BindRepeating(
               &NigoriSyncBridgeImpl::MaybeNotifyBootstrapTokenUpdated,
               base::Unretained(this)))) {
-  DCHECK(encryptor);
-
   // TODO(crbug.com/922900): we currently don't verify |deserialized_data|.
   // It's quite unlikely we get a corrupted data, since it was successfully
   // deserialized and decrypted. But we may want to consider some
@@ -1066,9 +1058,8 @@ NigoriSyncBridgeImpl::GetCustomPassphraseKeyDerivationParamsForTesting() const {
 }
 
 std::string NigoriSyncBridgeImpl::PackExplicitPassphraseKeyForTesting(
-    const Encryptor& encryptor,
     const CryptographerImpl& cryptographer) {
-  return PackExplicitPassphraseKey(encryptor, cryptographer);
+  return PackExplicitPassphraseKey(cryptographer);
 }
 
 base::Time NigoriSyncBridgeImpl::GetExplicitPassphraseTime() const {
@@ -1147,7 +1138,7 @@ void NigoriSyncBridgeImpl::MaybeNotifyBootstrapTokenUpdated() const {
       // |packed_custom_passphrase_key| will be empty in case serialization or
       // encryption error occurs.
       std::string packed_custom_passphrase_key =
-          PackExplicitPassphraseKey(*encryptor_, *state_.cryptographer);
+          PackExplicitPassphraseKey(*state_.cryptographer);
       if (!packed_custom_passphrase_key.empty()) {
         broadcasting_observer_->OnBootstrapTokenUpdated(
             packed_custom_passphrase_key, PASSPHRASE_BOOTSTRAP_TOKEN);
@@ -1186,7 +1177,7 @@ void NigoriSyncBridgeImpl::MaybeMigrateKeystoreKeys(
     return;
   }
   std::vector<std::string> keystore_keys =
-      UnpackKeystoreKeys(packed_keystore_keys, *encryptor_);
+      UnpackKeystoreKeys(packed_keystore_keys);
   if (keystore_keys.empty()) {
     // Error occurred during unpacking.
     return;

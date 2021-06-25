@@ -17,7 +17,6 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
-#include "components/sync/base/system_encryptor.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
@@ -186,9 +185,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Our parent SyncEngineImpl.
   WeakHandle<SyncEngineImpl> host_;
-
-  // Our encryptor, which uses Chrome's encryption functions.
-  SystemEncryptor encryptor_;
 
   // Should outlive |sync_manager_|.
   std::unique_ptr<SyncEncryptionHandler> sync_encryption_handler_;
