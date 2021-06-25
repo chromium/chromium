@@ -54,3 +54,7 @@ bool FileManagerSystemAppDelegate::ShouldBeSingleWindow() const {
 bool FileManagerSystemAppDelegate::IsAppEnabled() const {
   return ash::features::IsFileManagerSwaEnabled();
 }
+
+bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return true;
+}
