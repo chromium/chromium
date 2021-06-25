@@ -12,18 +12,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/prefs/browser_prefs.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "remoting/host/it2me/it2me_constants.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -346,42 +337,18 @@ class Response {
 
 }  // namespace
 
-class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
+class CRDHostDelegateTest : public ::testing::Test {
  public:
   CRDHostDelegateTest() = default;
   CRDHostDelegateTest(const CRDHostDelegateTest&) = delete;
   CRDHostDelegateTest& operator=(const CRDHostDelegateTest&) = delete;
   ~CRDHostDelegateTest() override = default;
 
-  void SetUp() override {
-    DeviceSettingsTestBase::SetUp();
-
-    // SystemSaltGetter is used by the token service.
-    chromeos::SystemSaltGetter::Initialize();
-    DeviceOAuth2TokenServiceFactory::Initialize(
-        test_url_loader_factory_.GetSafeWeakWrapper(), &local_state_);
-    RegisterLocalState(local_state_.registry());
-
-    // We can only create the delegate after the
-    // OAuth2TokenServiceFactory has been set up.
-    delegate_ = std::make_unique<CRDHostDelegate>(
-        std::make_unique<NativeMessageHostFactoryStub>(&host_));
-  }
-
-  void TearDown() override {
-    delegate_.reset();
-
-    DeviceOAuth2TokenServiceFactory::Shutdown();
-    chromeos::SystemSaltGetter::Shutdown();
-
-    DeviceSettingsTestBase::TearDown();
-  }
-
   void StartCRDHostAndGetCode(const std::string& auth_token = "auth-token",
                               bool terminate_upon_input = false) {
-    delegate().StartCRDHostAndGetCode(auth_token, terminate_upon_input,
-                                      response_.GetSuccessCallback(),
-                                      response_.GetErrorCallback());
+    delegate().StartCRDHostAndGetCode(
+        auth_token, "robot-account-user-name", terminate_upon_input,
+        response_.GetSuccessCallback(), response_.GetErrorCallback());
   }
 
   // Helper object representing the response, which is either the access code
@@ -390,15 +357,15 @@ class CRDHostDelegateTest : public ash::DeviceSettingsTestBase {
 
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
-  CRDHostDelegate& delegate() { return *delegate_; }
+  CRDHostDelegate& delegate() { return delegate_; }
   NativeMessageHostStub& host() { return host_; }
 
  private:
-  NativeMessageHostStub host_;
-  std::unique_ptr<CRDHostDelegate> delegate_;
+  base::test::SingleThreadTaskEnvironment environment_;
 
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  TestingPrefServiceSimple local_state_;
+  NativeMessageHostStub host_;
+  CRDHostDelegate delegate_{
+      std::make_unique<NativeMessageHostFactoryStub>(&host_)};
 
   Response response_;
 };

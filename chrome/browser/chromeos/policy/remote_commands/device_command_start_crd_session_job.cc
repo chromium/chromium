@@ -10,21 +10,33 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/chromeos/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
 namespace {
+
+// OAuth2 Token scopes
+constexpr char kCloudDevicesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/clouddevices";
+constexpr char kChromotingRemoteSupportOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromoting.remote.support";
+constexpr char kTachyonOAuth2Scope[] =
+    "https://www.googleapis.com/auth/tachyon";
 
 // Job parameters fields:
 
@@ -65,6 +77,68 @@ ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
 
 }  // namespace
 
+// Helper class that asynchronously fetches the OAuth token, and passes it to
+// the given callback.
+class DeviceCommandStartCRDSessionJob::OAuthTokenFetcher
+    : public OAuth2AccessTokenManager::Consumer {
+ public:
+  OAuthTokenFetcher(DeviceOAuth2TokenService& oauth_service,
+                    absl::optional<std::string> oauth_token_for_test,
+                    OAuthTokenCallback success_callback,
+                    ErrorCallback error_callback)
+      : OAuth2AccessTokenManager::Consumer("crd_host_delegate"),
+        oauth_service_(oauth_service),
+        oauth_token_for_test_(std::move(oauth_token_for_test)),
+        success_callback_(std::move(success_callback)),
+        error_callback_(std::move(error_callback)) {}
+  OAuthTokenFetcher(const OAuthTokenFetcher&) = delete;
+  OAuthTokenFetcher& operator=(const OAuthTokenFetcher&) = delete;
+  ~OAuthTokenFetcher() override = default;
+
+  void Start() {
+    CRD_DVLOG(1) << "Fetching OAuth access token";
+
+    if (oauth_token_for_test_) {
+      std::move(success_callback_).Run(oauth_token_for_test_.value());
+      return;
+    }
+
+    OAuth2AccessTokenManager::ScopeSet scopes{
+        GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
+        kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
+    oauth_request_ = oauth_service_.StartAccessTokenRequest(scopes, this);
+  }
+
+  bool is_running() const { return oauth_request_ != nullptr; }
+
+ private:
+  // OAuth2AccessTokenManager::Consumer implementation:
+  void OnGetTokenSuccess(
+      const OAuth2AccessTokenManager::Request* request,
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
+    CRD_DVLOG(1) << "Received OAuth access token";
+    oauth_request_.reset();
+    std::move(success_callback_).Run(token_response.access_token);
+  }
+
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
+                         const GoogleServiceAuthError& error) override {
+    CRD_DVLOG(1) << "Failed to get OAuth access token: " << error.ToString();
+    oauth_request_.reset();
+    std::move(error_callback_)
+        .Run(DeviceCommandStartCRDSessionJob::FAILURE_NO_OAUTH_TOKEN,
+             error.ToString());
+  }
+
+  DeviceOAuth2TokenService& oauth_service_;
+  absl::optional<std::string> oauth_token_for_test_;
+  DeviceCommandStartCRDSessionJob::OAuthTokenCallback success_callback_;
+  DeviceCommandStartCRDSessionJob::ErrorCallback error_callback_;
+  // Handler for the OAuth access token request.
+  // When deleted the token manager will cancel the request (and not call us).
+  std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
+};
+
 class DeviceCommandStartCRDSessionJob::ResultPayload
     : public RemoteCommandJob::ResultPayload {
  public:
@@ -72,7 +146,7 @@ class DeviceCommandStartCRDSessionJob::ResultPayload
                 const absl::optional<std::string>& access_code,
                 const absl::optional<base::TimeDelta>& time_delta,
                 const absl::optional<std::string>& error_message);
-  ~ResultPayload() override {}
+  ~ResultPayload() override = default;
 
   static std::unique_ptr<ResultPayload> CreateSuccessPayload(
       const std::string& access_code);
@@ -143,11 +217,16 @@ DeviceCommandStartCRDSessionJob::DeviceCommandStartCRDSessionJob(
     Delegate* crd_host_delegate)
     : delegate_(crd_host_delegate), terminate_session_attemtpted_(false) {}
 
-DeviceCommandStartCRDSessionJob::~DeviceCommandStartCRDSessionJob() {}
+DeviceCommandStartCRDSessionJob::~DeviceCommandStartCRDSessionJob() = default;
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandStartCRDSessionJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION;
+}
+
+void DeviceCommandStartCRDSessionJob::SetOAuthTokenForTest(
+    const std::string& token) {
+  oauth_token_for_test_ = token;
 }
 
 bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
@@ -181,7 +260,7 @@ bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
 bool DeviceCommandStartCRDSessionJob::AreServicesReady() const {
   return user_manager::UserManager::IsInitialized() &&
          ui::UserActivityDetector::Get() != nullptr &&
-         delegate_->AreServicesReady();
+         oauth_service() != nullptr;
 }
 
 bool DeviceCommandStartCRDSessionJob::IsRunningAutoLaunchedKiosk() const {
@@ -202,6 +281,18 @@ base::TimeDelta DeviceCommandStartCRDSessionJob::GetDeviceIdlenessPeriod()
     const {
   return base::TimeTicks::Now() -
          ui::UserActivityDetector::Get()->last_activity_time();
+}
+
+void DeviceCommandStartCRDSessionJob::FetchOAuthTokenASync(
+    OAuthTokenCallback on_success,
+    ErrorCallback on_error) {
+  DCHECK(!oauth_token_fetcher_ || !oauth_token_fetcher_->is_running());
+  DCHECK(oauth_service());
+
+  oauth_token_fetcher_ = std::make_unique<OAuthTokenFetcher>(
+      *oauth_service(), std::move(oauth_token_for_test_), std::move(on_success),
+      std::move(on_error));
+  oauth_token_fetcher_->Start();
 }
 
 void DeviceCommandStartCRDSessionJob::FinishWithError(
@@ -256,18 +347,19 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
     return;
   }
 
-  delegate_->FetchOAuthToken(
-      base::BindOnce(&DeviceCommandStartCRDSessionJob::OnOAuthTokenReceived,
-                     weak_factory_.GetWeakPtr()),
-      base::BindOnce(&DeviceCommandStartCRDSessionJob::FinishWithError,
-                     weak_factory_.GetWeakPtr()));
+  FetchOAuthTokenASync(
+      /*on_success=*/base::BindOnce(
+          &DeviceCommandStartCRDSessionJob::OnOAuthTokenReceived,
+          weak_factory_.GetWeakPtr()),
+      /*on_error=*/base::BindOnce(
+          &DeviceCommandStartCRDSessionJob::FinishWithError,
+          weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCommandStartCRDSessionJob::OnOAuthTokenReceived(
     const std::string& token) {
-  oauth_token_ = token;
   delegate_->StartCRDHostAndGetCode(
-      oauth_token_, terminate_upon_input_,
+      token, GetRobotAccountUserName(), terminate_upon_input_,
       base::BindOnce(&DeviceCommandStartCRDSessionJob::OnAccessCodeReceived,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&DeviceCommandStartCRDSessionJob::FinishWithError,
@@ -282,6 +374,19 @@ void DeviceCommandStartCRDSessionJob::OnAccessCodeReceived(
       FROM_HERE,
       base::BindOnce(std::move(succeeded_callback_),
                      ResultPayload::CreateSuccessPayload(access_code)));
+}
+
+std::string DeviceCommandStartCRDSessionJob::GetRobotAccountUserName() const {
+  CoreAccountId account_id = oauth_service()->GetRobotAccountId();
+
+  // TODO(msarda): This conversion will not be correct once account id is
+  // migrated to be the Gaia ID on ChromeOS. Fix it.
+  return account_id.ToString();
+}
+
+DeviceOAuth2TokenService* DeviceCommandStartCRDSessionJob::oauth_service()
+    const {
+  return DeviceOAuth2TokenServiceFactory::Get();
 }
 
 void DeviceCommandStartCRDSessionJob::TerminateImpl() {
