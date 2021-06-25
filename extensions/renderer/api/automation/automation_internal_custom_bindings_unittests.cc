@@ -137,7 +137,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetFocusOneTree) {
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
   EXPECT_EQ(desktop, focused_wrapper);
-  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->GetRole());
 
   // Push an update where we change the focus.
   focused_wrapper = nullptr;
@@ -148,7 +148,7 @@ TEST_F(AutomationInternalCustomBindingsTest, GetFocusOneTree) {
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
   EXPECT_EQ(desktop, focused_wrapper);
-  EXPECT_EQ(ax::mojom::Role::kDesktop, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kDesktop, focused_node->GetRole());
 
   // Push an update where we change the focus to nothing.
   focused_wrapper = nullptr;
@@ -221,7 +221,7 @@ TEST_F(AutomationInternalCustomBindingsTest,
   ASSERT_TRUE(focused_node);
   EXPECT_EQ(wrapper_1, focused_wrapper);
   EXPECT_EQ(tree_1_id, focused_node->tree()->GetAXTreeID());
-  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->GetRole());
 
   // Push an update where we change the focus.
   focused_wrapper = nullptr;
@@ -235,7 +235,7 @@ TEST_F(AutomationInternalCustomBindingsTest,
   ASSERT_TRUE(focused_node);
   EXPECT_EQ(wrapper_2, focused_wrapper);
   EXPECT_EQ(tree_2_id, focused_node->tree()->GetAXTreeID());
-  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->GetRole());
 }
 
 TEST_F(AutomationInternalCustomBindingsTest,
@@ -315,7 +315,7 @@ TEST_F(AutomationInternalCustomBindingsTest,
 
   // This is an interesting inconsistency as this node is technically not in the
   // app (which starts at the link in wrapper 1).
-  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->GetRole());
 
   // Push an update where we change the focus.
   focused_wrapper = nullptr;
@@ -329,7 +329,7 @@ TEST_F(AutomationInternalCustomBindingsTest,
   ASSERT_TRUE(focused_node);
   EXPECT_EQ(wrapper_2, focused_wrapper);
   EXPECT_EQ(tree_2_id, focused_node->tree()->GetAXTreeID());
-  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kButton, focused_node->GetRole());
 }
 
 TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {

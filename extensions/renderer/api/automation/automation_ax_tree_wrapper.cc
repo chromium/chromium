@@ -184,15 +184,15 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
 }
 
 bool AutomationAXTreeWrapper::IsDesktopTree() const {
-  return tree_.root() ? tree_.root()->data().role == ax::mojom::Role::kDesktop
+  return tree_.root() ? tree_.root()->GetRole() == ax::mojom::Role::kDesktop
                       : false;
 }
 
 bool AutomationAXTreeWrapper::HasDeviceScaleFactor() const {
   return tree_.root() ?
                       // These are views-backed trees.
-             tree_.root()->data().role != ax::mojom::Role::kDesktop &&
-                 tree_.root()->data().role != ax::mojom::Role::kClient
+             tree_.root()->GetRole() != ax::mojom::Role::kDesktop &&
+                 tree_.root()->GetRole() != ax::mojom::Role::kClient
                       : true;
 }
 
@@ -427,15 +427,15 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
   deleted_node_ids_.push_back(node->id());
   node_id_to_events_.erase(node->id());
 
-  if (node->data().HasStringAttribute(
+  if (node->HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
-    GetAppIDToChildTreeNodeMap().erase(node->data().GetStringAttribute(
+    GetAppIDToChildTreeNodeMap().erase(node->GetStringAttribute(
         ax::mojom::StringAttribute::kChildTreeNodeAppId));
   }
 
-  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     const std::string& app_id =
-        node->data().GetStringAttribute(ax::mojom::StringAttribute::kAppId);
+        node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
     GetAppIDToParentTreeNodeMap().erase(app_id);
     all_parent_tree_node_app_ids_.erase(app_id);
   }
@@ -443,16 +443,16 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
 
 void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
                                             ui::AXNode* node) {
-  if (node->data().HasStringAttribute(
+  if (node->HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
-    GetAppIDToChildTreeNodeMap()[node->data().GetStringAttribute(
+    GetAppIDToChildTreeNodeMap()[node->GetStringAttribute(
         ax::mojom::StringAttribute::kChildTreeNodeAppId)] = {
         node->tree()->GetAXTreeID(), node->id()};
   }
 
-  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     const std::string& app_id =
-        node->data().GetStringAttribute(ax::mojom::StringAttribute::kAppId);
+        node->GetStringAttribute(ax::mojom::StringAttribute::kAppId);
     GetAppIDToParentTreeNodeMap()[app_id] = {node->tree()->GetAXTreeID(),
                                              node->id()};
     all_parent_tree_node_app_ids_.insert(app_id);
