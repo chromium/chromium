@@ -28,7 +28,7 @@ is executed, giving insight into where test failures are occurring.
 
 ### Test Input Files
 
-Test files live in //chrome/browser/test/data/web_apps/:
+Test files live in //chrome/test/data/web_apps/:
  * web_app_integration_browsertest_cases.csv
  * web_app_integration_browsertest_cases_sync.csv
  * TestExpectations
