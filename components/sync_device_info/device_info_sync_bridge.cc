@@ -283,6 +283,33 @@ absl::optional<ModelError> ParseSpecificsOnBackendSequence(
   return absl::nullopt;
 }
 
+// Returns true if |stored| is similar enough to |current| that |current|
+// needn't be uploaded.
+bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
+                                   const DeviceInfo* current) {
+  return current->guid() == stored->guid() &&
+         current->client_name() == stored->client_name() &&
+         current->chrome_version() == stored->chrome_version() &&
+         current->sync_user_agent() == stored->sync_user_agent() &&
+         current->device_type() == stored->device_type() &&
+         current->signin_scoped_device_id() ==
+             stored->signin_scoped_device_id() &&
+         current->manufacturer_name() == stored->manufacturer_name() &&
+         current->model_name() == stored->model_name() &&
+         current->full_hardware_class() == stored->full_hardware_class() &&
+         current->send_tab_to_self_receiving_enabled() ==
+             stored->send_tab_to_self_receiving_enabled() &&
+         current->sharing_info() == stored->sharing_info() &&
+         current->paask_info().has_value() ==
+             stored->paask_info().has_value() &&
+         (!current->paask_info().has_value() ||
+          current->paask_info()->NonRotatingFieldsEqual(
+              stored->paask_info().value())) &&
+         current->fcm_registration_token() ==
+             stored->fcm_registration_token() &&
+         current->interested_data_types() == stored->interested_data_types();
+}
+
 }  // namespace
 
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
@@ -718,8 +745,9 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   auto iter = all_data_.find(current_info->guid());
   DCHECK(iter != all_data_.end());
 
-  // Convert to DeviceInfo for Equals function.
-  if (current_info->Equals(*SpecificsToModel(*iter->second))) {
+  // Convert |iter->second| to a DeviceInfo for comparison.
+  if (StoredDeviceInfoStillAccurate(SpecificsToModel(*iter->second).get(),
+                                    current_info)) {
     if (pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
       return false;

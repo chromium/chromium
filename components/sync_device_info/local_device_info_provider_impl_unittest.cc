@@ -293,7 +293,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
   EXPECT_EQ(local_device_info->interested_data_types(), kInterestedDataTypes);
   EXPECT_EQ(local_device_info->fcm_registration_token(), kFCMRegistrationToken);
-  EXPECT_EQ(local_device_info->paask_info(), paask_info);
+  EXPECT_TRUE(
+      local_device_info->paask_info()->NonRotatingFieldsEqual(paask_info));
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, PhoneAsASecurityKeyInfo) {

@@ -55,12 +55,14 @@ DeviceInfo::PhoneAsASecurityKeyInfo::operator=(
     const DeviceInfo::PhoneAsASecurityKeyInfo& other) = default;
 DeviceInfo::PhoneAsASecurityKeyInfo::~PhoneAsASecurityKeyInfo() = default;
 
-bool DeviceInfo::PhoneAsASecurityKeyInfo::operator==(
+bool DeviceInfo::PhoneAsASecurityKeyInfo::NonRotatingFieldsEqual(
     const PhoneAsASecurityKeyInfo& other) const {
-  // This can just be a default function once C++20 is available.
+  // secret and id are deliberately not tested. This is because their values are
+  // based on the current time, but they should not cause an upload of the
+  // local device's DeviceInfo.
   return tunnel_server_domain == other.tunnel_server_domain &&
-         contact_id == other.contact_id && secret == other.secret &&
-         id == other.id && peer_public_key_x962 == other.peer_public_key_x962;
+         contact_id == other.contact_id &&
+         peer_public_key_x962 == other.peer_public_key_x962;
 }
 
 DeviceInfo::DeviceInfo(
@@ -205,24 +207,6 @@ const std::string& DeviceInfo::fcm_registration_token() const {
 
 const ModelTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
-}
-
-bool DeviceInfo::Equals(const DeviceInfo& other) const {
-  return this->guid() == other.guid() &&
-         this->client_name() == other.client_name() &&
-         this->chrome_version() == other.chrome_version() &&
-         this->sync_user_agent() == other.sync_user_agent() &&
-         this->device_type() == other.device_type() &&
-         this->signin_scoped_device_id() == other.signin_scoped_device_id() &&
-         this->manufacturer_name() == other.manufacturer_name() &&
-         this->model_name() == other.model_name() &&
-         this->full_hardware_class() == other.full_hardware_class() &&
-         this->send_tab_to_self_receiving_enabled() ==
-             other.send_tab_to_self_receiving_enabled() &&
-         this->sharing_info() == other.sharing_info() &&
-         this->paask_info() == other.paask_info() &&
-         this->fcm_registration_token() == other.fcm_registration_token() &&
-         this->interested_data_types() == other.interested_data_types();
 }
 
 std::unique_ptr<base::DictionaryValue> DeviceInfo::ToValue() const {

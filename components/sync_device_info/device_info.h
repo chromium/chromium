@@ -75,7 +75,10 @@ class DeviceInfo {
     PhoneAsASecurityKeyInfo& operator=(const PhoneAsASecurityKeyInfo& other);
     ~PhoneAsASecurityKeyInfo();
 
-    bool operator==(const PhoneAsASecurityKeyInfo& other) const;
+    // NonRotatingFieldsEqual returns true if this object is equal to |other|,
+    // ignoring the |id| and |secret| fields, which update based on the current
+    // time.
+    bool NonRotatingFieldsEqual(const PhoneAsASecurityKeyInfo& other) const;
 
     // The domain of the tunnel service. See
     // |device::cablev2::tunnelserver::DecodeDomain| to decode this value.
@@ -177,9 +180,6 @@ class DeviceInfo {
   // Gets the device type in string form.
   std::string GetDeviceTypeString() const;
 
-  // Compares this object's fields with another's.
-  bool Equals(const DeviceInfo& other) const;
-
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
   // would lead to a stable unique id for a device which can potentially
@@ -244,6 +244,10 @@ class DeviceInfo {
 
   // Data types for which this device receives invalidations.
   ModelTypeSet interested_data_types_;
+
+  // NOTE: when adding a member, don't forget to update
+  // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else
+  // changes in that member might not trigger uploads of updated DeviceInfos.
 
   DISALLOW_COPY_AND_ASSIGN(DeviceInfo);
 };

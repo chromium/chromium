@@ -391,18 +391,17 @@ namespace sync {
 uint32_t IDNow() {
   const base::Time now = base::Time::Now();
   time_t utc_time = now.ToTimeT();
-  // The IDs, and thus Sync secret rotation, have a period of two days. Reducing
-  // this increases the bandwidth of the Sync service so check with the Sync
-  // server team first.
-  utc_time /= (86400 * 2);
-  // A uint32_t can span about 23 million years.
+  // The IDs, and thus Sync secret rotation, have a period of one day. These
+  // are lazily updated by the phone and don't cause additional Sync uploads.
+  utc_time /= 86400;
+  // A uint32_t can span about 11 million years.
   return static_cast<uint32_t>(utc_time);
 }
 
 bool IDIsValid(uint32_t candidate) {
   const uint32_t now = IDNow();
-  // Sync secrets are allowed to be, at most, 5 periods (~10 days) old.
-  return candidate <= now && (now - candidate) < 5;
+  // Sync secrets are allowed to be, at most, 10 periods (~10 days) old.
+  return candidate <= now && (now - candidate) < 10;
 }
 
 }  // namespace sync

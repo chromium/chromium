@@ -402,6 +402,10 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
       if (interested_data_types_) {
         local_device_info_->set_interested_data_types(*interested_data_types_);
       }
+      if (paask_info_) {
+        auto copy = *paask_info_;
+        local_device_info_->set_paask_info(std::move(copy));
+      }
     }
     return local_device_info_.get();
   }
@@ -420,10 +424,16 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     interested_data_types_ = data_types;
   }
 
+  void UpdatePhoneAsASecurityKeyInfo(
+      const DeviceInfo::PhoneAsASecurityKeyInfo& paask_info) {
+    paask_info_ = paask_info;
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
   absl::optional<std::string> fcm_registration_token_;
   absl::optional<ModelTypeSet> interested_data_types_;
+  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLocalDeviceInfoProvider);
 };  // namespace
@@ -1319,6 +1329,36 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceInfo) {
       SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
   RefreshLocalDeviceInfo();
   EXPECT_EQ(2, change_count());
+
+  // Setting Phone-as-a-security-key fields should trigger an update.
+  ASSERT_FALSE(local_device()->GetLocalDeviceInfo()->paask_info().has_value());
+  DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
+  paask_info.tunnel_server_domain = 123;
+  paask_info.contact_id = {1, 2, 3, 4};
+  paask_info.secret = {5, 6, 7, 8};
+  paask_info.id = 321;
+  paask_info.peer_public_key_x962 = {10, 11, 12, 13};
+  local_device()->UpdatePhoneAsASecurityKeyInfo(paask_info);
+
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(3, change_count());
+
+  // Rotating the PaaSK key should not trigger an update. These fields depend
+  // on the current time and are only updated when an update would be sent
+  // anyway.
+  paask_info.secret = {9, 10, 11, 12};
+  paask_info.id = 322;
+  local_device()->UpdatePhoneAsASecurityKeyInfo(paask_info);
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(3, change_count());
+
+  // But updating other PaaSK fields does trigger an update.
+  paask_info.tunnel_server_domain = 124;
+  local_device()->UpdatePhoneAsASecurityKeyInfo(paask_info);
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(4, change_count());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, DeviceNameForTransportOnlySyncMode) {
