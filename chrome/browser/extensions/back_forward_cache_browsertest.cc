@@ -311,8 +311,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223240
+#define MAYBE_LoadExtensionFlushCache DISABLED_LoadExtensionFlushCache
+#else
+#define MAYBE_LoadExtensionFlushCache LoadExtensionFlushCache
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       LoadExtensionFlushCache) {
+                       MAYBE_LoadExtensionFlushCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
