@@ -122,6 +122,7 @@ void AV1Decoder::Reset() {
   state_ = std::make_unique<libgav1::DecoderState>();
   ClearReferenceFrames();
   parser_.reset();
+  decrypt_config_.reset();
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
       /*on_frame_buffer_size_changed=*/nullptr,
@@ -147,6 +148,10 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 
   if (current_sequence_header_)
     parser_->set_sequence_header(*current_sequence_header_);
+  if (decoder_buffer.decrypt_config())
+    decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
+  else
+    decrypt_config_.reset();
 }
 
 void AV1Decoder::ClearCurrentFrame() {
@@ -359,7 +364,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       pic->set_colorspace(container_color_space_);
 
     pic->frame_header = frame_header;
-    // TODO(hiroh): Set decrypt config.
+    pic->set_decrypt_config(std::move(decrypt_config_));
     if (!DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers()))
       return kDecodeError;
   }

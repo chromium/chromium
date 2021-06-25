@@ -151,6 +151,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;
   size_t stream_size_ = 0;
+  std::unique_ptr<DecryptConfig> decrypt_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
