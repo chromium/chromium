@@ -407,24 +407,34 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     return absl::nullopt;
   }
 
-  internal::ScopedArCoreObject<ArLightEstimate*> light_estimate;
-  ArLightEstimate_create(
-      session.get(),
-      internal::ScopedArCoreObject<ArLightEstimate*>::Receiver(light_estimate)
-          .get());
-  if (!light_estimate.is_valid()) {
-    DVLOG(1) << "ArLightEstimate_create failed";
-    return absl::nullopt;
+  if (base::Contains(*maybe_enabled_features,
+                     device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+    internal::ScopedArCoreObject<ArLightEstimate*> light_estimate;
+    ArLightEstimate_create(
+        session.get(),
+        internal::ScopedArCoreObject<ArLightEstimate*>::Receiver(light_estimate)
+            .get());
+    if (!light_estimate.is_valid()) {
+      DVLOG(1) << "ArLightEstimate_create failed";
+      return absl::nullopt;
+    }
+    arcore_light_estimate_ = std::move(light_estimate);
   }
 
   // Success, we now have a valid session and a valid frame.
   arcore_frame_ = std::move(frame);
   arcore_session_ = std::move(session);
-  arcore_light_estimate_ = std::move(light_estimate);
-  anchor_manager_ = std::make_unique<ArCoreAnchorManager>(
-      base::PassKey<ArCoreImpl>(), arcore_session_.get());
-  plane_manager_ = std::make_unique<ArCorePlaneManager>(
-      base::PassKey<ArCoreImpl>(), arcore_session_.get());
+
+  if (base::Contains(*maybe_enabled_features,
+                     device::mojom::XRSessionFeature::ANCHORS)) {
+    anchor_manager_ = std::make_unique<ArCoreAnchorManager>(
+        base::PassKey<ArCoreImpl>(), arcore_session_.get());
+  }
+  if (base::Contains(*maybe_enabled_features,
+                     device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+    plane_manager_ = std::make_unique<ArCorePlaneManager>(
+        base::PassKey<ArCoreImpl>(), arcore_session_.get());
+  }
 
   return ArCore::InitializeResult(*maybe_enabled_features,
                                   depth_configuration_);
@@ -969,13 +979,15 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
   auto mojo_from_viewer =
       GetMojomVRPoseFromArPose(arcore_session_.get(), arcore_pose.get());
 
-  TRACE_EVENT_BEGIN0("gpu", "ArCorePlaneManager Update");
-  plane_manager_->Update(arcore_frame_.get());
-  TRACE_EVENT_END0("gpu", "ArCorePlaneManager Update");
+  if (plane_manager_) {
+    TRACE_EVENT0("gpu", "ArCorePlaneManager Update");
+    plane_manager_->Update(arcore_frame_.get());
+  }
 
-  TRACE_EVENT_BEGIN0("gpu", "ArCoreAnchorManager Update");
-  anchor_manager_->Update(arcore_frame_.get());
-  TRACE_EVENT_END0("gpu", "ArCoreAnchorManager Update");
+  if (anchor_manager_) {
+    TRACE_EVENT0("gpu", "ArCoreAnchorManager Update");
+    anchor_manager_->Update(arcore_frame_.get());
+  }
 
   return mojo_from_viewer;
 }
@@ -1077,6 +1089,9 @@ mojom::XRPlaneDetectionDataPtr ArCoreImpl::GetDetectedPlanesData() {
 
   TRACE_EVENT0("gpu", __func__);
 
+  // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
+  DCHECK(plane_manager_);
+
   return plane_manager_->GetDetectedPlanesData();
 }
 
@@ -1085,11 +1100,17 @@ mojom::XRAnchorsDataPtr ArCoreImpl::GetAnchorsData() {
 
   TRACE_EVENT0("gpu", __func__);
 
+  // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
+  DCHECK(anchor_manager_);
+
   return anchor_manager_->GetAnchorsData();
 }
 
 mojom::XRLightEstimationDataPtr ArCoreImpl::GetLightEstimationData() {
   TRACE_EVENT0("gpu", __func__);
+
+  // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
+  DCHECK(arcore_light_estimate_.get());
 
   ArFrame_getLightEstimate(arcore_session_.get(), arcore_frame_.get(),
                            arcore_light_estimate_.get());
@@ -1184,8 +1205,8 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
       // Validate that we know which plane's space the hit test is interested in
       // tracking.
-      if (!plane_manager_->PlaneExists(
-              PlaneId(native_origin_information->get_plane_id()))) {
+      if (!plane_manager_ || !plane_manager_->PlaneExists(PlaneId(
+                                 native_origin_information->get_plane_id()))) {
         return absl::nullopt;
       }
       break;
@@ -1195,7 +1216,8 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
       // Validate that we know which anchor's space the hit test is interested
       // in tracking.
-      if (!anchor_manager_->AnchorExists(
+      if (!anchor_manager_ ||
+          !anchor_manager_->AnchorExists(
               AnchorId(native_origin_information->get_anchor_id()))) {
         return absl::nullopt;
       }
@@ -1421,12 +1443,13 @@ bool ArCoreImpl::NativeOriginExists(
       return true;
 
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
-      return plane_manager_->PlaneExists(
-          PlaneId(native_origin_information.get_plane_id()));
+      return plane_manager_ ? plane_manager_->PlaneExists(PlaneId(
+                                  native_origin_information.get_plane_id()))
+                            : false;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
-
-      return anchor_manager_->AnchorExists(
-          AnchorId(native_origin_information.get_anchor_id()));
+      return anchor_manager_ ? anchor_manager_->AnchorExists(AnchorId(
+                                   native_origin_information.get_anchor_id()))
+                             : false;
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       return false;
   }
@@ -1465,11 +1488,13 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
           native_origin_information.get_reference_space_type(),
           mojo_from_viewer);
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
-      return plane_manager_->GetMojoFromPlane(
-          PlaneId(native_origin_information.get_plane_id()));
+      return plane_manager_ ? plane_manager_->GetMojoFromPlane(PlaneId(
+                                  native_origin_information.get_plane_id()))
+                            : absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
-      return anchor_manager_->GetMojoFromAnchor(
-          AnchorId(native_origin_information.get_anchor_id()));
+      return anchor_manager_ ? anchor_manager_->GetMojoFromAnchor(AnchorId(
+                                   native_origin_information.get_anchor_id()))
+                             : absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       return absl::nullopt;
   }
@@ -1621,7 +1646,7 @@ bool ArCoreImpl::RequestHitTest(
       }
 
       absl::optional<PlaneId> maybe_plane_id =
-          plane_manager_->GetPlaneId(ar_plane);
+          plane_manager_ ? plane_manager_->GetPlaneId(ar_plane) : absl::nullopt;
       if (maybe_plane_id) {
         plane_id = maybe_plane_id->GetUnsafeValue();
       }
@@ -1694,6 +1719,9 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state,
     const base::TimeTicks& frame_time) {
+  // This is only called from ArCoreGl::ProcessFrame if the feature is enabled.
+  DCHECK(anchor_manager_);
+
   DVLOG(2) << __func__ << ": Processing free-floating anchor creation requests";
   ProcessAnchorCreationRequestsHelper(
       mojo_from_viewer, input_state, &create_anchor_requests_, frame_time,
@@ -1702,6 +1730,11 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
         return anchor_manager_->CreateAnchor(
             device::mojom::Pose(orientation, position));
       });
+
+  // Plane detection and anchors are separate features, we can't assume that
+  // plane detection is enabled. If not, just skip this step.
+  if (!plane_manager_)
+    return;
 
   DVLOG(2) << __func__
            << ": Processing plane-attached anchor creation requests";
@@ -1817,6 +1850,7 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
 }
 
 void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
+  DCHECK(anchor_manager_);
   anchor_manager_->DetachAnchor(AnchorId(anchor_id));
 }
 
