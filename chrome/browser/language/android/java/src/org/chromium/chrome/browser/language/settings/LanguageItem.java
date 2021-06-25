@@ -10,9 +10,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.R;
-import org.chromium.ui.base.ResourceBundle;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
@@ -51,7 +49,7 @@ public class LanguageItem {
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;
         mSupportTranslate = supportTranslate;
-        mSupportAppUI = isAvailableUiLanguage(code);
+        mSupportAppUI = AppLocaleUtils.isAvailableExactUiLanguage(code);
     }
 
     /**
@@ -84,12 +82,12 @@ public class LanguageItem {
 
     /**
      * Return true if this LanguageItem is a base language that supports translate.
-     * This filters out country variants that are not supported by Translate even if their base
-     * language is (e.g. en-US, en-IN, or es-MX).
+     * This filters out country variants that are not differentiated by Translate even if their base
+     * language is (e.g. en-GB, en-IN, or es-MX).
      * Todo(crbug.com/1180262): Make mSupportTranslate equivalent to this flag.
      * @return Whether or not this Language item is a base translatable language.
      */
-    public boolean isSupportedBaseLanguage() {
+    public boolean isSupportedBaseTranslateLanguage() {
         if (!mSupportTranslate) {
             return false;
         }
@@ -153,12 +151,4 @@ public class LanguageItem {
                 true /*supportTranslate*/);
     }
 
-    /**
-     * Return true if the language is available as a UI language.
-     * @param language BCP-47 language tag representing a locale (e.g. "en-US")
-     */
-    public static boolean isAvailableUiLanguage(String language) {
-        if (Objects.equals(language, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) return true;
-        return Arrays.binarySearch(ResourceBundle.getAvailableLocales(), language) >= 0;
-    }
 }

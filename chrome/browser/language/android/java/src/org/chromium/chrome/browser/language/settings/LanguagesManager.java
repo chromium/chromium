@@ -202,7 +202,8 @@ public class LanguagesManager {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         // Filter for translatable languages not in |codesToSkipSet|.
         Predicate<LanguageItem> filter = (item) -> {
-            return item.isSupportedBaseLanguage() && !codesToSkipSet.contains(item.getCode());
+            return item.isSupportedBaseTranslateLanguage()
+                    && !codesToSkipSet.contains(item.getCode());
         };
         addItemsToResult(results, getUserAcceptLanguageItems(), filter);
         addItemsToResult(results, mLanguagesMap.values(), filter);
