@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/key.h"
 #include "components/user_manager/known_user.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -90,11 +91,19 @@ void ActiveDirectoryPasswordChangeScreen::ChangePassword(
   DCHECK(!old_password.empty() && !new_password.empty())
       << "Empty passwords should have been blocked in the UI";
 
+  // The Cryptohome key label is required when changing the password of an
+  // ephemeral user or a new user. Without this label, the login will fail
+  // with a Cryptohome mount error. For historical reasons, Active Directory
+  // users have the same label as GAIA users.
+  Key key(new_password);
+  key.SetLabel(kCryptohomeGaiaKeyLabel);
+
+  DCHECK(authpolicy_login_helper_);
   authpolicy_login_helper_->AuthenticateUser(
       username_, std::string() /* object_guid */,
       old_password + "\n" + new_password + "\n" + new_password,
       base::BindOnce(&ActiveDirectoryPasswordChangeScreen::OnAuthFinished,
-                     weak_factory_.GetWeakPtr(), username_, Key(new_password)));
+                     weak_factory_.GetWeakPtr(), username_, key));
 }
 
 void ActiveDirectoryPasswordChangeScreen::OnAuthFinished(
