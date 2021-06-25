@@ -48,7 +48,8 @@ found in the LICENSE file.
         <activity android:name=".NativeUnitTestActivity"
                 android:label="NativeTest"
                 android:configChanges="orientation|keyboardHidden"
-                android:process=":test_process">
+                android:process=":test_process"
+                android:exported="true">
         {% endif %}
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
