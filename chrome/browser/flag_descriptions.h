@@ -2708,6 +2708,9 @@ extern const char kIntentPickerPWAPersistenceDescription[];
 extern const char kKeyboardBasedDisplayArrangementInSettingsName[];
 extern const char kKeyboardBasedDisplayArrangementInSettingsDescription[];
 
+extern const char kLacrosAvailabilityIgnoreName[];
+extern const char kLacrosAvailabilityIgnoreDescription[];
+
 extern const char kLacrosPrimaryName[];
 extern const char kLacrosPrimaryDescription[];
 

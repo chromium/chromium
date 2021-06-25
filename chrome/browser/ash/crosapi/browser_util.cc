@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
@@ -122,7 +124,14 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+// Returns the lacros integration suggested by the policy lacros-availability.
 LacrosLaunchSwitch GetLaunchSwitch() {
+  // Users can set this switch in chrome://flags to disable the effect of the
+  // lacros-availability policy.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore))
+    return LacrosLaunchSwitch::kUserChoice;
+
   if (!g_browser_process->local_state() ||
       !g_browser_process->local_state()->FindPreference(
           prefs::kLacrosLaunchSwitch)) {

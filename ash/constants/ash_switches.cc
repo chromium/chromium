@@ -594,6 +594,9 @@ const char kInstallLogFastUploadForTests[] =
 // chrome://flags
 const char kKernelnextRestrictVMs[] = "kernelnext-restrict-vms";
 
+// When this flag is set, the lacros-availability policy is ignored.
+const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
+
 // If this switch is set, then ash-chrome will pass additional arguments when
 // launching lacros-chrome. The string '####' is used as a delimiter. Example:
 // --lacros-chrome-additional-args="--foo=5####--bar=/tmp/dir name". Will
