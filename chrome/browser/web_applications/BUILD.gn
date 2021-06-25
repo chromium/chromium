@@ -196,8 +196,6 @@ source_set("web_applications_test_support") {
     "test/fake_url_handler_manager.h",
     "test/fake_web_app_origin_association_manager.cc",
     "test/fake_web_app_origin_association_manager.h",
-    "test/test_app_registrar.cc",
-    "test/test_app_registrar.h",
     "test/test_app_registry_controller.cc",
     "test/test_app_registry_controller.h",
     "test/test_data_retriever.cc",

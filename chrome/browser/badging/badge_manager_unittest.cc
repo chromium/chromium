@@ -14,7 +14,6 @@
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
