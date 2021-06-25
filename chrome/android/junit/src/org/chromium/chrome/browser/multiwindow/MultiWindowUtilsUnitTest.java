@@ -24,7 +24,7 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsInMultiWindowMode;
     private boolean mIsInMultiDisplayMode;
     private boolean mIsMultipleInstanceRunning;
-    private boolean mIsApi31;
+    private boolean mIsAutosplitSupported;
     private boolean mCustomMultiWindowSupported;
 
     @Before
@@ -46,8 +46,8 @@ public class MultiWindowUtilsUnitTest {
             }
 
             @Override
-            public boolean isBuildAtLeastS() {
-                return mIsApi31;
+            public boolean aospMultiWindowModeSupported() {
+                return mIsAutosplitSupported;
             }
 
             @Override
@@ -70,11 +70,12 @@ public class MultiWindowUtilsUnitTest {
             mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
             mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
             mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
-            mIsApi31 = ((i >> 3) & 1) == 1;
+            mIsAutosplitSupported = ((i >> 3) & 1) == 1;
             mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
 
-            boolean canEnter = mIsApi31 || mCustomMultiWindowSupported;
-            assertEquals(" api-s: " + mIsApi31 + " vendor: " + mCustomMultiWindowSupported,
+            boolean canEnter = mIsAutosplitSupported || mCustomMultiWindowSupported;
+            assertEquals(
+                    " api-s: " + mIsAutosplitSupported + " vendor: " + mCustomMultiWindowSupported,
                     canEnter, mUtils.canEnterMultiWindowMode(null));
         }
     }
@@ -85,7 +86,7 @@ public class MultiWindowUtilsUnitTest {
             mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
             mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
             mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
-            mIsApi31 = ((i >> 3) & 1) == 1;
+            mIsAutosplitSupported = ((i >> 3) & 1) == 1;
             mCustomMultiWindowSupported = ((i >> 4) & 1) == 1;
 
             // 'openInOtherWindow' is supported if we are already in multi-window/display mode.

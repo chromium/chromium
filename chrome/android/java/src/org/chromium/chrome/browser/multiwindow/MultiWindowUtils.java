@@ -25,7 +25,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -126,12 +125,12 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return {@code True} if Chrome can get itself into multi-window mode.
      */
     public boolean canEnterMultiWindowMode(Activity activity) {
-        return isBuildAtLeastS() || customMultiWindowModeSupported();
+        return aospMultiWindowModeSupported() || customMultiWindowModeSupported();
     }
 
     @VisibleForTesting
-    boolean isBuildAtLeastS() {
-        return BuildInfo.isAtLeastS();
+    boolean aospMultiWindowModeSupported() {
+        return false;
     }
 
     @VisibleForTesting
