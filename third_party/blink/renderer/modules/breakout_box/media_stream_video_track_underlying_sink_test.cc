@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -28,7 +29,8 @@ namespace blink {
 class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSinkTest() {
-    pushable_video_source_ = new PushableMediaStreamVideoSource();
+    pushable_video_source_ = new PushableMediaStreamVideoSource(
+        scheduler::GetSingleThreadTaskRunnerForTesting());
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         /*remote=*/false);

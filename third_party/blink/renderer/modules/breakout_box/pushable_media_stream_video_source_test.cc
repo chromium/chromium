@@ -8,6 +8,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -88,7 +89,8 @@ MediaStreamSource* CreateAndStartMediaStreamSource(
 class PushableMediaStreamVideoSourceTest : public testing::Test {
  public:
   PushableMediaStreamVideoSourceTest() {
-    pushable_video_source_ = new PushableMediaStreamVideoSource();
+    pushable_video_source_ = new PushableMediaStreamVideoSource(
+        scheduler::GetSingleThreadTaskRunnerForTesting());
     stream_source_ = CreateConnectedMediaStreamSource(pushable_video_source_);
   }
 
@@ -153,7 +155,9 @@ TEST_F(PushableMediaStreamVideoSourceTest, FramesPropagateToSink) {
 TEST_F(PushableMediaStreamVideoSourceTest, ForwardToUpstream) {
   MockMediaStreamVideoSource* mock_source = new MockMediaStreamVideoSource();
   PushableMediaStreamVideoSource* pushable_video_source =
-      new PushableMediaStreamVideoSource(mock_source->GetWeakPtr());
+      new PushableMediaStreamVideoSource(
+          scheduler::GetSingleThreadTaskRunnerForTesting(),
+          mock_source->GetWeakPtr());
   CreateAndStartMediaStreamSource(mock_source);
   CreateAndStartMediaStreamSource(pushable_video_source);
 

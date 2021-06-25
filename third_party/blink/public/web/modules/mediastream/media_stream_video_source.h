@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,7 +58,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // RestartCallback is used for both the StopForRestart and Restart operations.
   using RestartCallback = base::OnceCallback<void(RestartResult)>;
 
-  MediaStreamVideoSource();
+  explicit MediaStreamVideoSource(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   MediaStreamVideoSource(const MediaStreamVideoSource&) = delete;
   MediaStreamVideoSource& operator=(const MediaStreamVideoSource&) = delete;
   ~MediaStreamVideoSource() override;
@@ -182,7 +182,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   virtual VideoCaptureFeedbackCB GetFeedbackCallback() const;
 
   size_t NumTracks() const {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(GetTaskRunner()->BelongsToCurrentThread());
     return tracks_.size();
   }
 

@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -18,7 +19,8 @@ MockMediaStreamVideoSource::MockMediaStreamVideoSource()
 
 MockMediaStreamVideoSource::MockMediaStreamVideoSource(
     bool respond_to_request_refresh_frame)
-    : respond_to_request_refresh_frame_(respond_to_request_refresh_frame),
+    : MediaStreamVideoSource(scheduler::GetSingleThreadTaskRunnerForTesting()),
+      respond_to_request_refresh_frame_(respond_to_request_refresh_frame),
       max_requested_height_(0),
       max_requested_width_(0),
       max_requested_frame_rate_(0.0),
@@ -27,7 +29,8 @@ MockMediaStreamVideoSource::MockMediaStreamVideoSource(
 MockMediaStreamVideoSource::MockMediaStreamVideoSource(
     const media::VideoCaptureFormat& format,
     bool respond_to_request_refresh_frame)
-    : format_(format),
+    : MediaStreamVideoSource(scheduler::GetSingleThreadTaskRunnerForTesting()),
+      format_(format),
       respond_to_request_refresh_frame_(respond_to_request_refresh_frame),
       max_requested_height_(format.frame_size.height()),
       max_requested_width_(format.frame_size.width()),

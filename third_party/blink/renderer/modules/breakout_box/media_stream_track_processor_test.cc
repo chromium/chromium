@@ -46,13 +46,14 @@ namespace {
 std::unique_ptr<PushableMediaStreamAudioSource> CreatePushableAudioSource() {
   // Use the IO thread for testing purposes.
   return std::make_unique<PushableMediaStreamAudioSource>(
-      Thread::MainThread()->GetTaskRunner(),
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
       Platform::Current()->GetIOTaskRunner());
 }
 
 PushableMediaStreamVideoSource* CreatePushableVideoSource() {
   PushableMediaStreamVideoSource* pushable_video_source =
-      new PushableMediaStreamVideoSource();
+      new PushableMediaStreamVideoSource(
+          scheduler::GetSingleThreadTaskRunnerForTesting());
   MediaStreamSource* media_stream_source =
       MakeGarbageCollected<MediaStreamSource>(
           "source_id", MediaStreamSource::kTypeVideo, "source_name",

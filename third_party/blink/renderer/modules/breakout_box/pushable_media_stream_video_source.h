@@ -22,8 +22,10 @@ class MediaStreamVideoTrackSignalObserver;
 class MODULES_EXPORT PushableMediaStreamVideoSource
     : public MediaStreamVideoSource {
  public:
-  PushableMediaStreamVideoSource() = default;
   explicit PushableMediaStreamVideoSource(
+      scoped_refptr<base::SingleThreadTaskRunner>);
+  PushableMediaStreamVideoSource(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const base::WeakPtr<MediaStreamVideoSource>& upstream_source);
   // See the definition of VideoCaptureDeliverFrameCB in
   // media/capture/video_capturer_source.h for the documentation
@@ -51,8 +53,6 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
 
   base::WeakPtr<MediaStreamVideoSource> upstream_source_;
   WeakPersistent<MediaStreamVideoTrackSignalObserver> signal_observer_;
-
-  THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };
 

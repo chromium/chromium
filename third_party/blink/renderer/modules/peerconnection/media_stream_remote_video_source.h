@@ -25,6 +25,7 @@ class MODULES_EXPORT MediaStreamRemoteVideoSource
     : public MediaStreamVideoSource {
  public:
   explicit MediaStreamRemoteVideoSource(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<TrackObserver> observer);
   ~MediaStreamRemoteVideoSource() override;
 

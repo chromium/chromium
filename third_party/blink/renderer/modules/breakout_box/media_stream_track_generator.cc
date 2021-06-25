@@ -160,6 +160,7 @@ PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
     const {
   DCHECK_EQ(Component()->Source()->GetType(), MediaStreamSource::kTypeVideo);
   return static_cast<PushableMediaStreamVideoSource*>(
+      GetExecutionContext()->GetTaskRunner(TaskType::kInternalMediaRealTime),
       MediaStreamVideoSource::GetVideoSource(Component()->Source()));
 }
 
@@ -175,6 +176,8 @@ void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack(
 
   std::unique_ptr<PushableMediaStreamVideoSource> platform_source =
       std::make_unique<PushableMediaStreamVideoSource>(
+          GetExecutionContext()->GetTaskRunner(
+              TaskType::kInternalMediaRealTime),
           signal_target_upstream_source);
   PushableMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   Component()->Source()->SetPlatformSource(std::move(platform_source));

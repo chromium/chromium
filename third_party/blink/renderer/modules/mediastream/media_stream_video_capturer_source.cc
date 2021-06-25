@@ -8,18 +8,33 @@
 
 #include "media/capture/video_capturer_source.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+// TODO(crbug.com/1223353): Remove usage of Thread::Current()->GetTaskRunner()
+// when canvas capture no longer requires a task runner when trying to capture
+// a detached canvas.
+scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerFromFrame(
+    LocalFrame* frame) {
+  return frame ? frame->GetTaskRunner(TaskType::kInternalMediaRealTime)
+               : Thread::Current()->GetTaskRunner();
+}
+}  // namespace
 
 MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     LocalFrame* frame,
     SourceStoppedCallback stop_callback,
     std::unique_ptr<media::VideoCapturerSource> source)
-    : frame_(frame), source_(std::move(source)) {
+    : MediaStreamVideoSource(GetTaskRunnerFromFrame(frame)),
+      frame_(frame),
+      source_(std::move(source)) {
   media::VideoCaptureFormats preferred_formats = source_->GetPreferredFormats();
   if (!preferred_formats.empty())
     capture_params_.requested_format = preferred_formats.front();
@@ -32,7 +47,8 @@ MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     const MediaStreamDevice& device,
     const media::VideoCaptureParams& capture_params,
     DeviceCapturerFactoryCallback device_capturer_factory_callback)
-    : frame_(frame),
+    : MediaStreamVideoSource(GetTaskRunnerFromFrame(frame)),
+      frame_(frame),
       source_(device_capturer_factory_callback.Run(device.session_id())),
       capture_params_(capture_params),
       device_capturer_factory_callback_(

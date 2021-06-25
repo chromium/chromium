@@ -46,8 +46,8 @@ void RemoteVideoTrackAdapter::InitializeWebVideoTrack(
     std::unique_ptr<TrackObserver> observer,
     bool enabled) {
   DCHECK(main_thread_->BelongsToCurrentThread());
-  auto video_source_ptr =
-      std::make_unique<MediaStreamRemoteVideoSource>(std::move(observer));
+  auto video_source_ptr = std::make_unique<MediaStreamRemoteVideoSource>(
+      main_thread_, std::move(observer));
   MediaStreamRemoteVideoSource* video_source = video_source_ptr.get();
   InitializeTrack(MediaStreamSource::kTypeVideo);
   track()->Source()->SetPlatformSource(std::move(video_source_ptr));

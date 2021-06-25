@@ -428,7 +428,8 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
     : public blink::MediaStreamVideoSource {
  public:
   explicit VideoSource(base::WeakPtr<PepperMediaStreamVideoTrackHost> host)
-      : host_(std::move(host)) {}
+      : blink::MediaStreamVideoSource(base::ThreadTaskRunnerHandle::Get()),
+        host_(std::move(host)) {}
 
   ~VideoSource() final { StopSourceImpl(); }
 

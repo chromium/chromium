@@ -8,6 +8,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -36,7 +37,8 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
             MediaStreamSource::kTypeVideo,
             "dummy_source_name",
             false /* remote */)),
-        pushable_video_source_(new PushableMediaStreamVideoSource()) {
+        pushable_video_source_(new PushableMediaStreamVideoSource(
+            scheduler::GetSingleThreadTaskRunnerForTesting())) {
     media_stream_source_->SetPlatformSource(
         base::WrapUnique(pushable_video_source_));
   }

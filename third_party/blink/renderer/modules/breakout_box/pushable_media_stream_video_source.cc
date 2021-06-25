@@ -12,13 +12,19 @@
 namespace blink {
 
 PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    : MediaStreamVideoSource(std::move(main_task_runner)) {}
+
+PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const base::WeakPtr<MediaStreamVideoSource>& upstream_source)
-    : upstream_source_(upstream_source) {}
+    : MediaStreamVideoSource(std::move(main_task_runner)),
+      upstream_source_(upstream_source) {}
 
 void PushableMediaStreamVideoSource::PushFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!running_)
     return;
 
@@ -40,7 +46,7 @@ void PushableMediaStreamVideoSource::PushFrame(
 }
 
 void PushableMediaStreamVideoSource::RequestRefreshFrame() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (upstream_source_)
     upstream_source_->RequestRefreshFrame();
   if (signal_observer_)
@@ -49,14 +55,14 @@ void PushableMediaStreamVideoSource::RequestRefreshFrame() {
 
 void PushableMediaStreamVideoSource::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (upstream_source_)
     upstream_source_->OnFrameDropped(reason);
 }
 
 VideoCaptureFeedbackCB PushableMediaStreamVideoSource::GetFeedbackCallback()
     const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (upstream_source_) {
     return WTF::BindRepeating(
         [](const base::WeakPtr<MediaStreamVideoSource>& source,
@@ -76,7 +82,7 @@ VideoCaptureFeedbackCB PushableMediaStreamVideoSource::GetFeedbackCallback()
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(frame_callback);
   running_ = true;
   deliver_frame_cb_ = frame_callback;
@@ -84,7 +90,7 @@ void PushableMediaStreamVideoSource::StartSourceImpl(
 }
 
 void PushableMediaStreamVideoSource::StopSourceImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   running_ = false;
 }
 
@@ -95,7 +101,7 @@ PushableMediaStreamVideoSource::GetWeakPtr() const {
 
 VideoCaptureFeedbackCB
 PushableMediaStreamVideoSource::GetInternalFeedbackCallback() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!upstream_source_)
     return VideoCaptureFeedbackCB();
 
@@ -104,7 +110,7 @@ PushableMediaStreamVideoSource::GetInternalFeedbackCallback() const {
 
 void PushableMediaStreamVideoSource::SetSignalObserver(
     MediaStreamVideoTrackSignalObserver* observer) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   signal_observer_ = observer;
 }
 

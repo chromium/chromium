@@ -58,7 +58,9 @@ class MediaStreamRemoteVideoSourceUnderTest
  public:
   explicit MediaStreamRemoteVideoSourceUnderTest(
       std::unique_ptr<blink::TrackObserver> observer)
-      : MediaStreamRemoteVideoSource(std::move(observer)) {}
+      : MediaStreamRemoteVideoSource(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            std::move(observer)) {}
   using MediaStreamRemoteVideoSource::EncodedSinkInterfaceForTesting;
   using MediaStreamRemoteVideoSource::SinkInterfaceForTesting;
   using MediaStreamRemoteVideoSource::StartSourceImpl;

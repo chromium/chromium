@@ -290,8 +290,10 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
 }
 
 MediaStreamRemoteVideoSource::MediaStreamRemoteVideoSource(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<TrackObserver> observer)
-    : observer_(std::move(observer)) {
+    : MediaStreamVideoSource(std::move(task_runner)),
+      observer_(std::move(observer)) {
   // The callback will be automatically cleared when 'observer_' goes out of
   // scope and no further callbacks will occur.
   observer_->SetCallback(WTF::BindRepeating(
