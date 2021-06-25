@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_INTERSTITIALS_ENTERPRISE_UTIL_H_
 #define CHROME_BROWSER_INTERSTITIALS_ENTERPRISE_UTIL_H_
 
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 namespace content {
 class WebContents;

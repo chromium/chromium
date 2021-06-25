@@ -9,7 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/safe_browsing/core/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"

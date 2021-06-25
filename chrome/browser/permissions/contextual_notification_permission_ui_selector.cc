@@ -21,7 +21,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 
 namespace {
 

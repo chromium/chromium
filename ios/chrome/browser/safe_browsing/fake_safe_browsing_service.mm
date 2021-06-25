@@ -6,8 +6,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/task/post_task.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"

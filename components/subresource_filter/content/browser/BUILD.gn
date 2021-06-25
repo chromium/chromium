@@ -56,8 +56,8 @@ static_library("browser") {
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/prefs:prefs",
-    "//components/safe_browsing/core/db:database_manager",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
     "//components/subresource_filter/content/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
@@ -121,7 +121,7 @@ static_library("test_support") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core/db:database_manager",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/subresource_filter/content/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
@@ -137,8 +137,8 @@ static_library("test_support") {
     "//url",
   ]
   public_deps = [
-    "//components/safe_browsing/core/db:test_database_manager",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:util",
   ]
 }
 
@@ -170,8 +170,8 @@ source_set("unit_tests") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core/db:database_manager",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:util",
     "//components/subresource_filter/content/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",

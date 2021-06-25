@@ -14,8 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/safe_browsing/core/db/metadata.pb.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/metadata.pb.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace safe_browsing {
 namespace {

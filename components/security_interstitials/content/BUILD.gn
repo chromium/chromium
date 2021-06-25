@@ -70,7 +70,7 @@ static_library("security_interstitial_page") {
 
   public_deps = [
     "//components/captive_portal/core:buildflags",
-    "//components/safe_browsing/core/db:hit_report",
+    "//components/safe_browsing/core/browser/db:hit_report",
   ]
 
   deps = [

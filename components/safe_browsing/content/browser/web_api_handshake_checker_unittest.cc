@@ -6,8 +6,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
-#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

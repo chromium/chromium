@@ -506,9 +506,9 @@ test("components_unittests") {
       "//components/safe_browsing/core:ping_manager_unittest",
       "//components/safe_browsing/core:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+      "//components/safe_browsing/core/browser/db:unit_tests_local_db",
+      "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/safe_browsing/core/browser/sync:unittests",
-      "//components/safe_browsing/core/db:unit_tests_local_db",
-      "//components/safe_browsing/core/db:v4_test_util",
     ]
   } else if (safe_browsing_mode == 2) {
     deps += [ "//components/safe_browsing/android:unit_tests_mobile" ]
@@ -841,11 +841,11 @@ if (!is_ios && !is_fuchsia) {
     }
 
     if (!is_android) {
-      sources += [ "safe_browsing/core/db/v4_store_perftest.cc" ]
+      sources += [ "safe_browsing/core/browser/db/v4_store_perftest.cc" ]
       deps += [
-        "//components/safe_browsing/core/db:v4_protocol_manager_util",
-        "//components/safe_browsing/core/db:v4_store",
-        "//components/safe_browsing/core/db:v4_test_util",
+        "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+        "//components/safe_browsing/core/browser/db:v4_store",
+        "//components/safe_browsing/core/browser/db:v4_test_util",
         "//crypto",
       ]
     }

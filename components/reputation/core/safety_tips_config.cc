@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 

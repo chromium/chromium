@@ -26,7 +26,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
 
 using safe_browsing::DownloadProtectionService;
 using safe_browsing::SafeBrowsingService;

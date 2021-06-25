@@ -5,7 +5,7 @@
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {

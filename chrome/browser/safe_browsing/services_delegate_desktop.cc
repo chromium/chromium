@@ -18,7 +18,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/db/v4_local_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "content/public/browser/browser_task_traits.h"

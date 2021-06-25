@@ -25,7 +25,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/safe_browsing/core/db/fake_database_manager.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "url/gurl.h"

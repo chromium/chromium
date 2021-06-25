@@ -11,7 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;

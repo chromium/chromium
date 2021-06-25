@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
 class GURL;

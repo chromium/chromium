@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/grit/dev_ui_components_resources.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/unsafe_resource.h"

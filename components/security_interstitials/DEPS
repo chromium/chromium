@@ -4,7 +4,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+components/safe_browsing/core/common",
-  "+components/safe_browsing/core/db",
+  "+components/safe_browsing/core/browser/db",
   "+components/ssl_errors",
   "+components/strings/grit/components_strings.h",
   "+components/grit/components_resources.h",

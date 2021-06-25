@@ -14,7 +14,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "url/origin.h"
 

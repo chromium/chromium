@@ -45,7 +45,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-#include "components/safe_browsing/core/db/v4_local_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

@@ -4,7 +4,7 @@
 
 #include "components/security_interstitials/core/unsafe_resource.h"
 
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace security_interstitials {
 

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace safe_browsing {
 

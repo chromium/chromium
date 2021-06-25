@@ -2141,12 +2141,12 @@ static_library("browser") {
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",
-    "//components/safe_browsing/core/db:database_manager",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
     "//components/schema_org/common:improved_mojom",
@@ -7165,7 +7165,7 @@ static_library("test_support") {
     deps += [
       "//components/crx_file",
       "//components/drive:test_support",
-      "//components/safe_browsing/core/db:v4_test_util",
+      "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/services/unzip:in_process",
       "//components/storage_monitor:test_support",
       "//extensions:test_support",
@@ -7221,7 +7221,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/safe_browsing",
       "//components/enterprise/common/proto:connectors_proto",
-      "//components/safe_browsing/core/db:test_database_manager",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
     ]
   }
 

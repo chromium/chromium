@@ -10,7 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"

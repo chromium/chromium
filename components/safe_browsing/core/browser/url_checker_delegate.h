@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 namespace content {
 class WebContents;

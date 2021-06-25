@@ -72,9 +72,9 @@ static_library("unsafe_resource") {
 
   deps = [
     "//base",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common:common",
-    "//components/safe_browsing/core/db:hit_report",
-    "//components/safe_browsing/core/db:util",
     "//net",
     "//services/network/public/mojom",
   ]

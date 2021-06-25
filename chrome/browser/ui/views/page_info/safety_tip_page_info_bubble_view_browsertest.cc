@@ -36,7 +36,7 @@
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/reputation/core/safety_tips_config.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"

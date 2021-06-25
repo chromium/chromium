@@ -73,7 +73,7 @@ components/policy/core/common 1 1
 components/policy/proto 2 1
 components/policy/resources 166 37
 components/safe_browsing/core/common 1 1
-components/safe_browsing/core/db 2 1
+components/safe_browsing/core/browser/db 2 1
 components/safe_browsing/core/proto 3 1
 components/security_interstitials/content 1 1
 components/strictmode/android/java/src/org/chromium/components/strictmode 4 3
