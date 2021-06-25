@@ -92,7 +92,8 @@ class SkiaGoldSession(object):
                     output_manager,
                     inexact_matching_args=None,
                     use_luci=True,
-                    optional_keys=None):
+                    optional_keys=None,
+                    force_dryrun=False):
     """Helper method to run all steps to compare a produced image.
 
     Handles authentication, itnitialization, comparison, and, if necessary,
@@ -115,6 +116,8 @@ class SkiaGoldSession(object):
           for this comparison. Optional keys are keys unrelated to the
           configuration the image was produced on, e.g. a comment or whether
           Gold should treat the image as ignored.
+      force_dryrun: A boolean denoting whether dryrun should be forced on
+          regardless of whether this is a local comparison or not.
 
     Returns:
       A tuple (status, error). |status| is a value from
@@ -133,7 +136,8 @@ class SkiaGoldSession(object):
         name=name,
         png_file=png_file,
         inexact_matching_args=inexact_matching_args,
-        optional_keys=optional_keys)
+        optional_keys=optional_keys,
+        force_dryrun=force_dryrun)
     if not compare_rc:
       return self.StatusCodes.SUCCESS, None
 
@@ -248,7 +252,8 @@ class SkiaGoldSession(object):
               name,
               png_file,
               inexact_matching_args=None,
-              optional_keys=None):
+              optional_keys=None,
+              force_dryrun=False):
     """Compares the given image to images known to Gold.
 
     Triage links can later be retrieved using GetTriageLinks().
@@ -263,6 +268,8 @@ class SkiaGoldSession(object):
           for this comparison. Optional keys are keys unrelated to the
           configuration the image was produced on, e.g. a comment or whether
           Gold should treat the image as ignored.
+      force_dryrun: A boolean denoting whether dryrun should be forced on
+          regardless of whether this is a local comparison or not.
 
     Returns:
       A tuple (return_code, output). |return_code| is the return code of the
@@ -285,7 +292,7 @@ class SkiaGoldSession(object):
         '--work-dir',
         self._working_dir,
     ]
-    if self._gold_properties.local_pixel_tests:
+    if self._gold_properties.local_pixel_tests or force_dryrun:
       compare_cmd.append('--dryrun')
     if inexact_matching_args:
       logging.info('Using inexact matching arguments for image %s: %s', name,

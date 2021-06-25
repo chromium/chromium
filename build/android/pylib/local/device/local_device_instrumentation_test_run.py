@@ -1092,6 +1092,27 @@ class LocalDeviceInstrumentationTestRun(
       return
     self._ProcessSkiaGoldRenderTestResults(device, results)
 
+  def _IsRetryWithoutPatch(self):
+    """Checks whether this test run is a retry without a patch/CL.
+
+    Returns:
+      True iff this is being run on a trybot and the current step is a retry
+      without the patch applied, otherwise False.
+    """
+    is_tryjob = self._test_instance.skia_gold_properties.IsTryjobRun()
+    # Builders automatically pass in --gtest_repeat,
+    # --test-launcher-retry-limit, --test-launcher-batch-limit, and
+    # --gtest_filter when running a step without a CL applied, but not for
+    # steps with the CL applied.
+    # TODO(skbug.com/12100): Check this in a less hacky way if a way can be
+    # found to check the actual step name. Ideally, this would not be necessary
+    # at all, but will be until Chromium stops doing step retries on trybots
+    # (extremely unlikely) or Gold is updated to not clobber earlier results
+    # (more likely, but a ways off).
+    has_filter = bool(self._test_instance.test_filter)
+    has_batch_limit = self._test_instance.test_launcher_batch_limit is not None
+    return is_tryjob and has_filter and has_batch_limit
+
   def _ProcessSkiaGoldRenderTestResults(self, device, results):
     gold_dir = posixpath.join(self._render_tests_device_output_dir,
                               _DEVICE_GOLD_DIR)
@@ -1169,7 +1190,8 @@ class LocalDeviceInstrumentationTestRun(
               name=render_name,
               png_file=image_path,
               output_manager=self._env.output_manager,
-              use_luci=use_luci)
+              use_luci=use_luci,
+              force_dryrun=self._IsRetryWithoutPatch())
         except Exception as e:  # pylint: disable=broad-except
           _FailTestIfNecessary(results, full_test_name)
           _AppendToLog(results, full_test_name,

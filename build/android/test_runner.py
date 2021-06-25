@@ -558,6 +558,13 @@ def AddInstrumentationTestOptions(parser):
       '--test-jar',
       help='Path of jar containing test java files.')
   parser.add_argument(
+      '--test-launcher-batch-limit',
+      dest='test_launcher_batch_limit',
+      type=int,
+      help=('Not actually used for instrumentation tests, but can be used as '
+            'a proxy for determining if the current run is a retry without '
+            'patch.'))
+  parser.add_argument(
       '--timeout-scale',
       type=float,
       help='Factor by which timeouts should be scaled.')

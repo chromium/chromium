@@ -21,7 +21,8 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
       output_manager=True,
       inexact_matching_args=None,
       use_luci=True,
-      optional_keys=None):
+      optional_keys=None,
+      force_dryrun=False):
     # Passing True for the output manager is a bit of a hack, as we don't
     # actually need an output manager and just need to get past the truthy
     # check.
@@ -31,7 +32,8 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
         output_manager=output_manager,
         inexact_matching_args=inexact_matching_args,
         use_luci=use_luci,
-        optional_keys=optional_keys)
+        optional_keys=optional_keys,
+        force_dryrun=force_dryrun)
 
   def _CreateDiffOutputDir(self):
     # We intentionally don't clean this up and don't put it in self._working_dir
