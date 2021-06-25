@@ -169,7 +169,10 @@ void SubresourceRedirectObserver::DidFinishNavigation(
       !navigation_handle->GetRenderFrameHost()) {
     return;
   }
-  if (!navigation_handle->IsInMainFrame() &&
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() &&
       !ShouldEnableRobotsRulesFetching()) {
     return;
   }
@@ -177,7 +180,10 @@ void SubresourceRedirectObserver::DidFinishNavigation(
     return;
 
   // Set to disable compression by default for the mainframe navigation.
-  if (navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame())
     is_mainframe_https_image_compression_applied_ = false;
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
@@ -195,8 +201,11 @@ void SubresourceRedirectObserver::DidFinishNavigation(
 
   // Handle login robots based compression mode.
   if (ShouldEnableRobotsRulesFetching()) {
+    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+    // frames. This caller was converted automatically to the primary main frame
+    // to preserve its semantics. Follow up to confirm correctness.
     if (ShouldEnableLoginRobotsCheckedImageCompression() &&
-        navigation_handle->IsInMainFrame()) {
+        navigation_handle->IsInPrimaryMainFrame()) {
       is_mainframe_https_image_compression_applied_ =
           is_allowed_by_login_state_;
     }

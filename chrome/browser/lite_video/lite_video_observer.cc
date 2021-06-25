@@ -92,7 +92,10 @@ void LiteVideoObserver::DidFinishNavigation(
   lite_video::LiteVideoBlocklistReason blocklist_reason =
       lite_video::LiteVideoBlocklistReason::kUnknown;
 
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     FlushUKMMetrics();
     routing_ids_to_notify_.clear();
     nav_metrics_ = lite_video::LiteVideoNavigationMetrics(
@@ -229,7 +232,10 @@ void LiteVideoObserver::FlushUKMMetrics() {
 // Returns the result of a coinflip.
 void LiteVideoObserver::MaybeUpdateCoinflipExperimentState(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (!lite_video::features::IsCoinflipExperimentEnabled())
     return;

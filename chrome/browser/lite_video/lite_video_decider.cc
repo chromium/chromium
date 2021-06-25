@@ -163,10 +163,16 @@ void LiteVideoDecider::CanApplyLiteVideo(
     return;
   }
 
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  const bool is_in_primary_main_frame =
+      navigation_handle->IsInPrimaryMainFrame();
+
   if (url.has_host() && IsHostPermanentlyBlockedlisted(url.host())) {
     blocklist_reason = LiteVideoBlocklistReason::kHostPermanentlyBlocklisted;
     ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
-        blocklist_reason, navigation_handle->IsInMainFrame());
+        blocklist_reason, is_in_primary_main_frame);
     std::move(callback).Run(
         absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
@@ -185,7 +191,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
                            ? LiteVideoBlocklistReason::kNavigationReload
                            : LiteVideoBlocklistReason::kNavigationForwardBack;
     ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
-        blocklist_reason, navigation_handle->IsInMainFrame());
+        blocklist_reason, is_in_primary_main_frame);
     std::move(callback).Run(
         absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
@@ -197,7 +203,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
 
   if (opt_guide_decider_) {
     // This relies on the optimization guide for hints.
-    if (navigation_handle->IsInMainFrame()) {
+    if (is_in_primary_main_frame) {
       opt_guide_decider_->CanApplyOptimizationAsync(
           navigation_handle, optimization_guide::proto::LITE_VIDEO,
           base::BindOnce(&LiteVideoDecider::OnOptimizationGuideHintAvailable,
@@ -230,7 +236,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
     UpdateBlocklists(navigation_handle, blocklist_reason);
 
     ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
-        blocklist_reason, navigation_handle->IsInMainFrame());
+        blocklist_reason, is_in_primary_main_frame);
     if (hint)
       scoped_decision_recorder.set_has_hint_for_host(true);
 
@@ -241,7 +247,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
   absl::optional<LiteVideoHint> hint =
       hint_cache_->GetHintForNavigationURL(url);
   ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
-      blocklist_reason, navigation_handle->IsInMainFrame());
+      blocklist_reason, is_in_primary_main_frame);
 
   if (hint)
     scoped_decision_recorder.set_has_hint_for_host(true);
@@ -270,7 +276,10 @@ void LiteVideoDecider::UpdateBlocklists(
   // have the LiteVideo optimization triggered so update the blocklist.
   user_blocklist_->AddNavigationToBlocklist(navigation_handle, false);
 
-  navigation_handle->IsInMainFrame()
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  navigation_handle->IsInPrimaryMainFrame()
       ? DidMediaRebuffer(navigation_handle->GetURL(), absl::nullopt, false)
       : DidMediaRebuffer(
             navigation_handle->GetWebContents()->GetLastCommittedURL(),

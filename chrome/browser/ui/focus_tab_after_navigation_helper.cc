@@ -47,7 +47,10 @@ bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
     return false;
 
   // Don't focus content after subframe navigations.
-  if (!navigation->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation->IsInPrimaryMainFrame())
     return false;
 
   // Browser-initiated navigations (e.g. typing in an omnibox) are taken care of

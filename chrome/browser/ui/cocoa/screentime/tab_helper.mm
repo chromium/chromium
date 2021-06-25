@@ -51,7 +51,10 @@ void TabHelper::DidFinishNavigation(content::NavigationHandle* handle) {
   // TODO(ellyjones): Some defensive programming around chrome:// URLs would
   // probably be a good idea here. It's not unimaginable that ScreenTime would
   // misbehave and end up occluding those URLs, which would be very bad.
-  if (handle->IsInMainFrame() && handle->HasCommitted())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (handle->IsInPrimaryMainFrame() && handle->HasCommitted())
     page_controller_->PageURLChangedTo(URLForReporting(handle->GetURL()));
 }
 

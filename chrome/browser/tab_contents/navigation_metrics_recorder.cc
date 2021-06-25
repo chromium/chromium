@@ -56,8 +56,8 @@ void NavigationMetricsRecorder::DidFinishNavigation(
 
   // See if the navigation committed for a site that required a dedicated
   // process and register a synthetic field trial if so.  Note that this needs
-  // to go before the IsInMainFrame() check, as we want to register navigations
-  // to isolated sites from both main frames and subframes.
+  // to go before the IsInPrimaryMainFrame() check, as we want to register
+  // navigations to isolated sites from both main frames and subframes.
   if (is_synthetic_isolation_trial_enabled_ &&
       navigation_handle->GetRenderFrameHost()
           ->GetSiteInstance()
@@ -74,7 +74,10 @@ void NavigationMetricsRecorder::DidFinishNavigation(
         "OutOfProcessIframesActive", "Enabled");
   }
 
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   content::BrowserContext* context = web_contents()->GetBrowserContext();

@@ -77,7 +77,10 @@ void ResourceCoordinatorTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     ukm_source_id_ = ukm::ConvertToSourceId(
         navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
   }

@@ -70,7 +70,10 @@ void ReaderModeIconView::DidFinishNavigation(
 void ReaderModeIconView::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = GetWebContents();
-  if (!navigation_handle->IsInMainFrame() || !web_contents)
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() || !web_contents)
     return;
   // When navigation is about to happen, ensure timers are appropriately stopped
   // and reset.

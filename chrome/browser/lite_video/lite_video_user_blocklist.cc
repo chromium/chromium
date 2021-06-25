@@ -68,8 +68,11 @@ LiteVideoBlocklistReason LiteVideoUserBlocklist::IsLiteVideoAllowedOnNavigation(
   if (blocklist_reason != blocklist::BlocklistReason::kAllowed)
     return LiteVideoBlocklistReason::kNavigationBlocklisted;
 
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   absl::optional<std::string> rebuffer_key =
-      navigation_handle->IsInMainFrame()
+      navigation_handle->IsInPrimaryMainFrame()
           ? GetRebufferBlocklistKey(navigation_url, absl::nullopt)
           : GetRebufferBlocklistKey(
                 navigation_handle->GetWebContents()->GetLastCommittedURL(),

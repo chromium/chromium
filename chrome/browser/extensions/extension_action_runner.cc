@@ -482,7 +482,10 @@ void ExtensionActionRunner::DidFinishNavigation(
   declarative_net_request::RulesMonitorService* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context_);
 
-  const bool is_main_frame = navigation_handle->IsInMainFrame();
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  const bool is_main_frame = navigation_handle->IsInPrimaryMainFrame();
   const bool has_committed = navigation_handle->HasCommitted();
 
   if (is_main_frame && !has_committed && rules_monitor_service) {

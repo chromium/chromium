@@ -154,7 +154,10 @@ void MediaEngagementContentsObserver::RegisterAudiblePlayersWithSession() {
 
 void MediaEngagementContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
     return;
@@ -581,8 +584,11 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
   // If the navigation is occuring in the main frame we should use the URL
   // provided by |handle| as the navigation has not committed yet. If the
   // navigation is in a sub frame then use the URL from the main frame.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   url::Origin origin = url::Origin::Create(
-      handle->IsInMainFrame()
+      handle->IsInPrimaryMainFrame()
           ? handle->GetURL()
           : handle->GetWebContents()->GetLastCommittedURL());
   MediaEngagementScore score = service_->CreateEngagementScore(origin);

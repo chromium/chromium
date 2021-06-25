@@ -181,7 +181,10 @@ void AccuracyTipBubbleView::OpenHelpCenter() {
 
 void AccuracyTipBubbleView::DidStartNavigation(
     content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame() || handle->IsSameDocument()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
     return;
   }
   GetWidget()->Close();

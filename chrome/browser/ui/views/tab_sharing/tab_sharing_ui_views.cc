@@ -246,7 +246,10 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only interested in committed navigations on the shared tab that result in
   // changing the shared tab's name.
-  if (!handle->IsInMainFrame() || !handle->HasCommitted() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
       handle->IsSameDocument() || handle->GetWebContents() != shared_tab_ ||
       GetTabName(shared_tab_) == shared_tab_name_) {
     return;

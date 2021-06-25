@@ -375,7 +375,11 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
   // TODO(crbug.com/1198274): Only main frame is checked because unsafe iframes
   // are blocked by the MixContentNavigationThrottle. But this design is
   // fragile.
-  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->IsInPrimaryMainFrame() &&
       !SslValidityChecker::IsValidPageInPaymentHandlerWindow(
           navigation_handle->GetWebContents())) {
     AbortPayment();

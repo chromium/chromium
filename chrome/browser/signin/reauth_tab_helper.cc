@@ -39,7 +39,10 @@ ReauthTabHelper::~ReauthTabHelper() = default;
 
 bool ReauthTabHelper::ShouldAllowNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return true;
 
   if (!restrict_to_reauth_origin_)
@@ -55,7 +58,10 @@ void ReauthTabHelper::CompleteReauth(signin::ReauthResult result) {
 
 void ReauthTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   is_within_reauth_origin_ &=

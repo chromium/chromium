@@ -395,7 +395,10 @@ void AppBrowserController::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!initial_url().is_empty())
     return;
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (navigation_handle->GetURL().is_empty())
     return;

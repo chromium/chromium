@@ -198,8 +198,11 @@ void ChromeOmniboxNavigationObserver::Observe(
 
 void ChromeOmniboxNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   if ((load_state_ != LOAD_COMMITTED) && navigation_handle->IsErrorPage() &&
-      navigation_handle->IsInMainFrame() &&
+      navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument())
     delete this;
 }

@@ -21,7 +21,10 @@ namespace {
 
 bool IsValidOptimizationGuideNavigation(
     content::NavigationHandle* navigation_handle) {
-  return navigation_handle->IsInMainFrame() &&
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  return navigation_handle->IsInPrimaryMainFrame() &&
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
 
@@ -64,7 +67,10 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Clear any leftover hint requests from a previous navigation.
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     ClearHintsToFetchBasedOnPredictions(navigation_handle);
   }
 
@@ -103,7 +109,10 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Clear any leftover hint requests from a previous navigation.
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     ClearHintsToFetchBasedOnPredictions(navigation_handle);
   }
 

@@ -28,7 +28,10 @@ void TabManager::WebContentsData::DidStartNavigation(
   // Only change to the loading state if there is a navigation in the main
   // frame. DidStartLoading() happens before this, but at that point we don't
   // know if the load is happening in the main frame or an iframe.
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }

@@ -68,7 +68,10 @@ void WebAppTabHelper::SetAppId(const AppId& app_id) {
 
 void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
     const AppId app_id = FindAppIdWithUrlInScope(url);
     SetAppId(app_id);
@@ -85,7 +88,11 @@ void WebAppTabHelper::ReadyToCommitNavigation(
 
 void WebAppTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted())
     return;
 
   if (!navigation_handle->GetURL().IsAboutBlank())
