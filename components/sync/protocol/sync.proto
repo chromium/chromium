@@ -62,6 +62,7 @@ import "components/sync/protocol/unique_position.proto";
 import "components/sync/protocol/user_consent_specifics.proto";
 import "components/sync/protocol/user_event_specifics.proto";
 import "components/sync/protocol/web_app_specifics.proto";
+import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
 
@@ -172,6 +173,9 @@ message EntitySpecifics {
     SharingMessageSpecifics sharing_message = 728866;
     AutofillOfferSpecifics autofill_offer = 774329;
     WorkspaceDeskSpecifics workspace_desk = 874841;
+    // This is not included in model_type.h because it's currently only used by
+    // the server and by Play Services. (crbug.com/1223853)
+    WebauthnCredentialSpecifics webauthn_credential = 895275;
   }
   reserved 218175;
   reserved "wifi_credential";

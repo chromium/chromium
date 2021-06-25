@@ -493,6 +493,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(web_app);
   VISIT(wifi_configuration);
   VISIT(workspace_desk);
+  VISIT(webauthn_credential);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ExtensionSettingSpecifics& proto) {

@@ -131,6 +131,10 @@ enum ModelType {
   SHARING_MESSAGE,
   // A workspace desk saved by user. Chrome OS only.
   WORKSPACE_DESK,
+  // WebAuthn credentials. Commented out because this type is currently only
+  // used by the server and Play Services, not Chrome itself.
+  // (crbug.com/1223853)
+  // WEBAUTHN_CREDENTIAL,
 
   // ---- Proxy types ----
   // Proxy types are excluded from the sync protocol, but are still considered
