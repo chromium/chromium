@@ -107,22 +107,6 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   UpdateBubbleState();
 }
 
-void UnifiedMessageCenterBubble::UpdateBubbleState() {
-  if (CalculateAvailableHeight() < kMessageCenterCollapseThreshold &&
-      message_center_view_->GetPreferredSize().height()) {
-    if (tray_->IsQuickSettingsExplicitlyExpanded()) {
-      message_center_view_->SetCollapsed(false /*animate*/);
-    } else {
-      message_center_view_->SetExpanded();
-      tray_->EnsureQuickSettingsCollapsed(false /*animate*/);
-    }
-  } else if (message_center_view_->collapsed()) {
-    message_center_view_->SetExpanded();
-  }
-
-  UpdatePosition();
-}
-
 UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
   if (bubble_widget_) {
     tray_->tray_event_filter()->RemoveBubble(this);
@@ -135,13 +119,6 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
     bubble_widget_->CloseNow();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
-}
-
-int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
-  return tray_->bubble()->CalculateMaxHeight() -
-         tray_->bubble()->GetCurrentTrayHeight() -
-         GetBubbleInsetHotseatCompensation() -
-         kUnifiedMessageCenterBubbleSpacing;
 }
 
 void UnifiedMessageCenterBubble::CollapseMessageCenter() {
@@ -263,6 +240,29 @@ void UnifiedMessageCenterBubble::OnWidgetActivationChanged(
 
 void UnifiedMessageCenterBubble::OnDisplayConfigurationChanged() {
   UpdateBubbleState();
+}
+
+void UnifiedMessageCenterBubble::UpdateBubbleState() {
+  if (CalculateAvailableHeight() < kMessageCenterCollapseThreshold &&
+      message_center_view_->GetPreferredSize().height()) {
+    if (tray_->IsQuickSettingsExplicitlyExpanded()) {
+      message_center_view_->SetCollapsed(false /*animate*/);
+    } else {
+      message_center_view_->SetExpanded();
+      tray_->EnsureQuickSettingsCollapsed(false /*animate*/);
+    }
+  } else if (message_center_view_->collapsed()) {
+    message_center_view_->SetExpanded();
+  }
+
+  UpdatePosition();
+}
+
+int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
+  return tray_->bubble()->CalculateMaxHeight() -
+         tray_->bubble()->GetCurrentTrayHeight() -
+         GetBubbleInsetHotseatCompensation() -
+         kUnifiedMessageCenterBubbleSpacing;
 }
 
 void UnifiedMessageCenterBubble::RecordTimeToClick() {
