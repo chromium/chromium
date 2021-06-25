@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
@@ -21,6 +22,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Unit tests for SmsProviderGms.
@@ -32,11 +36,15 @@ public class SmsProviderGmsTest {
     private SmsProviderGms mProvider;
     private SmsUserConsentReceiver mUserConsentReceiver;
     private SmsVerificationReceiver mVerificationReceiver;
+    private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
+
+        mWindowAndroid = Mockito.mock(WindowAndroid.class);
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mContext));
 
         mUserConsentReceiver = Mockito.mock(SmsUserConsentReceiver.class);
         mVerificationReceiver = Mockito.mock(SmsVerificationReceiver.class);
@@ -62,8 +70,9 @@ public class SmsProviderGmsTest {
     public void testUserConsentBackendWithLocalRequest() {
         createSmsProviderGms(GmsBackend.USER_CONSENT);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
-        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(1)).listen(null);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
+        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(1))
+                .listen(mWindowAndroid);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(0))
                 .listen(any(), anyBoolean());
     }
@@ -72,50 +81,51 @@ public class SmsProviderGmsTest {
     public void testUserConsentBackendWithRemoteRequest() {
         createSmsProviderGms(GmsBackend.USER_CONSENT);
         boolean isLocalRequest = false;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(any());
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
-                .listen(null, isLocalRequest);
+                .listen(mWindowAndroid, isLocalRequest);
     }
 
     @Test
     public void testVerificationBackendWithLocalRequest() {
         createSmsProviderGms(GmsBackend.VERIFICATION);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(any());
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
-                .listen(null, isLocalRequest);
+                .listen(mWindowAndroid, isLocalRequest);
     }
 
     @Test
     public void testVerificationBackendWithRemoteRequest() {
         createSmsProviderGms(GmsBackend.VERIFICATION);
         boolean isLocalRequest = false;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(any());
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
-                .listen(null, isLocalRequest);
+                .listen(mWindowAndroid, isLocalRequest);
     }
 
     @Test
     public void testAutoBackendWithLocalRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
-        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(1)).listen(null);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
+        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(1))
+                .listen(mWindowAndroid);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
-                .listen(null, isLocalRequest);
+                .listen(mWindowAndroid, isLocalRequest);
     }
 
     @Test
     public void testAutoBackendWithRemoteRequest() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = false;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(mWindowAndroid, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(any());
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
-                .listen(null, isLocalRequest);
+                .listen(mWindowAndroid, isLocalRequest);
     }
 
     @Test
@@ -148,5 +158,32 @@ public class SmsProviderGmsTest {
         boolean isLocalRequest = false;
         mProvider.destoryVerificationReceiver(isLocalRequest);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(0)).destroy();
+    }
+
+    @Test
+    public void testUserConsentBackendWithoutWindow() {
+        createSmsProviderGms(GmsBackend.USER_CONSENT);
+        boolean isLocalRequest = true;
+        mProvider.listen(/*window=*/null, isLocalRequest);
+        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(null);
+    }
+
+    @Test
+    public void testVerificationBackendWithoutWindow() {
+        createSmsProviderGms(GmsBackend.VERIFICATION);
+        boolean isLocalRequest = true;
+        mProvider.listen(/*window=*/null, isLocalRequest);
+        Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
+                .listen(null, isLocalRequest);
+    }
+
+    @Test
+    public void testAutoBackendWithoutWindow() {
+        createSmsProviderGms(GmsBackend.AUTO);
+        boolean isLocalRequest = true;
+        mProvider.listen(/*window=*/null, isLocalRequest);
+        Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(null);
+        Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
+                .listen(null, isLocalRequest);
     }
 }
