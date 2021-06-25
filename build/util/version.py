@@ -58,7 +58,7 @@ def FetchValues(file_list, is_official_build=None):
   script_dirname = os.path.dirname(os.path.realpath(__file__))
   lastchange_filename = os.path.join(script_dirname, "LASTCHANGE")
   lastchange_values = {}
-  FetchValuesFromFile(values, lastchange_filename)
+  FetchValuesFromFile(lastchange_values, lastchange_filename)
 
   for placeholder_key, placeholder_value in values.items():
     values[placeholder_key] = SubstTemplate(placeholder_value,
