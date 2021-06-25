@@ -66,8 +66,7 @@ class IntegrationTest : public ::testing::Test {
 
   void TearDown() override {
     ExpectClean();
-    if (::testing::Test::HasFailure())
-      PrintLog();
+    PrintLog();
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetDataDirPath().
     CopyLog();
@@ -83,8 +82,7 @@ class IntegrationTest : public ::testing::Test {
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
 
   void Uninstall() {
-    if (::testing::Test::HasFailure())
-      PrintLog();
+    PrintLog();
     CopyLog();
     test_commands_->Uninstall();
   }
