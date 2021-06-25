@@ -17,7 +17,7 @@ import {FileOperationManager} from '../../../externs/background/file_operation_m
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {constants} from '../constants.m.js';
+import {constants} from '../constants.js';
 import {FileFilter} from '../directory_contents.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
 import {MetadataModel} from '../metadata/metadata_model.js';

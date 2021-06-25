@@ -15,11 +15,11 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {AndroidAppListModel} from './android_app_list_model.m.js';
+import {AndroidAppListModel} from './android_app_list_model.js';
 import {DirectoryModel} from './directory_model.m.js';
-import {createFakeAndroidAppListModel} from './fake_android_app_list_model.m.js';
-import {createFakeDirectoryModel} from './mock_directory_model.m.js';
-import {MockFolderShortcutDataModel} from './mock_folder_shortcut_data_model.m.js';
+import {createFakeAndroidAppListModel} from './fake_android_app_list_model.js';
+import {createFakeDirectoryModel} from './mock_directory_model.js';
+import {MockFolderShortcutDataModel} from './mock_folder_shortcut_data_model.js';
 import { NavigationListModel, NavigationModelAndroidAppItem,NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.js';
 // clang-format on
 

@@ -9,7 +9,7 @@ import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 
-import {ThumbnailLoader} from './thumbnail_loader.m.js';
+import {ThumbnailLoader} from './thumbnail_loader.js';
 
 function getLoadTarget(entry, metadata) {
   return new ThumbnailLoader(entry, ThumbnailLoader.LoaderType.CANVAS, metadata)

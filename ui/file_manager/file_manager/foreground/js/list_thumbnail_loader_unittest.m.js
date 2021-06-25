@@ -16,7 +16,7 @@ import {FileListModel} from './file_list_model.m.js';
 import {ListThumbnailLoader} from './list_thumbnail_loader.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {ThumbnailModel} from './metadata/thumbnail_model.js';
-import {MockThumbnailLoader} from './mock_thumbnail_loader.m.js';
+import {MockThumbnailLoader} from './mock_thumbnail_loader.js';
 
 /** @type {string} */
 let currentVolumeType;
