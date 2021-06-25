@@ -12,6 +12,11 @@ namespace {
 
 const int kMaxSearchRange = 200;
 const int kSpecialWordMaxLength = 6;
+// The index difference between a sentence end and the next sentence start.
+// Setting it to 1 is sufficient for grammar check model, but 2 is better since
+// according to current rules, there is always a space or '\n' or '\r' after a
+// sentence end.
+const int kGapBetweenSentenceEndAndNextStart = 2;
 
 bool IsSentenceEndCharacter(char16_t c) {
   return (c == u'.' || c == u'?' || c == u'!' || c == u'。' || c == u'｡' ||
@@ -84,6 +89,23 @@ bool IsSentenceEnd(const std::u16string& text, int pos) {
 
 }  // namespace
 
+Sentence::Sentence() {}
+
+Sentence::Sentence(const gfx::Range& original_range, const std::u16string& text)
+    : original_range(original_range), text(text) {}
+
+Sentence::Sentence(const Sentence& other) = default;
+
+Sentence::~Sentence() = default;
+
+bool Sentence::operator==(const Sentence& other) const {
+  return original_range == other.original_range && text == other.text;
+}
+
+bool Sentence::operator!=(const Sentence& other) const {
+  return !(*this == other);
+}
+
 int FindLastSentenceEnd(const std::u16string& text, int pos) {
   if (pos <= 0 || pos > text.size())
     return kUndefined;
@@ -106,6 +128,44 @@ int FindNextSentenceEnd(const std::u16string& text, int pos) {
     }
   }
   return kUndefined;
+}
+
+Sentence FindLastSentence(const std::u16string& text, int pos) {
+  int end = FindLastSentenceEnd(text, pos);
+  if (end == kUndefined) {
+    return Sentence();
+  }
+  int start = FindLastSentenceEnd(text, end);
+  if (start == kUndefined) {
+    start = 0;
+  } else {
+    start = start + kGapBetweenSentenceEndAndNextStart;
+  }
+  if (start >= end) {
+    return Sentence();
+  }
+  return Sentence(gfx::Range(start, end + 1),
+                  text.substr(start, end - start + 1));
+}
+
+Sentence FindCurrentSentence(const std::u16string& text, int pos) {
+  int start = FindLastSentenceEnd(text, pos);
+  if (start == kUndefined) {
+    start = 0;
+  } else {
+    start = start + kGapBetweenSentenceEndAndNextStart;
+  }
+
+  int end = FindNextSentenceEnd(text, pos);
+  if (end == kUndefined) {
+    end = text.length() - 1;
+  }
+
+  if (start >= end)
+    return Sentence();
+
+  return Sentence(gfx::Range(start, end + 1),
+                  text.substr(start, end - start + 1));
 }
 
 }  // namespace text_utils

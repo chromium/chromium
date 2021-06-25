@@ -55,6 +55,50 @@ TEST(TextUtilsTest, FindsNextSentenceEnd) {
   EXPECT_EQ(FindNextSentenceEnd(u"This is a dog\n\nThat is a cat", 0), 12);
 }
 
+TEST(TextUtilsTest, FindLastSentence) {
+  EXPECT_EQ(FindLastSentence(u"This is a test.", 14), Sentence());
+  EXPECT_EQ(FindLastSentence(u"This is a test.", 15),
+            Sentence(gfx::Range(0, 15), u"This is a test."));
+  EXPECT_EQ(FindLastSentence(u"Hi! This is a test.  ", 19),
+            Sentence(gfx::Range(4, 19), u"This is a test."));
+
+  EXPECT_EQ(FindLastSentence(u"Hi! There are 1.5 million people.", 20),
+            Sentence(gfx::Range(0, 3), u"Hi!"));
+  EXPECT_EQ(FindLastSentence(u"What? Mr. Smith isn't here!", 20),
+            Sentence(gfx::Range(0, 5), u"What?"));
+  EXPECT_EQ(FindLastSentence(u"What? (Mr. Smith isn't here!)", 20),
+            Sentence(gfx::Range(0, 5), u"What?"));
+
+  EXPECT_EQ(FindLastSentence(u"Thank you :) Have a nice day!", 20),
+            Sentence(gfx::Range(0, 12), u"Thank you :)"));
+
+  EXPECT_EQ(FindLastSentence(u"This is a dog\nThat is a cat", 20),
+            Sentence(gfx::Range(0, 13), u"This is a dog"));
+  EXPECT_EQ(FindLastSentence(u"This is a dog\n\nThat is a cat", 20),
+            Sentence());
+}
+
+TEST(TextUtilsTest, FindCurrentSentence) {
+  EXPECT_EQ(FindCurrentSentence(u"This is a test.", 14),
+            Sentence(gfx::Range(0, 15), u"This is a test."));
+  EXPECT_EQ(FindCurrentSentence(u"This is a test.", 15), Sentence());
+  EXPECT_EQ(FindCurrentSentence(u"Hi! This is a test.  ", 18),
+            Sentence(gfx::Range(4, 19), u"This is a test."));
+
+  EXPECT_EQ(FindCurrentSentence(u"Hi! There are 1.5 million people.", 20),
+            Sentence(gfx::Range(4, 33), u"There are 1.5 million people."));
+  EXPECT_EQ(FindCurrentSentence(u"What? Mr. Smith isn't here!", 20),
+            Sentence(gfx::Range(6, 27), u"Mr. Smith isn't here!"));
+  EXPECT_EQ(FindCurrentSentence(u"What? (Mr. Smith isn't here!)", 20),
+            Sentence(gfx::Range(6, 29), u"(Mr. Smith isn't here!)"));
+
+  EXPECT_EQ(FindCurrentSentence(u"Thank you :) Have a nice day!", 20),
+            Sentence(gfx::Range(13, 29), u"Have a nice day!"));
+
+  EXPECT_EQ(FindCurrentSentence(u"This is a dog\nThat is a cat", 20),
+            Sentence(gfx::Range(14, 27), u"That is a cat"));
+}
+
 }  // namespace
 }  // namespace text_utils
 }  // namespace chromeos
