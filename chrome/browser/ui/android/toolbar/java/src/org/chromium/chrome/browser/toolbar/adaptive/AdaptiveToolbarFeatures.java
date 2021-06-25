@@ -92,6 +92,7 @@ public class AdaptiveToolbarFeatures {
      * @return The main feature flag for segmentation based adaptive toolbar customization.
      */
     public static boolean isCustomizationEnabled() {
+        if (isSingleVariantModeEnabled()) return false;
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION);
     }

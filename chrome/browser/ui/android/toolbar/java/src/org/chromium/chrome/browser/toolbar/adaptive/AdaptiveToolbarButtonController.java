@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,7 +23,10 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,18 +39,8 @@ public class AdaptiveToolbarButtonController
     @Nullable
     private ButtonDataProvider mSingleProvider;
 
-    /** {@code true} if the SessionVariant histogram value was already recorded. */
-    private boolean mIsSessionVariantRecorded;
-
-    /** The last received {@link ButtonSpec}. */
-    @Nullable
-    private ButtonSpec mOriginalButtonSpec;
-
-    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-
     // Maps from {@link AdaptiveToolbarButtonVariant} to {@link ButtonDataProvider}.
-    private Map<Integer, ButtonDataProvider> mButtonDataProviderMap =
-            new HashMap<Integer, ButtonDataProvider>();
+    private Map<Integer, ButtonDataProvider> mButtonDataProviderMap = new HashMap<>();
 
     /**
      * {@link ButtonData} instance returned by {@link AdaptiveToolbarButtonController#get(Tab)}
@@ -51,13 +48,42 @@ public class AdaptiveToolbarButtonController
      */
     private final ButtonDataImpl mButtonData = new ButtonDataImpl();
 
+    /** The last received {@link ButtonSpec}. */
+    @Nullable
+    private ButtonSpec mOriginalButtonSpec;
+
+    /** {@code true} if the SessionVariant histogram value was already recorded. */
+    private boolean mIsSessionVariantRecorded;
+
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+
+    @Nullable
+    private View.OnLongClickListener mMenuHandler;
+    private final Callback<Integer> mMenuClickListener;
+    private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
+
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
+     *
+     * @param context used in {@link SettingsLauncher}
+     * @param settingsLauncher opens adaptive button settings
      * @param lifecycleDispatcher notifies about native initialization
      */
-    public AdaptiveToolbarButtonController(ActivityLifecycleDispatcher lifecycleDispatcher) {
+    public AdaptiveToolbarButtonController(Context context, SettingsLauncher settingsLauncher,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            AdaptiveButtonActionMenuCoordinator menuCoordinator) {
+        mMenuClickListener = id -> {
+            if (id == R.id.customize_adaptive_button_menu_id) {
+                RecordUserAction.record("MobileAdaptiveMenuCustomize");
+                settingsLauncher.launchSettingsActivity(
+                        context, AdaptiveToolbarPreferenceFragment.class);
+                return;
+            }
+            assert false : "unknown adaptive button menu id: " + id;
+        };
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mMenuCoordinator = menuCoordinator;
     }
 
     /**
@@ -138,21 +164,21 @@ public class AdaptiveToolbarButtonController
                     receivedButtonData.getButtonSpec().getButtonVariant(),
                     AdaptiveToolbarButtonVariant.NUM_ENTRIES);
         }
-        // Return early if there is no need to wrap the listener.
-        if (receivedButtonData.getButtonSpec().getOnClickListener() == null) {
-            return receivedButtonData;
-        }
 
         mButtonData.setCanShow(receivedButtonData.canShow());
         mButtonData.setEnabled(receivedButtonData.isEnabled());
         final ButtonSpec receivedButtonSpec = receivedButtonData.getButtonSpec();
         // ButtonSpec is immutable, so we keep the previous value when noting changes.
         if (receivedButtonSpec != mOriginalButtonSpec) {
+            assert receivedButtonSpec.getOnLongClickListener()
+                    == null
+                : "adaptive button variants are expected to not set a long click listener";
+            if (mMenuHandler == null) mMenuHandler = createMenuHandler();
             mOriginalButtonSpec = receivedButtonSpec;
             mButtonData.setButtonSpec(new ButtonSpec(receivedButtonSpec.getDrawable(),
-                    wrapListener(receivedButtonSpec.getOnClickListener(),
+                    wrapClickListener(receivedButtonSpec.getOnClickListener(),
                             receivedButtonSpec.getButtonVariant()),
-                    receivedButtonSpec.getContentDescriptionResId(),
+                    mMenuHandler, receivedButtonSpec.getContentDescriptionResId(),
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
                     receivedButtonSpec.getButtonVariant()));
@@ -160,13 +186,19 @@ public class AdaptiveToolbarButtonController
         return mButtonData;
     }
 
-    private static View.OnClickListener wrapListener(View.OnClickListener receivedListener,
+    private static View.OnClickListener wrapClickListener(View.OnClickListener receivedListener,
             @AdaptiveToolbarButtonVariant int buttonVariant) {
         return view -> {
             RecordHistogram.recordEnumeratedHistogram("Android.AdaptiveToolbarButton.Clicked",
                     buttonVariant, AdaptiveToolbarButtonVariant.NUM_ENTRIES);
             receivedListener.onClick(view);
         };
+    }
+
+    @Nullable
+    private View.OnLongClickListener createMenuHandler() {
+        if (!FeatureList.isInitialized()) return null;
+        return mMenuCoordinator.createOnLongClickListener(mMenuClickListener);
     }
 
     @Override
@@ -183,6 +215,14 @@ public class AdaptiveToolbarButtonController
                             : null);
             notifyObservers(uiState.canShowUi);
         });
+
+        // We need the menu handler only if the customization feature is on.
+        if (mMenuHandler != null) return;
+        mMenuHandler = createMenuHandler();
+        if (mMenuHandler == null) return;
+        // Clearing mOriginalButtonSpec forces a refresh of mButtonData on the next get()
+        mOriginalButtonSpec = null;
+        notifyObservers(mButtonData.canShow());
     }
 
     private void notifyObservers(boolean canShowHint) {

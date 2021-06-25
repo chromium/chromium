@@ -16,6 +16,7 @@
     <!-- Custom Menu dimensions -->
     <dimen name="tab_switcher_menu_width">222dp</dimen>
     <dimen name="tab_switcher_menu_vertical_padding">8dp</dimen>
+    <dimen name="adaptive_button_menu_vertical_padding">8dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="toolbar_icon_height">24dp</dimen>

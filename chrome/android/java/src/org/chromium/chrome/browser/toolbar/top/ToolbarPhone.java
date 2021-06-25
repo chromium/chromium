@@ -2526,6 +2526,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
         mOptionalButton.setOnClickListener(buttonSpec.getOnClickListener());
+        if (buttonSpec.getOnLongClickListener() == null) {
+            mOptionalButton.setLongClickable(false);
+        } else {
+            mOptionalButton.setLongClickable(true);
+            mOptionalButton.setOnLongClickListener(buttonSpec.getOnLongClickListener());
+        }
         mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
         mOptionalButton.setContentDescription(
                 getContext().getResources().getString(buttonSpec.getContentDescriptionResId()));
