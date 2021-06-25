@@ -5629,7 +5629,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
 // new NavigationRequest, because it was trying to access the current
 // RenderFrameHost's PolicyContainerHost, which had not been set up yet by
 // RenderFrameHostImpl::DidNavigate.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug1210234) {
+#if defined(OS_ANDROID)
+// Flaky on Android: https://crbug.com/1222320.
+#define MAYBE_Bug1210234 DISABLED_Bug1210234
+#else
+#define MAYBE_Bug1210234 Bug1210234
+#endif  // defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
   class NavigationWebContentsDelegate : public WebContentsDelegate {
    public:
     NavigationWebContentsDelegate(const GURL& url_to_intercept,
