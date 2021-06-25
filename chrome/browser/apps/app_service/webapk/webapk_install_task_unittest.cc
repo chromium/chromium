@@ -181,6 +181,13 @@ class WebApkInstallTaskTest : public testing::Test {
     return install_success;
   }
 
+  bool UpdateWebApk(const std::string& app_id) {
+    // This is normally set by WebApkManager when an update is queued.
+    apps::webapk_prefs::SetUpdateNeededForApp(profile(), app_id,
+                                              /* update_needed= */ true);
+    return InstallWebApk(app_id);
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> HandleWebApkRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url == kServerPath) {
@@ -245,10 +252,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
                 "org.chromium.webapk.some_package"),
             1);
 
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
   ASSERT_EQ(*apps::webapk_prefs::GetWebApkPackageName(profile(), app_id),
             "org.chromium.webapk.some_package");
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
@@ -383,7 +388,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->title = u"Testy test App";
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  EXPECT_TRUE(InstallWebApk(app_id));
+  EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
   ASSERT_THAT(last_webapk_request()->update_reasons(),
@@ -396,10 +401,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
   EXPECT_EQ(manifest.short_name(), "Testy test App");
 
   // Check we still only have 1 version of |app_id| installed.
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
 }
 
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
@@ -422,7 +425,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->scope = GURL("https://www.differentexample.com/");
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  EXPECT_TRUE(InstallWebApk(app_id));
+  EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
   ASSERT_THAT(last_webapk_request()->update_reasons(),
@@ -434,10 +437,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
             "https://www.differentexample.com/");
 
   // Check we still only have 1 version of |app_id| installed.
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
 }
 
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
@@ -457,7 +458,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
                                         "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  EXPECT_TRUE(InstallWebApk(app_id));
+  EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
   ASSERT_THAT(
@@ -465,10 +466,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
       ::testing::ElementsAre(webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS));
 
   // Check we still only have 1 version of |app_id| installed.
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
 }
 
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
@@ -491,7 +490,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
   web_app_info->share_target->action =
       GURL("https://www.differentexample.com/");
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  EXPECT_TRUE(InstallWebApk(app_id));
+  EXPECT_TRUE(UpdateWebApk(app_id));
 
   // Check that the update worked.
   ASSERT_THAT(last_webapk_request()->update_reasons(),
@@ -502,10 +501,8 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
             "https://www.differentexample.com/");
 
   // Check we still only have 1 version of |app_id| installed.
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
 }
 
 TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
@@ -529,7 +526,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
       GURL("https://www.differentexample.com/");
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   base::HistogramTester histograms;
-  EXPECT_TRUE(InstallWebApk(app_id));
+  EXPECT_TRUE(UpdateWebApk(app_id));
 
   ASSERT_THAT(last_webapk_request()->update_reasons(),
               ::testing::UnorderedElementsAre(
@@ -542,10 +539,10 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
             "https://www.differentexample.com/");
 
   // Check we still only have 1 version of |app_id| installed.
-  base::flat_set<std::string> installed_webapks =
-      apps::webapk_prefs::GetWebApkAppIds(profile());
-  ASSERT_EQ(installed_webapks.size(), 1);
-  ASSERT_TRUE(installed_webapks.contains(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetUpdateNeededAppIds(profile()),
+              testing::IsEmpty());
   histograms.ExpectBucketCount(apps::kWebApkUpdateResultHistogram,
                                apps::WebApkInstallStatus::kSuccess, 1);
 }
@@ -564,10 +561,13 @@ TEST_F(WebApkInstallTaskTest, AbandonedUpdateNoChanges) {
   SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
                                         "org.chromium.webapk.some_package"));
   base::HistogramTester histograms;
-  EXPECT_FALSE(InstallWebApk(app_id));
+  EXPECT_FALSE(UpdateWebApk(app_id));
   histograms.ExpectBucketCount(
       apps::kWebApkUpdateResultHistogram,
       apps::WebApkInstallStatus::kUpdateCancelledWebApkUpToDate, 1);
+  // Update should no longer be needed.
+  ASSERT_THAT(apps::webapk_prefs::GetUpdateNeededAppIds(profile()),
+              testing::IsEmpty());
 }
 
 TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
@@ -581,8 +581,41 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
 
   // Install the same app without setting web apk info. Install should fail.
   base::HistogramTester histograms;
-  EXPECT_FALSE(InstallWebApk(app_id));
+  EXPECT_FALSE(UpdateWebApk(app_id));
   histograms.ExpectBucketCount(
       apps::kWebApkUpdateResultHistogram,
       apps::WebApkInstallStatus::kUpdateGetWebApkInfoError, 1);
+}
+
+TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  // Install the same app with |short_name| changed. This should trigger an
+  // update.
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app_info->title = u"Testy test App";
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  base::HistogramTester histograms;
+  SetWebApkResponse(base::BindRepeating(&BuildFailedResponse));
+
+  ASSERT_FALSE(UpdateWebApk(app_id));
+
+  histograms.ExpectBucketCount(apps::kWebApkUpdateResultHistogram,
+                               apps::WebApkInstallStatus::kNetworkError, 1);
+  // Check that the app is still installed and still needs an update.
+  ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
+              testing::ElementsAre(app_id));
+  ASSERT_THAT(apps::webapk_prefs::GetUpdateNeededAppIds(profile()),
+              testing::ElementsAre(app_id));
 }

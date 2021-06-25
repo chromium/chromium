@@ -55,7 +55,7 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
       // Update if there are app metadata changes.
       if (update.ShortNameChanged() || update.NameChanged() ||
           update.IconKeyChanged() || update.IntentFiltersChanged()) {
-        QueueInstall(update.AppId());
+        QueueUpdate(update.AppId());
       }
     } else {  // New WebAPK.
       // Install if it is eligible for installation.
@@ -73,6 +73,8 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
   }
 }
 
+// Called once per app type during startup, once apps of that type are
+// initialized.
 void WebApkManager::OnAppTypeInitialized(apps::mojom::AppType type) {
   if (type == apps::mojom::AppType::kWeb) {
     initialized_ = true;
@@ -98,6 +100,13 @@ void WebApkManager::OnAppTypeInitialized(apps::mojom::AppType type) {
       if (!eligible_installs.contains(id)) {
         QueueUninstall(id);
       }
+    }
+
+    // Update any WebAPK for which an update was previously queued but
+    // unsuccessful.
+    for (const std::string& id :
+         webapk_prefs::GetUpdateNeededAppIds(profile_)) {
+      QueueUpdate(id);
     }
   }
 }
@@ -167,10 +176,17 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
   return true;
 }
 
-// Queues |app_id| for install or update. |install_queue_| installs new WebAPKs
-// and updates existing ones.
 void WebApkManager::QueueInstall(const std::string& app_id) {
-  install_queue_->Install(app_id);
+  install_queue_->InstallOrUpdate(app_id);
+}
+
+void WebApkManager::QueueUpdate(const std::string& app_id) {
+  // Mark the WebAPK as needing an update. This will be cleared when the update
+  // is successful, and ensures that the update can be retried if it fails
+  // before completion.
+  webapk_prefs::SetUpdateNeededForApp(profile_, app_id,
+                                      /* update_needed= */ true);
+  install_queue_->InstallOrUpdate(app_id);
 }
 
 void WebApkManager::QueueUninstall(const std::string& app_id) {

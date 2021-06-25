@@ -19,6 +19,8 @@ namespace apps {
 
 class WebApkInstallTask;
 
+// Queue for WebAPK installation and update. Queued apps are processed
+// one-by-one while ARC is running.
 class WebApkInstallQueue
     : public arc::ConnectionObserver<arc::mojom::WebApkInstance> {
  public:
@@ -28,7 +30,9 @@ class WebApkInstallQueue
 
   ~WebApkInstallQueue() override;
 
-  void Install(const std::string& app_id);
+  // Queues the given |app_id| to either install a new WebAPK or update its
+  // existing WebAPK, as appropriate.
+  void InstallOrUpdate(const std::string& app_id);
 
   // arc::ConnectionObserver<arc::mojom::WebApkInstance> overrides:
   void OnConnectionReady() override;

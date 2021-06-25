@@ -39,6 +39,7 @@ class WebApkManager : public AppRegistryCache::Observer,
  private:
   bool IsAppEligibleForWebApk(const AppUpdate& app);
   void QueueInstall(const std::string& app_id);
+  void QueueUpdate(const std::string& app_id);
   void QueueUninstall(const std::string& app_id);
   void UninstallInternal(const std::string& app_id);
 

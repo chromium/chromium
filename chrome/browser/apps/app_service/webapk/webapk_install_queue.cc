@@ -34,7 +34,7 @@ WebApkInstallQueue::~WebApkInstallQueue() {
   }
 }
 
-void WebApkInstallQueue::Install(const std::string& app_id) {
+void WebApkInstallQueue::InstallOrUpdate(const std::string& app_id) {
   pending_installs_.push_back(
       std::make_unique<WebApkInstallTask>(profile_, app_id));
   PostMaybeStartNext();

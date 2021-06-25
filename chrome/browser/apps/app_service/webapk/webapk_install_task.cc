@@ -415,8 +415,10 @@ void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
 void WebApkInstallTask::OnProtoSerialized(
     absl::optional<std::string> serialized_proto) {
   if (!serialized_proto && !serialized_proto.has_value()) {
-    // We don't need to continue the install, because the existing WebAPK is up
+    // We don't need to continue the update, because the existing WebAPK is up
     // to date.
+    webapk_prefs::SetUpdateNeededForApp(profile_, app_id_,
+                                        /* update_needed= */ false);
     DeliverResult(WebApkInstallStatus::kUpdateCancelledWebApkUpToDate);
     return;
   }
@@ -498,7 +500,12 @@ void WebApkInstallTask::OnInstallComplete(
 
   bool success = result == arc::mojom::WebApkInstallResult::kSuccess;
   if (success) {
-    webapk_prefs::AddWebApk(profile_, app_id_, package_name);
+    if (package_name_to_update_.has_value()) {
+      webapk_prefs::SetUpdateNeededForApp(profile_, app_id_,
+                                          /* update_needed= */ false);
+    } else {
+      webapk_prefs::AddWebApk(profile_, app_id_, package_name);
+    }
   }
 
   DeliverResult(success ? WebApkInstallStatus::kSuccess

@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -205,4 +206,57 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
   app_service_test()->FlushMojoCalls();
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));
+}
+
+TEST_F(WebApkManagerTest, QueuesUpdatedApp) {
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  apps::webapk_prefs::AddWebApk(profile(), app_id, kTestWebApkPackageName);
+
+  StartWebApkManager();
+
+  // Mimic updating an app by reinstalling it with a different WebAppInfo.
+  auto updated_app_info = BuildDefaultWebAppInfo();
+  updated_app_info->title = u"Some new title";
+  auto updated_app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  EXPECT_EQ(app_id, updated_app_id);
+  app_service_test()->FlushMojoCalls();
+
+  auto install_task =
+      webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
+  ASSERT_TRUE(install_task);
+  ASSERT_EQ(install_task->app_id(), app_id);
+  AssertNoPendingInstalls();
+
+  base::flat_set<std::string> updating_apps =
+      apps::webapk_prefs::GetUpdateNeededAppIds(profile());
+  ASSERT_THAT(updating_apps, testing::ElementsAre(app_id));
+}
+
+TEST_F(WebApkManagerTest, QueuesPendingUpdateOnStartup) {
+  auto app_info_1 = BuildDefaultWebAppInfo();
+  auto app_info_2 = BuildDefaultWebAppInfo();
+  // Change the start_url so that the two apps have different IDs.
+  app_info_2->start_url = GURL(base::StrCat({kTestAppUrl, "/app_2"}));
+
+  auto app_id_1 =
+      web_app::test::InstallWebApp(profile(), std::move(app_info_1));
+  apps::webapk_prefs::AddWebApk(profile(), app_id_1, kTestWebApkPackageName);
+  apps::webapk_prefs::SetUpdateNeededForApp(profile(), app_id_1,
+                                            /* update_needed= */ true);
+  auto app_id_2 =
+      web_app::test::InstallWebApp(profile(), std::move(app_info_2));
+  apps::webapk_prefs::AddWebApk(profile(), app_id_2, kTestWebApkPackageName);
+  apps::webapk_prefs::SetUpdateNeededForApp(profile(), app_id_2,
+                                            /* update_needed= */ false);
+
+  StartWebApkManager();
+
+  // App 1 has a pending update, app 2 does not. Only app 1 should be queued.
+  auto install_task =
+      webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
+  ASSERT_TRUE(install_task);
+  ASSERT_EQ(install_task->app_id(), app_id_1);
+  AssertNoPendingInstalls();
 }
