@@ -299,6 +299,15 @@ bool EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::
   return false;
 }
 
+bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
+                  net::CookieOptions::SameSiteCookieContext::ContextMetadata>::
+    Read(network::mojom::CookieSameSiteContextMetadataDataView data,
+         net::CookieOptions::SameSiteCookieContext::ContextMetadata* out) {
+  out->affected_by_bugfix_1166211 = data.affected_by_bugfix_1166211();
+
+  return true;
+}
+
 bool StructTraits<network::mojom::CookieSameSiteContextDataView,
                   net::CookieOptions::SameSiteCookieContext>::
     Read(network::mojom::CookieSameSiteContextDataView mojo_context,
@@ -315,8 +324,16 @@ bool StructTraits<network::mojom::CookieSameSiteContextDataView,
   if (schemeful_context > context_type)
     return false;
 
-  *context = net::CookieOptions::SameSiteCookieContext(context_type,
-                                                       schemeful_context);
+  net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata;
+  if (!mojo_context.ReadMetadata(&metadata))
+    return false;
+
+  net::CookieOptions::SameSiteCookieContext::ContextMetadata schemeful_metadata;
+  if (!mojo_context.ReadSchemefulMetadata(&schemeful_metadata))
+    return false;
+
+  *context = net::CookieOptions::SameSiteCookieContext(
+      context_type, schemeful_context, metadata, schemeful_metadata);
   return true;
 }
 

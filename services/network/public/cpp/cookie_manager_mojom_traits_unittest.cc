@@ -289,21 +289,27 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_STRICT};
 
-  for (ContextType context_type : all_context_types) {
-    for (ContextType schemeful_context_type : all_context_types) {
-      net::CookieOptions::SameSiteCookieContext context_in, copy;
-      // We want to test malformed SameSiteCookieContexts. Since the constructor
-      // will DCHECK for these use the setters to bypass it.
-      context_in.set_context(context_type);
-      context_in.set_schemeful_context(schemeful_context_type);
+  for (bool metadata_affected_by_bugfix_1166211 : {true, false}) {
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata;
+    metadata.affected_by_bugfix_1166211 = metadata_affected_by_bugfix_1166211;
+    for (ContextType context_type : all_context_types) {
+      for (ContextType schemeful_context_type : all_context_types) {
+        net::CookieOptions::SameSiteCookieContext copy;
+        net::CookieOptions::SameSiteCookieContext context_in(
+            context_type, context_type, metadata, metadata);
+        // We want to test malformed SameSiteCookieContexts. Since the
+        // constructor will DCHECK for these use this setter to bypass it.
+        context_in.SetContextTypesForTesting(context_type,
+                                             schemeful_context_type);
 
-      EXPECT_EQ(
-          mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContext>(
-              context_in, copy),
-          schemeful_context_type <= context_type);
+        EXPECT_EQ(
+            mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContext>(
+                context_in, copy),
+            schemeful_context_type <= context_type);
 
-      if (schemeful_context_type <= context_type)
-        EXPECT_EQ(context_in, copy);
+        if (schemeful_context_type <= context_type)
+          EXPECT_TRUE(context_in.CompleteEquivalenceForTesting(copy));
+      }
     }
   }
 }

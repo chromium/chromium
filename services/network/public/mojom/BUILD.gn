@@ -680,6 +680,10 @@ mojom("cookies_mojom") {
           cpp = "::net::CookieEffectiveSameSite"
         },
         {
+          mojom = "network.mojom.CookieSameSiteContextMetadata"
+          cpp = "::net::CookieOptions::SameSiteCookieContext::ContextMetadata"
+        },
+        {
           mojom = "network.mojom.CookieSameSiteContext"
           cpp = "::net::CookieOptions::SameSiteCookieContext"
         },

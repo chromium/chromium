@@ -33,10 +33,22 @@ CookieOptions::SameSiteCookieContext::GetContextForCookieInclusion() const {
   return context_;
 }
 
+const CookieOptions::SameSiteCookieContext::ContextMetadata&
+CookieOptions::SameSiteCookieContext::GetMetadataForCurrentSchemefulMode()
+    const {
+  return cookie_util::IsSchemefulSameSiteEnabled() ? schemeful_metadata()
+                                                   : metadata();
+}
+
+void CookieOptions::SameSiteCookieContext::SetContextTypesForTesting(
+    ContextType context_type,
+    ContextType schemeful_context_type) {
+  context_ = context_type;
+  schemeful_context_ = schemeful_context_type;
+}
+
 bool CookieOptions::SameSiteCookieContext::AffectedByBugfix1166211() const {
-  return cookie_util::IsSchemefulSameSiteEnabled()
-             ? schemeful_affected_by_bugfix_1166211_
-             : affected_by_bugfix_1166211_;
+  return GetMetadataForCurrentSchemefulMode().affected_by_bugfix_1166211;
 }
 
 void CookieOptions::SameSiteCookieContext::
@@ -58,6 +70,17 @@ void CookieOptions::SameSiteCookieContext::
       "Cookie.SameSiteCookieInclusionChangedByBugfix1166211", changed);
 }
 
+bool CookieOptions::SameSiteCookieContext::CompleteEquivalenceForTesting(
+    const SameSiteCookieContext& other) const {
+  bool metadata_equal = metadata_.affected_by_bugfix_1166211 ==
+                        other.metadata().affected_by_bugfix_1166211;
+  bool schemeful_metadata_equal =
+      schemeful_metadata_.affected_by_bugfix_1166211 ==
+      other.schemeful_metadata().affected_by_bugfix_1166211;
+
+  return *this == other && metadata_equal && schemeful_metadata_equal;
+}
+
 bool operator==(const CookieOptions::SameSiteCookieContext& lhs,
                 const CookieOptions::SameSiteCookieContext& rhs) {
   return std::tie(lhs.context_, lhs.schemeful_context_) ==
@@ -71,11 +94,8 @@ bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
 
 // Keep default values in sync with content/public/common/cookie_manager.mojom.
 CookieOptions::CookieOptions()
-    : exclude_httponly_(true),
-      same_site_cookie_context_(SameSiteCookieContext(
-          SameSiteCookieContext::ContextType::CROSS_SITE)),
-      update_access_time_(true),
-      return_excluded_cookies_(false) {}
+    : same_site_cookie_context_(SameSiteCookieContext(
+          SameSiteCookieContext::ContextType::CROSS_SITE)) {}
 
 CookieOptions::CookieOptions(const CookieOptions& other) = default;
 CookieOptions::CookieOptions(CookieOptions&& other) = default;

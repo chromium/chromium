@@ -78,16 +78,39 @@ struct EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause> {
 };
 
 template <>
+struct StructTraits<
+    network::mojom::CookieSameSiteContextMetadataDataView,
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata> {
+  static bool affected_by_bugfix_1166211(
+      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
+    return m.affected_by_bugfix_1166211;
+  }
+
+  static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,
+                   net::CookieOptions::SameSiteCookieContext::ContextMetadata*);
+};
+
+template <>
 struct StructTraits<network::mojom::CookieSameSiteContextDataView,
                     net::CookieOptions::SameSiteCookieContext> {
   static net::CookieOptions::SameSiteCookieContext::ContextType context(
-      net::CookieOptions::SameSiteCookieContext& s) {
+      const net::CookieOptions::SameSiteCookieContext& s) {
     return s.context();
   }
 
   static net::CookieOptions::SameSiteCookieContext::ContextType
-  schemeful_context(net::CookieOptions::SameSiteCookieContext& s) {
+  schemeful_context(const net::CookieOptions::SameSiteCookieContext& s) {
     return s.schemeful_context();
+  }
+
+  static const net::CookieOptions::SameSiteCookieContext::ContextMetadata&
+  metadata(const net::CookieOptions::SameSiteCookieContext& s) {
+    return s.metadata();
+  }
+
+  static const net::CookieOptions::SameSiteCookieContext::ContextMetadata&
+  schemeful_metadata(const net::CookieOptions::SameSiteCookieContext& s) {
+    return s.schemeful_metadata();
   }
 
   static bool Read(network::mojom::CookieSameSiteContextDataView mojo_options,
