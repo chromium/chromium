@@ -99,7 +99,7 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(GrammarServiceClientTest, ParsesResultsForLongQuery) {
+TEST_F(GrammarServiceClientTest, RejectLongQueries) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);
@@ -109,23 +109,6 @@ TEST_F(GrammarServiceClientTest, ParsesResultsForLongQuery) {
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
   profile->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
-
-  // Construct fake output
-  machine_learning::mojom::GrammarCheckerResultPtr result =
-      machine_learning::mojom::GrammarCheckerResult::New();
-  result->status = machine_learning::mojom::GrammarCheckerResult::Status::OK;
-  machine_learning::mojom::GrammarCheckerCandidatePtr candidate =
-      machine_learning::mojom::GrammarCheckerCandidate::New();
-  candidate->text = "fake output";
-  candidate->score = 0.5f;
-  machine_learning::mojom::GrammarCorrectionFragmentPtr fragment =
-      machine_learning::mojom::GrammarCorrectionFragment::New();
-  fragment->offset = 3;
-  fragment->length = 5;
-  fragment->replacement = "fake replacement";
-  candidate->fragments.emplace_back(std::move(fragment));
-  result->candidates.emplace_back(std::move(candidate));
-  fake_service_connection.SetOutputGrammarCheckerResult(result);
 
   GrammarServiceClient client;
   base::RunLoop().RunUntilIdle();
@@ -140,12 +123,7 @@ TEST_F(GrammarServiceClientTest, ParsesResultsForLongQuery) {
       profile.get(), long_text,
       base::BindOnce(
           [](bool success, const std::vector<ui::GrammarFragment>& results) {
-            EXPECT_TRUE(success);
-            ASSERT_EQ(results.size(), 1U);
-            // The fake grammar check result is set to return offset=3, so here
-            // getting the location as 203 verifies the trimming.
-            EXPECT_EQ(results[0].range, gfx::Range(203, 208));
-            EXPECT_EQ(results[0].suggestion, "fake replacement");
+            EXPECT_FALSE(success);
           }));
 
   base::RunLoop().RunUntilIdle();

@@ -18,11 +18,24 @@
 namespace chromeos {
 namespace {
 
+using text_utils::FindCurrentSentence;
+using text_utils::FindLastSentence;
+using text_utils::Sentence;
+
 constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromMilliseconds(500);
 
 void RecordGrammarAction(GrammarActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
                                 action);
+}
+
+bool IsValidSentence(const std::u16string& text, const Sentence& sentence) {
+  uint32_t start = sentence.original_range.start();
+  uint32_t end = sentence.original_range.end();
+  if (start >= text.size() || end > text.size())
+    return false;
+
+  return FindCurrentSentence(text, start) == sentence;
 }
 
 }  // namespace
@@ -54,6 +67,7 @@ bool GrammarManager::IsOnDeviceGrammarEnabled() {
 void GrammarManager::OnFocus(int context_id) {
   if (context_id != context_id_) {
     last_text_ = u"";
+    last_sentence_ = Sentence();
   }
   context_id_ = context_id;
 }
@@ -98,13 +112,20 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
     DismissSuggestion();
 
   if (text != last_text_) {
+    last_text_ = text;
+
     // Grammar check is cpu consuming, so we only send request to ml service
-    // when the user has stopped typing for some time.
+    // when the user has finished a sentence or stopped typing for some time.
+    Sentence last_sentence = FindLastSentence(text, cursor_pos);
+    if (last_sentence_ != last_sentence) {
+      last_sentence_ = last_sentence;
+      Check(last_sentence);
+    }
+
     delay_timer_.Start(
         FROM_HERE, kCheckDelay,
-        base::BindOnce(&GrammarManager::Check, base::Unretained(this), text));
-
-    last_text_ = text;
+        base::BindOnce(&GrammarManager::Check, base::Unretained(this),
+                       FindCurrentSentence(text, cursor_pos)));
     return;
   }
 
@@ -141,9 +162,36 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   }
 }
 
-void GrammarManager::Check(const std::u16string& text) {
-  if (text != last_text_) {
+void GrammarManager::Check(const Sentence& sentence) {
+  if (!IsValidSentence(last_text_, sentence))
     return;
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return;
+
+  input_context->ClearGrammarFragments(sentence.original_range);
+
+  grammar_client_->RequestTextCheck(
+      profile_, sentence.text,
+      base::BindOnce(&GrammarManager::OnGrammarCheckDone,
+                     base::Unretained(this), sentence));
+}
+
+void GrammarManager::OnGrammarCheckDone(
+    const Sentence& sentence,
+    bool success,
+    const std::vector<ui::GrammarFragment>& results) const {
+  if (!success || !IsValidSentence(last_text_, sentence) || results.empty())
+    return;
+
+  std::vector<ui::GrammarFragment> corrected_results;
+  for (const ui::GrammarFragment& fragment : results) {
+    corrected_results.emplace_back(
+        gfx::Range(fragment.range.start() + sentence.original_range.start(),
+                   fragment.range.end() + sentence.original_range.start()),
+        fragment.suggestion);
   }
 
   ui::IMEInputContextHandlerInterface* input_context =
@@ -151,27 +199,7 @@ void GrammarManager::Check(const std::u16string& text) {
   if (!input_context)
     return;
 
-  input_context->ClearGrammarFragments(gfx::Range(0, text.size()));
-
-  grammar_client_->RequestTextCheck(
-      profile_, text,
-      base::BindOnce(&GrammarManager::OnGrammarCheckDone,
-                     base::Unretained(this), text));
-}
-
-void GrammarManager::OnGrammarCheckDone(
-    const std::u16string& text,
-    bool success,
-    const std::vector<ui::GrammarFragment>& results) const {
-  if (!success || text != last_text_ || results.empty())
-    return;
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return;
-
-  input_context->AddGrammarFragments(results);
-
+  input_context->AddGrammarFragments(corrected_results);
   RecordGrammarAction(GrammarActions::kUnderlined);
 }
 

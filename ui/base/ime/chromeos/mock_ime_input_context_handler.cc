@@ -81,7 +81,13 @@ absl::optional<GrammarFragment> MockIMEInputContextHandler::GetGrammarFragment(
 
 bool MockIMEInputContextHandler::ClearGrammarFragments(
     const gfx::Range& range) {
-  grammar_fragments_.clear();
+  std::vector<GrammarFragment> updated_fragments;
+  for (const GrammarFragment& fragment : grammar_fragments_) {
+    if (!range.Contains(fragment.range)) {
+      updated_fragments.push_back(fragment);
+    }
+  }
+  grammar_fragments_ = updated_fragments;
   return true;
 }
 

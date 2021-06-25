@@ -132,6 +132,44 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
                                       0 /*GrammarAction::kUnderlined*/, 1);
 }
 
+TEST_F(GrammarManagerTest, ChecksLastSentenceImmediately) {
+  MockSuggestionHandler mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+
+  manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"There is error. And another error.", 20,
+                                   20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+
+  auto grammar_fragments =
+      mock_ime_input_context_handler_.get_grammar_fragments();
+  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
+  EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
+}
+
+TEST_F(GrammarManagerTest, ChecksBothLastAndCurrentSentence) {
+  MockSuggestionHandler mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+
+  manager.OnFocus(1);
+  manager.OnSurroundingTextChanged(u"There is error. And another error.", 20,
+                                   20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+
+  auto grammar_fragments =
+      mock_ime_input_context_handler_.get_grammar_fragments();
+  EXPECT_EQ(grammar_fragments.size(), 2);
+  EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
+  EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
+  EXPECT_EQ(grammar_fragments[1].range, gfx::Range(28, 33));
+  EXPECT_EQ(grammar_fragments[1].suggestion, "correct");
+}
+
 TEST_F(GrammarManagerTest, HandlesMultipleGrammarCheckResults) {
   MockSuggestionHandler mock_suggestion_handler;
   GrammarManager manager(profile_.get(),

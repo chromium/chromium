@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
 #include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/chromeos/input_method/text_utils.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/events/event.h"
@@ -62,10 +63,10 @@ class GrammarManager {
   void IgnoreSuggestion();
 
  private:
-  void Check(const std::u16string& text);
+  void Check(const text_utils::Sentence& sentence);
 
   void OnGrammarCheckDone(
-      const std::u16string& text,
+      const text_utils::Sentence& sentence,
       bool success,
       const std::vector<ui::GrammarFragment>& results) const;
 
@@ -84,6 +85,7 @@ class GrammarManager {
   const ui::ime::AssistiveWindowButton ignore_button_;
   bool suggestion_shown_ = false;
   ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
+  text_utils::Sentence last_sentence_;
 };
 
 }  // namespace chromeos
