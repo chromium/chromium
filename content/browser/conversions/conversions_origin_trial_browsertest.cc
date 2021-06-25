@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -92,8 +93,15 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting === undefined"));
 }
 
+#if defined(OS_LINUX)
+// TODO(https://crbug.com/1121464): Flaky on linux.
+#define MAYBE_OriginTrialEnabled_ImpressionRegistered DISABLED_OriginTrialEnabled_ImpressionRegistered
+#else
+#define MAYBE_OriginTrialEnabled_ImpressionRegistered OriginTrialEnabled_ImpressionRegistered
+#endif
+
 IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
-                       OriginTrialEnabled_ImpressionRegistered) {
+                       MAYBE_OriginTrialEnabled_ImpressionRegistered) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/impression_with_origin_trial.html")));
 
