@@ -378,17 +378,28 @@ bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(document_loader);
 
-  // If load was from a data URL, then the saved data URL, not the history
-  // URL, should be the URL of the data source.
+  // If this document is loaded by a loadDataWithBaseURL request, then the URLs
+  // saved in the DocumentLoader will be the user-supplied base URL (used as the
+  // "document URL") and history URL (used as the "unreachable URL"/"URL for
+  // history"). However, we want to return the data: URL (the URL originally
+  // sent by the browser to commit the navigation) here.
+  // TODO(https://crbug.com/1223408): Since the DocumentState stays as long as
+  // the Document stays the same, this means the data: URL will be returned even
+  // after same-document navigations. Investigate whether this is intended or
+  // not.
   if (document_state->was_load_data_with_base_url_request()) {
     *output = document_state->data_url();
     return true;
   }
 
-  // WebDocumentLoader has unreachable URL means that the frame is loaded
-  // through blink::WebFrame::loadData(), and the base URL will be in the
-  // redirect chain. However, we never visited the baseURL. So in this case, we
-  // should use the unreachable URL as the original URL.
+  // The "unreachable URL" is only set in two cases:
+  // - An error page, where the "unreachable URL" is set to the URL that failed
+  // to load. We want the URL bar to show that URL, and the session history
+  // entry should also use that URL (instead of "chrome-error://chromewebdata"
+  // which is used as the "document URL" for the DocumentLoader).
+  // - A loadDataWithBaseURL, where the "unreachable URL" is set to the "history
+  // URL". This case should never reach this point as it's handled above, where
+  // we return the original data: URL instead.
   if (document_loader->HasUnreachableURL()) {
     *output = document_loader->UnreachableURL();
     return true;
@@ -833,6 +844,31 @@ mojo::PendingRemote<blink::mojom::BlobURLToken> CloneBlobURLToken(
   return cloned_token;
 }
 
+// Whether the navigation should be treated as a "loadDataWithBaseURL"
+// navigation, where the "document URL" is set to the supplied base URL instead
+// of the data URL set in CommonNavigationParams' `url` and the "unreachable
+// URL" is set to the supplied history URL. If this returns false, the data:
+// URL will still be loaded, but we won't try to use the supplied base URL and
+// history URL.
+bool ShouldLoadDataWithBaseURL(
+    bool is_main_frame,
+    const mojom::CommonNavigationParams& common_params,
+    const mojom::CommitNavigationParams& commit_params) {
+  if (!is_main_frame)
+    return false;
+  // If no base URL is supplied, we should treat this as a normal data: URL
+  // navigation, except when `data_url_as_string` should be used, as the `url`
+  // in CommonNavigationParams will just contain the data header with no actual
+  // data, and the `data_url_as_string` code is only available in the
+  // loadDataWithBaseURL path.
+  bool should_load_data_url = !common_params.base_url_for_data_url.is_empty();
+#if defined(OS_ANDROID)
+  should_load_data_url |= !commit_params.data_url_as_string.empty();
+#endif
+  DCHECK(!should_load_data_url || common_params.url.SchemeIs(url::kDataScheme));
+  return should_load_data_url;
+}
+
 // Creates a fully functional DocumentState in the case where we do not have
 // navigation parameters available.
 std::unique_ptr<DocumentState> BuildDocumentState() {
@@ -866,6 +902,16 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
       mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL);
   internal_data->set_request_id(request_id);
 
+  // If this is a loadDataWithBaseURL request, save the commit URL so that we
+  // can send a DidCommit message with the URL that was originally sent by the
+  // browser in CommonNavigationParams (See MaybeGetOverriddenURL()).
+  // Note that this is not calling ShouldLoadDataWithBaseURL() to preserve
+  // pre-existing behavior, where we would only return the data: URL with the
+  // DidCommitProvisionalLoadParams under this specific condition (in other
+  // cases we will return the DocumentLoader's URL - which will use the base URL
+  // if it's not empty).
+  // TODO(https://crbug.com/1223403, https://crbug.com/1223408): Make this
+  // consistent with the other LoadDataWithBaseURL checks.
   bool load_data = !common_params.base_url_for_data_url.is_empty() &&
                    !common_params.history_url_for_data_url.is_empty() &&
                    common_params.url.SchemeIs(url::kDataScheme);
@@ -2625,22 +2671,50 @@ void RenderFrameImpl::CommitNavigation(
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(document_state));
 
-  // Perform a navigation to a data url if needed (for main frames).
-  // Note: the base URL might be invalid, so also check the data URL string.
-  bool should_load_data_url = !common_params->base_url_for_data_url.is_empty();
-#if defined(OS_ANDROID)
-  should_load_data_url |= !commit_params->data_url_as_string.empty();
-#endif
-  if (is_main_frame_ && should_load_data_url) {
+  // Perform a "loadDataWithBaseURL" navigation. This is different from a normal
+  // data: URL navigation in various ways:
+  // - The "document URL" will use the supplied `base_url_for_data_url` if it's
+  // not empty (otherwise it will fall back to the data: URL).
+  // - The "unreachable URL" (used for HistoryItem, etc) will use the supplied
+  // `history_url_for_data_url` if it's not empty (otherwise it will fall back
+  // to the document URL).
+  // - The actual data: URL will be saved in the document's DocumentState to
+  // later be returned as the `url` in DidCommitProvisionalLoadParams.
+  if (ShouldLoadDataWithBaseURL(is_main_frame_, *common_params,
+                                *commit_params)) {
     std::string mime_type, charset, data;
+    // `base_url` will be set to `base_url_for_data_url` from `common_params`,
+    // unless it's empty, in which case `url` from `common_params` will be used.
     GURL base_url;
     DecodeDataURL(*common_params, *commit_params, &mime_type, &charset, &data,
                   &base_url);
+    // Note that even though we use the term "base URL", `base_url` is also
+    // used as the "document URL" (unlike normal "base URL"s set through the
+    // <base> element or other means, which would only be used to resolve
+    // relative URLs, etc).
     navigation_params->url = base_url;
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             WebString::FromUTF8(mime_type),
                                             WebString::FromUTF8(charset), data);
-    // Needed so that history-url-only changes don't become reloads.
+    // Even though this is a successful navigation, we set the "unreachable URL"
+    // to the value of the supplied "history URL". This value will be used for:
+    // - Setting the HistoryItem URL in
+    // DocumentLoader::SetHistoryItemStateForCommit(). Note that this is *not*
+    // used for setting the session history entry's URL in the browser side.
+    // - Determining whether various states (scroll state, document.state) from
+    // the previous HistoryItem should be carried over.
+    // - Determining whether a navigation is a same-URL navigation, and thus
+    // should result in replacement, in FrameLoader::DetermineFrameLoadType().
+    // Note that the code there compares the new *document URL* against the old
+    // *history URL* so if the base URL and the history URL is different, even
+    // if the loadDataWithBaseURL() navigation is triggered with the exact same
+    // parameters twice, it will not be classified as "same-URL". This seems to
+    // be unintended, but the old comment here says this is "Needed so that
+    // history-url-only changes don't become reloads" so at least it works to
+    // prevent reloads/replacements when the history URL changes but not
+    // everything else.
+    // TODO(https://crbug.com/1223398): Figure out if these behaviors should be
+    // kept, or even if we should send the history URL to the renderer at all.
     navigation_params->unreachable_url =
         common_params->history_url_for_data_url;
     std::move(commit_with_params).Run(std::move(navigation_params));
@@ -2911,6 +2985,8 @@ void RenderFrameImpl::CommitFailedNavigation(
   auto navigation_params = std::make_unique<WebNavigationParams>();
   FillNavigationParamsRequest(*common_params, *commit_params,
                               navigation_params.get());
+  // Use kUnreachableWebDataURL as the document URL (instead of the URL that
+  // failed to load, which is saved separately as the "unreachable URL" below).
   navigation_params->url = GURL(kUnreachableWebDataURL);
   // FillNavigationParamsRequest() sets the |navigation_params->http_method| to
   // the original method of the request. In successful page loads,
@@ -2982,6 +3058,11 @@ void RenderFrameImpl::CommitFailedNavigation(
                            navigation_params.get());
   WebNavigationParams::FillStaticResponse(navigation_params.get(), "text/html",
                                           "UTF-8", error_html);
+  // Save the URL that failed to load as the "unreachable URL" so that the
+  // we can use that (instead of kUnreachableWebDataURL) for the HistoryItem for
+  // this navigation, and also to send back with the DidCommitProvisionalLoad
+  // message to the browser.
+  // TODO(https://crbug.com/1131832): Stop sending the URL back with DidCommit.
   navigation_params->unreachable_url = error.url();
   if (commit_params->redirects.size()) {
     navigation_params->pre_redirect_url_for_failed_navigations =
@@ -4544,7 +4625,12 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->has_potentially_trustworthy_unique_origin =
       frame_origin.IsOpaque() && frame_origin.IsPotentiallyTrustworthy();
 
-  // Set the URL to be displayed in the browser UI to the user.
+  // Set the URL to be displayed in the browser UI to the user. Note this might
+  // be different than the URL actually used in the DocumentLoader (see comments
+  // in GetLoadingUrl() and MaybeGetOverriddenURL()). This might not be the URL
+  // actually shown to the user as well, since the browser has additional logic
+  // for virtual URLs (e.g. the "history URL" is shown for loadDataWithBaseURL
+  // instead of this URL).
   params->url = GetLoadingUrl();
 
   // TODO(https://crbug.com/1158101): Reconsider how we calculate
@@ -5686,13 +5772,27 @@ void RenderFrameImpl::DecodeDataURL(
       DCHECK(data_tmp.empty());
     }
 #endif
+    // If `data_url_as_string` is set, the `url` in CommonNavigationParams will
+    // only contain the data: URL header and won't contain any actual data (see
+    // NavigationControllerAndroid::LoadUrl()), so we should use
+    // `data_url_as_string` if possible.
     data_url = GURL(commit_params.data_url_as_string);
     if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme)) {
+      // If the given data URL is invalid, use the data: URL header as a
+      // fallback.
       data_url = common_params.url;
     }
   }
 #endif
+  // Parse the given data, then set the `base_url`, which is used as the
+  // document URL.
   if (net::DataURL::Parse(data_url, mime_type, charset, data)) {
+    // Since the base URL will also be used as the document URL, we should not
+    // use an empty URL. If it's empty, use the data: URL as a fallback.
+    // TODO(https://crbug.com/1223403): Maybe this should consider
+    // `data_url_as_string` too. Otherwise, the base URL might be set to the
+    // data: URL header with empty data, instead of the data: URL that contains
+    // the actual data.
     *base_url = common_params.base_url_for_data_url.is_empty()
                     ? common_params.url
                     : common_params.base_url_for_data_url;
@@ -5716,6 +5816,16 @@ blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {
   return GetLoadingUrl();
 }
 
+// Returns the "loading URL", which might be different than the "document URL"
+// used in the DocumentLoader in some cases:
+// - For error pages, it will return the URL that failed to load, instead of the
+// chrome-error:// URL used as the document URL in the DocumentLoader.
+// - For some loadDataWithBaseURL() navigations, it will return the data: URL
+// used to commit, instead of the "base URL" used as the document URL in the
+// DocumentLoader. Note that this does not cover all loadDataWithBaseURL()
+// navigations, the rest will just return the document/base URL. See comments in
+// BuildDocumentStateFromParams() and ShouldLoadDataWithBaseURL() for more
+// details.
 GURL RenderFrameImpl::GetLoadingUrl() const {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
 

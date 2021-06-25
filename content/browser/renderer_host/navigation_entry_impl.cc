@@ -801,6 +801,8 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
   if (IsViewSourceMode())
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
 
+  // TODO(https://crbug.com/1223394): Stop setting `base_url_for_data_url` and
+  // `history_url_for_data_url` for subframe history navigations.
   return mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
       GetTransitionType(), navigation_type, download_policy,

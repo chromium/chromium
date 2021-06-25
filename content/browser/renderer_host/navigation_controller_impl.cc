@@ -272,15 +272,8 @@ absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
   // URL used for the navigation.
   // TODO(https://crbug.com/1198406): Save committed origin in
   // FrameNavigationEntry for this case too.
-  absl::optional<std::string> data_url_as_string;
-#if defined(OS_ANDROID)
-  data_url_as_string = request->commit_params().data_url_as_string;
-#endif
-  if (NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
-          request->IsInMainFrame(), request->common_params(),
-          data_url_as_string)) {
+  if (request->IsLoadDataWithBaseURLAndHasUnreachableURL())
     return absl::nullopt;
-  }
 
   return absl::make_optional(params.origin);
 }

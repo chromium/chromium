@@ -36,6 +36,12 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
   // is set to true and |data_url_| is set to the data URL of the navigation.
   // Otherwise, |was_load_data_with_base_url_request_| is false and |data_url_|
   // is empty.
+  // NOTE: This does not actually cover all cases of LoadDataWithBaseURL
+  // navigations, see comments in render_frame_impl.cc's
+  // ShouldLoadDataWithBaseURL() and BuildDocumentStateFromParams() for more
+  // details. Prefer calling ShouldLoadDataWithBaseURL() instead of this method.
+  // TODO(https://crbug.com/1223403, https://crbug.com/1223408): Make this
+  // consistent with the other LoadDataWithBaseURL checks.
   void set_was_load_data_with_base_url_request(bool value) {
     was_load_data_with_base_url_request_ = value;
   }

@@ -9973,22 +9973,18 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_overriding_user_agent_ = navigation_request->is_overriding_user_agent() &&
                               frame_tree_node_->IsMainFrame();
 
-  // Mark whether the document is loaded with loadDataWithBaseURL or not. If
-  // |is_loaded_from_load_data_with_base_url_| is true, we will bypass checks
+  // Mark whether then navigation was intended as a loadDataWithBaseURL or not.
+  // If |is_loaded_from_load_data_with_base_url_| is true, we will bypass checks
   // in VerifyDidCommitParams for same-document navigations in the loaded
-  // document.
+  // document. Note that the renderer might not have actually gone through the
+  // special "loadDataWithBaseURL" path that tries to set the base URL and
+  // history URL with user-supplied URLs even if this is true.
   is_loaded_from_load_data_with_base_url_ =
       NavigationRequest::IsLoadDataWithBaseURL(
           navigation_request->common_params());
 
-  absl::optional<std::string> data_url_as_string;
-#if defined(OS_ANDROID)
-  data_url_as_string = navigation_request->commit_params().data_url_as_string;
-#endif
-  is_loaded_from_load_data_with_base_url_and_unreachable_url_ =
-      NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
-          frame_tree_node_->IsMainFrame(), navigation_request->common_params(),
-          data_url_as_string);
+  document_has_unreachable_url_from_load_data_with_base_url_ =
+      navigation_request->IsLoadDataWithBaseURLAndHasUnreachableURL();
 
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
@@ -10642,30 +10638,24 @@ const std::string CalculateMethod(
   return nav_request_method;
 }
 
-bool CalculateURLIsUnreachable(
-    NavigationRequest* request,
-    bool is_error_page,
-    bool is_loaded_from_load_data_with_base_url_and_unreachable_url) {
+bool CalculateURLIsUnreachable(NavigationRequest* request,
+                               bool is_error_page,
+                               bool prev_document_has_unreachable_url) {
   // url_is_unreachable should only be true in two cases:
   // 1) The navigation is for an error page
   if (is_error_page)
     return true;
   // 2) This is a main frame navigation to a data: URL document with a base_url
-  // (either an initial load or a same-document navigation).
+  // and history URL (either an initial load or a same-document navigation).
   // For same-document navigations, we can know this by checking the value
-  // of |is_loaded_from_load_data_with_base_url_and_unreachable_url|, which was
-  // set when the document was initially loaded.
+  // of |prev_document_has_unreachable_url|, which was set when the document
+  // was initially loaded.
   if (request->IsSameDocument())
-    return is_loaded_from_load_data_with_base_url_and_unreachable_url;
+    return prev_document_has_unreachable_url;
 
   // For cross-document navigations, we can know by checking
-  // NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL().
-  absl::optional<std::string> data_url_as_string;
-#if defined(OS_ANDROID)
-  data_url_as_string = request->commit_params().data_url_as_string;
-#endif
-  return NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
-      request->IsInMainFrame(), request->common_params(), data_url_as_string);
+  // NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL().
+  return request->IsLoadDataWithBaseURLAndHasUnreachableURL();
 }
 
 int CalculateHTTPStatusCode(NavigationRequest* request,
@@ -10864,7 +10854,7 @@ void RenderFrameHostImpl::
 
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
       request, is_error_page,
-      is_loaded_from_load_data_with_base_url_and_unreachable_url_);
+      document_has_unreachable_url_from_load_data_with_base_url_);
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -10931,7 +10921,7 @@ void RenderFrameHostImpl::
                         is_loaded_from_load_data_with_base_url_);
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "prev_ldwbu",
-      is_loaded_from_load_data_with_base_url_and_unreachable_url_);
+      document_has_unreachable_url_from_load_data_with_base_url_);
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "base_url_fdu_empty",
       request->common_params().base_url_for_data_url.is_empty());

@@ -5350,45 +5350,45 @@ bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
 }
 
 // static
-bool NavigationRequest::IsLoadDataWithBaseURL(const GURL& url,
-                                              const GURL& base_url) {
-  return url.SchemeIs(url::kDataScheme) && !base_url.is_empty();
-}
-
-// static
 bool NavigationRequest::IsLoadDataWithBaseURL(
     const mojom::CommonNavigationParams& common_params) {
-  return IsLoadDataWithBaseURL(common_params.url,
-                               common_params.base_url_for_data_url);
+  // TODO(https://crbug.com/1223394): This should probably check if the
+  // navigation is happening on a main frame too, since subframe history
+  // navigations can have a non-empty `base_url_for_data_url` (since it will use
+  // the base URL saved in the NavigationEntry).
+  // TODO(https://crbug.com/1223403): Make this consistent with the other
+  // LoadDataWithBaseURL checks.
+  return common_params.url.SchemeIs(url::kDataScheme) &&
+         !common_params.base_url_for_data_url.is_empty();
 }
 
-// static
-bool NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
-    bool is_main_frame,
-    const mojom::CommonNavigationParams& common_params,
-    const absl::optional<std::string>& data_url_as_string) {
-  if (!is_main_frame || !IsLoadDataWithBaseURL(common_params))
-    return false;
+bool NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL() {
+  // On loadDataURLWithBaseURL navigations, `history_url_for_data_url`
+  // is saved in WebNavigationParams' and DocumentLoader's `unreachable_url` in
+  // the renderer, unless the navigation is not treated as a loadDataWithBaseURL
+  // navigation (and instead treated like a normal data: URL navigation).
+  return IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() &&
+         !common_params_->history_url_for_data_url.is_empty();
+}
 
-  // On main frame loadDataURLWithBaseURL navigations, history_url_for_data_url
-  // is saved in WebNavigationParams' unreachable_url in the renderer and sent
-  // back to the browser, unless the base_url is invalid and data_url_as_string
-  // is not used. See https://crbug.com/522567 and handling of data: URLs in
-  // RenderFrameImpl::CommitNavigation() for more details.
-  const bool has_history_url_for_data_url =
-      !common_params.history_url_for_data_url.is_empty();
-  const bool has_non_empty_data_url_as_string =
-      data_url_as_string.has_value() && !data_url_as_string.value().empty();
-  if (has_history_url_for_data_url) {
-    // history_url_for_data_url must only be set if we originally set
-    // base_url_for_data_url or data_url_as_string.
-    DCHECK(!common_params.base_url_for_data_url.is_empty() ||
-           has_non_empty_data_url_as_string);
+bool NavigationRequest::
+    IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() {
+  // A navigation is treated as a loadDataWithBaseURL if it's a successful main
+  // frame navigation, and either the supplied base URL is not empty/invalid, or
+  // `data_url_as_string` is set. See the ShouldLoadDataWithBaseURL() function
+  // in render_frame_impl.cc for more details.
+  if (!IsInMainFrame() || DidEncounterError()) {
+    return false;
   }
 
-  return (common_params.base_url_for_data_url.is_valid() ||
-          has_non_empty_data_url_as_string) &&
-         has_history_url_for_data_url;
+  absl::optional<std::string> data_url_as_string;
+#if defined(OS_ANDROID)
+  data_url_as_string = commit_params_->data_url_as_string;
+#endif
+
+  return common_params_->base_url_for_data_url.is_valid() ||
+         (data_url_as_string.has_value() &&
+          !data_url_as_string.value().empty());
 }
 
 url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {

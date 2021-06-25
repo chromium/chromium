@@ -3514,11 +3514,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // loadDataWithBaseURL API or not.
   bool is_loaded_from_load_data_with_base_url_ = false;
 
-  // Whether the currently committed document is a result of webview's
-  // loadDataWithBaseURL API and the renderer has a non-empty unreachable URL.
-  // See NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL for more
-  // details.
-  bool is_loaded_from_load_data_with_base_url_and_unreachable_url_ = false;
+  // Whether the current document has a non-empty "unreachable URL" as a result
+  // of a loadDataWithBaseURL navigation. For more details, see
+  // NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL().
+  bool document_has_unreachable_url_from_load_data_with_base_url_ = false;
 
   // The last reported character encoding, not canonicalized.
   std::string last_reported_encoding_;
