@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 
 #include "base/base64url.h"
 #include "base/metrics/histogram_functions.h"

@@ -125,8 +125,8 @@
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"  // nogncheck
 #include "components/navigation_interception/intercept_navigation_delegate.h"
-#include "components/safe_browsing/core/realtime/policy_engine.h"  // nogncheck
-#include "components/safe_browsing/core/realtime/url_lookup_service.h"  // nogncheck
+#include "components/safe_browsing/core/browser/realtime/policy_engine.h"  // nogncheck
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"  // nogncheck
 #include "components/spellcheck/browser/spell_check_host_impl.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

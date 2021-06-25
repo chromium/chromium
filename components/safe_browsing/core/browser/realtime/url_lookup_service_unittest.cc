@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/realtime/url_lookup_service.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -94,8 +94,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
 
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */,
-        false /* restore_session */);
+        false /* store_last_modified */, false /* restore_session */);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         nullptr, content_setting_map_.get());
     referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
@@ -595,17 +594,13 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCanCheckUrl) {
   struct CanCheckUrlCases {
     const char* url;
     bool can_check;
-  } can_check_url_cases[] = {{"ftp://example.test/path", false},
-                             {"http://localhost/path", false},
-                             {"http://127.0.0.1/path", false},
-                             {"http://127.0.0.1:2222/path", false},
-                             {"http://192.168.1.1/path", false},
-                             {"http://172.16.2.2/path", false},
-                             {"http://10.1.1.9/path", false},
-                             {"http://10.1.1.09/path", true},
-                             {"http://example.test/path", true},
-                             {"http://nodothost/path", false},
-                             {"http://x.x/shorthost", false}};
+  } can_check_url_cases[] = {
+      {"ftp://example.test/path", false}, {"http://localhost/path", false},
+      {"http://127.0.0.1/path", false},   {"http://127.0.0.1:2222/path", false},
+      {"http://192.168.1.1/path", false}, {"http://172.16.2.2/path", false},
+      {"http://10.1.1.9/path", false},    {"http://10.1.1.09/path", true},
+      {"http://example.test/path", true}, {"http://nodothost/path", false},
+      {"http://x.x/shorthost", false}};
   for (auto& can_check_url_case : can_check_url_cases) {
     GURL url(can_check_url_case.url);
     bool expected_can_check = can_check_url_case.can_check;
@@ -883,32 +878,31 @@ TEST_F(RealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(
       url,
-      base::BindOnce(
-          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            EXPECT_EQ(2, request->version());
-            EXPECT_EQ(2, request->referrer_chain().size());
-            // The first entry is sanitized because it is triggered in a
-            // subframe.
-            EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
-            EXPECT_FALSE(request->referrer_chain().Get(0).has_main_frame_url());
-            EXPECT_TRUE(
-                request->referrer_chain().Get(0).is_subframe_url_removed());
-            EXPECT_EQ(kTestReferrerUrl,
-                      request->referrer_chain().Get(0).referrer_url());
-            EXPECT_FALSE(
-                request->referrer_chain().Get(0).has_referrer_main_frame_url());
-            EXPECT_TRUE(request->referrer_chain()
-                            .Get(0)
-                            .is_subframe_referrer_url_removed());
-            // The second entry is not sanitized because it is triggered in a
-            // mainframe.
-            EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
-            EXPECT_FALSE(
-                request->referrer_chain().Get(1).is_subframe_url_removed());
-            EXPECT_FALSE(request->referrer_chain()
-                             .Get(1)
-                             .is_subframe_referrer_url_removed());
-          }),
+      base::BindOnce([](std::unique_ptr<RTLookupRequest> request,
+                        std::string token) {
+        EXPECT_EQ(2, request->version());
+        EXPECT_EQ(2, request->referrer_chain().size());
+        // The first entry is sanitized because it is triggered in a
+        // subframe.
+        EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
+        EXPECT_FALSE(request->referrer_chain().Get(0).has_main_frame_url());
+        EXPECT_TRUE(request->referrer_chain().Get(0).is_subframe_url_removed());
+        EXPECT_EQ(kTestReferrerUrl,
+                  request->referrer_chain().Get(0).referrer_url());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(0).has_referrer_main_frame_url());
+        EXPECT_TRUE(request->referrer_chain()
+                        .Get(0)
+                        .is_subframe_referrer_url_removed());
+        // The second entry is not sanitized because it is triggered in a
+        // mainframe.
+        EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(1).is_subframe_url_removed());
+        EXPECT_FALSE(request->referrer_chain()
+                         .Get(1)
+                         .is_subframe_referrer_url_removed());
+      }),
       response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,

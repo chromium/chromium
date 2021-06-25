@@ -27,9 +27,9 @@ source_set("unit_tests") {
     "//components/safe_browsing/core:verdict_cache_manager_unittest",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+    "//components/safe_browsing/core/browser/realtime:unit_tests",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:unit_tests",
     "//components/safe_browsing/core/db:unit_tests_local_db",
-    "//components/safe_browsing/core/realtime:unit_tests",
   ]
 }
