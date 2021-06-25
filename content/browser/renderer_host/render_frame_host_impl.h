@@ -2161,8 +2161,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(nasko): Remove dependency on RenderViewHost here. RenderProcessHost
   // should be the abstraction needed here, but we need RenderViewHost to pass
   // into WebContentsObserver::FrameDetached for now.
-  // |lifecycle_state_| can either be kActive or kSpeculative during
-  // RenderFrameHostImpl creation.
+  // |lifecycle_state_| can either be kSpeculative, kPrerendering, or kActive
+  // during RenderFrameHostImpl creation.
   RenderFrameHostImpl(SiteInstance* site_instance,
                       scoped_refptr<RenderViewHostImpl> render_view_host,
                       RenderFrameHostDelegate* delegate,

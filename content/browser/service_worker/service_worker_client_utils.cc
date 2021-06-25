@@ -488,6 +488,18 @@ void NavigateClient(const GURL& url,
     return;
   }
 
+  // Prerendered main frames are not allowed to navigate after their initial
+  // navigation. We can't proceed with the navigation and rely on the usual
+  // mechanism to disallow (PrerenderNavigationThrottle), because
+  // RequestOpenURL() crashes if called by a prerendering main frame.
+  if (rfhi->frame_tree_node()->IsMainFrame() &&
+      rfhi->frame_tree()->is_prerendering()) {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
+                ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    return;
+  }
+
   // Reject the navigate() call if there is an ongoing browser-initiated
   // navigation. Not rejecting it would allow websites to prevent the user from
   // navigating away. See https://crbug.com/930154.

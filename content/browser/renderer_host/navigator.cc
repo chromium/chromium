@@ -641,6 +641,13 @@ void Navigator::RequestOpenURL(
         render_frame_host->frame_tree_node()->frame_tree_node_id();
   }
 
+  // Prerendering frames need to have an FTN id set, so OpenURL() can find
+  // the correct frame tree for the navigation. Due to the above logic, that
+  // means this function currently can't be called for prerendering main frames.
+  DCHECK(render_frame_host->lifecycle_state() !=
+             RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
+         frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId);
+
   OpenURLParams params(url, referrer, frame_tree_node_id, disposition,
                        ui::PAGE_TRANSITION_LINK,
                        true /* is_renderer_initiated */);
