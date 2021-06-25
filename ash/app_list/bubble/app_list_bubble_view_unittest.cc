@@ -82,6 +82,12 @@ AppListBubbleSearchPage* GetSearchPage() {
   return GetBubblePresenter()->bubble_view_for_test()->search_page_for_test();
 }
 
+gfx::Rect GetShelfBounds() {
+  return AshTestBase::GetPrimaryShelf()
+      ->shelf_widget()
+      ->GetWindowBoundsInScreen();
+}
+
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
@@ -282,6 +288,65 @@ TEST_F(AppListBubbleViewTest, BubbleSizedForLargeDisplay) {
   // The AppListBubble should be contained within the display bounds.
   EXPECT_TRUE(GetPrimaryDisplay().work_area().Contains(
       presenter->bubble_view_for_test()->bounds()));
+}
+
+// Tests that the AppListBubbleView is positioned correctly when
+// shown with bottom auto-hidden shelf.
+TEST_F(AppListBubbleViewTest, BubblePositionWithBottomAutoHideShelf) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
+  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  gfx::Point bubble_view_bottom_left = presenter->bubble_widget_for_test()
+                                           ->GetWindowBoundsInScreen()
+                                           .bottom_left();
+
+  // The bottom of the AppListBubbleView should be near the top of the shelf and
+  // not near the bottom side of the display.
+  EXPECT_FALSE(IsNear(bubble_view_bottom_left,
+                      GetPrimaryDisplay().bounds().bottom_left()));
+  EXPECT_TRUE(IsNear(bubble_view_bottom_left, GetShelfBounds().origin()));
+}
+
+// Tests that the AppListBubbleView is positioned correctly when shown with left
+// auto-hidden shelf.
+TEST_F(AppListBubbleViewTest, BubblePositionWithLeftAutoHideShelf) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  gfx::Point bubble_view_origin =
+      presenter->bubble_widget_for_test()->GetWindowBoundsInScreen().origin();
+
+  // The left of the AppListBubbleView should be near the right of the shelf and
+  // not near the left side of the display.
+  EXPECT_FALSE(
+      IsNear(bubble_view_origin, GetPrimaryDisplay().bounds().origin()));
+  EXPECT_TRUE(IsNear(bubble_view_origin, GetShelfBounds().top_right()));
+}
+
+// Tests that the AppListBubbleView is positioned correctly when shown with
+// right auto-hidden shelf.
+TEST_F(AppListBubbleViewTest, BubblePositionWithRightAutoHideShelf) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  gfx::Point bubble_view_top_right = presenter->bubble_widget_for_test()
+                                         ->GetWindowBoundsInScreen()
+                                         .top_right();
+
+  // The right of the AppListBubbleView should be near the left of the shelf and
+  // not near the right side of the display.
+  EXPECT_FALSE(
+      IsNear(bubble_view_top_right, GetPrimaryDisplay().bounds().top_right()));
+  EXPECT_TRUE(IsNear(bubble_view_top_right, GetShelfBounds().origin()));
 }
 
 }  // namespace

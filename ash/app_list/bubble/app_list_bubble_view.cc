@@ -45,20 +45,33 @@ constexpr int kExtraTopOfScreenSpacing = 16;
 // Insets for the bubble contents.
 constexpr gfx::Insets kContentMargins(16);
 
+gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  gfx::Rect work_area = display.work_area();
+
+  // Subtract the shelf's bounds from the work area, since the shelf should
+  // always be shown with the app list bubble. This is done because the work
+  // area includes the area under the shelf when the shelf is set to auto-hide.
+  work_area.Subtract(Shelf::ForWindow(root_window)->GetIdealBounds());
+
+  return work_area;
+}
+
 // Returns the point on the screen to which the bubble is anchored.
 gfx::Point GetAnchorPointInScreen(aura::Window* root_window,
                                   ShelfAlignment shelf_alignment) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  gfx::Rect work_area = GetWorkAreaForBubble(root_window);
+
   switch (shelf_alignment) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      return base::i18n::IsRTL() ? display.work_area().bottom_right()
-                                 : display.work_area().bottom_left();
+      return base::i18n::IsRTL() ? work_area.bottom_right()
+                                 : work_area.bottom_left();
     case ShelfAlignment::kLeft:
-      return display.work_area().origin();
+      return work_area.origin();
     case ShelfAlignment::kRight:
-      return display.work_area().top_right();
+      return work_area.top_right();
   }
 }
 
@@ -138,9 +151,10 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           GetWidget()->GetNativeWindow());
+  gfx::Rect work_area = GetWorkAreaForBubble(GetWidget()->GetNativeWindow());
 
   if (display.bounds().height() < 800) {
-    height = display.work_area().height() - margins().height() -
+    height = work_area.height() - margins().height() -
              ShelfConfig::Get()->shelf_size() - kExtraTopOfScreenSpacing;
   } else if (display.bounds().height() > 1200) {
     // Calculate the height required to fit the contents of the AppListBubble
@@ -150,7 +164,7 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
         search_box_view_->GetPreferredSize().height();
 
     int max_height =
-        (display.work_area().height() - margins().height() -
+        (work_area.height() - margins().height() -
          ShelfConfig::Get()->shelf_size() + kExtraTopOfScreenSpacing) /
         2;
 
