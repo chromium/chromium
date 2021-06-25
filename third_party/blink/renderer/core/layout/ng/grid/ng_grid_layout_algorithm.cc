@@ -2739,7 +2739,8 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 
     while (!set_iterator.IsAtEnd()) {
       auto& set = set_iterator.CurrentSet();
-      if (set.TrackSize().HasFlexMaxTrackBreadth()) {
+      if (set.TrackSize().HasFlexMaxTrackBreadth() &&
+          !AreEqual<double>(set.FlexFactor(), 0)) {
         flex_factor_sum += set.FlexFactor();
         flexible_sets.push_back(&set);
       } else {
@@ -2775,15 +2776,16 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     // on the left changes whenever we restart the algorithm treating some of
     // those sets as inflexible. Note that, if the expression above is false for
     // a given set, any other set with a lesser (base size / flex factor) ratio
-    // will also fulfill such expression.
+    // will also fail such expression.
     //
-    // Based on this observation, we can process the sets in non-decreasing
+    // Based on this observation, we can process the sets in non-increasing
     // ratio, when the current set does not fulfill the expression, no further
     // set will fulfill it either (and we can return the hypothetical fr size).
     // Otherwise, determine which sets should be treated as inflexible, exclude
     // them from the leftover space and flex factor sum computation, and keep
     // checking the condition for sets with lesser ratios.
-    auto CompareSetsByBaseSizeFlexFactorRatio = [](NGGridSet* a, NGGridSet* b) {
+    auto CompareSetsByBaseSizeFlexFactorRatio = [](NGGridSet* a,
+                                                   NGGridSet* b) -> bool {
       // Avoid divisions by reordering the terms of the comparison.
       return a->BaseSize().RawValue() * b->FlexFactor() >
              b->BaseSize().RawValue() * a->FlexFactor();
