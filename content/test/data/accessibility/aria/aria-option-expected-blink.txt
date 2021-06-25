@@ -18,3 +18,8 @@ rootWebArea focusable
 ++++++++++++inlineTextBox name='cat'
 ++++++++++staticText name='fish'
 ++++++++++++inlineTextBox name='fish'
+++++++++listBoxOption focusable name='medusa' selected=false
+++++++++++staticText name='jelly'
+++++++++++++inlineTextBox name='jelly'
+++++++++++staticText name='fish'
+++++++++++++inlineTextBox name='fish'

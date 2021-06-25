@@ -2508,15 +2508,18 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return nil;
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
+    std::u16string name = _owner->GetInnerText();
+    // Leaf node with aria-label will have empty inner text.
+    // e.g. <div role="option" aria-label="label">content</div>
+    // So we use its computed name for AXValue.
+    if (name.empty())
+      name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
-      return NSStringForStringAttribute(_owner,
-                                        ax::mojom::StringAttribute::kName);
+      return base::SysUTF16ToNSString(name);
     }
 
     // Append the selection state as a string, because VoiceOver will not
     // automatically report selection state when an individual item is focused.
-    std::u16string name =
-        _owner->GetString16Attribute(ax::mojom::StringAttribute::kName);
     bool is_selected =
         _owner->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
     int msg_id =
