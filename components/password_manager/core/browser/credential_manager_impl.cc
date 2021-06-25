@@ -82,7 +82,7 @@ void CredentialManagerImpl::PreventSilentAccess(
   // Send acknowledge response back.
   std::move(callback).Run();
 
-  PasswordStore* store = GetProfilePasswordStore();
+  PasswordStoreInterface* store = GetProfilePasswordStore();
   if (!store || !client_->IsSavingAndFillingEnabled(GetOrigin().GetURL()))
     return;
 
@@ -99,7 +99,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
                                 GetCallback callback) {
   using metrics_util::LogCredentialManagerGetResult;
 
-  PasswordStore* store = GetProfilePasswordStore();
+  PasswordStoreInterface* store = GetProfilePasswordStore();
   if (password_manager_util::IsLoggingActive(client_)) {
     CredentialManagerLogger(client_->GetLogManager())
         .LogRequestCredential(GetOrigin(), mediation, federations);
@@ -199,9 +199,9 @@ void CredentialManagerImpl::SendPasswordForm(
   CredentialInfo info;
   if (form) {
     info = PasswordFormToCredentialInfo(*form);
-    PasswordStore* store = form->IsUsingAccountStore()
-                               ? GetAccountPasswordStore()
-                               : GetProfilePasswordStore();
+    PasswordStoreInterface* store = form->IsUsingAccountStore()
+                                        ? GetAccountPasswordStore()
+                                        : GetProfilePasswordStore();
     if (store) {
       if (form->skip_zero_click && IsZeroClickAllowed()) {
         PasswordForm update_form = *form;
@@ -226,11 +226,11 @@ PasswordManagerClient* CredentialManagerImpl::client() const {
   return client_;
 }
 
-PasswordStore* CredentialManagerImpl::GetProfilePasswordStore() {
+PasswordStoreInterface* CredentialManagerImpl::GetProfilePasswordStore() {
   return client_ ? client_->GetProfilePasswordStore() : nullptr;
 }
 
-PasswordStore* CredentialManagerImpl::GetAccountPasswordStore() {
+PasswordStoreInterface* CredentialManagerImpl::GetAccountPasswordStore() {
   return client_ ? client_->GetAccountPasswordStore() : nullptr;
 }
 
