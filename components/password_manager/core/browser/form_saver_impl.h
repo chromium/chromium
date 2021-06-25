@@ -12,14 +12,14 @@
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 
 // The production code implementation of FormSaver.
 class FormSaverImpl : public FormSaver {
  public:
-  // |store| needs to outlive |this| and will be used for all PasswordStore
-  // operations.
-  explicit FormSaverImpl(PasswordStore* store);
+  // |store| needs to outlive |this| and will be used for all
+  // PasswordStoreInterface operations.
+  explicit FormSaverImpl(PasswordStoreInterface* store);
 
   ~FormSaverImpl() override;
 
@@ -44,8 +44,8 @@ class FormSaverImpl : public FormSaver {
   // common tasks on the password store. The state should belong to either a
   // form handler or origin handler which could embed FormSaver.
 
-  // Cached pointer to the PasswordStore.
-  PasswordStore* const store_;
+  // Cached pointer to the PasswordStoreInterface.
+  PasswordStoreInterface* const store_;
 
   DISALLOW_COPY_AND_ASSIGN(FormSaverImpl);
 };
