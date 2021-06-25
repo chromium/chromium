@@ -9,12 +9,14 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -85,6 +87,46 @@ class HighlightBorder : public views::View {
 
 }  // namespace
 
+class ArcSplashScreenDialogView::ArcSplashScreenWindowObserver
+    : public aura::WindowObserver {
+ public:
+  ArcSplashScreenWindowObserver(aura::Window* window,
+                                base::RepeatingClosure on_close_callback)
+      : on_close_callback_(on_close_callback) {
+    window_observation_.Observe(window);
+  }
+
+  ArcSplashScreenWindowObserver(const ArcSplashScreenWindowObserver&) = delete;
+  ArcSplashScreenWindowObserver& operator=(
+      const ArcSplashScreenWindowObserver&) = delete;
+  ~ArcSplashScreenWindowObserver() override = default;
+
+ private:
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (key != aura::client::kShowStateKey)
+      return;
+
+    ui::WindowShowState state =
+        window->GetProperty(aura::client::kShowStateKey);
+    if (state == ui::SHOW_STATE_FULLSCREEN ||
+        state == ui::SHOW_STATE_MAXIMIZED) {
+      // Run the callback when window is fullscreen or maximized.
+      on_close_callback_.Run();
+    }
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
+
+  base::RepeatingClosure on_close_callback_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     base::OnceClosure close_callback,
     aura::Window* parent,
@@ -92,7 +134,6 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     bool is_for_unresizable)
     : anchor_(anchor), close_callback_(std::move(close_callback)) {
   const auto background_color = GetDialogBackgroundBaseColor();
-
   // Setup delegate.
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -164,6 +205,12 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   // Setup highlight border.
   highlight_border_ =
       anchor_->AddChildView(std::make_unique<HighlightBorder>());
+
+  // Add window observer.
+  window_observer_ = std::make_unique<ArcSplashScreenWindowObserver>(
+      parent,
+      base::BindRepeating(&ArcSplashScreenDialogView::OnCloseButtonClicked,
+                          base::Unretained(this)));
 }
 
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;

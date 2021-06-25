@@ -56,6 +56,8 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
   void AddedToWidget() override;
 
  private:
+  class ArcSplashScreenWindowObserver;
+
   void OnCloseButtonClicked();
 
   views::View* const anchor_;
@@ -63,6 +65,7 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
 
   base::OnceClosure close_callback_;
   views::MdTextButton* close_button_ = nullptr;
+  std::unique_ptr<ArcSplashScreenWindowObserver> window_observer_;
 };
 
 }  // namespace arc

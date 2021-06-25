@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/views_test_base.h"
@@ -92,6 +93,24 @@ TEST_F(ArcSplashScreenDialogViewTest, TestAnchorHighlight) {
     EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
     ClickOnView(dialog_view_test.close_button());
     EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+  }
+}
+
+TEST_F(ArcSplashScreenDialogViewTest,
+       TestSplashScreenInFullscreenOrMaximinzedWindow) {
+  for (const bool is_for_unresizable : {true, false}) {
+    for (const auto state :
+         {ui::SHOW_STATE_FULLSCREEN, ui::SHOW_STATE_MAXIMIZED}) {
+      bool on_close_callback_called = false;
+      auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
+          base::BindLambdaForTesting(
+              [&]() { on_close_callback_called = true; }),
+          parent_window(), anchor(), is_for_unresizable);
+      ShowAsBubble(std::move(dialog_view));
+      EXPECT_FALSE(on_close_callback_called);
+      parent_window()->SetProperty(aura::client::kShowStateKey, state);
+      EXPECT_TRUE(on_close_callback_called);
+    }
   }
 }
 
