@@ -5317,7 +5317,7 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
     observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
                                navigation_handle);
   }
-  if (navigation_handle->IsInMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     // When the browser is started with about:blank as the startup URL, focus
     // the location bar (which will also select its contents) so people can
     // simply begin typing to navigate elsewhere.
