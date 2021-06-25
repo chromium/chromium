@@ -15,9 +15,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/corewm/tooltip_aura.h"
@@ -161,6 +163,13 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     return gfx::Point(x, y) + rwhv_->GetViewBounds().OffsetFromOrigin();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "KeyboardAccessibleTooltip");
+    scoped_feature_list_.InitWithFeatures(
+        {features::kKeyboardAccessibleTooltip}, {});
+  }
+
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   TooltipControllerTestHelper* helper() { return helper_.get(); }
   TooltipWidgetMonitor* tooltip_monitor() { return tooltip_monitor_.get(); }
@@ -172,6 +181,8 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<TooltipWidgetMonitor> tooltip_monitor_ = nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };  // class TooltipBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
@@ -194,9 +205,16 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-// Disabled http://crbug.com/1212403
+#if defined(OS_CHROMEOS)
+// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
+#define MAYBE_ShowTooltipFromWebContentWithKeyboard \
+  DISABLED_ShowTooltipFromWebContentWithKeyboard
+#else
+#define MAYBE_ShowTooltipFromWebContentWithKeyboard \
+  ShowTooltipFromWebContentWithKeyboard
+#endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
-                       DISABLED_ShowTooltipFromWebContentWithKeyboard) {
+                       MAYBE_ShowTooltipFromWebContentWithKeyboard) {
   if (SkipTestForOldWinVersion())
     return;
 
@@ -213,9 +231,16 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-// Disabled http://crbug.com/1212403
+#if defined(OS_CHROMEOS)
+// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
+#define MAYBE_ShowTooltipFromIFrameWithKeyboard \
+  DISABLED_ShowTooltipFromIFrameWithKeyboard
+#else
+#define MAYBE_ShowTooltipFromIFrameWithKeyboard \
+  ShowTooltipFromIFrameWithKeyboard
+#endif
 IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
-                       DISABLED_ShowTooltipFromIFrameWithKeyboard) {
+                       MAYBE_ShowTooltipFromIFrameWithKeyboard) {
   if (SkipTestForOldWinVersion())
     return;
 
@@ -257,8 +282,13 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-// Disabled http://crbug.com/1212403
-IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, DISABLED_HideTooltipOnKeyPress) {
+#if defined(OS_CHROMEOS)
+// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
+#define MAYBE_HideTooltipOnKeyPress DISABLED_HideTooltipOnKeyPress
+#else
+#define MAYBE_HideTooltipOnKeyPress HideTooltipOnKeyPress
+#endif
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, MAYBE_HideTooltipOnKeyPress) {
   if (SkipTestForOldWinVersion())
     return;
 
