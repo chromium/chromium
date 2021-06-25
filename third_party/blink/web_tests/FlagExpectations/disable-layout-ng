@@ -358,6 +358,7 @@ crbug.com/591099 external/wpt/css/css-text/text-encoding/shaping-tatweel-003.htm
 crbug.com/591099 external/wpt/css/css-text/text-transform/text-transform-shaping-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/text-transform/text-transform-shaping-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/text-transform/text-transform-shaping-003.html [ Failure ]
+crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-105.html [ Crash ]
 
 ### external/wpt/css/css-text/white-space/
 crbug.com/591099 external/wpt/css/css-text/white-space/control-chars-00C.html [ Failure ]
