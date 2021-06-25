@@ -46,6 +46,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
@@ -296,6 +297,7 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   // The added 0.5 on the else block allow us to let the user know there are
   // more than |kMaxAppResults| apps accessible by scrolling the list.
   scroll_view->ClipHeightTo(kRowHeight, (kMaxAppResults + 0.5) * kRowHeight);
+  scroll_view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kListBox);
 
   constexpr int kColumnSetId = 0;
   views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);

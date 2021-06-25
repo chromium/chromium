@@ -31,7 +31,7 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
   // +-------------------------------------------------------------------+
   //
   WebAppUrlHandlerHoverButton(
-      size_t buttons_count,
+      size_t total_buttons,
       views::Button::PressedCallback callback,
       const web_app::UrlHandlerLaunchParams& url_handler_launch_params,
       web_app::WebAppProvider* provider,
@@ -46,7 +46,7 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
   // |      |                                                            |
   // +-------------------------------------------------------------------+
   //
-  explicit WebAppUrlHandlerHoverButton(size_t buttons_count,
+  explicit WebAppUrlHandlerHoverButton(size_t total_buttons,
                                        views::Button::PressedCallback callback);
   WebAppUrlHandlerHoverButton(const WebAppUrlHandlerHoverButton&) = delete;
   WebAppUrlHandlerHoverButton& operator=(const WebAppUrlHandlerHoverButton&) =
