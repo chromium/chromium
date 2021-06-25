@@ -166,6 +166,12 @@ extern const base::Feature kAvatarToolbarButton{
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the ability to use advertisement monitoring.
+// Advertisement monitoring allows applications to register low energy scanners
+// that filter low energy advertisements in a power-efficient manner.
+const base::Feature kBluetoothAdvertisementMonitoring{
+    "BluetoothAdvertisementMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables more aggressive filtering out of Bluetooth devices with
 // "appearances" that are less likely to be pairable or useful.
 const base::Feature kBluetoothAggressiveAppearanceFilter{
@@ -1108,6 +1114,10 @@ bool IsBackgroundBlurEnabled() {
 
 bool IsBentoBarEnabled() {
   return base::FeatureList::IsEnabled(kBentoBar);
+}
+
+bool IsBluetoothAdvertisementMonitoringEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
 }
 
 bool IsCaptureModeEnabled() {

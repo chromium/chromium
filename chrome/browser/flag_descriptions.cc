@@ -4014,6 +4014,13 @@ const char kAshSwipingFromLeftEdgeToGoBackDescription[] =
     "distance or fling velocity could go back to the previous page while in "
     "tablet mode.";
 
+const char kBluetoothAdvertisementMonitoringName[] =
+    "Bluetooth Advertisement Monitoring";
+const char kBluetoothAdvertisementMonitoringDescription[] =
+    "Advertisement monitoring allows applications to register low energy "
+    "scanners that filter low energy advertisements in a power-efficient "
+    "manner.";
+
 const char kBluetoothAggressiveAppearanceFilterName[] =
     "Aggressive Bluetooth device filtering";
 const char kBluetoothAggressiveAppearanceFilterDescription[] =

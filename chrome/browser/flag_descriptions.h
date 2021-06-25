@@ -2299,6 +2299,9 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kAshSwipingFromLeftEdgeToGoBackName[];
 extern const char kAshSwipingFromLeftEdgeToGoBackDescription[];
 
+extern const char kBluetoothAdvertisementMonitoringName[];
+extern const char kBluetoothAdvertisementMonitoringDescription[];
+
 extern const char kBluetoothAggressiveAppearanceFilterName[];
 extern const char kBluetoothAggressiveAppearanceFilterDescription[];
 

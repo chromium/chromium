@@ -466,6 +466,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "bluetooth-advertisement-monitoring",
+    "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "cros-system-services@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "bluetooth-aggressive-appearance-filter",
     "owners": [ "hansberry", "cros-system-services@google.com" ],
     "expiry_milestone": 85

@@ -78,6 +78,8 @@ extern const base::Feature kAutoScreenBrightness;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAvatarToolbarButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kBluetoothAdvertisementMonitoring;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothAggressiveAppearanceFilter;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothFixA2dpPacketSize;
@@ -406,6 +408,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBentoBarEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBluetoothAdvertisementMonitoringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularActivationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
