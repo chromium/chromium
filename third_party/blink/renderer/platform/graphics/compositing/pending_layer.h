@@ -114,9 +114,6 @@ class PLATFORM_EXPORT PendingLayer {
 
   std::unique_ptr<JSONObject> ToJSON() const;
 
-  FloatRect VisualRectForOverlapTesting(
-      const PropertyTreeState& ancestor_state) const;
-
   bool MayDrawContent() const;
 
   bool RequiresOwnLayer() const {
@@ -125,9 +122,13 @@ class PLATFORM_EXPORT PendingLayer {
 
   bool PropertyTreeStateChanged() const;
 
+  bool MightOverlap(const PendingLayer& other) const;
+
   static void DecompositeTransforms(Vector<PendingLayer>& pending_layers);
 
  private:
+  FloatRect VisualRectForOverlapTesting(
+      const PropertyTreeState& ancestor_state) const;
   FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,

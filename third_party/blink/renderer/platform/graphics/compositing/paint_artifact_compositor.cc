@@ -433,48 +433,6 @@ static const EffectPaintPropertyNode* StrictUnaliasedChildOfAlongPath(
   return nullptr;
 }
 
-static const ClipPaintPropertyNode* HighestOutputClipBetween(
-    const EffectPaintPropertyNode& ancestor,
-    const EffectPaintPropertyNode& descendant) {
-  const ClipPaintPropertyNode* result = nullptr;
-  for (const auto* effect = &descendant; effect != &ancestor;
-       effect = effect->UnaliasedParent()) {
-    if (const auto* output_clip = effect->OutputClip())
-      result = &output_clip->Unalias();
-  }
-  return result;
-}
-
-bool PaintArtifactCompositor::MightOverlap(const PendingLayer& layer_a,
-                                           const PendingLayer& layer_b) {
-  const PropertyTreeState& layer_a_state = layer_a.GetPropertyTreeState();
-  const PropertyTreeState& layer_b_state = layer_b.GetPropertyTreeState();
-  PropertyTreeState common_ancestor_state(
-      layer_a_state.Transform()
-          .LowestCommonAncestor(layer_b.GetPropertyTreeState().Transform())
-          .Unalias(),
-      layer_a_state.Clip()
-          .LowestCommonAncestor(layer_b.GetPropertyTreeState().Clip())
-          .Unalias(),
-      layer_a_state.Effect()
-          .LowestCommonAncestor(layer_b.GetPropertyTreeState().Effect())
-          .Unalias());
-  // Move the common clip up if some effect nodes have OutputClip escaping the
-  // common clip.
-  if (const auto* clip_a = HighestOutputClipBetween(
-          common_ancestor_state.Effect(), layer_a_state.Effect())) {
-    common_ancestor_state.SetClip(
-        clip_a->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
-  }
-  if (const auto* clip_b = HighestOutputClipBetween(
-          common_ancestor_state.Effect(), layer_b_state.Effect())) {
-    common_ancestor_state.SetClip(
-        clip_b->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
-  }
-  return layer_a.VisualRectForOverlapTesting(common_ancestor_state)
-      .Intersects(layer_b.VisualRectForOverlapTesting(common_ancestor_state));
-}
-
 bool PaintArtifactCompositor::DecompositeEffect(
     const EffectPaintPropertyNode& parent_effect,
     wtf_size_t first_layer_in_parent_group_index,
@@ -657,7 +615,7 @@ void PaintArtifactCompositor::LayerizeGroup(
         pending_layers_.pop_back();
         break;
       }
-      if (MightOverlap(new_layer, candidate_layer)) {
+      if (new_layer.MightOverlap(candidate_layer)) {
         new_layer.SetCompositingType(PendingLayer::kOverlap);
         break;
       }

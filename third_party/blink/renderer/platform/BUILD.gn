@@ -2065,6 +2065,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/compositing/chunk_to_layer_mapper_test.cc",
     "graphics/compositing/paint_artifact_compositor_test.cc",
     "graphics/compositing/paint_chunks_to_cc_layer_test.cc",
+    "graphics/compositing/pending_layer_test.cc",
     "graphics/compositor_element_id_test.cc",
     "graphics/dark_mode_color_classifier_test.cc",
     "graphics/dark_mode_filter_test.cc",

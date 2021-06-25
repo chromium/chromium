@@ -10,13 +10,21 @@
 
 namespace blink {
 
-bool PendingLayer::PropertyTreeStateChanged() const {
-  auto change = PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  if (change_of_decomposited_transforms_ >= change)
-    return true;
+namespace {
 
-  return property_tree_state_.ChangedToRoot(change);
+const ClipPaintPropertyNode* HighestOutputClipBetween(
+    const EffectPaintPropertyNode& ancestor,
+    const EffectPaintPropertyNode& descendant) {
+  const ClipPaintPropertyNode* result = nullptr;
+  for (const auto* effect = &descendant; effect != &ancestor;
+       effect = effect->UnaliasedParent()) {
+    if (const auto* output_clip = effect->OutputClip())
+      result = &output_clip->Unalias();
+  }
+  return result;
 }
+
+}  // anonymous namespace
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk,
@@ -195,6 +203,42 @@ PendingLayer::ScrollTranslationForScrollHitTestLayer() const {
   if (!paint_chunk.hit_test_data)
     return nullptr;
   return paint_chunk.hit_test_data->scroll_translation;
+}
+
+bool PendingLayer::PropertyTreeStateChanged() const {
+  auto change = PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
+  if (change_of_decomposited_transforms_ >= change)
+    return true;
+
+  return property_tree_state_.ChangedToRoot(change);
+}
+
+bool PendingLayer::MightOverlap(const PendingLayer& other) const {
+  PropertyTreeState common_ancestor_state(
+      property_tree_state_.Transform()
+          .LowestCommonAncestor(other.property_tree_state_.Transform())
+          .Unalias(),
+      property_tree_state_.Clip()
+          .LowestCommonAncestor(other.property_tree_state_.Clip())
+          .Unalias(),
+      property_tree_state_.Effect()
+          .LowestCommonAncestor(other.property_tree_state_.Effect())
+          .Unalias());
+  // Move the common clip up if some effect nodes have OutputClip escaping the
+  // common clip.
+  if (const auto* clip_a = HighestOutputClipBetween(
+          common_ancestor_state.Effect(), property_tree_state_.Effect())) {
+    common_ancestor_state.SetClip(
+        clip_a->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
+  }
+  if (const auto* clip_b =
+          HighestOutputClipBetween(common_ancestor_state.Effect(),
+                                   other.property_tree_state_.Effect())) {
+    common_ancestor_state.SetClip(
+        clip_b->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
+  }
+  return VisualRectForOverlapTesting(common_ancestor_state)
+      .Intersects(other.VisualRectForOverlapTesting(common_ancestor_state));
 }
 
 // Walk the pending layer list and build up a table of transform nodes that

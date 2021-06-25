@@ -274,7 +274,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                      const EffectPaintPropertyNode&,
                      PaintChunkIterator& chunk_cursor,
                      bool effectively_invisible);
-  static bool MightOverlap(const PendingLayer&, const PendingLayer&);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,
                          const EffectPaintPropertyNode& effect,
