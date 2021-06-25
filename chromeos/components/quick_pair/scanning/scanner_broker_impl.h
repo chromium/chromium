@@ -14,10 +14,10 @@ namespace quick_pair {
 
 class ScannerBrokerImpl : public ScannerBroker {
  public:
-  ScannerBrokerImpl() = default;
+  ScannerBrokerImpl();
   ScannerBrokerImpl(const ScannerBrokerImpl&) = delete;
   ScannerBrokerImpl& operator=(const ScannerBrokerImpl&) = delete;
-  ~ScannerBrokerImpl() = default;
+  ~ScannerBrokerImpl();
 
   // ScannerBroker:
   void AddObserver(Observer* observer) override;

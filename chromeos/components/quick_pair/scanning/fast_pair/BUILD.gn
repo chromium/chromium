@@ -4,15 +4,28 @@
 
 assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
 
-source_set("unit_tests") {
-  testonly = true
+static_library("fast_pair_scanner") {
+  sources = [
+    "fast_pair_scanner.h",
+    "fast_pair_scanner_impl.cc",
+    "fast_pair_scanner_impl.h",
+  ]
 
   deps = [
+    "//base",
+    "//device/bluetooth",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fast_pair_scanner_unittest.cc" ]
+
+  deps = [
+    ":fast_pair_scanner",
     "//base/test:test_support",
-    "//chromeos/components/quick_pair/common:unit_tests",
-    "//chromeos/components/quick_pair/feature_status_tracker:unit_tests",
-    "//chromeos/components/quick_pair/keyed_service:unit_tests",
-    "//chromeos/components/quick_pair/scanning:unit_tests",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }

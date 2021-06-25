@@ -11,6 +11,10 @@
 namespace chromeos {
 namespace quick_pair {
 
+ScannerBrokerImpl::ScannerBrokerImpl() = default;
+
+ScannerBrokerImpl::~ScannerBrokerImpl() = default;
+
 void ScannerBrokerImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

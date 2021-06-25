@@ -16,3 +16,12 @@ source_set("scanning") {
     "//chromeos/components/quick_pair/common",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  deps = [
+    "//chromeos/components/quick_pair/scanning/fast_pair:unit_tests",
+    "//testing/gtest",
+  ]
+}
