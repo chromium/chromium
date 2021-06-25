@@ -14,6 +14,7 @@
 
 #include <cassert>
 
+#include "RecordInfo.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/Attr.h"
 
@@ -35,28 +36,78 @@ extern const char kConstReverseIteratorName[];
 extern const char kReverseIteratorName[];
 
 class Config {
+ private:
+  // Checks that the namespace matches the expected namespace and that the type
+  // takes at least |expected_minimum_arg_count| template arguments. If both
+  // requirements are fulfilled, populates |args| with the first
+  // |expected_minimum_arg_count| template arguments. Verifying only the minimum
+  // expected argument keeps the plugin resistant to changes in the type
+  // definitions (to some extent)
+  static bool VerifyNamespaceAndArgCount(std::string expected_ns_name,
+                                         int expected_minimum_arg_count,
+                                         llvm::StringRef ns_name,
+                                         RecordInfo* info,
+                                         RecordInfo::TemplateArgs* args) {
+    return (ns_name == expected_ns_name) &&
+           info->GetTemplateArgs(expected_minimum_arg_count, args);
+  }
+
  public:
-  static bool IsMember(llvm::StringRef name) {
-    return name == "Member";
+  static bool IsMember(llvm::StringRef name,
+                       llvm::StringRef ns_name,
+                       RecordInfo* info,
+                       RecordInfo::TemplateArgs* args) {
+    if (name == "Member") {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicMember") {
+      if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
+        return false;
+      return (*args)[1]->getAsRecordDecl()->getName() == "StrongMemberTag";
+    }
+    return false;
   }
 
-  static bool IsWeakMember(llvm::StringRef name) {
-    return name == "WeakMember";
+  static bool IsWeakMember(llvm::StringRef name,
+                           llvm::StringRef ns_name,
+                           RecordInfo* info,
+                           RecordInfo::TemplateArgs* args) {
+    if (name == "WeakMember") {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicMember") {
+      if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
+        return false;
+      return (*args)[1]->getAsRecordDecl()->getName() == "WeakMemberTag";
+    }
+    return false;
   }
 
-  static bool IsMemberHandle(llvm::StringRef name) {
-    return IsMember(name) ||
-           IsWeakMember(name);
+  static bool IsPersistent(llvm::StringRef name,
+                           llvm::StringRef ns_name,
+                           RecordInfo* info,
+                           RecordInfo::TemplateArgs* args) {
+    if ((name == "Persistent") || (name == "WeakPersistent")) {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicPersistent") {
+      return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
+    }
+    return false;
   }
 
-  static bool IsPersistent(llvm::StringRef name) {
-    return name == "Persistent" ||
-           name == "WeakPersistent" ;
-  }
-
-  static bool IsCrossThreadPersistent(llvm::StringRef name) {
-    return name == "CrossThreadPersistent" ||
-           name == "CrossThreadWeakPersistent" ;
+  static bool IsCrossThreadPersistent(llvm::StringRef name,
+                                      llvm::StringRef ns_name,
+                                      RecordInfo* info,
+                                      RecordInfo::TemplateArgs* args) {
+    if ((name == "CrossThreadPersistent") ||
+        (name == "CrossThreadWeakPersistent")) {
+      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
+    }
+    if (name == "BasicCrossThreadPersistent") {
+      return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
+    }
+    return false;
   }
 
   static bool IsRefPtr(llvm::StringRef name) { return name == "scoped_refptr"; }
@@ -71,8 +122,12 @@ class Config {
     return name == "unique_ptr";
   }
 
-  static bool IsTraceWrapperV8Reference(llvm::StringRef name) {
-    return name == "TraceWrapperV8Reference";
+  static bool IsTraceWrapperV8Reference(llvm::StringRef name,
+                                        llvm::StringRef ns_name,
+                                        RecordInfo* info,
+                                        RecordInfo::TemplateArgs* args) {
+    return name == "TraceWrapperV8Reference" &&
+           VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
   }
 
   static bool IsWTFCollection(llvm::StringRef name) {
