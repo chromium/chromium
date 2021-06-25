@@ -177,6 +177,18 @@ const base::Feature kImprovedKeyboardShortcuts = {
 bool IsImprovedKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
+
+// Whether to deprecate the Alt-Based event rewrites that map to the
+// Page Up/Down, Home/End, Insert/Delete keys. This feature was a
+// part of kImprovedKeyboardShortcuts, but it is being postponed until
+// the new shortcut customization app ships.
+// TODO(crbug.com/1179893): Remove after the customization app ships.
+const base::Feature kDeprecateAltBasedSixPack = {
+    "DeprecateAltBasedSixPack", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDeprecateAltBasedSixPackEnabled() {
+  return base::FeatureList::IsEnabled(kDeprecateAltBasedSixPack);
+}
 #endif  // defined(OS_CHROMEOS)
 
 // Enables forced colors mode for web content.

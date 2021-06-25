@@ -74,6 +74,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kImprovedKeyboardShortcuts;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsImprovedKeyboardShortcutsEnabled();
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kDeprecateAltBasedSixPack;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsDeprecateAltBasedSixPackEnabled();
 #endif  // defined(OS_CHROMEOS)
 
 // Used to enable forced colors mode for web content.

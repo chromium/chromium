@@ -948,6 +948,12 @@
     "expiry_milestone": 92
   },
   {
+    "name": "deprecate-alt-based-six-pack",
+    "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
+                "cros-peripherals@google.com"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

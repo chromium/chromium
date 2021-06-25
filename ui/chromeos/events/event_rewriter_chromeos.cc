@@ -1368,7 +1368,8 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
 
   // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
   // are deprecated.
-  if (!::features::IsImprovedKeyboardShortcutsEnabled() &&
+  if ((!::features::IsImprovedKeyboardShortcutsEnabled() ||
+       !::features::IsDeprecateAltBasedSixPackEnabled()) &&
       ((incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) ==
        (EF_COMMAND_DOWN | EF_ALT_DOWN))) {
     // Allow Search to avoid rewriting extended keys.
@@ -1508,7 +1509,8 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
         {// Alt+Down -> Next (aka PageDown)
          {EF_ALT_DOWN, VKEY_DOWN},
          {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
-    if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
+    if (!::features::IsImprovedKeyboardShortcutsEnabled() ||
+        !::features::IsDeprecateAltBasedSixPackEnabled()) {
       if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
                                         base::size(kLegacySixPackRemappings),
                                         incoming, state)) {
