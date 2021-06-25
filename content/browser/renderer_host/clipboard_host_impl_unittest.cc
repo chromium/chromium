@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -25,6 +26,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -112,7 +114,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
 };
 
 // Test that it actually works.
-TEST_F(ClipboardHostImplTest, SimpleImage) {
+TEST_F(ClipboardHostImplTest, SimpleImage_ReadBitmap) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(3, 2);
   bitmap.eraseARGB(255, 0, 255, 0);
@@ -132,6 +134,35 @@ TEST_F(ClipboardHostImplTest, SimpleImage) {
       /*data_dst=*/nullptr));
 
   SkBitmap actual = ui::clipboard_test_util::ReadImage(system_clipboard());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
+}
+
+TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(3, 2);
+  bitmap.eraseARGB(255, 0, 255, 0);
+  mojo_clipboard()->WriteImage(bitmap);
+  uint64_t sequence_number =
+      system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+  mojo_clipboard()->CommitWrite();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
+                                 ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_FALSE(system_clipboard()->IsFormatAvailable(
+      ui::ClipboardFormatType::GetPlainTextType(),
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst=*/nullptr));
+  EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
+      ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+  EXPECT_TRUE(system_clipboard()->IsFormatAvailable(
+      ui::ClipboardFormatType::GetPngType(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
 }
 

@@ -6,6 +6,10 @@
 
 #include "base/containers/contains.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/color_behavior.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
 
@@ -23,6 +27,7 @@ void MockClipboardHost::Reset() {
   html_text_ = g_empty_string;
   svg_text_ = g_empty_string;
   url_ = KURL();
+  png_.clear();
   image_.reset();
   custom_data_.clear();
   write_smart_paste_ = false;
@@ -45,7 +50,7 @@ void MockClipboardHost::ReadAvailableTypes(
     types.push_back("text/html");
   if (!svg_text_.IsEmpty())
     types.push_back("image/svg+xml");
-  if (!image_.isNull())
+  if (!png_.IsEmpty() || !image_.isNull())
     types.push_back("image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.key));
@@ -97,6 +102,11 @@ void MockClipboardHost::ReadSvg(mojom::ClipboardBuffer clipboard_buffer,
 void MockClipboardHost::ReadRtf(mojom::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
   std::move(callback).Run(g_empty_string);
+}
+
+void MockClipboardHost::ReadPng(mojom::ClipboardBuffer clipboard_buffer,
+                                ReadPngCallback callback) {
+  std::move(callback).Run(mojo_base::BigBuffer(png_));
 }
 
 void MockClipboardHost::ReadImage(mojom::ClipboardBuffer clipboard_buffer,
@@ -154,7 +164,18 @@ void MockClipboardHost::WriteBookmark(const String& url, const String& title) {}
 void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
   if (needs_reset_)
     Reset();
+  // TODO(crbug.com/1223254): Consider removing `image_` in favor of `png_`.
+  // For now, write to each.
   image_ = bitmap;
+
+  SkPixmap pixmap;
+  bitmap.peekPixels(&pixmap);
+  // Set encoding options to favor speed over size.
+  SkPngEncoder::Options options;
+  options.fZLibLevel = 1;
+  options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
+
+  ImageEncoder::Encode(&png_, pixmap, options);
 }
 
 void MockClipboardHost::CommitWrite() {

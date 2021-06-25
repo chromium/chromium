@@ -41,6 +41,8 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
                ReadSvgCallback callback) override;
   void ReadRtf(mojom::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
+  void ReadPng(mojom::ClipboardBuffer clipboard_buffer,
+               ReadPngCallback callback) override;
   void ReadImage(mojom::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
   void ReadFiles(mojom::ClipboardBuffer clipboard_buffer,
@@ -66,6 +68,8 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   String html_text_ = g_empty_string;
   String svg_text_ = g_empty_string;
   KURL url_;
+  Vector<uint8_t> png_;
+  // TODO(asully): Remove `image_` once ReadImage() path is removed.
   SkBitmap image_;
   HashMap<String, String> custom_data_;
   bool write_smart_paste_ = false;

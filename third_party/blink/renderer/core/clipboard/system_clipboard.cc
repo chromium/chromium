@@ -170,6 +170,15 @@ String SystemClipboard::ReadRTF() {
   return rtf;
 }
 
+mojo_base::BigBuffer SystemClipboard::ReadPng(
+    mojom::blink::ClipboardBuffer buffer) {
+  if (!IsValidBufferType(buffer) || !clipboard_.is_bound())
+    return mojo_base::BigBuffer();
+  mojo_base::BigBuffer png;
+  clipboard_->ReadPng(buffer, &png);
+  return png;
+}
+
 SkBitmap SystemClipboard::ReadImage(mojom::ClipboardBuffer buffer) {
   if (!IsValidBufferType(buffer) || !clipboard_.is_bound())
     return SkBitmap();

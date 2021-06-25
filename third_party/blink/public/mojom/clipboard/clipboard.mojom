@@ -35,7 +35,7 @@ struct ClipboardFiles {
   string? file_system_id;
 };
 
-// Allows communication with the system clipboard.
+// Implemented by the browser to allow the renderer to use the system clipboard.
 // Individual operations are atomic, but successive operations are not.
 // Therefore, it's possible that one may see text available from
 // ReadAvailableTypes(), but that a subsequent ReadText() may then fail.
@@ -67,6 +67,12 @@ interface ClipboardHost {
   [Sync]
   ReadRtf(ClipboardBuffer buffer) => (mojo_base.mojom.BigString result);
 
+  // Read an image from the OS clipboard, returning the PNG-encoded bytes if
+  // there is an image, or an empty buffer otherwise.
+  [Sync]
+  ReadPng(ClipboardBuffer buffer) => (mojo_base.mojom.BigBuffer png);
+
+  // TODO(crbug.com/1223849): Transition call sites to ReadPng, then remove.
   [Sync]
   ReadImage(ClipboardBuffer buffer) => (skia.mojom.BitmapN32? image);
 

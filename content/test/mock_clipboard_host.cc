@@ -4,8 +4,13 @@
 
 #include "content/test/mock_clipboard_host.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace content {
 
@@ -23,7 +28,7 @@ void MockClipboardHost::Reset() {
   html_text_ = std::u16string();
   svg_text_ = std::u16string();
   url_ = GURL();
-  image_.reset();
+  png_.clear();
   custom_data_.clear();
   write_smart_paste_ = false;
   needs_reset_ = false;
@@ -44,7 +49,7 @@ void MockClipboardHost::ReadAvailableTypes(
     types.push_back(u"text/html");
   if (!svg_text_.empty())
     types.push_back(u"image/svg+xml");
-  if (!image_.isNull())
+  if (!png_.empty())
     types.push_back(u"image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.first));
@@ -97,9 +102,16 @@ void MockClipboardHost::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(std::string());
 }
 
+void MockClipboardHost::ReadPng(ui::ClipboardBuffer clipboard_buffer,
+                                ReadPngCallback callback) {
+  std::move(callback).Run(mojo_base::BigBuffer(png_));
+}
+
 void MockClipboardHost::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
-  std::move(callback).Run(image_);
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_.data(), png_.size(), &bitmap);
+  std::move(callback).Run(std::move(bitmap));
 }
 
 void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
@@ -155,7 +167,7 @@ void MockClipboardHost::WriteBookmark(const std::string& url,
 void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
   if (needs_reset_)
     Reset();
-  image_ = bitmap;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_);
 }
 
 void MockClipboardHost::CommitWrite() {

@@ -149,9 +149,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
                            PerformPasteIfContentAllowed);
 
-  // TODO(crbug.com/1201018): Integrate this with mojo.
-  using ReadPngCallback = base::OnceCallback<void(mojo_base::BigBuffer)>;
-
   // mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                          GetSequenceNumberCallback callback) override;
@@ -168,7 +165,8 @@ class CONTENT_EXPORT ClipboardHostImpl
                ReadSvgCallback callback) override;
   void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
-  void ReadPng(ui::ClipboardBuffer clipboard_buffer, ReadPngCallback callback);
+  void ReadPng(ui::ClipboardBuffer clipboard_buffer,
+               ReadPngCallback callback) override;
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,

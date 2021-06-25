@@ -40,6 +40,8 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
                ReadSvgCallback callback) override;
   void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
+  void ReadPng(ui::ClipboardBuffer clipboard_buffer,
+               ReadPngCallback callback) override;
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
@@ -67,7 +69,7 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   std::u16string html_text_;
   std::u16string svg_text_;
   GURL url_;
-  SkBitmap image_;
+  std::vector<uint8_t> png_;
   std::map<std::u16string, std::u16string> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
