@@ -79,7 +79,7 @@ void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
   }
 
   url::Origin embedding_origin =
-      url::Origin::Create(web_contents->GetLastCommittedURL());
+      web_contents->GetMainFrame()->GetLastCommittedOrigin();
   if (embedding_origin != requesting_origin) {
     // Third party iframes are not allowed to show a file picker.
     std::move(callback).Run(
