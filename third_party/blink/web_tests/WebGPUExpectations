@@ -160,6 +160,12 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindi
 # Deprecations that need to be updated in the tests
 wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:* [ Failure ]
 
+# Limits that should be updated.
+# maxStorageTexturePerShaderStage 8 -> 4
+crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_pipeline_layout:* [ Failure ]
+# maxColorAttachments 4 -> 8
+crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass_descriptor:OOB_color_attachment_indices_are_handled:* [ Failure ]
+
 ###
 ### Test bugs (fixed upstream)
 ###
