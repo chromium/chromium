@@ -489,8 +489,13 @@ config("default_crt") {
 config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
+
+    # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
+    # standard library, which libc++ needs for exception_ptr internals.
+    ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
   } else {
     cflags = [ "/MT" ]
+    ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
   }
 }
 
@@ -498,8 +503,10 @@ config("dynamic_crt") {
   if (is_debug) {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
+    ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
   } else {
     cflags = [ "/MD" ]
+    ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
   }
 }
 
@@ -507,8 +514,10 @@ config("static_crt") {
   if (is_debug) {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
+    ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
   } else {
     cflags = [ "/MT" ]
+    ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
   }
 }
 
