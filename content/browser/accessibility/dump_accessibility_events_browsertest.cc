@@ -244,6 +244,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaAtomicChanged2) {
+  RunEventTest(FILE_PATH_LITERAL("aria-atomic-changed2.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaBusyChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
