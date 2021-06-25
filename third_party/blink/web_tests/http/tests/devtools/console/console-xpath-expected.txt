@@ -3,7 +3,7 @@ Tests $x for iterator and non-iterator types.
 $x('42')
 42
 $x('name(/html)')
-"html"
+'html'
 $x('not(42)')
 false
 $x('/html/body/p').length
