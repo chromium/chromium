@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -3416,7 +3417,14 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
     if (show_signatures)
       EnableShowAutofillSignatures();
 
-    LoadHTML(kFormHTML);
+    // An empty DOMSubtreeModified event listener is added for
+    // https://crbug.com/1219852.
+    std::string dom_with_dom_subtree_modified_listener =
+        base::StrCat({"<SCRIPT>"
+                      "window.addEventListener('DOMSubtreeModified', () => {});"
+                      "</SCRIPT>",
+                      kFormHTML});
+    LoadHTML(dom_with_dom_subtree_modified_listener.c_str());
     WebDocument document = GetMainFrame()->GetDocument();
     WebFormElement form_element =
         document.GetElementById(WebString::FromASCII("LoginTestForm"))

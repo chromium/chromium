@@ -247,28 +247,49 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
          gurl1.port() == gurl2.port();
 }
 
-// Helper function that calculates form signature for |password_form| and
-// returns it as WebString.
-WebString GetFormSignatureAsWebString(const FormData& form_data) {
-  return WebString::FromUTF8(
-      base::NumberToString(CalculateFormSignature(form_data).value()));
+// Helper function that calculates form signature for |form_data| and returns it
+// as a string.
+std::string GetFormSignatureAsString(const FormData& form_data) {
+  return base::NumberToString(CalculateFormSignature(form_data).value());
+}
+
+// Sets the specified attribute of |target| to the given value. This must not
+// happen while ScriptForbiddenScope is active (e.g. during
+// blink::FrameLoader::FinishedParsing(), see crbug.com/1219852). Therefore,
+// this function should be called asynchronously via SetAttributeAsync.
+void SetAttributeInternal(blink::WebElement target,
+                          const std::string& attribute_utf8,
+                          const std::string& value_utf8) {
+  target.SetAttribute(WebString::FromUTF8(attribute_utf8),
+                      WebString::FromUTF8(value_utf8));
+}
+
+// Posts an async task to call SetAttributeInternal.
+void SetAttributeAsync(blink::WebElement target,
+                       const std::string& attribute_utf8,
+                       const std::string& value_utf8) {
+  if (target.IsNull())
+    return;
+  target.GetDocument()
+      .GetFrame()
+      ->GetTaskRunner(blink::TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, base::BindOnce(&SetAttributeInternal, target,
+                                           attribute_utf8, value_utf8));
 }
 
 // Annotate |fields| with field signatures and form signature as HTML
 // attributes.
 void AnnotateFieldsWithSignatures(
     std::vector<blink::WebFormControlElement>& fields,
-    const blink::WebString& form_signature) {
+    const std::string& form_signature) {
   for (blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
         control_element.FormControlTypeForAutofill().Utf8());
-    control_element.SetAttribute(
-        WebString::FromASCII(kDebugAttributeForFieldSignature),
-        WebString::FromUTF8(base::NumberToString(field_signature.value())));
-    control_element.SetAttribute(
-        blink::WebString::FromASCII(kDebugAttributeForFormSignature),
-        form_signature);
+    SetAttributeAsync(control_element, kDebugAttributeForFieldSignature,
+                      base::NumberToString(field_signature.value()));
+    SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
+                      form_signature);
   }
 }
 
@@ -364,6 +385,9 @@ void AnnotateFieldWithParsingResult(WebDocument doc,
   auto element = FindFormControlElementByUniqueRendererId(doc, renderer_id);
   if (element.IsNull())
     return;
+  // Calling SetAttribute synchronously here is safe because
+  // AnnotateFieldWithParsingResult is triggered via a call from the the
+  // browser. This means that we should not be in a ScriptForbiddenScope.
   element.SetAttribute(
       WebString::FromASCII(kDebugAttributeForParserAnnotations),
       WebString::FromASCII(text));
@@ -975,11 +999,10 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     WebVector<WebFormElement>& forms) {
   for (WebFormElement& form : forms) {
     std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
-    WebString form_signature;
+    std::string form_signature;
     if (form_data) {
-      form_signature = GetFormSignatureAsWebString(*form_data);
-      form.SetAttribute(WebString::FromASCII(kDebugAttributeForFormSignature),
-                        form_signature);
+      form_signature = GetFormSignatureAsString(*form_data);
+      SetAttributeAsync(form, kDebugAttributeForFormSignature, form_signature);
     }
     std::vector<WebFormControlElement> form_fields =
         form_util::ExtractAutofillableElementsInForm(form);
@@ -990,9 +1013,9 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
       form_util::GetUnownedAutofillableFormFieldElements(
           render_frame()->GetWebFrame()->GetDocument().All(), nullptr);
   std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
-  WebString form_signature;
+  std::string form_signature;
   if (form_data)
-    form_signature = GetFormSignatureAsWebString(*form_data);
+    form_signature = GetFormSignatureAsString(*form_data);
   AnnotateFieldsWithSignatures(unowned_elements, form_signature);
 }
 
