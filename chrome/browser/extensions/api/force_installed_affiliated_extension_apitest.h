@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/affiliation/affiliation_mixin.h"
+#include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"

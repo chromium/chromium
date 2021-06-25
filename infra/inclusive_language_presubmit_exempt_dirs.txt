@@ -10,6 +10,7 @@ chrome 1 1
 chrome/android/java/src/org/chromium/chrome/browser/services/gcm 2 1
 chrome/browser 3 2
 chrome/browser/android/oom_intervention 1 1
+chrome/browser/ash/policy 15 2
 chrome/browser/ash/ownership 4 2
 chrome/browser/ash/settings 9 3
 chrome/browser/autofill 2 1

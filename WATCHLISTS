@@ -842,6 +842,7 @@
       'filepath': 'ash/policy/'\
                   '|components/policy/'\
                   '|chromeos/policy/'\
+                  '|chrome/browser/ash/policy/'\
                   '|chrome/browser/chromeos/policy/'\
                   '|chrome/browser/policy/'
     },

@@ -1,4 +1,4 @@
-chrome/browser/chromeos/policy/affiliation
+chrome/browser/ash/policy/affiliation
 ==========================================
 
 This directory should contain code related to affiliation, a mechanism

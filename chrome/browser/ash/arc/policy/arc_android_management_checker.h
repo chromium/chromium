@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/policy/arc/android_management_client.h"
+#include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;

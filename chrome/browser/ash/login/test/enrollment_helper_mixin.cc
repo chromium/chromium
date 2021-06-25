@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/chromeos/policy/active_directory/active_directory_join_delegate.h"
+#include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 
 using testing::_;
 using testing::AtLeast;

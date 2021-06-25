@@ -62,7 +62,7 @@ to handle cancellation and other stuff. The
 [AuthPolicyCredentialsManager](https://cs.chromium.org/chromium/src/chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h)
 keeps track of user credential status, shows notifications if the Kerberos
 ticket expires and handles network connection changes. The
-[ActiveDirectoryPolicyManager](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/active_directory/active_directory_policy_manager.h)
+[ActiveDirectoryPolicyManager](https://cs.chromium.org/chromium/src/chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h)
 is the AD equivalent of the CloudPolicyManager and handles policy for AD-managed
 devices.
 

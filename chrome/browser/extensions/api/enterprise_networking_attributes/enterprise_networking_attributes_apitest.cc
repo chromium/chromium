@@ -6,7 +6,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/affiliation/affiliation_test_helper.h"
+#include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
