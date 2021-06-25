@@ -345,7 +345,7 @@ bool ParseJSON(base::StringPiece json,
       return false;
     }
 
-    for (const auto& entry_value : parsed.DictItems()) {
+    for (auto entry_value : parsed.DictItems()) {
       if (!base::Contains(valid_keys, entry_value.first)) {
         LOG(ERROR) << "The entry for " << entry->hostname
                    << " contains an unknown " << entry_value.first << " field";

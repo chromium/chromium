@@ -35,7 +35,7 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::DictionaryValue* value) {
   DCHECK_GE(kMaxCacheSize, value->DictSize());
 
   ParsedPrefs read_prefs;
-  for (const auto& it : value->DictItems()) {
+  for (auto it : value->DictItems()) {
     nqe::internal::NetworkID network_id =
         nqe::internal::NetworkID::FromString(it.first);
 
@@ -135,7 +135,7 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
     // |kMaxCacheSize|.
     int index_to_delete = base::RandInt(0, kMaxCacheSize - 1);
 
-    for (const auto& it : prefs_->DictItems()) {
+    for (auto it : prefs_->DictItems()) {
       // Delete the kth element in the dictionary, not including the element
       // that represents the current network. k == |index_to_delete|.
       if (nqe::internal::NetworkID::FromString(it.first) == network_id)

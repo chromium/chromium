@@ -169,7 +169,7 @@ bool CopyHashToHashesMapFromHeader(
     return true;
   }
 
-  for (const auto& i : dict->DictItems()) {
+  for (auto i : dict->DictItems()) {
     if (!i.second.is_list()) {
       return false;
     }
