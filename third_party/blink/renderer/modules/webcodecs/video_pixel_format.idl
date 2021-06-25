@@ -5,27 +5,30 @@
 // https://github.com/WICG/web-codecs
 
 enum VideoPixelFormat {
-    // 4:2:0 subsampled 3 plane Y,U,V or 4 plane Y,U,V,A
+    // 4:2:0 Y, U, V
     "I420",
 
-    // 4:2:2 subsampled 3 plane Y,U,V
+    // 4:2:0 Y, U, V, A
+    "I420A",
+
+    // 4:2:2 Y, U, V
     "I422",
 
-    // 4:4:4 subsampled 3 plane Y,U,V
+    // 4:4:4 Y, U, V
     "I444",
 
-    // 4:2:0 subsampled 2 plane Y,UV
+    // 4:2:0 Y, UV
     "NV12",
 
-    // 32bpp RGBA (byte-order), 1 plane.
-    "ABGR",
+    // 32bpp RGBA
+    "RGBA",
 
-    // 32bpp BGRA (byte-order), 1 plane.
-    "ARGB",
+    // 32bpp RGBX (opaque)
+    "RGBX",
 
-    // 24bpp RGBX (byte-order), 1 plane.
-    "XBGR",
+    // 32bpp BGRA
+    "BGRA",
 
-    // 24bpp BGRX (byte-order), 1 plane.
-    "XRGB",
+    // 32bpp BGRX (opaque)
+    "BGRX",
 };

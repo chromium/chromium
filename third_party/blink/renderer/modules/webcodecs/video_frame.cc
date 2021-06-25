@@ -14,6 +14,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_frame_pool.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -81,19 +82,21 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
     case V8VideoPixelFormat::Enum::kI420:
       return media::PIXEL_FORMAT_I420;
+    case V8VideoPixelFormat::Enum::kI420A:
+      return media::PIXEL_FORMAT_I420A;
     case V8VideoPixelFormat::Enum::kI422:
       return media::PIXEL_FORMAT_I422;
     case V8VideoPixelFormat::Enum::kI444:
       return media::PIXEL_FORMAT_I444;
     case V8VideoPixelFormat::Enum::kNV12:
       return media::PIXEL_FORMAT_NV12;
-    case V8VideoPixelFormat::Enum::kABGR:
+    case V8VideoPixelFormat::Enum::kRGBA:
       return media::PIXEL_FORMAT_ABGR;
-    case V8VideoPixelFormat::Enum::kXBGR:
+    case V8VideoPixelFormat::Enum::kRGBX:
       return media::PIXEL_FORMAT_XBGR;
-    case V8VideoPixelFormat::Enum::kARGB:
+    case V8VideoPixelFormat::Enum::kBGRA:
       return media::PIXEL_FORMAT_ARGB;
-    case V8VideoPixelFormat::Enum::kXRGB:
+    case V8VideoPixelFormat::Enum::kBGRX:
       return media::PIXEL_FORMAT_XRGB;
   }
 }
@@ -433,10 +436,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   auto typed_fmt = V8VideoPixelFormat::Create(init->format());
   auto media_fmt = ToMediaPixelFormat(typed_fmt->AsEnum());
 
-  // There's no I420A pixel format, so treat I420 + 4 planes as I420A.
-  if (media_fmt == media::PIXEL_FORMAT_I420 && planes.size() == 4)
-    media_fmt = media::PIXEL_FORMAT_I420A;
-
   // Validate coded size.
   uint32_t coded_width = init->codedWidth();
   uint32_t coded_height = init->codedHeight();
@@ -670,8 +669,9 @@ String VideoFrame::format() const {
 
   switch (local_frame->format()) {
     case media::PIXEL_FORMAT_I420:
-    case media::PIXEL_FORMAT_I420A:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
+    case media::PIXEL_FORMAT_I420A:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420A);
     case media::PIXEL_FORMAT_I422:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI422);
     case media::PIXEL_FORMAT_I444:
@@ -679,13 +679,13 @@ String VideoFrame::format() const {
     case media::PIXEL_FORMAT_NV12:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
     case media::PIXEL_FORMAT_ABGR:
-      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kABGR);
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kRGBA);
     case media::PIXEL_FORMAT_XBGR:
-      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kXBGR);
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kRGBX);
     case media::PIXEL_FORMAT_ARGB:
-      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kARGB);
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRA);
     case media::PIXEL_FORMAT_XRGB:
-      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kXRGB);
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRX);
     default:
       NOTREACHED();
       return String();

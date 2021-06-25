@@ -24,7 +24,7 @@ function testGLCanvas(gl, width, height, expectedPixel, assertCompares) {
 
 function testTexImage2DFromVideoFrame(
     width, height, useTexSubImage2D, expectedPixel) {
-  let vfInit = {format: 'ABGR', timestamp: 0, codedWidth: width,
+  let vfInit = {format: 'RGBA', timestamp: 0, codedWidth: width,
                 codedHeight: height};
   let u32Data = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
   u32Data.fill(0xFF966432);  // 'rgb(50, 100, 150)';
