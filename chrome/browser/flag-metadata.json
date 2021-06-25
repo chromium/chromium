@@ -3804,6 +3804,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "nearby-sharing-background-scanning",
+    "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "nearby-sharing-device-contacts",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
     "expiry_milestone": 95

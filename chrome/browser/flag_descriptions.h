@@ -2776,6 +2776,9 @@ extern const char kMultilingualTypingDescription[];
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 
+extern const char kNearbySharingBackgroundScanningName[];
+extern const char kNearbySharingBackgroundScanningDescription[];
+
 extern const char kNearbySharingDeviceContactsName[];
 extern const char kNearbySharingDeviceContactsDescription[];
 

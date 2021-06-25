@@ -4812,6 +4812,13 @@ const char kNearbySharingName[] = "Nearby Sharing";
 const char kNearbySharingDescription[] =
     "Enables Nearby Sharing for sharing content between devices.";
 
+const char kNearbySharingBackgroundScanningName[] =
+    "Nearby Sharing Background Scanning";
+const char kNearbySharingBackgroundScanningDescription[] =
+    "Enables background scanning for Nearby Share, allowing devices to "
+    "persistently scan and present a notification when a nearby device is "
+    "attempting to share.";
+
 const char kNearbySharingDeviceContactsName[] =
     "Nearby Sharing Device Contacts";
 const char kNearbySharingDeviceContactsDescription[] =

@@ -46944,6 +46944,7 @@ from previous Chrome versions.
   <int value="-697751423" label="disable-quickoffice-component-app"/>
   <int value="-696693295" label="Canvas2DImageChromium:disabled"/>
   <int value="-696225611" label="UseSerialBusEnumerator:disabled"/>
+  <int value="-695764575" label="NearbySharingBackgroundScanning:enabled"/>
   <int value="-695687521" label="double-buffer-compositing"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
@@ -48877,6 +48878,7 @@ from previous Chrome versions.
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
   <int value="986796748" label="AccountConsistency:enabled"/>
+  <int value="987690332" label="NearbySharingBackgroundScanning:disabled"/>
   <int value="987843084" label="TerminalSystemApp:enabled"/>
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
