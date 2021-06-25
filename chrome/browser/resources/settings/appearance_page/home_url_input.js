@@ -10,59 +10,72 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 
-import {CrPolicyPrefBehavior} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from 'chrome://resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlBehavior} from '../controls/pref_control_behavior.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 
-Polymer({
-  is: 'home-url-input',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrPolicyPrefBehaviorInterface}
+ */
+const HomeUrlInputElementBase =
+    mixinBehaviors([CrPolicyPrefBehavior, PrefControlBehavior], PolymerElement);
 
-  behaviors: [CrPolicyPrefBehavior, PrefControlBehavior],
+/** @polymer */
+class HomeUrlInputElement extends HomeUrlInputElementBase {
+  static get is() {
+    return 'home-url-input';
+  }
 
-  properties: {
-    /**
-     * The preference object to control.
-     * @type {!chrome.settingsPrivate.PrefObject|undefined}
-     * @override
-     */
-    pref: {observer: 'prefChanged_'},
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /* Set to true to disable editing the input. */
-    disabled: {type: Boolean, value: false, reflectToAttribute: true},
+  static get properties() {
+    return {
+      /**
+       * The preference object to control.
+       * @type {!chrome.settingsPrivate.PrefObject|undefined}
+       * @override
+       */
+      pref: {observer: 'prefChanged_'},
 
-    canTab: Boolean,
+      /* Set to true to disable editing the input. */
+      disabled: {type: Boolean, value: false, reflectToAttribute: true},
 
-    invalid: {type: Boolean, value: false},
+      canTab: Boolean,
 
-    /* The current value of the input, reflected to/from |pref|. */
-    value: {
-      type: String,
-      value: '',
-      notify: true,
-    },
-  },
+      invalid: {type: Boolean, value: false},
 
-  /** @private {?AppearanceBrowserProxy} */
-  browserProxy_: null,
+      /* The current value of the input, reflected to/from |pref|. */
+      value: {
+        type: String,
+        value: '',
+        notify: true,
+      },
+    };
+  }
 
-  /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!AppearanceBrowserProxy} */
     this.browserProxy_ = AppearanceBrowserProxyImpl.getInstance();
     this.noExtensionIndicator = true;  // Prevent double indicator.
-  },
+  }
 
   /**
    * Focuses the 'input' element.
    */
   focus() {
     this.$.input.focus();
-  },
+  }
 
   /**
    * Polymer changed observer for |pref|.
@@ -80,13 +93,13 @@ Polymer({
     }
 
     this.setInputValueFromPref_();
-  },
+  }
 
   /** @private */
   setInputValueFromPref_() {
     assert(this.pref.type === chrome.settingsPrivate.PrefType.URL);
     this.value = /** @type {string} */ (this.pref.value);
-  },
+  }
 
   /**
    * Gets a tab index for this control if it can be tabbed to.
@@ -96,7 +109,7 @@ Polymer({
    */
   getTabindex_(canTab) {
     return canTab ? 0 : -1;
-  },
+  }
 
   /**
    * Change event handler for cr-input. Updates the pref value.
@@ -111,14 +124,14 @@ Polymer({
 
     assert(this.pref.type === chrome.settingsPrivate.PrefType.URL);
     this.set('pref.value', this.value);
-  },
+  }
 
   /** @private */
   resetValue_() {
     this.invalid = false;
     this.setInputValueFromPref_();
     this.$.input.blur();
-  },
+  }
 
   /**
    * Keydown handler to specify enter-key and escape-key interactions.
@@ -134,7 +147,7 @@ Polymer({
     }
 
     this.stopKeyEventPropagation_(event);
-  },
+  }
 
   /**
    * This function prevents unwanted change of selection of the containing
@@ -144,7 +157,7 @@ Polymer({
    */
   stopKeyEventPropagation_(e) {
     e.stopPropagation();
-  },
+  }
 
   /**
    * @param {boolean} disabled
@@ -153,7 +166,7 @@ Polymer({
    */
   isDisabled_(disabled) {
     return disabled || this.isPrefEnforced();
-  },
+  }
 
   /** @private */
   validate_() {
@@ -165,5 +178,7 @@ Polymer({
     this.browserProxy_.validateStartupPage(this.value).then(isValid => {
       this.invalid = !isValid;
     });
-  },
-});
+  }
+}
+
+customElements.define(HomeUrlInputElement.is, HomeUrlInputElement);

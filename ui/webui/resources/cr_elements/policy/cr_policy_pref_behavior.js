@@ -45,3 +45,12 @@
         chrome.settingsPrivate.Enforcement.RECOMMENDED;
   },
 };
+
+/** @interface */
+/* #export */ class CrPolicyPrefBehaviorInterface {
+  /** @param {boolean} enabled */
+  set noExtensionIndicator(enabled) {}
+
+  /** @return {boolean} */
+  isPrefEnforced() {}
+}

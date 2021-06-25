@@ -8,9 +8,7 @@ import '../controls/settings_slider.js';
 import '../settings_shared_css.js';
 
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -40,62 +38,72 @@ function ticksWithLabels(ticks) {
  * 'settings-appearance-fonts-page' is the settings page containing appearance
  * settings.
  */
-Polymer({
-  is: 'settings-appearance-fonts-page',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsAppearanceFontsPageElement extends PolymerElement {
+  static get is() {
+    return 'settings-appearance-fonts-page';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {!DropdownMenuOptionList} */
-    fontOptions_: Object,
+  static get properties() {
+    return {
+      /** @private {!DropdownMenuOptionList} */
+      fontOptions_: Object,
 
-    /**
-     * Common font sizes.
-     * @private {!Array<!SliderTick>}
-     */
-    fontSizeRange_: {
-      readOnly: true,
-      type: Array,
-      value: ticksWithLabels(FONT_SIZE_RANGE),
-    },
+      /**
+       * Common font sizes.
+       * @private {!Array<!SliderTick>}
+       */
+      fontSizeRange_: {
+        readOnly: true,
+        type: Array,
+        value: ticksWithLabels(FONT_SIZE_RANGE),
+      },
 
-    /**
-     * Reasonable, minimum font sizes.
-     * @private {!Array<!SliderTick>}
-     */
-    minimumFontSizeRange_: {
-      readOnly: true,
-      type: Array,
-      value: ticksWithLabels(MINIMUM_FONT_SIZE_RANGE),
-    },
+      /**
+       * Reasonable, minimum font sizes.
+       * @private {!Array<!SliderTick>}
+       */
+      minimumFontSizeRange_: {
+        readOnly: true,
+        type: Array,
+        value: ticksWithLabels(MINIMUM_FONT_SIZE_RANGE),
+      },
 
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
-  },
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+    };
+  }
 
-  observers: [
-    'onMinimumSizeChange_(prefs.webkit.webprefs.minimum_font_size.value)',
-  ],
-
-  /** @private {?FontsBrowserProxy} */
-  browserProxy_: null,
+  static get observers() {
+    return [
+      'onMinimumSizeChange_(prefs.webkit.webprefs.minimum_font_size.value)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!FontsBrowserProxy} */
     this.browserProxy_ = FontsBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.browserProxy_.fetchFontsData().then(this.setFontsData_.bind(this));
-  },
+  }
 
   /**
    * @param {!FontsData} response A list of fonts.
@@ -107,7 +115,7 @@ Polymer({
       fontMenuOptions.push({value: fontData[0], name: fontData[1]});
     }
     this.fontOptions_ = fontMenuOptions;
-  },
+  }
 
   /**
    * Get the minimum font size, accounting for unset prefs.
@@ -117,11 +125,14 @@ Polymer({
   computeMinimumFontSize_() {
     const prefValue = this.get('prefs.webkit.webprefs.minimum_font_size.value');
     return /** @type {number} */ (prefValue) || MINIMUM_FONT_SIZE_RANGE[0];
-  },
+  }
 
 
   /** @private */
   onMinimumSizeChange_() {
     this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsAppearanceFontsPageElement.is, SettingsAppearanceFontsPageElement);
