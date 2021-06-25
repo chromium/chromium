@@ -2850,8 +2850,6 @@ crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/gets
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDataChannel-send.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-send.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simulcast/getStats.https.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/getStats.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Timeout ]
@@ -7075,3 +7073,4 @@ crbug.com/1222097 virtual/gpu-rasterization/images/color-profile-background-imag
 # Flaky on Webkit Linux Leak
 crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Pass Failure ]
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Pass Failure ]
+crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Pass Failure ]
