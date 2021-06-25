@@ -793,6 +793,10 @@ experimental domain Audits
       optional QuirksModeIssueDetails quirksModeIssueDetails
       optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails
 
+  # A unique id for a DevTools inspector issue. Allows other entities (e.g.
+  # exceptions, CDP message, console messages, etc.) to reference an issue.
+  type IssueId extends string
+
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object
     properties
@@ -800,7 +804,7 @@ experimental domain Audits
       InspectorIssueDetails details
       # A unique id for this issue. May be omitted if no other entity (e.g.
       # exception, CDP message, etc.) is referencing this issue.
-      optional string issueId
+      optional IssueId issueId
 
   # Returns the response body and size if it were re-encoded with the specified settings. Only
   # applies to images.
