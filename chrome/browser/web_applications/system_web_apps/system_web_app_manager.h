@@ -163,6 +163,9 @@ class SystemWebAppManager {
   // doesn't specify a minimum.
   gfx::Size GetMinimumWindowSize(const AppId& app_id) const;
 
+  // Returns whether to show "New Window" menu item in App's shelf context menu.
+  bool ShouldShowNewWindowMenuOption(SystemAppType type) const;
+
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
   const SystemAppDelegateMap& GetRegisteredSystemAppsForTesting() const;

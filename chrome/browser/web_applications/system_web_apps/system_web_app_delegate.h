@@ -71,6 +71,10 @@ class SystemWebAppDelegate {
   // If set, we allow only a single window for this app.
   virtual bool ShouldBeSingleWindow() const;
 
+  // If true, adds a "New Window" option to App's shelf context menu.
+  // ShouldBeSingleWindow() should return false at the same time.
+  virtual bool ShouldShowNewWindowMenuOption() const;
+
   // If true, when the app is launched through the File Handling Web API, we
   // will include the file's directory in window.launchQueue as the first value.
   virtual bool ShouldIncludeLaunchDirectory() const;

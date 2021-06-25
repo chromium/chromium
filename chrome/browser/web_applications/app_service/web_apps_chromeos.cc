@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -148,7 +149,21 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
 
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
-  if (!is_system_web_app) {
+  if (is_system_web_app) {
+    const auto* web_app = GetWebApp(app_id);
+    DCHECK(web_app);
+    DCHECK(web_app->client_data().system_web_app_data.has_value());
+
+    SystemAppType swa_type =
+        web_app->client_data().system_web_app_data->system_app_type;
+
+    if (WebAppProvider::GetForSystemWebApps(profile())
+            ->system_web_app_manager()
+            .ShouldShowNewWindowMenuOption(swa_type)) {
+      apps::AddCommandItem(ash::MENU_OPEN_NEW,
+                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
+    }
+  } else {
     apps::CreateOpenNewSubmenu(menu_type,
                                display_mode == apps::mojom::WindowMode::kBrowser
                                    ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB

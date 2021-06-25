@@ -400,6 +400,20 @@ bool SystemWebAppManager::IsSingleWindow(SystemAppType type) const {
   return it->second->ShouldBeSingleWindow();
 }
 
+bool SystemWebAppManager::ShouldShowNewWindowMenuOption(
+    SystemAppType type) const {
+  auto it = system_app_delegates_.find(type);
+  if (it == system_app_delegates_.end())
+    return false;
+
+  DCHECK(!(it->second->ShouldShowNewWindowMenuOption() &&
+           it->second->ShouldBeSingleWindow()))
+      << "App can't show 'new window' menu option and be single window same "
+         "time.";
+
+  return it->second->ShouldShowNewWindowMenuOption();
+}
+
 bool SystemWebAppManager::AppShouldReceiveLaunchDirectory(
     SystemAppType type) const {
   auto it = system_app_delegates_.find(type);

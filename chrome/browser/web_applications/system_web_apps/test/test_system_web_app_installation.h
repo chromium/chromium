@@ -32,6 +32,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool ShouldBeSingleWindow() const override;
+  bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldIncludeLaunchDirectory() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
   bool ShouldShowInLauncher() const override;
@@ -49,6 +50,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
   void SetShouldBeSingleWindow(bool);
+  void SetShouldShowNewWindowMenuOption(bool);
   void SetShouldIncludeLaunchDirectory(bool);
   void SetEnabledOriginTrials(const OriginTrialsMap&);
   void SetAdditionalSearchTerms(const std::vector<int>&);
@@ -69,6 +71,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   std::vector<AppId> uninstall_and_replace_;
   gfx::Size minimum_window_size_;
   bool single_window_ = true;
+  bool show_new_window_menu_option_ = false;
   bool include_launch_directory_ = false;
   std::vector<int> additional_search_terms_;
   bool show_in_launcher_ = true;
@@ -144,6 +147,9 @@ class TestSystemWebAppInstallation {
 
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithDefaultBounds(const gfx::Rect& default_bounds);
+
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppWithNewWindowMenuItem();
 
   ~TestSystemWebAppInstallation();
 

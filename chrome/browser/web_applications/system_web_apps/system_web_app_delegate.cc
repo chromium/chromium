@@ -43,6 +43,10 @@ bool SystemWebAppDelegate::ShouldBeSingleWindow() const {
   return true;
 }
 
+bool SystemWebAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return false;
+}
+
 bool SystemWebAppDelegate::ShouldIncludeLaunchDirectory() const {
   return false;
 }

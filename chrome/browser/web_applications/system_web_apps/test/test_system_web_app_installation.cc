@@ -112,6 +112,9 @@ gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
 bool UnittestingSystemAppDelegate::ShouldBeSingleWindow() const {
   return single_window_;
 }
+bool UnittestingSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return show_new_window_menu_option_;
+}
 bool UnittestingSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
   return include_launch_directory_;
 }
@@ -168,6 +171,10 @@ void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
 }
 void UnittestingSystemAppDelegate::SetShouldBeSingleWindow(bool value) {
   single_window_ = value;
+}
+void UnittestingSystemAppDelegate::SetShouldShowNewWindowMenuOption(
+    bool value) {
+  show_new_window_menu_option_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldIncludeLaunchDirectory(bool value) {
   include_launch_directory_ = value;
@@ -520,6 +527,21 @@ TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
 
   return base::WrapUnique(new TestSystemWebAppInstallation(
       SystemAppType::SETTINGS, std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemAppType::MEDIA, "Test",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  delegate->SetShouldShowNewWindowMenuOption(true);
+  delegate->SetShouldBeSingleWindow(false);
+
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::FILE_MANAGER, std::move(delegate)));
 }
 
 std::unique_ptr<KeyedService>
