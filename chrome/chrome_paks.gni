@@ -195,6 +195,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/ash_shimless_rma_resources.pak",
         "$root_gen_dir/ash/ash_shortcut_customization_app_resources.pak",
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+        "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/browser/supervised_user/supervised_user_unscaled_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
@@ -231,6 +232,7 @@ template("chrome_extra_paks") {
         "//ash/components/resources:shimless_rma_resources",
         "//ash/components/resources:shortcut_customization_app_resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
+        "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
         "//chrome/browser/resources:internet_config_dialog_resources",
         "//chrome/browser/resources:internet_detail_dialog_resources",
@@ -264,14 +266,12 @@ template("chrome_extra_paks") {
 
       if (!is_official_build) {
         sources += [
-          "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
           "$root_gen_dir/chromeos/chromeos_demo_mode_app_resources.pak",
           "$root_gen_dir/chromeos/chromeos_sample_system_web_app_resources.pak",
           "$root_gen_dir/chromeos/chromeos_sample_system_web_app_untrusted_resources.pak",
           "$root_gen_dir/chromeos/chromeos_telemetry_extension_resources.pak",
         ]
         deps += [
-          "//ash/webui/file_manager/resources:file_manager_swa_resources",
           "//chromeos/resources:demo_mode_app_resources",
           "//chromeos/resources:sample_system_web_app_resources",
           "//chromeos/resources:sample_system_web_app_untrusted_resources",

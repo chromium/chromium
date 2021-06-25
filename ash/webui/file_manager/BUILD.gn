@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "File Manager is Chrome OS only")
-assert(!is_official_build, "File Manager is only built for unofficial builds")
+assert(is_chromeos, "File Manager is ChromeOS only")
 
 static_library("constants") {
   sources = [

@@ -2160,6 +2160,7 @@ if (!is_android) {
         "//ash/components/audio",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
+        "//ash/webui/file_manager:constants",
         "//ash/webui/os_feedback_ui:os_feedback_ui",
         "//ash/webui/scanning",
         "//ash/webui/shimless_rma",
@@ -2272,7 +2273,6 @@ if (!is_android) {
 
       if (!is_official_build) {
         deps += [
-          "//ash/webui/file_manager:constants",
           "//chromeos/components/demo_mode_app_ui",
           "//chromeos/components/sample_system_web_app_ui",
           "//chromeos/components/telemetry_extension_ui",

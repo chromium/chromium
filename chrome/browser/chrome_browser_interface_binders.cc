@@ -159,6 +159,8 @@
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/file_manager/file_manager_ui.h"
+#include "ash/webui/file_manager/mojom/file_manager.mojom.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -231,8 +233,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "ash/webui/file_manager/file_manager_ui.h"
-#include "ash/webui/file_manager/mojom/file_manager.mojom.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"  // nogncheck crbug.com/1125897
@@ -722,6 +722,10 @@ void PopulateChromeWebUIFrameBinders(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterWebUIControllerInterfaceBinder<
+      ash::file_manager::mojom::PageHandlerFactory,
+      ash::file_manager::FileManagerUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
       add_supervision::mojom::AddSupervisionHandler,
       chromeos::AddSupervisionUI>(map);
 
@@ -860,10 +864,6 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-  RegisterWebUIControllerInterfaceBinder<
-      ash::file_manager::mojom::PageHandlerFactory,
-      ash::file_manager::FileManagerUI>(map);
-
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
     RegisterWebUIControllerInterfaceBinder<
         chromeos::health::mojom::DiagnosticsService,

@@ -69,6 +69,7 @@
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/eche_app_info.h"
+#include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
@@ -89,7 +90,6 @@
 #include "extensions/common/constants.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
-#include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/telemetry_extension_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
@@ -135,11 +135,11 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.emplace_back(
       std::make_unique<ShortcutCustomizationSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<OSFeedbackAppDelegate>(profile));
+  info_vec.emplace_back(
+      std::make_unique<FileManagerSystemAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));
-  info_vec.emplace_back(
-      std::make_unique<FileManagerSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)

@@ -152,6 +152,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/file_manager/file_manager_ui.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/scanning/scanning_ui.h"
@@ -170,6 +172,7 @@
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_ui_delegate.h"
@@ -249,9 +252,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "ash/webui/file_manager/file_manager_ui.h"
-#include "ash/webui/file_manager/url_constants.h"
-#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"
 #include "chromeos/components/demo_mode_app_ui/url_constants.h"
@@ -765,6 +765,13 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
     return &NewWebUI<chromeos::LockScreenNetworkUI>;
   }
+  if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
+    if (!ash::features::IsFileManagerSwaEnabled()) {
+      return nullptr;
+    }
+    return &NewComponentUI<ash::file_manager::FileManagerUI,
+                           ChromeFileManagerUIDelegate>;
+  }
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
     return &NewWebUI<chromeos::AccountManagerErrorUI>;
   if (url.host_piece() == chrome::kChromeUIAccountManagerWelcomeHost)
@@ -908,10 +915,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (chromeos::features::IsDemoModeSWAEnabled()) {
       return &NewWebUI<chromeos::DemoModeAppUI>;
     }
-  }
-  if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
-    return &NewComponentUI<ash::file_manager::FileManagerUI,
-                           ChromeFileManagerUIDelegate>;
   }
   if (url.host_piece() == chromeos::kChromeUISampleSystemWebAppHost)
     return &NewWebUI<chromeos::SampleSystemWebAppUI>;

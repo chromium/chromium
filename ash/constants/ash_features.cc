@@ -1188,6 +1188,10 @@ bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
 }
 
+bool IsFileManagerSwaEnabled() {
+  return base::FeatureList::IsEnabled(kFilesSWA);
+}
+
 bool IsFullscreenAlertBubbleEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
 }

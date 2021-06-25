@@ -271,11 +271,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayDownloads"),
         TestCase("fileDisplayDownloads").InGuestMode(),
         TestCase("fileDisplayDownloads").TabletMode(),
-#if !defined(OFFICIAL_BUILD)
         TestCase("fileDisplayDownloads").FilesSwa(),
         TestCase("fileDisplayDownloads").FilesSwa().InGuestMode(),
         TestCase("fileDisplayDownloads").FilesSwa().TabletMode(),
-#endif
         TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks(),
         TestCase("fileDisplayDrive").TabletMode(),

@@ -11,10 +11,6 @@
 
 struct WebApplicationInfo;
 
-#if defined(OFFICIAL_BUILD)
-#error File Manager should only be included in unofficial builds.
-#endif
-
 class FileManagerSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit FileManagerSystemAppDelegate(Profile* profile);

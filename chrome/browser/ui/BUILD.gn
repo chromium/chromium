@@ -2714,6 +2714,7 @@ static_library("ui") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/services/recording/public/mojom",
       "//ash/shortcut_viewer",
+      "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/os_feedback_ui",
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
@@ -2883,7 +2884,6 @@ static_library("ui") {
         ]
       }
       deps += [
-        "//ash/webui/file_manager:file_manager_ui",
         "//chromeos/components/demo_mode_app_ui",
         "//chromeos/components/sample_system_web_app_ui",
         "//chromeos/components/telemetry_extension_ui",

@@ -52,5 +52,5 @@ bool FileManagerSystemAppDelegate::ShouldBeSingleWindow() const {
 }
 
 bool FileManagerSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kFilesSWA);
+  return ash::features::IsFileManagerSwaEnabled();
 }

@@ -2356,6 +2356,8 @@ static_library("browser") {
     deps += [
       "//ash/components/audio",
       "//ash/constants",
+      "//ash/webui/file_manager:file_manager_ui",
+      "//ash/webui/file_manager/mojom",
       "//ash/webui/scanning",
       "//ash/webui/scanning/mojom",
       "//ash/webui/shimless_rma",
@@ -2415,8 +2417,6 @@ static_library("browser") {
     ]
     if (!is_official_build) {
       deps += [
-        "//ash/webui/file_manager:file_manager_ui",
-        "//ash/webui/file_manager/mojom",
         "//chromeos/components/demo_mode_app_ui",
         "//chromeos/components/telemetry_extension_ui",
         "//chromeos/components/telemetry_extension_ui/mojom",

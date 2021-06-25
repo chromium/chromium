@@ -90,6 +90,8 @@ source_set("chromeos") {
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
+    "//ash/webui/file_manager:file_manager_ui",
+    "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
     "//ash/webui/os_feedback_ui",
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
@@ -2154,6 +2156,8 @@ source_set("chromeos") {
     "../ash/web_applications/chrome_camera_app_ui_constants.h",
     "../ash/web_applications/chrome_camera_app_ui_delegate.cc",
     "../ash/web_applications/chrome_camera_app_ui_delegate.h",
+    "../ash/web_applications/chrome_file_manager_ui_delegate.cc",
+    "../ash/web_applications/chrome_file_manager_ui_delegate.h",
     "../ash/web_applications/connectivity_diagnostics_system_web_app_info.cc",
     "../ash/web_applications/connectivity_diagnostics_system_web_app_info.h",
     "../ash/web_applications/crosh_loader.cc",
@@ -2166,6 +2170,8 @@ source_set("chromeos") {
     "../ash/web_applications/diagnostics_system_web_app_info.h",
     "../ash/web_applications/eche_app_info.cc",
     "../ash/web_applications/eche_app_info.h",
+    "../ash/web_applications/file_manager_web_app_info.cc",
+    "../ash/web_applications/file_manager_web_app_info.h",
     "../ash/web_applications/help_app/help_app_discover_tab_notification.cc",
     "../ash/web_applications/help_app/help_app_discover_tab_notification.h",
     "../ash/web_applications/help_app/help_app_notification_controller.cc",
@@ -3241,8 +3247,6 @@ source_set("chromeos") {
 
   if (!is_official_build) {
     deps += [
-      "//ash/webui/file_manager:file_manager_ui",
-      "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
       "//chromeos/components/demo_mode_app_ui",
       "//chromeos/components/sample_system_web_app_ui",
       "//chromeos/components/telemetry_extension_ui",
@@ -3252,12 +3256,8 @@ source_set("chromeos") {
       "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
-      "../ash/web_applications/chrome_file_manager_ui_delegate.cc",
-      "../ash/web_applications/chrome_file_manager_ui_delegate.h",
       "../ash/web_applications/demo_mode_web_app_info.cc",
       "../ash/web_applications/demo_mode_web_app_info.h",
-      "../ash/web_applications/file_manager_web_app_info.cc",
-      "../ash/web_applications/file_manager_web_app_info.h",
       "../ash/web_applications/sample_system_web_app_info.cc",
       "../ash/web_applications/sample_system_web_app_info.h",
       "../ash/web_applications/telemetry_extension_web_app_info.cc",

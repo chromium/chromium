@@ -12,9 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#if !defined(OFFICIAL_BUILD)
 #include "ash/webui/file_manager/url_constants.h"
-#endif
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -2056,7 +2054,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-#if !defined(OFFICIAL_BUILD)
   if (name == "launchFileManagerSwa") {
     std::string launchDir;
     std::string search;
@@ -2117,7 +2114,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         output));
     return;
   }
-#endif
 
   if (name == "isDevtoolsCoverageActive") {
     bool devtools_coverage_active = !devtools_code_coverage_dir_.empty();

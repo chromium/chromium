@@ -242,12 +242,10 @@ bool FileSystemBackend::IsAccessAllowed(
   if (url.origin().opaque())
     return true;
 
-#if !defined(OFFICIAL_BUILD)
   // The chrome://file-manager can access its filesystem origin.
   if (url.origin().GetURL() == ash::file_manager::kChromeUIFileManagerURL) {
     return true;
   }
-#endif
 
   const std::string& extension_id = url.origin().host();
   if (url.type() == storage::kFileSystemTypeRestrictedLocal) {
