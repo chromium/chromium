@@ -1138,6 +1138,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // used, only allows <option>/AXMenuListOption children.
   static bool CanComputeAsNaturalParent(Node*);
 
+  // For a given image, return a <map> that's actually used for it.
+  static HTMLMapElement* GetMapForImage(Node* image);
+
   // Compute the AXObject parent for the given node or layout_object.
   // The layout object is only necessary if the node is null, which is the case
   // only for pseudo elements. ** Does not take aria-owns into account. **
