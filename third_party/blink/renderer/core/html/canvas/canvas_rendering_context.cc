@@ -60,9 +60,19 @@ void CanvasRenderingContext::Dispose() {
   }
 }
 
-void CanvasRenderingContext::DidDraw(const SkIRect& dirty_rect) {
+void CanvasRenderingContext::DidDraw(
+    const SkIRect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
   Host()->DidDraw(dirty_rect);
-  DidDrawCommon();
+
+  auto& monitor = GetCanvasPerformanceMonitor();
+  monitor.DidDraw(draw_type);
+  if (did_draw_in_current_task_)
+    return;
+
+  monitor.CurrentTaskDrawsToContext(this);
+  did_draw_in_current_task_ = true;
+  Thread::Current()->AddTaskObserver(this);
 }
 
 void CanvasRenderingContext::DidProcessTask(
@@ -156,15 +166,6 @@ void CanvasRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(host_);
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
-}
-
-void CanvasRenderingContext::DidDrawCommon() {
-  if (did_draw_in_current_task_)
-    return;
-
-  GetCanvasPerformanceMonitor().CurrentTaskDrawsToContext(this);
-  did_draw_in_current_task_ = true;
-  Thread::Current()->AddTaskObserver(this);
 }
 
 void CanvasRenderingContext::RenderTaskEnded() {

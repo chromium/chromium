@@ -216,7 +216,7 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
   // As we are getting a new texture, we need to tell the canvas context that
   // there will be a need to send a new frame to the offscreencanvas.
   if (context_->IsOffscreenCanvas())
-    context_->DidDraw();
+    context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrenTexture is called multiple

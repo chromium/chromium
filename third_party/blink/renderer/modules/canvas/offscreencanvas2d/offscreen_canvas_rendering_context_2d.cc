@@ -100,7 +100,7 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
 
   // Clear the background transparent or opaque.
   if (IsCanvas2DBufferValid())
-    DidDraw();
+    DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
@@ -281,8 +281,11 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   return GetCanvasResourceProvider()->Canvas();
 }
 
-void OffscreenCanvasRenderingContext2D::DidDraw2D(const SkIRect& dirty_rect) {
+void OffscreenCanvasRenderingContext2D::DidDraw2D(
+    const SkIRect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
   dirty_rect_for_commit_.join(dirty_rect);
+  GetCanvasPerformanceMonitor().DidDraw(draw_type);
   Host()->DidDraw(dirty_rect_for_commit_);
   if (GetCanvasResourceProvider() && GetCanvasResourceProvider()->needs_flush())
     FinalizeFrame();
@@ -722,7 +725,8 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage);
+      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kText);
 
   // |paint_canvas| maybe rese during Draw. If that happens,
   // GetOrCreatePaintCanvas will create a new |paint_canvas| and return a new

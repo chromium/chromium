@@ -721,7 +721,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void DrawingBufferClientForceLostContextWithAutoRecovery() override;
 
   virtual void DestroyContext();
-  void MarkContextChanged(ContentChangeType);
+  void MarkContextChanged(ContentChangeType,
+                          CanvasPerformanceMonitor::DrawType);
 
   void OnErrorMessage(const char*, int32_t id);
 
@@ -1597,7 +1598,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
 
   // State updates and operations necessary before or at draw call time.
-  virtual void OnBeforeDrawCall();
+  virtual void OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType);
 
   // Helper functions to bufferData() and bufferSubData().
   void BufferDataImpl(GLenum target,

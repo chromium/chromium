@@ -172,11 +172,12 @@ class CORE_EXPORT CanvasRenderingContext
     return nullptr;
   }
   virtual bool IsPaintable() const = 0;
-  void DidDraw(const SkIRect& dirty_rect);
-  void DidDraw() {
+  void DidDraw(CanvasPerformanceMonitor::DrawType draw_type) {
     return DidDraw(Host() ? SkIRect::MakeWH(Host()->width(), Host()->height())
-                          : SkIRect::MakeEmpty());
+                          : SkIRect::MakeEmpty(),
+                   draw_type);
   }
+  void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
   // Return true if the content is updated.
   virtual bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) {
@@ -289,7 +290,6 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasColorParams color_params_;
   CanvasContextCreationAttributesCore creation_attributes_;
 
-  void DidDrawCommon();
   void RenderTaskEnded();
   bool did_draw_in_current_task_ = false;
 

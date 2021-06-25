@@ -178,7 +178,7 @@ void OffscreenCanvas::SetSize(const IntSize& size) {
       context_->Reset();
       origin_clean_ = true;
     }
-    context_->DidDraw();
+    context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
   }
 }
 

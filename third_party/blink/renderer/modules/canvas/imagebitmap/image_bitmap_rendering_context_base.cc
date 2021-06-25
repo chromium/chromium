@@ -62,7 +62,7 @@ void ImageBitmapRenderingContextBase::SetImage(ImageBitmap* image_bitmap) {
   else
     ResetInternalBitmapToBlackTransparent(Host()->width(), Host()->height());
 
-  DidDraw();
+  DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   if (image_bitmap)
     image_bitmap->close();

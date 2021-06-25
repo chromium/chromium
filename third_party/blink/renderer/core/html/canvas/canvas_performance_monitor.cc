@@ -28,6 +28,13 @@ const char* const kContextTypeName_ImageBitmap = ".ImageBitmap";
 
 const char* const kFilterName_All = ".All";
 const char* const kFilterName_Animation = ".Animation";
+const char* const kFilterName_Path = ".Path";
+const char* const kFilterName_Image = ".Image";
+const char* const kFilterName_ImageData = ".ImageData";
+const char* const kFilterName_Rectangle = ".Rectangle";
+const char* const kFilterName_Text = ".Text";
+const char* const kFilterName_DrawArrays = ".DrawArrays";
+const char* const kFilterName_DrawElements = ".DrawElements";
 
 const char* const kMeasurementName_RenderTaskDuration = ".RenderTaskDuration";
 const char* const kMeasurementName_PartitionAlloc = ".PartitionAlloc";
@@ -201,6 +208,65 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                                           elapsed_time);
     }
 
+    // Filtered histograms that apply to 2D canvases
+    if (desc.ContextType() == CanvasRenderingContext::kContext2D) {
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kPath)) {
+        WTF::String histogram_name = histogram_name_prefix +
+                                     kMeasurementName_RenderTaskDuration +
+                                     histogram_name_radical + kFilterName_Path;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kImage)) {
+        WTF::String histogram_name = histogram_name_prefix +
+                                     kMeasurementName_RenderTaskDuration +
+                                     histogram_name_radical + kFilterName_Image;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kImageData)) {
+        WTF::String histogram_name =
+            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
+            histogram_name_radical + kFilterName_ImageData;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kText)) {
+        WTF::String histogram_name = histogram_name_prefix +
+                                     kMeasurementName_RenderTaskDuration +
+                                     histogram_name_radical + kFilterName_Text;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kRectangle)) {
+        WTF::String histogram_name =
+            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
+            histogram_name_radical + kFilterName_Rectangle;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+    } else if (desc.ContextType() == CanvasRenderingContext::kContextWebgl ||
+               desc.ContextType() == CanvasRenderingContext::kContextWebgl2 ||
+               desc.ContextType() ==
+                   CanvasRenderingContext::kContextExperimentalWebgl) {
+      // Filtered histograms that apply to WebGL canvases
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kDrawArrays)) {
+        WTF::String histogram_name =
+            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
+            histogram_name_radical + kFilterName_DrawArrays;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+      if (draw_types_ & static_cast<uint32_t>(DrawType::kDrawElements)) {
+        WTF::String histogram_name =
+            histogram_name_prefix + kMeasurementName_RenderTaskDuration +
+            histogram_name_radical + kFilterName_DrawElements;
+        base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
+                                            elapsed_time);
+      }
+    }
+    // TODO(junov) Add filtered histograms that apply to WebGPU canvases
+
     // PartitionAlloc heap size metric
     {
       WTF::String histogram_name = histogram_name_prefix +
@@ -229,14 +295,14 @@ void CanvasPerformanceMonitor::DidProcessTask(TimeTicks start_time,
     RecordMetrics(start_time, end_time);
 
   is_render_task_ = false;
-  draw_flags_ = 0;
+  draw_types_ = 0;
 }
 
 void CanvasPerformanceMonitor::ResetForTesting() {
   if (is_render_task_)
     Thread::Current()->RemoveTaskTimeObserver(this);
   is_render_task_ = false;
-  draw_flags_ = 0;
+  draw_types_ = 0;
   rendering_context_descriptions_.clear();
   call_type_ = CallType::kOther;
   task_counter_ = 0;

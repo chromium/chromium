@@ -3192,6 +3192,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="Filter">
     <variant name="All"/>
     <variant name="Animation"/>
+    <variant name="DrawArrays"/>
+    <variant name="DrawElements"/>
+    <variant name="Image"/>
+    <variant name="ImageData"/>
+    <variant name="Path"/>
+    <variant name="Rectangle"/>
+    <variant name="Text"/>
   </token>
 </histogram>
 

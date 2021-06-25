@@ -292,7 +292,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   virtual cc::PaintCanvas* GetPaintCanvas() const = 0;
 
-  virtual void DidDraw2D(const SkIRect& dirty_rect) = 0;
+  virtual void DidDraw2D(const SkIRect& dirty_rect,
+                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual bool StateHasFilter() = 0;
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
@@ -413,7 +414,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
             const DrawCoversClipBoundsFunc&,
             const SkRect& bounds,
             CanvasRenderingContext2DState::PaintType,
-            CanvasRenderingContext2DState::ImageType);
+            CanvasRenderingContext2DState::ImageType,
+            CanvasPerformanceMonitor::DrawType);
 
   void InflateStrokeRect(FloatRect&) const;
 
@@ -517,7 +519,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                     const SkRect& bounds,
                     CanvasRenderingContext2DState::PaintType,
                     CanvasRenderingContext2DState::ImageType,
-                    const SkIRect& clip_bounds);
+                    const SkIRect& clip_bounds,
+                    CanvasPerformanceMonitor::DrawType);
 
   void DrawPathInternal(const Path&,
                         CanvasRenderingContext2DState::PaintType,
@@ -591,19 +594,20 @@ void BaseRenderingContext2D::DrawInternal(
     const SkRect& bounds,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
-    const SkIRect& clip_bounds) {
+    const SkIRect& clip_bounds,
+    CanvasPerformanceMonitor::DrawType draw_type) {
   if (IsFullCanvasCompositeMode(GetState().GlobalComposite()) ||
       StateHasFilter() ||
       (GetState().ShouldDrawShadows() &&
        ShouldUseDropShadowPaintFilter(paint_type, image_type))) {
     CompositedDraw(draw_func, GetPaintCanvas(), paint_type, image_type);
-    DidDraw2D(clip_bounds);
+    DidDraw2D(clip_bounds, draw_type);
   } else if (GetState().GlobalComposite() == SkBlendMode::kSrc) {
     ClearCanvas();  // takes care of checkOverdraw()
     const PaintFlags* flags =
         GetState().GetFlags(paint_type, kDrawForegroundOnly, image_type);
     draw_func(GetPaintCanvas(), flags);
-    DidDraw2D(clip_bounds);
+    DidDraw2D(clip_bounds, draw_type);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
@@ -613,7 +617,7 @@ void BaseRenderingContext2D::DrawInternal(
           draw_covers_clip_bounds(clip_bounds))
         CheckOverdraw(bounds, flags, image_type, kClipFill);
       draw_func(GetPaintCanvas(), flags);
-      DidDraw2D(dirty_rect);
+      DidDraw2D(dirty_rect, draw_type);
     }
   }
 }
@@ -624,7 +628,8 @@ void BaseRenderingContext2D::Draw(
     const DrawCoversClipBoundsFunc& draw_covers_clip_bounds,
     const SkRect& bounds,
     CanvasRenderingContext2DState::PaintType paint_type,
-    CanvasRenderingContext2DState::ImageType image_type) {
+    CanvasRenderingContext2DState::ImageType image_type,
+    CanvasPerformanceMonitor::DrawType draw_type) {
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -639,10 +644,10 @@ void BaseRenderingContext2D::Draw(
         &BaseRenderingContext2D::DrawInternal<DrawFunc,
                                               DrawCoversClipBoundsFunc>,
         WrapPersistent(this), draw_func, draw_covers_clip_bounds, bounds,
-        paint_type, image_type, clip_bounds));
+        paint_type, image_type, clip_bounds, draw_type));
   } else {
     DrawInternal(draw_func, draw_covers_clip_bounds, bounds, paint_type,
-                 image_type, clip_bounds);
+                 image_type, clip_bounds, draw_type);
   }
 }
 

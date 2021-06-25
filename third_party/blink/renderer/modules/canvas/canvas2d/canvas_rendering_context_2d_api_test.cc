@@ -75,6 +75,7 @@ void CanvasRenderingContext2DAPITest::SetUp() {
 }
 
 void CanvasRenderingContext2DAPITest::TearDown() {
+  PageTestBase::TearDown();
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 

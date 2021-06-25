@@ -119,7 +119,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;
 
-  void DidDraw2D(const SkIRect& dirty_rect) final;
+  void DidDraw2D(const SkIRect& dirty_rect,
+                 CanvasPerformanceMonitor::DrawType) final;
 
   bool StateHasFilter() final;
   sk_sp<PaintFilter> StateGetFilter() final;

@@ -175,7 +175,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ClearFilterReferences();
 
   // BaseRenderingContext2D implementation
-  void DidDraw2D(const SkIRect& dirty_rect) final;
+  void DidDraw2D(const SkIRect& dirty_rect,
+                 CanvasPerformanceMonitor::DrawType) final;
   bool OriginClean() const final;
   void SetOriginTainted() final;
   bool WouldTaintOrigin(CanvasImageSource* source) final {

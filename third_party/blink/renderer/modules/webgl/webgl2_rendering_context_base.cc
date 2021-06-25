@@ -412,7 +412,8 @@ void WebGL2RenderingContextBase::blitFramebuffer(GLint src_x0,
       GetDrawingBuffer(), user_framebuffer_bound);
   ContextGL()->BlitFramebufferCHROMIUM(src_x0, src_y0, src_x1, src_y1, dst_x0,
                                        dst_y0, dst_x1, dst_y1, mask, filter);
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 bool WebGL2RenderingContextBase::ValidateTexFuncLayer(const char* function_name,
@@ -3620,7 +3621,7 @@ void WebGL2RenderingContextBase::drawArraysInstanced(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
   ContextGL()->DrawArraysInstancedANGLE(mode, first, count, instance_count);
   RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
@@ -3641,7 +3642,7 @@ void WebGL2RenderingContextBase::drawElementsInstanced(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
   ContextGL()->DrawElementsInstancedANGLE(
       mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
       instance_count);
@@ -3665,7 +3666,7 @@ void WebGL2RenderingContextBase::drawRangeElements(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
   ContextGL()->DrawRangeElements(
       mode, start, end, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
@@ -3858,7 +3859,8 @@ void WebGL2RenderingContextBase::clearBufferfv(
   // if they're called against the default back buffer. If support for
   // extended canvas color spaces is added, this call might need to be
   // added to the other versions.
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
   UpdateBuffersToAutoClear(kClearBufferfv, buffer, drawbuffer);
 }
 
@@ -3884,7 +3886,8 @@ void WebGL2RenderingContextBase::clearBufferfv(GLenum buffer,
   // if they're called against the default back buffer. If support for
   // extended canvas color spaces is added, this call might need to be
   // added to the other versions.
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
   UpdateBuffersToAutoClear(kClearBufferfv, buffer, drawbuffer);
 }
 
@@ -3898,7 +3901,8 @@ void WebGL2RenderingContextBase::clearBufferfi(GLenum buffer,
   ContextGL()->ClearBufferfi(buffer, drawbuffer, depth, stencil);
   // This might have been used to clear the depth and stencil buffers
   // of the default back buffer.
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
   UpdateBuffersToAutoClear(kClearBufferfi, buffer, drawbuffer);
 }
 
@@ -4772,7 +4776,8 @@ bool WebGL2RenderingContextBase::ValidateTransformFeedbackPrimitiveMode(
   }
 }
 
-void WebGL2RenderingContextBase::OnBeforeDrawCall() {
+void WebGL2RenderingContextBase::OnBeforeDrawCall(
+    CanvasPerformanceMonitor::DrawType draw_type) {
   if (transform_feedback_binding_->active() &&
       !transform_feedback_binding_->paused()) {
     for (WebGLBuffer* buffer :
@@ -4785,7 +4790,7 @@ void WebGL2RenderingContextBase::OnBeforeDrawCall() {
     }
   }
 
-  WebGLRenderingContextBase::OnBeforeDrawCall();
+  WebGLRenderingContextBase::OnBeforeDrawCall(draw_type);
 }
 
 void WebGL2RenderingContextBase::bindBufferBase(GLenum target,

@@ -390,8 +390,10 @@ void CanvasRenderingContext2D::clearRect(double x,
   }
 }
 
-void CanvasRenderingContext2D::DidDraw2D(const SkIRect& dirty_rect) {
-  CanvasRenderingContext::DidDraw(dirty_rect);
+void CanvasRenderingContext2D::DidDraw2D(
+    const SkIRect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
+  CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
 }
 
 bool CanvasRenderingContext2D::StateHasFilter() {
@@ -954,7 +956,8 @@ void CanvasRenderingContext2D::fillFormattedText(
        { c->drawPicture(recording); },
        [](const SkIRect& rect) { return false; }, bounds,
        CanvasRenderingContext2DState::PaintType::kFillPaintType,
-       CanvasRenderingContext2DState::kNoImage);
+       CanvasRenderingContext2DState::kNoImage,
+       CanvasPerformanceMonitor::DrawType::kText);
 }
 
 void CanvasRenderingContext2D::DrawTextInternal(
@@ -1067,7 +1070,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage);
+      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kText);
 }
 
 const Font& CanvasRenderingContext2D::AccessFont() {
@@ -1179,7 +1183,7 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   if (!ComputeDirtyRect(path.StrokeBoundingRect(stroke_data), &dirty_rect))
     return;
 
-  DidDraw(dirty_rect);
+  DidDraw(dirty_rect, CanvasPerformanceMonitor::DrawType::kPath);
 }
 
 void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,

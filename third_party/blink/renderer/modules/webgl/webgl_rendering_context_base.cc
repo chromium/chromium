@@ -1345,7 +1345,8 @@ void WebGLRenderingContextBase::DestroyContext() {
 }
 
 void WebGLRenderingContextBase::MarkContextChanged(
-    ContentChangeType change_type) {
+    ContentChangeType change_type,
+    CanvasPerformanceMonitor::DrawType draw_type) {
   if (isContextLost())
     return;
 
@@ -1365,7 +1366,7 @@ void WebGLRenderingContextBase::MarkContextChanged(
 
   if (Host()->IsOffscreenCanvas()) {
     marked_canvas_dirty_ = true;
-    DidDraw();
+    DidDraw(draw_type);
     return;
   }
 
@@ -1382,9 +1383,10 @@ void WebGLRenderingContextBase::MarkContextChanged(
       if (layout_box && settings->GetAcceleratedCompositingEnabled())
         layout_box->ContentChanged(change_type);
     }
-    DidDraw();
+    DidDraw(draw_type);
   }
 }
+
 scoped_refptr<base::SingleThreadTaskRunner>
 WebGLRenderingContextBase::GetContextTaskRunner() {
   return task_runner_;
@@ -2214,7 +2216,8 @@ void WebGLRenderingContextBase::clear(GLbitfield mask) {
     }
     ContextGL()->Clear(mask);
   }
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 void WebGLRenderingContextBase::clearColor(GLfloat r,
@@ -2724,7 +2727,7 @@ void WebGLRenderingContextBase::drawArrays(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
   ContextGL()->DrawArrays(mode, first, count);
   RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
@@ -2744,7 +2747,7 @@ void WebGLRenderingContextBase::drawElements(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
   ContextGL()->DrawElements(
       mode, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
@@ -2766,7 +2769,7 @@ void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
   ContextGL()->DrawArraysInstancedANGLE(mode, first, count, primcount);
   RecordUKMCanvasDrawnToAtFirstDrawCall();
 }
@@ -2787,7 +2790,7 @@ void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
-  OnBeforeDrawCall();
+  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
   ContextGL()->DrawElementsInstancedANGLE(
       mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
       primcount);
@@ -8513,9 +8516,10 @@ bool WebGLRenderingContextBase::ValidateDrawElements(const char* function_name,
   return true;
 }
 
-void WebGLRenderingContextBase::OnBeforeDrawCall() {
+void WebGLRenderingContextBase::OnBeforeDrawCall(
+    CanvasPerformanceMonitor::DrawType draw_type) {
   ClearIfComposited(kClearCallerDrawOrClear);
-  MarkContextChanged(kCanvasChanged);
+  MarkContextChanged(kCanvasChanged, draw_type);
 }
 
 void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
@@ -8624,7 +8628,8 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
 
   SetupFlags();
   InitializeNewContext();
-  MarkContextChanged(kCanvasContextChanged);
+  MarkContextChanged(kCanvasContextChanged,
+                     CanvasPerformanceMonitor::DrawType::kOther);
   WebGLContextEvent* event =
       WebGLContextEvent::Create(event_type_names::kWebglcontextrestored, "");
   Host()->HostDispatchEvent(event);
