@@ -128,16 +128,14 @@ class StandaloneTrustedVaultBackend
 
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it.
-  void MaybeRegisterDevice(const std::string& gaia_id);
+  void MaybeRegisterDevice();
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
   // given |gaia_id|.
-  void OnDeviceRegistered(const std::string& gaia_id,
-                          TrustedVaultRegistrationStatus status);
+  void OnDeviceRegistered(TrustedVaultRegistrationStatus status);
 
-  void OnKeysDownloaded(const std::string& gaia_id,
-                        TrustedVaultDownloadKeysStatus status,
+  void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& vault_keys,
                         int last_vault_key_version);
 
@@ -152,11 +150,11 @@ class StandaloneTrustedVaultBackend
   // should be throttled now (certain amount of time should pass since the last
   // failed request). Handles the situation, when last failed request time is
   // set to the future.
-  bool AreConnectionRequestsThrottled(const std::string& gaia_id);
+  bool AreConnectionRequestsThrottled();
 
   // Records request failure time, that will be used to determine whether new
   // requests should be throttled.
-  void RecordFailedConnectionRequestForThrottling(const std::string& gaia_id);
+  void RecordFailedConnectionRequestForThrottling();
 
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
