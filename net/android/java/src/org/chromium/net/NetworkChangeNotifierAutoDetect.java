@@ -360,7 +360,17 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @VisibleForTesting
         protected NetworkCapabilities getNetworkCapabilities(Network network) {
-            return mConnectivityManager.getNetworkCapabilities(network);
+            final int retryCount = 2;
+            for (int i = 0; i < retryCount; ++i) {
+                // This try-catch is a workaround for https://crbug.com/1218536. We ignore
+                // the exception intentionally.
+                try {
+                    return mConnectivityManager.getNetworkCapabilities(network);
+                } catch (SecurityException e) {
+                    // Do nothing.
+                }
+            }
+            return null;
         }
 
         /**
