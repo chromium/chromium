@@ -211,9 +211,7 @@ template("msvc_toolchain") {
       description = "CC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
 
-      # Note that the code coverage wrapper scripts assumes that {{source}}
-      # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /Fo{{output}} /Fd\"$pdbname\""
+      command = "$coverage_wrapper$env_wrapper$cl /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     }
 
     tool("cxx") {
@@ -227,9 +225,7 @@ template("msvc_toolchain") {
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
 
-      # Note that the code coverage wrapper scripts assumes that {{source}}
-      # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /Fd\"$pdbname\""
+      command = "$coverage_wrapper$env_wrapper$cl /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     }
 
     tool("rc") {
