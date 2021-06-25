@@ -7052,6 +7052,10 @@ crbug.com/v8/11365 wpt_internal/fetch/metadata/appcache.tentative.https.sub.html
 crbug.com/1222097 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
 crbug.com/1222097 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
 
+# Upcoming DevTools roll 2021-06-21
+crbug.com/1106746 http/tests/devtools/security/interstitial-sidebar.js [ Skip ]
+crbug.com/1106746 http/tests/devtools/security/mixed-content-sidebar.js [ Skip ]
+
 crbug.com/1222097 svg/css/alignment-baseline.html [ Pass Failure ]
 crbug.com/1222531 http/tests/inspector-protocol/css/constructed-stylesheet-source-url.js [ Pass Failure ]
 crbug.com/1222097 virtual/synchronous_html_parser/http/tests/inspector-protocol/css/constructed-stylesheet-source-url.js [ Pass Failure ]
