@@ -199,6 +199,7 @@
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/policy/messaging_layer/util/heartbeat_event_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -417,6 +418,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 
   RendererUpdaterFactory::GetInstance();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  reporting::HeartbeatEventFactory::GetInstance();
+#endif
+
 #if !defined(OS_ANDROID)
   performance_manager::SiteDataCacheFacadeFactory::GetInstance();
 #endif
