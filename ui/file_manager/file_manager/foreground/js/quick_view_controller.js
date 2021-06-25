@@ -657,8 +657,8 @@ export class QuickViewController {
           }
 
           params.browsable = tasks.some(task => {
-            const verb = task.taskId.split('|')[2];
-            return ['view-in-browser', 'view-pdf'].includes(verb);
+            return ['view-in-browser', 'view-pdf'].includes(
+                task.descriptor.actionId);
           });
 
           if (params.browsable) {

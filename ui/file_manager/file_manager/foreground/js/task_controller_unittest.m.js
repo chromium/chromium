@@ -150,11 +150,19 @@ function setupFileManagerPrivate() {
       mockChrome.fileManagerPrivate.getFileTaskCalledCount_++;
       const fileTasks = ([
         /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-          taskId: 'handler-extension-id|file|open',
+          descriptor: {
+            appId: 'handler-extension-id',
+            taskType: 'file',
+            actionId: 'open'
+          },
           isDefault: false,
         }),
         /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-          taskId: 'handler-extension-id|file|play',
+          descriptor: {
+            appId: 'handler-extension-id',
+            taskType: 'file',
+            actionId: 'play'
+          },
           isDefault: true,
         }),
       ]);

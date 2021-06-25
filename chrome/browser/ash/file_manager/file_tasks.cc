@@ -95,29 +95,6 @@ const char kWebAppTaskType[] = "web";
 const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
 const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
 
-// Converts a TaskType to a string.
-std::string TaskTypeToString(TaskType task_type) {
-  switch (task_type) {
-    case TASK_TYPE_FILE_BROWSER_HANDLER:
-      return kFileBrowserHandlerTaskType;
-    case TASK_TYPE_FILE_HANDLER:
-      return kFileHandlerTaskType;
-    case TASK_TYPE_ARC_APP:
-      return kArcAppTaskType;
-    case TASK_TYPE_CROSTINI_APP:
-      return kCrostiniAppTaskType;
-    case TASK_TYPE_WEB_APP:
-      return kWebAppTaskType;
-    case TASK_TYPE_PLUGIN_VM_APP:
-      return kPluginVmAppTaskType;
-    case TASK_TYPE_UNKNOWN:
-    case DEPRECATED_TASK_TYPE_DRIVE_APP:
-    case NUM_TASK_TYPE:
-      break;
-  }
-  NOTREACHED();
-  return "";
-}
 
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
 TaskType StringToTaskType(const std::string& str) {
@@ -353,6 +330,30 @@ bool OpenFilesWithBrowser(Profile* profile,
 
 }  // namespace
 
+// Converts a TaskType to a string.
+std::string TaskTypeToString(TaskType task_type) {
+  switch (task_type) {
+    case TASK_TYPE_FILE_BROWSER_HANDLER:
+      return kFileBrowserHandlerTaskType;
+    case TASK_TYPE_FILE_HANDLER:
+      return kFileHandlerTaskType;
+    case TASK_TYPE_ARC_APP:
+      return kArcAppTaskType;
+    case TASK_TYPE_CROSTINI_APP:
+      return kCrostiniAppTaskType;
+    case TASK_TYPE_WEB_APP:
+      return kWebAppTaskType;
+    case TASK_TYPE_PLUGIN_VM_APP:
+      return kPluginVmAppTaskType;
+    case TASK_TYPE_UNKNOWN:
+    case DEPRECATED_TASK_TYPE_DRIVE_APP:
+    case NUM_TASK_TYPE:
+      break;
+  }
+  NOTREACHED();
+  return "";
+}
+
 FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& task_descriptor,
                                        const std::string& task_title,
                                        const Verb task_verb,
@@ -401,9 +402,10 @@ void UpdateDefaultTask(PrefService* pref_service,
   }
 }
 
-std::string GetDefaultTaskIdFromPrefs(const PrefService& pref_service,
-                                      const std::string& mime_type,
-                                      const std::string& suffix) {
+bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
+                             const std::string& mime_type,
+                             const std::string& suffix,
+                             TaskDescriptor* task_out) {
   VLOG(1) << "Looking for default for MIME type: " << mime_type
       << " and suffix: " << suffix;
   std::string task_id;
@@ -415,7 +417,7 @@ std::string GetDefaultTaskIdFromPrefs(const PrefService& pref_service,
     if (mime_task_prefs &&
         mime_task_prefs->GetStringWithoutPathExpansion(mime_type, &task_id)) {
       VLOG(1) << "Found MIME default handler: " << task_id;
-      return task_id;
+      return ParseTaskID(task_id, task_out);
     }
   }
 
@@ -427,7 +429,10 @@ std::string GetDefaultTaskIdFromPrefs(const PrefService& pref_service,
   if (suffix_task_prefs)
     suffix_task_prefs->GetStringWithoutPathExpansion(lower_suffix, &task_id);
   VLOG_IF(1, !task_id.empty()) << "Found suffix default handler: " << task_id;
-  return task_id;
+  if (!task_id.empty()) {
+    return ParseTaskID(task_id, task_out);
+  }
+  return false;
 }
 
 std::string MakeTaskID(const std::string& app_id,
@@ -826,15 +831,17 @@ void FindAllTypesOfTasks(Profile* profile,
 void ChooseAndSetDefaultTask(const PrefService& pref_service,
                              const std::vector<extensions::EntryInfo>& entries,
                              std::vector<FullTaskDescriptor>* tasks) {
-  // Collect the task IDs of default tasks from the preferences into a set.
-  std::set<std::string> default_task_ids;
+  // Collect the default tasks from the preferences into a set.
+  std::set<TaskDescriptor> default_tasks;
   for (std::vector<extensions::EntryInfo>::const_iterator it = entries.begin();
        it != entries.end(); ++it) {
     const base::FilePath& file_path = it->path;
     const std::string& mime_type = it->mime_type;
-    std::string task_id = file_tasks::GetDefaultTaskIdFromPrefs(
-        pref_service, mime_type, file_path.Extension());
-    default_task_ids.insert(task_id);
+    TaskDescriptor default_task;
+    if (file_tasks::GetDefaultTaskFromPrefs(
+            pref_service, mime_type, file_path.Extension(), &default_task)) {
+      default_tasks.insert(default_task);
+    }
   }
 
   // Go through all the tasks from the beginning and see if there is any
@@ -842,8 +849,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   for (size_t i = 0; i < tasks->size(); ++i) {
     FullTaskDescriptor* task = &tasks->at(i);
     DCHECK(!task->is_default());
-    const std::string task_id = TaskDescriptorToId(task->task_descriptor());
-    if (base::Contains(default_task_ids, task_id)) {
+    if (base::Contains(default_tasks, task->task_descriptor())) {
       task->set_is_default(true);
       return;
     }

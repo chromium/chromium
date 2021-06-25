@@ -214,8 +214,10 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
   std::vector<FileTask> results;
   for (const file_manager::file_tasks::FullTaskDescriptor& task : *tasks) {
     FileTask converted;
-    converted.task_id =
-        file_manager::file_tasks::TaskDescriptorToId(task.task_descriptor());
+    converted.descriptor.app_id = task.task_descriptor().app_id;
+    converted.descriptor.task_type =
+        TaskTypeToString(task.task_descriptor().task_type);
+    converted.descriptor.action_id = task.task_descriptor().action_id;
     if (!task.icon_url().is_empty())
       converted.icon_url = task.icon_url().spec();
     converted.title = task.task_title();

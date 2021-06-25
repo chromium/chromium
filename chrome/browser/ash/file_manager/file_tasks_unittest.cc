@@ -86,9 +86,10 @@ TEST(FileManagerFileTasksTest, FullTaskDescriptor_WithIconAndDefault) {
       true /* is_default */, false /* is_generic_file_handler */,
       false /* is_file_extension_match */);
 
-  const std::string task_id =
-      TaskDescriptorToId(full_descriptor.task_descriptor());
-  EXPECT_EQ("app-id|file|action-id", task_id);
+  EXPECT_EQ("app-id", full_descriptor.task_descriptor().app_id);
+  EXPECT_EQ(TaskType::TASK_TYPE_FILE_BROWSER_HANDLER,
+            full_descriptor.task_descriptor().task_type);
+  EXPECT_EQ("action-id", full_descriptor.task_descriptor().action_id);
   EXPECT_EQ("http://example.com/icon.png", full_descriptor.icon_url().spec());
   EXPECT_EQ("task title", full_descriptor.task_title());
   EXPECT_EQ(Verb::VERB_OPEN_WITH, full_descriptor.task_verb());

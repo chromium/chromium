@@ -88,19 +88,27 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
 
   // Override the tasks so the "Open with Plugin VM App" button becomes a
   // dropdown option.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'overrideTasks', appId, [[
-        {
-          taskId: 'text-app-id|app|text',
-          title: 'Text',
-          verb: 'open_with',
-        },
-        {
-          taskId: 'plugin-vm-app-id|pluginvm|open-with',
-          title: 'App (Windows)',
-          verb: 'open_with',
-        }
-      ]]));
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('overrideTasks', appId, [[
+                                              {
+                                                descriptor: {
+                                                  appId: 'text-app-id',
+                                                  taskType: 'app',
+                                                  actionId: 'text',
+                                                },
+                                                title: 'Text',
+                                                verb: 'open_with',
+                                              },
+                                              {
+                                                descriptor: {
+                                                  appId: 'plugin-vm-app-id',
+                                                  taskType: 'pluginvm',
+                                                  actionId: 'open-with',
+                                                },
+                                                title: 'App (Windows)',
+                                                verb: 'open_with',
+                                              }
+                                            ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.
   await remoteCall.callRemoteTestUtil(
@@ -155,19 +163,27 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
 
   // Override the tasks so the "Open with Plugin VM App" button becomes a
   // dropdown option.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'overrideTasks', appId, [[
-        {
-          taskId: 'text-app-id|app|text',
-          title: 'Text',
-          verb: 'open_with',
-        },
-        {
-          taskId: 'plugin-vm-app-id|pluginvm|open-with',
-          title: 'App (Windows)',
-          verb: 'open_with',
-        }
-      ]]));
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('overrideTasks', appId, [[
+                                              {
+                                                descriptor: {
+                                                  appId: 'text-app-id',
+                                                  taskType: 'app',
+                                                  actionId: 'text',
+                                                },
+                                                title: 'Text',
+                                                verb: 'open_with',
+                                              },
+                                              {
+                                                descriptor: {
+                                                  appId: 'plugin-vm-app-id',
+                                                  taskType: 'pluginvm',
+                                                  actionId: 'open-with',
+                                                },
+                                                title: 'App (Windows)',
+                                                verb: 'open_with',
+                                              }
+                                            ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.
   await remoteCall.callRemoteTestUtil(

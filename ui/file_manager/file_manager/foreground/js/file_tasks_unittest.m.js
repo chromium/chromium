@@ -128,7 +128,11 @@ export function setUp() {
   window.loadTimeData.getBoolean = key => false;
 
   const mockTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    taskId: 'handler-extension-id|app|any',
+    descriptor: {
+      appId: 'handler-extension-id',
+      taskType: 'app',
+      actionId: 'any',
+    },
     isDefault: false,
     isGenericFileHandler: true,
   });
@@ -383,13 +387,21 @@ export function testOpenTaskPicker(callback) {
             null,
             [
               {
-                taskId: 'handler-extension-id1|app|any',
+                descriptor: {
+                  appId: 'handler-extension-id1',
+                  taskType: 'app',
+                  actionId: 'any',
+                },
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'app 1',
               },
               {
-                taskId: 'handler-extension-id2|app|any',
+                descriptor: {
+                  appId: 'handler-extension-id2',
+                  taskType: 'app',
+                  actionId: 'any',
+                },
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'app 2',
@@ -414,6 +426,17 @@ export function testOpenWithMostRecentlyExecuted(callback) {
   const latestTaskId = 'handler-extension-most-recently-executed|app|any';
   const oldTaskId = 'handler-extension-executed-before|app|any';
 
+  const latestTaskDescriptor = {
+    appId: 'handler-extension-most-recently-executed',
+    taskType: 'app',
+    actionId: 'any',
+  };
+  const oldTaskDescriptor = {
+    appId: 'handler-extension-executed-before',
+    taskType: 'app',
+    actionId: 'any',
+  };
+
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
         callback.bind(
@@ -421,19 +444,23 @@ export function testOpenWithMostRecentlyExecuted(callback) {
             // File tasks is sorted by last executed time, latest first.
             [
               {
-                taskId: latestTaskId,
+                descriptor: latestTaskDescriptor,
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'app 1',
               },
               {
-                taskId: oldTaskId,
+                descriptor: oldTaskDescriptor,
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'app 2',
               },
               {
-                taskId: 'handler-extension-never-executed|app|any',
+                descriptor: {
+                  appId: 'handler-extension-never-executed',
+                  taskType: 'app',
+                  actionId: 'any',
+                },
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'app 3',
@@ -503,7 +530,11 @@ export function testOpenZipWithZipArchiver(callback) {
             null,
             [
               {
-                taskId: zipArchiverTaskId,
+                descriptor: {
+                  appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
+                  taskType: 'app',
+                  actionId: 'open',
+                },
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'Zip Archiver',
@@ -564,7 +595,11 @@ function setUpInstallLinuxPackage() {
     });
   };
   const fileTask = {
-    taskId: 'test-extension-id|app|install-linux-package',
+    descriptor: {
+      appId: 'test-extension-id',
+      taskType: 'app',
+      actionId: 'install-linux-package'
+    },
     isDefault: false,
     isGenericFileHandler: false,
     title: '__MSG_INSTALL_LINUX_PACKAGE__',
@@ -617,7 +652,11 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
             null,
             [
               {
-                taskId: 'test-extension-id|app|import-crostini-image',
+                descriptor: {
+                  appId: 'test-extension-id',
+                  taskType: 'app',
+                  actionId: 'import-crostini-image'
+                },
                 isDefault: false,
                 isGenericFileHandler: false,
               },
@@ -716,7 +755,11 @@ export async function testShareWith(done) {
       fileManager.progressCenter);
 
   const mockTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    taskId: 'com.acme/com.acme.android.PhotosApp|arc|send_multiple',
+    descriptor: {
+      appId: 'com.acme/com.acme.android.PhotosApp',
+      taskType: 'arc',
+      actionId: 'send_multiple'
+    },
     isDefault: false,
     verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
     isGenericFileHandler: true,

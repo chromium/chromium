@@ -295,7 +295,16 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
 
 /**
  * @typedef {{
- *   taskId: string,
+ *   appId: string,
+ *   taskType: string,
+ *   actionId: string
+ * }}
+ */
+chrome.fileManagerPrivate.FileTaskDescriptor;
+
+/**
+ * @typedef {{
+ *   descriptor: !chrome.fileManagerPrivate.FileTaskDescriptor,
  *   title: string,
  *   verb: (!chrome.fileManagerPrivate.Verb|undefined),
  *   iconUrl: (string|undefined),

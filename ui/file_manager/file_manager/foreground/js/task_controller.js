@@ -280,7 +280,8 @@ export class TaskController {
     Promise.all(entries.map((entry) => this.getMimeType_(entry)))
         .then(mimeTypes => {
           chrome.fileManagerPrivate.setDefaultTask(
-              task.taskId, entries, mimeTypes, util.checkAPIError);
+              FileTasks.makeTaskID(task.descriptor), entries, mimeTypes,
+              util.checkAPIError);
           this.metadataUpdateController_.refreshCurrentDirectoryMetadata();
 
           // Update task menu button unless the task button was updated other
@@ -309,7 +310,9 @@ export class TaskController {
     this.getFileTasks()
         .then(tasks => {
           const task = {
-            taskId: /** @type {string} */ (this.ui_.defaultTaskMenuItem.taskId),
+            descriptor:
+                /** @type {!chrome.fileManagerPrivate.FileTaskDescriptor} */ (
+                    this.ui_.defaultTaskMenuItem.descriptor),
             title: /** @type {string} */ (this.ui_.defaultTaskMenuItem.label),
             get iconUrl() {
               assert(false);
@@ -504,7 +507,9 @@ export class TaskController {
         this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '';
       }
 
-      if (defaultTask.taskId === FileTasks.ZIP_ARCHIVER_UNZIP_TASK_ID) {
+      if (FileTasks.descriptorEqual(
+              defaultTask.descriptor,
+              FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR)) {
         this.ui_.defaultTaskMenuItem.label = str('TASK_OPEN');
       } else {
         this.ui_.defaultTaskMenuItem.label =
@@ -512,7 +517,7 @@ export class TaskController {
       }
 
       this.ui_.defaultTaskMenuItem.disabled = !!defaultTask.disabled;
-      this.ui_.defaultTaskMenuItem.taskId = defaultTask.taskId;
+      this.ui_.defaultTaskMenuItem.descriptor = defaultTask.descriptor;
     }
 
     this.canExecuteDefaultTask_ = defaultTask != null;

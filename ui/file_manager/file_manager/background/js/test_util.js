@@ -379,7 +379,8 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
 
   const setDefaultTask = taskId => {
     for (let i = 0; i < taskList.length; i++) {
-      taskList[i].isDefault = taskList[i].taskId === taskId;
+      const {appId, taskType, actionId} = taskList[i].descriptor;
+      taskList[i].isDefault = `${appId}|${taskType}|${actionId}` === taskId;
     }
   };
 

@@ -2173,11 +2173,12 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
           .then(tasks => {
             if (fileManager.directoryModel.isOnDrive() ||
                 fileManager.directoryModel.isOnMTP()) {
-              tasks.execute(/** @type {chrome.fileManagerPrivate.FileTask} */ (
-                  {taskId: FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_ID}));
+              tasks.execute(/** @type {chrome.fileManagerPrivate.FileTask} */ ({
+                descriptor: FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR
+              }));
             } else {
               tasks.execute(/** @type {chrome.fileManagerPrivate.FileTask} */ (
-                  {taskId: FileTasks.ZIP_ARCHIVER_ZIP_TASK_ID}));
+                  {descriptor: FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR}));
             }
           })
           .catch(error => {

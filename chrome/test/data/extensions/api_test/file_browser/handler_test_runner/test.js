@@ -101,11 +101,12 @@ function run() {
     }
     // Task could be default from an explicit file extension match
     // but if matched on MIME type we need to set the task as default
+    const {appId, taskType, actionId} = tasks[0].descriptor;
     chrome.fileManagerPrivate.setDefaultTask(
-        tasks[0].taskId, [entry], [],
-        function() {
+        `${appId}|${taskType}|${actionId}`, [entry], [], function() {
           if (chrome.runtime.lastError) {
-            onError('Failed to set a task to default: ' + tasks[0].taskId);
+            onError(`Failed to set a task to default: ${appId}|${taskType}|${
+                actionId}`);
             return;
           }
           chrome.fileManagerPrivate.getFileTasks([entry],
@@ -130,12 +131,13 @@ function run() {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);
     }
+    const {appId, taskType, actionId} = tasks[0].descriptor;
+    const taskId = `${appId}|${taskType}|${actionId}`;
     if (!tasks[0].isDefault) {
-      onError('Task "' + tasks[0].taskId + '" is not default for "' +
-          entry.fullPath + '"');
+      onError(`Task "${taskId}" is not default for "${entry.fullPath}"`);
     }
 
-    foundTasks.push({id: tasks[0].taskId, entry: entry});
+    foundTasks.push({id: taskId, entry: entry});
 
     if (foundTasks.length == kTestPaths.length) {
       foundTasks.forEach(function(task) {

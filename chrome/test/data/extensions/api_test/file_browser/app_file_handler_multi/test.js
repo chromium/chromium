@@ -169,8 +169,10 @@ function launchWithEntries(isolatedEntries) {
               chrome.test.assertEq("ChromeOS File handler extension",
                                    tasks[0].title);
               chrome.test.assertEq(
-                  'pkplfbidichfdicaijlchgnapepdginl|app|textAction',
-                  tasks[0].taskId);
+                  'pkplfbidichfdicaijlchgnapepdginl',
+                  tasks[0].descriptor.appId);
+              chrome.test.assertEq('app', tasks[0].descriptor.taskType);
+              chrome.test.assertEq('textAction', tasks[0].descriptor.actionId);
               return tasks[0];
             });
             var launchDataPromise = new Promise(function(fulfill) {
@@ -182,16 +184,16 @@ function launchWithEntries(isolatedEntries) {
             });
             var taskExecutedPromise = tasksPromise.then(function(task) {
               return new Promise(function(fulfill, reject) {
+                const {appId, taskType, actionId} = task.descriptor;
                 chrome.fileManagerPrivate.executeTask(
-                    task.taskId,
-                    entries,
+                    `${appId}|${taskType}|${actionId}`, entries,
                     function(result) {
                       if (result)
                         fulfill();
                       else
                         reject();
                     });
-                });
+              });
             });
             var resolvedEntriesPromise = launchDataPromise.then(
                 function(launchData) {

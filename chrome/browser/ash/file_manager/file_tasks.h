@@ -34,7 +34,11 @@
 //     "iconUrl":
 //       "chrome://extension-icon/hhaomjibdihmijegdhdafkllkbggdgoj/16/1",
 //     "isDefault": true,
-//     "taskId": "hhaomjibdihmijegdhdafkllkbggdgoj|file|gallery",
+//     "descriptor": {
+//       appId: "hhaomjibdihmijegdhdafkllkbggdgoj",
+//       taskType: "file",
+//       actionId: "gallery"
+//     }
 //     "title": "__MSG_OPEN_ACTION__"
 //   }
 // ]
@@ -43,19 +47,16 @@
 //
 // WHAT ARE TASK IDS?
 //
-// You may have noticed that "taskId" fields in the above example look
-// awkward. Apparently "taskId" encodes three types of information delimited
-// by "|". This is a weird format for something called as an ID.
+// "TaskId" is a string of the format "appId|taskType|actionId". We used to
+// store these three fields together in a string so we could easily store this
+// data in user preferences. We are removing taskId wherever possible in favour
+// of the TaskDescriptor struct, which contains the same information but in a
+// more typical struct format. TaskId will remain in some parts of the code
+// where we need to serialize TaskDescriptors, like for UMA.
 //
-// 1) Why are the three types information encoded in this way?
+// What are the three types of information encoded here?
 //
-// It's just a historical reason. The reason is that a simple string can be
-// easily stored in user's preferences. We should stop doing this, by storing
-// this information in chrome.storage instead. crbug.com/267359.
-//
-// 2) OK, then what are the three types of information encoded here?
-//
-// The task ID encodes the following structure:
+// The "TaskId" format encoding is as follows:
 //
 //     <app-id>|<task-type>|<task-action-id>
 //
@@ -76,15 +77,12 @@
 //
 // HOW TASKS ARE EXECUTED?
 //
-// chrome.fileManagerPrivate.viewFiles() is used to open a file in a browser,
-// without any handler. Browser will take care of handling the file (ex. PDF).
-//
-// chrome.fileManagerPrivate.executeTasks() is used to open a file with a
-// handler (Chrome Extension/App).
+// chrome.fileManagerPrivate.executeTask() is used to open a file with a
+// handler (Chrome Extension/App), and to open files directly in the browser
+// without any handler, e.g. PDF.
 //
 // Some built-in handlers such as "play" are handled internally in the Files
-// app. "mount-archive" is handled very differently. The task execution
-// business should be simplified: crbug.com/267313
+// app. "mount-archive" is handled very differently.
 //
 // See also:
 // ui/file_manager/file_manager/foreground/js/file_tasks.js
@@ -143,6 +141,8 @@ enum TaskType {
   NUM_TASK_TYPE,
 };
 
+std::string TaskTypeToString(TaskType task_type);
+
 // Describes a task.
 // See the comment above for <app-id>, <task-type>, and <action-id>.
 struct TaskDescriptor {
@@ -154,6 +154,11 @@ struct TaskDescriptor {
         action_id(in_action_id) {
   }
   TaskDescriptor() = default;
+
+  bool operator<(const TaskDescriptor& other) const {
+    return app_id < other.app_id || task_type < other.task_type ||
+           action_id < other.action_id;
+  }
 
   std::string app_id;
   TaskType task_type;
@@ -223,13 +228,13 @@ void UpdateDefaultTask(PrefService* pref_service,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types);
 
-// Returns the task ID of the default task for the given |mime_type|/|suffix|
-// combination. If it finds a MIME type match, then it prefers that over a
-// suffix match. If it a default can't be found, then it returns the empty
-// string.
-std::string GetDefaultTaskIdFromPrefs(const PrefService& pref_service,
-                                      const std::string& mime_type,
-                                      const std::string& suffix);
+// Returns the default task for the given |mime_type|/|suffix| combination in
+// |task_out|. If it finds a MIME type match, then it prefers that over a suffix
+// match. If a default can't be found, then it returns false.
+bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
+                             const std::string& mime_type,
+                             const std::string& suffix,
+                             TaskDescriptor* task_out);
 
 // Generates task id for the task specified by |app_id|, |task_type| and
 // |action_id|.
