@@ -155,7 +155,7 @@ suite('PasswordsSection_Cros', function() {
     passwordPromise.then(fail);
     const exportDialog =
         elementFactory.createExportPasswordsDialog(passwordManager, true);
-    exportDialog.$$('#exportPasswordsButton').click();
+    exportDialog.shadowRoot.querySelector('#exportPasswordsButton').click();
     return requestPromise;
   });
 
@@ -167,7 +167,8 @@ suite('PasswordsSection_Cros', function() {
         requestPromise.then(fail);
         const passwordListItem = elementFactory.createPasswordListItem();
         passwordManager.setPlaintextPassword('password');
-        passwordListItem.$$('#showPasswordButton').click();
+        passwordListItem.shadowRoot.querySelector('#showPasswordButton')
+            .click();
         return passwordPromise;
       });
 
@@ -178,7 +179,8 @@ suite('PasswordsSection_Cros', function() {
         passwordPromise.then(fail);
         const passwordListItem = elementFactory.createPasswordListItem();
         passwordManager.setPlaintextPassword('');
-        passwordListItem.$$('#showPasswordButton').click();
+        passwordListItem.shadowRoot.querySelector('#showPasswordButton')
+            .click();
         return requestPromise;
       });
 
@@ -190,7 +192,8 @@ suite('PasswordsSection_Cros', function() {
         requestPromise.then(fail);
         const passwordEditDialog = elementFactory.createPasswordEditDialog();
         passwordManager.setPlaintextPassword('password');
-        passwordEditDialog.$$('#showPasswordButton').click();
+        passwordEditDialog.shadowRoot.querySelector('#showPasswordButton')
+            .click();
         return passwordPromise;
       });
 
@@ -201,7 +204,8 @@ suite('PasswordsSection_Cros', function() {
         passwordPromise.then(fail);
         const passwordEditDialog = elementFactory.createPasswordEditDialog();
         passwordManager.setPlaintextPassword('');
-        passwordEditDialog.$$('#showPasswordButton').click();
+        passwordEditDialog.shadowRoot.querySelector('#showPasswordButton')
+            .click();
         return requestPromise;
       });
 
@@ -210,10 +214,12 @@ suite('PasswordsSection_Cros', function() {
   test.skip('password-prompt-dialog appears on auth token request', function() {
     const passwordsSection =
         elementFactory.createPasswordsSection(passwordManager);
-    assertTrue(!passwordsSection.$$('settings-password-prompt-dialog'));
+    assertTrue(!passwordsSection.shadowRoot.querySelector(
+        'settings-password-prompt-dialog'));
     passwordsSection.tokenRequestManager_.request(fail);
     flush();
-    assertTrue(!!passwordsSection.$$('settings-password-prompt-dialog'));
+    assertTrue(!!passwordsSection.shadowRoot.querySelector(
+        'settings-password-prompt-dialog'));
   });
 
   // Note (rbpotter): this fails locally, possibly out of date
@@ -247,10 +253,12 @@ suite('PasswordsSection_Cros', function() {
         const passwordsSection = document.createElement('passwords-section');
         document.body.appendChild(passwordsSection);
         flush();
-        assertTrue(!passwordsSection.$$('settings-password-prompt-dialog'));
+        assertTrue(!passwordsSection.shadowRoot.querySelector(
+            'settings-password-prompt-dialog'));
         passwordsSection.tokenRequestManager_.request(() => {
           flush();
-          assertTrue(!passwordsSection.$$('settings-password-prompt-dialog'));
+          assertTrue(!passwordsSection.shadowRoot.querySelector(
+              'settings-password-prompt-dialog'));
           done();
         });
       });

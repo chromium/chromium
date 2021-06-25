@@ -23,172 +23,194 @@ import '../controls/password_prompt_dialog.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 // <if expr="chromeos">
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // </if>
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {PasswordCheckBehavior} from './password_check_behavior.js';
+import {PasswordCheckBehavior, PasswordCheckBehaviorInterface} from './password_check_behavior.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
-Polymer({
-  is: 'settings-password-check',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PasswordCheckBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsPasswordCheckElementBase = mixinBehaviors(
+    [
+      I18nBehavior, PasswordCheckBehavior, PrefsBehavior, RouteObserverBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    PasswordCheckBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
+  static get is() {
+    return 'settings-password-check';
+  }
 
-  properties: {
-    // <if expr="not chromeos">
-    /** @private */
-    storedAccounts_: Array,
-    // </if>
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    title_: {
-      type: String,
-      computed: 'computeTitle_(status, canUsePasswordCheckup_)',
-    },
+  static get properties() {
+    return {
+      // <if expr="not chromeos">
+      /** @private */
+      storedAccounts_: Array,
+      // </if>
 
-    /** @private */
-    isSignedOut_: {
-      type: Boolean,
-      computed: 'computeIsSignedOut_(syncStatus_, storedAccounts_)',
-    },
+      /** @private */
+      title_: {
+        type: String,
+        computed: 'computeTitle_(status, canUsePasswordCheckup_)',
+      },
 
-    /** @private */
-    isSyncingPasswords_: {
-      type: Boolean,
-      computed: 'computeIsSyncingPasswords_(syncPrefs_, syncStatus_)',
-    },
+      /** @private */
+      isSignedOut_: {
+        type: Boolean,
+        computed: 'computeIsSignedOut_(syncStatus_, storedAccounts_)',
+      },
 
-    canUsePasswordCheckup_: {
-      type: Boolean,
-      computed: 'computeCanUsePasswordCheckup_(syncPrefs_, syncStatus_)',
-    },
+      /** @private */
+      isSyncingPasswords_: {
+        type: Boolean,
+        computed: 'computeIsSyncingPasswords_(syncPrefs_, syncStatus_)',
+      },
 
-    /** @private */
-    isButtonHidden_: {
-      type: Boolean,
-      computed: 'computeIsButtonHidden_(status, isSignedOut_, isInitialStatus)',
-    },
+      canUsePasswordCheckup_: {
+        type: Boolean,
+        computed: 'computeCanUsePasswordCheckup_(syncPrefs_, syncStatus_)',
+      },
 
-    /** @private {SyncPrefs} */
-    syncPrefs_: Object,
+      /** @private */
+      isButtonHidden_: {
+        type: Boolean,
+        computed:
+            'computeIsButtonHidden_(status, isSignedOut_, isInitialStatus)',
+      },
 
-    /** @private {SyncStatus} */
-    syncStatus_: Object,
+      /** @private {SyncPrefs} */
+      syncPrefs_: Object,
 
-    /** @private */
-    showPasswordEditDialog_: Boolean,
+      /** @private {SyncStatus} */
+      syncStatus_: Object,
 
-    /** @private */
-    showPasswordRemoveDialog_: Boolean,
+      /** @private */
+      showPasswordEditDialog_: Boolean,
 
-    /** @private */
-    showPasswordEditDisclaimer_: Boolean,
+      /** @private */
+      showPasswordRemoveDialog_: Boolean,
+
+      /** @private */
+      showPasswordEditDisclaimer_: Boolean,
+
+      /**
+       * The password that the user is interacting with now.
+       * @private {?PasswordManagerProxy.InsecureCredential}
+       */
+      activePassword_: Object,
+
+      /** @private */
+      showCompromisedCredentialsBody_: {
+        type: Boolean,
+        computed: 'computeShowCompromisedCredentialsBody_(' +
+            'isSignedOut_, leakedPasswords)',
+      },
+
+      /** @private */
+      showNoCompromisedPasswordsLabel_: {
+        type: Boolean,
+        computed: 'computeShowNoCompromisedPasswordsLabel_(' +
+            'syncStatus_, prefs.*, status, leakedPasswords)',
+      },
+
+      /** @private */
+      showHideMenuTitle_: {
+        type: String,
+        computed: 'computeShowHideMenuTitle(activePassword_)',
+      },
+
+      /** @private */
+      iconHaloClass_: {
+        type: String,
+        computed: 'computeIconHaloClass_(' +
+            'status, isSignedOut_, leakedPasswords, weakPasswords)',
+      },
+
+      /**
+       * The ids of insecure credentials for which user clicked "Change
+       * Password" button
+       * @private
+       */
+      clickedChangePasswordIds_: {
+        type: Object,
+        value: new Set(),
+      },
+
+      // <if expr="chromeos">
+      /** @private */
+      showPasswordPromptDialog_: Boolean,
+
+      /** @private {BlockingRequestManager} */
+      tokenRequestManager_: Object,
+      // </if>
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * The password that the user is interacting with now.
-     * @private {?PasswordManagerProxy.InsecureCredential}
+     * A stack of the elements that triggered dialog to open and should
+     * therefore receive focus when that dialog is closed. The bottom of the
+     * stack is the element that triggered the earliest open dialog and top of
+     * the stack is the element that triggered the most recent (i.e. active)
+     * dialog. If no dialog is open, the stack is empty.
+     * @private {?Array<!HTMLElement>}
      */
-    activePassword_: Object,
-
-    /** @private */
-    showCompromisedCredentialsBody_: {
-      type: Boolean,
-      computed: 'computeShowCompromisedCredentialsBody_(' +
-          'isSignedOut_, leakedPasswords)',
-    },
-
-    /** @private */
-    showNoCompromisedPasswordsLabel_: {
-      type: Boolean,
-      computed: 'computeShowNoCompromisedPasswordsLabel_(' +
-          'syncStatus_, prefs.*, status, leakedPasswords)',
-    },
-
-    /** @private */
-    showHideMenuTitle_: {
-      type: String,
-      computed: 'computeShowHideMenuTitle(activePassword_)',
-    },
-
-    /** @private */
-    iconHaloClass_: {
-      type: String,
-      computed: 'computeIconHaloClass_(' +
-          'status, isSignedOut_, leakedPasswords, weakPasswords)',
-    },
+    this.activeDialogAnchorStack_ = null;
 
     /**
-     * The ids of insecure credentials for which user clicked "Change Password"
-     * button
-     * @private
+     * The password_check_list_item that the user is interacting with now.
+     * @private {?EventTarget}
      */
-    clickedChangePasswordIds_: {
-      type: Object,
-      value: new Set(),
-    },
+    this.activeListItem_ = null;
 
-    // <if expr="chromeos">
-    /** @private */
-    showPasswordPromptDialog_: Boolean,
+    /** @private {boolean} */
+    this.startCheckAutomaticallySucceeded = false;
 
-    /** @private {BlockingRequestManager} */
-    tokenRequestManager_: Object,
-    // </if>
-  },
-
-  /**
-   * A stack of the elements that triggered dialog to open and should therefore
-   * receive focus when that dialog is closed. The bottom of the stack is the
-   * element that triggered the earliest open dialog and top of the stack is the
-   * element that triggered the most recent (i.e. active) dialog. If no dialog
-   * is open, the stack is empty.
-   * @private {?Array<!HTMLElement>}
-   */
-  activeDialogAnchorStack_: null,
-
-  /**
-   * The password_check_list_item that the user is interacting with now.
-   * @private {?EventTarget}
-   */
-  activeListItem_: null,
-
-  /** @private {boolean} */
-  startCheckAutomaticallySucceeded: false,
-
-  /**
-   * Observer for saved passwords to update startCheckAutomaticallySucceeded
-   * once they are changed. It's needed to run password check on navigation
-   * again once passwords changed.
-   * @private {?function(!Array<PasswordManagerProxy.PasswordUiEntry>):void}
-   */
-  setSavedPasswordsListener_: null,
+    /**
+     * Observer for saved passwords to update startCheckAutomaticallySucceeded
+     * once they are changed. It's needed to run password check on navigation
+     * again once passwords changed.
+     * @private {?function(!Array<PasswordManagerProxy.PasswordUiEntry>):void}
+     */
+    this.setSavedPasswordsListener_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // <if expr="chromeos">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
@@ -229,13 +251,15 @@ Polymer({
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
     // </if>
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.passwordManager.removeSavedPasswordListChangedListener(
         assert(this.setSavedPasswordsListener_));
-  },
+  }
 
   /**
    * Tries to start bulk password check on page open if instructed to do so and
@@ -262,7 +286,7 @@ Polymer({
     // Requesting status on navigation to update elapsedTimeSinceLastCheck
     this.passwordManager.getPasswordCheckStatus().then(
         status => this.status = status);
-  },
+  }
 
   /**
    * Start/Stop bulk password check.
@@ -299,7 +323,7 @@ Polymer({
     }
     assertNotReached(
         'Can\'t trigger an action for state: ' + this.status.state);
-  },
+  }
 
   /**
    * Returns true if there are any compromised credentials.
@@ -308,7 +332,7 @@ Polymer({
    */
   hasLeakedCredentials_() {
     return !!this.leakedPasswords.length;
-  },
+  }
 
   /**
    * Returns true if there are any weak credentials.
@@ -317,7 +341,7 @@ Polymer({
    */
   hasWeakCredentials_() {
     return !!this.weakPasswords.length;
-  },
+  }
 
   /**
    * Returns true if there are any insecure credentials.
@@ -326,7 +350,7 @@ Polymer({
    */
   hasInsecureCredentials_() {
     return !!this.leakedPasswords.length || this.hasWeakCredentials_();
-  },
+  }
 
   /**
    * Returns a relevant help text for weak passwords. Contains a link that
@@ -338,7 +362,7 @@ Polymer({
     return this.i18nAdvanced(
         this.isSyncingPasswords_ ? 'weakPasswordsDescriptionGeneration' :
                                    'weakPasswordsDescription');
-  },
+  }
 
   /**
    * @param {!CustomEvent<{moreActionsButton: !HTMLElement}>} event
@@ -350,7 +374,7 @@ Polymer({
     this.activeDialogAnchorStack_.push(target);
     this.activeListItem_ = event.target;
     this.activePassword_ = this.activeListItem_.item;
-  },
+  }
 
   /** @private */
   onMenuShowPasswordClick_() {
@@ -359,7 +383,7 @@ Polymer({
     this.$.moreActionsMenu.close();
     this.activePassword_ = null;
     this.activeDialogAnchorStack_.pop();
-  },
+  }
 
   /** @private */
   onEditPasswordClick_() {
@@ -384,25 +408,25 @@ Polymer({
               // </if>
             });
     this.$.moreActionsMenu.close();
-  },
+  }
 
   /** @private */
   onMenuRemovePasswordClick_() {
     this.$.moreActionsMenu.close();
     this.showPasswordRemoveDialog_ = true;
-  },
+  }
 
   /** @private */
   onPasswordRemoveDialogClosed_() {
     this.showPasswordRemoveDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
-  },
+  }
 
   /** @private */
   onPasswordEditDialogClosed_() {
     this.showPasswordEditDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
-  },
+  }
 
   /**
    * @param {!CustomEvent<!HTMLElement>} event
@@ -416,13 +440,13 @@ Polymer({
     this.activePassword_ = event.target.item;
 
     this.showPasswordEditDisclaimer_ = true;
-  },
+  }
 
   /** @private */
   onEditDisclaimerClosed_() {
     this.showPasswordEditDisclaimer_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
-  },
+  }
 
   /**
    * @return {string}
@@ -432,7 +456,7 @@ Polymer({
     return this.i18n(
         this.activeListItem_.isPasswordVisible_ ? 'hideCompromisedPassword' :
                                                   'showCompromisedPassword');
-  },
+  }
 
   /**
    * @return {string}
@@ -442,7 +466,7 @@ Polymer({
     return !this.isCheckInProgress_() && this.hasLeakedCredentials_() ?
         'warning-halo' :
         '';
-  },
+  }
 
   /**
    * Returns the icon (warning, info or error) indicating the check status.
@@ -457,7 +481,7 @@ Polymer({
       return 'cr:warning';
     }
     return 'cr:info';
-  },
+  }
 
   /**
    * Returns the CSS class used to style the icon (warning, info or error).
@@ -472,7 +496,7 @@ Polymer({
       return 'has-security-issues';
     }
     return '';
-  },
+  }
 
   /**
    * Returns the title message indicating the state of the last/ongoing check.
@@ -514,7 +538,7 @@ Polymer({
         return this.i18n('checkPasswordsErrorGeneric');
     }
     assertNotReached('Can\'t find a title for state: ' + this.status.state);
-  },
+  }
 
   /**
    * Returns true iff a check is running right according to the given |status|.
@@ -523,7 +547,7 @@ Polymer({
    */
   isCheckInProgress_() {
     return this.status.state === CheckState.RUNNING;
-  },
+  }
 
   /**
    * Returns true to show the timestamp when a check was completed successfully.
@@ -534,7 +558,7 @@ Polymer({
     return !!this.status.elapsedTimeSinceLastCheck &&
         (this.status.state === CheckState.IDLE ||
          this.status.state === CheckState.SIGNED_OUT);
-  },
+  }
 
   /**
    * Returns the button caption indicating it's current functionality.
@@ -563,7 +587,7 @@ Polymer({
     }
     assertNotReached(
         'Can\'t find a button text for state: ' + this.status.state);
-  },
+  }
 
   /**
    * Returns 'action-button' only for the very first check.
@@ -572,7 +596,7 @@ Polymer({
    */
   getButtonTypeClass_() {
     return this.waitsForFirstCheck_() ? 'action-button' : ' ';
-  },
+  }
 
   /**
    * Returns true iff the check/stop button should be visible for a given state.
@@ -595,7 +619,7 @@ Polymer({
     }
     assertNotReached(
         'Can\'t determine button visibility for state: ' + this.status.state);
-  },
+  }
 
   /**
    * Returns the chrome:// address where the banner image is located.
@@ -610,7 +634,7 @@ Polymer({
         'neutral';
     const suffix = isDarkMode ? '_dark' : '';
     return `chrome://settings/images/password_check_${type}${suffix}.svg`;
-  },
+  }
 
   /**
    * Returns true iff the banner should be shown.
@@ -623,7 +647,7 @@ Polymer({
     }
     return this.status.state === CheckState.CANCELED ||
         !this.hasInsecureCredentialsOrErrors_();
-  },
+  }
 
   /**
    * Returns true if there are insecure credentials or the status is unexpected
@@ -649,7 +673,7 @@ Polymer({
     }
     assertNotReached(
         'Not specified whether to state is an error: ' + this.status.state);
-  },
+  }
 
   /**
    * Returns true if there are insecure credentials or the status is unexpected
@@ -679,7 +703,7 @@ Polymer({
     assertNotReached(
         'Not specified whether to show passwords for state: ' +
         this.status.state);
-  },
+  }
 
   /**
    * Returns a localized and pluralized string of the passwords count, depending
@@ -692,7 +716,7 @@ Polymer({
     return this.isSignedOut_ && this.leakedPasswords.length === 0 ?
         this.weakPasswordsCount :
         this.insecurePasswordsCount;
-  },
+  }
 
   /**
    * Returns the label that should be shown in the compromised password section
@@ -708,7 +732,7 @@ Polymer({
         this.hasLeakedCredentials_() ?
             'signedOutUserHasCompromisedCredentialsLabel' :
             'signedOutUserLabel');
-  },
+  }
 
   /**
    * Returns true iff the leak or weak check was performed at least once before.
@@ -717,7 +741,7 @@ Polymer({
    */
   waitsForFirstCheck_() {
     return !this.status.elapsedTimeSinceLastCheck;
-  },
+  }
 
   /**
    * Returns true iff the user is signed out.
@@ -729,7 +753,7 @@ Polymer({
       return !this.storedAccounts_ || this.storedAccounts_.length === 0;
     }
     return !!this.syncStatus_.hasError;
-  },
+  }
 
   /**
    * Returns true iff the user is syncing passwords.
@@ -740,7 +764,7 @@ Polymer({
     return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
         !this.syncStatus_.hasError && !!this.syncPrefs_ &&
         this.syncPrefs_.passwordsSynced;
-  },
+  }
 
   /**
    * Returns whether the user can use the online Password Checkup.
@@ -750,7 +774,7 @@ Polymer({
   computeCanUsePasswordCheckup_() {
     return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
         (!this.syncPrefs_ || !this.syncPrefs_.encryptAllData);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -759,7 +783,7 @@ Polymer({
   computeShowCompromisedCredentialsBody_() {
     // Always shows compromised credetnials section if user is signed out.
     return this.isSignedOut_ || this.hasLeakedCredentials_();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -780,7 +804,7 @@ Polymer({
     // Return true if there was a successful check and no compromised passwords
     // were found.
     return !this.hasLeakedCredentials_() && this.showsTimestamp_();
-  },
+  }
 
   /**
    * @param {!CustomEvent<{id: number}>} event
@@ -789,7 +813,7 @@ Polymer({
   onChangePasswordClick_(event) {
     this.clickedChangePasswordIds_.add(event.detail.id);
     this.notifyPath('clickedChangePasswordIds_.size');
-  },
+  }
 
   /**
    * @param {!PasswordManagerProxy.InsecureCredential} item
@@ -798,7 +822,7 @@ Polymer({
    */
   clickedChangePassword_(item) {
     return this.clickedChangePasswordIds_.has(item.id);
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -813,18 +837,21 @@ Polymer({
   onTokenObtained_(e) {
     assert(e.detail);
     this.tokenRequestManager_.resolve();
-  },
+  }
 
   /** @private */
   onPasswordPromptClosed_() {
     this.showPasswordPromptDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
-  },
+  }
 
   /** @private */
   openPasswordPromptDialog_() {
     this.activeDialogAnchorStack_.push(/** @type {!HTMLElement} */ (getDeepActiveElement()));
     this.showPasswordPromptDialog_ = true;
-  },
+  }
   // </if>
-});
+}
+
+customElements.define(
+    SettingsPasswordCheckElement.is, SettingsPasswordCheckElement);

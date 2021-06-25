@@ -99,3 +99,29 @@ export const ShowPasswordBehavior = {
     this.set('entry.password', '');
   }
 };
+
+
+/** @interface */
+export class ShowPasswordBehaviorInterface {
+  /** @type {!MultiStorePasswordUiEntry} */
+  get entry() {}
+
+  /** @return {string} */
+  getPasswordInputType() {}
+
+  /*
+   * @param {string} password
+   * @param {string} hide
+   * @param {string} show
+   */
+  showPasswordTitle(password, hide, show) {}
+
+  /** @return {string} */
+  getIconClass() {}
+
+  /** @return {string} */
+  getPassword() {}
+
+  onShowPasswordButtonTap() {}
+  hide() {}
+}

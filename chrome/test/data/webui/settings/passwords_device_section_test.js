@@ -258,8 +258,8 @@ suite('PasswordsDeviceSection', function() {
         syncBrowserProxy, passwordManager, [deviceCopy, accountCopy]);
 
     // At first the dialog is not shown.
-    assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.$$(
-        '#passwordMoveToAccountDialog'));
+    assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.shadowRoot
+                      .querySelector('#passwordMoveToAccountDialog'));
 
     // Click the option in the overflow menu to move the password. Verify the
     // dialog is now open.
@@ -270,7 +270,7 @@ suite('PasswordsDeviceSection', function() {
         .click();
     flush();
     const moveToAccountDialog =
-        passwordsDeviceSection.$.passwordsListHandler.$$(
+        passwordsDeviceSection.$.passwordsListHandler.shadowRoot.querySelector(
             '#passwordMoveToAccountDialog');
     assertTrue(!!moveToAccountDialog);
 
@@ -341,7 +341,8 @@ suite('PasswordsDeviceSection', function() {
     const moveMultipleDialog = elementFactory.createMoveMultiplePasswordsDialog(
         [deviceEntry1, deviceEntry2]);
     // Uncheck the first entry.
-    const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
+    const firstPasswordItem =
+        moveMultipleDialog.shadowRoot.querySelector('password-list-item');
     firstPasswordItem.querySelector('cr-checkbox').click();
     // Press the Move button
     moveMultipleDialog.$.moveButton.click();
@@ -361,7 +362,8 @@ suite('PasswordsDeviceSection', function() {
         {url: 'goo.gl', username: 'bart', deviceId: 42});
     const moveMultipleDialog =
         elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
-    const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
+    const firstPasswordItem =
+        moveMultipleDialog.shadowRoot.querySelector('password-list-item');
     assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
   });
 

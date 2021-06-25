@@ -166,7 +166,6 @@ js_library("password_check_list_item") {
     "..:open_window_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -242,7 +241,6 @@ js_library("passwords_list_handler") {
 js_library("password_move_multiple_passwords_to_account_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -256,7 +254,6 @@ js_library("password_move_to_account_dialog") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -303,7 +300,6 @@ js_library("passwords_section") {
     "../people_page:sync_browser_proxy",
     "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -330,7 +326,6 @@ js_library("passwords_device_section") {
     "..:open_window_proxy",
     "..:route",
     "../people_page:sync_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

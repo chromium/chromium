@@ -22,12 +22,10 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {IronA11yKeysBehavior} from 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -36,7 +34,7 @@ import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_p
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
-import {MergePasswordsStoreCopiesBehavior} from './merge_passwords_store_copies_behavior.js';
+import {MergePasswordsStoreCopiesBehavior, MergePasswordsStoreCopiesBehaviorInterface} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
@@ -54,169 +52,174 @@ function isEditable(element) {
         /^(?:text|search|email|number|tel|url|password)$/i.test(element.type)));
 }
 
-Polymer({
-  is: 'passwords-device-section',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MergePasswordsStoreCopiesBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PasswordsDeviceSectionElementBase = mixinBehaviors(
+    [
+      MergePasswordsStoreCopiesBehavior,
+      GlobalScrollTargetBehavior,
+      WebUIListenerBehavior,
+      RouteObserverBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    MergePasswordsStoreCopiesBehavior,
-    I18nBehavior,
-    IronA11yKeysBehavior,
-    GlobalScrollTargetBehavior,
-    WebUIListenerBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
+  static get is() {
+    return 'passwords-device-section';
+  }
 
-  properties: {
-    /** @override */
-    subpageRoute: {
-      type: Object,
-      value: routes.DEVICE_PASSWORDS,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** Search filter on the saved passwords. */
-    filter: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @override */
+      subpageRoute: {
+        type: Object,
+        value: routes.DEVICE_PASSWORDS,
+      },
 
-    /**
-     * The target of the key bindings defined below.
-     * @type {EventTarget}
-     */
-    keyEventTarget: {
-      type: Object,
-      value: () => document,
-    },
+      /** Search filter on the saved passwords. */
+      filter: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Passwords displayed in the device-only subsection.
-     * @private {!Array<!MultiStorePasswordUiEntry>}
-     */
-    deviceOnlyPasswords_: {
-      type: Array,
-      value: () => [],
-      computed:
-          'computeDeviceOnlyPasswords_(savedPasswords, savedPasswords.splices)',
-    },
+      /**
+       * Passwords displayed in the device-only subsection.
+       * @private {!Array<!MultiStorePasswordUiEntry>}
+       */
+      deviceOnlyPasswords_: {
+        type: Array,
+        value: () => [],
+        computed:
+            'computeDeviceOnlyPasswords_(savedPasswords, savedPasswords.splices)',
+      },
 
-    /**
-     * Passwords displayed in the 'device and account' subsection.
-     * @private {!Array<!MultiStorePasswordUiEntry>}
-     */
-    deviceAndAccountPasswords_: {
-      type: Array,
-      value: () => [],
-      computed: 'computeDeviceAndAccountPasswords_(savedPasswords, ' +
-          'savedPasswords.splices)',
-    },
+      /**
+       * Passwords displayed in the 'device and account' subsection.
+       * @private {!Array<!MultiStorePasswordUiEntry>}
+       */
+      deviceAndAccountPasswords_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeDeviceAndAccountPasswords_(savedPasswords, ' +
+            'savedPasswords.splices)',
+      },
 
-    /**
-     * Passwords displayed in both the device-only and 'device and account'
-     * subsections.
-     * @private {!Array<!MultiStorePasswordUiEntry>}
-     */
-    allDevicePasswords_: {
-      type: Array,
-      value: () => [],
-      computed: 'computeAllDevicePasswords_(savedPasswords.splices)',
-      observer: 'onAllDevicePasswordsChanged_',
-    },
+      /**
+       * Passwords displayed in both the device-only and 'device and account'
+       * subsections.
+       * @private {!Array<!MultiStorePasswordUiEntry>}
+       */
+      allDevicePasswords_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeAllDevicePasswords_(savedPasswords.splices)',
+        observer: 'onAllDevicePasswordsChanged_',
+      },
 
-    /**
-     * Whether the entry point leading to the dialog to move multiple passwords
-     * to the Google Account should be shown. It's shown only where there is at
-     * least one password store on device.
-     * @private
-     */
-    shouldShowMoveMultiplePasswordsBanner_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeShouldShowMoveMultiplePasswordsBanner_(' +
-          'savedPasswords, savedPasswords.splices)',
-    },
+      /**
+       * Whether the entry point leading to the dialog to move multiple
+       * passwords to the Google Account should be shown. It's shown only where
+       * there is at least one password store on device.
+       * @private
+       */
+      shouldShowMoveMultiplePasswordsBanner_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShouldShowMoveMultiplePasswordsBanner_(' +
+            'savedPasswords, savedPasswords.splices)',
+      },
 
 
-    /** @private {!MultiStorePasswordUiEntry} */
-    lastFocused_: Object,
+      /** @private {!MultiStorePasswordUiEntry} */
+      lastFocused_: Object,
 
-    /** @private */
-    listBlurred_: Boolean,
+      /** @private */
+      listBlurred_: Boolean,
 
-    /** @private */
-    accountEmail_: String,
+      /** @private */
+      accountEmail_: String,
 
-    /** @private */
-    isUserAllowedToAccessPage_: {
-      type: Boolean,
-      computed: 'computeIsUserAllowedToAccessPage_(signedIn_, syncDisabled_,' +
-          'optedInForAccountStorage_)',
-    },
+      /** @private */
+      isUserAllowedToAccessPage_: {
+        type: Boolean,
+        computed:
+            'computeIsUserAllowedToAccessPage_(signedIn_, syncDisabled_,' +
+            'optedInForAccountStorage_)',
+      },
 
-    /**
-     * Whether the user is signed in, one of the requirements to view this page.
-     * @private {boolean?}
-     */
-    signedIn_: {
-      type: Boolean,
-      value: null,
-    },
+      /**
+       * Whether the user is signed in, one of the requirements to view this
+       * page.
+       * @private {boolean?}
+       */
+      signedIn_: {
+        type: Boolean,
+        value: null,
+      },
 
-    /**
-     * Whether Sync is disabled, one of the requirements to view this page.
-     * @private {boolean?}
-     */
-    syncDisabled_: {
-      type: Boolean,
-      value: null,
-    },
+      /**
+       * Whether Sync is disabled, one of the requirements to view this page.
+       * @private {boolean?}
+       */
+      syncDisabled_: {
+        type: Boolean,
+        value: null,
+      },
 
-    /**
-     * Whether the user has opted in to the account-scoped password storage, one
-     * of the requirements to view this page.
-     * @private {boolean?}
-     */
-    optedInForAccountStorage_: {
-      type: Boolean,
-      value: null,
-    },
+      /**
+       * Whether the user has opted in to the account-scoped password storage,
+       * one of the requirements to view this page.
+       * @private {boolean?}
+       */
+      optedInForAccountStorage_: {
+        type: Boolean,
+        value: null,
+      },
 
-    /** @private */
-    showMoveMultiplePasswordsDialog_: Boolean,
+      /** @private */
+      showMoveMultiplePasswordsDialog_: Boolean,
 
-    /** @private {Route?} */
-    currentRoute_: {
-      type: Object,
-      value: null,
-    },
+      /** @private {Route?} */
+      currentRoute_: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private */
-    devicePasswordsLabel_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      devicePasswordsLabel_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  },
+  static get observers() {
+    return [
+      'maybeRedirectToPasswordsPage_(isUserAllowedToAccessPage_, currentRoute_)'
+    ];
+  }
 
-  keyBindings: {
-    // <if expr="is_macosx">
-    'meta+z': 'onUndoKeyBinding_',
-    // </if>
-    // <if expr="not is_macosx">
-    'ctrl+z': 'onUndoKeyBinding_',
-    // </if>
-  },
+  constructor() {
+    super();
 
-  /** @private {!function(boolean): void} */
-  accountStorageOptInStateListener_: Function,
-
-  observers:
-      ['maybeRedirectToPasswordsPage_(isUserAllowedToAccessPage_, ' +
-       'currentRoute_)'],
+    /** @private {!function(boolean): void} */
+    this.accountStorageOptInStateListener_;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addListenersForAccountStorageRequirements_();
     this.currentRoute_ = Router.getInstance().currentRoute;
 
@@ -228,13 +231,34 @@ Polymer({
         extractFirstStoredAccountEmail);
     this.addWebUIListener(
         'stored-accounts-updated', extractFirstStoredAccountEmail);
-  },
+  }
 
   /** @override */
-  detached() {
+  ready() {
+    super.ready();
+
+    document.addEventListener('keydown', e => {
+      const keyboardEvent = /** @type {!KeyboardEvent} */ (e);
+      // <if expr="is_macosx">
+      if (keyboardEvent.metaKey && keyboardEvent.key === 'z') {
+        this.onUndoKeyBinding_(keyboardEvent);
+      }
+      // </if>
+      // <if expr="not is_macosx">
+      if (keyboardEvent.ctrlKey && keyboardEvent.key === 'z') {
+        this.onUndoKeyBinding_(keyboardEvent);
+      }
+      // </if>
+    });
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     PasswordManagerImpl.getInstance().removeAccountStorageOptInStateListener(
         this.accountStorageOptInStateListener_);
-  },
+  }
 
   /**
    * @return {!Array<!MultiStorePasswordUiEntry>}
@@ -242,7 +266,7 @@ Polymer({
    */
   computeAllDevicePasswords_() {
     return this.savedPasswords.filter(p => p.isPresentOnDevice());
-  },
+  }
 
   /**
    * @return {!Array<!MultiStorePasswordUiEntry>}
@@ -251,7 +275,7 @@ Polymer({
   computeDeviceOnlyPasswords_() {
     return this.savedPasswords.filter(
         p => p.isPresentOnDevice() && !p.isPresentInAccount());
-  },
+  }
 
   /**
    * @return {!Array<!MultiStorePasswordUiEntry>}
@@ -260,7 +284,7 @@ Polymer({
   computeDeviceAndAccountPasswords_() {
     return this.savedPasswords.filter(
         p => p.isPresentOnDevice() && p.isPresentInAccount());
-  },
+  }
 
   /**
    * @private
@@ -273,7 +297,7 @@ Polymer({
         (this.syncDisabled_ === null || !!this.syncDisabled_) &&
         (this.optedInForAccountStorage_ === null ||
          !!this.optedInForAccountStorage_);
-  },
+  }
 
   /**
    * @private
@@ -301,7 +325,7 @@ Polymer({
                      p2 => p1.username === p2.username &&
                          p1.urls.origin === p2.urls.origin)
                  .length === 1));
-  },
+  }
 
   /**
    * @private
@@ -310,7 +334,7 @@ Polymer({
     this.devicePasswordsLabel_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'movePasswordsToAccount', this.allDevicePasswords_.length);
-  },
+  }
 
   /**
    * From RouteObserverBehavior.
@@ -319,7 +343,7 @@ Polymer({
    */
   currentRouteChanged(route) {
     this.currentRoute_ = route || null;
-  },
+  }
 
   /** @private */
   addListenersForAccountStorageRequirements_() {
@@ -343,7 +367,7 @@ Polymer({
     PasswordManagerImpl.getInstance().addAccountStorageOptInStateListener(
         setOptedIn);
     this.accountStorageOptInStateListener_ = setOptedIn;
-  },
+  }
 
   /**
    * @param {!Array<!MultiStorePasswordUiEntry>} passwords
@@ -352,7 +376,7 @@ Polymer({
    */
   isNonEmpty_(passwords) {
     return passwords.length > 0;
-  },
+  }
 
   /**
    * @param {!Array<!MultiStorePasswordUiEntry>} passwords
@@ -368,7 +392,7 @@ Polymer({
     return passwords.filter(
         p => [p.urls.shown, p.username].some(
             term => term.toLowerCase().includes(filter.toLowerCase())));
-  },
+  }
 
   /**
    * Handle the undo shortcut.
@@ -386,27 +410,28 @@ Polymer({
       // search action.
       event.preventDefault();
     }
-  },
+  }
 
   /** @private */
   onManageAccountPasswordsClicked_() {
     OpenWindowProxyImpl.getInstance().openURL(
         loadTimeData.getString('googlePasswordManagerUrl'));
-  },
+  }
 
   /** @private */
   onMoveMultiplePasswordsTap_() {
     this.showMoveMultiplePasswordsDialog_ = true;
-  },
+  }
 
   /** @private */
   onMoveMultiplePasswordsDialogClose_() {
-    if ((this.$$('password-move-multiple-passwords-to-account-dialog'))
+    if ((this.shadowRoot.querySelector(
+             'password-move-multiple-passwords-to-account-dialog'))
             .wasConfirmed()) {
       this.$.toast.show();
     }
     this.showMoveMultiplePasswordsDialog_ = false;
-  },
+  }
 
   /** @private */
   maybeRedirectToPasswordsPage_() {
@@ -417,6 +442,8 @@ Polymer({
         this.currentRoute_ === routes.DEVICE_PASSWORDS) {
       Router.getInstance().navigateTo(routes.PASSWORDS);
     }
-  },
+  }
+}
 
-});
+customElements.define(
+    PasswordsDeviceSectionElement.is, PasswordsDeviceSectionElement);

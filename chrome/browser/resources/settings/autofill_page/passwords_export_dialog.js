@@ -14,8 +14,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
@@ -48,72 +48,98 @@ const progressBarDelayMs = 100;
  */
 const progressBarBlockMs = 1000;
 
-Polymer({
-  is: 'passwords-export-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PasswordsExportDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
+  static get is() {
+    return 'passwords-export-dialog';
+  }
 
-  properties: {
-    /** The error that occurred while exporting. */
-    exportErrorMessage: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    showStartDialog_: Boolean,
+  static get properties() {
+    return {
+      /** The error that occurred while exporting. */
+      exportErrorMessage: String,
 
-    /** @private */
-    showProgressDialog_: Boolean,
+      /** @private */
+      showStartDialog_: Boolean,
 
-    /** @private */
-    showErrorDialog_: Boolean,
+      /** @private */
+      showProgressDialog_: Boolean,
 
-    // <if expr="chromeos">
-    /** @type BlockingRequestManager */
-    tokenRequestManager: Object
-    // </if>
-  },
+      /** @private */
+      showErrorDialog_: Boolean,
 
-  listeners: {
-    'cancel': 'close',
-  },
+      // <if expr="chromeos">
+      /** @type BlockingRequestManager */
+      tokenRequestManager: Object
+      // </if>
 
-  /**
-   * The interface for callbacks to the browser.
-   * Defined in passwords_section.js
-   * @type {PasswordManagerProxy}
-   * @private
-   */
-  passwordManager_: null,
+    };
+  }
 
-  /** @private {?function(!PasswordManagerProxy.PasswordExportProgress):void} */
-  onPasswordsFileExportProgressListener_: null,
+  constructor() {
+    super();
 
-  /**
-   * The task that will display the progress bar, if the export doesn't finish
-   * quickly. This is null, unless the task is currently scheduled.
-   * @private {?number}
-   */
-  progressTaskToken_: null,
+    /**
+     * The interface for callbacks to the browser.
+     * Defined in passwords_section.js
+     * @private {PasswordManagerProxy}
+     */
+    this.passwordManager_ = null;
 
-  /**
-   * The task that will display the completion of the export, if any. We display
-   * the progress bar for at least |progressBarBlockMs|, therefore, if export
-   * finishes earlier, we cache the result in |delayedProgress_| and this task
-   * will consume it. This is null, unless the task is currently scheduled.
-   * @private {?number}
-   */
-  delayedCompletionToken_: null,
+    /**
+     * @private {?function(!PasswordManagerProxy.PasswordExportProgress):void}
+     */
+    this.onPasswordsFileExportProgressListener_ = null;
 
-  /**
-   * We display the progress bar for at least |progressBarBlockMs|. If progress
-   * is achieved earlier, we store the update here and consume it later.
-   * @private {?PasswordManagerProxy.PasswordExportProgress}
-   */
-  delayedProgress_: null,
+    /**
+     * The task that will display the progress bar; if the export doesn't finish
+     * quickly. This is null; unless the task is currently scheduled.
+     * @private {?number}
+     */
+    this.progressTaskToken_ = null;
+
+    /**
+     * The task that will display the completion of the export; if any. We
+     * display the progress bar for at least |progressBarBlockMs|; therefore, if
+     * export finishes earlier; we cache the result in |delayedProgress_| and
+     * this task will consume it. This is null; unless the task is currently
+     * scheduled.
+     * @private {?number}
+     */
+    this.delayedCompletionToken_ = null;
+
+    /**
+     * We display the progress bar for at least |progressBarBlockMs|. If
+     * progress is achieved earlier; we store the update here and consume it
+     * later.
+     * @private {?PasswordManagerProxy.PasswordExportProgress}
+     */
+    this.delayedProgress_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+    this.addEventListener('cancel', this.close);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.passwordManager_ = PasswordManagerImpl.getInstance();
 
     this.switchToDialog_(States.START);
@@ -131,7 +157,7 @@ Polymer({
 
     this.passwordManager_.addPasswordsFileExportProgressListener(
         this.onPasswordsFileExportProgressListener_);
-  },
+  }
 
   /**
    * Handles an export progress event by changing the visible dialog or caching
@@ -153,7 +179,7 @@ Polymer({
     } else {
       this.delayedProgress_ = progress;
     }
-  },
+  }
 
   /**
    * Displays the progress bar and suspends further UI updates for
@@ -166,7 +192,7 @@ Polymer({
 
     this.delayedCompletionToken_ =
         setTimeout(this.delayedCompletionTask_.bind(this), progressBarBlockMs);
-  },
+  }
 
   /**
    * Unblocks progress after showing the progress bar for |progressBarBlock|ms
@@ -179,7 +205,7 @@ Polymer({
       this.processProgress_(this.delayedProgress_);
       this.delayedProgress_ = null;
     }
-  },
+  }
 
   /** Closes the dialog. */
   close() {
@@ -198,8 +224,11 @@ Polymer({
     this.showErrorDialog_ = false;
     // Need to allow for the dialogs to be removed from the DOM before firing
     // the close event. Otherwise the handler will not be able to set focus.
-    this.async(() => this.fire('passwords-export-dialog-close'));
-  },
+    window.setTimeout(
+        () => this.dispatchEvent(new CustomEvent(
+            'passwords-export-dialog-close', {bubbles: true, composed: true})),
+        0);
+  }
 
   /** @private */
   onExportTap_() {
@@ -209,7 +238,7 @@ Polymer({
     // <if expr="not chromeos">
     this.exportPasswords_();
     // </if>
-  },
+  }
 
   /**
    * Tells the PasswordsPrivate API to export saved passwords in a .csv pending
@@ -226,7 +255,7 @@ Polymer({
         this.switchToDialog_(States.IN_PROGRESS);
       }
     });
-  },
+  }
 
   /**
    * Prepares and displays the appropriate view (with delay, if necessary).
@@ -250,7 +279,7 @@ Polymer({
       this.switchToDialog_(States.ERROR);
       return;
     }
-  },
+  }
 
   /**
    * Opens the specified dialog and hides the others.
@@ -261,7 +290,7 @@ Polymer({
     this.showStartDialog_ = state === States.START;
     this.showProgressDialog_ = state === States.IN_PROGRESS;
     this.showErrorDialog_ = state === States.ERROR;
-  },
+  }
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
@@ -269,7 +298,7 @@ Polymer({
    */
   onCancelButtonTap_() {
     this.close();
-  },
+  }
 
   /**
    * Handler for tapping the 'cancel' button on the progress dialog. It should
@@ -279,5 +308,8 @@ Polymer({
   onCancelProgressButtonTap_() {
     this.passwordManager_.cancelExportPasswords();
     this.close();
-  },
-});
+  }
+}
+
+customElements.define(
+    PasswordsExportDialogElement.is, PasswordsExportDialogElement);

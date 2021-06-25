@@ -20,57 +20,79 @@ import './passwords_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
-Polymer({
-  is: 'settings-password-check-edit-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsPasswordCheckEditDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class SettingsPasswordCheckEditDialogElement extends
+    SettingsPasswordCheckEditDialogElementBase {
+  static get is() {
+    return 'settings-password-check-edit-dialog';
+  }
 
-  properties: {
-    /**
-     * The password that the user is interacting with now.
-     * @type {?PasswordManagerProxy.InsecureCredential}
-     */
-    item: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Whether the password is visible or obfuscated.
-     * @private
-     */
-    visible: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * The password that the user is interacting with now.
+       * @type {?PasswordManagerProxy.InsecureCredential}
+       */
+      item: Object,
 
-    /**
-     * Whether the input is invalid.
-     * @private
-     */
-    inputInvalid_: Boolean,
-  },
+      /**
+       * Whether the password is visible or obfuscated.
+       * @private
+       */
+      visible: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @private {?PasswordManagerProxy} */
-  passwordManager_: null,
+      /**
+       * Whether the input is invalid.
+       * @private
+       */
+      inputInvalid_: Boolean,
+
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?PasswordManagerProxy} */
+    this.passwordManager_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Set the manager. These can be overridden by tests.
     this.passwordManager_ = PasswordManagerImpl.getInstance();
     this.$.dialog.showModal();
     focusWithoutInk(this.$.cancel);
-  },
+  }
 
   /** Closes the dialog. */
   close() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
@@ -78,7 +100,7 @@ Polymer({
    */
   onCancel_() {
     this.close();
-  },
+  }
 
   /**
    * Handler for tapping the 'save' button. Should just dismiss the dialog.
@@ -92,7 +114,7 @@ Polymer({
         .finally(() => {
           this.close();
         });
-  },
+  }
 
   /**
    * @private
@@ -100,7 +122,7 @@ Polymer({
    */
   showPasswordTitle_() {
     return this.i18n(this.visible ? 'hidePassword' : 'showPassword');
-  },
+  }
 
   /**
    * @private
@@ -109,7 +131,7 @@ Polymer({
    */
   showPasswordIcon_() {
     return this.visible ? 'icon-visibility-off' : 'icon-visibility';
-  },
+  }
 
   /**
    * @private
@@ -118,7 +140,7 @@ Polymer({
    */
   getPasswordInputType_() {
     return this.visible ? 'text' : 'password';
-  },
+  }
 
   /**
    * Handler for tapping the show/hide button.
@@ -126,7 +148,7 @@ Polymer({
    */
   onShowPasswordButtonClick_() {
     this.visible = !this.visible;
-  },
+  }
 
   /**
    * @private
@@ -134,7 +156,7 @@ Polymer({
    */
   getFootnote_() {
     return this.i18n('editPasswordFootnote', this.item.formattedOrigin);
-  },
+  }
 
   /**
    * @private
@@ -146,4 +168,8 @@ Polymer({
         this.item.isAndroidCredential ? 'editCompromisedPasswordApp' :
                                         'editCompromisedPasswordSite');
   }
-});
+}
+
+customElements.define(
+    SettingsPasswordCheckEditDialogElement.is,
+    SettingsPasswordCheckEditDialogElement);

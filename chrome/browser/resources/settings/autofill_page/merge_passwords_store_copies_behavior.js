@@ -29,7 +29,6 @@ const MergePasswordsStoreCopiesBehaviorImpl = {
       type: Array,
       value: () => [],
     },
-
   },
 
   /**
@@ -102,3 +101,10 @@ const MergePasswordsStoreCopiesBehaviorImpl = {
  */
 export const MergePasswordsStoreCopiesBehavior =
     [ListPropertyUpdateBehavior, MergePasswordsStoreCopiesBehaviorImpl];
+
+
+/** @interface */
+export class MergePasswordsStoreCopiesBehaviorInterface {
+  /** @return {!Array<!MultiStorePasswordUiEntry>} */
+  get savedPasswords() {}
+}

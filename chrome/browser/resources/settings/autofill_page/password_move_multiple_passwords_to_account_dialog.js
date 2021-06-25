@@ -10,42 +10,50 @@
 
 import './password_list_item.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 
-Polymer({
-  is: 'password-move-multiple-passwords-to-account-dialog',
+/** @polymer */
+class PasswordMoveMultiplePasswordsToAccountDialogElement extends
+    PolymerElement {
+  static get is() {
+    return 'password-move-multiple-passwords-to-account-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [I18nBehavior],
+  static get properties() {
+    return {
+      /** @type {!Array<!MultiStorePasswordUiEntry>} */
+      passwordsToMove: {
+        type: Array,
+        value: () => [],
+      },
 
-  properties: {
-    /** @type {!Array<!MultiStorePasswordUiEntry>} */
-    passwordsToMove: {
-      type: Array,
-      value: () => [],
-    },
-    accountEmail: String,
-  },
+      accountEmail: String,
+    };
+  }
 
   /** @return {boolean} Whether the user confirmed the dialog. */
   wasConfirmed() {
     return this.$.dialog.getNative().returnValue === 'success';
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
         MoveToAccountStoreTrigger
             .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS,
         MoveToAccountStoreTrigger.COUNT);
-  },
+  }
 
   /** @private */
   onMoveButtonClick_() {
@@ -61,10 +69,14 @@ Polymer({
         'PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount',
         selectedPasswords.length);
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.cancel();
-  },
-});
+  }
+}
+
+customElements.define(
+    PasswordMoveMultiplePasswordsToAccountDialogElement.is,
+    PasswordMoveMultiplePasswordsToAccountDialogElement);

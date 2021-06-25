@@ -15,8 +15,7 @@ import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
@@ -26,63 +25,75 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
-Polymer({
-  is: 'password-check-list-item',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class PasswordCheckListItemElement extends PolymerElement {
+  static get is() {
+    return 'password-check-list-item';
+  }
 
-  properties: {
-    // <if expr="chromeos">
-    /** @type {BlockingRequestManager} */
-    tokenRequestManager: Object,
-    // </if>
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The password that is being displayed.
-     * @type {!PasswordManagerProxy.InsecureCredential}
-     */
-    item: Object,
+  static get properties() {
+    return {
+      // <if expr="chromeos">
+      /** @type {BlockingRequestManager} */
+      tokenRequestManager: Object,
+      // </if>
 
-    /** @private */
-    isPasswordVisible_: {
-      type: Boolean,
-      computed: 'computePasswordVisibility_(item.password)',
-    },
+      /**
+       * The password that is being displayed.
+       * @type {!PasswordManagerProxy.InsecureCredential}
+       */
+      item: Object,
 
-    /** @private */
-    password_: {
-      type: String,
-      computed: 'computePassword_(item.password)',
-    },
+      /** @private */
+      isPasswordVisible_: {
+        type: Boolean,
+        computed: 'computePasswordVisibility_(item.password)',
+      },
 
-    clickedChangePassword: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      password_: {
+        type: String,
+        computed: 'computePassword_(item.password)',
+      },
 
-    /** @private */
-    buttonClass_: {
-      type: String,
-      computed: 'computeButtonClass_(item.compromisedInfo)',
-    },
+      clickedChangePassword: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    iconClass_: {
-      type: String,
-      computed: 'computeIconClass_(item.compromisedInfo)',
-    },
-  },
+      /** @private */
+      buttonClass_: {
+        type: String,
+        computed: 'computeButtonClass_(item.compromisedInfo)',
+      },
 
-  /**
-   * @private {?PasswordManagerProxy}
-   */
-  passwordManager_: null,
+      /** @private */
+      iconClass_: {
+        type: String,
+        computed: 'computeIconClass_(item.compromisedInfo)',
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?PasswordManagerProxy} */
+    this.passwordManager_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Set the manager. These can be overridden by tests.
     this.passwordManager_ = PasswordManagerImpl.getInstance();
-  },
+  }
 
   /**
    * Returns true if |item| is compromised credential, otherwise returns false.
@@ -91,7 +102,7 @@ Polymer({
    */
   isCompromisedItem_() {
     return !!this.item.compromisedInfo;
-  },
+  }
 
   /**
    * @return {string}
@@ -110,28 +121,36 @@ Polymer({
     assertNotReached(
         'Can\'t find a string for type: ' +
         this.item.compromisedInfo.compromiseType);
-  },
+  }
 
   /**
+   * @param {string} eventName
+   * @param {*=} detail
    * @private
    */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
+
+  /** @private */
   onChangePasswordClick_() {
-    this.fire('change-password-clicked', {id: this.item.id});
+    this.fire_('change-password-clicked', {id: this.item.id});
 
     const url = assert(this.item.changePasswordUrl);
     OpenWindowProxyImpl.getInstance().openURL(url);
 
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordManagerProxy.PasswordCheckInteraction.CHANGE_PASSWORD);
-  },
+  }
 
   /**
    * @param {!Event} event
    * @private
    */
   onMoreClick_(event) {
-    this.fire('more-actions-click', {moreActionsButton: event.target});
-  },
+    this.fire_('more-actions-click', {moreActionsButton: event.target});
+  }
 
   /**
    * @return {string}
@@ -139,7 +158,7 @@ Polymer({
    */
   getInputType_() {
     return this.isPasswordVisible_ ? 'text' : 'password';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -147,7 +166,7 @@ Polymer({
    */
   computePasswordVisibility_() {
     return !!this.item.password;
-  },
+  }
 
   /**
    * @return {string}
@@ -160,7 +179,7 @@ Polymer({
     }
     // Weak CTA.
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -173,7 +192,7 @@ Polymer({
     }
     // Weak CTA, non-white-icon.
     return 'icon-weak-cta';
-  },
+  }
 
   /**
    * @return {string}
@@ -182,14 +201,14 @@ Polymer({
   computePassword_() {
     const NUM_PLACEHOLDERS = 10;
     return this.item.password || ' '.repeat(NUM_PLACEHOLDERS);
-  },
+  }
 
   /**
    * @public
    */
   hidePassword() {
     this.set('item.password', null);
-  },
+  }
 
   /**
    * @public
@@ -210,16 +229,16 @@ Polymer({
               this.tokenRequestManager.request(this.showPassword.bind(this));
               // </if>
             });
-  },
+  }
 
   /**
    * @private
    */
   onReadonlyInputTap_() {
     if (this.isPasswordVisible_) {
-      this.$$('#leakedPassword').select();
+      this.shadowRoot.querySelector('#leakedPassword').select();
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -227,6 +246,9 @@ Polymer({
    */
   onAlreadyChangedClick_(event) {
     event.preventDefault();
-    this.fire('already-changed-password-click', event.target);
-  },
-});
+    this.fire_('already-changed-password-click', event.target);
+  }
+}
+
+customElements.define(
+    PasswordCheckListItemElement.is, PasswordCheckListItemElement);

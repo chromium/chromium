@@ -28,7 +28,6 @@ export const MergeExceptionsStoreCopiesBehavior = {
       type: Array,
       value: () => [],
     },
-
   },
 
   /**
@@ -86,3 +85,9 @@ export const MergeExceptionsStoreCopiesBehavior = {
     return multiStoreEntries;
   },
 };
+
+/** @interface */
+export class MergeExceptionsStoreCopiesBehaviorInterface {
+  /** @return {!Array<!MultiStoreExceptionEntry>} */
+  get passwordExceptions() {}
+}

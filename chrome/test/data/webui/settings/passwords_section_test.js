@@ -119,7 +119,7 @@ function getDomRepeatChildren(element) {
  */
 function getFirstPasswordListItem(passwordsSection) {
   // The first child is a template, skip and get the real 'first child'.
-  return passwordsSection.$$('password-list-item');
+  return passwordsSection.shadowRoot.querySelector('password-list-item');
 }
 
 /**
@@ -244,15 +244,16 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
       elementFactory.createPasswordsSection(passwordManager, passwordList, []);
 
   const passwordListItem = getFirstPasswordListItem(passwordsSection);
-  passwordListItem.$$('#showPasswordButton').click();
+  passwordListItem.shadowRoot.querySelector('#showPasswordButton').click();
   flush();
   await passwordManager.whenCalled('requestPlaintextPassword');
   passwordManager.resetResolver('requestPlaintextPassword');
   flush();
 
-  assertEquals('text', passwordListItem.$$('#password').type);
-  assertFalse(passwordListItem.$$('#password').disabled);
-  assertTrue(passwordListItem.$$('#showPasswordButton')
+  assertEquals(
+      'text', passwordListItem.shadowRoot.querySelector('#password').type);
+  assertFalse(passwordListItem.shadowRoot.querySelector('#password').disabled);
+  assertTrue(passwordListItem.shadowRoot.querySelector('#showPasswordButton')
                  .classList.contains('icon-visibility-off'));
 
   // Open Edit Dialog.
@@ -264,19 +265,21 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
   passwordManager.resetResolver('requestPlaintextPassword');
   flush();
 
-  assertEquals('password', passwordListItem.$$('#password').type);
-  assertTrue(passwordListItem.$$('#password').disabled);
-  assertTrue(passwordListItem.$$('#showPasswordButton')
+  assertEquals(
+      'password', passwordListItem.shadowRoot.querySelector('#password').type);
+  assertTrue(passwordListItem.shadowRoot.querySelector('#password').disabled);
+  assertTrue(passwordListItem.shadowRoot.querySelector('#showPasswordButton')
                  .classList.contains('icon-visibility'));
 
   // Verify that edit dialog password is hidden.
   const passwordEditDialog =
-      passwordsSection.$.passwordsListHandler.$$('#passwordEditDialog');
+      passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
+          '#passwordEditDialog');
   assertEquals('password', passwordEditDialog.$.passwordInput.type);
   assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
       'icon-visibility'));
 
-  passwordEditDialog.$$('#showPasswordButton').click();
+  passwordEditDialog.shadowRoot.querySelector('#showPasswordButton').click();
   flush();
 
   assertEquals('text', passwordEditDialog.$.passwordInput.type);
@@ -290,9 +293,10 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
   await eventToPromise('close', passwordEditDialog);
 
   assertEquals('', passwordListItem.entry.password);
-  assertEquals('password', passwordListItem.$$('#password').type);
-  assertTrue(passwordListItem.$$('#password').disabled);
-  assertTrue(passwordListItem.$$('#showPasswordButton')
+  assertEquals(
+      'password', passwordListItem.shadowRoot.querySelector('#password').type);
+  assertTrue(passwordListItem.shadowRoot.querySelector('#password').disabled);
+  assertTrue(passwordListItem.shadowRoot.querySelector('#showPasswordButton')
                  .classList.contains('icon-visibility'));
 }
 
@@ -339,11 +343,13 @@ suite('PasswordsSection', function() {
     };
     document.body.appendChild(element);
 
-    assertFalse(!!element.$$('#passwordsExtensionIndicator'));
+    assertFalse(
+        !!element.shadowRoot.querySelector('#passwordsExtensionIndicator'));
     element.set('prefs.credentials_enable_service.extensionId', 'test-id');
     flush();
 
-    assertTrue(!!element.$$('#passwordsExtensionIndicator'));
+    assertTrue(
+        !!element.shadowRoot.querySelector('#passwordsExtensionIndicator'));
   });
 
   test('verifyNoSavedPasswords', function() {
@@ -465,18 +471,26 @@ suite('PasswordsSection', function() {
         passwordsSection.root.querySelectorAll('password-list-item');
     assertEquals(2, passwordListItems.length);
 
-    passwordListItems[0].$$('#showPasswordButton').click();
+    passwordListItems[0]
+        .shadowRoot.querySelector('#showPasswordButton')
+        .click();
     flush();
     await passwordManager.whenCalled('requestPlaintextPassword');
     passwordManager.resetResolver('requestPlaintextPassword');
     flush();
 
-    passwordListItems[1].$$('#showPasswordButton').click();
+    passwordListItems[1]
+        .shadowRoot.querySelector('#showPasswordButton')
+        .click();
     await passwordManager.whenCalled('requestPlaintextPassword');
     flush();
 
-    assertEquals('text', passwordListItems[0].$$('#password').type);
-    assertEquals('text', passwordListItems[1].$$('#password').type);
+    assertEquals(
+        'text',
+        passwordListItems[0].shadowRoot.querySelector('#password').type);
+    assertEquals(
+        'text',
+        passwordListItems[1].shadowRoot.querySelector('#password').type);
 
     // Remove first row and verify that the remaining password is hidden.
     passwordList.splice(0, 1);
@@ -486,7 +500,9 @@ suite('PasswordsSection', function() {
     assertEquals('', getFirstPasswordListItem(passwordsSection).entry.password);
     assertEquals(
         'password',
-        getFirstPasswordListItem(passwordsSection).$$('#password').type);
+        getFirstPasswordListItem(passwordsSection)
+            .shadowRoot.querySelector('#password')
+            .type);
     assertEquals(
         'user1', getFirstPasswordListItem(passwordsSection).entry.username);
   });
@@ -712,8 +728,9 @@ suite('PasswordsSection', function() {
 
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
     flush();
-    assertTrue(
-        passwordsSection.$.passwordsListHandler.$$('#menuCopyPassword').hidden);
+    assertTrue(passwordsSection.$.passwordsListHandler.shadowRoot
+                   .querySelector('#menuCopyPassword')
+                   .hidden);
   });
 
   // Test verifies that 'Copy password' button is not hidden for common
@@ -727,8 +744,9 @@ suite('PasswordsSection', function() {
 
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
     flush();
-    assertFalse(
-        passwordsSection.$.passwordsListHandler.$$('#menuCopyPassword').hidden);
+    assertFalse(passwordsSection.$.passwordsListHandler.shadowRoot
+                    .querySelector('#menuCopyPassword')
+                    .hidden);
   });
 
   // Test verifies that 'Edit' button is replaced to 'Details' for Federated
@@ -744,7 +762,8 @@ suite('PasswordsSection', function() {
     flush();
     assertEquals(
         passwordsSection.i18n('passwordViewDetails'),
-        passwordsSection.$.passwordsListHandler.$$('#menuEditPassword')
+        passwordsSection.$.passwordsListHandler.shadowRoot
+            .querySelector('#menuEditPassword')
             .textContent.trim());
   });
 
@@ -763,7 +782,8 @@ suite('PasswordsSection', function() {
         flush();
         assertEquals(
             passwordsSection.i18n('passwordViewDetails'),
-            passwordsSection.$.passwordsListHandler.$$('#menuEditPassword')
+            passwordsSection.$.passwordsListHandler.shadowRoot
+                .querySelector('#menuEditPassword')
                 .textContent.trim());
       });
 
@@ -781,7 +801,8 @@ suite('PasswordsSection', function() {
     flush();
     assertEquals(
         passwordsSection.i18n('editPassword'),
-        passwordsSection.$.passwordsListHandler.$$('#menuEditPassword')
+        passwordsSection.$.passwordsListHandler.shadowRoot
+            .querySelector('#menuEditPassword')
             .textContent.trim());
   });
 
@@ -1220,32 +1241,37 @@ suite('PasswordsSection', function() {
     const passwordListItem = elementFactory.createPasswordListItem(item);
 
     // Hidden passwords should be disabled.
-    assertTrue(passwordListItem.$$('#password').disabled);
+    assertTrue(passwordListItem.shadowRoot.querySelector('#password').disabled);
 
-    passwordListItem.$$('#showPasswordButton').click();
+    passwordListItem.shadowRoot.querySelector('#showPasswordButton').click();
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
     flush();
     assertEquals(1, id);
     assertEquals('VIEW', reason);
 
-    assertEquals(PASSWORD, passwordListItem.$$('#password').value);
+    assertEquals(
+        PASSWORD, passwordListItem.shadowRoot.querySelector('#password').value);
     // Password should be visible.
-    assertEquals('text', passwordListItem.$$('#password').type);
+    assertEquals(
+        'text', passwordListItem.shadowRoot.querySelector('#password').type);
     // Visible passwords should not be disabled.
-    assertFalse(passwordListItem.$$('#password').disabled);
+    assertFalse(
+        passwordListItem.shadowRoot.querySelector('#password').disabled);
 
     // Hide Password Button should be shown.
-    assertTrue(passwordListItem.$$('#showPasswordButton')
+    assertTrue(passwordListItem.shadowRoot.querySelector('#showPasswordButton')
                    .classList.contains('icon-visibility-off'));
 
     // Hide the Password again.
-    passwordListItem.$$('#showPasswordButton').click();
+    passwordListItem.shadowRoot.querySelector('#showPasswordButton').click();
     flush();
 
-    assertEquals('password', passwordListItem.$$('#password').type);
-    assertTrue(passwordListItem.$$('#password').disabled);
-    assertTrue(passwordListItem.$$('#showPasswordButton')
+    assertEquals(
+        'password',
+        passwordListItem.shadowRoot.querySelector('#password').type);
+    assertTrue(passwordListItem.shadowRoot.querySelector('#password').disabled);
+    assertTrue(passwordListItem.shadowRoot.querySelector('#showPasswordButton')
                    .classList.contains('icon-visibility'));
   });
 
@@ -1269,7 +1295,8 @@ suite('PasswordsSection', function() {
     assertEquals('EDIT', reason);
 
     const passwordEditDialog =
-        passwordSection.$.passwordsListHandler.$$('#passwordEditDialog');
+        passwordSection.$.passwordsListHandler.shadowRoot.querySelector(
+            '#passwordEditDialog');
     assertEquals('password', passwordEditDialog.$.passwordInput.type);
     assertEquals(PASSWORD, passwordEditDialog.$.passwordInput.value);
     assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
@@ -1284,7 +1311,7 @@ suite('PasswordsSection', function() {
     assertEquals('', passwordListItem.entry.password);
 
     passwordManager.setPlaintextPassword('password');
-    passwordListItem.$$('#showPasswordButton').click();
+    passwordListItem.shadowRoot.querySelector('#showPasswordButton').click();
     return passwordManager.whenCalled('requestPlaintextPassword')
         .then(({id, reason}) => {
           assertEquals(1, id);
@@ -1300,7 +1327,9 @@ suite('PasswordsSection', function() {
         passwordManager, [expectedItem], []);
 
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
-    passwordsSection.$.passwordsListHandler.$$('#menuCopyPassword').click();
+    passwordsSection.$.passwordsListHandler.shadowRoot
+        .querySelector('#menuCopyPassword')
+        .click();
 
     return passwordManager.whenCalled('requestPlaintextPassword')
         .then(({id, reason}) => {
@@ -1316,7 +1345,9 @@ suite('PasswordsSection', function() {
         passwordManager, [expectedItem], []);
 
     getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
-    passwordsSection.$.passwordsListHandler.$$('#menuEditPassword').click();
+    passwordsSection.$.passwordsListHandler.shadowRoot
+        .querySelector('#menuEditPassword')
+        .click();
 
     return passwordManager.whenCalled('requestPlaintextPassword')
         .then(({id, reason}) => {
@@ -1619,14 +1650,16 @@ suite('PasswordsSection', function() {
 
       // At first the dialog is not shown.
       assertTrue(
-          !passwordsSection.$.passwordsListHandler.$$('#passwordRemoveDialog'));
+          !passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
+              '#passwordRemoveDialog'));
 
       // Clicking remove in the overflow menu shows the dialog.
       getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
       passwordsSection.$.passwordsListHandler.$.menuRemovePassword.click();
       flush();
       const removeDialog =
-          passwordsSection.$.passwordsListHandler.$$('#passwordRemoveDialog');
+          passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
+              '#passwordRemoveDialog');
       assertTrue(!!removeDialog);
 
       // Both checkboxes are selected by default. Confirming removes from both
@@ -1658,14 +1691,16 @@ suite('PasswordsSection', function() {
 
       // At first the dialog is not shown.
       assertTrue(
-          !passwordsSection.$.passwordsListHandler.$$('#passwordRemoveDialog'));
+          !passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
+              '#passwordRemoveDialog'));
 
       // Clicking remove in the overflow menu shows the dialog.
       getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
       passwordsSection.$.passwordsListHandler.$.menuRemovePassword.click();
       flush();
       const removeDialog =
-          passwordsSection.$.passwordsListHandler.$$('#passwordRemoveDialog');
+          passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
+              '#passwordRemoveDialog');
       assertTrue(!!removeDialog);
 
       // Uncheck the account checkboxes then confirm. Only the device copy is
@@ -1687,17 +1722,17 @@ suite('PasswordsSection', function() {
     const exportDialog =
         elementFactory.createExportPasswordsDialog(passwordManager);
 
-    assertTrue(exportDialog.$$('#dialog_start').open);
-    exportDialog.$$('#cancelButton').click();
+    assertTrue(exportDialog.shadowRoot.querySelector('#dialog_start').open);
+    exportDialog.shadowRoot.querySelector('#cancelButton').click();
     flush();
-    assertFalse(!!exportDialog.$$('#dialog_start'));
+    assertFalse(!!exportDialog.shadowRoot.querySelector('#dialog_start'));
   });
 
   test('fires close event when canceled', () => {
     const exportDialog =
         elementFactory.createExportPasswordsDialog(passwordManager);
     const wait = eventToPromise('passwords-export-dialog-close', exportDialog);
-    exportDialog.$$('#cancelButton').click();
+    exportDialog.shadowRoot.querySelector('#cancelButton').click();
     return wait;
   });
 
@@ -1747,10 +1782,15 @@ suite('PasswordsSection', function() {
             passwordManager, passwordList, []);
         return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
           flush();
-          assertFalse(
-              passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-          assertFalse(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-          assertTrue(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordsBannerContainer')
+                          .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordsButtonRow')
+                          .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordsLinkRow')
+                         .hidden);
         });
       });
 
@@ -1779,13 +1819,19 @@ suite('PasswordsSection', function() {
         await pluralString.whenCalled('getPluralString');
 
         flush();
-        assertTrue(
-            passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-        assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-        assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+        assertTrue(passwordsSection.shadowRoot
+                       .querySelector('#checkPasswordsBannerContainer')
+                       .hidden);
+        assertTrue(passwordsSection.shadowRoot
+                       .querySelector('#checkPasswordsButtonRow')
+                       .hidden);
+        assertFalse(
+            passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+                .hidden);
         assertEquals(
             pluralString.text,
-            passwordsSection.$$('#checkPasswordLeakCount').innerText.trim());
+            passwordsSection.shadowRoot.querySelector('#checkPasswordLeakCount')
+                .innerText.trim());
       });
 
   test('showPasswordCheckLinkButtonWithoutWarningWhenNotSignedIn', function() {
@@ -1801,9 +1847,15 @@ suite('PasswordsSection', function() {
     simulateSyncStatus({signedIn: false});
     return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
       flush();
-      assertTrue(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordsBannerContainer')
+                     .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
     });
   });
 
@@ -1816,9 +1868,15 @@ suite('PasswordsSection', function() {
         elementFactory.createPasswordsSection(passwordManager, [], []);
     return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
       flush();
-      assertTrue(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordsBannerContainer')
+                     .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
     });
   });
 
@@ -1836,14 +1894,24 @@ suite('PasswordsSection', function() {
             passwordManager, passwordList, []);
         return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
           flush();
-          assertTrue(
-              passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-          assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-          assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
-          assertFalse(
-              passwordsSection.$$('#checkPasswordLeakDescription').hidden);
-          assertTrue(passwordsSection.$$('#checkPasswordWarningIcon').hidden);
-          assertTrue(passwordsSection.$$('#checkPasswordLeakCount').hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordsBannerContainer')
+                         .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordsButtonRow')
+                         .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordsLinkRow')
+                          .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordLeakDescription')
+                          .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordWarningIcon')
+                         .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordLeakCount')
+                         .hidden);
         });
       });
 
@@ -1864,14 +1932,24 @@ suite('PasswordsSection', function() {
             passwordManager, passwordList, []);
         return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
           flush();
-          assertTrue(
-              passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-          assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-          assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
-          assertTrue(
-              passwordsSection.$$('#checkPasswordLeakDescription').hidden);
-          assertFalse(passwordsSection.$$('#checkPasswordWarningIcon').hidden);
-          assertFalse(passwordsSection.$$('#checkPasswordLeakCount').hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordsBannerContainer')
+                         .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordsButtonRow')
+                         .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordsLinkRow')
+                          .hidden);
+          assertTrue(passwordsSection.shadowRoot
+                         .querySelector('#checkPasswordLeakDescription')
+                         .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordWarningIcon')
+                          .hidden);
+          assertFalse(passwordsSection.shadowRoot
+                          .querySelector('#checkPasswordLeakCount')
+                          .hidden);
         });
       });
 
@@ -1890,12 +1968,24 @@ suite('PasswordsSection', function() {
         passwordManager, passwordList, []);
     return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
       flush();
-      assertTrue(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordLeakDescription').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordWarningIcon').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordLeakCount').hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordsBannerContainer')
+                     .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
+      assertFalse(passwordsSection.shadowRoot
+                      .querySelector('#checkPasswordLeakDescription')
+                      .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordWarningIcon')
+              .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordLeakCount')
+              .hidden);
       // Suppose two newly detected leaks come in.
       const leakedCredentials = [
         makeCompromisedCredential('one.com', 'test4', 'LEAKED'),
@@ -1914,12 +2004,24 @@ suite('PasswordsSection', function() {
               /*remaining=*/ 0,
               /*elapsedTime=*/ elapsedTimeSinceLastCheck));
       flush();
-      assertTrue(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordLeakDescription').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordWarningIcon').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordLeakCount').hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordsBannerContainer')
+                     .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordLeakDescription')
+                     .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordWarningIcon')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordLeakCount')
+              .hidden);
     });
   });
 
@@ -1934,21 +2036,33 @@ suite('PasswordsSection', function() {
         passwordManager, passwordList, []);
     return passwordManager.whenCalled('getPasswordCheckStatus').then(() => {
       flush();
-      assertFalse(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+      assertFalse(passwordsSection.shadowRoot
+                      .querySelector('#checkPasswordsBannerContainer')
+                      .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
 
       simulateSyncStatus({signedIn: false});
-      assertTrue(passwordsSection.$$('#checkPasswordsBannerContainer').hidden);
-      assertTrue(passwordsSection.$$('#checkPasswordsButtonRow').hidden);
-      assertFalse(passwordsSection.$$('#checkPasswordsLinkRow').hidden);
+      assertTrue(passwordsSection.shadowRoot
+                     .querySelector('#checkPasswordsBannerContainer')
+                     .hidden);
+      assertTrue(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsButtonRow')
+              .hidden);
+      assertFalse(
+          passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow')
+              .hidden);
     });
   });
 
   test('clickingCheckPasswordsButtonStartsCheck', async function() {
     const passwordsSection =
         elementFactory.createPasswordsSection(passwordManager, [], []);
-    passwordsSection.$$('#checkPasswordsButton').click();
+    passwordsSection.shadowRoot.querySelector('#checkPasswordsButton').click();
     flush();
     const router = Router.getInstance();
     assertEquals(routes.CHECK_PASSWORDS, router.currentRoute);
@@ -1962,7 +2076,7 @@ suite('PasswordsSection', function() {
   test('clickingCheckPasswordsRowStartsCheck', async function() {
     const passwordsSection =
         elementFactory.createPasswordsSection(passwordManager, [], []);
-    passwordsSection.$$('#checkPasswordsLinkRow').click();
+    passwordsSection.shadowRoot.querySelector('#checkPasswordsLinkRow').click();
     flush();
     const router = Router.getInstance();
     assertEquals(routes.CHECK_PASSWORDS, router.currentRoute);

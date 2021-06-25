@@ -76,6 +76,12 @@ export const PrefsBehavior = {
 
 /** @interface */
 export class PrefsBehaviorInterface {
+  /** @return  {!Object} */
+  get prefs() {}
+
+  /** @param obj {!Object} */
+  set prefs(obj) {}
+
   /**
    * @param {string} prefPath
    * @return {!chrome.settingsPrivate.PrefObject}

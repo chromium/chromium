@@ -16,11 +16,11 @@ import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {ShowPasswordBehavior} from './show_password_behavior.js';
+import {ShowPasswordBehavior, ShowPasswordBehaviorInterface} from './show_password_behavior.js';
 
 /**
  * @typedef {!Event<!{target: !HTMLElement, listItem:
@@ -28,43 +28,58 @@ import {ShowPasswordBehavior} from './show_password_behavior.js';
  */
 export let PasswordMoreActionsClickedEvent;
 
-Polymer({
-  is: 'password-list-item',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {ShowPasswordBehaviorInterface}
+ */
+const PasswordListItemElementBase =
+    mixinBehaviors([ShowPasswordBehavior], PolymerElement);
 
-  behaviors: [
-    ShowPasswordBehavior,
-  ],
+/** @polymer */
+export class PasswordListItemElement extends PasswordListItemElementBase {
+  static get is() {
+    return 'password-list-item';
+  }
 
-  properties: {
-    /**
-     * Whether to hide the 3 dot button that open the more actions menu.
-     */
-    shouldHideMoreActionsButton: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Whether to hide the 3 dot button that open the more actions menu.
+       */
+      shouldHideMoreActionsButton: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * Selects the password on tap if revealed.
    * @private
    */
   onReadonlyInputTap_() {
-    if (this.password) {
-      this.$$('#password').select();
+    if (this.entry.password) {
+      this.shadowRoot.querySelector('#password').select();
     }
-  },
+  }
 
-  /**
-   * @private
-   */
+  /** @private */
   onPasswordMoreActionsButtonTap_() {
-    this.fire(
-        'password-more-actions-clicked',
-        {target: this.$.moreActionsButton, listItem: this});
-  },
+    this.dispatchEvent(new CustomEvent('password-more-actions-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        target: this.$.moreActionsButton,
+        listItem: this,
+      },
+    }));
+  }
 
   /**
    * Get the aria label for the More Actions button on this row.
@@ -78,5 +93,7 @@ Polymer({
         (this.entry.federationText) ? 'passwordRowFederatedMoreActionsButton' :
                                       'passwordRowMoreActionsButton',
         this.entry.username, this.entry.urls.shown);
-  },
-});
+  }
+}
+
+customElements.define(PasswordListItemElement.is, PasswordListItemElement);

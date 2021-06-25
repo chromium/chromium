@@ -15,8 +15,7 @@ import './avatar_icon.js';
 import '../site_favicon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
@@ -35,21 +34,27 @@ export const MoveToAccountStoreTrigger = {
   COUNT: 3,
 };
 
-Polymer({
-  is: 'password-move-to-account-dialog',
+/** @polymer */
+class PasswordMoveToAccountDialogElement extends PolymerElement {
+  static get is() {
+    return 'password-move-to-account-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [I18nBehavior],
-
-  properties: {
-    /** @type {!MultiStorePasswordUiEntry} */
-    passwordToMove: Object,
-
-  },
+  static get properties() {
+    return {
+      /** @type {!MultiStorePasswordUiEntry} */
+      passwordToMove: Object,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     chrome.send('metricsHandler:recordInHistogram', [
       'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
       MoveToAccountStoreTrigger.EXPLICITLY_TRIGGERED_IN_SETTINGS,
@@ -57,7 +62,7 @@ Polymer({
     ]);
 
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onMoveButtonClick_() {
@@ -65,10 +70,13 @@ Polymer({
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         [this.passwordToMove.deviceId]);
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
   }
-});
+}
+
+customElements.define(
+    PasswordMoveToAccountDialogElement.is, PasswordMoveToAccountDialogElement);

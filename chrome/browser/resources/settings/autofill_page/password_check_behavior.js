@@ -235,9 +235,27 @@ export const PasswordCheckBehavior = {
 
 /** @interface */
 export class PasswordCheckBehaviorInterface {
+  /** @type {?PasswordManagerProxy} */
+  get passwordManager() {}
+
   /** @return {!Array<!PasswordManagerProxy.InsecureCredential>} */
   get leakedPasswords() {}
 
+  /** @return {!Array<!PasswordManagerProxy.InsecureCredential>} */
+  get weakPasswords() {}
+
   /** @return {string} */
   get compromisedPasswordsCount() {}
+
+  /** @return {string} */
+  get weakPasswordsCount() {}
+
+  /** @return {string} */
+  get insecurePasswordsCount() {}
+
+  /** return {!PasswordManagerProxy.PasswordCheckStatus} */
+  get status() {}
+
+  /** return {boolean} */
+  get isInitialStatus() {}
 }

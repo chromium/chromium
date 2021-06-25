@@ -17,8 +17,8 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './avatar_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
@@ -30,43 +30,59 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
  */
 export let PasswordRemoveDialogPasswordsRemovedEvent;
 
-Polymer({
-  is: 'password-remove-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PasswordRemoveDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
+  static get is() {
+    return 'password-remove-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The password whose copies are to be removed.
-     * @type {!MultiStorePasswordUiEntry}
-     */
-    duplicatedPassword: Object,
+  static get properties() {
+    return {
+      /**
+       * The password whose copies are to be removed.
+       * @type {!MultiStorePasswordUiEntry}
+       */
+      duplicatedPassword: Object,
 
-    /** @private */
-    removeFromAccountChecked_: {
-      type: Boolean,
-      // Both checkboxes are selected by default (see |removeFromDeviceChecked_|
-      // as well), since removing from both locations is the most common case.
-      value: true,
-    },
+      /** @private */
+      removeFromAccountChecked_: {
+        type: Boolean,
+        // Both checkboxes are selected by default (see
+        // |removeFromDeviceChecked_| as well), since removing from both
+        // locations is the most common case.
+        value: true,
+      },
 
-    /** @private */
-    removeFromDeviceChecked_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private */
+      removeFromDeviceChecked_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    accountEmail_: {
-      type: String,
-      value: '',
-    },
-  },
+      /** @private */
+      accountEmail_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // At creation time, the password should exist in both locations.
     assert(
         this.duplicatedPassword.isPresentInAccount() &&
@@ -81,7 +97,7 @@ Polymer({
         this.accountEmail_ = accounts[0].email;
       }
     });
-  },
+  }
 
   /** @private */
   onRemoveButtonClick_() {
@@ -96,16 +112,21 @@ Polymer({
     PasswordManagerImpl.getInstance().removeSavedPasswords(idsToRemove);
 
     this.$.dialog.close();
-    this.fire('password-remove-dialog-passwords-removed', {
-      removedFromAccount: this.removeFromAccountChecked_,
-      removedFromDevice: this.removeFromDeviceChecked_
-    });
-  },
+    this.dispatchEvent(
+        new CustomEvent('password-remove-dialog-passwords-removed', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            removedFromAccount: this.removeFromAccountChecked_,
+            removedFromDevice: this.removeFromDeviceChecked_,
+          },
+        }));
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @private
@@ -113,7 +134,7 @@ Polymer({
    */
   shouldDisableRemoveButton_() {
     return !this.removeFromAccountChecked_ && !this.removeFromDeviceChecked_;
-  },
+  }
 
   /**
    * @private
@@ -123,5 +144,8 @@ Polymer({
     return this.i18nAdvanced(
         'passwordRemoveDialogBody',
         {substitutions: [this.duplicatedPassword.urls.shown], tags: ['b']});
-  },
-});
+  }
+}
+
+customElements.define(
+    PasswordRemoveDialogElement.is, PasswordRemoveDialogElement);

@@ -7,36 +7,58 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../i18n_setup.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
-Polymer({
-  is: 'settings-password-remove-confirmation-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsPasswordRemoveConfirmationDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class SettingsPasswordRemoveConfirmationDialogElement extends
+    SettingsPasswordRemoveConfirmationDialogElementBase {
+  static get is() {
+    return 'settings-password-remove-confirmation-dialog';
+  }
 
-  properties: {
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The password that is being displayed.
+       * @private {?PasswordManagerProxy.InsecureCredential}
+       */
+      item: Object,
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * The password that is being displayed.
-     * @private {?PasswordManagerProxy.InsecureCredential}
+     * @private {?PasswordManagerProxy}
      */
-    item: Object,
-
-  },
-
-  /** @private {PasswordManagerProxy} */
-  passwordManager_: null,
+    this.passwordManager_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Set the manager. These can be overridden by tests.
     this.passwordManager_ = PasswordManagerImpl.getInstance();
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onRemoveClick_() {
@@ -44,12 +66,12 @@ Polymer({
         PasswordManagerProxy.PasswordCheckInteraction.REMOVE_PASSWORD);
     this.passwordManager_.removeInsecureCredential(assert(this.item));
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onCancelClick_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @private
@@ -58,7 +80,7 @@ Polymer({
   hasSecureChangePasswordUrl_() {
     const url = this.item.changePasswordUrl;
     return !!url && (url.startsWith('https://') || url.startsWith('chrome://'));
-  },
+  }
 
   /**
    * Returns the remove password description with a linkified change password
@@ -78,7 +100,7 @@ Polymer({
           substitutions:
               [origin, `<a href='${url}' target='_blank'>${origin}</a>`],
         });
-  },
+  }
 
   /**
    * Returns the remove password description as a plain text.
@@ -90,5 +112,9 @@ Polymer({
     const origin = this.item.formattedOrigin;
     return this.i18n(
         'removeCompromisedPasswordConfirmationDescription', origin, origin);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsPasswordRemoveConfirmationDialogElement.is,
+    SettingsPasswordRemoveConfirmationDialogElement);
