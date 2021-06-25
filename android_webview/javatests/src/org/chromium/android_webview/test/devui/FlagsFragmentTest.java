@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -371,9 +372,114 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    public void testTogglingFlagShowsBlueDot() throws Throwable {
+    /**
+     * Verify if the baseFeature flag contains only "Default", "Enabled" , "Disabled" states.
+     */
+    public void testFlagStates_baseFeature() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+
+        int firstBaseFeaturePosition = -1;
+        for (int i = 1; i < flagsList.getCount(); i++) {
+            if (((Flag) flagsList.getAdapter().getItem(i)).isBaseFeature()) {
+                firstBaseFeaturePosition = i;
+                break;
+            }
+        }
+        Assert.assertNotEquals("Flags list should have at least one base feature flag", -1,
+                firstBaseFeaturePosition);
+
+        testFlagStatesHelper(firstBaseFeaturePosition);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    /**
+     * Verify if the commandline flag contains only "Default", "Enabled" states.
+     */
+    public void testFlagStates_commandLineFlag() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+
+        int firstCommandLineFlagPosition = -1;
+        for (int i = 1; i < flagsList.getCount(); i++) {
+            if (!((Flag) flagsList.getAdapter().getItem(i)).isBaseFeature()) {
+                firstCommandLineFlagPosition = i;
+                break;
+            }
+        }
+        Assert.assertNotEquals("Flags list should have at least one commandline flag", -1,
+                firstCommandLineFlagPosition);
+
+        testFlagStatesHelper(firstCommandLineFlagPosition);
+    }
+
+    /**
+     * Helper method to verify that flag only contains the appropriate states
+     */
+    private void testFlagStatesHelper(int flagPosition) {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+        Flag flag = (Flag) flagsList.getAdapter().getItem(flagPosition);
         DataInteraction flagInteraction =
-                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1);
+                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(flagPosition);
+
+        // click open the spinner containing the states of the commandline flag
+        flagInteraction.onChildView(withId(R.id.flag_toggle)).perform(click());
+
+        // assert that the flag contains only the two states
+        onView(withText("Default")).check(matches(isDisplayed()));
+        onView(withText("Enabled")).check(matches(isDisplayed()));
+
+        if (flag.isBaseFeature()) {
+            onView(withText("Disabled")).check(matches(isDisplayed()));
+        } else {
+            onView(withText("Disabled")).check(doesNotExist());
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testTogglingFlagShowsBlueDot_baseFeature() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+
+        int firstBaseFeaturePosition = -1;
+        for (int i = 1; i < flagsList.getCount(); i++) {
+            if (((Flag) flagsList.getAdapter().getItem(i)).isBaseFeature()) {
+                firstBaseFeaturePosition = i;
+                break;
+            }
+        }
+        Assert.assertNotEquals("Flags list should have at least one baseFeature Flag", -1,
+                firstBaseFeaturePosition);
+
+        testTogglingFlagShowsBlueDotHelper(firstBaseFeaturePosition);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testTogglingFlagShowsBlueDot_commandLineFlag() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+
+        int firstCommandLineFlagPosition = -1;
+        for (int i = 1; i < flagsList.getCount(); i++) {
+            if (!((Flag) flagsList.getAdapter().getItem(i)).isBaseFeature()) {
+                firstCommandLineFlagPosition = i;
+                break;
+            }
+        }
+        Assert.assertNotEquals("Flags list should have at least one commandline flag", -1,
+                firstCommandLineFlagPosition);
+
+        testTogglingFlagShowsBlueDotHelper(firstCommandLineFlagPosition);
+    }
+
+    private void testTogglingFlagShowsBlueDotHelper(int flagPosition) {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+        Flag flag = (Flag) flagsList.getAdapter().getItem(flagPosition);
+
+        DataInteraction flagInteraction =
+                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(flagPosition);
 
         // blue dot should be hidden by default
         flagInteraction.onChildView(withId(R.id.flag_name))
@@ -389,11 +495,12 @@ public class FlagsFragmentTest {
         flagInteraction.onChildView(withId(R.id.flag_name))
                 .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
 
-        // Test disabling flags shows a bluedot next to flag name
-        toggleFlag(flagInteraction, false);
-        flagInteraction.onChildView(withId(R.id.flag_name))
-                .check(matches(compoundDrawableVisible(CompoundDrawable.START)));
-
+        // Test disabling flags shows a bluedot next to flag name, only applies to BaseFeatures
+        if (flag.isBaseFeature()) {
+            toggleFlag(flagInteraction, false);
+            flagInteraction.onChildView(withId(R.id.flag_name))
+                    .check(matches(compoundDrawableVisible(CompoundDrawable.START)));
+        }
         // Test setting to default again hide the blue dot
         toggleFlag(flagInteraction, null);
         flagInteraction.onChildView(withId(R.id.flag_name))

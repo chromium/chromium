@@ -63,10 +63,15 @@ public class FlagsFragment extends DevUiBaseFragment {
     private static final String STATE_DEFAULT = "Default";
     private static final String STATE_ENABLED = "Enabled";
     private static final String STATE_DISABLED = "Disabled";
-    private static final String[] sFlagStates = {
+    private static final String[] sBaseFeatureStates = {
             STATE_DEFAULT,
             STATE_ENABLED,
             STATE_DISABLED,
+    };
+
+    private static final String[] sCommandLineStates = {
+            STATE_DEFAULT,
+            STATE_ENABLED,
     };
 
     private Map<String, Boolean> mOverriddenFlags = new HashMap<>();
@@ -215,13 +220,17 @@ public class FlagsFragment extends DevUiBaseFragment {
         return sortedFlags;
     }
 
-    private static int booleanToState(Boolean b) {
+    private static int booleanToBaseFeatureState(Boolean b) {
         if (b == null) {
             return /* STATE_DEFAULT */ 0;
         } else if (b) {
             return /* STATE_ENABLED */ 1;
         }
         return /* STATE_DISABLED */ 2;
+    }
+
+    private static int booleanToCommandLineState(Boolean b) {
+        return Boolean.TRUE.equals(b) ? /* STATE_ENABLED */ 1 : /* STATE_DEFAULT */ 0;
     }
 
     private class FlagStateSpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
@@ -234,19 +243,36 @@ public class FlagsFragment extends DevUiBaseFragment {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             String flagName = mFlag.getName();
-            int oldState = booleanToState(mOverriddenFlags.get(flagName));
+
+            int oldState;
+            if (mFlag.isBaseFeature()) {
+                oldState = booleanToBaseFeatureState(mOverriddenFlags.get(flagName));
+            } else {
+                oldState = booleanToCommandLineState(mOverriddenFlags.get(flagName));
+            }
             int newState = position;
 
-            switch (sFlagStates[newState]) {
-                case STATE_DEFAULT:
-                    mOverriddenFlags.remove(flagName);
-                    break;
-                case STATE_ENABLED:
-                    mOverriddenFlags.put(flagName, true);
-                    break;
-                case STATE_DISABLED:
-                    mOverriddenFlags.put(flagName, false);
-                    break;
+            if (mFlag.isBaseFeature()) {
+                switch (sBaseFeatureStates[newState]) {
+                    case STATE_DEFAULT:
+                        mOverriddenFlags.remove(flagName);
+                        break;
+                    case STATE_ENABLED:
+                        mOverriddenFlags.put(flagName, true);
+                        break;
+                    case STATE_DISABLED:
+                        mOverriddenFlags.put(flagName, false);
+                        break;
+                }
+            } else {
+                switch (sCommandLineStates[newState]) {
+                    case STATE_DEFAULT:
+                        mOverriddenFlags.remove(flagName);
+                        break;
+                    case STATE_ENABLED:
+                        mOverriddenFlags.put(flagName, true);
+                        break;
+                }
             }
 
             // Update UI and Service. Only communicate with the service if the map actually updated.
@@ -355,13 +381,23 @@ public class FlagsFragment extends DevUiBaseFragment {
             }
             flagName.setText(label);
             flagDescription.setText(flag.getDescription());
-            ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(mContext, R.layout.flag_states, sFlagStates);
+            ArrayAdapter<String> adapter;
+            if (flag.isBaseFeature()) {
+                adapter = new ArrayAdapter<>(mContext, R.layout.flag_states, sBaseFeatureStates);
+            } else {
+                adapter = new ArrayAdapter<>(mContext, R.layout.flag_states, sCommandLineStates);
+            }
             adapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
             flagToggle.setAdapter(adapter);
 
             // Populate spinner state from map and update indicators.
-            int state = booleanToState(mOverriddenFlags.get(flag.getName()));
+            int state;
+            if (flag.isBaseFeature()) {
+                state = booleanToBaseFeatureState(mOverriddenFlags.get(flag.getName()));
+            } else {
+                state = booleanToCommandLineState(mOverriddenFlags.get(flag.getName()));
+            }
+
             flagToggle.setSelection(state);
             flagToggle.setOnItemSelectedListener(new FlagStateSpinnerSelectedListener(flag));
             formatListEntry(view, state);
