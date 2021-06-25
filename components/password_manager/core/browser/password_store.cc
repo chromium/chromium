@@ -610,12 +610,8 @@ bool PasswordStore::InitOnBackgroundSequence() {
 
   if (IsPasswordReuseDetectionEnabled()) {
     reuse_detector_ = new PasswordReuseDetector;
-
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                       reuse_detector_->GetWeakPtr(), base::RetainedRef(this),
-                       GetAutofillableLoginsImpl()));
+    reuse_detector_->Init(this);
+    reuse_detector_->OnGetPasswordStoreResults(GetAutofillableLoginsImpl());
   }
   return true;
 }
@@ -676,9 +672,6 @@ void PasswordStore::NotifyLoginsChanged(
                        base::RetainedRef(this), changes);
     if (sync_bridge_)
       sync_bridge_->ActOnPasswordStoreChanges(changes);
-
-    if (reuse_detector_)
-      reuse_detector_->OnLoginsChanged(changes);
   }
 
   if (base::ranges::any_of(changes, [](const auto& change) {

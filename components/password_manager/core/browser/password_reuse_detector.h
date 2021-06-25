@@ -16,7 +16,7 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -45,17 +45,18 @@ struct MatchingReusedCredential {
 // It receives saved passwords through PasswordStoreConsumer interface.
 // It stores passwords in memory and CheckReuse() can be used for finding
 // a password reuse.
-class PasswordReuseDetector : public PasswordStoreConsumer {
+class PasswordReuseDetector : public PasswordStoreInterface::Observer {
  public:
   PasswordReuseDetector();
   ~PasswordReuseDetector() override;
 
-  // PasswordStoreConsumer
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void Init(scoped_refptr<PasswordStoreInterface> store);
 
-  // Add new or updated passwords from |changes| to internal password index.
-  void OnLoginsChanged(const PasswordStoreChangeList& changes);
+  PasswordReuseDetector(const PasswordReuseDetector&) = delete;
+  PasswordReuseDetector& operator=(const PasswordReuseDetector&) = delete;
+
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain| or to a sync password.
@@ -95,6 +96,14 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
                ReverseStringLess>;
 
   using passwords_iterator = PasswordsReusedCredentialsMap::const_iterator;
+
+  // PasswordStoreInterface::Observer
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(
+      PasswordStoreInterface* store,
+      const std::vector<PasswordForm>& retained_passwords) override;
 
   // Add password from |form| to |passwords_| and
   // |passwords_with_matching_reused_credentials_|.
@@ -141,6 +150,13 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   passwords_iterator FindNextSavedPassword(const std::u16string& input,
                                            passwords_iterator it);
 
+  // Ensures that all methods, excluding construction, are called on the same
+  // sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  scoped_refptr<PasswordStoreInterface> store_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Contains all passwords.
   // A key is a password.
   // A value is a set of pairs of signon_realms and username on which the
@@ -150,20 +166,21 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   // were not reversed, it would be needed to loop over the length of the typed
   // input and size of this map and then find the suffix (O(n*m*log(n))).
   // See https://crbug.com/668155.
-  PasswordsReusedCredentialsMap passwords_with_matching_reused_credentials_;
+  PasswordsReusedCredentialsMap passwords_with_matching_reused_credentials_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Number of passwords in |passwords_|, each password is calculated the number
   // of times how many different sites it's saved on.
-  int saved_passwords_ = 0;
+  int saved_passwords_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  absl::optional<std::vector<PasswordHashData>> gaia_password_hash_data_list_;
+  absl::optional<std::vector<PasswordHashData>> gaia_password_hash_data_list_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   absl::optional<std::vector<PasswordHashData>>
-      enterprise_password_hash_data_list_;
+      enterprise_password_hash_data_list_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  absl::optional<std::vector<GURL>> enterprise_password_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseDetector);
+  absl::optional<std::vector<GURL>> enterprise_password_urls_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace password_manager

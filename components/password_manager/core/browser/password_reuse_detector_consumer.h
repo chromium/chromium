@@ -10,10 +10,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
+
+struct MatchingReusedCredential;
 
 // Callback interface for receiving a password reuse event.
 class PasswordReuseDetectorConsumer

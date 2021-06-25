@@ -1168,6 +1168,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
     auto credentials = FillPasswordFormWithData(test_credentials);
     store->AddLogin(*credentials);
   }
+  WaitForPasswordStore();
 
   struct {
     const char16_t* input;

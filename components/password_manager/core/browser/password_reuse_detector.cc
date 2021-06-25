@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -82,31 +83,36 @@ bool MatchingReusedCredential::operator==(
          in_store == other.in_store;
 }
 
-PasswordReuseDetector::PasswordReuseDetector() = default;
+PasswordReuseDetector::PasswordReuseDetector() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-PasswordReuseDetector::~PasswordReuseDetector() = default;
+PasswordReuseDetector::~PasswordReuseDetector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (store_) {
+    store_->RemoveObserver(this);
+  }
+}
+
+void PasswordReuseDetector::Init(scoped_refptr<PasswordStoreInterface> store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(store);
+  store_ = std::move(store);
+  store_->AddObserver(this);
+}
 
 void PasswordReuseDetector::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& form : results)
     AddPassword(*form);
-}
-
-void PasswordReuseDetector::OnLoginsChanged(
-    const PasswordStoreChangeList& changes) {
-  for (const auto& change : changes) {
-    if (change.type() == PasswordStoreChange::ADD ||
-        change.type() == PasswordStoreChange::UPDATE)
-      AddPassword(change.form());
-    if (change.type() == PasswordStoreChange::REMOVE)
-      RemovePassword(change.form());
-  }
 }
 
 void PasswordReuseDetector::CheckReuse(
     const std::u16string& input,
     const std::string& domain,
     PasswordReuseDetectorConsumer* consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
   if (input.size() < kMinPasswordLengthToCheck) {
     consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, saved_passwords_);
@@ -154,6 +160,7 @@ void PasswordReuseDetector::CheckReuse(
 absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
     return absl::nullopt;
@@ -172,6 +179,7 @@ absl::optional<PasswordHashData>
 PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enterprise_password_hash_data_list_.has_value() ||
       enterprise_password_hash_data_list_->empty()) {
     return absl::nullopt;
@@ -193,6 +201,7 @@ size_t PasswordReuseDetector::CheckSavedPasswordReuse(
     const std::u16string& input,
     const std::string& domain,
     std::vector<MatchingReusedCredential>* matching_reused_credentials_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string registry_controlled_domain =
       GetRegistryControlledDomain(GURL(domain));
 
@@ -236,17 +245,20 @@ size_t PasswordReuseDetector::CheckSavedPasswordReuse(
 
 void PasswordReuseDetector::UseGaiaPasswordHash(
     absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gaia_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseNonGaiaEnterprisePasswordHash(
     absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseEnterprisePasswordURLs(
     absl::optional<std::vector<GURL>> enterprise_login_urls,
     absl::optional<GURL> enterprise_change_password_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_urls_ = std::move(enterprise_login_urls);
   if (!enterprise_change_password_url.has_value() ||
       !enterprise_change_password_url->is_valid()) {
@@ -259,24 +271,29 @@ void PasswordReuseDetector::UseEnterprisePasswordURLs(
 }
 
 void PasswordReuseDetector::ClearGaiaPasswordHash(const std::string& username) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_)
     return;
 
   base::EraseIf(*gaia_password_hash_data_list_,
                 [&username](const PasswordHashData& data) {
-                  return data.username == username;
+                  return AreUsernamesSame(username, true, data.username,
+                                          data.is_gaia_password);
                 });
 }
 
 void PasswordReuseDetector::ClearAllGaiaPasswordHash() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gaia_password_hash_data_list_.reset();
 }
 
 void PasswordReuseDetector::ClearAllEnterprisePasswordHash() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_hash_data_list_.reset();
 }
 
 void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_)
     return;
 
@@ -288,7 +305,25 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
       });
 }
 
+void PasswordReuseDetector::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* store,
+    const password_manager::PasswordStoreChangeList& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& change : changes) {
+    if (change.type() == PasswordStoreChange::ADD ||
+        change.type() == PasswordStoreChange::UPDATE)
+      AddPassword(change.form());
+    if (change.type() == PasswordStoreChange::REMOVE)
+      RemovePassword(change.form());
+  }
+}
+
+void PasswordReuseDetector::OnLoginsRetained(
+    PasswordStoreInterface* store,
+    const std::vector<PasswordForm>& retained_passwords) {}
+
 void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (form.password_value.size() < kMinPasswordLengthToCheck)
     return;
 
@@ -301,6 +336,7 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
 }
 
 void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (form.password_value.size() < kMinPasswordLengthToCheck)
     return;
 
@@ -335,6 +371,7 @@ void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
 
 PasswordReuseDetector::passwords_iterator
 PasswordReuseDetector::FindFirstSavedPassword(const std::u16string& input) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Keys in |passwords_with_matching_reused_credentials_| are ordered by
   // lexicographical order of reversed strings. In order to check a password
   // reuse a key of |passwords_with_matching_reused_credentials_| that is a
@@ -361,6 +398,7 @@ PasswordReuseDetector::passwords_iterator
 PasswordReuseDetector::FindNextSavedPassword(
     const std::u16string& input,
     PasswordReuseDetector::passwords_iterator it) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (it == passwords_with_matching_reused_credentials_.begin())
     return passwords_with_matching_reused_credentials_.end();
   --it;
