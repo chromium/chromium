@@ -33,6 +33,7 @@
 using device::mojom::UsbDeviceInfoPtr;
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::NiceMock;
 
 namespace {
 
@@ -84,7 +85,7 @@ class UsbChooserContextTest : public testing::Test {
   device::FakeUsbDeviceManager device_manager_;
 
   // Mock observers
-  permissions::MockPermissionObserver mock_permission_observer_;
+  NiceMock<permissions::MockPermissionObserver> mock_permission_observer_;
   MockDeviceObserver mock_device_observer_;
 
  private:

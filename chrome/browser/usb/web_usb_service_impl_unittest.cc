@@ -40,6 +40,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::_;
+using ::testing::NiceMock;
 
 using blink::mojom::WebUsbService;
 using device::FakeUsbDeviceInfo;
@@ -63,7 +64,9 @@ ACTION_P2(ExpectGuidAndThen, expected_guid, callback) {
 
 class WebUsbServiceImplTest : public ChromeRenderViewHostTestHarness {
  public:
-  WebUsbServiceImplTest() {}
+  WebUsbServiceImplTest() = default;
+  WebUsbServiceImplTest(const WebUsbServiceImplTest&) = delete;
+  WebUsbServiceImplTest& operator=(const WebUsbServiceImplTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -101,7 +104,6 @@ class WebUsbServiceImplTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<device::FakeUsbDeviceManager> device_manager_;
-  DISALLOW_COPY_AND_ASSIGN(WebUsbServiceImplTest);
 };
 
 class MockDeviceManagerClient : public UsbDeviceManagerClient {
@@ -182,7 +184,7 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
 
   mojo::Remote<WebUsbService> web_usb_service;
   ConnectToService(web_usb_service.BindNewPipeAndPassReceiver());
-  MockDeviceManagerClient mock_client;
+  NiceMock<MockDeviceManagerClient> mock_client;
   web_usb_service->SetClient(mock_client.CreateInterfacePtrAndBind());
 
   // Call GetDevices once to make sure the WebUsbService is up and running
