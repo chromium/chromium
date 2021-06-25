@@ -12,8 +12,6 @@ namespace network_diagnostics {
 
 namespace {
 
-constexpr char kInitialTitle[] = "";
-constexpr char kTitle[] = "test_title";
 constexpr mojom::RoutineVerdict kInitialVerdict =
     mojom::RoutineVerdict::kNotRun;
 constexpr mojom::RoutineVerdict kVerdict = mojom::RoutineVerdict::kNoProblem;
@@ -45,12 +43,6 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
     return test_network_diagnostics_routine_.get();
   }
 
-  std::string title() { return test_network_diagnostics_routine()->title(); }
-
-  void set_title(std::string title) {
-    test_network_diagnostics_routine()->set_title(title);
-  }
-
   mojom::RoutineVerdict verdict() {
     return test_network_diagnostics_routine()->verdict();
   }
@@ -63,12 +55,6 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
   std::unique_ptr<TestNetworkDiagnosticsRoutine>
       test_network_diagnostics_routine_;
 };
-
-TEST_F(NetworkDiagnosticsRoutineTest, TestTitleFunctionality) {
-  EXPECT_EQ(title(), kInitialTitle);
-  set_title(kTitle);
-  EXPECT_EQ(title(), kTitle);
-}
 
 TEST_F(NetworkDiagnosticsRoutineTest, TestVerdictFunctionality) {
   EXPECT_EQ(verdict(), kInitialVerdict);

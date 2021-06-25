@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_
 
-#include <string>
-#include <utility>
-
 #include "base/bind.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 
@@ -18,15 +15,6 @@ namespace network_diagnostics {
 // expected to be implemented by every network diagnostics routine.
 class NetworkDiagnosticsRoutine {
  public:
-  // Structure of a routine's result.
-  struct RoutineResult {
-    RoutineResult() : routine_verdict(mojom::RoutineVerdict::kNotRun) {}
-    ~RoutineResult() {}
-
-    mojom::RoutineVerdict routine_verdict;
-    std::string title;
-  };
-
   NetworkDiagnosticsRoutine();
   NetworkDiagnosticsRoutine(const NetworkDiagnosticsRoutine&) = delete;
   NetworkDiagnosticsRoutine& operator=(const NetworkDiagnosticsRoutine&) =
@@ -40,17 +28,13 @@ class NetworkDiagnosticsRoutine {
   virtual void AnalyzeResultsAndExecuteCallback() = 0;
 
  protected:
-  void set_title(const std::string& title) { routine_result_.title = title; }
-  const std::string& title() const { return routine_result_.title; }
   void set_verdict(mojom::RoutineVerdict routine_verdict) {
-    routine_result_.routine_verdict = routine_verdict;
+    verdict_ = routine_verdict;
   }
-  mojom::RoutineVerdict verdict() const {
-    return routine_result_.routine_verdict;
-  }
+  mojom::RoutineVerdict verdict() const { return verdict_; }
 
  private:
-  RoutineResult routine_result_;
+  mojom::RoutineVerdict verdict_ = mojom::RoutineVerdict::kNotRun;
   friend class NetworkDiagnosticsRoutineTest;
 };
 
