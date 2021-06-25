@@ -39,6 +39,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -1099,8 +1100,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeSessionState.setIsInMultiWindowMode(
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
 
+        if (BuildInfo.isAtLeastS()) {
+            ensurePictureInPictureController();
+        }
         if (mPictureInPictureController != null) {
-            mPictureInPictureController.cleanup();
+            mPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
         VrModuleProvider.getDelegate().maybeRegisterVrEntryHook(this);
 
@@ -1143,7 +1147,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mLastPictureInPictureModeForTesting = true;
         } else if (mPictureInPictureController != null) {
             mLastPictureInPictureModeForTesting = false;
-            mPictureInPictureController.cleanup();
+            mPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
     }
 
@@ -1197,7 +1201,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mPictureInPictureController != null) {
-            mPictureInPictureController.cleanup();
+            mPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
 
         super.onNewIntentWithNative(intent);

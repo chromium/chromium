@@ -185,6 +185,18 @@ public abstract class WebContentsObserver {
     public void didChangeThemeColor() {}
 
     /**
+     * Called when media started playing.  Unlike the native version, this does not identify which
+     * player because we don't have a type for it, but nothing currently needs it anyway.
+     */
+    public void mediaStartedPlaying() {}
+
+    /**
+     * Called when media stopped playing.  Unlike the native version, this does not identify which
+     * player because we don't have a type for it, but nothing currently needs it anyway.
+     */
+    public void mediaStoppedPlaying() {}
+
+    /**
      * Called when Media in the Web Contents leaves or enters fullscreen mode.
      * @param isFullscreen whether fullscreen is being entered or left.
      */

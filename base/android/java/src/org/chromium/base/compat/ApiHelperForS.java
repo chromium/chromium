@@ -5,6 +5,7 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
+import android.app.PictureInPictureParams;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.pm.PackageManager;
@@ -82,5 +83,20 @@ public final class ApiHelperForS {
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                        "android.permission.BLUETOOTH_CONNECT", Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * See {@link android.app.PictureInPictureParams.Builder#setAutoEnterEnabled(boolean)}
+     */
+    public static void setAutoEnterEnabled(
+            PictureInPictureParams.Builder builder, boolean enabled) {
+        try {
+            Method setAutoEnterEnabledMethod =
+                    PictureInPictureParams.Builder.class.getDeclaredMethod(
+                            "setAutoEnterEnabled", boolean.class);
+            setAutoEnterEnabledMethod.invoke(builder, enabled);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            Log.e(TAG, "Failed to invoke PictureInPictureParams.Builder#setAutoEnterEnabled() ", e);
+        }
     }
 }

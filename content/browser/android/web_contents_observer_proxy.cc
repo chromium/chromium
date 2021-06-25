@@ -225,6 +225,21 @@ void WebContentsObserverProxy::DidChangeThemeColor() {
   Java_WebContentsObserverProxy_didChangeThemeColor(env, java_observer_);
 }
 
+void WebContentsObserverProxy::MediaStartedPlaying(
+    const MediaPlayerInfo& video_type,
+    const MediaPlayerId& id) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_mediaStartedPlaying(env, java_observer_);
+}
+
+void WebContentsObserverProxy::MediaStoppedPlaying(
+    const MediaPlayerInfo& video_type,
+    const MediaPlayerId& id,
+    WebContentsObserver::MediaStoppedReason reason) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_mediaStoppedPlaying(env, java_observer_);
+}
+
 void WebContentsObserverProxy::MediaEffectivelyFullscreenChanged(
     bool is_fullscreen) {
   JNIEnv* env = AttachCurrentThread();

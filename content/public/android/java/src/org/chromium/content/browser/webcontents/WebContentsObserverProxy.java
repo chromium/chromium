@@ -278,6 +278,22 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void mediaStartedPlaying() {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().mediaStartedPlaying();
+        }
+    }
+
+    @Override
+    @CalledByNative
+    public void mediaStoppedPlaying() {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().mediaStoppedPlaying();
+        }
+    }
+
+    @Override
+    @CalledByNative
     public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().hasEffectivelyFullscreenVideoChange(isFullscreen);
