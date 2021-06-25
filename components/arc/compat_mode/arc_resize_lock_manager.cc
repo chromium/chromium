@@ -86,6 +86,8 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   if (window->GetProperty(ash::kAppIDKey) == nullptr)
     return;
 
+  UpdateCompatModeButton(window);
+
   const ash::ArcResizeLockType current_resize_lock_value =
       window->GetProperty(ash::kArcResizeLockTypeKey);
   const bool resize_lock_changed =
@@ -134,7 +136,6 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     is_first_launch = true;
   }
 
-  UpdateCompatModeButton(window);
   // Show lock shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->ShowShadow(window);
@@ -150,7 +151,6 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
-  UpdateCompatModeButton(window);
   // Hide shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
