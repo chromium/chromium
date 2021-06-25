@@ -861,6 +861,8 @@ bool GpuProcessHost::Init() {
 
   TRACE_EVENT_INSTANT0("gpu", "LaunchGpuProcess", TRACE_EVENT_SCOPE_THREAD);
 
+  process_->GetHost()->CreateChannelMojo();
+
   mode_ = GpuDataManagerImpl::GetInstance()->GetGpuMode();
 
   if (in_process_) {
