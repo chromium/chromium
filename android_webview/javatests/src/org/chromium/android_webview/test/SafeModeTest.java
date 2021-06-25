@@ -71,6 +71,8 @@ public class SafeModeTest {
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
             (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
+    private static final String SAFEMODE_ACTION_NAME = "some_action_name";
+
     private AtomicInteger mTestSafeModeActionExecutionCounter;
 
     @Rule
@@ -126,7 +128,7 @@ public class SafeModeTest {
         try (ServiceConnectionHelper helper =
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList("some_action_name"));
+            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
         }
 
         Assert.assertTrue("SafeMode should be enabled",
@@ -141,7 +143,7 @@ public class SafeModeTest {
         try (ServiceConnectionHelper helper =
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList("some_action_name"));
+            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
         }
 
         Assert.assertTrue("SafeMode should be enabled",
@@ -182,6 +184,25 @@ public class SafeModeTest {
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
         Assert.assertEquals("Querying the ContentProvider should yield the action we set",
                 asSet(variationsActionId),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_multipleActions() throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        final String variationsActionId = new VariationsSeedSafeModeAction().getId();
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME, variationsActionId));
+        }
+
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertEquals("Querying the ContentProvider should yield the action we set",
+                asSet(SAFEMODE_ACTION_NAME, variationsActionId),
                 SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
     }
 

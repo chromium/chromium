@@ -32,6 +32,7 @@ import org.chromium.base.compat.ApiHelperForP;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +48,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public final class SafeModeService extends Service {
     private static final String TAG = "WebViewSafeMode";
+    private static final String SAFEMODE_ACTIONS_KEY = "SAFEMODE_ACTIONS";
 
     private static final Object sLock = new Object();
 
@@ -243,8 +245,8 @@ public final class SafeModeService extends Service {
             long currentTime = sClock.currentTimeMillis();
             editor.putLong(LAST_MODIFIED_TIME_KEY, currentTime);
 
-            // TODO(ntfschr): persist the list of actions once we figure out the right
-            // representation on disk.
+            Set<String> actionsToPersist = new HashSet<>(actions);
+            editor.putStringSet(SAFEMODE_ACTIONS_KEY, actionsToPersist);
         } else {
             editor.clear();
         }
@@ -278,9 +280,7 @@ public final class SafeModeService extends Service {
         }
     }
 
-    // This must match the constant in VariationsSeedSafeModeAction.java
-    private static final String VARIATIONS_SAFEMODEACTION_ID = "delete_variations_seed";
-
+    @NonNull
     public static Set<String> getSafeModeConfig() {
         synchronized (sLock) {
             final Context context = ContextUtils.getApplicationContext();
@@ -291,10 +291,11 @@ public final class SafeModeService extends Service {
                 setSafeMode(Arrays.asList());
                 return new HashSet<>();
             }
-            // TODO(ntfschr): fetch the list of actions from disk once we figure out the right
-            // representation on disk. At that point, we can delete the VARIATIONS_SAFEMODEACTION_ID
-            // constant in this class since there's no more benefit to hardcoding actions.
-            return new HashSet<>(Arrays.asList(VARIATIONS_SAFEMODEACTION_ID));
+
+            // Returning an empty Set in the absence of persisted actions ensures the caller
+            // doesn't crash when iterating over the return value.
+            return getSharedPreferences().getStringSet(
+                    SAFEMODE_ACTIONS_KEY, Collections.emptySet());
         }
     }
 
