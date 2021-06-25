@@ -103,6 +103,20 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
           file_data};
 }
 
+bool IsZipFile(const base::FilePath::StringType& extension,
+               const std::string& mime_type) {
+  return extension == FILE_PATH_LITERAL(".zip") ||
+         mime_type == "application/x-zip-compressed" ||
+         mime_type == "application/zip";
+}
+
+bool IsRarFile(const base::FilePath::StringType& extension,
+               const std::string& mime_type) {
+  return extension == FILE_PATH_LITERAL(".rar") ||
+         mime_type == "application/vnd.rar" ||
+         mime_type == "application/x-rar-compressed";
+}
+
 }  // namespace
 
 FileAnalysisRequest::FileAnalysisRequest(
@@ -175,9 +189,10 @@ void FileAnalysisRequest::OnGotFileData(
     return;
   }
 
-  if (!FileSupportedByDlp(cached_data_.mime_type.empty()
-                              ? result_and_data.second.mime_type
-                              : cached_data_.mime_type)) {
+  const std::string& mime_type = cached_data_.mime_type.empty()
+                                     ? result_and_data.second.mime_type
+                                     : cached_data_.mime_type;
+  if (!FileSupportedByDlp(mime_type)) {
     // Abort the request early if settings say to block unsupported types or if
     // there was no malware request to be done, otherwise proceed with the
     // malware request only.
@@ -194,7 +209,7 @@ void FileAnalysisRequest::OnGotFileData(
 
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
-  if (ext == FILE_PATH_LITERAL(".zip")) {
+  if (IsZipFile(ext, mime_type)) {
     auto analyzer = base::MakeRefCounted<SandboxedZipAnalyzer>(
         path_,
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
@@ -202,7 +217,7 @@ void FileAnalysisRequest::OnGotFileData(
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
     analyzer->Start();
-  } else if (ext == FILE_PATH_LITERAL(".rar")) {
+  } else if (IsRarFile(ext, mime_type)) {
     auto analyzer = base::MakeRefCounted<SandboxedRarAnalyzer>(
         path_,
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,

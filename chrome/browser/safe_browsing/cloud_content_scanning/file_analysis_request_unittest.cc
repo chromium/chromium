@@ -349,7 +349,21 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
   EXPECT_EQ(sync_data.mime_type, async_data.mime_type);
 }
 
-TEST_F(FileAnalysisRequestTest, Encrypted) {
+// Class used to validate that an archive file is correctly detected and checked
+// for encryption, even without a .zip/.rar extension.
+class FileAnalysisRequestZipTest
+    : public FileAnalysisRequestTest,
+      public testing::WithParamInterface<const char*> {
+ public:
+  const char* file_name() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FileAnalysisRequestZipTest,
+                         testing::Values("encrypted.zip",
+                                         "encrypted_zip_no_extension"));
+
+TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   content::BrowserTaskEnvironment browser_task_environment;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
   base::ScopedTempDir temp_dir;
@@ -359,7 +373,7 @@ TEST_F(FileAnalysisRequestTest, Encrypted) {
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
   test_zip = test_zip.AppendASCII("safe_browsing")
                  .AppendASCII("download_protection")
-                 .AppendASCII("encrypted.zip");
+                 .AppendASCII(file_name());
 
   auto request = MakeRequest(/*block_unsupported_types=*/false, test_zip,
                              test_zip.BaseName());
@@ -380,11 +394,14 @@ TEST_F(FileAnalysisRequestTest, Encrypted) {
   run_loop.Run();
 
   ASSERT_TRUE(called);
+
+  // encrypted_zip_no_extension is a copy of encrypted.zip, so the same
+  // assertions hold and the same commands can be used to get its size/hash.
   EXPECT_EQ(result, BinaryUploadService::Result::FILE_ENCRYPTED);
-  // du chrome/test/data/safe_browsing/download_protection -b
+  // du chrome/test/data/safe_browsing/download_protection/<file> -b
   EXPECT_EQ(data.size, 20015u);
-  // sha256sum < chrome/test/data/safe_browsing/download_protection/\
-  // encrypted.zip |  tr '[:lower:]' '[:upper:]'
+  // sha256sum < chrome/test/data/safe_browsing/download_protection/<file> \
+  // |  tr '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A");
   EXPECT_EQ(request->digest(), data.hash);
