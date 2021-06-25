@@ -32,9 +32,9 @@ const wchar_t kD3DCompiler[] = L"D3DCompiler_47.dll";
 bool LoadD3DXLibrary(const base::FilePath& module_path,
                      const base::FilePath::StringType& name) {
   base::NativeLibrary library =
-      base::LoadNativeLibrary(base::FilePath(name), nullptr);
+      base::LoadNativeLibrary(module_path.Append(name), nullptr);
   if (!library) {
-    library = base::LoadNativeLibrary(module_path.Append(name), nullptr);
+    library = base::LoadNativeLibrary(base::FilePath(name), nullptr);
     if (!library) {
       DVLOG(1) << name << " not found.";
       return false;
@@ -48,10 +48,9 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
     return false;
 
-  // Attempt to load the D3DX shader compiler using the default search path
-  // and if that fails, using an absolute path. This is to ensure these DLLs
-  // are loaded before ANGLE is loaded in case they are not in the default
-  // search path.
+  // Attempt to load the D3DX shader compiler using an absolute path. This is to
+  // ensure that we load the versions of these DLLs that we ship. If that fails,
+  // load the OS version.
   LoadD3DXLibrary(module_path, kD3DCompiler);
 
   base::FilePath gles_path;
