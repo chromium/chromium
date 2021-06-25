@@ -23,10 +23,29 @@ message ShareTarget {
           //   c-5.5,0-9.3,3.4-9.3,9.6v5.3h-6.3v7.2h6.3V48h7.5V29.4H39.4z'/>
           // </g>"
 }
+
 message ShareTargets {
   repeated ShareTarget targets = 1;  // Share targets for the above locale
 }
+
 message MapLocaleTargets {
   map<string, ShareTargets> map_target_locale_map = 1;
   uint32 version_id = 2;
+}
+
+// Intermediary types to store targets per locale for build time.
+
+message TmpShareTargetMap {
+  map<string, ShareTarget> all_targets = 1;
+}
+
+message ShareTargetLocalesForParsing {
+  repeated string targets = 1;
+  repeated string locale_keys = 2;
+}
+
+message TargetLocalesForParsing {
+  repeated ShareTarget targets = 1;
+  repeated ShareTargetLocalesForParsing locale_mapping = 2;
+  uint32 version_id = 3;
 }

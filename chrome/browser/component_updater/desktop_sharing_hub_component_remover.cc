@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/sth_set_component_remover.h"
+#include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -12,12 +12,12 @@
 
 namespace component_updater {
 
-void DeleteLegacySTHSet(const base::FilePath& user_data_dir) {
+void DeleteDesktopSharingHub(const base::FilePath& user_data_dir) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           &DeleteFilesAndParentDirectory,
-          user_data_dir.Append(FILE_PATH_LITERAL("CertificateTransparency"))));
+          user_data_dir.Append(FILE_PATH_LITERAL("DesktopSharingHub"))));
 }
 
 }  // namespace component_updater

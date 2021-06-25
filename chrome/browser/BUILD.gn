@@ -316,8 +316,6 @@ static_library("browser") {
     "component_updater/crl_set_component_installer.h",
     "component_updater/crowd_deny_component_installer.cc",
     "component_updater/crowd_deny_component_installer.h",
-    "component_updater/desktop_sharing_hub_component_installer.cc",
-    "component_updater/desktop_sharing_hub_component_installer.h",
     "component_updater/file_type_policies_component_installer.cc",
     "component_updater/file_type_policies_component_installer.h",
     "component_updater/first_party_sets_component_installer.cc",
@@ -1931,7 +1929,6 @@ static_library("browser") {
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/search/drive:mojo_bindings",
     "//chrome/browser/search/task_module:mojo_bindings",
-    "//chrome/browser/share/core:core",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/sharing/proto",
     "//chrome/browser/signin:identity_manager_provider",
@@ -2945,6 +2942,8 @@ static_library("browser") {
       "commerce/commerce_feature_list.cc",
       "commerce/commerce_feature_list.h",
       "commerce/merchant_viewer/web_contents_helper.cc",
+      "component_updater/desktop_sharing_hub_component_remover.cc",
+      "component_updater/desktop_sharing_hub_component_remover.h",
       "content_creation/notes/internal/android/note_service_bridge_factory.cc",
       "content_creation/notes/internal/note_service_factory.cc",
       "content_creation/notes/internal/note_service_factory.h",
@@ -3494,6 +3493,8 @@ static_library("browser") {
       "certificate_viewer.h",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
+      "component_updater/desktop_sharing_hub_component_installer.cc",
+      "component_updater/desktop_sharing_hub_component_installer.h",
       "component_updater/intervention_policy_database_component_installer.cc",
       "component_updater/intervention_policy_database_component_installer.h",
       "component_updater/soda_component_installer.cc",
@@ -4222,6 +4223,7 @@ static_library("browser") {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/resources:component_extension_resources",
+      "//chrome/browser/share/core:core",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/web_applications/components",
@@ -6772,6 +6774,10 @@ grit("resources") {
   if (is_android) {
     deps +=
         [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js" ]
+  }
+  if (!is_android) {
+    deps +=
+        [ "//chrome/browser/share/core/resources:make_share_targets_protobuf" ]
   }
   if (is_chromeos_ash) {
     deps += [

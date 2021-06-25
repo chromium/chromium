@@ -11,7 +11,9 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
+#include "chrome/grit/browser_resources.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace sharing {
 
@@ -25,7 +27,7 @@ struct ShareTargetsSingletonTrait
     : public base::DefaultSingletonTraits<ShareTargets> {
   static ShareTargets* New() {
     ShareTargets* instance = new ShareTargets();
-    // TODO PopulateFromResourceBundle
+    instance->PopulateFromResourceBundle();
     return instance;
   }
 };
@@ -46,7 +48,6 @@ ShareTargets::~ShareTargets() {
 void ShareTargets::RecordUpdateMetrics(UpdateResult result,
                                        const std::string& src_name) {
   lock_.AssertAcquired();
-
   // TODO record histograms
 }
 
@@ -54,6 +55,16 @@ void ShareTargets::PopulateFromDynamicUpdate(const std::string& binary_pb) {
   AutoLock lock(lock_);
   UpdateResult result = PopulateFromBinaryPb(binary_pb);
   RecordUpdateMetrics(result, "DynamicUpdate");
+}
+
+void ShareTargets::PopulateFromResourceBundle() {
+  AutoLock lock(lock_);
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  std::string binary_pb =
+      bundle.LoadDataResourceString(IDR_DESKTOP_SHARING_HUB_PB);
+  UpdateResult result = PopulateFromBinaryPb(binary_pb);
+  RecordUpdateMetrics(result, "ResourceBundle");
 }
 
 ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(

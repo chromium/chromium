@@ -1,0 +1,126 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+##
+## Top level settings
+##
+version_id: 1
+
+##
+## Share Targets
+##
+targets {
+  nickname: "mail"
+  url: "mailto:?subject=%(escaped_subject)&body=%(escaped_url)"
+}
+
+targets {
+ nickname: "reddit"
+ url: "http://reddit.com/submit?url=%(escaped_url)s&title=%(escaped_title)s"
+}
+
+targets {
+    nickname:"whatsapp"
+    url:"https://web.whatsapp.com/send?text=%(escpaed_url)"
+}
+
+targets {
+    nickname:"facebook"
+    url:"http://www.facebook.com/dialog/share?app_id=87741124305&href=%(escaped_url)s&"
+}
+
+targets {
+    nickname:"linkedin"
+    url:"http://www.linkedin.com/shareArticle?url=%(escaped_url)s&title=%(escaped_title)s&summary=%(escaped_description)s"
+}
+
+targets {
+    nickname:"pinterest"
+    url:"http://pinterest.com/pin/create/button/?url=%(escaped_url)s&description=%(escaped_title)s"
+}
+
+targets {
+    nickname:"twitter"
+    url:"https://twitter.com/intent/tweet?url=%(escaped_shortened_url)s&text=%(escaped_title)s"
+}
+
+targets {
+    nickname:"vkontakte"
+    url:"http://vkontakte.ru/share.php?url=%(escaped_url)s"
+}
+
+## Temporary versions of the sharing targets per locale.
+
+locale_mapping {
+    locale_keys:"US"
+    locale_keys:"CA"
+    targets:"mail"
+    targets:"facebook"
+    targets:"twitter"
+    targets:"reddit"
+    targets:"linkedin"
+    targets:"pinterest"
+}
+
+locale_mapping {
+    locale_keys: "JP"
+    locale_keys: "KR"
+    targets:"mail"
+    targets:"twitter"
+    targets:"facebook"
+}
+
+locale_mapping{
+    locale_keys:"IN"
+    targets:"mail"
+    targets:"whatsapp"
+    targets:"facebook"
+    targets:"linkedin"
+    targets:"twitter"
+}
+
+locale_mapping{
+    locale_keys: "BR"
+    targets:"mail"
+    targets:"facebook"
+    targets:"whatsapp"
+    targets:"linkedin"
+    targets:"twitter"
+}
+
+locale_mapping{
+    locale_keys: "GB"
+    targets:"mail"
+    targets:"facebook"
+    targets:"twitter"
+    targets:"linkedin"
+    targets:"whatsapp"
+}
+
+locale_mapping{
+    locale_keys: "FR"
+    targets:"mail"
+    targets:"facebook"
+    targets:"twitter"
+    targets:"linkedin"
+
+}
+locale_mapping{
+    locale_keys: "RU"
+    targets:"mail"
+    targets:"vkontakte"
+    targets:"facebook"
+    targets:"whatsapp"
+    targets:"twitter"
+    targets:"linkedin"
+}
+
+locale_mapping{
+    locale_keys: "GLOBAL"
+    targets:"mail"
+    targets:"facebook"
+    targets:"whatsapp"
+    targets:"twitter"
+    targets:"linkedin";
+}

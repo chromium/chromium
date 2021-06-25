@@ -50,6 +50,11 @@ class ShareTargets {
   // only if it passes integrity checks.
   UpdateResult PopulateFromBinaryPb(const std::string& binary_pb);
 
+  // Read data from the main ResourceBundle. This updates the internal list
+  // only if the data passes integrity checks. This is normally called once
+  // after construction.
+  void PopulateFromResourceBundle();
+
   // Record the result of an update attempt.
   void RecordUpdateMetrics(UpdateResult result, const std::string& src_name);
 

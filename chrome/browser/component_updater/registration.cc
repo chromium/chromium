@@ -18,7 +18,6 @@
 #include "chrome/browser/component_updater/client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
-#include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/floc_component_installer.h"
@@ -56,12 +55,17 @@
 #include "chrome/browser/component_updater/recovery_component_installer.h"
 #endif  // defined(OS_WIN)
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
+#endif  // defined(OS_ANDROID)
+
 #if !defined(OS_ANDROID)
+#include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
-#endif
+#endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
@@ -145,10 +149,13 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
     // Chrome OS: On Chrome OS, this cleanup is delayed until user login.
     component_updater::DeleteLegacySTHSet(path);
 #endif
+#if defined(OS_ANDROID)
+    // Clean up any desktop sharing hubs that were installed on Android.
+    component_updater::DeleteDesktopSharingHub(path);
+#endif  // defined(OS_ANDROID)
   }
   RegisterSSLErrorAssistantComponent(cus);
   RegisterFileTypePoliciesComponent(cus);
-  RegisterDesktopSharingHubComponent(cus);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // CRLSetFetcher attempts to load a CRL set from either the local disk or
@@ -191,6 +198,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif
 
 #if !defined(OS_ANDROID)
+  RegisterDesktopSharingHubComponent(cus);
   RegisterZxcvbnDataComponent(cus);
 #endif  // !defined(OS_ANDROID)
 
