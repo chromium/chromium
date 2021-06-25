@@ -161,7 +161,7 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
 
 // Fills |out_result_matrix_vector| from the given skia |matrix|.
 void ColorMatrixVectorFromSkMatrix44(
-    const SkMatrix44& matrix,
+    const skia::Matrix44& matrix,
     std::vector<float>* out_result_matrix_vector) {
   DCHECK(out_result_matrix_vector);
   out_result_matrix_vector->assign(9, 0.0f);
@@ -170,13 +170,13 @@ void ColorMatrixVectorFromSkMatrix44(
   (*out_result_matrix_vector)[8] = matrix.get(2, 2);
 }
 
-SkMatrix44 SkMatrix44FromColorMatrixVector(
+skia::Matrix44 SkMatrix44FromColorMatrixVector(
     const std::vector<float>& matrix_vector) {
   if (matrix_vector.empty())
-    return SkMatrix44::I();
+    return skia::Matrix44::I();
 
   DCHECK_EQ(matrix_vector.size(), 9u);
-  SkMatrix44 matrix(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 matrix(skia::Matrix44::kUninitialized_Constructor);
   matrix.set3x3RowMajorf(matrix_vector.data());
   return matrix;
 }
@@ -218,7 +218,7 @@ DisplayColorManager::~DisplayColorManager() {
 
 bool DisplayColorManager::SetDisplayColorMatrix(
     int64_t display_id,
-    const SkMatrix44& color_matrix) {
+    const skia::Matrix44& color_matrix) {
   for (const auto* display_snapshot : configurator_->cached_displays()) {
     if (display_snapshot->display_id() != display_id)
       continue;
@@ -232,7 +232,7 @@ bool DisplayColorManager::SetDisplayColorMatrix(
 
 bool DisplayColorManager::SetDisplayColorMatrix(
     const display::DisplaySnapshot* display_snapshot,
-    const SkMatrix44& color_matrix) {
+    const skia::Matrix44& color_matrix) {
   DCHECK(display_snapshot);
   DCHECK(base::Contains(configurator_->cached_displays(), display_snapshot));
 
@@ -245,7 +245,7 @@ bool DisplayColorManager::SetDisplayColorMatrix(
   const int64_t display_id = display_snapshot->display_id();
   displays_color_matrix_map_[display_id] = color_matrix;
   const auto iter = calibration_map_.find(display_snapshot->product_code());
-  SkMatrix44 combined_matrix = color_matrix;
+  skia::Matrix44 combined_matrix = color_matrix;
   if (iter != calibration_map_.end()) {
     DCHECK(iter->second);
     combined_matrix.preConcat(
@@ -301,7 +301,7 @@ void DisplayColorManager::ApplyDisplayColorCalibration(
     const std::vector<float>* final_matrix =
         &calibration_data.correction_matrix;
     if (color_matrix_iter != displays_color_matrix_map_.end()) {
-      SkMatrix44 combined_matrix = color_matrix_iter->second;
+      skia::Matrix44 combined_matrix = color_matrix_iter->second;
       combined_matrix.preConcat(SkMatrix44FromColorMatrixVector(*final_matrix));
       ColorMatrixVectorFromSkMatrix44(combined_matrix, &matrix_buffer_);
       final_matrix = &matrix_buffer_;

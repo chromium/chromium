@@ -24,8 +24,8 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"
@@ -170,10 +170,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Downcasts to SkiaOutputSurface if it is one and returns nullptr otherwise.
   virtual SkiaOutputSurface* AsSkiaOutputSurface();
 
-  void set_color_matrix(const SkMatrix44& color_matrix) {
+  void set_color_matrix(const skia::Matrix44& color_matrix) {
     color_matrix_ = color_matrix;
   }
-  const SkMatrix44& color_matrix() const { return color_matrix_; }
+  const skia::Matrix44& color_matrix() const { return color_matrix_; }
 
   // Only useful for GPU backend.
   virtual gpu::SurfaceHandle GetSurfaceHandle() const;
@@ -303,7 +303,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 
  private:
   const Type type_;
-  SkMatrix44 color_matrix_;
+  skia::Matrix44 color_matrix_;
 
   DISALLOW_COPY_AND_ASSIGN(OutputSurface);
 };

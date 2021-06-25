@@ -26,7 +26,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
   void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
-      const SkMatrix44& output_color_matrix,
+      const skia::Matrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,

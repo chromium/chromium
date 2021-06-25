@@ -941,7 +941,7 @@ void MathUtil::AddToTracedValue(const char* name,
                                 const gfx::Transform& transform,
                                 base::trace_event::TracedValue* res) {
   res->BeginArray(name);
-  const SkMatrix44& m = transform.matrix();
+  const skia::Matrix44& m = transform.matrix();
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col)
       res->AppendDouble(m.getDouble(row, col));

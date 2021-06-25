@@ -3264,7 +3264,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
 
 void AXNodeObject::GetRelativeBounds(AXObject** out_container,
                                      FloatRect& out_bounds_in_container,
-                                     SkMatrix44& out_container_transform,
+                                     skia::Matrix44& out_container_transform,
                                      bool* clips_children) const {
   if (GetLayoutObject()) {
     AXObject::GetRelativeBounds(out_container, out_bounds_in_container,

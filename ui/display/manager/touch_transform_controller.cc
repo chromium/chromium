@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -48,12 +48,12 @@ bool GetCalibratedTransform(
 
   // Vector of the X-coordinate of display points corresponding to each of the
   // touch points.
-  SkVector4 display_points_x(
+  skia::Vector4 display_points_x(
       touch_point_pairs[0].first.x(), touch_point_pairs[1].first.x(),
       touch_point_pairs[2].first.x(), touch_point_pairs[3].first.x());
   // Vector of the Y-coordinate of display points corresponding to each of the
   // touch points.
-  SkVector4 display_points_y(
+  skia::Vector4 display_points_y(
       touch_point_pairs[0].first.y(), touch_point_pairs[1].first.y(),
       touch_point_pairs[2].first.y(), touch_point_pairs[3].first.y());
 
@@ -65,23 +65,24 @@ bool GetCalibratedTransform(
   // |xt_2  yt_2  1  0|
   // |xt_3  yt_3  1  0|
   // |xt_4  yt_4  1  0|
-  SkMatrix44 touch_point_matrix;
+  skia::Matrix44 touch_point_matrix;
   for (int row = 0; row < 4; row++) {
     touch_point_matrix.set(row, 0, touch_point_pairs[row].second.x());
     touch_point_matrix.set(row, 1, touch_point_pairs[row].second.y());
     touch_point_matrix.set(row, 2, 1);
     touch_point_matrix.set(row, 3, 0);
   }
-  SkMatrix44 touch_point_matrix_transpose(touch_point_matrix);
+  skia::Matrix44 touch_point_matrix_transpose(touch_point_matrix);
   touch_point_matrix_transpose.transpose();
 
-  SkMatrix44 product_matrix = touch_point_matrix_transpose * touch_point_matrix;
+  skia::Matrix44 product_matrix =
+      touch_point_matrix_transpose * touch_point_matrix;
 
   // Set (3, 3) = 1 so that |determinent| of the matrix is != 0 and the inverse
   // can be calculated.
   product_matrix.set(3, 3, 1);
 
-  SkMatrix44 product_matrix_inverse;
+  skia::Matrix44 product_matrix_inverse;
 
   // NOTE: If the determinent is zero then the inverse cannot be computed. The
   // only solution is to restart touch calibration and get new points from user.
@@ -96,10 +97,10 @@ bool GetCalibratedTransform(
 
   // Constants [A, B, C, 0] used to calibrate the x-coordinate of touch input.
   // x_new = x_old * A + y_old * B + C;
-  SkVector4 x_constants = product_matrix * display_points_x;
+  skia::Vector4 x_constants = product_matrix * display_points_x;
   // Constants [D, E, F, 0] used to calibrate the y-coordinate of touch input.
   // y_new = x_old * D + y_old * E + F;
-  SkVector4 y_constants = product_matrix * display_points_y;
+  skia::Vector4 y_constants = product_matrix * display_points_y;
 
   // Create a transform matrix using the touch calibration data.
   ctm->ConcatTransform(gfx::Transform(

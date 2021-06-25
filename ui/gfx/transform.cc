@@ -53,7 +53,7 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row4,
                      SkScalar col3row4,
                      SkScalar col4row4)
-    : matrix_(SkMatrix44::kUninitialized_Constructor) {
+    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
   matrix_.set4x4(col1row1, col1row2, col1row3, col1row4, col2row1, col2row2,
                  col2row3, col2row4, col3row1, col3row2, col3row3, col3row4,
                  col4row1, col4row2, col4row3, col4row4);
@@ -65,7 +65,7 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row2,
                      SkScalar x_translation,
                      SkScalar y_translation)
-    : matrix_(SkMatrix44::kUninitialized_Constructor) {
+    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
   matrix_.set4x4(col1row1, col1row2, 0, 0,
                  col2row1, col2row2, 0, 0,
                  0, 0, 1, 0,
@@ -73,7 +73,7 @@ Transform::Transform(SkScalar col1row1,
 }
 
 Transform::Transform(const Quaternion& q)
-    : matrix_(SkMatrix44::kUninitialized_Constructor) {
+    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
   double x = q.x();
   double y = q.y();
   double z = q.z();
@@ -100,7 +100,7 @@ void Transform::RotateAboutXAxis(double degrees) {
                      0, cosTheta, sinTheta,
                      0, -sinTheta, cosTheta);
   } else {
-    SkMatrix44 rot(SkMatrix44::kUninitialized_Constructor);
+    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
     rot.set3x3(1, 0, 0,
                0, cosTheta, sinTheta,
                0, -sinTheta, cosTheta);
@@ -119,7 +119,7 @@ void Transform::RotateAboutYAxis(double degrees) {
                      0, 1, 0,
                      sinTheta, 0, cosTheta);
   } else {
-    SkMatrix44 rot(SkMatrix44::kUninitialized_Constructor);
+    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
     rot.set3x3(cosTheta, 0, -sinTheta,
                0, 1, 0,
                sinTheta, 0, cosTheta);
@@ -136,7 +136,7 @@ void Transform::RotateAboutZAxis(double degrees) {
                      -sinTheta, cosTheta, 0,
                      0, 0, 1);
   } else {
-    SkMatrix44 rot(SkMatrix44::kUninitialized_Constructor);
+    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
     rot.set3x3(cosTheta, sinTheta, 0,
                -sinTheta, cosTheta, 0,
                0, 0, 1);
@@ -149,7 +149,7 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
     matrix_.setRotateDegreesAbout(axis.x(), axis.y(), axis.z(),
                                   SkDoubleToScalar(degrees));
   } else {
-    SkMatrix44 rot(SkMatrix44::kUninitialized_Constructor);
+    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
     rot.setRotateDegreesAbout(axis.x(), axis.y(), axis.z(),
                               SkDoubleToScalar(degrees));
     matrix_.preConcat(rot);
@@ -197,7 +197,7 @@ void Transform::Skew(double angle_x, double angle_y) {
     matrix_.set(0, 1, TanDegrees(angle_x));
     matrix_.set(1, 0, TanDegrees(angle_y));
   } else {
-    SkMatrix44 skew(SkMatrix44::kIdentity_Constructor);
+    skia::Matrix44 skew(skia::Matrix44::kIdentity_Constructor);
     skew.set(0, 1, TanDegrees(angle_x));
     skew.set(1, 0, TanDegrees(angle_y));
     matrix_.preConcat(skew);
@@ -210,7 +210,7 @@ void Transform::ApplyPerspectiveDepth(SkScalar depth) {
   if (matrix_.isIdentity()) {
     matrix_.set(3, 2, -SK_Scalar1 / depth);
   } else {
-    SkMatrix44 m(SkMatrix44::kIdentity_Constructor);
+    skia::Matrix44 m(skia::Matrix44::kIdentity_Constructor);
     m.set(3, 2, -SK_Scalar1 / depth);
     matrix_.preConcat(m);
   }
@@ -444,7 +444,7 @@ bool Transform::TransformPointReverse(Point* point) const {
   DCHECK(point);
 
   // TODO(sad): Try to avoid trying to invert the matrix.
-  SkMatrix44 inverse(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -456,7 +456,7 @@ bool Transform::TransformPointReverse(Point3F* point) const {
   DCHECK(point);
 
   // TODO(sad): Try to avoid trying to invert the matrix.
-  SkMatrix44 inverse(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -477,7 +477,7 @@ bool Transform::TransformRectReverse(RectF* rect) const {
   if (matrix_.isIdentity())
     return true;
 
-  SkMatrix44 inverse(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -540,7 +540,7 @@ void Transform::RoundTranslationComponents() {
   matrix_.set(1, 3, std::round(matrix_.get(1, 3)));
 }
 
-void Transform::TransformPointInternal(const SkMatrix44& xform,
+void Transform::TransformPointInternal(const skia::Matrix44& xform,
                                        Point3F* point) const {
   if (xform.isIdentity())
     return;
@@ -557,7 +557,7 @@ void Transform::TransformPointInternal(const SkMatrix44& xform,
   }
 }
 
-void Transform::TransformVectorInternal(const SkMatrix44& xform,
+void Transform::TransformVectorInternal(const skia::Matrix44& xform,
                                         Vector3dF* vector) const {
   if (xform.isIdentity())
     return;
@@ -571,7 +571,7 @@ void Transform::TransformVectorInternal(const SkMatrix44& xform,
   vector->set_z(p[2]);
 }
 
-void Transform::TransformPointInternal(const SkMatrix44& xform,
+void Transform::TransformPointInternal(const skia::Matrix44& xform,
                                        PointF* point) const {
   if (xform.isIdentity())
     return;
@@ -583,7 +583,7 @@ void Transform::TransformPointInternal(const SkMatrix44& xform,
   point->SetPoint(p[0], p[1]);
 }
 
-void Transform::TransformPointInternal(const SkMatrix44& xform,
+void Transform::TransformPointInternal(const skia::Matrix44& xform,
                                        Point* point) const {
   PointF point_float(*point);
   TransformPointInternal(xform, &point_float);

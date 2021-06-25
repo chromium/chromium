@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_ax_object.h"
 
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -57,7 +58,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/accessibility/ax_action_data.h"
 
 namespace blink {
@@ -1174,7 +1174,7 @@ void WebAXObject::Dropeffects(
 
 void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
                                     gfx::RectF& bounds_in_container,
-                                    SkMatrix44& container_transform,
+                                    skia::Matrix44& container_transform,
                                     bool* clips_children) const {
   if (IsDetached())
     return;

@@ -56,7 +56,7 @@ class AXInlineTextBox final : public AXObject {
   int TextOffsetInContainer(int offset) const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
-                         SkMatrix44& out_container_transform,
+                         skia::Matrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
   ax::mojom::blink::WritingDirection GetTextDirection() const override;
   Node* GetNode() const override;

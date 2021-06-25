@@ -36,7 +36,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
       OpaqueMode opaque_mode = OpaqueMode::RequireOpaqueCandidates);
   ~OverlayStrategyUnderlay() override;
 
-  bool Attempt(const SkMatrix44& output_color_matrix,
+  bool Attempt(const skia::Matrix44& output_color_matrix,
                const OverlayProcessorInterface::FilterOperationsMap&
                    render_pass_backdrop_filters,
                DisplayResourceProvider* resource_provider,
@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
                OverlayCandidateList* candidate_list,
                std::vector<gfx::Rect>* content_bounds) override;
 
-  void ProposePrioritized(const SkMatrix44& output_color_matrix,
+  void ProposePrioritized(const skia::Matrix44& output_color_matrix,
                           const OverlayProcessorInterface::FilterOperationsMap&
                               render_pass_backdrop_filters,
                           DisplayResourceProvider* resource_provider,
@@ -57,7 +57,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
                           std::vector<gfx::Rect>* content_bounds) override;
 
   bool AttemptPrioritized(
-      const SkMatrix44& output_color_matrix,
+      const skia::Matrix44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,

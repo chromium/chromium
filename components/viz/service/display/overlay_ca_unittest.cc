@@ -204,8 +204,8 @@ TextureDrawQuad* CreateFullscreenCandidateQuad(
       shared_quad_state, render_pass, render_pass->output_rect);
 }
 
-SkMatrix44 GetIdentityColorMatrix() {
-  return SkMatrix44(SkMatrix44::kIdentity_Constructor);
+skia::Matrix44 GetIdentityColorMatrix() {
+  return skia::Matrix44(skia::Matrix44::kIdentity_Constructor);
 }
 
 class CALayerOverlayTest : public testing::Test {

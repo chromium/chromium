@@ -10,7 +10,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {

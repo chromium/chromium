@@ -617,7 +617,7 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
     Microsoft::WRL::ComPtr<IDCompositionMatrixTransform> dcomp_transform;
     dcomp_device_->CreateMatrixTransform(&dcomp_transform);
     DCHECK(dcomp_transform);
-    // SkMatrix44 is column-major, but D2D_MATRIX_3x2_F is row-major.
+    // skia::Matrix44 is column-major, but D2D_MATRIX_3x2_F is row-major.
     D2D_MATRIX_3X2_F d2d_matrix = {
         {{transform.matrix().get(0, 0), transform.matrix().get(1, 0),
           transform.matrix().get(0, 1), transform.matrix().get(1, 1),

@@ -2080,9 +2080,9 @@ void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
   result[15] = M44();
 }
 
-SkMatrix44 TransformationMatrix::ToSkMatrix44(
+skia::Matrix44 TransformationMatrix::ToSkMatrix44(
     const TransformationMatrix& matrix) {
-  SkMatrix44 ret(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 ret(skia::Matrix44::kUninitialized_Constructor);
   ret.set4x4(matrix.M11(), matrix.M12(), matrix.M13(), matrix.M14(),
              matrix.M21(), matrix.M22(), matrix.M23(), matrix.M24(),
              matrix.M31(), matrix.M32(), matrix.M33(), matrix.M34(),

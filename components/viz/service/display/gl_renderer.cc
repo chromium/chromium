@@ -2162,9 +2162,9 @@ void GLRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
 
   // Apply any color matrix that may be present.
   if (HasOutputColorMatrix()) {
-    const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
-    const SkVector4 color_v(color_f.fR, color_f.fG, color_f.fB, color_f.fA);
-    const SkVector4 result = output_color_matrix * color_v;
+    const skia::Matrix44& output_color_matrix = output_surface_->color_matrix();
+    const skia::Vector4 color_v(color_f.fR, color_f.fG, color_f.fB, color_f.fA);
+    const skia::Vector4 result = output_color_matrix * color_v;
     std::copy(result.fData, result.fData + 4, color_f.vec());
     color = color_f.toSkColor();
   }
@@ -3944,7 +3944,7 @@ void GLRenderer::ScheduleDCLayers() {
     const gfx::Rect& content_rect = dc_layer_overlay.content_rect;
     const gfx::Rect& quad_rect = dc_layer_overlay.quad_rect;
     DCHECK(dc_layer_overlay.transform.IsFlat());
-    const SkMatrix44& transform = dc_layer_overlay.transform.matrix();
+    const skia::Matrix44& transform = dc_layer_overlay.transform.matrix();
     bool is_clipped = dc_layer_overlay.clip_rect.has_value();
     const gfx::Rect& clip_rect =
         dc_layer_overlay.clip_rect.value_or(gfx::Rect());
@@ -4260,7 +4260,7 @@ GLRenderer::ScheduleRenderPassDrawQuad(const CALayerOverlay* ca_layer_overlay) {
       ca_layer_overlay->shared_state->rounded_corner_bounds.GetSimpleRadius()};
 
   GLint sorting_context_id = ca_layer_overlay->shared_state->sorting_context_id;
-  SkMatrix44 transform = ca_layer_overlay->shared_state->transform;
+  skia::Matrix44 transform = ca_layer_overlay->shared_state->transform;
   GLfloat gl_transform[16];
   transform.asColMajorf(gl_transform);
   unsigned filter = ca_layer_overlay->filter;
@@ -4388,7 +4388,7 @@ ResourceFormat GLRenderer::CurrentRenderPassResourceFormat() const {
 bool GLRenderer::HasOutputColorMatrix() const {
   const bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
-  const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
+  const skia::Matrix44& output_color_matrix = output_surface_->color_matrix();
   return is_root_render_pass && !output_color_matrix.isIdentity();
 }
 

@@ -90,7 +90,7 @@ bool MatricesAreNearlyEqual(const Transform& lhs,
 }
 
 void InitializeTestMatrix(Transform* transform) {
-  SkMatrix44& matrix = transform->matrix();
+  skia::Matrix44& matrix = transform->matrix();
   matrix.set(0, 0, 10.f);
   matrix.set(1, 0, 11.f);
   matrix.set(2, 0, 12.f);
@@ -116,7 +116,7 @@ void InitializeTestMatrix(Transform* transform) {
 }
 
 void InitializeTestMatrix2(Transform* transform) {
-  SkMatrix44& matrix = transform->matrix();
+  skia::Matrix44& matrix = transform->matrix();
   matrix.set(0, 0, 30.f);
   matrix.set(1, 0, 31.f);
   matrix.set(2, 0, 32.f);
@@ -145,7 +145,7 @@ const SkScalar kApproxZero = std::numeric_limits<float>::epsilon();
 const SkScalar kApproxOne = 1 - kApproxZero;
 
 void InitializeApproxIdentityMatrix(Transform* transform) {
-  SkMatrix44& matrix = transform->matrix();
+  skia::Matrix44& matrix = transform->matrix();
   matrix.set(0, 0, kApproxOne);
   matrix.set(0, 1, kApproxZero);
   matrix.set(0, 2, kApproxZero);
@@ -2215,7 +2215,7 @@ TEST(XFormTest, verifyIsIdentityOrTranslation) {
 
 TEST(XFormTest, verifyIsApproximatelyIdentityOrTranslation) {
   Transform A;
-  SkMatrix44& matrix = A.matrix();
+  skia::Matrix44& matrix = A.matrix();
 
   // Exact pure translation.
   A.MakeIdentity();
@@ -2678,7 +2678,7 @@ TEST(XFormTest, TransformRRectF) {
   EXPECT_TRUE(translation.TransformRRectF(&rrect));
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 
-  SkMatrix44 rot(SkMatrix44::kUninitialized_Constructor);
+  skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
   rot.set3x3(0, 1, 0, -1, 0, 0, 0, 0, 1);
   Transform rotation_90_Clock(rot);
 

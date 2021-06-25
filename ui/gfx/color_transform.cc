@@ -144,20 +144,20 @@ float ToLinear(ColorSpace::TransferID id, float v) {
 }
 
 Transform GetTransferMatrix(const gfx::ColorSpace& color_space, int bit_depth) {
-  SkMatrix44 transfer_matrix;
+  skia::Matrix44 transfer_matrix;
   color_space.GetTransferMatrix(bit_depth, &transfer_matrix);
   return Transform(transfer_matrix);
 }
 
 Transform GetRangeAdjustMatrix(const gfx::ColorSpace& color_space,
                                int bit_depth) {
-  SkMatrix44 range_adjust_matrix;
+  skia::Matrix44 range_adjust_matrix;
   color_space.GetRangeAdjustMatrix(bit_depth, &range_adjust_matrix);
   return Transform(range_adjust_matrix);
 }
 
 Transform GetPrimaryTransform(const gfx::ColorSpace& color_space) {
-  SkMatrix44 primary_matrix;
+  skia::Matrix44 primary_matrix;
   color_space.GetPrimaryMatrix(&primary_matrix);
   return Transform(primary_matrix);
 }
@@ -271,7 +271,7 @@ class ColorTransformMatrix : public ColorTransformStep {
   void AppendShaderSource(std::stringstream* hdr,
                           std::stringstream* src,
                           size_t step_index) const override {
-    const SkMatrix44& m = matrix_.matrix();
+    const skia::Matrix44& m = matrix_.matrix();
     *src << "  color = mat3(";
     *src << m.get(0, 0) << ", " << m.get(1, 0) << ", " << m.get(2, 0) << ",";
     *src << endl;
@@ -291,7 +291,7 @@ class ColorTransformMatrix : public ColorTransformStep {
   }
 
   void AppendSkShaderSource(std::stringstream* src) const override {
-    const SkMatrix44& m = matrix_.matrix();
+    const skia::Matrix44& m = matrix_.matrix();
     *src << "  color = half4x4(";
     *src << m.get(0, 0) << ", " << m.get(1, 0) << ", " << m.get(2, 0) << ", 0,";
     *src << endl;

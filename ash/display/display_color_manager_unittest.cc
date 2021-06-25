@@ -251,7 +251,7 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixNoCTMSupport) {
   EXPECT_FALSE(base::MatchPattern(actions, "*set_color_matrix*"));
 
   // Attempt to set a color matrix.
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
   matrix.set(1, 1, 0.7);
   matrix.set(2, 2, 0.3);
   EXPECT_FALSE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
@@ -283,7 +283,7 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
   matrix.set(1, 1, 0.7);
   matrix.set(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
@@ -340,7 +340,7 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
             DisplayColorManager::DisplayCtmSupport::kMixed);
 
   // Attempt to set a color matrix.
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
   matrix.set(1, 1, 0.7);
   matrix.set(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayWithCtmId, matrix));
@@ -377,7 +377,7 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
   matrix.set(1, 1, 0.7);
   matrix.set(2, 2, 0.3);
   EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));

@@ -56,7 +56,7 @@ SkScalar Round(SkScalar n) {
 }
 
 // Returns false if the matrix cannot be normalized.
-bool Normalize(SkMatrix44& m) {
+bool Normalize(skia::Matrix44& m) {
   if (m.get(3, 3) == 0.0)
     // Cannot normalize.
     return false;
@@ -69,16 +69,16 @@ bool Normalize(SkMatrix44& m) {
   return true;
 }
 
-SkMatrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+skia::Matrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
 
   for (int i = 0; i < 4; i++)
     matrix.setDouble(3, i, decomp.perspective[i]);
   return matrix;
 }
 
-SkMatrix44 BuildTranslationMatrix(const DecomposedTransform& decomp) {
-  SkMatrix44 matrix(SkMatrix44::kUninitialized_Constructor);
+skia::Matrix44 BuildTranslationMatrix(const DecomposedTransform& decomp) {
+  skia::Matrix44 matrix(skia::Matrix44::kUninitialized_Constructor);
   // Implicitly calls matrix.setIdentity()
   matrix.setTranslate(SkDoubleToScalar(decomp.translate[0]),
                       SkDoubleToScalar(decomp.translate[1]),
@@ -86,20 +86,20 @@ SkMatrix44 BuildTranslationMatrix(const DecomposedTransform& decomp) {
   return matrix;
 }
 
-SkMatrix44 BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
+skia::Matrix44 BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
   decomp.translate[0] = Round(decomp.translate[0]);
   decomp.translate[1] = Round(decomp.translate[1]);
   decomp.translate[2] = Round(decomp.translate[2]);
   return BuildTranslationMatrix(decomp);
 }
 
-SkMatrix44 BuildRotationMatrix(const DecomposedTransform& decomp) {
+skia::Matrix44 BuildRotationMatrix(const DecomposedTransform& decomp) {
   return Transform(decomp.quaternion).matrix();
 }
 
-SkMatrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
+skia::Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
   // Create snapped rotation.
-  SkMatrix44 rotation_matrix = BuildRotationMatrix(decomp);
+  skia::Matrix44 rotation_matrix = BuildRotationMatrix(decomp);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       SkScalar value = rotation_matrix.get(i, j);
@@ -117,10 +117,10 @@ SkMatrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
   return rotation_matrix;
 }
 
-SkMatrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+skia::Matrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
 
-  SkMatrix44 temp(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 temp(skia::Matrix44::kIdentity_Constructor);
   if (decomp.skew[2]) {
     temp.setDouble(1, 2, decomp.skew[2]);
     matrix.preConcat(temp);
@@ -140,27 +140,27 @@ SkMatrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
   return matrix;
 }
 
-SkMatrix44 BuildScaleMatrix(const DecomposedTransform& decomp) {
-  SkMatrix44 matrix(SkMatrix44::kUninitialized_Constructor);
+skia::Matrix44 BuildScaleMatrix(const DecomposedTransform& decomp) {
+  skia::Matrix44 matrix(skia::Matrix44::kUninitialized_Constructor);
   matrix.setScale(SkDoubleToScalar(decomp.scale[0]),
                   SkDoubleToScalar(decomp.scale[1]),
                   SkDoubleToScalar(decomp.scale[2]));
   return matrix;
 }
 
-SkMatrix44 BuildSnappedScaleMatrix(DecomposedTransform decomp) {
+skia::Matrix44 BuildSnappedScaleMatrix(DecomposedTransform decomp) {
   decomp.scale[0] = Round(decomp.scale[0]);
   decomp.scale[1] = Round(decomp.scale[1]);
   decomp.scale[2] = Round(decomp.scale[2]);
   return BuildScaleMatrix(decomp);
 }
 
-Transform ComposeTransform(const SkMatrix44& perspective,
-                           const SkMatrix44& translation,
-                           const SkMatrix44& rotation,
-                           const SkMatrix44& skew,
-                           const SkMatrix44& scale) {
-  SkMatrix44 matrix(SkMatrix44::kIdentity_Constructor);
+Transform ComposeTransform(const skia::Matrix44& perspective,
+                           const skia::Matrix44& translation,
+                           const skia::Matrix44& rotation,
+                           const skia::Matrix44& skew,
+                           const skia::Matrix44& scale) {
+  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
 
   matrix.preConcat(perspective);
   matrix.preConcat(translation);
@@ -209,7 +209,7 @@ bool CheckTransformsMapsIntViewportWithinOnePixel(const Rect& viewport,
 }
 
 bool Is2dTransform(const Transform& transform) {
-  const SkMatrix44 matrix = transform.matrix();
+  const skia::Matrix44 matrix = transform.matrix();
   if (matrix.hasPerspective())
     return false;
 
@@ -225,7 +225,7 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
     return false;
   }
 
-  const SkMatrix44 matrix = transform.matrix();
+  const skia::Matrix44 matrix = transform.matrix();
   double m11 = matrix.getDouble(0, 0);
   double m21 = matrix.getDouble(0, 1);
   double m12 = matrix.getDouble(1, 0);
@@ -361,13 +361,13 @@ bool DecomposeTransform(DecomposedTransform* decomp,
     return true;
 
   // We'll operate on a copy of the matrix.
-  SkMatrix44 matrix = transform.matrix();
+  skia::Matrix44 matrix = transform.matrix();
 
   // If we cannot normalize the matrix, then bail early as we cannot decompose.
   if (!Normalize(matrix))
     return false;
 
-  SkMatrix44 perspectiveMatrix = matrix;
+  skia::Matrix44 perspectiveMatrix = matrix;
 
   for (int i = 0; i < 3; ++i)
     perspectiveMatrix.set(3, i, 0.0);
@@ -375,7 +375,7 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   perspectiveMatrix.set(3, 3, 1.0);
 
   // If the perspective matrix is not invertible, we are also unable to
-  // decompose, so we'll bail early. Constant taken from SkMatrix44::invert.
+  // decompose, so we'll bail early. Constant taken from skia::Matrix44::invert.
   if (std::abs(perspectiveMatrix.determinant()) < 1e-8)
     return false;
 
@@ -387,11 +387,13 @@ bool DecomposeTransform(DecomposedTransform* decomp,
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.
-    SkMatrix44 inversePerspectiveMatrix(SkMatrix44::kUninitialized_Constructor);
+    skia::Matrix44 inversePerspectiveMatrix(
+        skia::Matrix44::kUninitialized_Constructor);
     if (!perspectiveMatrix.invert(&inversePerspectiveMatrix))
       return false;
 
-    SkMatrix44 transposedInversePerspectiveMatrix = inversePerspectiveMatrix;
+    skia::Matrix44 transposedInversePerspectiveMatrix =
+        inversePerspectiveMatrix;
 
     transposedInversePerspectiveMatrix.transpose();
     transposedInversePerspectiveMatrix.mapScalars(rhs);
@@ -529,11 +531,11 @@ bool DecomposeTransform(DecomposedTransform* decomp,
 
 // Taken from http://www.w3.org/TR/css3-transforms/.
 Transform ComposeTransform(const DecomposedTransform& decomp) {
-  SkMatrix44 perspective = BuildPerspectiveMatrix(decomp);
-  SkMatrix44 translation = BuildTranslationMatrix(decomp);
-  SkMatrix44 rotation = BuildRotationMatrix(decomp);
-  SkMatrix44 skew = BuildSkewMatrix(decomp);
-  SkMatrix44 scale = BuildScaleMatrix(decomp);
+  skia::Matrix44 perspective = BuildPerspectiveMatrix(decomp);
+  skia::Matrix44 translation = BuildTranslationMatrix(decomp);
+  skia::Matrix44 rotation = BuildRotationMatrix(decomp);
+  skia::Matrix44 skew = BuildSkewMatrix(decomp);
+  skia::Matrix44 scale = BuildScaleMatrix(decomp);
 
   return ComposeTransform(perspective, translation, rotation, skew, scale);
 }
@@ -544,15 +546,15 @@ bool SnapTransform(Transform* out,
   DecomposedTransform decomp;
   DecomposeTransform(&decomp, transform);
 
-  SkMatrix44 rotation_matrix = BuildSnappedRotationMatrix(decomp);
-  SkMatrix44 translation = BuildSnappedTranslationMatrix(decomp);
-  SkMatrix44 scale = BuildSnappedScaleMatrix(decomp);
+  skia::Matrix44 rotation_matrix = BuildSnappedRotationMatrix(decomp);
+  skia::Matrix44 translation = BuildSnappedTranslationMatrix(decomp);
+  skia::Matrix44 scale = BuildSnappedScaleMatrix(decomp);
 
   // Rebuild matrices for other unchanged components.
-  SkMatrix44 perspective = BuildPerspectiveMatrix(decomp);
+  skia::Matrix44 perspective = BuildPerspectiveMatrix(decomp);
 
   // Completely ignore the skew.
-  SkMatrix44 skew(SkMatrix44::kIdentity_Constructor);
+  skia::Matrix44 skew(skia::Matrix44::kIdentity_Constructor);
 
   // Get full tranform
   Transform snapped =

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_operations.h"
 
@@ -62,7 +62,7 @@ void CompositorTransformOperations::AppendPerspective(double depth) {
   transform_operations_.AppendPerspective(SkDoubleToScalar(depth));
 }
 
-void CompositorTransformOperations::AppendMatrix(const SkMatrix44& matrix) {
+void CompositorTransformOperations::AppendMatrix(const skia::Matrix44& matrix) {
   gfx::Transform transform(gfx::Transform::kSkipInitialization);
   transform.matrix() = matrix;
   transform_operations_.AppendMatrix(transform);

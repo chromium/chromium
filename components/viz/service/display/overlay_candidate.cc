@@ -132,7 +132,7 @@ OverlayCandidate::~OverlayCandidate() = default;
 bool OverlayCandidate::FromDrawQuad(
     DisplayResourceProvider* resource_provider,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const SkMatrix44& output_color_matrix,
+    const skia::Matrix44& output_color_matrix,
     const DrawQuad* quad,
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate,

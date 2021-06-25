@@ -63,7 +63,7 @@ DOMMatrix* DOMMatrix::Create(DOMMatrixReadOnly* other,
   return MakeGarbageCollected<DOMMatrix>(other->Matrix(), other->is2D());
 }
 
-DOMMatrix* DOMMatrix::Create(const SkMatrix44& matrix,
+DOMMatrix* DOMMatrix::Create(const skia::Matrix44& matrix,
                              ExceptionState& exception_state) {
   TransformationMatrix transformation_matrix(matrix);
   return MakeGarbageCollected<DOMMatrix>(transformation_matrix,

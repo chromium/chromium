@@ -275,7 +275,7 @@ void BlinkAXTreeSource::PopulateAXRelativeBounds(WebAXObject obj,
                                                  bool* clips_children) const {
   WebAXObject offset_container;
   gfx::RectF bounds_in_container;
-  SkMatrix44 web_container_transform;
+  skia::Matrix44 web_container_transform;
   obj.GetRelativeBounds(offset_container, bounds_in_container,
                         web_container_transform, clips_children);
   bounds->bounds = bounds_in_container;
@@ -948,7 +948,7 @@ void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
   // unloaded images where the size is unknown.
   WebAXObject offset_container;
   gfx::RectF bounds;
-  SkMatrix44 container_transform;
+  skia::Matrix44 container_transform;
   bool clips_children = false;
   src.GetRelativeBounds(offset_container, bounds, container_transform,
                         &clips_children);

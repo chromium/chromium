@@ -33,11 +33,11 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkM44.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace gfx {
 class Transform;
@@ -115,7 +115,7 @@ class PLATFORM_EXPORT TransformationMatrix {
     SetMatrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41,
               m42, m43, m44);
   }
-  explicit TransformationMatrix(const SkMatrix44& matrix) {
+  explicit TransformationMatrix(const skia::Matrix44& matrix) {
     SetMatrix(
         matrix.get(0, 0), matrix.get(1, 0), matrix.get(2, 0), matrix.get(3, 0),
         matrix.get(0, 1), matrix.get(1, 1), matrix.get(2, 1), matrix.get(3, 1),
@@ -463,7 +463,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   typedef float FloatMatrix4[16];
   void ToColumnMajorFloatArray(FloatMatrix4& result) const;
 
-  static SkMatrix44 ToSkMatrix44(const TransformationMatrix&);
+  static skia::Matrix44 ToSkMatrix44(const TransformationMatrix&);
   static SkM44 ToSkM44(const TransformationMatrix&);
   static gfx::Transform ToTransform(const TransformationMatrix&);
 

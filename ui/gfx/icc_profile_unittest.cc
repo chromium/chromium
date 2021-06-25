@@ -123,13 +123,13 @@ TEST(ICCProfile, GenericRGB) {
   ColorSpace color_space(ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
                          ColorSpace::TransferID::GAMMA18);
 
-  SkMatrix44 icc_profile_matrix;
-  SkMatrix44 color_space_matrix;
+  skia::Matrix44 icc_profile_matrix;
+  skia::Matrix44 color_space_matrix;
 
   icc_profile.GetPrimaryMatrix(&icc_profile_matrix);
   color_space.GetPrimaryMatrix(&color_space_matrix);
 
-  SkMatrix44 eye;
+  skia::Matrix44 eye;
   icc_profile_matrix.invert(&eye);
   eye.postConcat(color_space_matrix);
   EXPECT_TRUE(SkMatrixIsApproximatelyIdentity(eye));

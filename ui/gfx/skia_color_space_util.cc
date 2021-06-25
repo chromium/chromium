@@ -80,7 +80,7 @@ bool SkTransferFnIsApproximatelyIdentity(const skcms_TransferFunction& a) {
   return true;
 }
 
-bool SkMatrixIsApproximatelyIdentity(const SkMatrix44& m) {
+bool SkMatrixIsApproximatelyIdentity(const skia::Matrix44& m) {
   const float kEpsilon = 1.f / 256.f;
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {

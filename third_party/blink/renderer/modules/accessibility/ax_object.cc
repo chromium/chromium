@@ -32,6 +32,7 @@
 #include <ostream>
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
@@ -97,7 +98,6 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -4722,7 +4722,7 @@ int AXObject::GetDOMNodeId() const {
 
 void AXObject::GetRelativeBounds(AXObject** out_container,
                                  FloatRect& out_bounds_in_container,
-                                 SkMatrix44& out_container_transform,
+                                 skia::Matrix44& out_container_transform,
                                  bool* clips_children) const {
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();
@@ -4861,7 +4861,7 @@ FloatRect AXObject::LocalBoundingBoxRectForAccessibility() {
 LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
   AXObject* container = nullptr;
   FloatRect bounds;
-  SkMatrix44 transform;
+  skia::Matrix44 transform;
   GetRelativeBounds(&container, bounds, transform);
   FloatRect computed_bounds(0, 0, bounds.Width(), bounds.Height());
   while (container && container != this) {

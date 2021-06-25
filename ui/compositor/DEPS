@@ -5,7 +5,7 @@ include_rules = [
   "+gpu/command_buffer/client/gles2_interface.h",
   "+mojo/public/cpp/bindings/pending_remote.h",
   "+services/viz/privileged/mojom/compositing",
-  "+skia/ext/refptr.h",
+  "+skia/ext",
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/skia",
   "+ui/base",

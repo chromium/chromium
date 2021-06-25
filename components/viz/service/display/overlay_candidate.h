@@ -41,7 +41,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // the case of a null primary plane.
   static bool FromDrawQuad(DisplayResourceProvider* resource_provider,
                            SurfaceDamageRectList* surface_damage_rect_list,
-                           const SkMatrix44& output_color_matrix,
+                           const skia::Matrix44& output_color_matrix,
                            const DrawQuad* quad,
                            const gfx::RectF& primary_rect,
                            OverlayCandidate* candidate,

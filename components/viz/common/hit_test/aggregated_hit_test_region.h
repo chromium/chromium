@@ -67,9 +67,9 @@ struct AggregatedHitTestRegion {
   // to move to the next entry.
   int32_t child_count = 0;
 
-  // gfx::Transform is backed by SkMatrix44. SkMatrix44 has a mutable attribute
-  // which can be changed even during a const function call (e.g.
-  // SkMatrix44::getType()). This means that when HitTestQuery reads the
+  // gfx::Transform is backed by skia::Matrix44. skia::Matrix44 has a mutable
+  // attribute which can be changed even during a const function call (e.g.
+  // skia::Matrix44::getType()). This means that when HitTestQuery reads the
   // transform in the read-only shared memory segment created (and populated) by
   // HitTestAggregator, if it attempts to perform any operation on the
   // transform (e.g. use Transform::IsIdentity()), skia will attempt to write to

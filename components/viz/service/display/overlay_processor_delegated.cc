@@ -51,7 +51,7 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
 
 bool OverlayProcessorDelegated::AttemptWithStrategies(
-    const SkMatrix44& output_color_matrix,
+    const skia::Matrix44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -145,7 +145,7 @@ gfx::RectF OverlayProcessorDelegated::GetPrimaryPlaneDisplayRect(
 void OverlayProcessorDelegated::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
-    const SkMatrix44& output_color_matrix,
+    const skia::Matrix44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,

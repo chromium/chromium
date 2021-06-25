@@ -56,7 +56,7 @@ AXInlineTextBox::AXInlineTextBox(
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
                                         FloatRect& out_bounds_in_container,
-                                        SkMatrix44& out_container_transform,
+                                        skia::Matrix44& out_container_transform,
                                         bool* clips_children) const {
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();

@@ -301,7 +301,7 @@ void AXImageAnnotator::OnImageAnnotated(
     // Get the image size as minimum and maximum dimension.
     blink::WebAXObject offset_container;
     gfx::RectF bounds;
-    SkMatrix44 container_transform;
+    skia::Matrix44 container_transform;
     bool clips_children = false;
     image.GetRelativeBounds(offset_container, bounds, container_transform,
                             &clips_children);

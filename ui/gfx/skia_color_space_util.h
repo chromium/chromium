@@ -5,9 +5,9 @@
 #ifndef UI_GFX_SKIA_COLOR_SPACE_UTIL_H_
 #define UI_GFX_SKIA_COLOR_SPACE_UTIL_H_
 
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkICC.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/color_space_export.h"
 
 namespace gfx {
@@ -35,7 +35,8 @@ SkTransferFnsApproximatelyCancel(const skcms_TransferFunction& a,
 bool COLOR_SPACE_EXPORT
 SkTransferFnIsApproximatelyIdentity(const skcms_TransferFunction& fn);
 
-bool COLOR_SPACE_EXPORT SkMatrixIsApproximatelyIdentity(const SkMatrix44& m);
+bool COLOR_SPACE_EXPORT
+SkMatrixIsApproximatelyIdentity(const skia::Matrix44& m);
 
 }  // namespace gfx
 

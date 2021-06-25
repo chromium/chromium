@@ -68,6 +68,7 @@ include_rules = [
     "+components/power_scheduler",
     "+net/cookies",
     "+net/http/structured_headers.h",
+    "+skia/ext",
     "+services/network/public/mojom",
     "+testing/gmock/include/gmock",
     "+testing/gtest/include/gtest",

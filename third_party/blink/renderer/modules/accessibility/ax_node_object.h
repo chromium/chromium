@@ -213,7 +213,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Location
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
-                         SkMatrix44& out_container_transform,
+                         skia::Matrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
 
   void AddChildren() override;

@@ -2352,7 +2352,7 @@ half4 main(half4 color) {
 }
 
 namespace {
-SkColorMatrix ToColorMatrix(const SkMatrix44& mat) {
+SkColorMatrix ToColorMatrix(const skia::Matrix44& mat) {
   std::array<float, 20> values;
   values.fill(0.0f);
   for (uint32_t r = 0; r < 4; r++) {
@@ -2388,7 +2388,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetContentColorFilter() {
       color_mat.setScale(rgb[0], rgb[1], rgb[2]);
       tint_transform = SkColorFilters::Matrix(color_mat);
     } else {
-      SkMatrix44 mat44;
+      skia::Matrix44 mat44;
       mat44.setColMajorf(
           cc::DebugColors::TintCompositedContentColorTransformMatrix().data());
       tint_transform = SkColorFilters::Matrix(ToColorMatrix(mat44));

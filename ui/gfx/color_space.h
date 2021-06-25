@@ -19,7 +19,10 @@
 struct skcms_Matrix3x3;
 struct skcms_TransferFunction;
 class SkColorSpace;
-class SkMatrix44;
+
+namespace skia {
+class Matrix44;
+}  // namespace skia
 
 // These forward declarations are used to give IPC code friend access to private
 // fields of gfx::ColorSpace for the purpose of serialization and
@@ -316,7 +319,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   }
 
   void GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const;
-  void GetPrimaryMatrix(SkMatrix44* to_XYZD50) const;
+  void GetPrimaryMatrix(skia::Matrix44* to_XYZD50) const;
   bool GetTransferFunction(skcms_TransferFunction* fn) const;
   bool GetInverseTransferFunction(skcms_TransferFunction* fn) const;
 
@@ -331,11 +334,11 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   // Returns the transfer matrix for |bit_depth|. For most formats, this is the
   // RGB to YUV matrix.
-  void GetTransferMatrix(int bit_depth, SkMatrix44* matrix) const;
+  void GetTransferMatrix(int bit_depth, skia::Matrix44* matrix) const;
 
   // Returns the range adjust matrix that converts from |range_| to full range
   // for |bit_depth|.
-  void GetRangeAdjustMatrix(int bit_depth, SkMatrix44* matrix) const;
+  void GetRangeAdjustMatrix(int bit_depth, skia::Matrix44* matrix) const;
 
   // Returns the range adjust matrix that converts from |range_| to full range
   // for bit depth 8.
@@ -358,7 +361,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Relative error (same for min/max):
   //   10 bit: abs(16/235 - 64/1023)/(64/1023)   = 0.0029411764705882222
   //   12 bit: abs(16/235 - 256/4095)/(256/4095) = 0.003676470588235281
-  void GetRangeAdjustMatrix(SkMatrix44* matrix) const {
+  void GetRangeAdjustMatrix(skia::Matrix44* matrix) const {
     GetRangeAdjustMatrix(kDefaultBitDepth, matrix);
   }
 

@@ -136,7 +136,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   // Sets the color matrix that will be used to transform the output of this
   // display. This is only supported for GPU compositing.
-  void SetColorMatrix(const SkMatrix44& matrix);
+  void SetColorMatrix(const skia::Matrix44& matrix);
 
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);

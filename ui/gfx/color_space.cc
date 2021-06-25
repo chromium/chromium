@@ -956,7 +956,7 @@ void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
   }
 }
 
-void ColorSpace::GetPrimaryMatrix(SkMatrix44* to_XYZD50) const {
+void ColorSpace::GetPrimaryMatrix(skia::Matrix44* to_XYZD50) const {
   skcms_Matrix3x3 toXYZ_3x3;
   GetPrimaryMatrix(&toXYZ_3x3);
   to_XYZD50->set3x3RowMajorf(&toXYZ_3x3.vals[0][0]);
@@ -1087,7 +1087,8 @@ bool ColorSpace::GetPiecewiseHDRParams(float* sdr_joint,
   return true;
 }
 
-void ColorSpace::GetTransferMatrix(int bit_depth, SkMatrix44* matrix) const {
+void ColorSpace::GetTransferMatrix(int bit_depth,
+                                   skia::Matrix44* matrix) const {
   DCHECK_GE(bit_depth, 8);
   // If chroma samples are real numbers in the range of −0.5 to 0.5, an offset
   // of 0.5 is added to get real numbers in the range of 0 to 1. When
@@ -1188,7 +1189,8 @@ void ColorSpace::GetTransferMatrix(int bit_depth, SkMatrix44* matrix) const {
   matrix->setRowMajorf(data);
 }
 
-void ColorSpace::GetRangeAdjustMatrix(int bit_depth, SkMatrix44* matrix) const {
+void ColorSpace::GetRangeAdjustMatrix(int bit_depth,
+                                      skia::Matrix44* matrix) const {
   DCHECK_GE(bit_depth, 8);
   switch (range_) {
     case RangeID::FULL:

@@ -56,7 +56,9 @@
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
 
-class SkMatrix44;
+namespace skia {
+class Matrix44;
+}
 
 namespace ui {
 struct AXActionData;
@@ -909,7 +911,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // set |clips_children| to true.
   virtual void GetRelativeBounds(AXObject** out_container,
                                  FloatRect& out_bounds_in_container,
-                                 SkMatrix44& out_container_transform,
+                                 skia::Matrix44& out_container_transform,
                                  bool* clips_children = nullptr) const;
 
   FloatRect LocalBoundingBoxRectForAccessibility();

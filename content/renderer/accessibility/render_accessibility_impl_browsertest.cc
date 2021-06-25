@@ -1150,7 +1150,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;
-  SkMatrix44 container_transform;
+  skia::Matrix44 container_transform;
   input_checkbox.GetRelativeBounds(offset_container, expected_bounds,
                                    container_transform);
   gfx::Rect actual_bounds = input_checkbox_action_target->GetRelativeBounds();

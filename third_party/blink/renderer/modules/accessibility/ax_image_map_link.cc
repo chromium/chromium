@@ -28,13 +28,13 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace blink {
 
@@ -102,7 +102,7 @@ KURL AXImageMapLink::Url() const {
 
 void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
                                        FloatRect& out_bounds_in_container,
-                                       SkMatrix44& out_container_transform,
+                                       skia::Matrix44& out_container_transform,
                                        bool* clips_children) const {
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();
