@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -178,6 +179,11 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   const AccountId account = AccountId::FromUserEmail("test@test");
   const user_manager::User* user = user_manager.AddUser(account);
   user_manager.UserLoggedIn(account, user->username_hash(), false, false);
+  TestingProfile* profile =
+      testing_profile_manager.CreateTestingProfile(account.GetUserEmail());
+  profile->set_profile_name(account.GetUserEmail());
+  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                    profile);
 
   auto crosapi_manager = std::make_unique<CrosapiManager>();
 
