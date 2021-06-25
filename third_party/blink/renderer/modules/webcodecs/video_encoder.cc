@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -337,6 +338,9 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
 
   if (config.hasBitrateMode())
     result->setBitrateMode(config.bitrateMode());
+
+  if (config.hasLatencyMode())
+    result->setLatencyMode(config.latencyMode());
 
   if (config.hasAvc() && config.avc()->hasFormat()) {
     auto* avc = AvcEncoderConfig::Create();

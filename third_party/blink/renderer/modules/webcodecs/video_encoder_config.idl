@@ -27,4 +27,6 @@ dictionary VideoEncoderConfig {
 
   // Same as in WebRTC SVC (https://w3c.github.io/webrtc-svc/)
   DOMString scalabilityMode;
+
+  LatencyMode latencyMode = "quality";
 };
