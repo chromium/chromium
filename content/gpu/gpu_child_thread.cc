@@ -63,6 +63,7 @@ void HandleBadMessage(const std::string& error) {
 ChildThreadImpl::Options GetOptions(
     const InProcessChildThreadParams* in_process_params = nullptr) {
   ChildThreadImpl::Options::Builder builder;
+  builder.WithLegacyIPCChannel(false);
   builder.ConnectToBrowser(true);
   builder.ExposesInterfacesToBrowser();
   if (in_process_params)
