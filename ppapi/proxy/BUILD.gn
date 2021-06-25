@@ -245,6 +245,8 @@ component("proxy") {
     "//base",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
+    "//gpu/command_buffer/client:client",
+    "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:command_buffer_traits",
@@ -276,6 +278,8 @@ source_set("common") {
     "tcp_socket_resource_constants.h",
     "udp_socket_resource_constants.h",
   ]
+
+  deps = [ "//base:base" ]
 }
 
 group("ipc") {
@@ -341,6 +345,7 @@ static_library("test_support") {
     "//ipc:test_support",
     "//ppapi/proxy",
     "//ppapi/shared_impl",
+    "//ppapi/shared_impl:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -67,7 +67,8 @@ no_check_targets = [
   "//extensions:*",  # 75 errors
   "//headless:*",  # 167 errors
   "//ppapi/native_client/src/untrusted/pnacl_irt_shim:*",  # 197 errors
-  "//ppapi/proxy:*",  # 31 errors
+  "//ppapi/proxy:ipc_sources",  # 13 errors
+  "//ppapi/proxy:proxy",  # 5 errors
   "//ppapi/thunk:*",  # 1071 errors
   "//remoting/host/mac:*",  # 49 errors
   "//remoting/host/security_key:*",  # 68 errors
