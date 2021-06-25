@@ -28,6 +28,21 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
                 value: 1000,
               },
             },
+            'next': {
+              'device_key_codes': {
+                value: {},
+              },
+            },
+            'previous': {
+              'device_key_codes': {
+                value: {},
+              },
+            },
+            'select': {
+              'device_key_codes': {
+                value: {},
+              },
+            },
           },
         },
       },
@@ -200,12 +215,12 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
 
     // Verify the contents of the assign select page.
     assertTrue(dialog['$']['intro']['hidden']);
-    assertFalse(dialog['$']['assign-select']['hidden']);
+    assertFalse(dialog['$']['assign-switch']['hidden']);
 
     dialog.loadPage_(/*Auto-scan enabled=*/2);
 
     // Verify the contents of the auto-scan enabled page.
-    assertTrue(dialog['$']['assign-select']['hidden']);
+    assertTrue(dialog['$']['assign-switch']['hidden']);
     assertFalse(dialog['$']['auto-scan-enabled']['hidden']);
 
     dialog.loadPage_(/*Choose switch count=*/3);
@@ -220,10 +235,22 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertTrue(dialog['$']['choose-switch-count']['hidden']);
     assertFalse(dialog['$']['auto-scan-speed']['hidden']);
 
+    dialog.loadPage_(/*Assign next=*/ 5);
+
+    // Verify the contents of the assign next page.
+    assertTrue(dialog['$']['auto-scan-speed']['hidden']);
+    assertFalse(dialog['$']['assign-switch']['hidden']);
+
+    dialog.loadPage_(/*Assign previous=*/ 6);
+
+    // Verify the contents of the assign previous page.
+    assertFalse(dialog['$']['assign-switch']['hidden']);
+
     dialog.loadPage_(/*Closing=*/8);
 
     // Verify the contents of the closing page.
     assertTrue(dialog['$']['auto-scan-speed']['hidden']);
+    assertTrue(dialog['$']['assign-switch']['hidden']);
     assertFalse(dialog['$']['closing']['hidden']);
   });
 
@@ -275,6 +302,28 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         assertTrue(data.value);
       }
     }
+
+    // Confirm that auto-scan is disabled upon reaching the "Next" assignment
+    // page.
+    setPrefData = [];
+    dialog.currentPageId_ = /*Choose switch count=*/ 3;
+    dialog.switchCount_ = 2;
+    dialog.onNextClick_();
+
+    // Loading the assignment pane generates additional calls to setPref, so
+    // expect at least one call to that function.
+    assertLE(1, setPrefData.length);
+
+    // Auto-scan enabled should be set to false at least once, and should not be
+    // set to true.
+    let autoScanEnabledSet = false;
+    for (const data of setPrefData) {
+      if (data.key === 'settings.a11y.switch_access.auto_scan.enabled') {
+        autoScanEnabledSet = true;
+        assertFalse(data.value);
+      }
+    }
+    assertTrue(autoScanEnabledSet);
   });
 
   test('Auto-scan speed slower and faster buttons', function() {
@@ -331,5 +380,62 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertTrue(!!oneSwitch);
     switchCountGroup.select_(oneSwitch);
     assertEquals('illustration one-switch', switchCountIllustration.className);
+  });
+
+  test('Assignment pane behaves correctly', function() {
+    assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
+    dialog.switchCount_ = 3;
+
+    const assignContents =
+        dialog['$']['assign-switch'].querySelector('.sa-setup-contents');
+    assertTrue(!!assignContents);
+    // Check that there is no pane currently attached.
+    assertEquals(0, assignContents.children.length);
+
+    const nextButton = dialog.$.next;
+    assertTrue(!!nextButton);
+    nextButton.click();
+
+    // Confirm that the pane loaded successfully.
+    assertEquals(1, assignContents.children.length);
+    assertEquals('select', assignContents.firstChild.action);
+
+    // Simulate the pane exiting without successfully assigning a switch.
+    cr.webUIListenerCallback('exit-pane');
+
+    // Confirm the page has not changed and the pane was loaded.
+    assertEquals(/*Assign select=*/ 1, dialog.currentPageId_);
+    assertEquals(1, assignContents.children.length);
+    assertEquals('select', assignContents.firstChild.action);
+
+    // Simulate the user successfully assigning a switch.
+    // TODO(anastasi): The change to the pref should correspond to the observer
+    // being called automatically. Investigate.
+    dialog.prefs.settings.a11y.switch_access.select.device_key_codes.value =
+        {23: 'usb'};
+    dialog.onSwitchAssignmentMaybeChanged_();
+
+    // Confirm that we're on the next page.
+    assertEquals(/*Auto-scan enabled=*/ 2, dialog.currentPageId_);
+    assertEquals(0, assignContents.children.length);
+
+    nextButton.click();
+    nextButton.click();
+
+    // Confirm that the pane loaded successfully.
+    assertEquals(/*Assign next=*/ 5, dialog.currentPageId_);
+    assertEquals(1, assignContents.children.length);
+    assertEquals('next', assignContents.firstChild.action);
+
+    // Simulate the user successfully assigning a switch.
+    dialog.prefs.settings.a11y.switch_access.next.device_key_codes.value =
+        {101: 'bluetooth'};
+    dialog.onSwitchAssignmentMaybeChanged_();
+
+    // Confirm that we're on the page to assign previous, and that there's only
+    // one dialog.
+    assertEquals(/*Assign previous=*/ 6, dialog.currentPageId_);
+    assertEquals(1, assignContents.children.length);
+    assertEquals('previous', assignContents.firstChild.action);
   });
 });

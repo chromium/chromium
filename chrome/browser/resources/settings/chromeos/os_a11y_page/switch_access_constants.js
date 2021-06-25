@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 /**
+ * Maps an action to its pref name.
+ * @const {!Object<SwitchAccessCommand, string>}
+ */
+/* #export */ const actionToPref = {
+  select: 'settings.a11y.switch_access.select.device_key_codes',
+  next: 'settings.a11y.switch_access.next.device_key_codes',
+  previous: 'settings.a11y.switch_access.previous.device_key_codes'
+};
+
+/**
  * The values that the auto-scan speed slider can have, in ms.
  * @type {!Array<number>}
  */

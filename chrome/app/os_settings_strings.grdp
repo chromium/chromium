@@ -1235,6 +1235,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_BODY" desc="The message displayed on the first page of the Switch Access setup guide, instructing the user to confirm that their external switch is appropriately connected to the chromebook. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     To get started, please make sure your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_SELECT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action select, which selects the element onscreen currently surrounded by the focus ring. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Assign switch: Select
+  </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_TITLE" desc="The title for the page of the Switch Access setup guide that informs the user that auto-scan has been enabled, meaning that the focused item will change periodically with no additional input. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Auto-scan enabled
   </message>
@@ -1267,6 +1270,12 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SPEED_DESCRIPTION" desc="The description on the page of the Switch Access setup guide adjusting the auto-scan speed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Choose how long the highlight should stay on each item
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_NEXT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action next, which advances the focus ring to the next element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Assign switch: Next
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_PREVIOUS_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action previous, which moves the focus ring to the previous element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Assign switch: Previous
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE" desc="The title for the final page of the Switch Access setup guide, which informs the user that setup is complete and provides some final information. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     You're all set!

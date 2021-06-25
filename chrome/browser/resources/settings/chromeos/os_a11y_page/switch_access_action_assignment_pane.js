@@ -26,17 +26,6 @@
 };
 
 /**
- * Maps a action to its pref name.
- * @const {!Object<SwitchAccessCommand, string>}
- * @private
- */
-/* #export */ const actionToPref = {
-  select: 'settings.a11y.switch_access.select.device_key_codes',
-  next: 'settings.a11y.switch_access.next.device_key_codes',
-  previous: 'settings.a11y.switch_access.previous.device_key_codes'
-};
-
-/**
  * Various icons representing the state of a given key assignment.
  * @enum {string}
  */

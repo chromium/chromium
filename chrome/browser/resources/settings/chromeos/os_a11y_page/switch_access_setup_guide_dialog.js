@@ -20,7 +20,7 @@ const SASetupElement = {
   PREVIOUS_BUTTON: 'previous',
   START_OVER_BUTTON: 'start-over',
   INTRO_CONTENT: 'intro',
-  ASSIGN_SELECT_CONTENT: 'assign-select',
+  ASSIGN_SWITCH_CONTENT: 'assign-switch',
   AUTO_SCAN_ENABLED_CONTENT: 'auto-scan-enabled',
   CHOOSE_SWITCH_COUNT_CONTENT: 'choose-switch-count',
   AUTO_SCAN_SPEED_CONTENT: 'auto-scan-speed',
@@ -64,13 +64,10 @@ SASetupPageList[SASetupPageId.INTRO] = {
   ]
 };
 
-// Placeholder.
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
-  titleId: 'switchAccessSetupIntroTitle',
-  visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.ASSIGN_SELECT_CONTENT
-  ]
+  titleId: 'switchAccessSetupAssignSelectTitle',
+  visibleElements:
+      [SASetupElement.EXIT_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
@@ -97,22 +94,16 @@ SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
   ]
 };
 
-// Placeholder.
 SASetupPageList[SASetupPageId.ASSIGN_NEXT] = {
-  titleId: 'switchAccessSetupIntroTitle',
-  visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.ASSIGN_SELECT_CONTENT
-  ]
+  titleId: 'switchAccessSetupAssignNextTitle',
+  visibleElements:
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
 };
 
-// Placeholder.
 SASetupPageList[SASetupPageId.ASSIGN_PREVIOUS] = {
-  titleId: 'switchAccessSetupIntroTitle',
-  visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.ASSIGN_SELECT_CONTENT
-  ]
+  titleId: 'switchAccessSetupAssignPreviousTitle',
+  visibleElements:
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
 };
 
 SASetupPageList[SASetupPageId.CLOSING] = {
@@ -203,6 +194,17 @@ Polymer({
     },
   },
 
+  listeners: {
+    'exit-pane': 'onSwitchAssignmentMaybeChanged_',
+  },
+
+  observers: [
+    `onSwitchAssignmentMaybeChanged_(
+        prefs.settings.a11y.switch_access.next.*,
+        prefs.settings.a11y.switch_access.previous.*,
+        prefs.settings.a11y.switch_access.select.*)`,
+  ],
+
   /** @override */
   created() {
     this.autoScanSpeedRangeMs_ =
@@ -214,6 +216,8 @@ Polymer({
    * @private
    */
   loadPage_(id) {
+    this.addOrRemoveAssignmentPane_(id);
+
     const newPage = SASetupPageList[id];
     this.$.title.textContent = this.i18n(newPage.titleId);
 
@@ -222,6 +226,55 @@ Polymer({
     }
 
     this.currentPageId_ = id;
+  },
+
+  /**
+   * The assignment pane prevents Switch Access from receiving key events when
+   * it is attached, which disables the user's navigational control. Therefore,
+   * we add the assignment pane only when it's about to be displayed, and remove
+   * it as soon as it's complete.
+   * @param {SASetupPageId} id
+   * @private
+   */
+  addOrRemoveAssignmentPane_(id) {
+    let action;
+    switch (id) {
+      case SASetupPageId.ASSIGN_SELECT:
+        action = SwitchAccessCommand.SELECT;
+        break;
+      case SASetupPageId.ASSIGN_NEXT:
+        action = SwitchAccessCommand.NEXT;
+        break;
+      case SASetupPageId.ASSIGN_PREVIOUS:
+        action = SwitchAccessCommand.PREVIOUS;
+    }
+
+    if (action) {
+      this.initializeAssignmentPane_(action);
+    } else {
+      this.removeAssignmentPaneIfPresent_();
+    }
+  },
+
+  /**
+   * @param {SwitchAccessCommand} action
+   * @private
+   */
+  initializeAssignmentPane_(action) {
+    this.removeAssignmentPaneIfPresent_();
+
+    const assignmentPane =
+        document.createElement('settings-switch-access-action-assignment-pane');
+    assignmentPane.action = action;
+    this.assignmentContentsElement.appendChild(assignmentPane);
+  },
+
+  /** @private */
+  removeAssignmentPaneIfPresent_() {
+    if (this.assignmentContentsElement.firstChild) {
+      this.assignmentContentsElement.removeChild(
+          this.assignmentContentsElement.firstChild);
+    }
   },
 
   /**
@@ -309,10 +362,13 @@ Polymer({
           'settings.a11y.switch_access.auto_scan.enabled', true);
     }
 
+    if (this.currentPageId_ === SASetupPageId.ASSIGN_NEXT) {
+      chrome.settingsPrivate.setPref(
+          'settings.a11y.switch_access.auto_scan.enabled', false);
+    }
+
     if (this.currentPageId_ === SASetupPageId.CLOSING) {
       if (this.switchCount_ >= 2) {
-        chrome.settingsPrivate.setPref(
-            'settings.a11y.switch_access.auto_scan.enabled', false);
         this['$']['closing-instructions'].textContent =
             this.i18n('switchAccessSetupClosingManualScanInstructions');
       } else {
@@ -385,6 +441,25 @@ Polymer({
     }
   },
 
+  /** @private */
+  onSwitchAssignmentMaybeChanged_() {
+    if (!this.assignmentContentsElement ||
+        !this.assignmentContentsElement.firstChild) {
+      return;
+    }
+
+    const currentAction = this.assignmentContentsElement.firstChild.action;
+    const prefValue = /** @type {!Object} */ (
+        this.getPref(actionToPref[currentAction]).value);
+    const hasSwitchAssigned = Object.keys(prefValue).length > 0;
+
+    if (hasSwitchAssigned) {
+      this.onNextClick_();
+    } else {
+      this.initializeAssignmentPane_(currentAction);
+    }
+  },
+
   /**
    * @param {number} scanSpeedValueMs
    * @return {string} a string representing the scan speed in seconds.
@@ -406,4 +481,11 @@ Polymer({
     return ticksInMs.map(
         x => ({label: `${this.scanSpeedStringInSec_(x)}`, value: x}));
   },
+
+  /** @private */
+  get assignmentContentsElement() {
+    return this['$'][SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
+        '.sa-setup-contents');
+  },
+
 });
