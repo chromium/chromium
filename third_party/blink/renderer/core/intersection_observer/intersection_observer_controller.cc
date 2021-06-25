@@ -62,7 +62,8 @@ void IntersectionObserverController::DeliverNotifications(
 
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
-    LocalFrameUkmAggregator& ukm_aggregator) {
+    LocalFrameUkmAggregator& ukm_aggregator,
+    absl::optional<base::TimeTicks>& monotonic_time) {
   needs_occlusion_tracking_ = false;
   if (GetExecutionContext()) {
     TRACE_EVENT0("blink,devtools.timeline",
@@ -79,14 +80,15 @@ bool IntersectionObserverController::ComputeIntersections(
       for (auto& observer : observers_to_process) {
         if (observer->HasObservations()) {
           // ukm_timer.StartInterval(observer->GetUkmMetricId());
-          needs_occlusion_tracking_ |= observer->ComputeIntersections(flags);
+          needs_occlusion_tracking_ |=
+              observer->ComputeIntersections(flags, monotonic_time);
         } else {
           tracked_explicit_root_observers_.erase(observer);
         }
       }
       for (auto& observation : observations_to_process) {
         // ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
-        observation->ComputeIntersection(flags);
+        observation->ComputeIntersection(flags, monotonic_time);
         needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
       }
     }

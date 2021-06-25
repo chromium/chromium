@@ -61,10 +61,12 @@ class CORE_EXPORT IntersectionObservation final
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_; }
   unsigned LastThresholdIndex() const { return last_threshold_index_; }
-  void ComputeIntersection(unsigned flags);
+  void ComputeIntersection(unsigned flags,
+                           absl::optional<base::TimeTicks>& monotonic_time);
   void ComputeIntersection(
       const IntersectionGeometry::RootGeometry& root_geometry,
-      unsigned flags);
+      unsigned flags,
+      absl::optional<base::TimeTicks>& monotonic_time);
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
   void InvalidateCachedRects();
@@ -74,12 +76,14 @@ class CORE_EXPORT IntersectionObservation final
   bool CanUseCachedRectsForTesting() const { return CanUseCachedRects(); }
 
  private:
-  bool ShouldCompute(unsigned flags);
+  bool ShouldCompute(unsigned flags) const;
+  bool MaybeDelayAndReschedule(unsigned flags, DOMHighResTimeStamp timestamp);
   bool CanUseCachedRects() const;
   unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;
   // Inspect the geometry to see if there has been a transition event; if so,
   // generate a notification and schedule it for delivery.
-  void ProcessIntersectionGeometry(const IntersectionGeometry& geometry);
+  void ProcessIntersectionGeometry(const IntersectionGeometry& geometry,
+                                   DOMHighResTimeStamp timestamp);
   void SetLastThresholdIndex(unsigned index) { last_threshold_index_ = index; }
   void SetWasVisible(bool last_is_visible) {
     last_is_visible_ = last_is_visible ? 1 : 0;

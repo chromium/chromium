@@ -96,7 +96,8 @@ void RemoteFrameView::DetachFromLayout() {
 }
 
 bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
-    unsigned parent_flags) {
+    unsigned parent_flags,
+    absl::optional<base::TimeTicks>&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
   return needs_occlusion_tracking_;
 }

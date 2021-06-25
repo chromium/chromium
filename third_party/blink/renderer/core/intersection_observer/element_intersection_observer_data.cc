@@ -61,9 +61,10 @@ void ElementIntersectionObserverData::StopTrackingWithController(
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
+  absl::optional<base::TimeTicks> monotonic_time;
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags);
+    entry.value->ComputeIntersection(flags, monotonic_time);
   }
   return needs_occlusion_tracking;
 }

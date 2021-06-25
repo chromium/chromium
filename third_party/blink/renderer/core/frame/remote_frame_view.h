@@ -51,7 +51,9 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void Hide() override;
   void Show() override;
 
-  bool UpdateViewportIntersectionsForSubtree(unsigned parent_flags) override;
+  bool UpdateViewportIntersectionsForSubtree(
+      unsigned parent_flags,
+      absl::optional<base::TimeTicks>&) override;
   void SetNeedsOcclusionTracking(bool);
   bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
 

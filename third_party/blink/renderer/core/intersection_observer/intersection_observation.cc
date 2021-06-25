@@ -43,25 +43,54 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 
 void IntersectionObservation::ComputeIntersection(
     const IntersectionGeometry::RootGeometry& root_geometry,
-    unsigned compute_flags) {
+    unsigned compute_flags,
+    absl::optional<base::TimeTicks>& monotonic_time) {
+  DCHECK(Observer());
+  if (compute_flags &
+      (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
+                                   : kExplicitRootObserversNeedUpdate)) {
+    needs_update_ = true;
+  }
   if (!ShouldCompute(compute_flags))
+    return;
+  if (!monotonic_time.has_value())
+    monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
+  DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
+  if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return;
   DCHECK(observer_->root());
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
       root_geometry, *observer_->root(), *Target(), observer_->thresholds(),
       observer_->TargetMargin(), geometry_flags, cached_rects_.get());
-  ProcessIntersectionGeometry(geometry);
+  ProcessIntersectionGeometry(geometry, timestamp);
+  last_run_time_ = timestamp;
+  needs_update_ = false;
 }
 
-void IntersectionObservation::ComputeIntersection(unsigned compute_flags) {
+void IntersectionObservation::ComputeIntersection(
+    unsigned compute_flags,
+    absl::optional<base::TimeTicks>& monotonic_time) {
+  DCHECK(Observer());
+  if (compute_flags &
+      (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
+                                   : kExplicitRootObserversNeedUpdate)) {
+    needs_update_ = true;
+  }
   if (!ShouldCompute(compute_flags))
+    return;
+  if (!monotonic_time.has_value())
+    monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
+  DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
+  if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return;
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
       observer_->root(), *Target(), observer_->RootMargin(),
       observer_->thresholds(), observer_->TargetMargin(), geometry_flags);
-  ProcessIntersectionGeometry(geometry);
+  ProcessIntersectionGeometry(geometry, timestamp);
+  last_run_time_ = timestamp;
+  needs_update_ = false;
 }
 
 void IntersectionObservation::TakeRecords(
@@ -99,11 +128,9 @@ void IntersectionObservation::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
 }
 
-bool IntersectionObservation::ShouldCompute(unsigned flags) {
-  DCHECK(Observer());
+bool IntersectionObservation::ShouldCompute(unsigned flags) const {
   if (!target_ || !observer_->RootIsValid() | !observer_->GetExecutionContext())
     return false;
-
   // If we're processing post-layout deliveries only and we don't have a
   // post-layout delivery observer, then return early. Likewise, return if we
   // need to compute non-post-layout-delivery observations but the observer
@@ -114,23 +141,8 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) {
       IntersectionObserver::kDeliverDuringPostLayoutSteps;
   if (post_layout_delivery_only != is_post_layout_delivery_observer)
     return false;
-
-  if (flags &
-      (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
-                                   : kExplicitRootObserversNeedUpdate)) {
-    needs_update_ = true;
-  }
   if (!needs_update_)
     return false;
-  DOMHighResTimeStamp timestamp = observer_->GetTimeStamp();
-  if (timestamp == -1)
-    return false;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      observer_->GetEffectiveDelay() - (timestamp - last_run_time_));
-  if (!(flags & kIgnoreDelay) && delay > base::TimeDelta()) {
-    TrackingDocument(this).View()->ScheduleAnimation(delay);
-    return false;
-  }
   if (target_->isConnected() && Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
         target_->GetDocument().GetFrame()->GetOcclusionState();
@@ -140,9 +152,21 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) {
     if (occlusion_state == mojom::blink::FrameOcclusionState::kUnknown)
       return false;
   }
-  last_run_time_ = timestamp;
-  needs_update_ = false;
   return true;
+}
+
+bool IntersectionObservation::MaybeDelayAndReschedule(
+    unsigned flags,
+    DOMHighResTimeStamp timestamp) {
+  if (timestamp == -1)
+    return true;
+  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
+      observer_->GetEffectiveDelay() - (timestamp - last_run_time_));
+  if (!(flags & kIgnoreDelay) && delay > base::TimeDelta()) {
+    TrackingDocument(this).View()->ScheduleAnimation(delay);
+    return true;
+  }
+  return false;
 }
 
 bool IntersectionObservation::CanUseCachedRects() const {
@@ -206,13 +230,14 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
 }
 
 void IntersectionObservation::ProcessIntersectionGeometry(
-    const IntersectionGeometry& geometry) {
+    const IntersectionGeometry& geometry,
+    DOMHighResTimeStamp timestamp) {
   CHECK_LT(geometry.ThresholdIndex(), kMaxThresholdIndex - 1);
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
-        geometry, last_run_time_, Target()));
+        geometry, timestamp, Target()));
     Observer()->ReportUpdates(*this);
     SetLastThresholdIndex(geometry.ThresholdIndex());
     SetWasVisible(geometry.IsVisible());

@@ -366,12 +366,15 @@ void IntersectionObserver::observe(Element* target,
   } else {
     // The IntersectionObsever spec requires that at least one observation
     // be recorded after observe() is called, even if the target is detached.
+    absl::optional<base::TimeTicks> monotonic_time;
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
-        IntersectionObservation::kExplicitRootObserversNeedUpdate |
-        IntersectionObservation::kIgnoreDelay |
-        (use_overflow_clip_edge_ ? IntersectionObservation::kUseOverflowClipEdge
-                                 : 0));
+            IntersectionObservation::kExplicitRootObserversNeedUpdate |
+            IntersectionObservation::kIgnoreDelay |
+            (use_overflow_clip_edge_
+                 ? IntersectionObservation::kUseOverflowClipEdge
+                 : 0),
+        monotonic_time);
   }
 }
 
@@ -448,13 +451,16 @@ DOMHighResTimeStamp IntersectionObserver::GetEffectiveDelay() const {
   return throttle_delay_enabled ? delay_ : 0;
 }
 
-DOMHighResTimeStamp IntersectionObserver::GetTimeStamp() const {
+DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
+    base::TimeTicks monotonic_time) const {
   return DOMWindowPerformance::performance(
              *To<LocalDOMWindow>(delegate_->GetExecutionContext()))
-      ->now();
+      ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
 }
 
-bool IntersectionObserver::ComputeIntersections(unsigned flags) {
+bool IntersectionObserver::ComputeIntersections(
+    unsigned flags,
+    absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.IsEmpty())
     return false;
@@ -482,7 +488,7 @@ bool IntersectionObserver::ComputeIntersections(unsigned flags) {
   // TODO(szager): Is this copy necessary?
   CopyToVector(observations_, observations_to_process);
   for (auto& observation : observations_to_process) {
-    observation->ComputeIntersection(root_geometry, flags);
+    observation->ComputeIntersection(root_geometry, flags, monotonic_time);
   }
   can_use_cached_rects_ = 1;
   return trackVisibility();

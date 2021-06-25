@@ -156,7 +156,7 @@ class CORE_EXPORT IntersectionObserver final
     return trackVisibility() && !observations_.IsEmpty();
   }
 
-  DOMHighResTimeStamp GetTimeStamp() const;
+  DOMHighResTimeStamp GetTimeStamp(base::TimeTicks monotonic_time) const;
   DOMHighResTimeStamp GetEffectiveDelay() const;
   Vector<Length> RootMargin() const {
     return margin_target_ == kApplyMarginToRoot ? margin_ : Vector<Length>();
@@ -165,7 +165,8 @@ class CORE_EXPORT IntersectionObserver final
     return margin_target_ == kApplyMarginToTarget ? margin_ : Vector<Length>();
   }
 
-  bool ComputeIntersections(unsigned flags);
+  bool ComputeIntersections(unsigned flags,
+                            absl::optional<base::TimeTicks>& monotonic_time);
 
   LocalFrameUkmAggregator::MetricId GetUkmMetricId() const;
 

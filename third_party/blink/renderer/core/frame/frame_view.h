@@ -24,7 +24,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // parent_flags is the result of calling GetIntersectionObservationFlags on
   // the LocalFrameView parent of this FrameView (if any). It contains dirty
   // bits based on whether geometry may have changed in the parent frame.
-  virtual bool UpdateViewportIntersectionsForSubtree(unsigned parent_flags) = 0;
+  virtual bool UpdateViewportIntersectionsForSubtree(
+      unsigned parent_flags,
+      absl::optional<base::TimeTicks>& monotonic_time) = 0;
 
   virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
   virtual bool HasIntrinsicSizingInfo() const = 0;
