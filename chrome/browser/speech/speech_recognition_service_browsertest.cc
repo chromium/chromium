@@ -30,6 +30,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -245,7 +246,7 @@ void SpeechRecognitionServiceTest::LaunchService() {
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true),
+          /*enable_formatting=*/true, "en-US"),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {
@@ -277,7 +278,7 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kIme,
-          /*enable_formatting=*/false),
+          /*enable_formatting=*/false, "en-US"),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {

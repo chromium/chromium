@@ -46,8 +46,6 @@ class CrosSpeechRecognitionService
       BindRecognizerCallback callback) override;
 
  private:
-  void PopulateFilePaths(base::FilePath& binary_path,
-                         base::FilePath& languagepack_path);
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
 };

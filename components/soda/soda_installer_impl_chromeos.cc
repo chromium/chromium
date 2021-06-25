@@ -32,7 +32,11 @@ base::FilePath SodaInstallerImplChromeOS::GetSodaBinaryPath() const {
   return soda_lib_path_;
 }
 
-base::FilePath SodaInstallerImplChromeOS::GetLanguagePath() const {
+base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
+    const std::string& language) const {
+  // TODO(crbug.com/1161569): Support multiple languages. Currently only en-US
+  // is supported.
+  DCHECK_EQ(language, kUsEnglishLocale);
   return language_path_;
 }
 
@@ -56,6 +60,8 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
 
 void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
                                                 PrefService* global_prefs) {
+  // TODO(crbug.com/1161569): SODA is only available for en-US right now.
+  DCHECK_EQ(language, kUsEnglishLocale);
   SodaInstaller::RegisterLanguage(language, global_prefs);
   // Clear cached path in case this is a reinstallation (path could
   // change).
@@ -64,7 +70,7 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
   // TODO(crbug.com/1055150): Compare user's language to a list of
   // supported languages and map it to a DLC ID. For now, default to
   // installing the SODA English-US DLC.
-  DCHECK_EQ(language, "en-US");
+  DCHECK_EQ(language, kUsEnglishLocale);
 
   language_installed_ = false;
   is_language_downloading_ = true;
@@ -84,12 +90,18 @@ bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
 }
 
 bool SodaInstallerImplChromeOS::IsLanguageInstalled(
-    const std::string& locale_or_language) const {
+    const std::string& language) const {
   // TODO(crbug.com/1161569): SODA is only available for English right now.
   // Update this to check installation of language pack when available.
-  return (l10n_util::GetLanguage(locale_or_language) == "en" &&
-          language_installed_) ||
+  return (language_installed_ && language == kUsEnglishLocale) ||
          soda_installed_for_test_;
+}
+
+std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
+    const {
+  // TODO(crbug.com/1161569): SODA is only available for English right now.
+  // Update this to check available languages.
+  return {kUsEnglishLocale};
 }
 
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {

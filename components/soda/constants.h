@@ -14,6 +14,8 @@
 
 namespace speech {
 
+extern const char kUsEnglishLocale[];
+
 enum class LanguageCode {
   kNone = 0,
   kEnUs = 1,

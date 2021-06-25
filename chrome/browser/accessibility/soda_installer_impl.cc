@@ -66,7 +66,8 @@ base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
   return base::FilePath();
 }
 
-base::FilePath SodaInstallerImpl::GetLanguagePath() const {
+base::FilePath SodaInstallerImpl::GetLanguagePath(
+    const std::string& language) const {
   DLOG(FATAL) << "GetLanguagePath not supported on this platform";
   return base::FilePath();
 }
@@ -89,6 +90,8 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
 
 void SodaInstallerImpl::InstallLanguage(const std::string& language,
                                         PrefService* global_prefs) {
+  // TODO(crbug.com/1161569): SODA is only available for en-US right now.
+  DCHECK_EQ(language, kUsEnglishLocale);
   language_installed_ = false;
   SodaInstaller::RegisterLanguage(language, global_prefs);
   component_updater::RegisterSodaLanguageComponent(
@@ -107,12 +110,16 @@ bool SodaInstallerImpl::IsSodaInstalled() const {
   return soda_binary_installed_ && language_installed_;
 }
 
-bool SodaInstallerImpl::IsLanguageInstalled(
-    const std::string& locale_or_language) const {
+bool SodaInstallerImpl::IsLanguageInstalled(const std::string& language) const {
   // TODO(crbug.com/1161569): SODA is only available for en-US right now.
   // Update this to check installation of language pack when available.
-  return l10n_util::GetLanguage(locale_or_language) == "en" &&
-         language_installed_;
+  return language == kUsEnglishLocale && language_installed_;
+}
+
+std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
+  // TODO(crbug.com/1161569): SODA is only available for English right now.
+  // Update this to check available languages.
+  return {kUsEnglishLocale};
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {

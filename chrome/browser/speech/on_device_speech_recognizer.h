@@ -29,11 +29,10 @@ class OnDeviceSpeechRecognizer
       public media::mojom::SpeechRecognitionRecognizerClient {
  public:
   // Returns true if on-device speech recognition is available and installed
-  // on-device.
-  static bool IsOnDeviceSpeechRecognizerAvailable(
-      std::string language_or_locale);
+  // on-device for the given language (BCP-47 format, e.g. "en-US").
+  static bool IsOnDeviceSpeechRecognizerAvailable(const std::string& language);
 
-  // |language_or_locale| specificies the recognition language.
+  // |language| specificies the recognition language in BCP-47 format.
   // |recognition_mode_ime| is whether to use speech recognition configured for
   // IME or Captions.
   // |enable_formatting| is whether to include extra, assumed formatting and
@@ -42,7 +41,7 @@ class OnDeviceSpeechRecognizer
   OnDeviceSpeechRecognizer(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       Profile* profile,
-      std::string language_or_locale,
+      const std::string& language,
       bool recognition_mode_ime,
       bool enable_formatting);
   ~OnDeviceSpeechRecognizer() override;
@@ -76,7 +75,7 @@ class OnDeviceSpeechRecognizer
 
   SpeechRecognizerStatus state_;
   bool is_multichannel_supported_;
-  std::string language_or_locale_;
+  std::string language_;
 
   // Whether we are waiting for the AudioParameters callback to return. Used
   // to ensure Start doesn't keep starting if Stop or Error were called

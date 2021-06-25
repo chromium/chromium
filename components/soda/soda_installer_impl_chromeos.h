@@ -29,16 +29,16 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // Empty if SODA DLC not installed yet.
   base::FilePath GetSodaBinaryPath() const override;
 
-  // Where the SODA language pack DLC was installed. Cached on completed
-  // installation. Empty if not installed yet.
-  base::FilePath GetLanguagePath() const override;
+  // Where the SODA language pack DLC was installed for a given language.
+  // Cached on completed installation. Empty if not installed yet.
+  base::FilePath GetLanguagePath(const std::string& language) const override;
 
   // SodaInstaller:
   void InstallLanguage(const std::string& language,
                        PrefService* global_prefs) override;
   bool IsSodaInstalled() const override;
-  bool IsLanguageInstalled(
-      const std::string& locale_or_language) const override;
+  bool IsLanguageInstalled(const std::string& language) const override;
+  std::vector<std::string> GetAvailableLanguages() const override;
 
   void set_soda_installed_for_test(bool installed) {
     soda_installed_for_test_ = installed;

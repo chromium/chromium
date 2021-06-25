@@ -76,10 +76,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // platforms.
   virtual base::FilePath GetSodaBinaryPath() const = 0;
 
-  // Gets the directory path of the installed SODA language bundle, or an empty
+  // Gets the directory path of the installed SODA language bundle given a
+  // localized language code in BCP-47 (e.g. "en-US"), or an empty
   // path if not installed. Currently Chrome OS only, returns empty path on
   // other platforms.
-  virtual base::FilePath GetLanguagePath() const = 0;
+  virtual base::FilePath GetLanguagePath(const std::string& language) const = 0;
 
   // Installs the user-selected SODA language model. Called by
   // LiveCaptionController when the kLiveCaptionEnabled or
@@ -94,10 +95,13 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // asynchronously returned an answer.
   virtual bool IsSodaInstalled() const = 0;
 
-  // Returns whether or not the language pack for a given language or locale
-  // code is installed.
-  virtual bool IsLanguageInstalled(
-      const std::string& locale_or_language) const = 0;
+  // Returns whether or not the language pack for a given language is
+  // installed. The language should be localized in BCP-47, e.g. "en-US".
+  virtual bool IsLanguageInstalled(const std::string& language) const = 0;
+
+  // Gets all installed and installable language codes supported by SODA
+  // (in BCP-47 format).
+  virtual std::vector<std::string> GetAvailableLanguages() const = 0;
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);

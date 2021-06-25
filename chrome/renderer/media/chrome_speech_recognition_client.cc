@@ -140,12 +140,13 @@ void ChromeSpeechRecognitionClient::Initialize() {
   mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_receiver =
           speech_recognition_context_.BindNewPipeAndPassReceiver();
+  media::mojom::SpeechRecognitionOptionsPtr options =
+      media::mojom::SpeechRecognitionOptions::New();
+  options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+  options->enable_formatting = true;
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
-      std::move(speech_recognition_client_remote),
-      media::mojom::SpeechRecognitionOptions::New(
-          media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true),
+      std::move(speech_recognition_client_remote), std::move(options),
       media::BindToCurrentLoop(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));

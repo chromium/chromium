@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
+#include "base/stl_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
@@ -13,6 +14,35 @@
 #include "media/base/media_switches.h"
 
 namespace speech {
+
+namespace {
+
+void PopulateFilePaths(const std::string* language,
+                       base::FilePath& binary_path,
+                       base::FilePath& languagepack_path) {
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!soda_installer->IsSodaInstalled()) {
+    LOG(DFATAL) << "Instantiation of SODA requested without SODA being "
+                   "installed";
+    return;
+  }
+
+  // TODO(crbug.com/1161569): Language should not be optional in
+  // PopulateFilePaths, as it will be required once we support multiple
+  // languages since the CrosSpeechRecognitionService supports several
+  // features at once. For now only US English is available.
+  std::string language_code = language ? *language : kUsEnglishLocale;
+  if (!soda_installer->IsLanguageInstalled(language_code)) {
+    LOG(DFATAL) << "Instantiation of SODA requested with language "
+                << language_code
+                << ", but the requested language was not installed.";
+    return;
+  }
+  binary_path = soda_installer->GetSodaBinaryPath();
+  languagepack_path = soda_installer->GetLanguagePath(language_code);
+}
+
+}  // namespace
 
 CrosSpeechRecognitionService::CrosSpeechRecognitionService(
     content::BrowserContext* context)
@@ -36,7 +66,8 @@ void CrosSpeechRecognitionService::BindRecognizer(
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(binary_path, languagepack_path);
+  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+                    languagepack_path);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client),
@@ -52,7 +83,8 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
-  PopulateFilePaths(binary_path, languagepack_path);
+  PopulateFilePaths(base::OptionalOrNullptr(options->language), binary_path,
+                    languagepack_path);
 
   // CrosSpeechRecognitionService runs on browser UI thread.
   // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
@@ -68,19 +100,6 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
               std::move(options), binary_path, languagepack_path)));
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
-}
-
-void CrosSpeechRecognitionService::PopulateFilePaths(
-    base::FilePath& binary_path,
-    base::FilePath& languagepack_path) {
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer->IsSodaInstalled()) {
-    binary_path = soda_installer->GetSodaBinaryPath();
-    languagepack_path = soda_installer->GetLanguagePath();
-  } else {
-    LOG(DFATAL)
-        << "Instantiation of SODA requested without SODA being installed.";
-  }
 }
 
 }  // namespace speech

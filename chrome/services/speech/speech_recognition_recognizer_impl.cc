@@ -281,7 +281,9 @@ void SpeechRecognitionRecognizerImpl::
       CloudSpeechConfig config;
       config.sample_rate = sample_rate_;
       config.channel_count = channel_count_;
-      config.language_code = "en-US";
+      // TODO(crbug.com/1161569): This should be chosen dynamically, probably
+      // via options_->language.
+      config.language_code = speech::kUsEnglishLocale;
       cloud_client_->Initialize(config);
     }
 
@@ -327,6 +329,11 @@ void SpeechRecognitionRecognizerImpl::RecordDuration() {
 void SpeechRecognitionRecognizerImpl::ResetSoda() {
   // Initialize the SODA instance.
   auto api_key = google_apis::GetSodaAPIKey();
+
+  // TODO(crbug.com/1161569): Use language from SpeechRecognitionOptions
+  // to determine the appropriate language pack path. Note that
+  // SodaInstaller::GetLanguagePath() is not implemented outside of Chrome OS,
+  // and options_->language is not set for Live Caption.
   std::string language_pack_directory = config_path_.AsUTF8Unsafe();
 
   // Initialize the SODA instance with the serialized config.

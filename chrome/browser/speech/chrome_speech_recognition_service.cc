@@ -106,6 +106,10 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 
 base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
     PrefService* prefs) {
+  // TODO(crbug.com/1161569): Language pack path should be configurable per
+  // SpeechRecognitionRecognizer to allow multiple features to use Speech
+  // recognition. For now, only Live Caption uses SpeechRecognitionService on
+  // non-Chrome OS Chrome, so hard-coding to the Live Caption language code.
   absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfig(
           prefs->GetString(prefs::kLiveCaptionLanguageCode));
