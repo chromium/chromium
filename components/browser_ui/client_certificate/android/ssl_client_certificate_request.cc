@@ -303,15 +303,16 @@ void ClientCertRequest::OnCancel() {
 }  // namespace
 
 // Called from JNI on request completion/result.
-// |env| is the current thread's JNIEnv.
-// |clazz| is the SSLClientCertificateRequest JNI class reference.
-// |request_id| is the id passed to
-// Java_SSLClientCertificateRequest_selectClientCertificate() in Start().
-// |encoded_chain_ref| is a JNI reference to a Java array of byte arrays,
-// each item holding a DER-encoded X.509 certificate.
-// |private_key_ref| is the platform PrivateKey object JNI reference for
-// the client certificate.
-// Note: both |encoded_chain_ref| and |private_key_ref| will be NULL if
+// - |env| is the current thread's JNIEnv.
+// - |request_id| is the id passed to
+//   |Java_SSLClientCertificateRequest_selectClientCertificate| in
+//   ||StartClientCertificateRequest|.
+// - |encoded_chain_ref| is a JNI reference to a Java array of byte arrays, each
+//   item holding a DER-encoded X.509 certificate.
+// - |private_key_ref| is the platform PrivateKey object JNI reference for the
+//   client certificate.
+//
+// Note: both |encoded_chain_ref| and |private_key_ref| will be nullptr if
 // the user didn't select a certificate.
 static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     JNIEnv* env,
@@ -324,7 +325,7 @@ static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
   std::unique_ptr<ClientCertRequest> request(
       reinterpret_cast<ClientCertRequest*>(request_id));
 
-  if (encoded_chain_ref == NULL || private_key_ref == NULL) {
+  if (!encoded_chain_ref || !private_key_ref) {
     LOG(ERROR) << "No client certificate selected";
     request->CertificateSelected(nullptr, nullptr);
     return;
@@ -336,15 +337,13 @@ static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     base::android::JavaArrayOfByteArrayToStringVector(env, encoded_chain_ref,
                                                       &encoded_chain_strings);
   }
-
-  std::vector<base::StringPiece> encoded_chain;
-  for (size_t n = 0; n < encoded_chain_strings.size(); ++n)
-    encoded_chain.push_back(encoded_chain_strings[n]);
+  const std::vector<base::StringPiece> encoded_chain(
+      encoded_chain_strings.cbegin(), encoded_chain_strings.cend());
 
   // Create the X509Certificate object from the encoded chain.
   scoped_refptr<net::X509Certificate> client_cert(
       net::X509Certificate::CreateFromDERCertChain(encoded_chain));
-  if (!client_cert.get()) {
+  if (!client_cert) {
     LOG(ERROR) << "Could not decode client certificate chain";
     return;
   }

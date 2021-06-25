@@ -16,7 +16,7 @@ class WebContents;
 
 namespace net {
 class SSLCertRequestInfo;
-}
+}  // namespace net
 
 namespace browser_ui {
 
