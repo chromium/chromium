@@ -1798,6 +1798,9 @@ crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 
+crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.https.html [ Pass Failure ]
+crbug.com/1223681 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Pass Failure Timeout ]
+
 # crbug.com/1218723 This test fails when SplitCacheByNetworkIsolationKey is enabled.
 crbug.com/1218723 http/tests/devtools/network/network-prefetch.js [ Failure ]
 
@@ -2631,7 +2634,6 @@ crbug.com/626703 [ Win ] external/wpt/density-size-correction/image-set-003.html
 crbug.com/626703 external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
-crbug.com/626703 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-009.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Timeout ]
