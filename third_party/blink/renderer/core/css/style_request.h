@@ -43,7 +43,11 @@ class StyleRequest {
   StyleRequest() = default;
 
   bool IsPseudoStyleRequest() const { return pseudo_id != kPseudoIdNone; }
-
+  PseudoId StyleType() const { return pseudo_id; }
+  PseudoId PseudoIdForMatching() const {
+    return pseudo_id == kPseudoIdSelectionInactive ? kPseudoIdSelection
+                                                   : pseudo_id;
+  }
   const ComputedStyle* parent_override{nullptr};
   const ComputedStyle* layout_parent_override{nullptr};
   RuleMatchingBehavior matching_behavior{kMatchAllRules};

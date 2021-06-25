@@ -167,11 +167,13 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
   if (pseudo == kPseudoIdSelection &&
       element->GetDocument().GetStyleEngine().UsesWindowInactiveSelector() &&
       !element->GetDocument().GetPage()->GetFocusController().IsActive()) {
-    // ::selection and ::selection:window-inactive styles may be different. Only
-    // cache the styles for ::selection if there are no :window-inactive
-    // selector, or if the page is active.
-    return element->UncachedStyleForPseudoElement(
-        StyleRequest(pseudo, element->GetComputedStyle(), pseudo_argument));
+    // ::selection and ::selection:window-inactive styles may be different.
+    // Cache them separately by passing a pseudo id for inactive selection
+    // styles. CachedStyleForPseudoElement will match using kPseudoIdSelection,
+    // but store with style-type kPseudoIdSelectionInactive in the cache.
+    // The CSS Pseudo spec does not support inactive selection, or other
+    // highlight styles, but :window-inactive is a non-standard Blink pseudo.
+    pseudo = kPseudoIdSelectionInactive;
   }
 
   return element->CachedStyleForPseudoElement(pseudo, pseudo_argument);
