@@ -85,11 +85,12 @@ TEST_F(SignalFilterProcessorTest, UserActionRegistrationFlow) {
 TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
   std::string kHistogramName1 = "some_histogram_1";
   segment_database_->AddHistogramValueFeature(
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS, kHistogramName1);
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      kHistogramName1, 1, proto::Aggregation::SUM_COUNT);
   std::string kHistogramName2 = "some_histogram_2";
   segment_database_->AddHistogramValueFeature(
-      OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      kHistogramName2);
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      kHistogramName2, 1, proto::Aggregation::SUM_COUNT);
 
   std::set<std::pair<std::string, proto::SignalType>> histograms;
   EXPECT_CALL(*histogram_signal_handler_, SetRelevantHistograms(_))

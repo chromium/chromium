@@ -93,7 +93,9 @@ void TestSegmentInfoDatabase::AddUserActionFeature(
 
 void TestSegmentInfoDatabase::AddHistogramValueFeature(
     OptimizationTarget segment_id,
-    const std::string& histogram_name) {
+    const std::string& histogram_name,
+    int64_t length,
+    proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
   proto::Feature* feature = metadata->add_features();
@@ -101,6 +103,28 @@ void TestSegmentInfoDatabase::AddHistogramValueFeature(
       feature->mutable_histogram_value();
   histogram_value->set_name(histogram_name);
   histogram_value->set_name_hash(base::HashMetricName(histogram_name));
+  feature->set_length(length);
+  feature->set_aggregation(aggregation);
+}
+
+void TestSegmentInfoDatabase::AddHistogramEnumFeature(
+    OptimizationTarget segment_id,
+    const std::string& histogram_name,
+    int64_t length,
+    proto::Aggregation aggregation,
+    const std::vector<int32_t>& accepted_enum_ids) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
+  proto::Feature* feature = metadata->add_features();
+  proto::HistogramEnumFeature* histogram_enum =
+      feature->mutable_histogram_enum();
+  histogram_enum->set_name(histogram_name);
+  histogram_enum->set_name_hash(base::HashMetricName(histogram_name));
+  for (int32_t accepted_enum_id : accepted_enum_ids)
+    histogram_enum->add_enum_ids(accepted_enum_id);
+
+  feature->set_length(length);
+  feature->set_aggregation(aggregation);
 }
 
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,

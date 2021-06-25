@@ -41,7 +41,14 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                             int64_t length,
                             proto::Aggregation aggregation);
   void AddHistogramValueFeature(OptimizationTarget segment_id,
-                                const std::string& histogram);
+                                const std::string& histogram,
+                                int64_t length,
+                                proto::Aggregation aggregation);
+  void AddHistogramEnumFeature(OptimizationTarget segment_id,
+                               const std::string& histogram_name,
+                               int64_t length,
+                               proto::Aggregation aggregation,
+                               const std::vector<int32_t>& accepted_enum_ids);
   void AddPredictionResult(OptimizationTarget segment_id,
                            float score,
                            base::Time timestamp);
