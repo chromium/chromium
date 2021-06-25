@@ -39,7 +39,8 @@ constexpr int kAnnotationPaddingBottom = 16;
 constexpr int kAnnotationPaddingTop = 6;
 constexpr char kTabKey[] = "tab";
 constexpr SkColor kConfirmedTextColor = gfx::kGoogleGrey900;
-constexpr SkColor kSuggestionColor = gfx::kGoogleGrey700;
+constexpr SkColor kSuggestionColor =
+    SkColorSetA(gfx::kGoogleGrey700, 0xB3);  // 70% opacity
 constexpr SkColor kButtonHighlightColor =
     SkColorSetA(SK_ColorBLACK, 0x0F);  // 6% Black.
 
