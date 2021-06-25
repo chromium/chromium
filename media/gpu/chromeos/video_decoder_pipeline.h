@@ -223,9 +223,6 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Call |client_flush_cb_| with |status|.
   void CallFlushCbIfNeeded(DecodeStatus status);
 
-  // Handle ImageProcessor error callback.
-  void OnImageProcessorError();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback for when transcryption of a buffer completes.
   void OnBufferTranscrypted(scoped_refptr<DecoderBuffer> transcrypted_buffer,
@@ -286,11 +283,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Set to true when any unexpected error occurs.
   bool has_error_ = false;
 
-  base::WeakPtr<VideoDecoderPipeline> client_weak_this_;
   base::WeakPtr<VideoDecoderPipeline> decoder_weak_this_;
-
-  // The weak pointer of this, bound to |client_task_runner_|.
-  base::WeakPtrFactory<VideoDecoderPipeline> client_weak_this_factory_{this};
   // The weak pointer of this, bound to |decoder_task_runner_|.
   base::WeakPtrFactory<VideoDecoderPipeline> decoder_weak_this_factory_{this};
 };

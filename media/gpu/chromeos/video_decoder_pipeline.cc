@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "media/base/async_destroy_video_decoder.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -107,7 +108,6 @@ VideoDecoderPipeline::VideoDecoderPipeline(
   DCHECK(client_task_runner_);
   DVLOGF(2);
 
-  client_weak_this_ = client_weak_this_factory_.GetWeakPtr();
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
 
   main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
@@ -140,7 +140,6 @@ void VideoDecoderPipeline::DestroyAsync(
   DCHECK(decoder);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder->client_sequence_checker_);
 
-  decoder->client_weak_this_factory_.InvalidateWeakPtrs();
   auto* decoder_task_runner = decoder->decoder_task_runner_.get();
   decoder_task_runner->DeleteSoon(FROM_HERE, std::move(decoder));
 }
@@ -541,8 +540,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
       ImageProcessorFactory::CreateWithInputCandidates(
           candidates, visible_rect.size(), kNumFramesForImageProcessor,
           decoder_task_runner_, base::BindRepeating(&PickRenderableFourcc),
-          base::BindRepeating(&VideoDecoderPipeline::OnImageProcessorError,
-                              decoder_weak_this_));
+          BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
+                                                decoder_weak_this_,
+                                                "ImageProcessor error")));
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
     return absl::nullopt;
@@ -562,15 +562,6 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   }
 
   return std::make_pair(fourcc, size);
-}
-
-void VideoDecoderPipeline::OnImageProcessorError() {
-  VLOGF(1);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-
-  client_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoDecoderPipeline::OnError,
-                                client_weak_this_, "Image processor error"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
