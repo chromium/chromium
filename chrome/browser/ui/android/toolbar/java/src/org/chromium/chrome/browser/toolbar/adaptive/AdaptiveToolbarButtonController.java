@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
+
 import android.content.Context;
 import android.view.View;
 
@@ -17,6 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -33,8 +36,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
-public class AdaptiveToolbarButtonController
-        implements ButtonDataProvider, ButtonDataObserver, NativeInitObserver {
+public class AdaptiveToolbarButtonController implements ButtonDataProvider, ButtonDataObserver,
+                                                        NativeInitObserver,
+                                                        SharedPreferencesManager.Observer {
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable
     private ButtonDataProvider mSingleProvider;
@@ -56,6 +60,7 @@ public class AdaptiveToolbarButtonController
     private boolean mIsSessionVariantRecorded;
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final SharedPreferencesManager mSharedPreferencesManager;
 
     @Nullable
     private View.OnLongClickListener mMenuHandler;
@@ -71,7 +76,8 @@ public class AdaptiveToolbarButtonController
      */
     public AdaptiveToolbarButtonController(Context context, SettingsLauncher settingsLauncher,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            AdaptiveButtonActionMenuCoordinator menuCoordinator) {
+            AdaptiveButtonActionMenuCoordinator menuCoordinator,
+            SharedPreferencesManager sharedPreferencesManager) {
         mMenuClickListener = id -> {
             if (id == R.id.customize_adaptive_button_menu_id) {
                 RecordUserAction.record("MobileAdaptiveMenuCustomize");
@@ -84,6 +90,8 @@ public class AdaptiveToolbarButtonController
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mMenuCoordinator = menuCoordinator;
+        mSharedPreferencesManager = sharedPreferencesManager;
+        mSharedPreferencesManager.addObserver(this);
     }
 
     /**
@@ -119,6 +127,7 @@ public class AdaptiveToolbarButtonController
     public void destroy() {
         setSingleProvider(null);
         mObservers.clear();
+        mSharedPreferencesManager.removeObserver(this);
         mLifecycleDispatcher.unregister(this);
 
         Iterator<Map.Entry<Integer, ButtonDataProvider>> it =
@@ -236,5 +245,18 @@ public class AdaptiveToolbarButtonController
     @VisibleForTesting
     public ButtonDataProvider getSingleProviderForTesting() {
         return mSingleProvider;
+    }
+
+    @Override
+    public void onPreferenceChanged(String key) {
+        if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)) {
+            assert AdaptiveToolbarFeatures.isCustomizationEnabled();
+            new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
+                setSingleProvider(uiState.canShowUi
+                                ? mButtonDataProviderMap.get(uiState.toolbarButtonState)
+                                : null);
+                notifyObservers(uiState.canShowUi);
+            });
+        }
     }
 }
