@@ -610,7 +610,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     chrome.automation.getFocus((focus) => {
       // Desktop tabs get "selection" when there's a focused webview during
       // tab switching. Read it, but don't steal focus which is usually on the
-      // monibox.
+      // omnibox.
       if (evt.target.role === RoleType.TAB &&
           evt.target.root.role === RoleType.DESKTOP) {
         const range = cursors.Range.fromNode(evt.target);
