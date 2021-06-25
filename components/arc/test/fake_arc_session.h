@@ -36,6 +36,7 @@ class FakeArcSession : public ArcSession {
   void SetDemoModeDelegate(
       ArcClientAdapter::DemoModeDelegate* delegate) override;
   void TrimVmMemory(TrimVmMemoryCallback callback) override;
+  void SetDefaultDeviceScaleFactor(float scale_factor) override;
 
   // To emulate unexpected stop, such as crash.
   void StopWithReason(ArcStopReason reason);

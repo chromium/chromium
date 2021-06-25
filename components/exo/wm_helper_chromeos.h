@@ -130,6 +130,10 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   DISALLOW_COPY_AND_ASSIGN(WMHelperChromeOS);
 };
 
+// Returnsn the default device scale factor used for
+// ClientControlledShellSurface (ARC).
+float GetDefaultDeviceScaleFactor();
+
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_WM_HELPER_CHROMEOS_H_

@@ -20,10 +20,6 @@
 #include "components/arc/session/arc_session.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-class DefaultScaleFactorRetriever;
-}
-
 namespace base {
 struct SystemMemoryInfoKB;
 }
@@ -49,8 +45,6 @@ class ArcSessionImpl
   //
   // NOT_STARTED
   // -> StartMiniInstance() ->
-  // WAITING_FOR_LCD_DENSITY
-  // -> OnLcdDensity ->
   // WAITING_FOR_NUM_CORES
   // -> OnConfigurationSet ->
   // STARTING_MINI_INSTANCE
@@ -66,12 +60,6 @@ class ArcSessionImpl
   // Note that, if RequestUpgrade() is called during STARTING_MINI_INSTANCE
   // state, the state change to STARTING_FULL_INSTANCE is suspended until
   // the state becomes RUNNING_MINI_INSTANCE.
-  //
-  // Upon |StartMiniInstance()| call, it queries LCD Density through
-  // Delegate::GetLcdDenstity, and moves to WAITING_FOR_LCD_DENSITY state.  The
-  // query may be made synchronlsly or asynchronosly depending on the
-  // availability of the density information. It then asks SessionManager to
-  // start mini container and moves to STARTING_MINI_INSTANCE state.
   //
   // At any state, Stop() can be called. It may not immediately stop the
   // instance, but will eventually stop it. The actual stop will be notified
@@ -117,9 +105,6 @@ class ArcSessionImpl
     // ARC is not yet started.
     NOT_STARTED,
 
-    // It's waiting for LCD density to be available.
-    WAITING_FOR_LCD_DENSITY,
-
     // It's waiting for CPU cores information to be available.
     WAITING_FOR_NUM_CORES,
 
@@ -162,14 +147,6 @@ class ArcSessionImpl
     virtual base::ScopedFD ConnectMojo(base::ScopedFD socket_fd,
                                        ConnectMojoCallback callback) = 0;
 
-    using GetLcdDensityCallback = base::OnceCallback<void(int32_t)>;
-
-    // Gets the lcd density via callback. The callback may be invoked
-    // immediately if it's already available, or called asynchronously later if
-    // it's not yet available. Calling this method while there is a pending
-    // callback will cancel the pending callback.
-    virtual void GetLcdDensity(GetLcdDensityCallback callback) = 0;
-
     // Gets the available disk space under /home. The result is in bytes.
     using GetFreeDiskSpaceCallback = base::OnceCallback<void(int64_t)>;
     virtual void GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) = 0;
@@ -194,7 +171,6 @@ class ArcSessionImpl
   // Returns default delegate implementation used for the production.
   static std::unique_ptr<Delegate> CreateDelegate(
       ArcBridgeService* arc_bridge_service,
-      ash::DefaultScaleFactorRetriever* retriever,
       version_info::Channel channel);
 
   State GetStateForTesting() { return state_; }
@@ -214,6 +190,7 @@ class ArcSessionImpl
   void SetDemoModeDelegate(
       ArcClientAdapter::DemoModeDelegate* delegate) override;
   void TrimVmMemory(TrimVmMemoryCallback callback) override;
+  void SetDefaultDeviceScaleFactor(float scale_factor) override;
 
   // chromeos::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -260,9 +237,6 @@ class ArcSessionImpl
   // Completes the termination procedure. Note that calling this may end up with
   // deleting |this| because the function calls observers' OnSessionStopped().
   void OnStopped(ArcStopReason reason);
-
-  // LCD density for the device is available.
-  void OnLcdDensity(int32_t lcd_density);
 
   // Called when |state_| moves to STARTING_MINI_INSTANCE.
   void DoStartMiniInstance(size_t num_cores_disabled);

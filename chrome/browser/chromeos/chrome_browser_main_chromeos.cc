@@ -836,12 +836,7 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // ash::Shell.
   ChromeBrowserMainPartsLinux::PreProfileInit();
 
-  // ash::Shell must be initialized before we can ask Ash to bind a
-  // CrosDisplayConfigController.
-  mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
-  ash::BindCrosDisplayConfigController(
-      display_config.InitWithNewPipeAndPassReceiver());
-  arc_service_launcher_->Initialize(std::move(display_config));
+  arc_service_launcher_->Initialize();
 
   // Needs to be initialized after ash::Shell.
   chrome_keyboard_controller_client_->Init(ash::KeyboardController::Get());

@@ -67,6 +67,7 @@
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_supervision_transition.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -1643,6 +1644,8 @@ void ArcSessionManager::MaybeStartTimer() {
 
 void ArcSessionManager::StartMiniArc() {
   pre_start_time_ = base::TimeTicks::Now();
+  arc_session_runner_->set_default_device_scale_factor(
+      exo::GetDefaultDeviceScaleFactor());
   arc_session_runner_->RequestStartMiniInstance();
 }
 

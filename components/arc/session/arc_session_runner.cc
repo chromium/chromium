@@ -285,6 +285,7 @@ void ArcSessionRunner::StartArcSession() {
         !serial_number_.empty()) {
       arc_session_->SetUserInfo(cryptohome_id_, user_id_hash_, serial_number_);
     }
+    arc_session_->SetDefaultDeviceScaleFactor(default_device_scale_factor_);
     arc_session_->SetDemoModeDelegate(demo_mode_delegate_.get());
     arc_session_->AddObserver(this);
     arc_session_->StartMiniInstance();

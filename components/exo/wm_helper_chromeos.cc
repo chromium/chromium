@@ -242,24 +242,13 @@ bool WMHelperChromeOS::InTabletMode() const {
 }
 
 double WMHelperChromeOS::GetDefaultDeviceScaleFactor() const {
-  if (!display::Display::HasInternalDisplay())
-    return 1.0;
-
-  if (display::Display::HasForceDeviceScaleFactor())
-    return display::Display::GetForcedDeviceScaleFactor();
-
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
-  const display::ManagedDisplayInfo& display_info =
-      display_manager->GetDisplayInfo(display::Display::InternalDisplayId());
-  DCHECK(display_info.display_modes().size());
-  return display_info.display_modes()[0].device_scale_factor();
+  return exo::GetDefaultDeviceScaleFactor();
 }
 
 double WMHelperChromeOS::GetDeviceScaleFactorForWindow(
     aura::Window* window) const {
   if (default_scale_cancellation_)
-    return GetDefaultDeviceScaleFactor();
+    return exo::GetDefaultDeviceScaleFactor();
   const display::Screen* screen = display::Screen::GetScreen();
   display::Display display = screen->GetDisplayNearestWindow(window);
   return display.device_scale_factor();
@@ -285,6 +274,21 @@ WMHelper::LifetimeManager* WMHelperChromeOS::GetLifetimeManager() {
 
 aura::client::CaptureClient* WMHelperChromeOS::GetCaptureClient() {
   return wm::CaptureController::Get();
+}
+
+float GetDefaultDeviceScaleFactor() {
+  if (!display::Display::HasInternalDisplay())
+    return 1.0;
+
+  if (display::Display::HasForceDeviceScaleFactor())
+    return display::Display::GetForcedDeviceScaleFactor();
+
+  display::DisplayManager* display_manager =
+      ash::Shell::Get()->display_manager();
+  const display::ManagedDisplayInfo& display_info =
+      display_manager->GetDisplayInfo(display::Display::InternalDisplayId());
+  DCHECK(display_info.display_modes().size());
+  return display_info.display_modes()[0].device_scale_factor();
 }
 
 }  // namespace exo

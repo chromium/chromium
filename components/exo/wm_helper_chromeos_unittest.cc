@@ -5,6 +5,7 @@
 #include "components/exo/wm_helper_chromeos.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/shell.h"
@@ -19,6 +20,10 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace exo {
@@ -121,6 +126,24 @@ TEST_F(WMHelperChromeOSTest, MultipleDragDropObservers) {
 
   wm_helper_chromeos->RemoveDragDropObserver(&observer_no_drop);
   wm_helper_chromeos->RemoveDragDropObserver(&observer_copy_drop);
+}
+
+TEST_F(WMHelperChromeOSTest, DockedModeShouldUseInternalAsDefault) {
+  UpdateDisplay("1920x1080*2, 600x400");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  auto display_list = display::Screen::GetScreen()->GetAllDisplays();
+  auto first_info = display_manager()->GetDisplayInfo(display_list[0].id());
+  auto second_info = display_manager()->GetDisplayInfo(display_list[1].id());
+  ASSERT_EQ(gfx::Size(1920, 1080), first_info.size_in_pixel());
+  ASSERT_EQ(first_info.id(), display::Display::InternalDisplayId());
+
+  std::vector<display::ManagedDisplayInfo> display_info_list{second_info};
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  ASSERT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+            second_info.id());
+
+  EXPECT_EQ(2.0f, GetDefaultDeviceScaleFactor());
 }
 
 }  // namespace exo

@@ -7,16 +7,12 @@
 
 #include <memory>
 
-#include "ash/public/cpp/default_scale_factor_retriever.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;
 
-namespace ash {
-class DefaultScaleFactorRetriever;
-}
 
 namespace chromeos {
 class SchedulerConfigurationManagerBase;
@@ -41,8 +37,7 @@ class ArcServiceLauncher {
   static ArcServiceLauncher* Get();
 
   // Must be called early in startup.
-  void Initialize(mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
-                      display_config);
+  void Initialize();
 
   // Called just before most of BrowserContextKeyedService instance creation.
   // Set the given |profile| to ArcSessionManager, if the profile is allowed
@@ -63,7 +58,6 @@ class ArcServiceLauncher {
   void ResetForTesting();
 
  private:
-  ash::DefaultScaleFactorRetriever default_scale_factor_retriever_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>

@@ -116,6 +116,10 @@ class ArcSessionRunner : public ArcSession::Observer {
       base::OnceCallback<void(bool success, const std::string& failure_reason)>;
   void TrimVmMemory(TrimVmMemoryCallback callback);
 
+  void set_default_device_scale_factor(float scale_factor) {
+    default_device_scale_factor_ = scale_factor;
+  }
+
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
 
@@ -172,6 +176,8 @@ class ArcSessionRunner : public ArcSession::Observer {
   std::string serial_number_;
 
   bool resumed_ = false;
+
+  float default_device_scale_factor_ = 1.0f;
 
   // DemoModeDelegate to be used by ArcSession.
   std::unique_ptr<ArcClientAdapter::DemoModeDelegate> demo_mode_delegate_;

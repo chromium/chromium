@@ -16,10 +16,6 @@
 #include "components/arc/session/arc_stop_reason.h"
 #include "components/arc/session/arc_upgrade_params.h"
 
-namespace ash {
-class DefaultScaleFactorRetriever;
-}
-
 namespace chromeos {
 class SchedulerConfigurationManagerBase;
 }
@@ -62,7 +58,6 @@ class ArcSession {
   // Creates a default instance of ArcSession.
   static std::unique_ptr<ArcSession> Create(
       ArcBridgeService* arc_bridge_service,
-      ash::DefaultScaleFactorRetriever* retriever,
       version_info::Channel channel,
       chromeos::SchedulerConfigurationManagerBase*
           scheduler_configuration_manager,
@@ -108,6 +103,8 @@ class ArcSession {
   using TrimVmMemoryCallback =
       base::OnceCallback<void(bool success, const std::string& failure_reason)>;
   virtual void TrimVmMemory(TrimVmMemoryCallback callback) = 0;
+
+  virtual void SetDefaultDeviceScaleFactor(float scale_factor) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

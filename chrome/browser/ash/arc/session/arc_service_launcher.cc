@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/default_scale_factor_retriever.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -102,14 +101,13 @@ ArcServiceLauncher* g_arc_service_launcher = nullptr;
 
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     ArcBridgeService* arc_bridge_service,
-    ash::DefaultScaleFactorRetriever* retriever,
     version_info::Channel channel,
     chromeos::SchedulerConfigurationManagerBase*
         scheduler_configuration_manager) {
   auto delegate = std::make_unique<AdbSideloadingAvailabilityDelegateImpl>();
-  auto runner = std::make_unique<ArcSessionRunner>(base::BindRepeating(
-      ArcSession::Create, arc_bridge_service, retriever, channel,
-      scheduler_configuration_manager, delegate.get()));
+  auto runner = std::make_unique<ArcSessionRunner>(
+      base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
+                          scheduler_configuration_manager, delegate.get()));
   return std::make_unique<ArcSessionManager>(std::move(runner),
                                              std::move(delegate));
 }
@@ -122,7 +120,6 @@ ArcServiceLauncher::ArcServiceLauncher(
     : arc_service_manager_(std::make_unique<ArcServiceManager>()),
       arc_session_manager_(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
-                                  &default_scale_factor_retriever_,
                                   chrome::GetChannel(),
                                   scheduler_configuration_manager)),
       scheduler_configuration_manager_(scheduler_configuration_manager) {
@@ -145,10 +142,7 @@ ArcServiceLauncher* ArcServiceLauncher::Get() {
   return g_arc_service_launcher;
 }
 
-void ArcServiceLauncher::Initialize(
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
-        display_config) {
-  default_scale_factor_retriever_.Start(std::move(display_config));
+void ArcServiceLauncher::Initialize() {
   arc_session_manager_->ExpandPropertyFilesAndReadSalt();
 }
 
@@ -287,8 +281,7 @@ void ArcServiceLauncher::ResetForTesting() {
   // may be referred from existing KeyedService, so destoying it would cause
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
-      arc_service_manager_->arc_bridge_service(),
-      &default_scale_factor_retriever_, chrome::GetChannel(),
+      arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
       scheduler_configuration_manager_);
 }
 

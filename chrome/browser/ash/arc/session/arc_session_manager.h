@@ -153,6 +153,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // via SetProfile().
   void Initialize();
 
+  // Set the device scale factor used to start the arc. This must be called
+  // before staring mini-ARC.
+  void SetDefaultDeviceScaleFactor(float default_device_scale_factor);
+
   void Shutdown();
 
   // Sets the |profile|, and sets up Profile related fields in this instance.
