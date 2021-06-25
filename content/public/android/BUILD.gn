@@ -616,6 +616,7 @@ junit_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/selection/MagnifierAnimatorTest.java",
     "junit/src/org/chromium/content/browser/selection/SelectionPopupControllerTest.java",
     "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
+    "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
   ]
   deps = [
     ":content_java",
