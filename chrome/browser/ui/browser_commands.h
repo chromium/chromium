@@ -188,6 +188,7 @@ void FocusSearch(Browser* browser);
 void FocusAppMenu(Browser* browser);
 void FocusBookmarksToolbar(Browser* browser);
 void FocusInactivePopupForAccessibility(Browser* browser);
+void FocusHelpBubble(Browser* browser);
 void FocusNextPane(Browser* browser);
 void FocusPreviousPane(Browser* browser);
 void ToggleDevToolsWindow(Browser* browser,

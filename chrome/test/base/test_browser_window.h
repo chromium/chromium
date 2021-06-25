@@ -121,6 +121,7 @@ class TestBrowserWindow : public BrowserWindow {
   void FocusAppMenu() override {}
   void FocusBookmarksToolbar() override {}
   void FocusInactivePopupForAccessibility() override {}
+  void FocusHelpBubble() override {}
   void RotatePaneFocus(bool forwards) override {}
   void ShowAppMenu() override {}
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(

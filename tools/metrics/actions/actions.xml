@@ -7230,6 +7230,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="FocusHelpBubble">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <description>
+    Recorded when the user focuses a help bubble (i.e. for in-product help or a
+    tutorial) with a keyboard shortcut.
+  </description>
+</action>
+
 <action name="FocusInactivePopupForAccessibility">
   <owner>dtseng@chromium.org</owner>
   <description>

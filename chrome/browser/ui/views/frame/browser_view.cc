@@ -1649,6 +1649,10 @@ void BrowserView::FocusInactivePopupForAccessibility() {
     infobar_container_->SetPaneFocusAndFocusDefault();
 }
 
+void BrowserView::FocusHelpBubble() {
+  FeaturePromoBubbleOwnerImpl::GetInstance()->ActivateBubbleForAccessibility();
+}
+
 void BrowserView::FocusAppMenu() {
   // Chrome doesn't have a traditional menu bar, but it has a menu button in the
   // main toolbar that plays the same role.  If the user presses a key that
@@ -1719,7 +1723,10 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     return true;
   }
 
-  return false;
+  // Activate an in-product help bubble last, if there's no other bubbles to
+  // activate.
+  return FeaturePromoBubbleOwnerImpl::GetInstance()
+      ->ActivateBubbleForAccessibility();
 }
 
 void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {

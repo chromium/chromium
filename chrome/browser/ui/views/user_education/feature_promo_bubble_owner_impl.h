@@ -21,6 +21,10 @@ class FeaturePromoBubbleOwnerImpl : public FeaturePromoBubbleOwner,
 
   static FeaturePromoBubbleOwnerImpl* GetInstance();
 
+  // Attempts to activate the bubble, if it's showing. Returns true if it was
+  // activated. Returns false if no bubble is showing or it's not activatable.
+  bool ActivateBubbleForAccessibility();
+
   FeaturePromoBubbleView* bubble_for_testing() { return bubble_; }
 
   // FeaturePromoBubbleOwner:

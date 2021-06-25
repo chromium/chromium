@@ -670,10 +670,10 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ShortcutChangedOnUpdate) {
   EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED) !=
               NULL);
 
-  // Verify it has a command of Alt+Shift+H.
+  // Verify it has a command of Alt+Shift+J.
   accelerator = command_service->FindCommandByName(
       kId, manifest_values::kBrowserActionCommandEvent).accelerator();
-  EXPECT_EQ(ui::VKEY_H, accelerator.key_code());
+  EXPECT_EQ(ui::VKEY_J, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
   EXPECT_TRUE(accelerator.IsAltDown());

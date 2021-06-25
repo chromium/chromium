@@ -19,6 +19,15 @@ FeaturePromoBubbleOwnerImpl* FeaturePromoBubbleOwnerImpl::GetInstance() {
   return instance.get();
 }
 
+bool FeaturePromoBubbleOwnerImpl::ActivateBubbleForAccessibility() {
+  if (!bubble_)
+    return false;
+
+  bubble_->GetWidget()->Activate();
+  bubble_->RequestFocus();
+  return true;
+}
+
 absl::optional<base::Token> FeaturePromoBubbleOwnerImpl::ShowBubble(
     FeaturePromoBubbleView::CreateParams params,
     base::OnceClosure close_callback) {

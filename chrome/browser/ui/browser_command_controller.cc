@@ -639,6 +639,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY:
       FocusInactivePopupForAccessibility(browser_);
       break;
+    case IDC_FOCUS_HELP_BUBBLE:
+      FocusHelpBubble(browser_);
+      break;
     case IDC_FOCUS_NEXT_PANE:
       FocusNextPane(browser_);
       break;

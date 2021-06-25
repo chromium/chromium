@@ -681,7 +681,7 @@
     <ph name="shift">$1<ex>Shift</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="alt">$3<ex>Alt</ex></ph><ph name="separator2">$4<ex>+</ex></ph><ph name="l">$5<ex>v</ex></ph>, then <ph name="esc">$6<ex>v</ex></ph>
   </message>
   <message name="IDS_KSV_DESCRIPTION_SWITCH_FOCUS" desc="Description of the command in keyboard shortcut viewer.">
-    Switch focus between: Status area (where your account picture appears), Launcher, Address bar, Bookmarks bar (if visible), The webpage that's open, and Downloads bar (if visible).
+    Switch focus between: Status area (where your account picture appears), Launcher, Address bar, Bookmarks bar (if visible), The webpage that's open, and Downloads bar (if visible). If a focusable dialog is displayed, move focus there instead.
   </message>
   <message name="IDS_KSV_SHORTCUT_SWITCH_FOCUS" desc="Human readable version of the keyboard shortcut.">
     <ph name="ctrl1">$1<ex>Ctrl</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="back1">$3<ex>v</ex></ph> or <ph name="ctrl2">$4<ex>Ctrl</ex></ph><ph name="separator2">$5<ex>+</ex></ph><ph name="shift">$6<ex>Shift</ex></ph><ph name="separator3">$7<ex>+</ex></ph><ph name="back2">$8<ex>v</ex></ph>
@@ -730,6 +730,9 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Description of the command in keyboard shortcut viewer.">
     Previous pane
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_HELP_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
+    Move focus to a help dialog
   </message>
   <message name="IDS_KSV_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Description of the command in keyboard shortcut viewer.">
     Move active window between displays
