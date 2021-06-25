@@ -77,10 +77,6 @@ void LacrosChromeServiceDelegateImpl::RestoreTab() {
   chrome::RestoreTab(browser);
 }
 
-std::string LacrosChromeServiceDelegateImpl::GetChromeVersion() {
-  return chrome::GetVersionString(chrome::WithExtendedStable(true));
-}
-
 void LacrosChromeServiceDelegateImpl::GetFeedbackData(
     GetFeedbackDataCallback callback) {
   DCHECK(!callback.is_null());

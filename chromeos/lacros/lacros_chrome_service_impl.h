@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/check.h"
@@ -92,7 +93,12 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // This can be called on any thread. This call allows LacrosChromeServiceImpl
   // to start receiving messages from ash-chrome.
-  void BindReceiver();
+  // |browser_version| is the version of lacros-chrome displayed to user in
+  // feedback report, etc.
+  // It includes both browser version and channel in the format of:
+  // {browser version} {channel}
+  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
+  void BindReceiver(const std::string& browser_version);
 
   // Each of these functions guards usage of access to the corresponding remote.
   // Keep these in alphabetical order.

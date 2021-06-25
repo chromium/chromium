@@ -24,7 +24,6 @@ class LacrosChromeServiceDelegateImpl
   void NewWindow(bool incognito) override;
   void NewTab() override;
   void RestoreTab() override;
-  std::string GetChromeVersion() override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
   void GetHistograms(GetHistogramsCallback callback) override;
   GURL GetActiveTabUrl() override;

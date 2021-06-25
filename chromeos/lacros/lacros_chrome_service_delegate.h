@@ -16,6 +16,8 @@ namespace chromeos {
 
 // Interface to inject Chrome dependent behavior into LacrosChromeServiceImpl
 // to split the dependency.
+// TODO(hidehiko): This interface is being removed. Please do not add
+// any new methods.
 class LacrosChromeServiceDelegate {
  public:
   virtual ~LacrosChromeServiceDelegate() = default;
@@ -28,12 +30,6 @@ class LacrosChromeServiceDelegate {
 
   // Restores a tab recently closed.
   virtual void RestoreTab() = 0;
-
-  // Returns version of lacros-chrome displayed to user in feedback report, etc.
-  // It includes both browser version and channel in the format of:
-  // {browser version} {channel}
-  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
-  virtual std::string GetChromeVersion() = 0;
 
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets lacros feedback data.

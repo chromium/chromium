@@ -301,7 +301,7 @@ LacrosChromeServiceImpl::~LacrosChromeServiceImpl() {
   g_instance = nullptr;
 }
 
-void LacrosChromeServiceImpl::BindReceiver() {
+void LacrosChromeServiceImpl::BindReceiver(const std::string& browser_version) {
   // Accept Crosapi invitation here. Mojo IPC support should be initialized
   // at this stage.
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -337,7 +337,7 @@ void LacrosChromeServiceImpl::BindReceiver() {
         FROM_HERE,
         base::BindOnce(
             &LacrosChromeServiceImplNeverBlockingState::OnBrowserStartup,
-            weak_sequenced_state_, ToMojo(delegate_->GetChromeVersion())));
+            weak_sequenced_state_, ToMojo(browser_version)));
   }
 }
 
