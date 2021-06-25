@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -795,6 +797,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Px int getInitialActivityHeight() {
+        if (!mIsTrustedIntent
+                && !CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)) {
+            return 0;
+        }
+
         return mInitialActivityHeight;
     }
 }
