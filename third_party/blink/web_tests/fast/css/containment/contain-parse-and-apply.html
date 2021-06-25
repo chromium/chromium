@@ -44,9 +44,12 @@ for (var i = 0; i < children.length; i++) {
 var test = document.querySelector('#test');
 
 test.style.setProperty("contain", "layout paint style size");
-shouldBeEqualToString("getContainValue('#test')", "size layout style paint");
+shouldBeEqualToString("getContainValue('#test')", "strict");
 
 test.style.setProperty("contain", "layout paint");
+shouldBeEqualToString("getContainValue('#test')", "layout paint");
+
+test.style.setProperty("contain", "style layout paint");
 shouldBeEqualToString("getContainValue('#test')", "content");
 
 test.style.setProperty("contain", "strict");

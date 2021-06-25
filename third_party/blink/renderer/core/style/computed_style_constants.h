@@ -195,8 +195,9 @@ enum Containment {
   kContainsBlockSize = 0x8,
   kContainsInlineSize = 0x10,
   kContainsSize = kContainsBlockSize | kContainsInlineSize,
-  kContainsStrict = kContainsLayout | kContainsPaint | kContainsSize,
-  kContainsContent = kContainsLayout | kContainsPaint,
+  kContainsStrict =
+      kContainsStyle | kContainsLayout | kContainsPaint | kContainsSize,
+  kContainsContent = kContainsStyle | kContainsLayout | kContainsPaint,
 };
 inline Containment operator|(Containment a, Containment b) {
   return Containment(int(a) | int(b));

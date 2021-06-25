@@ -246,9 +246,8 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
   target->classList().Add("strict");
   UpdateAllLifecyclePhasesForTest();
 
-  // Strict should register, but without style containment the "all" bucket is
-  // not counted.
-  EXPECT_FALSE(GetDocument().IsUseCounted(
+  // Strict should register, and all is counted.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainAllWithoutContentVisibility));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainStrictWithoutContentVisibility));
