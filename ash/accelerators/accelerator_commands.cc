@@ -5,6 +5,12 @@
 #include "ash/accelerators/accelerator_commands.h"
 
 #include "ash/display/display_configuration_controller.h"
+#include "ash/focus_cycler.h"
+#include "ash/ime/ime_controller_impl.h"
+#include "ash/media/media_controller_impl.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -19,19 +25,116 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/widget/widget.h"
 
 // Keep the functions in this file in alphabetical order.
 namespace ash {
 namespace accelerators {
+
+namespace {
+
+views::Widget* FindPipWidget() {
+  return Shell::Get()->focus_cycler()->FindWidget(
+      base::BindRepeating([](views::Widget* widget) {
+        return WindowState::Get(widget->GetNativeWindow())->IsPip();
+      }));
+}
+
+}  // namespace
 
 void CycleBackwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kBackward);
 }
 
+void FocusPip() {
+  auto* widget = FindPipWidget();
+  if (widget)
+    Shell::Get()->focus_cycler()->FocusWidget(widget);
+}
+
 void CycleForwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
+}
+
+void DisableCapsLock() {
+  Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
+}
+
+void LaunchAppN(int n) {
+  Shelf::LaunchShelfItem(n);
+}
+
+void LaunchLastApp() {
+  Shelf::LaunchShelfItem(-1);
+}
+
+void LockScreen() {
+  Shell::Get()->session_controller()->LockScreen();
+}
+
+void MediaFastForward() {
+  Shell::Get()->media_controller()->HandleMediaSeekForward();
+}
+
+void MediaNextTrack() {
+  Shell::Get()->media_controller()->HandleMediaNextTrack();
+}
+
+void MediaPause() {
+  Shell::Get()->media_controller()->HandleMediaPause();
+}
+
+void MediaPlay() {
+  Shell::Get()->media_controller()->HandleMediaPlay();
+}
+
+void MediaPlayPause() {
+  Shell::Get()->media_controller()->HandleMediaPlayPause();
+}
+
+void MediaPrevTrack() {
+  Shell::Get()->media_controller()->HandleMediaPrevTrack();
+}
+void MediaRewind() {
+  Shell::Get()->media_controller()->HandleMediaSeekBackward();
+}
+
+void MediaStop() {
+  Shell::Get()->media_controller()->HandleMediaStop();
+}
+
+void NewIncognitoWindow() {
+  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/true);
+}
+
+void NewWindow() {
+  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/false);
+}
+
+void OpenCalculator() {
+  NewWindowDelegate::GetInstance()->OpenCalculator();
+}
+
+void OpenCrosh() {
+  NewWindowDelegate::GetInstance()->OpenCrosh();
+}
+
+void OpenDiagnostics() {
+  NewWindowDelegate::GetInstance()->OpenDiagnostics();
+}
+
+void OpenFeedbackPage() {
+  NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+}
+
+void OpenFileManager() {
+  NewWindowDelegate::GetInstance()->OpenFileManager();
+}
+
+void OpenHelp() {
+  NewWindowDelegate::GetInstance()->OpenGetHelp();
 }
 
 void ResetDisplayZoom() {
@@ -41,6 +144,10 @@ void ResetDisplayZoom() {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(point);
   display_manager->ResetDisplayZoom(display.id());
+}
+
+void RestoreTab() {
+  NewWindowDelegate::GetPrimary()->RestoreTab();
 }
 
 void ShiftPrimaryDisplay() {

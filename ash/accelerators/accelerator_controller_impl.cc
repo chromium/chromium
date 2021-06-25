@@ -35,7 +35,6 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/media/media_controller_impl.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_profile_uma.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -512,67 +511,13 @@ void HandleFocusShelf() {
   shelf->shelf_focus_cycler()->FocusNavigation(false /* lastElement */);
 }
 
+// TODO(zentaro): This is duplicated in accelerator_commands.cc. Remove
+// once the CanFocusPipWidget() function is moved.
 views::Widget* FindPipWidget() {
   return Shell::Get()->focus_cycler()->FindWidget(
       base::BindRepeating([](views::Widget* widget) {
         return WindowState::Get(widget->GetNativeWindow())->IsPip();
       }));
-}
-
-void HandleFocusPip() {
-  base::RecordAction(UserMetricsAction("Accel_Focus_Pip"));
-  auto* widget = FindPipWidget();
-  if (widget)
-    Shell::Get()->focus_cycler()->FocusWidget(widget);
-}
-
-void HandleLaunchAppN(int n) {
-  base::RecordAction(UserMetricsAction("Accel_Launch_App"));
-  Shelf::LaunchShelfItem(n);
-}
-
-void HandleLaunchLastApp() {
-  base::RecordAction(UserMetricsAction("Accel_Launch_Last_App"));
-  Shelf::LaunchShelfItem(-1);
-}
-
-void HandleMediaNextTrack() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Next_Track"));
-  Shell::Get()->media_controller()->HandleMediaNextTrack();
-}
-
-void HandleMediaFastForward() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Fast_Forward"));
-  Shell::Get()->media_controller()->HandleMediaSeekForward();
-}
-
-void HandleMediaPause() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Pause"));
-  Shell::Get()->media_controller()->HandleMediaPause();
-}
-
-void HandleMediaPlay() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Play"));
-  Shell::Get()->media_controller()->HandleMediaPlay();
-}
-
-void HandleMediaPlayPause() {
-  base::RecordAction(UserMetricsAction("Accel_Media_PlayPause"));
-  Shell::Get()->media_controller()->HandleMediaPlayPause();
-}
-
-void HandleMediaPrevTrack() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Prev_Track"));
-  Shell::Get()->media_controller()->HandleMediaPrevTrack();
-}
-void HandleMediaRewind() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Rewind"));
-  Shell::Get()->media_controller()->HandleMediaSeekBackward();
-}
-
-void HandleMediaStop() {
-  base::RecordAction(UserMetricsAction("Accel_Media_Stop"));
-  Shell::Get()->media_controller()->HandleMediaStop();
 }
 
 void HandleToggleMirrorMode() {
@@ -591,20 +536,10 @@ bool CanHandleNewIncognitoWindow() {
   return user_type && *user_type != user_manager::USER_TYPE_GUEST;
 }
 
-void HandleNewIncognitoWindow() {
-  base::RecordAction(UserMetricsAction("Accel_New_Incognito_Window"));
-  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/true);
-}
-
 void HandleNewTab(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_T)
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
   NewWindowDelegate::GetPrimary()->NewTab();
-}
-
-void HandleNewWindow() {
-  base::RecordAction(UserMetricsAction("Accel_New_Window"));
-  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/false);
 }
 
 bool CanCycleInputMethod() {
@@ -628,21 +563,6 @@ void HandleSwitchToNextIme(const ui::Accelerator& accelerator) {
   else
     RecordImeSwitchByAccelerator();
   Shell::Get()->ime_controller()->SwitchToNextIme();
-}
-
-void HandleCalculator() {
-  base::RecordAction(UserMetricsAction("Accel_Open_Calculator"));
-  NewWindowDelegate::GetInstance()->OpenCalculator();
-}
-
-void HandleDiagnostics() {
-  base::RecordAction(UserMetricsAction("Accel_Open_Diagnostics"));
-  NewWindowDelegate::GetInstance()->OpenDiagnostics();
-}
-
-void HandleOpenFeedbackPage() {
-  base::RecordAction(UserMetricsAction("Accel_Open_Feedback_Page"));
-  NewWindowDelegate::GetInstance()->OpenFeedbackPage();
 }
 
 void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
@@ -794,11 +714,6 @@ void HandleRotateScreen() {
         RotationAcceleratorAction::kAlreadyAcceptedDialog);
     RotateScreen();
   }
-}
-
-void HandleRestoreTab() {
-  base::RecordAction(UserMetricsAction("Accel_Restore_Tab"));
-  NewWindowDelegate::GetPrimary()->RestoreTab();
 }
 
 // Rotate the active window.
@@ -1086,12 +1001,6 @@ void HandleShowImeMenuBubble() {
   }
 }
 
-void HandleCrosh() {
-  base::RecordAction(UserMetricsAction("Accel_Open_Crosh"));
-
-  NewWindowDelegate::GetInstance()->OpenCrosh();
-}
-
 bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
   ui::KeyboardCode previous_key_code = previous_accelerator.key_code();
   if (previous_accelerator.key_state() == ui::Accelerator::KeyState::RELEASED ||
@@ -1105,28 +1014,8 @@ bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
   return Shell::Get()->ime_controller()->IsCapsLockEnabled();
 }
 
-void HandleDisableCapsLock() {
-  base::RecordAction(UserMetricsAction("Accel_Disable_Caps_Lock"));
-  Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
-}
-
-void HandleFileManager() {
-  base::RecordAction(UserMetricsAction("Accel_Open_File_Manager"));
-
-  NewWindowDelegate::GetInstance()->OpenFileManager();
-}
-
-void HandleGetHelp() {
-  NewWindowDelegate::GetInstance()->OpenGetHelp();
-}
-
 bool CanHandleLock() {
   return Shell::Get()->session_controller()->CanLockScreen();
-}
-
-void HandleLock() {
-  base::RecordAction(UserMetricsAction("Accel_LockScreen_L"));
-  Shell::Get()->session_controller()->LockScreen();
 }
 
 PaletteTray* GetPaletteTray() {
@@ -2321,7 +2210,8 @@ void AcceleratorControllerImpl::PerformAction(
       HandleToggleUnifiedDesktop();
       break;
     case DISABLE_CAPS_LOCK:
-      HandleDisableCapsLock();
+      base::RecordAction(base::UserMetricsAction("Accel_Disable_Caps_Lock"));
+      accelerators::DisableCapsLock();
       break;
     case EXIT:
       // UMA metrics are recorded in the handler.
@@ -2337,7 +2227,8 @@ void AcceleratorControllerImpl::PerformAction(
       HandleFocusShelf();
       break;
     case FOCUS_PIP:
-      HandleFocusPip();
+      base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));
+      accelerators::FocusPip();
       break;
     case KEYBOARD_BRIGHTNESS_DOWN: {
       KeyboardBrightnessControlDelegate* delegate =
@@ -2354,31 +2245,40 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     }
     case LAUNCH_APP_0:
-      HandleLaunchAppN(0);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(0);
       break;
     case LAUNCH_APP_1:
-      HandleLaunchAppN(1);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(1);
       break;
     case LAUNCH_APP_2:
-      HandleLaunchAppN(2);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(2);
       break;
     case LAUNCH_APP_3:
-      HandleLaunchAppN(3);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(3);
       break;
     case LAUNCH_APP_4:
-      HandleLaunchAppN(4);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(4);
       break;
     case LAUNCH_APP_5:
-      HandleLaunchAppN(5);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(5);
       break;
     case LAUNCH_APP_6:
-      HandleLaunchAppN(6);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(6);
       break;
     case LAUNCH_APP_7:
-      HandleLaunchAppN(7);
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_App"));
+      accelerators::LaunchAppN(7);
       break;
     case LAUNCH_LAST_APP:
-      HandleLaunchLastApp();
+      base::RecordAction(base::UserMetricsAction("Accel_Launch_Last_App"));
+      accelerators::LaunchLastApp();
       break;
     case LOCK_PRESSED:
     case LOCK_RELEASED:
@@ -2386,7 +2286,8 @@ void AcceleratorControllerImpl::PerformAction(
           action == LOCK_PRESSED, base::TimeTicks());
       break;
     case LOCK_SCREEN:
-      HandleLock();
+      base::RecordAction(base::UserMetricsAction("Accel_LockScreen_L"));
+      accelerators::LockScreen();
       break;
     case MAGNIFIER_ZOOM_IN:
       HandleActiveMagnifierZoom(1);
@@ -2395,58 +2296,73 @@ void AcceleratorControllerImpl::PerformAction(
       HandleActiveMagnifierZoom(-1);
       break;
     case MEDIA_FAST_FORWARD:
-      HandleMediaFastForward();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Fast_Forward"));
+      accelerators::MediaFastForward();
       break;
     case MEDIA_NEXT_TRACK:
-      HandleMediaNextTrack();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Next_Track"));
+      accelerators::MediaNextTrack();
       break;
     case MEDIA_PAUSE:
-      HandleMediaPause();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Pause"));
+      accelerators::MediaPause();
       break;
     case MEDIA_PLAY:
-      HandleMediaPlay();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Play"));
+      accelerators::MediaPlay();
       break;
     case MEDIA_PLAY_PAUSE:
-      HandleMediaPlayPause();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_PlayPause"));
+      accelerators::MediaPlayPause();
       break;
     case MEDIA_PREV_TRACK:
-      HandleMediaPrevTrack();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Prev_Track"));
+      accelerators::MediaPrevTrack();
       break;
     case MEDIA_REWIND:
-      HandleMediaRewind();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Rewind"));
+      accelerators::MediaRewind();
       break;
     case MEDIA_STOP:
-      HandleMediaStop();
+      base::RecordAction(base::UserMetricsAction("Accel_Media_Stop"));
+      accelerators::MediaStop();
       break;
     case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
       display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
       break;
     case NEW_INCOGNITO_WINDOW:
-      HandleNewIncognitoWindow();
+      base::RecordAction(base::UserMetricsAction("Accel_New_Incognito_Window"));
+      accelerators::NewIncognitoWindow();
       break;
     case NEW_TAB:
       HandleNewTab(accelerator);
       break;
     case NEW_WINDOW:
-      HandleNewWindow();
+      base::RecordAction(base::UserMetricsAction("Accel_New_Window"));
+      accelerators::NewWindow();
       break;
     case OPEN_CALCULATOR:
-      HandleCalculator();
+      base::RecordAction(base::UserMetricsAction("Accel_Open_Calculator"));
+      accelerators::OpenCalculator();
       break;
     case OPEN_CROSH:
-      HandleCrosh();
+      base::RecordAction(base::UserMetricsAction("Accel_Open_Crosh"));
+      accelerators::OpenCrosh();
       break;
     case OPEN_DIAGNOSTICS:
-      HandleDiagnostics();
+      base::RecordAction(base::UserMetricsAction("Accel_Open_Diagnostics"));
+      accelerators::OpenDiagnostics();
       break;
     case OPEN_FEEDBACK_PAGE:
-      HandleOpenFeedbackPage();
+      base::RecordAction(base::UserMetricsAction("Accel_Open_Feedback_Page"));
+      accelerators::OpenFeedbackPage();
       break;
     case OPEN_FILE_MANAGER:
-      HandleFileManager();
+      base::RecordAction(base::UserMetricsAction("Accel_Open_File_Manager"));
+      accelerators::OpenFileManager();
       break;
     case OPEN_GET_HELP:
-      HandleGetHelp();
+      accelerators::OpenHelp();
       break;
     case POWER_PRESSED:
     case POWER_RELEASED:
@@ -2471,7 +2387,8 @@ void AcceleratorControllerImpl::PerformAction(
       HandleRotateScreen();
       break;
     case RESTORE_TAB:
-      HandleRestoreTab();
+      base::RecordAction(base::UserMetricsAction("Accel_Restore_Tab"));
+      accelerators::RestoreTab();
       break;
     case ROTATE_WINDOW:
       HandleRotateActiveWindow();

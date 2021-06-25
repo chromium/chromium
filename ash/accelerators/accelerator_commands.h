@@ -20,8 +20,74 @@ ASH_EXPORT void CycleBackwardMru();
 // Cycle forwards in the MRU window list. Usually Alt-Tab.
 ASH_EXPORT void CycleForwardMru();
 
+// Disable caps-lock.
+ASH_EXPORT void DisableCapsLock();
+
+// Focus the PiP window if it is present.
+ASH_EXPORT void FocusPip();
+
+// Launch the nth(0-7) app on the shelf.
+ASH_EXPORT void LaunchAppN(int n);
+
+// Launch the right-most app on the shelf.
+ASH_EXPORT void LaunchLastApp();
+
+// Lock the screen.
+ASH_EXPORT void LockScreen();
+
+// Fast-forward playing media.
+ASH_EXPORT void MediaFastForward();
+
+// Go to the next media track.
+ASH_EXPORT void MediaNextTrack();
+
+// Pause media.
+ASH_EXPORT void MediaPause();
+
+// Play media.
+ASH_EXPORT void MediaPlay();
+
+// Toggle pause or play on media.
+ASH_EXPORT void MediaPlayPause();
+
+// To to the previous media track.
+ASH_EXPORT void MediaPrevTrack();
+
+// Rewind playing media.
+ASH_EXPORT void MediaRewind();
+
+// Stop playing media.
+ASH_EXPORT void MediaStop();
+
+// Open a new incognito browser window.
+ASH_EXPORT void NewIncognitoWindow();
+
+// Open a new browser window.
+ASH_EXPORT void NewWindow();
+
+// Open the calculator app.
+ASH_EXPORT void OpenCalculator();
+
+// Open Crosh.
+ASH_EXPORT void OpenCrosh();
+
+// Open the diagnostics app.
+ASH_EXPORT void OpenDiagnostics();
+
+// Open the feedback app.
+ASH_EXPORT void OpenFeedbackPage();
+
+// Open the file manager app.
+ASH_EXPORT void OpenFileManager();
+
+// Open the help/explore app.
+ASH_EXPORT void OpenHelp();
+
 // Reset the display zooming to the default state.
 ASH_EXPORT void ResetDisplayZoom();
+
+// Restore the last closed tab in the browser.
+ASH_EXPORT void RestoreTab();
 
 // Change primary display to the secondary display next to current primary
 // display
