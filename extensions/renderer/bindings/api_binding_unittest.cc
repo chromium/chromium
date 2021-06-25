@@ -102,6 +102,37 @@ constexpr char kFunctionsWithCallbackSignatures[] = R"(
        }]
      }])";
 
+constexpr char kFunctionsWithPromiseSignatures[] =
+    R"([{
+          "name": "supportsPromises",
+          "parameters": [{
+            "name": "int",
+            "type": "integer"
+          }],
+          "returns_async": {
+            "name": "callback",
+            "parameters": [{
+              "name": "strResult",
+              "type": "string"
+            }]
+          }
+        },
+        {
+          "name": "callbackOptional",
+          "parameters": [{
+            "name": "int",
+            "type": "integer"
+          }],
+          "returns_async": {
+            "name": "callback",
+            "optional": true,
+            "parameters": [{
+              "name": "strResult",
+              "type": "string"
+            }]
+          }
+        }])";
+
 bool AllowAllFeatures(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
@@ -200,6 +231,29 @@ class APIBindingUnittest : public APIBindingTest {
   void SetPromiseAvailabilityCallback(
       const BindingAccessChecker::PromiseAvailabilityCallback& callback) {
     promise_availability_callback_ = callback;
+  }
+
+  void InitializeJSHooks(
+      const char* register_hook,
+      v8::Local<v8::Value> additional_arg = v8::Local<v8::Value>()) {
+    auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+
+    v8::HandleScope handle_scope(isolate());
+    v8::Local<v8::Context> context = MainContext();
+
+    {
+      v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
+      v8::Local<v8::Function> function =
+          FunctionFromString(context, register_hook);
+      if (!additional_arg.IsEmpty()) {
+        v8::Local<v8::Value> args[] = {js_hooks, additional_arg};
+        RunFunctionOnGlobal(function, context, base::size(args), args);
+      } else {
+        v8::Local<v8::Value> args[] = {js_hooks};
+        RunFunctionOnGlobal(function, context, base::size(args), args);
+      }
+    }
+    SetHooks(std::move(hooks));
   }
 
   void InitializeBinding() {
@@ -824,28 +878,18 @@ TEST_F(APIBindingUnittest, TestCustomHooks) {
 
 TEST_F(APIBindingUnittest, TestJSCustomHook) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setHandleRequest('oneString', function() {
+          this.requestArguments = Array.from(arguments);
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctions);
+  InitializeBinding();
 
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setHandleRequest('oneString', function() {\n"
-        "    this.requestArguments = Array.from(arguments);\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetFunctions(kFunctions);
-  SetHooks(std::move(hooks));
-  InitializeBinding();
-
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   // First try calling with an invalid invocation. An error should be raised and
@@ -876,28 +920,21 @@ TEST_F(APIBindingUnittest, TestJSCustomHook) {
 // Tests the updateArgumentsPreValidate hook.
 TEST_F(APIBindingUnittest, TestUpdateArgumentsPreValidate) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
-
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  const char kRegisterHook[] =
-      "(function(hooks) {\n"
-      "  hooks.setUpdateArgumentsPreValidate('oneString', function() {\n"
-      "    this.requestArguments = Array.from(arguments);\n"
-      "    if (this.requestArguments[0] === true)\n"
-      "      return ['hooked']\n"
-      "    return this.requestArguments\n"
-      "  });\n"
-      "})";
-  v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-  v8::Local<v8::Function> function = FunctionFromString(context, kRegisterHook);
-  v8::Local<v8::Value> args[] = {js_hooks};
-  RunFunctionOnGlobal(function, context, base::size(args), args);
-
-  SetHooks(std::move(hooks));
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPreValidate('oneString', function() {
+          this.requestArguments = Array.from(arguments);
+          if (this.requestArguments[0] === true)
+            return ['hooked']
+          return this.requestArguments
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   // Call the method with a hook. Since the hook updates arguments before
@@ -921,28 +958,18 @@ TEST_F(APIBindingUnittest, TestUpdateArgumentsPreValidate) {
 // Tests the updateArgumentsPreValidate hook.
 TEST_F(APIBindingUnittest, TestThrowInUpdateArgumentsPreValidate) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
-
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setUpdateArgumentsPreValidate('oneString', function() {\n"
-        "    throw new Error('Custom Hook Error');\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPreValidate('oneString', function() {
+          throw new Error('Custom Hook Error');
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   v8::Local<v8::Function> function =
@@ -964,28 +991,19 @@ TEST_F(APIBindingUnittest, TestThrowInUpdateArgumentsPreValidate) {
 // Tests that custom JS hooks can return results synchronously.
 TEST_F(APIBindingUnittest, TestReturningResultFromCustomJSHook) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setHandleRequest('oneString', str => {
+          return str + ' pong';
+        });
+      }))";
 
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setHandleRequest('oneString', str => {\n"
-        "    return str + ' pong';\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   v8::Local<v8::Function> function =
@@ -1003,28 +1021,19 @@ TEST_F(APIBindingUnittest, TestReturningResultFromCustomJSHook) {
 // Tests that JS custom hooks can throw exceptions for bad invocations.
 TEST_F(APIBindingUnittest, TestThrowingFromCustomJSHook) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setHandleRequest('oneString', str => {
+          throw new Error('Custom Hook Error');
+        });
+      }))";
 
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setHandleRequest('oneString', str => {\n"
-        "    throw new Error('Custom Hook Error');\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   v8::Local<v8::Function> function =
@@ -1041,8 +1050,6 @@ TEST_F(APIBindingUnittest, TestThrowingFromCustomJSHook) {
 // Tests that JS custom hooks correctly handle the context being invalidated.
 // Regression test for https://crbug.com/944014.
 TEST_F(APIBindingUnittest, TestInvalidatingInCustomHook) {
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
-
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -1051,30 +1058,22 @@ TEST_F(APIBindingUnittest, TestInvalidatingInCustomHook) {
         gin::Arguments arguments(info);
         binding::InvalidateContext(arguments.GetHolderCreationContext());
       };
+  v8::Local<v8::Function> v8_context_invalidator =
+      v8::Function::New(context, context_invalidator).ToLocalChecked();
 
-  {
-    v8::Local<v8::Function> v8_context_invalidator =
-        v8::Function::New(context, context_invalidator).ToLocalChecked();
-    // Register two hooks. Since the context is invalidated in the first, the
-    // second should never run.
-    const char kRegisterHook[] =
-        R"((function(hooks, contextInvalidator) {
-             hooks.setUpdateArgumentsPreValidate('oneString', () => {
-               contextInvalidator();
-               return ['foo'];
-             });
-             hooks.setHandleRequest('oneString', () => {
-               this.ranHandleHook = true;
-             });
-            }))";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks, v8_context_invalidator};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  // Register two hooks. Since the context is invalidated in the first, the
+  // second should never run.
+  const char kRegisterHook[] = R"(
+      (function(hooks, contextInvalidator) {
+        hooks.setUpdateArgumentsPreValidate('oneString', () => {
+          contextInvalidator();
+          return ['foo'];
+        });
+        hooks.setHandleRequest('oneString', () => {
+          this.ranHandleHook = true;
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook, v8_context_invalidator);
   SetFunctions(kFunctions);
   InitializeBinding();
 
@@ -1163,29 +1162,20 @@ TEST_F(APIBindingUnittest,
 // Tests the updateArgumentsPostValidate hook.
 TEST_F(APIBindingUnittest, TestUpdateArgumentsPostValidate) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPostValidate('oneString', function() {
+          this.requestArguments = Array.from(arguments);
+          return ['pong'];
+        });
+      }))";
 
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setUpdateArgumentsPostValidate('oneString', function() {\n"
-        "    this.requestArguments = Array.from(arguments);\n"
-        "    return ['pong'];\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   // Try calling the method with an invalid signature. Since it's invalid, we
@@ -1212,28 +1202,19 @@ TEST_F(APIBindingUnittest, TestUpdateArgumentsPostValidate) {
 // See comment in api_binding.cc.
 TEST_F(APIBindingUnittest, TestUpdateArgumentsPostValidateViolatingSchema) {
   // Register a hook for the test.oneString method.
-  auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPostValidate('oneString', function() {
+          return [{}];
+        });
+      }))";
 
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-  {
-    const char kRegisterHook[] =
-        "(function(hooks) {\n"
-        "  hooks.setUpdateArgumentsPostValidate('oneString', function() {\n"
-        "    return [{}];\n"
-        "  });\n"
-        "})";
-    v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kRegisterHook);
-    v8::Local<v8::Value> args[] = {js_hooks};
-    RunFunctionOnGlobal(function, context, base::size(args), args);
-  }
-
-  SetHooks(std::move(hooks));
+  InitializeJSHooks(kRegisterHook);
   SetFunctions(kFunctions);
   InitializeBinding();
 
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   // Call the method with a valid signature. The hook should be entered and
@@ -1699,31 +1680,7 @@ TEST_F(APIBindingUnittest,
 
 // Tests promise-based APIs exposed on bindings.
 TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
-  constexpr char kFunctions[] =
-      R"([{
-            'name': 'supportsPromises',
-            'parameters': [{
-              'name': 'int',
-              'type': 'integer'
-            }],
-            "returns_async": {
-              'name': 'strResult',
-              'type': 'string'
-            }
-          },
-          {
-            'name': 'callbackOptional',
-            'parameters': [{
-              'name': 'int',
-              'type': 'integer'
-            }],
-            "returns_async": {
-              'name': 'strResult',
-              'optional': true,
-              'type': 'string'
-            }
-          }])";
-  SetFunctions(kFunctions);
+  SetFunctions(kFunctionsWithPromiseSignatures);
 
   // Set a local boolean we can change to simulate if the context supports
   // promises or not.
@@ -1848,6 +1805,80 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
     v8::Local<v8::Value> api_result = GetPropertyFromObject(
         context->Global(), context, "callbackOptionalResult");
     ASSERT_TRUE(api_result->IsNullOrUndefined());
+  }
+}
+
+TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
+  // Set a local boolean we can change to simulate if the context supports
+  // promises or not.
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityCallback(base::BindRepeating(
+      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+      &context_allows_promises));
+
+  // Register a custom callback hook for the supportsPromises method.
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setCustomCallback('supportsPromises',
+                                (name, request, callback, response) => {
+          this.methodName = name;
+          this.response = response;
+          this.resolveCallback = callback;
+        });
+      }))";
+
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctionsWithPromiseSignatures);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
+
+  // A normal call into the promise-based API should return a promise.
+  {
+    constexpr char kFunctionCall[] =
+        R"((function(api) {
+             this.apiResult = api.supportsPromises(3);
+             this.apiResult.then((strResult) => {
+               this.promiseResult = strResult;
+             });
+           }))";
+    v8::Local<v8::Function> promise_api_call =
+        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object};
+    RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
+    v8::Local<v8::Value> api_result =
+        GetPropertyFromObject(context->Global(), context, "apiResult");
+    ASSERT_FALSE(api_result.IsEmpty());
+    ASSERT_TRUE(api_result->IsPromise());
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       *ListValueFromString(R"(["foo"])"),
+                                       std::string());
+    // The promise should still be unfulfilled until the callback is invoked.
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+    EXPECT_EQ(
+        R"("test.supportsPromises")",
+        GetStringPropertyFromObject(context->Global(), context, "methodName"));
+    v8::Local<v8::Value> resolve_callback =
+        GetPropertyFromObject(context->Global(), context, "resolveCallback");
+    ASSERT_TRUE(resolve_callback->IsFunction());
+    v8::Local<v8::Value> callback_arguments[] = {
+        GetPropertyFromObject(context->Global(), context, "response")};
+    EXPECT_EQ(R"("foo")", V8ToString(callback_arguments[0], context));
+
+    RunFunctionOnGlobal(resolve_callback.As<v8::Function>(), context,
+                        base::size(callback_arguments), callback_arguments);
+
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
+    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
+                              context->Global(), context, "promiseResult"));
   }
 }
 

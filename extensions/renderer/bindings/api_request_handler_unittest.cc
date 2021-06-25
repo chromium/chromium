@@ -210,8 +210,8 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
 
   v8::Local<v8::Function> custom_callback =
       FunctionFromString(context, kEchoArgs);
-  v8::Local<v8::Function> callback =
-      FunctionFromString(context, "(function() {})");
+  v8::Local<v8::Function> callback = FunctionFromString(
+      context, "(function(arg) {this.callbackCalled = arg})");
   ASSERT_FALSE(callback.IsEmpty());
   ASSERT_FALSE(custom_callback.IsEmpty());
 
@@ -235,14 +235,78 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
   ArgumentList args;
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(5u, args.size());
-  EXPECT_EQ("\"method\"", V8ToString(args[0], context));
-  EXPECT_EQ(base::StringPrintf("{\"id\":%d}", request_id),
+  EXPECT_EQ(R"("method")", V8ToString(args[0], context));
+  EXPECT_EQ(base::StringPrintf(R"({"id":%d})", request_id),
             V8ToString(args[1], context));
-  EXPECT_EQ(callback, args[2]);
-  EXPECT_EQ("\"response\"", V8ToString(args[3], context));
-  EXPECT_EQ("\"arguments\"", V8ToString(args[4], context));
+  EXPECT_TRUE(args[2]->IsFunction());
+  EXPECT_EQ(R"("response")", V8ToString(args[3], context));
+  EXPECT_EQ(R"("arguments")", V8ToString(args[4], context));
 
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+
+  // The function passed to the custom callback isn't actually the same callback
+  // that was passed in when calling the API, but invoking it below should still
+  // result in the original callback being run.
+  EXPECT_TRUE(
+      GetPropertyFromObject(context->Global(), context, "callbackCalled")
+          ->IsUndefined());
+  v8::Local<v8::Value> callback_args[] = {gin::StringToV8(isolate(), "foo")};
+  RunFunctionOnGlobal(args[2].As<v8::Function>(), context, 1, callback_args);
+
+  EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(context->Global(), context,
+                                                    "callbackCalled"));
+}
+
+TEST_F(APIRequestHandlerTest, CustomCallbackPromiseBased) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  std::unique_ptr<APIRequestHandler> request_handler = CreateRequestHandler();
+
+  v8::Local<v8::Function> custom_callback =
+      FunctionFromString(context, kEchoArgs);
+  ASSERT_FALSE(custom_callback.IsEmpty());
+
+  int request_id = 0;
+  v8::Local<v8::Promise> promise;
+  std::tie(request_id, promise) = request_handler->StartPromiseBasedRequest(
+      context, "method", std::make_unique<base::ListValue>(), custom_callback);
+  EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
+              testing::UnorderedElementsAre(request_id));
+  ASSERT_TRUE(promise->IsPromise());
+
+  std::unique_ptr<base::ListValue> response_arguments =
+      ListValueFromString("['response', 'arguments']");
+  ASSERT_TRUE(response_arguments);
+  request_handler->CompleteRequest(request_id, *response_arguments,
+                                   std::string());
+
+  EXPECT_TRUE(did_run_js());
+  v8::Local<v8::Value> result =
+      GetPropertyFromObject(context->Global(), context, "result");
+  ASSERT_FALSE(result.IsEmpty());
+  ASSERT_TRUE(result->IsArray());
+  ArgumentList args;
+  ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
+  ASSERT_EQ(5u, args.size());
+  EXPECT_EQ(R"("method")", V8ToString(args[0], context));
+  EXPECT_EQ(base::StringPrintf(R"({"id":%d})", request_id),
+            V8ToString(args[1], context));
+  // Even though this is a promise based request the custom callbacks expect a
+  // function argument to be passed to them, hence why we get a function here.
+  // Invoking the callback however, should still result in the promise being
+  // resolved.
+  EXPECT_TRUE(args[2]->IsFunction());
+  EXPECT_EQ(R"("response")", V8ToString(args[3], context));
+  EXPECT_EQ(R"("arguments")", V8ToString(args[4], context));
+
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+  v8::Local<v8::Value> callback_args[] = {gin::StringToV8(isolate(), "foo")};
+  RunFunctionOnGlobal(args[2].As<v8::Function>(), context, 1, callback_args);
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
 }
 
 // Test that having a custom callback without an extension-provided callback
@@ -531,7 +595,8 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Fulfilled) {
   v8::Local<v8::Promise> promise;
   int request_id = -1;
   std::tie(request_id, promise) = request_handler->StartPromiseBasedRequest(
-      context, kMethod, std::make_unique<base::ListValue>());
+      context, kMethod, std::make_unique<base::ListValue>(),
+      v8::Local<v8::Function>());
 
   EXPECT_NE(-1, request_id);
   ASSERT_FALSE(promise.IsEmpty());
@@ -560,7 +625,8 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Rejected) {
   v8::Local<v8::Promise> promise;
   int request_id = -1;
   std::tie(request_id, promise) = request_handler->StartPromiseBasedRequest(
-      context, kMethod, std::make_unique<base::ListValue>());
+      context, kMethod, std::make_unique<base::ListValue>(),
+      v8::Local<v8::Function>());
 
   EXPECT_NE(-1, request_id);
   ASSERT_FALSE(promise.IsEmpty());

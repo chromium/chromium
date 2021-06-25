@@ -67,7 +67,8 @@ class APIRequestHandler {
   std::pair<int, v8::Local<v8::Promise>> StartPromiseBasedRequest(
       v8::Local<v8::Context> context,
       const std::string& method,
-      std::unique_ptr<base::Value> arguments_list);
+      std::unique_ptr<base::Value> arguments_list,
+      v8::Local<v8::Function> custom_callback);
 
   // Adds a pending request for the request handler to manage (and complete via
   // CompleteRequest). This is used by renderer-side implementations that

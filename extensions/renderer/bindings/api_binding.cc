@@ -716,7 +716,7 @@ void APIBinding::HandleCall(const std::string& name,
     int request_id = 0;
     v8::Local<v8::Promise> promise;
     std::tie(request_id, promise) = request_handler_->StartPromiseBasedRequest(
-        context, name, std::move(parse_result.arguments_list));
+        context, name, std::move(parse_result.arguments_list), custom_callback);
     arguments->Return(promise);
   } else {
     request_handler_->StartRequest(context, name,
