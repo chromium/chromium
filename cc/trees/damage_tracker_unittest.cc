@@ -1801,13 +1801,13 @@ TEST_F(DamageTrackerTest, DamageRectTooBig) {
   SetCopyRequest(root);
 
   // Really far left.
-  child1->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 100, 0));
+  child1->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 100), 0));
   child1->SetBounds(gfx::Size(1, 1));
 
   // Really far right.
-  child2->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::max() - 100, 0));
+  child2->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::max() - 100), 0));
   child2->SetBounds(gfx::Size(1, 1));
 
   EmulateDrawingOneFrame(root, 1.f);
@@ -1838,13 +1838,13 @@ TEST_F(DamageTrackerTest, DamageRectTooBigWithFilter) {
   SetBackdropFilter(root, filters);
 
   // Really far left.
-  child1->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 100, 0));
+  child1->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 100), 0));
   child1->SetBounds(gfx::Size(1, 1));
 
   // Really far right.
-  child2->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::max() - 100, 0));
+  child2->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::max() - 100), 0));
   child2->SetBounds(gfx::Size(1, 1));
 
   float device_scale_factor = 1.f;
@@ -1869,14 +1869,14 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurface) {
   SetCopyRequest(root);
 
   // Really far left.
-  grand_child1_->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 500, 0));
+  grand_child1_->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 500), 0));
   grand_child1_->SetBounds(gfx::Size(1, 1));
   grand_child1_->SetDrawsContent(true);
 
   // Really far right.
-  grand_child2_->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::max() - 500, 0));
+  grand_child2_->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::max() - 500), 0));
   grand_child2_->SetBounds(gfx::Size(1, 1));
   grand_child2_->SetDrawsContent(true);
 
@@ -1959,14 +1959,14 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurfaceWithFilter) {
   SetBackdropFilter(child1_, filters);
 
   // Really far left.
-  grand_child1_->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 500, 0));
+  grand_child1_->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 500), 0));
   grand_child1_->SetBounds(gfx::Size(1, 1));
   grand_child1_->SetDrawsContent(true);
 
   // Really far right.
-  grand_child2_->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::max() - 500, 0));
+  grand_child2_->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::max() - 500), 0));
   grand_child2_->SetBounds(gfx::Size(1, 1));
   grand_child2_->SetDrawsContent(true);
 
@@ -2217,13 +2217,13 @@ TEST_F(DamageTrackerTest, DamageRectOnlyVisibleContentsMoveToOutside) {
   origin_damage.Union(child2->visible_drawable_content_rect());
 
   // Really far left.
-  child1->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 100, 0));
+  child1->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 100), 0));
   child1->SetBounds(gfx::Size(1, 1));
 
   // Really far right.
-  child2->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::max() - 100, 0));
+  child2->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::max() - 100), 0));
   child2->SetBounds(gfx::Size(1, 1));
   EmulateDrawingOneFrame(root, 1.f);
 
@@ -2252,8 +2252,8 @@ TEST_F(DamageTrackerTest, DamageRectOnlyVisibleContentsLargeTwoContents) {
   expected_damage.set_width(GetRenderSurface(root)->content_rect().width());
 
   // Really far left.
-  child1->SetOffsetToTransformParent(
-      gfx::Vector2dF(std::numeric_limits<int>::min() + 100, 100));
+  child1->SetOffsetToTransformParent(gfx::Vector2dF(
+      static_cast<float>(std::numeric_limits<int>::min() + 100), 100));
   child1->SetBounds(
       gfx::Size(std::numeric_limits<int>::max(), child1->bounds().height()));
 
@@ -2263,7 +2263,7 @@ TEST_F(DamageTrackerTest, DamageRectOnlyVisibleContentsLargeTwoContents) {
       gfx::Size(std::numeric_limits<int>::max(), child2->bounds().height()));
   EmulateDrawingOneFrame(root, 1.f);
 
-  // Above damages should be excludebe because they're outside of
+  // Above damages should be excluded because they're outside of
   // the root surface.
   gfx::Rect damage_rect;
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(

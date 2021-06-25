@@ -373,7 +373,8 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
 // Check if SkNoDrawCanvas does not crash for large layers.
 TEST_F(DiscardableImageMapTest, RestoreSavedBigLayers) {
   PaintFlags flags;
-  SkRect rect = SkRect::MakeWH(INT_MAX, INT_MAX);
+  SkRect rect =
+      SkRect::MakeWH(static_cast<float>(INT_MAX), static_cast<float>(INT_MAX));
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
   display_list->StartPaint();
   display_list->push<DrawRectOp>(rect, flags);

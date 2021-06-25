@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
+#include <utility>
 
 #include "base/rand_util.h"
 #include "base/values.h"
@@ -131,10 +133,11 @@ bool InvalidationBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
 // high quality, but they need to be identical in each run. Therefore, we use a
 // LCG and keep the state locally in the benchmark.
 float InvalidationBenchmark::LCGRandom() {
-  const uint32_t a = 1664525;
-  const uint32_t c = 1013904223;
+  constexpr uint32_t a = 1664525;
+  constexpr uint32_t c = 1013904223;
   seed_ = a * seed_ + c;
-  return static_cast<float>(seed_) / std::numeric_limits<uint32_t>::max();
+  return static_cast<float>(seed_) /
+         static_cast<float>(std::numeric_limits<uint32_t>::max());
 }
 
 }  // namespace cc
