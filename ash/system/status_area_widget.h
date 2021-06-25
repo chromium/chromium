@@ -48,6 +48,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // applicable in in-app tablet mode. Otherwise the state is NOT_COLLAPSIBLE.
   enum class CollapseState { NOT_COLLAPSIBLE, COLLAPSED, EXPANDED };
 
+  // Used to keep track of visible TrayBubbles per display, and notify the shelf
+  // when 0<->1 bubbles are visible.
   class ScopedTrayBubbleCounter {
    public:
     explicit ScopedTrayBubbleCounter(StatusAreaWidget* status_area_widget);
