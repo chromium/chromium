@@ -139,6 +139,15 @@ class PasswordGenerationPopupViewPrerenderingTest
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
+// Flaky on LacrOS: crbug.com/1223763
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
+  DISABLED_PasswordGenerationPopupControllerInPrerendering
+#else
+#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
+  PasswordGenerationPopupControllerInPrerendering
+#endif
+
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
                        PasswordGenerationPopupControllerInPrerendering) {
   GURL url =
