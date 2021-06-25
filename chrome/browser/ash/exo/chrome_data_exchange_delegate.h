@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "components/exo/data_exchange_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 // Translate paths from |source| VM to valid paths in the host. Invalid paths
 // are ignored.
@@ -52,6 +52,12 @@ class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
       const base::Pickle& pickle) const override;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::ShareWithVMAndTranslateToFileUrls;
+using ::ash::TranslateVMPathsToHost;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_EXO_CHROME_DATA_EXCHANGE_DELEGATE_H_

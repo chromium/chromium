@@ -37,7 +37,7 @@ ExoParts::~ExoParts() {
 ExoParts::ExoParts()
     : arc_overlay_manager_(std::make_unique<ash::ArcOverlayManager>()) {
   wayland_server_ = exo::WaylandServerController::CreateIfNecessary(
-      std::make_unique<chromeos::ChromeDataExchangeDelegate>(),
+      std::make_unique<ash::ChromeDataExchangeDelegate>(),
       std::make_unique<ash::ArcNotificationSurfaceManagerImpl>(),
       std::make_unique<ash::ArcInputMethodSurfaceManager>(),
       std::make_unique<ash::ArcToastSurfaceManager>());

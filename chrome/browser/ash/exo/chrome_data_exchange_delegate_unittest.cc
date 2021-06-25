@@ -44,7 +44,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -480,4 +480,4 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
   EXPECT_TRUE(file_info.empty());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -43,7 +43,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -443,4 +443,4 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
   return file_info;
 }
 
-}  // namespace chromeos
+}  // namespace ash
