@@ -1236,6 +1236,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                 action:@selector(newTabButtonTapped:)];
   [bottomToolbar setCloseTabsButtonTarget:self
                                    action:@selector(closeSelectedTabs:)];
+  [bottomToolbar setShareTabsButtonTarget:self
+                                   action:@selector(shareSelectedTabs:)];
 
   NamedGuide* guide =
       [[NamedGuide alloc] initWithName:kTabGridBottomToolbarGuide];
@@ -1943,6 +1945,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRemoteTabs:
       NOTREACHED()
           << "It is invalid to call close selected tabs on remote tabs.";
+      break;
+  }
+}
+
+- (void)shareSelectedTabs:(id)sender {
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSArray<NSString*>* items = gridViewController.selectedItemIDsForEditing;
+
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      [self.incognitoTabsDelegate shareItems:items anchor:sender];
+      break;
+    case TabGridPageRegularTabs:
+      [self.regularTabsDelegate shareItems:items anchor:sender];
+      break;
+    case TabGridPageRemoteTabs:
+      NOTREACHED() << "Multiple tab selection invalid on remote tabs.";
       break;
   }
 }

@@ -27,16 +27,25 @@ class Browser;
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView;
 
+// Creates a coordinator configured to share the URLs specified in |params|.
+// This initializer uses |barButtonItem| to position the activity view popover
+// on iPad.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(ActivityParams*)params
+                                    anchor:(UIBarButtonItem*)barButtonItem;
+
 // Creates a coordinator configured to share the current tab's URL using the
 // base |viewController|, a |browser|, |params| with all the necessary values
-// to drive the scenario, and an |originView| from which the scenario was
-// triggered. This initializer also uses the |originRect| to position the
-// activity view popover on iPad.
+// to drive the scenario. If |barButtonItem| is non-null, it will be used
+// to present the activity view popover on iPad. Otherwise, |originView| and
+// |originRect| will be used to position the activity view popover on iPad.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView
                                 originRect:(CGRect)originRect
+                                    anchor:(UIBarButtonItem*)barButtonItem
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

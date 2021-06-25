@@ -387,6 +387,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="SharedHighlight" summary="highlighted fragment"/>
     <variant name="TabGridItem" summary="tab grid item"/>
+    <variant name="TabGridSelectionMode" summary="tab grid selection mode"/>
     <variant name="TabShareButton" summary="current tab"/>
   </token>
 </histogram>

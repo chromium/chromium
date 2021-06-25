@@ -48,6 +48,8 @@ using bookmarks::BookmarkNode;
 
 @property(nonatomic, assign) CGRect originRect;
 
+@property(nonatomic, weak) UIBarButtonItem* anchor;
+
 @end
 
 @implementation SharingCoordinator
@@ -56,13 +58,27 @@ using bookmarks::BookmarkNode;
                                    browser:(Browser*)browser
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView {
-  DCHECK(params);
   DCHECK(originView);
   self = [self initWithBaseViewController:viewController
                                   browser:browser
                                    params:params
                                originView:originView
-                               originRect:originView.bounds];
+                               originRect:originView.bounds
+                                   anchor:nil];
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(ActivityParams*)params
+                                    anchor:(UIBarButtonItem*)anchor {
+  DCHECK(anchor);
+  self = [self initWithBaseViewController:viewController
+                                  browser:browser
+                                   params:params
+                               originView:nil
+                               originRect:CGRectZero
+                                   anchor:anchor];
   return self;
 }
 
@@ -70,13 +86,15 @@ using bookmarks::BookmarkNode;
                                    browser:(Browser*)browser
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView
-                                originRect:(CGRect)originRect {
+                                originRect:(CGRect)originRect
+                                    anchor:(UIBarButtonItem*)anchor {
   DCHECK(params);
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
     _params = params;
     _originView = originView;
     _originRect = originRect;
+    _anchor = anchor;
   }
   return self;
 }
@@ -111,6 +129,10 @@ using bookmarks::BookmarkNode;
 
 - (CGRect)sourceRect {
   return self.originRect;
+}
+
+- (UIBarButtonItem*)barButtonItem {
+  return self.anchor;
 }
 
 #pragma mark - ActivityServicePresentation

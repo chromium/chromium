@@ -58,6 +58,11 @@
 // Set |enabled| on the close tabs button.
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled;
 
+// Sets target/action for tapping event on share tabs button.
+- (void)setShareTabsButtonTarget:(id)target action:(SEL)action;
+// Set |enabled| on the close tabs button.
+- (void)setShareTabsButtonEnabled:(BOOL)enabled;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;

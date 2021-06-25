@@ -34,6 +34,8 @@ const char kShareSharedHighlightActionsHistogram[] =
     "Mobile.Share.SharedHighlight.Actions";
 const char kShareTabGridItemActionsHistogram[] =
     "Mobile.Share.TabGridItem.Actions";
+const char kShareTabGridSelectionModeActionsHistogram[] =
+    "Mobile.Share.TabGridSelectionMode.Actions";
 
 // Enum representing an aggregation of the |ActivityType| enum values in a way
 // that is relevant for metric collection. Current values should not
@@ -162,6 +164,9 @@ void RecordActionForScenario(ShareActionType actionType,
       break;
     case ActivityScenario::TabGridItem:
       histogramName = kShareTabGridItemActionsHistogram;
+      break;
+    case ActivityScenario::TabGridSelectionMode:
+      histogramName = kShareTabGridSelectionModeActionsHistogram;
       break;
   }
   base::UmaHistogramEnumeration(histogramName, actionType);

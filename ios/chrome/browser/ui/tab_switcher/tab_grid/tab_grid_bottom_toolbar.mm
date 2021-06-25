@@ -180,6 +180,16 @@
   _closeTabsButton.enabled = enabled;
 }
 
+#pragma mark Share Tabs
+
+- (void)setShareTabsButtonTarget:(id)target action:(SEL)action {
+  _shareButton.target = target;
+  _shareButton.action = action;
+}
+- (void)setShareTabsButtonEnabled:(BOOL)enabled {
+  _shareButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 - (void)setupViews {

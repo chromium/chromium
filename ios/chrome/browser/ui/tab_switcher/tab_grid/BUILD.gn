@@ -40,6 +40,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/activity_services/data",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/commands",

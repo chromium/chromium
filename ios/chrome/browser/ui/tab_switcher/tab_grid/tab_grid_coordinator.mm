@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -858,6 +859,21 @@
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
+}
+
+- (void)tabGridMediator:(TabGridMediator*)tabGridMediator
+              shareURLs:(NSArray<URLWithTitle*>*)URLs
+                 anchor:(UIBarButtonItem*)buttonAnchor {
+  ActivityParams* params = [[ActivityParams alloc]
+      initWithURLs:URLs
+          scenario:ActivityScenario::TabGridSelectionMode];
+
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.regularBrowser
+                          params:params
+                          anchor:buttonAnchor];
+  [self.sharingCoordinator start];
 }
 
 #pragma mark - TabGridViewControllerDelegate

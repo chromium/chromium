@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -439,6 +440,19 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       showCloseItemsConfirmationActionSheetWithTabGridMediator:self
                                                          items:items
                                                         anchor:buttonAnchor];
+}
+
+- (void)shareItems:(NSArray<NSString*>*)items
+            anchor:(UIBarButtonItem*)buttonAnchor {
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (NSString* itemIdentifier in items) {
+    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+
+  [self.delegate tabGridMediator:self shareURLs:URLs anchor:buttonAnchor];
 }
 
 #pragma mark GridCommands helpers

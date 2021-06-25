@@ -15,6 +15,7 @@
 class Browser;
 @protocol GridConsumer;
 @class TabGridMediator;
+@class URLWithTitle;
 
 namespace sessions {
 class TabRestoreService;
@@ -41,6 +42,10 @@ class TabRestoreService;
                                                                items
                                                       anchor:(UIBarButtonItem*)
                                                                  buttonAnchor;
+
+- (void)tabGridMediator:(TabGridMediator*)tabGridMediator
+              shareURLs:(NSArray<URLWithTitle*>*)items
+                 anchor:(UIBarButtonItem*)buttonAnchor;
 
 @end
 

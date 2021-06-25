@@ -122,7 +122,8 @@ TEST_F(BrowserCoordinatorTest, SharePage) {
                                    browser:browser_.get()
                                     params:[OCMArg any]
                                 originView:[OCMArg any]
-                                originRect:CGRectZero])
+                                originRect:CGRectZero
+                                    anchor:[OCMArg any]])
       .andReturn(mockSharingCoordinator);
   OCMExpect([mockSharingCoordinator start]);
 

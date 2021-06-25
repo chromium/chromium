@@ -127,10 +127,16 @@
 
   // Set-up popover positioning (for iPad).
   DCHECK(self.positionProvider);
-  self.viewController.popoverPresentationController.sourceView =
-      self.positionProvider.sourceView;
-  self.viewController.popoverPresentationController.sourceRect =
-      self.positionProvider.sourceRect;
+  if ([self.positionProvider respondsToSelector:@selector(barButtonItem)] &&
+      self.positionProvider.barButtonItem) {
+    self.viewController.popoverPresentationController.barButtonItem =
+        self.positionProvider.barButtonItem;
+  } else {
+    self.viewController.popoverPresentationController.sourceView =
+        self.positionProvider.sourceView;
+    self.viewController.popoverPresentationController.sourceRect =
+        self.positionProvider.sourceRect;
+  }
 
   // Set completion callback.
   __weak __typeof(self) weakSelf = self;

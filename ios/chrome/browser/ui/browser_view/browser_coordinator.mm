@@ -558,6 +558,12 @@
   // Exit fullscreen if needed to make sure that share button is visible.
   FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 
+  UIBarButtonItem* anchor = nil;
+  if ([self.viewController.activityServicePositioner
+          respondsToSelector:@selector(barButtonItem)]) {
+    anchor = self.viewController.activityServicePositioner.barButtonItem;
+  }
+
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -565,7 +571,8 @@
                       originView:self.viewController.activityServicePositioner
                                      .sourceView
                       originRect:self.viewController.activityServicePositioner
-                                     .sourceRect];
+                                     .sourceRect
+                          anchor:anchor];
   [self.sharingCoordinator start];
 }
 
@@ -576,12 +583,13 @@
                            additionalText:command.selectedText
                                  scenario:ActivityScenario::SharedHighlight];
 
-  self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                          params:params
-                      originView:command.sourceView
-                      originRect:command.sourceRect];
+  self.sharingCoordinator =
+      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                      params:params
+                                                  originView:command.sourceView
+                                                  originRect:command.sourceRect
+                                                      anchor:nil];
   [self.sharingCoordinator start];
 }
 

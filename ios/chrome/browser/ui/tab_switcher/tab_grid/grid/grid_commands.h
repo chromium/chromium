@@ -51,6 +51,9 @@
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
                                             anchor:
                                                 (UIBarButtonItem*)buttonAnchor;
+// Shows a share sheet to share |items|, anchored to the |buttonAnchor|.
+- (void)shareItems:(NSArray<NSString*>*)items
+            anchor:(UIBarButtonItem*)buttonAnchor;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_COMMANDS_H_
