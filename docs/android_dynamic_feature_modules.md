@@ -272,6 +272,12 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/foo/Foo.java",
   ]
+  deps = [
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+  ]
+  annotation_processor_deps =
+    [ "//components/module_installer/android:module_interface_processor" ]
 }
 ```
 
