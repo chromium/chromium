@@ -157,12 +157,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
                   error:&error];
   if (error) {
-    // If the consent is bigger than the scroll view, the primary button should
-    // be "MORE".
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON)]
-        assertWithMatcher:grey_notNil()];
     [[EarlGrey selectElementWithMatcher:confirmationScrollViewMatcher]
         performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   }
