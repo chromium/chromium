@@ -26,9 +26,16 @@ var HistoryToolbarFocusTest = class extends HistoryFocusTest {
   }
 };
 
-TEST_F('HistoryToolbarFocusTest', 'All', function() {
+GEN('#if defined(OS_MAC)');
+GEN('// Flaky, https://crbug.com/1200678');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('HistoryToolbarFocusTest', 'MAYBE_All', function() {
   mocha.run();
 });
+GEN('#undef MAYBE_All');
 
 // eslint-disable-next-line no-var
 var HistoryListFocusTest = class extends HistoryFocusTest {
