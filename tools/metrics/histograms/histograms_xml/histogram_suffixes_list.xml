@@ -8679,6 +8679,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SharedDb" label="Shared database"/>
   <suffix name="ShareHistoryDatabase"
       label="Database for third-party share history."/>
+  <suffix name="ShareRankingDatabase"
+      label="Database for third-party share rankings."/>
   <suffix name="SignalDatabase" label="Segmentation platform signal database."/>
   <suffix name="SignalStorageConfigDatabase"
       label="Segmentation platform signal storage config."/>
