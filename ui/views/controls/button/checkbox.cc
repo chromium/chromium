@@ -47,8 +47,10 @@ class Checkbox::FocusRingHighlightPathGenerator
   }
 };
 
-Checkbox::Checkbox(const std::u16string& label, PressedCallback callback)
-    : LabelButton(std::move(callback), label) {
+Checkbox::Checkbox(const std::u16string& label,
+                   PressedCallback callback,
+                   int button_context)
+    : LabelButton(std::move(callback), label, button_context) {
   SetImageCentered(false);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

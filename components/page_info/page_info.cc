@@ -629,6 +629,15 @@ void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
 #endif
 }
 
+void PageInfo::OpenContentSettingsExceptions(
+    ContentSettingsType content_settings_type) {
+#if defined(OS_ANDROID)
+  NOTREACHED();
+#else
+  delegate_->OpenContentSettingsExceptions(content_settings_type);
+#endif
+}
+
 void PageInfo::OnChangePasswordButtonPressed() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   delegate_->OnUserActionOnPasswordUi(

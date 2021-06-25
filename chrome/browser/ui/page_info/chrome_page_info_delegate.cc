@@ -183,6 +183,12 @@ void ChromePageInfoDelegate::OpenConnectionHelpCenterPage(
 void ChromePageInfoDelegate::OpenSafetyTipHelpCenterPage() {
   OpenHelpCenterFromSafetyTip(web_contents_);
 }
+
+void ChromePageInfoDelegate::OpenContentSettingsExceptions(
+    ContentSettingsType content_settings_type) {
+  chrome::ShowContentSettingsExceptionsForProfile(GetProfile(),
+                                                  content_settings_type);
+}
 #endif
 
 permissions::PermissionDecisionAutoBlocker*

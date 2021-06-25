@@ -169,7 +169,8 @@ void PageInfoMainView::SetPermissionInfo(
 
   for (const auto& permission : permission_info_list) {
     auto* selector = permissions_view_->AddChildView(
-        std::make_unique<PermissionToggleRowView>(ui_delegate_, permission));
+        std::make_unique<PermissionToggleRowView>(
+            ui_delegate_, navigation_handler_, permission));
     selector->AddObserver(this);
     selector_rows_.push_back(std::move(selector));
   }

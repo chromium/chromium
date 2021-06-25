@@ -11,6 +11,7 @@ class PageInfoNavigationHandler {
  public:
   virtual void OpenMainPage() = 0;
   virtual void OpenSecurityPage() = 0;
+  virtual void OpenPermissionPage(ContentSettingsType type) = 0;
   virtual void CloseBubble() = 0;
 };
 

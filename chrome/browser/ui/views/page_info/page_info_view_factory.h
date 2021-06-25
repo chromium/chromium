@@ -90,6 +90,8 @@ class PageInfoViewFactory {
 
   std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;
+  std::unique_ptr<views::View> CreatePermissionPageView(
+      ContentSettingsType type) WARN_UNUSED_RESULT;
 
  private:
   // Creates a subpage header with back button that opens the main page, a

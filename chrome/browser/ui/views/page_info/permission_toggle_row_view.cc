@@ -24,8 +24,9 @@
 
 PermissionToggleRowView::PermissionToggleRowView(
     ChromePageInfoUiDelegate* delegate,
+    PageInfoNavigationHandler* navigation_handler,
     const PageInfo::PermissionInfo& permission)
-    : permission_(permission) {
+    : permission_(permission), navigation_handler_(navigation_handler) {
   SetUseDefaultFillLayout(true);
   row_view_ = AddChildView(std::make_unique<PageInfoRowView>());
   row_view_->SetTitle(PageInfoUI::PermissionTypeToUIString(permission.type));
@@ -114,7 +115,7 @@ void PermissionToggleRowView::InitForUserSource() {
   auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(
           [=](PermissionToggleRowView* row) {
-            // TODO(olesiamarukhno): Add opening permissions page.
+            row->navigation_handler_->OpenPermissionPage(row->permission_.type);
           },
           base::Unretained(this)),
       vector_icons::kSubmenuArrowIcon);

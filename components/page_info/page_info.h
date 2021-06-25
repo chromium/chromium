@@ -242,6 +242,9 @@ class PageInfo : public content::WebContentsObserver {
   // Handles opening the connection help center page and records the event.
   void OpenConnectionHelpCenterPage(const ui::Event& event);
 
+  // Handles opening the settings page for a permission.
+  void OpenContentSettingsExceptions(ContentSettingsType content_settings_type);
+
   // This method is called when the user pressed "Change password" button.
   void OnChangePasswordButtonPressed();
 

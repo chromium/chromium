@@ -13,6 +13,8 @@ class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoViewFactory;
 
+enum class ContentSettingsType;
+
 // The experimental new implementation of the Views page info UI (under a flag
 // PageInfoV2Desktop). Current implementation (PageInfoBubbleView) will be
 // deprecated when the redesign is finished.
@@ -32,6 +34,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   // PageInfoNavigationHandler:
   void OpenMainPage() override;
   void OpenSecurityPage() override;
+  void OpenPermissionPage(ContentSettingsType type) override;
   void CloseBubble() override;
 
  private:

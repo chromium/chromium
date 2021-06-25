@@ -74,6 +74,10 @@ void PageInfoNewBubbleView::OpenSecurityPage() {
   page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
 }
 
+void PageInfoNewBubbleView::OpenPermissionPage(ContentSettingsType type) {
+  page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
+}
+
 void PageInfoNewBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);

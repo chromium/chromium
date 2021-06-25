@@ -11,6 +11,7 @@
 
 class ChromePageInfoUiDelegate;
 class PageInfoRowView;
+class PageInfoNavigationHandler;
 
 // A view that shows a permission that a site is able to access, and
 // allows the user to control via toggle whether that access is granted. Has a
@@ -18,6 +19,7 @@ class PageInfoRowView;
 class PermissionToggleRowView : public views::View {
  public:
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
+                          PageInfoNavigationHandler* navigation_handler,
                           const PageInfo::PermissionInfo& permission);
   PermissionToggleRowView(const PermissionToggleRowView&) = delete;
   PermissionToggleRowView& operator=(const PermissionToggleRowView&) = delete;
@@ -35,6 +37,8 @@ class PermissionToggleRowView : public views::View {
   PageInfo::PermissionInfo permission_;
 
   PageInfoRowView* row_view_ = nullptr;
+
+  PageInfoNavigationHandler* navigation_handler_;
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;

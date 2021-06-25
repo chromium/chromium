@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
+#include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "components/page_info/page_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -111,6 +112,14 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER)),
       std::make_unique<PageInfoSecurityContentView>(
           presenter_, /*is_standalone_page=*/true));
+}
+
+std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
+    ContentSettingsType type) {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type)),
+      std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
+                                                      type));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
