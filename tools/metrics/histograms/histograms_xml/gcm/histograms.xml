@@ -276,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.RegistrationCacheStatus" enum="GCMRegistrationCacheStatus"
-    expires_after="2021-07-31">
+    expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>

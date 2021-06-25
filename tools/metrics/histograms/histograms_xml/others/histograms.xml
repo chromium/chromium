@@ -11678,7 +11678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
-    expires_after="2021-07-31">
+    expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -11689,7 +11689,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PeriodicBackgroundSync.Event.FromWakeupTask"
-    enum="BackgroundSyncWakeupTask" expires_after="2021-07-31">
+    enum="BackgroundSyncWakeupTask" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

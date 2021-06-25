@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram base="true" name="BackgroundFetch.EventDispatchFailure.Dispatch"
-    enum="ServiceWorkerStatusCode" expires_after="2021-06-30">
+    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
 <!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
 
   <owner>peter@chromium.org</owner>
@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="BackgroundFetch.EventDispatchFailure.FindWorker"
-    enum="ServiceWorkerStatusCode" expires_after="2021-06-30">
+    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
 <!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
 
   <owner>peter@chromium.org</owner>
@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="BackgroundFetch.EventDispatchFailure.StartWorker"
-    enum="ServiceWorkerStatusCode" expires_after="2021-06-30">
+    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
 <!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
 
   <owner>peter@chromium.org</owner>
@@ -59,7 +59,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="BackgroundFetch.EventDispatchResult"
-    enum="BackgroundFetchEventDispatchResult" expires_after="2021-06-30">
+    enum="BackgroundFetchEventDispatchResult" expires_after="2022-06-30">
 <!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
 
   <owner>peter@chromium.org</owner>
@@ -71,7 +71,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.HasDuplicateRequests" enum="Boolean"
-    expires_after="2021-06-30">
+    expires_after="2022-06-30">
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -232,7 +232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Event.FromWakeupTask"
-    enum="BackgroundSyncWakeupTask" expires_after="2021-07-31">
+    enum="BackgroundSyncWakeupTask" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -266,7 +266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Event.PeriodicResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2021-07-31">
+    enum="BackgroundSyncResultPattern" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -281,7 +281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Event.PeriodicStartedInForeground"
-    enum="BooleanInForeground" expires_after="2021-07-31">
+    enum="BooleanInForeground" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -316,7 +316,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.NetworkObserver.HasPermission" enum="Boolean"
-    expires_after="2021-06-30">
+    expires_after="2022-06-30">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -328,7 +328,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Periodic.Wakeup.DelayTime" units="ms"
-    expires_after="2021-07-31">
+    expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -402,7 +402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic.IsDuplicate"
-    enum="BooleanRegistrationIsDuplicate" expires_after="2021-07-31">
+    enum="BooleanRegistrationIsDuplicate" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -413,7 +413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic.MinInterval"
-    units="seconds" expires_after="2021-07-31">
+    units="seconds" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -423,7 +423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Unregistration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2021-07-31">
+    enum="BackgroundSyncStatus" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -432,7 +432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Wakeup.DelayTime" units="ms"
-    expires_after="2021-07-31">
+    expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -445,7 +445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.WakeupTaskFiredEvents.OneShot"
-    enum="BackgroundSyncFiredEvents" expires_after="2021-07-31">
+    enum="BackgroundSyncFiredEvents" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -458,7 +458,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.WakeupTaskFiredEvents.Periodic"
-    enum="BackgroundSyncFiredEvents" expires_after="2021-07-31">
+    enum="BackgroundSyncFiredEvents" expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
