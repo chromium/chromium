@@ -102,8 +102,7 @@ class WebAppsBase : public apps::PublisherBase,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
 
-  void ConvertWebApps(apps::mojom::Readiness readiness,
-                      std::vector<apps::mojom::AppPtr>* apps_out);
+  void ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out);
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
 

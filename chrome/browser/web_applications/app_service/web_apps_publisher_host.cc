@@ -89,8 +89,7 @@ void WebAppsPublisherHost::OnReady() {
 
   std::vector<apps::mojom::AppPtr> apps;
   for (const WebApp& web_app : registrar().GetApps()) {
-    apps.push_back(publisher_helper().ConvertWebApp(
-        &web_app, apps::mojom::Readiness::kReady));
+    apps.push_back(publisher_helper().ConvertWebApp(&web_app));
   }
   remote_publisher_->OnApps(std::move(apps));
 }

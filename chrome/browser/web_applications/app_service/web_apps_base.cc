@@ -201,8 +201,7 @@ void WebAppsBase::ModifyWebAppCapabilityAccess(
                          std::move(accessing_microphone));
 }
 
-void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
-                                 std::vector<apps::mojom::AppPtr>* apps_out) {
+void WebAppsBase::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   const WebAppRegistrar* registrar = GetRegistrar();
   // Can be nullptr in tests.
   if (!registrar)
@@ -210,8 +209,7 @@ void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
 
   for (const WebApp& web_app : registrar->GetApps()) {
     if (Accepts(web_app.app_id())) {
-      apps_out->push_back(
-          publisher_helper().ConvertWebApp(&web_app, readiness));
+      apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
     }
   }
 }
@@ -219,7 +217,7 @@ void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
 void WebAppsBase::StartPublishingWebApps(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote) {
   std::vector<apps::mojom::AppPtr> apps;
-  ConvertWebApps(apps::mojom::Readiness::kReady, &apps);
+  ConvertWebApps(&apps);
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));

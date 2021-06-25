@@ -236,15 +236,15 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 }
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
-    const WebApp* web_app,
-    apps::mojom::Readiness readiness) {
+    const WebApp* web_app) {
+  bool is_disabled = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(web_app->chromeos_data().has_value());
-  bool is_disabled = web_app->chromeos_data()->is_disabled;
-  if (is_disabled) {
-    readiness = apps::mojom::Readiness::kDisabledByPolicy;
-  }
+  is_disabled = web_app->chromeos_data()->is_disabled;
 #endif
+  const apps::mojom::Readiness readiness =
+      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
+                  : apps::mojom::Readiness::kReady;
 
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       app_type(), web_app->app_id(), readiness, web_app->name(),
@@ -353,10 +353,8 @@ void WebAppPublisherHelper::UninstallWebApp(
 }
 
 apps::mojom::IconKeyPtr WebAppPublisherHelper::MakeIconKey(
-    const WebApp* web_app,
-    absl::optional<bool> is_disabled) {
-  return icon_key_factory_.MakeIconKey(
-      GetIconEffects(web_app, std::move(is_disabled)));
+    const WebApp* web_app) {
+  return icon_key_factory_.MakeIconKey(GetIconEffects(web_app));
 }
 
 void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
@@ -694,8 +692,7 @@ void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
 
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(
-        ConvertWebApp(web_app, apps::mojom::Readiness::kReady));
+    delegate_->PublishWebApp(ConvertWebApp(web_app));
   }
 }
 
@@ -704,8 +701,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
     base::StringPiece old_name) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(
-        ConvertWebApp(web_app, apps::mojom::Readiness::kReady));
+    delegate_->PublishWebApp(ConvertWebApp(web_app));
   }
 }
 
@@ -782,15 +778,9 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
     return;
   }
 
-  // Sometimes OnWebAppDisabledStateChanged is called but
-  // WebApp::chromos_data().is_disabled isn't updated yet, that's why here we
-  // depend only on |is_disabled|.
-  apps::mojom::Readiness readiness =
-      is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
-                  : apps::mojom::Readiness::kReady;
-  apps::mojom::AppPtr app = ConvertWebApp(web_app, readiness);
   DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
-  app->icon_key = MakeIconKey(web_app, is_disabled);
+  apps::mojom::AppPtr app = ConvertWebApp(web_app);
+  app->icon_key = MakeIconKey(web_app);
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
@@ -973,9 +963,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
 #endif
 }
 
-IconEffects WebAppPublisherHelper::GetIconEffects(
-    const WebApp* web_app,
-    absl::optional<bool> is_disabled_opt) {
+IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   IconEffects icon_effects = IconEffects::kRoundCorners;
   if (!web_app->is_locally_installed()) {
     icon_effects |= IconEffects::kBlocked;
@@ -996,9 +984,7 @@ IconEffects WebAppPublisherHelper::GetIconEffects(
   }
 
   bool is_disabled = false;
-  if (is_disabled_opt.has_value()) {
-    is_disabled = *is_disabled_opt;
-  } else if (web_app->chromeos_data().has_value()) {
+  if (web_app->chromeos_data().has_value()) {
     is_disabled = web_app->chromeos_data()->is_disabled;
   }
   if (is_disabled) {

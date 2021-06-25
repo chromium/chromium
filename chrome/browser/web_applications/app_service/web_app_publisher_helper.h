@@ -106,8 +106,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       std::vector<apps::mojom::PermissionPtr>* target);
 
   // Creates an |apps::mojom::App| describing |web_app|.
-  apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app,
-                                    apps::mojom::Readiness readiness);
+  apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to identify an
   // uninstallation.
@@ -127,11 +126,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                        bool clear_site_data,
                        bool report_abuse);
 
-  // If |is_disabled| is |absl::nullopt|, |web_app->chromos_data().is_disabled|
-  // is consulted instead.
-  apps::mojom::IconKeyPtr MakeIconKey(
-      const WebApp* web_app,
-      absl::optional<bool> is_disabled = absl::nullopt);
+  apps::mojom::IconKeyPtr MakeIconKey(const WebApp* web_app);
 
   void SetIconEffect(const std::string& app_id);
 
@@ -262,8 +257,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   void Init(bool observe_media_requests);
 
-  apps::IconEffects GetIconEffects(const WebApp* web_app,
-                                   absl::optional<bool> is_disabled_opt);
+  apps::IconEffects GetIconEffects(const WebApp* web_app);
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
