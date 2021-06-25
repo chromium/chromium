@@ -66,12 +66,8 @@ class WatchTimeRecorderTest : public testing::Test {
     ResetMetricRecorders();
     MediaMetricsProvider::Create(
         MediaMetricsProvider::BrowsingMode::kIncognito,
-        MediaMetricsProvider::FrameStatus::kTopFrame,
-        base::BindRepeating(&WatchTimeRecorderTest::GetSourceId,
-                            base::Unretained(this)),
-        base::BindRepeating(
-            []() { return learning::FeatureValue(0); }) /* origin callback */,
-        VideoDecodePerfHistory::SaveCallback(),
+        MediaMetricsProvider::FrameStatus::kTopFrame, GetSourceId(),
+        learning::FeatureValue(0), VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(
             &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,

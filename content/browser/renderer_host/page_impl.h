@@ -10,6 +10,8 @@
 
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/public/browser/page.h"
+#include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "url/gurl.h"
@@ -53,6 +55,13 @@ class CONTENT_EXPORT PageImpl : public Page {
     return fenced_frame_urls_map_;
   }
 
+  void set_last_main_document_source_id(ukm::SourceId id) {
+    last_main_document_source_id_ = id;
+  }
+  ukm::SourceId last_main_document_source_id() const {
+    return last_main_document_source_id_;
+  }
+
  private:
   // True if we've received a notification that the onload() handler has
   // run for main frame document.
@@ -83,6 +92,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.
   RenderFrameHostImpl& main_document_;
+
+  // SourceId of the navigation in this page's main frame. Note that a same
+  // document navigation is the only case where this source id can change, since
+  // all other navigations create a new PageImpl instance.
+  ukm::SourceId last_main_document_source_id_ = ukm::kInvalidSourceId;
 };
 
 }  // namespace content

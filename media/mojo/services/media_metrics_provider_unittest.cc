@@ -46,9 +46,7 @@ class MediaMetricsProviderTest : public testing::Test {
                       : MediaMetricsProvider::BrowsingMode::kNormal),
         (is_top_frame ? MediaMetricsProvider::FrameStatus::kTopFrame
                       : MediaMetricsProvider::FrameStatus::kNotTopFrame),
-        base::BindRepeating(&MediaMetricsProviderTest::GetSourceId,
-                            base::Unretained(this)),
-        base::BindRepeating([]() { return learning::FeatureValue(0); }),
+        GetSourceId(), learning::FeatureValue(0),
         VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(

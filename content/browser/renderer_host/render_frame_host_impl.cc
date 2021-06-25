@@ -8685,19 +8685,8 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       frame_tree_node_->IsMainFrame()
           ? media::MediaMetricsProvider::FrameStatus::kTopFrame
           : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
-      base::BindRepeating(
-          &RenderFrameHostDelegate::
-              GetUkmSourceIdForLastCommittedSourceIncludingSameDocument,
-          // This callback is only executed when Create() is called, during
-          // which the lifetime of the |delegate_| is guaranteed.
-          base::Unretained(delegate_)),
-      base::BindRepeating(
-          [](RenderFrameHostImpl* frame) {
-            return ::media::learning::FeatureValue(
-                frame->GetLastCommittedOrigin().host());
-          },
-          // Same as above.
-          base::Unretained(this)),
+      GetPage().last_main_document_source_id(),
+      media::learning::FeatureValue(GetLastCommittedOrigin().host()),
       std::move(save_stats_cb),
       base::BindRepeating(
           [](base::WeakPtr<RenderFrameHostImpl> frame)
@@ -9827,6 +9816,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   } else {
     DCHECK_EQ(is_overriding_user_agent_, params->is_overriding_user_agent);
+  }
+
+  if (is_main_frame()) {
+    document_associated_data_->owned_page->set_last_main_document_source_id(
+        ukm::ConvertToSourceId(navigation_request->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID));
   }
 
   // TODO(https://crbug.com/1131832): Do not pass |params| to DidNavigate().

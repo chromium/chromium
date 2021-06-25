@@ -68,16 +68,11 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   // Creates a MediaMetricsProvider, |perf_history| may be nullptr if perf
   // history database recording is disabled.
-  //
-  // |get_source_id_cb| and |get_origin_cb| may not be run after this function
-  // returns.  The intention is that they'll be run to produce the constructor
-  // arguments for MediaMetricsProvider synchronously.  They should not be
-  // copied or moved for later.
   static void Create(
       BrowsingMode is_incognito,
       FrameStatus is_top_frame,
-      GetSourceIdCallback get_source_id_cb,
-      GetOriginCallback get_origin_cb,
+      ukm::SourceId source_id,
+      learning::FeatureValue origin,
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
       GetRecordAggregateWatchTimeCallback get_record_playback_cb,

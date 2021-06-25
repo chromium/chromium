@@ -3076,12 +3076,6 @@ void WebContentsImpl::Activate() {
     delegate_->ActivateContents(this);
 }
 
-ukm::SourceId
-WebContentsImpl::GetUkmSourceIdForLastCommittedSourceIncludingSameDocument()
-    const {
-  return last_committed_source_id_including_same_document_;
-}
-
 void WebContentsImpl::SetTopControlsShownRatio(
     RenderWidgetHostImpl* render_widget_host,
     float ratio) {
@@ -5455,14 +5449,9 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
       }
     }
 
-    if (navigation_handle->IsInMainFrame()) {
-      last_committed_source_id_including_same_document_ =
-          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID);
-
-      if (!navigation_handle->IsSameDocument()) {
-        was_ever_audible_ = false;
-      }
+    if (navigation_handle->IsInMainFrame() &&
+        !navigation_handle->IsSameDocument()) {
+      was_ever_audible_ = false;
     }
 
     if (!navigation_handle->IsSameDocument())

@@ -170,16 +170,15 @@ void MediaMetricsProvider::ReportPipelineUMA() {
 void MediaMetricsProvider::Create(
     BrowsingMode is_incognito,
     FrameStatus is_top_frame,
-    GetSourceIdCallback get_source_id_cb,
-    GetOriginCallback get_origin_cb,
+    ukm::SourceId source_id,
+    learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
     GetRecordAggregateWatchTimeCallback get_record_playback_cb,
     mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
-          is_incognito, is_top_frame, get_source_id_cb.Run(),
-          get_origin_cb.Run(), std::move(save_cb),
+          is_incognito, is_top_frame, source_id, origin, std::move(save_cb),
           std::move(learning_session_cb),
           std::move(get_record_playback_cb).Run()),
       std::move(receiver));

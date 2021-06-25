@@ -486,15 +486,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the visibility of the delegate.
   virtual Visibility GetVisibility();
 
-  // Get the UKM source ID for current content from the last committed
-  // navigation, either a cross-document or same-document navigation. This is
-  // for providing data about the content to the URL-keyed metrics service.
-  // Use this method if UKM events should be attributed to the latest
-  // navigation, that is, attribute events to the new source after each
-  // same-document navigation, if any.
-  virtual ukm::SourceId
-  GetUkmSourceIdForLastCommittedSourceIncludingSameDocument() const;
-
   // Notify observers if WebAudio AudioContext has started (or stopped) playing
   // audible sounds.
   virtual void AudioContextPlaybackStarted(RenderFrameHostImpl* host,

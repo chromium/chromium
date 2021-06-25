@@ -413,10 +413,8 @@ class WebMediaPlayerImplTest
     mojo::Remote<mojom::MediaMetricsProvider> provider;
     MediaMetricsProvider::Create(
         MediaMetricsProvider::BrowsingMode::kNormal,
-        MediaMetricsProvider::FrameStatus::kNotTopFrame,
-        base::BindRepeating([]() { return ukm::kInvalidSourceId; }),
-        base::BindRepeating([]() { return learning::FeatureValue(0); }),
-        VideoDecodePerfHistory::SaveCallback(),
+        MediaMetricsProvider::FrameStatus::kNotTopFrame, ukm::kInvalidSourceId,
+        learning::FeatureValue(0), VideoDecodePerfHistory::SaveCallback(),
         MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(
             &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,

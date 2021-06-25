@@ -900,8 +900,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // RenderWidgetHostDelegate --------------------------------------------------
 
-  ukm::SourceId GetUkmSourceIdForLastCommittedSourceIncludingSameDocument()
-      const override;
   void SetTopControlsShownRatio(RenderWidgetHostImpl* render_widget_host,
                                 float ratio) override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
@@ -1882,11 +1880,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // The last published background color.
   absl::optional<SkColor> last_sent_background_color_;
-
-  // SourceId of the last committed navigation, either a cross-document or
-  // same-document navigation.
-  ukm::SourceId last_committed_source_id_including_same_document_ =
-      ukm::kInvalidSourceId;
 
   // Data for misc internal state ----------------------------------------------
 
