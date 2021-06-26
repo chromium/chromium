@@ -5712,7 +5712,7 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
 }
 
 // https://www.w3.org/TR/css-overflow-4
-// auto | [ stable | always ] && both? && force?
+// auto | stable && mirror?
 const CSSValue* ScrollbarGutter::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -5723,37 +5723,30 @@ const CSSValue* ScrollbarGutter::ParseSingleValue(
   if (auto* value = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range))
     return value;
 
-  CSSIdentifierValue* stable_or_always = nullptr;
-  CSSIdentifierValue* both = nullptr;
-  CSSIdentifierValue* force = nullptr;
+  CSSIdentifierValue* stable = nullptr;
+  CSSIdentifierValue* mirror = nullptr;
 
   while (!range.AtEnd()) {
-    if (!stable_or_always) {
-      if ((stable_or_always =
-               css_parsing_utils::ConsumeIdent<CSSValueID::kStable,
-                                               CSSValueID::kAlways>(range)))
+    if (!stable) {
+      if ((stable =
+               css_parsing_utils::ConsumeIdent<CSSValueID::kStable>(range)))
         continue;
     }
     CSSValueID id = range.Peek().Id();
-    if (id == CSSValueID::kBoth && !both)
-      both = css_parsing_utils::ConsumeIdent(range);
-    else if (id == CSSValueID::kForce && !force)
-      force = css_parsing_utils::ConsumeIdent(range);
+    if (id == CSSValueID::kMirror && !mirror)
+      mirror = css_parsing_utils::ConsumeIdent(range);
     else
       return nullptr;
   }
-  if (!stable_or_always)
+  if (!stable)
     return nullptr;
-  if (both || force) {
+  if (mirror) {
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    list->Append(*stable_or_always);
-    if (both)
-      list->Append(*both);
-    if (force)
-      list->Append(*force);
+    list->Append(*stable);
+    list->Append(*mirror);
     return list;
   }
-  return stable_or_always;
+  return stable;
 }
 
 const CSSValue* ScrollbarGutter::CSSValueFromComputedStyleInternal(
@@ -5764,23 +5757,19 @@ const CSSValue* ScrollbarGutter::CSSValueFromComputedStyleInternal(
   if (scrollbar_gutter == kScrollbarGutterAuto)
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
 
-  DCHECK(scrollbar_gutter & (kScrollbarGutterStable | kScrollbarGutterAlways));
+  DCHECK(scrollbar_gutter & kScrollbarGutterStable);
 
-  CSSValue* main_value = nullptr;
+  CSSValue* stable = nullptr;
   if (scrollbar_gutter & kScrollbarGutterStable)
-    main_value = CSSIdentifierValue::Create(CSSValueID::kStable);
-  else
-    main_value = CSSIdentifierValue::Create(CSSValueID::kAlways);
+    stable = CSSIdentifierValue::Create(CSSValueID::kStable);
 
-  if (!(scrollbar_gutter & (kScrollbarGutterBoth | kScrollbarGutterForce)))
-    return main_value;
+  if (!(scrollbar_gutter & kScrollbarGutterMirror))
+    return stable;
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*main_value);
-  if (scrollbar_gutter & kScrollbarGutterBoth)
-    list->Append(*CSSIdentifierValue::Create(kScrollbarGutterBoth));
-  if (scrollbar_gutter & kScrollbarGutterForce)
-    list->Append(*CSSIdentifierValue::Create(kScrollbarGutterForce));
+  list->Append(*stable);
+  if (scrollbar_gutter & kScrollbarGutterMirror)
+    list->Append(*CSSIdentifierValue::Create(kScrollbarGutterMirror));
   return list;
 }
 

@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -1673,10 +1674,12 @@ bool PaintLayer::RequiresScrollableArea() const {
   // PaintLayerScrollableArea.
   if (GetLayoutBox()->CanResize())
     return true;
-  // With custom scrollbars, we need a PaintLayerScrollableArea
-  // so we can calculate the size of scrollbar gutters.
-  if (GetLayoutObject().StyleRef().IsScrollbarGutterForce() &&
-      GetLayoutObject().StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar)) {
+  // With custom scrollbars unfortunately we may need a PaintLayerScrollableArea
+  // to be able to calculate the size of scrollbar gutters.
+  const ComputedStyle& style = GetLayoutObject().StyleRef();
+  if (style.IsScrollbarGutterStable() &&
+      style.OverflowBlockDirection() == EOverflow::kHidden &&
+      style.HasPseudoElementStyle(kPseudoIdScrollbar)) {
     return true;
   }
   return false;

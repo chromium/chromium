@@ -448,10 +448,6 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
   if (HasNonVisibleOverflow())
     return kOverflowClipPaintLayer;
 
-  if (StyleRef().IsScrollbarGutterForce() &&
-      StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar))
-    return kNormalPaintLayer;
-
   return kNoPaintLayer;
 }
 
@@ -1025,7 +1021,8 @@ LayoutUnit LayoutBox::ScrollWidth() const {
   NOT_DESTROYED();
   if (IsScrollContainer())
     return GetScrollableArea()->ScrollWidth();
-  if (StyleRef().IsScrollbarGutterForce()) {
+  if (StyleRef().IsScrollbarGutterStable() &&
+      StyleRef().OverflowBlockDirection() == EOverflow::kHidden) {
     if (auto* scrollable_area = GetScrollableArea())
       return scrollable_area->ScrollWidth();
     else
@@ -1043,7 +1040,8 @@ LayoutUnit LayoutBox::ScrollHeight() const {
   NOT_DESTROYED();
   if (IsScrollContainer())
     return GetScrollableArea()->ScrollHeight();
-  if (StyleRef().IsScrollbarGutterForce()) {
+  if (StyleRef().IsScrollbarGutterStable() &&
+      StyleRef().OverflowBlockDirection() == EOverflow::kHidden) {
     if (auto* scrollable_area = GetScrollableArea())
       return scrollable_area->ScrollHeight();
     else
@@ -1595,28 +1593,24 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
   if (StyleRef().IsScrollbarGutterAuto())
     return false;
 
-  bool is_stable = StyleRef().IsScrollbarGutterStable();
-  bool is_always = StyleRef().IsScrollbarGutterAlways();
-
-  if (!is_stable && !is_always)
-    return false;
+  DCHECK(StyleRef().IsScrollbarGutterStable());
 
   // Scrollbar-gutter propagates to the viewport
   // (see:|StyleResolver::PropagateStyleToViewport|).
   if (orientation == kVerticalScrollbar) {
     EOverflow overflow = StyleRef().OverflowY();
-    return (StyleRef().IsScrollbarGutterForce() ||
-            overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
-           StyleRef().IsHorizontalWritingMode() &&
-           GetNode() != GetDocument().ViewportDefiningElement() &&
-           !(is_stable && UsesOverlayScrollbars());
+    return StyleRef().IsHorizontalWritingMode() &&
+           (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll ||
+            overflow == EOverflow::kHidden) &&
+           !UsesOverlayScrollbars() &&
+           GetNode() != GetDocument().ViewportDefiningElement();
   } else {
     EOverflow overflow = StyleRef().OverflowX();
-    return (StyleRef().IsScrollbarGutterForce() ||
-            overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
-           !StyleRef().IsHorizontalWritingMode() &&
-           GetNode() != GetDocument().ViewportDefiningElement() &&
-           !(is_stable && UsesOverlayScrollbars());
+    return !StyleRef().IsHorizontalWritingMode() &&
+           (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll ||
+            overflow == EOverflow::kHidden) &&
+           !UsesOverlayScrollbars() &&
+           GetNode() != GetDocument().ViewportDefiningElement();
   }
 }
 
@@ -1634,11 +1628,11 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         *this, kVerticalScrollbar, /* include_overlay_thickness */ true));
     if (ShouldPlaceVerticalScrollbarOnLeft()) {
       scrollbars.left = gutter_size;
-      if (StyleRef().IsScrollbarGutterBoth())
+      if (StyleRef().IsScrollbarGutterMirror())
         scrollbars.right = gutter_size;
     } else {
       scrollbars.right = gutter_size;
-      if (StyleRef().IsScrollbarGutterBoth())
+      if (StyleRef().IsScrollbarGutterMirror())
         scrollbars.left = gutter_size;
     }
   } else if (scrollable_area) {
@@ -1657,7 +1651,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         HypotheticalScrollbarThickness(*this, kHorizontalScrollbar,
                                        /* include_overlay_thickness */ true));
     scrollbars.bottom = gutter_size;
-    if (StyleRef().IsScrollbarGutterBoth())
+    if (StyleRef().IsScrollbarGutterMirror())
       scrollbars.top = gutter_size;
   } else if (scrollable_area) {
     scrollbars.bottom = LayoutUnit(scrollable_area->HorizontalScrollbarHeight(

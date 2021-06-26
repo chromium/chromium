@@ -849,14 +849,8 @@ class ComputedStyle : public ComputedStyleBase,
   inline bool IsScrollbarGutterStable() const {
     return ScrollbarGutter() & kScrollbarGutterStable;
   }
-  inline bool IsScrollbarGutterAlways() const {
-    return ScrollbarGutter() & kScrollbarGutterAlways;
-  }
-  inline bool IsScrollbarGutterBoth() const {
-    return ScrollbarGutter() & kScrollbarGutterBoth;
-  }
-  inline bool IsScrollbarGutterForce() const {
-    return ScrollbarGutter() & kScrollbarGutterForce;
+  inline bool IsScrollbarGutterMirror() const {
+    return ScrollbarGutter() & kScrollbarGutterMirror;
   }
 
   // ignore non-standard ::-webkit-scrollbar when standard properties are in use

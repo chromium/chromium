@@ -1,16 +1,16 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Overflow: test scrollbar-gutter: auto (classic scrollbars, vertical text)</title>
+<title>CSS Overflow: test scrollbar-gutter: stable mirror (classic scrollbars, vertical text)</title>
 <link rel="author" title="Felipe Erias Morandeira" href="mailto:felipeerias@gmail.com"/>
 <link rel="help" href="https://www.w3.org/TR/css-overflow-4/#scollbar-gutter-property"/>
-<meta name="assert" content="Test scrollbar-gutter: auto with custom classic scrollbars">
+<meta name="assert" content="Test scrollbar-gutter: stable with custom classic scrollbars">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 <style>
 
     .container {
-        scrollbar-gutter: auto;
+        scrollbar-gutter: stable mirror;
         height: 200px;
         width: 200px;
         margin: 1px;
@@ -59,45 +59,47 @@
     function performTest() {
         setup({explicit_done: true});
 
+        // vertical
+
         test(function() {
             let container = document.getElementById('container_auto_v');
             let content = document.getElementById('content_auto_v');
-            assert_equals(container.scrollHeight, 200, "auto/auto scrollHeight");
-            assert_equals(container.clientHeight, 200, "auto/auto clientHeight");
-            assert_equals(container.offsetTop, content.offsetTop, "auto/auto offsetTop");
-            assert_equals(container.clientHeight, content.clientHeight, "auto/auto clientHeight");
-            assert_equals(container.offsetHeight, content.offsetHeight, "auto/auto offsetHeight");
-        }, "overflow auto, scrollbar-gutter auto, vertical-rl");
+            assert_equals(container.scrollHeight, 160, "auto/stable mirror scrollHeight");
+            assert_equals(container.clientHeight, 160, "auto/stable mirror clientHeight");
+            assert_equals(container.offsetTop, content.offsetTop - 20, "auto/stable mirror offsetTop");
+            assert_equals(container.clientHeight, content.clientHeight, "auto/stable mirror clientHeight");
+            assert_not_equals(container.offsetHeight, content.offsetHeight, "auto/stable mirror offsetHeight");
+        }, "overflow auto, scrollbar-gutter stable mirror, vertical-rl");
 
         test(function() {
             let container = document.getElementById('container_scroll_v');
             let content = document.getElementById('content_scroll_v');
-            assert_equals(container.scrollHeight, 180, "scroll/auto scrollHeight");
-            assert_equals(container.clientHeight, 180, "scroll/auto clientHeight");
-            assert_equals(container.offsetTop, content.offsetTop, "scroll/auto offsetTop");
-            assert_equals(container.clientHeight, content.clientHeight, "scroll/auto clientHeight");
-            assert_not_equals(container.offsetHeight, content.offsetHeight, "scroll/auto offsetHeight");
-        }, "overflow scroll, scrollbar-gutter auto, vertical-rl");
+            assert_equals(container.scrollHeight, 160, "scroll/stable mirror scrollHeight");
+            assert_equals(container.clientHeight, 160, "scroll/stable mirror clientHeight");
+            assert_equals(container.offsetTop, content.offsetTop - 20, "scroll/stable mirror offsetTop");
+            assert_equals(container.clientHeight, content.clientHeight, "scroll/stable mirror clientHeight");
+            assert_not_equals(container.offsetHeight, content.offsetHeight, "scroll/stable mirror offsetHeight");
+        }, "overflow scroll, scrollbar-gutter stable mirror, vertical-rl");
 
         test(function() {
             let container = document.getElementById('container_visible_v');
             let content = document.getElementById('content_visible_v');
-            assert_equals(container.scrollHeight, 200, "visible/auto scrollHeight");
-            assert_equals(container.clientHeight, 200, "visible/auto clientHeight");
-            assert_equals(container.offsetTop, content.offsetTop, "visible/auto offsetTop");
-            assert_equals(container.clientHeight, content.clientHeight, "visible/auto clientHeight");
-            assert_equals(container.offsetHeight, content.offsetHeight, "visible/auto offsetHeight");
-        }, "overflow visible, scrollbar-gutter auto, vertical-rl");
+            assert_equals(container.scrollHeight, 200, "visible/stable mirror scrollHeight");
+            assert_equals(container.clientHeight, 200, "visible/stable mirror clientHeight");
+            assert_equals(container.offsetTop, content.offsetTop, "visible/stable mirror offsetTop");
+            assert_equals(container.clientHeight, content.clientHeight, "visible/stable mirror clientHeight");
+            assert_equals(container.offsetHeight, content.offsetHeight, "visible/stable mirror offsetHeight");
+        }, "overflow visible, scrollbar-gutter stable mirror, vertical-rl");
 
         test(function() {
             let container = document.getElementById('container_hidden_v');
             let content = document.getElementById('content_hidden_v');
-            assert_equals(container.scrollHeight, 200, "hidden/auto scrollHeight");
-            assert_equals(container.clientHeight, 200, "hidden/auto clientHeight");
-            assert_equals(container.offsetTop, content.offsetTop, "hidden/auto offsetTop");
-            assert_equals(container.clientHeight, content.clientHeight, "hidden/auto clientHeight");
-            assert_equals(container.offsetHeight, content.offsetHeight, "hidden/auto offsetHeight");
-        }, "overflow hidden, scrollbar-gutter auto, vertical-rl");
+            assert_equals(container.scrollHeight, 160, "hidden/stable mirror scrollHeight");
+            assert_equals(container.clientHeight, 160, "hidden/stable mirror clientHeight");
+            assert_equals(container.offsetTop, content.offsetTop - 20, "hidden/stable mirror offsetTop");
+            assert_equals(container.clientHeight, content.clientHeight, "hidden/stable mirror clientHeight");
+            assert_not_equals(container.offsetHeight, content.offsetHeight, "hidden/stable mirror offsetHeight");
+        }, "overflow hidden, scrollbar-gutter stable mirror, vertical-rl");
 
         done();
     }
@@ -105,7 +107,7 @@
 </script>
 <body onload="performTest()">
 
-    Test scrollbar-gutter: auto, writing-mode: vertical-rl
+    Test scrollbar-gutter: stable mirror, writing-mode: vertical-rl
 
     <div class="container classic vertical auto" id="container_auto_v">
         <div class="content" id="content_auto_v">ｏｖｅｒｆｌｏｗ：ａｕｔｏ</div>

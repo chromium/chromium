@@ -303,13 +303,11 @@ enum class LineLogicalSide {
   kUnder,
 };
 
-constexpr size_t kScrollbarGutterBits = 4;
+constexpr size_t kScrollbarGutterBits = 2;
 enum ScrollbarGutter {
   kScrollbarGutterAuto = 0x0,
   kScrollbarGutterStable = 0x1,
-  kScrollbarGutterAlways = 0x2,
-  kScrollbarGutterBoth = 0x4,
-  kScrollbarGutterForce = 0x8
+  kScrollbarGutterMirror = 0x2,
 };
 inline ScrollbarGutter operator|(ScrollbarGutter a, ScrollbarGutter b) {
   return ScrollbarGutter(int(a) | int(b));

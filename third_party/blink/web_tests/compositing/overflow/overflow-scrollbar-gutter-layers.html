@@ -26,51 +26,27 @@
 
   /* scrollbar-gutter */
   .stable            { scrollbar-gutter: stable; }
-  .stable_both       { scrollbar-gutter: stable both; }
-  .stable_force      { scrollbar-gutter: stable force; }
-  .stable_both_force { scrollbar-gutter: stable both force; }
-  .always            { scrollbar-gutter: always; }
-  .always_both       { scrollbar-gutter: always both; }
-  .always_force      { scrollbar-gutter: always force; }
-  .always_both_force { scrollbar-gutter: always both force; }
+  .stable_mirror     { scrollbar-gutter: stable mirror; }
 
 </style>
 <pre id="layerTree"></pre>
 <!-- These elements should not create new layers. -->
-<div class="container visible stable_force">
+<div class="container visible stable">
   <div class="content"></div>
 </div>
-<div class="container visible stable_both_force">
+<div class="container visible stable_mirror">
   <div class="content"></div>
 </div>
-<div class="container visible always_force">
+<div class="container hidden stable">
   <div class="content"></div>
 </div>
-<div class="container visible always_both_force">
+<div class="container hidden stable_mirror">
   <div class="content"></div>
 </div>
-<div class="container hidden stable_force">
+<div class="container clip stable">
   <div class="content"></div>
 </div>
-<div class="container hidden stable_both_force">
-  <div class="content"></div>
-</div>
-<div class="container hidden always_force">
-  <div class="content"></div>
-</div>
-<div class="container hidden always_both_force">
-  <div class="content"></div>
-</div>
-<div class="container clip stable_force">
-  <div class="content"></div>
-</div>
-<div class="container clip stable_both_force">
-  <div class="content"></div>
-</div>
-<div class="container clip always_force">
-  <div class="content"></div>
-</div>
-<div class="container clip always_both_force">
+<div class="container clip stable_mirror">
   <div class="content"></div>
 </div>
 <script>

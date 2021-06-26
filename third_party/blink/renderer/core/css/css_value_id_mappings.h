@@ -511,12 +511,8 @@ inline ScrollbarGutter CssValueIDToPlatformEnum(CSSValueID v) {
     return kScrollbarGutterAuto;
   if (v == CSSValueID::kStable)
     return kScrollbarGutterStable;
-  if (v == CSSValueID::kAlways)
-    return kScrollbarGutterAlways;
-  if (v == CSSValueID::kBoth)
-    return kScrollbarGutterBoth;
-  if (v == CSSValueID::kForce)
-    return kScrollbarGutterForce;
+  if (v == CSSValueID::kMirror)
+    return kScrollbarGutterMirror;
 
   NOTREACHED();
   return kScrollbarGutterAuto;
