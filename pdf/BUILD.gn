@@ -8,6 +8,7 @@ import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
+import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
 
 # Generate a buildflag header for compile-time checking of PDF support.
@@ -474,7 +475,6 @@ if (enable_pdf) {
       "//base:i18n",
       "//base/test:test_support",
       "//cc:test_support",
-      "//components/strings",
       "//gin",
       "//mojo/core/embedder",
       "//mojo/public/cpp/bindings",
@@ -489,7 +489,7 @@ if (enable_pdf) {
       "//third_party/blink/public:test_support",
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
-      "//ui/base:test_support",
+      "//ui/base",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
@@ -502,6 +502,18 @@ if (enable_pdf) {
         "//v8:external_startup_data",
       ]
     }
+
+    data_deps = [
+      ":pdf_unittests_pak",
+      "//ui/resources:ui_test_pak_data",
+    ]
+  }
+
+  repack("pdf_unittests_pak") {
+    sources =
+        [ "$root_gen_dir/components/strings/components_strings_en-US.pak" ]
+    output = "$root_out_dir/pdf_tests_resources.pak"
+    deps = [ "//components/strings" ]
   }
 
   fuzzer_test("pdf_dates_fuzzer") {

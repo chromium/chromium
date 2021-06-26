@@ -4,17 +4,23 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/blink.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 #include "v8/include/v8.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -71,14 +77,31 @@ class PdfTestSuite final : public base::TestSuite {
     mojo::BinderMap binders;
     blink::Initialize(platform_.get(), &binders,
                       platform_->GetMainThreadScheduler());
+
+    InitializeResourceBundle();
   }
 
   void Shutdown() override {
     platform_.reset();
+    ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
 
  private:
+  void InitializeResourceBundle() {
+    ui::RegisterPathProvider();
+    base::FilePath ui_test_pak_path;
+    ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+
+    base::FilePath pdf_tests_pak_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pdf_tests_pak_path));
+    pdf_tests_pak_path =
+        pdf_tests_pak_path.AppendASCII("pdf_tests_resources.pak");
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        pdf_tests_pak_path, ui::SCALE_FACTOR_NONE);
+  }
+
   std::unique_ptr<BlinkPlatformForTesting> platform_;
 };
 
