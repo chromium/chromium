@@ -19,6 +19,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
@@ -76,7 +77,8 @@ const char kIsEphemeral[] = "is_ephemeral";
 const char kChallengeResponseKeys[] = "challenge_response_keys";
 
 const char kLastOnlineSignin[] = "last_online_singin";
-const char kOfflineSigninLimit[] = "offline_signin_limit";
+const char kOfflineSigninLimitDeprecated[] = "offline_signin_limit";
+const char kOfflineSigninLimit[] = "offline_signin_limit2";
 
 // Key of the boolean flag telling if user is enterprise managed.
 const char kIsEnterpriseManaged[] = "is_enterprise_managed";
@@ -766,6 +768,18 @@ void KnownUser::CleanObsoletePrefs() {
       continue;
     for (const std::string& key : kObsoleteKeys)
       user_entry.RemoveKey(key);
+
+    // Migrate Offline signin limit to the new logic. Old logic stored 0 when
+    // the limit was not set. New logic does not store anything when the limit
+    // is not set because 0 is a legit value.
+    const base::Value* value =
+        user_entry.FindKey(kOfflineSigninLimitDeprecated);
+    absl::optional<base::TimeDelta> new_value = util::ValueToTimeDelta(value);
+    user_entry.RemoveKey(kOfflineSigninLimitDeprecated);
+    if (new_value.has_value() && !new_value->is_zero()) {
+      user_entry.SetKey(kOfflineSigninLimit,
+                        util::TimeDeltaToValue(*new_value));
+    }
   }
 }
 

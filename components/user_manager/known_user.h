@@ -254,6 +254,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
                            CleanEphemeralUsersRemovesEphemeralAdOnly);
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest, CleanObsoletePrefs);
+  FRIEND_TEST_ALL_PREFIXES(KnownUserTest, MigrateOfflineSigninLimit);
 
   // Removes |path| from account_id's known user dictionary.
   void ClearPref(const AccountId& account_id, const std::string& path);

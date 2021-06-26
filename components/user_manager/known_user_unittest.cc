@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
+#include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -51,6 +53,9 @@ class KnownUserTest : public testing::Test {
   const AccountId kDefaultAccountId =
       AccountId::FromUserEmailGaiaId("default_account@gmail.com",
                                      "fake-gaia-id");
+  const AccountId kDefaultAccountId2 =
+      AccountId::FromUserEmailGaiaId("default_account_2@gmail.com",
+                                     "fake-gaia-id-2");
 
   FakeUserManager* fake_user_manager() { return fake_user_manager_; }
 
@@ -660,6 +665,34 @@ TEST_F(KnownUserTest, CleanObsoletePrefs) {
   EXPECT_TRUE(custom_pref_value);
 
   EXPECT_TRUE(known_user.GetIsEnterpriseManaged(kDefaultAccountId));
+}
+
+TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
+  KnownUser known_user(local_state());
+  const std::string kDeprecatedPrefName = "offline_signin_limit";
+  const std::string kNewPrefName = "offline_signin_limit2";
+
+  // Set a deprecated pref. base::TimeDelta() meant that value is not set.
+  known_user.SetPref(kDefaultAccountId, kDeprecatedPrefName,
+                     util::TimeDeltaToValue(base::TimeDelta()));
+
+  const base::TimeDelta kLegitValue = base::TimeDelta::FromDays(14);
+  known_user.SetPref(kDefaultAccountId2, kDeprecatedPrefName,
+                     util::TimeDeltaToValue(kLegitValue));
+
+  known_user.CleanObsoletePrefs();
+
+  const base::Value* out_value = nullptr;
+  // Verify that the deprecated pref has been removed.
+  EXPECT_FALSE(
+      known_user.GetPref(kDefaultAccountId, kDeprecatedPrefName, &out_value));
+  EXPECT_FALSE(
+      known_user.GetPref(kDefaultAccountId2, kDeprecatedPrefName, &out_value));
+
+  EXPECT_FALSE(known_user.GetPref(kDefaultAccountId, kNewPrefName, &out_value));
+
+  EXPECT_TRUE(known_user.GetPref(kDefaultAccountId2, kNewPrefName, &out_value));
+  EXPECT_EQ(kLegitValue, util::ValueToTimeDelta(*out_value));
 }
 
 //
