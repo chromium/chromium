@@ -215,6 +215,9 @@ def main():
   # correct separator for the current platform (i.e. '\' on Windows and '/'
   # otherwise).
   compile_source_file = os.path.normpath(compile_command[source_flag_index + 1])
+  extension = os.path.splitext(compile_source_file)[1]
+  if not extension in ['.c', '.cc', '.cpp', '.cxx', '.m', '.mm', '.S']:
+    raise Exception('Invalid source file %s found' % compile_source_file)
   exclusion_list = _COVERAGE_EXCLUSION_LIST_MAP.get(
       target_os, _DEFAULT_COVERAGE_EXCLUSION_LIST)
   force_list = _COVERAGE_FORCE_LIST_MAP.get(target_os, [])
