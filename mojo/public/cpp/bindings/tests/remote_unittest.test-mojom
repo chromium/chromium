@@ -24,8 +24,10 @@ interface SequenceChecker {
   AddClient(pending_associated_remote<SequenceCheckerClient> client);
   Check(int32 n);
   [Sync] GetNextExpectedValue() => (int32 n);
+  [Sync] Quit() => ();
 };
 
 interface SequenceCheckerClient {
   OnNextExpectedValueQueried(int32 n);
+  OnQuit();
 };

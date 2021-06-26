@@ -317,6 +317,16 @@ class SharedRemote {
     }
   }
 
+  // Creates a new pipe, binding this SharedRemote to one end on
+  // `bind_task_runner` and returning the other end as a PendingReceiver.
+  PendingReceiver<Interface> BindNewPipeAndPassReceiver(
+      scoped_refptr<base::SequencedTaskRunner> bind_task_runner = nullptr) {
+    PendingRemote<Interface> remote;
+    auto receiver = remote.InitWithNewPipeAndPassReceiver();
+    Bind(std::move(remote), std::move(bind_task_runner));
+    return receiver;
+  }
+
  private:
   scoped_refptr<SharedRemoteBase<Remote<Interface>>> remote_;
 };

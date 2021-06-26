@@ -112,6 +112,13 @@ class MultiplexRouter::InterfaceEndpoint
     return requests_with_external_sync_waiter_.erase(request_id) != 0;
   }
 
+  base::flat_set<uint64_t> UnregisterAllExternalSyncWaiters() {
+    router_->AssertLockAcquired();
+    base::flat_set<uint64_t> request_ids;
+    std::swap(request_ids, requests_with_external_sync_waiter_);
+    return request_ids;
+  }
+
   void SignalSyncMessageEvent() {
     router_->AssertLockAcquired();
     if (sync_message_event_signaled_)
@@ -811,8 +818,17 @@ void MultiplexRouter::OnPipeConnectionError(bool force_async_dispatch) {
     endpoint_vector.push_back(pair.second);
 
   for (const auto& endpoint : endpoint_vector) {
-    if (endpoint->client())
+    if (endpoint->client()) {
+      base::flat_set<uint64_t> request_ids =
+          endpoint->UnregisterAllExternalSyncWaiters();
+      // NOTE: Accessing the InterfaceEndpointClient from off-thread must be
+      // safe here, because the client can only be detached from us while
+      // holding `lock_`.
+      for (uint64_t request_id : request_ids)
+        endpoint->client()->ForgetAsyncRequest(request_id);
+
       tasks_.push_back(Task::CreateNotifyErrorTask(endpoint.get()));
+    }
 
     UpdateEndpointStateMayRemove(endpoint.get(), PEER_ENDPOINT_CLOSED);
   }

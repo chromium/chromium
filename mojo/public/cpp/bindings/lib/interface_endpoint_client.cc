@@ -603,13 +603,14 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     ++num_unacked_messages_;
 
   if (!is_sync || sync_send_mode == SyncSendMode::kForceAsync) {
-    async_responders_[request_id] = std::move(responder);
     if (is_sync) {
       // This was forced to send async. Leave a placeholder in the map of
       // expected sync responses so HandleValidatedMessage knows what to do.
       sync_responses_.emplace(request_id, nullptr);
       controller_->RegisterExternalSyncWaiter(request_id);
     }
+    base::AutoLock lock(async_responders_lock_);
+    async_responders_[request_id] = std::move(responder);
     return true;
   }
 
@@ -664,7 +665,11 @@ void InterfaceEndpointClient::NotifyError(
   // them alive any longer. Note that it's allowed that a pending response
   // callback may own this endpoint, so we simply move the responders onto the
   // stack here and let them be destroyed when the stack unwinds.
-  AsyncResponderMap responders = std::move(async_responders_);
+  AsyncResponderMap responders;
+  {
+    base::AutoLock lock(async_responders_lock_);
+    std::swap(responders, async_responders_);
+  }
 
   control_message_proxy_.OnConnectionError();
 
@@ -783,6 +788,18 @@ void InterfaceEndpointClient::ResetFromAnotherSequenceUnsafe() {
   handle_.reset();
 }
 
+void InterfaceEndpointClient::ForgetAsyncRequest(uint64_t request_id) {
+  std::unique_ptr<MessageReceiver> responder;
+  {
+    base::AutoLock lock(async_responders_lock_);
+    auto it = async_responders_.find(request_id);
+    if (it == async_responders_.end())
+      return;
+    responder = std::move(it->second);
+    async_responders_.erase(it);
+  }
+}
+
 void InterfaceEndpointClient::InitControllerIfNecessary() {
   if (controller_ || handle_.pending_association())
     return;
@@ -854,11 +871,15 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       sync_responses_.erase(it);
     }
 
-    auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end())
-      return false;
-    std::unique_ptr<MessageReceiver> responder = std::move(it->second);
-    async_responders_.erase(it);
+    std::unique_ptr<MessageReceiver> responder;
+    {
+      base::AutoLock lock(async_responders_lock_);
+      auto it = async_responders_.find(request_id);
+      if (it == async_responders_.end())
+        return false;
+      responder = std::move(it->second);
+      async_responders_.erase(it);
+    }
 
     internal::MessageDispatchContext dispatch_context(message);
     return responder->Accept(message);
