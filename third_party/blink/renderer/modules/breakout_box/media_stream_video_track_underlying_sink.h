@@ -6,19 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_VIDEO_TRACK_UNDERLYING_SINK_H_
 
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
+#include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
-class MediaStreamVideoSource;
-class PushableMediaStreamVideoSource;
 class WritableStreamTransferringOptimizer;
 
 class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
     : public UnderlyingSinkBase {
  public:
   explicit MediaStreamVideoTrackUnderlyingSink(
-      PushableMediaStreamVideoSource* source);
+      scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker);
 
   // UnderlyingSinkBase overrides.
   ScriptPromise start(ScriptState* script_state,
@@ -38,7 +37,8 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
   GetTransferringOptimizer();
 
  private:
-  base::WeakPtr<MediaStreamVideoSource> source_;
+  const scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink
