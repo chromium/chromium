@@ -643,6 +643,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, DirectDownload) {
       std::vector<GURL>(),            // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       referrer_chain.Get(0));
+  EXPECT_FALSE(referrer_chain.Get(0).is_url_removed_by_policy());
   VerifyReferrerChainEntry(initial_url,                       // url
                            GURL(),                            // main_frame_url
                            ReferrerChainEntry::LANDING_PAGE,  // type
@@ -653,6 +654,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, DirectDownload) {
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(1));
+  EXPECT_FALSE(referrer_chain.Get(1).is_url_removed_by_policy());
 }
 
 // Click on a link with rel="noreferrer" attribute, and start download on the
@@ -2909,6 +2911,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       std::vector<GURL>(),            // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       referrer_chain.Get(0));
+  EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
   VerifyReferrerChainEntry(
       GURL(),                            // url
       GURL(),                            // main_frame_url
@@ -2920,6 +2923,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       std::vector<GURL>(),               // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       referrer_chain.Get(1));
+  EXPECT_TRUE(referrer_chain.Get(1).is_url_removed_by_policy());
   VerifyReferrerChainEntry(
       GURL(),                               // url
       GURL(),                               // main_frame_url
@@ -2931,6 +2935,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       std::vector<GURL>(),                  // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       referrer_chain.Get(2));
+  EXPECT_TRUE(referrer_chain.Get(2).is_url_removed_by_policy());
   VerifyReferrerChainEntry(GURL(),  // url
                            GURL(),  // main_frame_url
                            ReferrerChainEntry::LANDING_REFERRER,  // type
@@ -2941,6 +2946,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(3));
+  EXPECT_TRUE(referrer_chain.Get(3).is_url_removed_by_policy());
 }
 
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
@@ -2974,6 +2980,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
       std::vector<GURL>(),                    // server redirects
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       referrer_chain.Get(0));
+  EXPECT_TRUE(referrer_chain.Get(0).is_url_removed_by_policy());
   VerifyReferrerChainEntry(GURL(),  // url
                            GURL(),  // main_frame_url
                            ReferrerChainEntry::RECENT_NAVIGATION,  // type
@@ -2984,6 +2991,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(1));
+  EXPECT_TRUE(referrer_chain.Get(1).is_url_removed_by_policy());
 }
 
 class SBNavigationObserverPortalBrowserTest

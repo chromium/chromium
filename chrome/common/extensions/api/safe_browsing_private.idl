@@ -123,6 +123,10 @@ namespace safeBrowsingPrivate {
     // Whether subframe referrer URLs are removed due to user consent
     // restriction.
     boolean? isSubframeReferrerUrlRemoved;
+
+    // Whether any of the URLs are removed because the URL matches the
+    // SafeBrowsingAllowlistDomains enterprise policy in Chrome.
+    boolean isUrlRemovedByPolicy;
   };
 
   callback GetReferrerChainCallback = void(ReferrerChainEntry[] entries);

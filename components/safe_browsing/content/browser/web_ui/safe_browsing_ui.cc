@@ -763,6 +763,11 @@ base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
         base::Value(referrer.is_subframe_referrer_url_removed()));
   }
 
+  if (referrer.has_is_url_removed_by_policy()) {
+    referrer_dict.SetKey("is_url_removed_by_policy",
+                         base::Value(referrer.is_url_removed_by_policy()));
+  }
+
   return std::move(referrer_dict);
 }
 

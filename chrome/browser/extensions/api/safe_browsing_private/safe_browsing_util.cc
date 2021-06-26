@@ -116,6 +116,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     entry.is_subframe_referrer_url_removed =
         std::make_unique<bool>(referrer.is_subframe_referrer_url_removed());
   }
+  entry.is_url_removed_by_policy = referrer.is_url_removed_by_policy();
 
   return entry;
 }

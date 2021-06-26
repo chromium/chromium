@@ -791,21 +791,27 @@ void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
 
 void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
     ReferrerChain* out_referrer_chain) {
+  bool is_url_removed_by_policy = false;
   for (ReferrerChainEntry& entry : *out_referrer_chain) {
     if (IsURLAllowlistedByPolicy(GURL(entry.url()), *pref_service_)) {
       entry.clear_url();
+      is_url_removed_by_policy = true;
     }
     if (IsURLAllowlistedByPolicy(GURL(entry.main_frame_url()),
                                  *pref_service_)) {
       entry.clear_main_frame_url();
+      is_url_removed_by_policy = true;
     }
     if (IsURLAllowlistedByPolicy(GURL(entry.referrer_url()), *pref_service_)) {
       entry.clear_referrer_url();
+      is_url_removed_by_policy = true;
     }
     if (IsURLAllowlistedByPolicy(GURL(entry.referrer_main_frame_url()),
                                  *pref_service_)) {
       entry.clear_referrer_main_frame_url();
+      is_url_removed_by_policy = true;
     }
+    entry.set_is_url_removed_by_policy(is_url_removed_by_policy);
   }
 }
 

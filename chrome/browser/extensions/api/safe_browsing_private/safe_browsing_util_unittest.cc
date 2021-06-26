@@ -24,6 +24,7 @@ const char kServerRedirectUrl[] = "https://example.com/redirect";
 const bool kMaybeLaunched = false;
 const bool kIsSubframeUrlRemoved = false;
 const bool kIsSubframeReferrerUrlRemoved = false;
+const bool kIsUrlRemovedByPolicy = false;
 
 void InitializeFakeReferrerChainEntry(
     std::string url,
@@ -43,6 +44,7 @@ void InitializeFakeReferrerChainEntry(
   referrer->set_maybe_launched_by_external_application(kMaybeLaunched);
   referrer->set_is_subframe_url_removed(kIsSubframeUrlRemoved);
   referrer->set_is_subframe_referrer_url_removed(kIsSubframeReferrerUrlRemoved);
+  referrer->set_is_url_removed_by_policy(kIsUrlRemovedByPolicy);
 }
 
 void ValidateReferrerChain(
@@ -62,6 +64,7 @@ void ValidateReferrerChain(
   EXPECT_EQ(*referrer.is_subframe_url_removed, kIsSubframeUrlRemoved);
   EXPECT_EQ(*referrer.is_subframe_referrer_url_removed,
             kIsSubframeReferrerUrlRemoved);
+  EXPECT_EQ(referrer.is_url_removed_by_policy, kIsUrlRemovedByPolicy);
 }
 
 }  // namespace

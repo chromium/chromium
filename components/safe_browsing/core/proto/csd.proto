@@ -962,7 +962,12 @@ message ReferrerChainEntry {
   // their relative mainframe URLs and |referrer_main_frame_url| is cleared.
   optional bool is_subframe_referrer_url_removed = 13;
 
-  // next available tag number: 14.
+  // Whether any of the URLs in the |url|, |main_frame_url|, |referrer_url|,
+  // |referrer_main_frame_url| fields are removed because the URL matches the
+  // SafeBrowsingAllowlistDomains enterprise policy in Chrome.
+  optional bool is_url_removed_by_policy = 14;
+
+  // next available tag number: 15.
 }  // End of ReferrerChainEntry
 
 message ClientDownloadResponse {
