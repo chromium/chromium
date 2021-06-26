@@ -31,6 +31,11 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     Broker(const Broker&) = delete;
     Broker& operator=(const Broker&) = delete;
 
+    // Increases the count of connected clients.
+    void OnClientStarted();
+    // Decreases the count of connected clients. If the count reaches zero,
+    // StopSource() is called.
+    void OnClientStopped();
     bool IsRunning();
     void PushFrame(scoped_refptr<media::VideoFrame> video_frame,
                    base::TimeTicks estimated_capture_time);
@@ -57,6 +62,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     // complex interactions with owners, like |source_| does, we always guard
     // it for simplicity.
     VideoCaptureDeliverFrameCB frame_callback_ GUARDED_BY(mutex_);
+    int num_clients_ GUARDED_BY(mutex_) = 0;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   };

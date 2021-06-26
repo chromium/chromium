@@ -20,6 +20,23 @@ PushableMediaStreamVideoSource::Broker::Broker(
   DCHECK(io_task_runner_);
 }
 
+void PushableMediaStreamVideoSource::Broker::OnClientStarted() {
+  WTF::MutexLocker locker(mutex_);
+  DCHECK_GE(num_clients_, 0);
+  ++num_clients_;
+}
+
+void PushableMediaStreamVideoSource::Broker::OnClientStopped() {
+  bool should_stop = false;
+  {
+    WTF::MutexLocker locker(mutex_);
+    should_stop = --num_clients_ == 0;
+    DCHECK_GE(num_clients_, 0);
+  }
+  if (should_stop)
+    StopSource();
+}
+
 bool PushableMediaStreamVideoSource::Broker::IsRunning() {
   WTF::MutexLocker locker(mutex_);
   return !frame_callback_.is_null();
