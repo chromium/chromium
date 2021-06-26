@@ -568,7 +568,8 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
 
     // The "Remove" command should only be present if *all* of the selected
     // holding space items are removable.
-    is_removable &= item->type() != HoldingSpaceItem::Type::kPinnedFile;
+    is_removable &= item->type() != HoldingSpaceItem::Type::kPinnedFile &&
+                    !item->IsInProgress();
 
     // In-progress holding space items are ignored with respect to the pin-/
     // unpin-ability of the `selection`.
