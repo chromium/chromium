@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1569387923882100876">Туташкан түзмөк</translation>
-<translation id="1612196535745283361">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. Жайгашкан жерди колдонуу функциясы <ph name="BEGIN_LINK" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK" />.</translation>
+<translation id="1612196535745283361">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. Жайгашкан жерди аныктоо функциясы <ph name="BEGIN_LINK" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK" />.</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> сайты жупташканы жатат</translation>
 <translation id="2077832278056815832">Колдонмолордогу калкып чыкма билдирмелерди же үстүнө коюулардын баарын жабыңыз. Андан кийин кайталап көрүңүз.</translation>
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
@@ -13,7 +13,7 @@
 <translation id="3773755127849930740">Жупташтырууга уруксат берүү үчүн <ph name="BEGIN_LINK" />Bluetooth’ду күйгүзүңүз<ph name="END_LINK" /></translation>
 <translation id="4915549754973153784">Түзмөктөрдү издеп жатканда <ph name="BEGIN_LINK" />жардам алыңыз<ph name="END_LINK" />…</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> сайты жакын жердеги Bluetooth түзмөктөрүн скандаганы жатат. Төмөнкү түзмөктөр табылды:</translation>
-<translation id="5527082711130173040">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. <ph name="BEGIN_LINK1" />Уруксаттарды жаңыртыңыз<ph name="END_LINK1" />. Жайгашкан жерди колдонуу функциясы да <ph name="BEGIN_LINK2" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK2" />.</translation>
+<translation id="5527082711130173040">Түзмөктөрдү издөө үчүн Chrome жайгашкан жерди колдонууга мүмкүнчүлүк алышы керек. <ph name="BEGIN_LINK1" />Уруксаттарды жаңыртыңыз<ph name="END_LINK1" />. Жайгашкан жерди аныктоо функциясы да <ph name="BEGIN_LINK2" />бул түзмөк үчүн өчүрүлгөн<ph name="END_LINK2" />.</translation>
 <translation id="557283862590186398">Бул сайтта иштөө үчүн Chrome микрофонуңузду колдонушу керек.</translation>
 <translation id="5817918615728894473">Байланыштыруу</translation>
 <translation id="5858741533101922242">Chrome Bluetooth адаптерин күйгүзө албай жатат</translation>

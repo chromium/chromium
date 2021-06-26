@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1449835205994625556">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> वस्तुहरू</translation>
+<translation id="149095475893949513">यो वेबसाइट कुनै कन्फिगुरेसन प्रोफाइल डाउनलोड गर्न खोज्दै छ।</translation>
 <translation id="1491277525950327607">सेटिङ टगल गर्न डबल ट्याप गर्नुहोस्</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
 <translation id="1509486075633541495">वेबसाइटमा साइन इन गर्नुहोस्</translation>
@@ -268,6 +269,7 @@
 <translation id="3607167657931203000">स्वतः भरणको डेटा</translation>
 <translation id="3609785682760573515">समक्रमण हुँदै...</translation>
 <translation id="3638472932233958418">पूर्वलोड गरिएका वेबपृष्ठहरू</translation>
+<translation id="3661160521073045932">कन्फिगुरेसन प्रोफाइल उपलब्ध छ</translation>
 <translation id="3670030362669914947">अङ्क</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="3709582977625132201">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
@@ -408,6 +410,7 @@
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5228579091201413441">सिंकलाई सक्रिय गर्नुहोस्</translation>
+<translation id="5232485538978018676">व्यवस्थापन गरिएको खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5245322853195994030">सिंक गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="5271549068863921519">पासवर्ड बचत गर्नुहोस्</translation>
@@ -728,6 +731,7 @@
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
 <translation id="8225985093977202398">क्यास गरिएका छवि र फाइलहरू</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="8271720166617117963">स्वीकार गर्नुहोस् र साइन इन गर्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">त्याग्नुहोस्</translation>
 <translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
@@ -771,6 +775,7 @@
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8668210798914567634">यस पृष्ठलाई तपाईंको पाठ्य सूचीमा सुरक्षित गरिएको छ।</translation>
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
+<translation id="8691262314411702087">सिंक गर्नु पर्ने कुराहरू छनौट गर्नुहोस्</translation>
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8706588385081740091">पासवर्डहरू</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>

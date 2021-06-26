@@ -907,7 +907,7 @@
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
 <translation id="1956050014111002555">檔案含有多個憑證，但全都無法匯入：</translation>
-<translation id="1956167375087861299">禁止使用 ID 來播放受保護的內容</translation>
+<translation id="1956167375087861299">不允許使用識別碼來播放受保護的內容</translation>
 <translation id="1956390763342388273">此操作會上載「<ph name="FOLDER_PATH" />」中的所有檔案。請只在您信任該網站的情況下執行此操作。</translation>
 <translation id="1962233722219655970">這個網頁使用無法在您電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963227389609234879">全部移除</translation>
@@ -1165,7 +1165,7 @@
 <translation id="2229161054156947610">還有 1 個多小時</translation>
 <translation id="222931766245975952">檔案已被截斷</translation>
 <translation id="2230005943220647148">攝氏</translation>
-<translation id="2231160360698766265">網站可以播放受保護的內容</translation>
+<translation id="2231160360698766265">網站可播放受保護的內容</translation>
 <translation id="2231238007119540260">如果您刪除了伺服器憑證，系統便會還原對該伺服器的定期安全性檢查，並要求使用有效的憑證。</translation>
 <translation id="2232751457155581899">網站可要求追蹤攝錄機的位置</translation>
 <translation id="2232876851878324699">檔案含有一個憑證，但無法匯入：</translation>
@@ -1353,7 +1353,7 @@
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">地址無效。請檢查地址，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
-<translation id="2443487764245141020">網站可能也需要使用 ID 來辨識你的裝置</translation>
+<translation id="2443487764245141020">網站亦可能需要透過識別碼來辨識您的裝置</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的設定檔</translation>
 <translation id="244641233057214044">與您的搜尋相關</translation>
@@ -1463,7 +1463,7 @@
 <translation id="2542050502251273923">使用 ff_debug 設定網絡連線管理員及其他服務的偵錯等級。</translation>
 <translation id="2544352060595557290">這個分頁</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2546302722632337735">禁止網站使用 ID 來播放受保護的內容</translation>
+<translation id="2546302722632337735">不允許網站使用識別碼來播放受保護的內容</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重設 eSIM 卡設定檔快取</translation>
 <translation id="2549985041256363841">開始錄影</translation>
@@ -2214,7 +2214,7 @@
 <translation id="3391482648489541560">編輯檔案</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
-<translation id="3394850431319394743">允許使用 ID 來播放受保護的內容</translation>
+<translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
 <translation id="339722927132407568">畫面凍結</translation>
 <translation id="3399432415385675819">通知將會停用</translation>
@@ -3261,7 +3261,7 @@
 <translation id="4535127706710932914">預設設定檔</translation>
 <translation id="4535767533210902251">指紋感應器位於鍵盤右上方。請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="4536140153723794651">一律可以使用 Cookie 的網站</translation>
-<translation id="4538163005498287211">以你的桌布為依據</translation>
+<translation id="4538163005498287211">根據您的桌布</translation>
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
@@ -4240,7 +4240,7 @@
 <translation id="5627832140542566187">顯示方向</translation>
 <translation id="562935524653278697">您的管理員已停用書籤、記錄、密碼和其他設定的同步處理功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
-<translation id="5631713186079911700">清除搜尋框中的歷史記錄</translation>
+<translation id="5631713186079911700">清除搜尋框中的記錄</translation>
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
@@ -5250,7 +5250,7 @@
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">已解除壓縮的擴充程式</translation>
 <translation id="6789592661892473991">水平分割</translation>
-<translation id="678982761784843853">受保護的內容 ID</translation>
+<translation id="678982761784843853">受保護的 Content ID</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已從遠端新增 <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">新增使用者…</translation>
@@ -5733,7 +5733,7 @@
 <translation id="7328867076235380839">無效的組合</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7332053360324989309">專用工作程式：<ph name="SCRIPT_URL" /></translation>
-<translation id="7334014994694414993">為啟動器、檔案櫃、快速設定等項目選取色彩主題</translation>
+<translation id="7334014994694414993">為啟動器、捷徑列、快速設定及其他項目選取顏色主題</translation>
 <translation id="7334274148831027933">啟用固定的放大鏡</translation>
 <translation id="7335974957018254119">使用拼字檢查的語言：</translation>
 <translation id="7336799713063880535">已封鎖通知。</translation>
@@ -6612,7 +6612,7 @@
 <translation id="8241868517363889229">讀取和變更您的書籤</translation>
 <translation id="8242370300221559051">啟用「Play 商店」</translation>
 <translation id="8242426110754782860">Proceed</translation>
-<translation id="8243948765190375130">媒體品質可能會降低</translation>
+<translation id="8243948765190375130">媒體質素可能會降低</translation>
 <translation id="8244514732452879619">快到睡覺時間了</translation>
 <translation id="8246776524656196770">使用 PIN (個人識別碼) 保護您的安全密鑰</translation>
 <translation id="8248050856337841185">貼上(&amp;P)</translation>
@@ -7418,7 +7418,7 @@
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9130015405878219958">輸入的模式無效。</translation>
 <translation id="9131487537093447019">透過藍牙裝置傳送及接收訊息。</translation>
-<translation id="9134066738478820307">網站可以使用 ID 來播放受保護的內容</translation>
+<translation id="9134066738478820307">網站可使用識別碼來播放受保護的內容</translation>
 <translation id="913411432238655354">在啟動時還原應用程式</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137157311132182254">偏好的搜尋引擎</translation>

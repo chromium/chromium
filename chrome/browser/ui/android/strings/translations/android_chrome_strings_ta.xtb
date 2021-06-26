@@ -396,6 +396,7 @@
 <translation id="3518985090088779359">ஏற்று, தொடரவும்</translation>
 <translation id="3522247891732774234">புதுப்பிப்பு உள்ளது. மேலும் விருப்பங்கள்</translation>
 <translation id="3524138585025253783">டெவெலப்பர் UI</translation>
+<translation id="3524334353996115845">இது நீங்கள்தான் என்பதை உறுதிசெய்ய <ph name="ORIGIN" /> தளத்தை அனுமதியுங்கள்</translation>
 <translation id="3527085408025491307">கோப்புறை</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> கி.பை. உள்ளது</translation>
 <translation id="3549657413697417275">உங்கள் வரலாற்றைத் தேடுக</translation>
@@ -666,6 +667,7 @@
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> திறந்துள்ள தாவல், தாவல்களை மாற்ற, தட்டவும்}other{<ph name="OPEN_TABS_MANY" /> திறந்துள்ள தாவல்கள், தாவல்களை மாற்ற, தட்டவும்}}</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">குறிப்பிட்ட தளங்களை மட்டும் அனுமதி</translation>
+<translation id="5409881200985013443"><ph name="CLIENT_NAME" /> இல் <ph name="ONE_TIME_CODE" /> என்ற குறியீட்டைச் சமர்ப்பிக்கவா?</translation>
 <translation id="5414836363063783498">சரிபார்க்கிறது...</translation>
 <translation id="5423934151118863508">நீங்கள் அதிகமாகப் பார்வையிட்ட பக்கங்கள் இங்கு தோன்றும்</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ஜி.பை. உள்ளது</translation>
@@ -1021,6 +1023,7 @@
 <translation id="7583262514280211622">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="7588219262685291874">சாதனத்தில் பேட்டரி சேமிப்பான் இயக்கத்தில் இருக்கும்போது டார்க் தீமை இயக்கும்</translation>
 <translation id="7593557518625677601">Chrome ஒத்திசைவைத் தொடங்க, Android அமைப்புகளைத் திறந்து Android சாதன ஒத்திசைவை மீண்டும் இயக்கவும்</translation>
+<translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> இல் உங்கள் அடையாளத்தைச் சரிபார்க்க <ph name="EMBEDDED_ORIGIN" /> ஐ அனுமதியுங்கள்</translation>
 <translation id="7596558890252710462">ஆப்ரேட்டிங் சிஸ்டம்</translation>
 <translation id="7605594153474022051">ஒத்திசைவு வேலை செய்யவில்லை</translation>
 <translation id="7606077192958116810">லைட் பயன்முறை இயக்கத்தில் உள்ளது. இதை அமைப்புகளில் நிர்வகிக்கவும்.</translation>
