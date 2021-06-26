@@ -85,7 +85,7 @@ def _FormatSourceHeader(root, output_dir):
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 #include "%(rc_header_file)s"
 
