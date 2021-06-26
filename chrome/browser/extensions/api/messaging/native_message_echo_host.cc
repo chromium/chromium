@@ -28,7 +28,7 @@ const char* const NativeMessageEchoHost::kOrigins[] = {
     "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"};
 
 // static
-const int NativeMessageEchoHost::kOriginCount = base::size(kOrigins);
+const size_t NativeMessageEchoHost::kOriginCount = base::size(kOrigins);
 
 // static
 std::unique_ptr<NativeMessageHost> NativeMessageEchoHost::Create(

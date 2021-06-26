@@ -74,7 +74,8 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
       DCHECK(permission->value_type == apps::mojom::PermissionValueType::kBool);
       notifier_dataset.push_back(
           {update.AppId() /*app_id*/, update.Name() /*app_name*/,
-           update.PublisherId() /*package name*/, permission->value /*enabled*/,
+           update.PublisherId() /*package name*/,
+           !!permission->value /*enabled*/,
            update.InstallSource() ==
                apps::mojom::InstallSource::kSystem /*is_system_app*/});
     }

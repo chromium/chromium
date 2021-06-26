@@ -84,7 +84,7 @@ class CrostiniPortForwarderTest : public testing::Test {
                                                 Protocol protocol_type,
                                                 ContainerId container_id) {
     return {
-        .port_number = port_number,
+        .port_number = static_cast<uint16_t>(port_number),
         .protocol_type = protocol_type,
         .container_id = container_id,
     };

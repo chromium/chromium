@@ -1422,7 +1422,7 @@ class DocumentsProviderTestVolume : public TestVolume {
   std::string EncodeURI(const std::string& component) {
     url::RawCanonOutputT<char> encoded;
     url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
-    return {encoded.data(), encoded.length()};
+    return {encoded.data(), static_cast<size_t>(encoded.length())};
   }
 
   DISALLOW_COPY_AND_ASSIGN(DocumentsProviderTestVolume);

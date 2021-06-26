@@ -8,7 +8,7 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-AtomicUint32::AtomicUint32(std::int32_t initial_value)
+AtomicUint32::AtomicUint32(std::uint32_t initial_value)
     : value_(initial_value) {}
 
 AtomicUint32::~AtomicUint32() = default;

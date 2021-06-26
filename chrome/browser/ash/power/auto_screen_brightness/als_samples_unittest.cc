@@ -47,7 +47,8 @@ TEST(AmbientLightSampleBufferTest, Basic) {
   std::vector<double> expected_data;
   for (int i = 1; i < 6; ++i) {
     tick_clock.Advance(base::TimeDelta::FromSeconds(1));
-    const AmbientLightSampleBuffer::Sample sample = {i, tick_clock.NowTicks()};
+    const AmbientLightSampleBuffer::Sample sample = {static_cast<double>(i),
+                                                     tick_clock.NowTicks()};
     expected_data.push_back(i);
     buffer.SaveToBuffer(sample);
     EXPECT_EQ(buffer.NumberOfSamplesForTesting(), static_cast<size_t>(i));

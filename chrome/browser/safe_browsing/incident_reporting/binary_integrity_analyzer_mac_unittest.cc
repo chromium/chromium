@@ -42,7 +42,7 @@ bool CorruptFileContent(const base::FilePath& file_path) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
     return false;
-  char vec[] = {0xAA};
+  char vec[] = {'\xAA'};
   return file.Write(text_pos, vec, sizeof(vec)) == sizeof(vec);
 }
 

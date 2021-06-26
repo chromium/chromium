@@ -52,8 +52,10 @@ task_manager::Task::Type FromMojo(crosapi::mojom::TaskType mojo_type) {
 
 blink::WebCacheResourceTypeStat FromMojo(
     const crosapi::mojom::WebCacheResourceTypeStatPtr& mojo_stat) {
-  return blink::WebCacheResourceTypeStat{mojo_stat->count, mojo_stat->size,
-                                         mojo_stat->decoded_size};
+  return blink::WebCacheResourceTypeStat{
+      static_cast<size_t>(mojo_stat->count),
+      static_cast<size_t>(mojo_stat->size),
+      static_cast<size_t>(mojo_stat->decoded_size)};
 }
 
 blink::WebCacheResourceTypeStats FromMojo(

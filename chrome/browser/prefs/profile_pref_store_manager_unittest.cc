@@ -164,7 +164,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
     // registered above for this test as kPreferenceResetTime is already
     // registered in ProfilePrefStoreManager::RegisterProfilePrefs.
     prefs::TrackedPreferenceMetadata pref_reset_time_config = {
-        (*configuration_.rbegin())->reporting_id + 1,
+        static_cast<size_t>((*configuration_.rbegin())->reporting_id + 1),
         user_prefs::kPreferenceResetTime, EnforcementLevel::ENFORCE_ON_LOAD,
         PrefTrackingStrategy::ATOMIC};
     configuration_.push_back(

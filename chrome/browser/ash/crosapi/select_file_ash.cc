@@ -87,7 +87,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
       // means "no selection". See ui::SelectFileDialog::SelectFile().
       file_type_index =
           base::ClampToRange(options->file_types->default_file_type_index, 0,
-                             int{file_types_->extensions.size()});
+                             static_cast<int>(file_types_->extensions.size()));
       file_types_->include_all_files = options->file_types->include_all_files;
       file_types_->allowed_paths =
           GetUiAllowedPaths(options->file_types->allowed_paths);

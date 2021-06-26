@@ -7,6 +7,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
@@ -282,8 +283,10 @@ void FrecencyPredictor::FromProto(const RecurrencePredictorProto& proto) {
 
   std::map<unsigned int, TargetData> targets;
   for (const auto& target_data : predictor.targets()) {
-    targets[target_data.id()] = {target_data.last_score(),
-                                 target_data.last_num_updates()};
+    targets[target_data.id()] = {
+        target_data.last_score(),
+        // Proto field defined as uint32.
+        base::saturated_cast<int32_t>(target_data.last_num_updates())};
   }
   targets_.swap(targets);
 }

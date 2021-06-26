@@ -50,7 +50,8 @@ constexpr char kSamlVerifiedAccessChallengeHeader[] =
 constexpr char kSamlVerifiedAccessResponseHeader[] =
     "x-verified-access-challenge-response";
 
-constexpr char kTpmChallenge[] = {0, 1, 2, 'c', 'h', 'a', 'l', 253, 254, 255};
+constexpr char kTpmChallenge[] = {0,   1,   2,      'c',    'h',
+                                  'a', 'l', '\xFD', '\xFE', '\xFF'};
 
 std::string GetTpmChallenge() {
   return std::string(kTpmChallenge, base::size(kTpmChallenge));

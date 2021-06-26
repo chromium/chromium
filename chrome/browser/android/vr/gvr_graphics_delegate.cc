@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -345,9 +346,11 @@ void GvrGraphicsDelegate::InitializeRenderer(bool start_in_webxr_mode) {
   float scale = low_density_ ? kLowDpiDefaultRenderTargetSizeScale
                              : kDefaultRenderTargetSizeScale;
 
-  render_size_default_ = {max_size.width * scale, max_size.height * scale};
-  render_size_webvr_ui_ = {max_size.width / kWebVrBrowserUiSizeFactor,
-                           max_size.height / kWebVrBrowserUiSizeFactor};
+  render_size_default_ = {base::ClampRound(max_size.width * scale),
+                          base::ClampRound(max_size.height * scale)};
+  render_size_webvr_ui_ = {
+      base::ClampRound(max_size.width / kWebVrBrowserUiSizeFactor),
+      base::ClampRound(max_size.height / kWebVrBrowserUiSizeFactor)};
 
   specs[kMultiSampleBuffer].SetSamples(2);
   specs[kMultiSampleBuffer].SetDepthStencilFormat(
@@ -451,8 +454,10 @@ void GvrGraphicsDelegate::ResizeForBrowser() {
                              {target_size.width(), target_size.height()});
   }
   size = swap_chain_.GetBufferSize(kNoMultiSampleBuffer);
-  target_size = {content_tex_buffer_size_.width() * kContentVignetteScale,
-                 content_tex_buffer_size_.height() * kContentVignetteScale};
+  target_size = {base::ClampRound(content_tex_buffer_size_.width() *
+                                  kContentVignetteScale),
+                 base::ClampRound(content_tex_buffer_size_.height() *
+                                  kContentVignetteScale)};
   if (size.width != target_size.width() ||
       size.height != target_size.height()) {
     swap_chain_.ResizeBuffer(kNoMultiSampleBuffer,

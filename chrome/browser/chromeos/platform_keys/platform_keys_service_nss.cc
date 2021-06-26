@@ -848,7 +848,7 @@ void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
   SECItem input = {
       siBuffer,
       reinterpret_cast<unsigned char*>(const_cast<char*>(state->data_.data())),
-      state->data_.size()};
+      static_cast<unsigned int>(state->data_.size())};
 
   // Compute signature of hash.
   int signature_len = PK11_SignatureLen(rsa_key.get());
@@ -858,7 +858,8 @@ void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
   }
 
   std::vector<unsigned char> signature(signature_len);
-  SECItem signature_output = {siBuffer, signature.data(), signature.size()};
+  SECItem signature_output = {siBuffer, signature.data(),
+                              static_cast<unsigned int>(signature.size())};
   if (PK11_Sign(rsa_key.get(), &signature_output, &input) != SECSuccess) {
     // Input size is checked after a failure - obtaining max input size
     // involves extracting key modulus length which is not a free operation, so

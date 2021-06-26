@@ -20,8 +20,8 @@ namespace quirks {
 namespace {
 
 const char kFakeIccJson[] = "{\n  \"icc\": \"AAAIkCAgICACEAAA\"\n}";
-const char kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
-                             0x20, 0x20, 0x02, 0x10, 0x00, 0x00};
+const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
+                                0x20, 0x20, 0x02, 0x10, 0x00, 0x00};
 
 // Full path to fake icc file in <tmp test directory>/display_profiles/.
 base::FilePath GetPathForIccFile(int64_t product_id) {

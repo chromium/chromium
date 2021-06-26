@@ -507,9 +507,9 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   const size_t targets =
       default_views +
       (show_expanded_view_ ? (expanded_view_->children().size() - 1) : 0);
-  const int new_target = int{keyboard_highlighted_target_} + delta;
-  keyboard_highlighted_target_ =
-      size_t{base::ClampToRange(new_target, 0, int{targets} - 1)};
+  const int new_target = static_cast<int>(keyboard_highlighted_target_) + delta;
+  keyboard_highlighted_target_ = static_cast<size_t>(
+      base::ClampToRange(new_target, 0, static_cast<int>(targets) - 1));
 
   if (keyboard_highlighted_target_ < default_views) {
     default_view_->children()[keyboard_highlighted_target_]->RequestFocus();

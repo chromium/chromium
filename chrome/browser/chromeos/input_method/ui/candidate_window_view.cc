@@ -384,7 +384,7 @@ void CandidateWindowView::MaybeInitializeCandidateViews(
     candidate_views_.push_back(
         candidate_area_->AddChildView(std::make_unique<CandidateView>(
             base::BindRepeating(&CandidateWindowView::CandidateViewPressed,
-                                base::Unretained(this), int{i}),
+                                base::Unretained(this), static_cast<int>(i)),
             orientation)));
   }
 }

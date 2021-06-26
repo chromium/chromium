@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -194,14 +195,16 @@ TEST_F(StreamParserTest, TagFailure) {
   GetStreamParser().Append(message);
   EXPECT_EQ(0, MessagesReceived());
 
-  char bytes[3] = {0x00, 0xf0, 0xab};
-  GetStreamParser().Append(bytes);
+  uint8_t bytes[3] = {0x00, 0xf0, 0xab};
+  GetStreamParser().Append(
+      base::StringPiece(reinterpret_cast<char*>(bytes), base::size(bytes)));
   EXPECT_EQ(0, MessagesReceived());
 }
 
 // Check that when we have a ReadBytes failure, no message is received.
 TEST_F(StreamParserTest, ReadBytesFailure) {
-  char bytes[6] = {0x00, 0xf0, 0xab, 0xf0, 0xab, 0xf0};
-  GetStreamParser().Append(bytes);
+  uint8_t bytes[6] = {0x00, 0xf0, 0xab, 0xf0, 0xab, 0xf0};
+  GetStreamParser().Append(
+      base::StringPiece(reinterpret_cast<char*>(bytes), base::size(bytes)));
   EXPECT_EQ(0, MessagesReceived());
 }

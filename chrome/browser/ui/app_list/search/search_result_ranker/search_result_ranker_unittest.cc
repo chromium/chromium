@@ -513,7 +513,7 @@ TEST_F(SearchResultRankerTest, ZeroStateStaleResultIgnored) {
                                        HasId("Z2"), HasId("Z3"), HasId("Z4"),
                                        HasId("D1"), HasId("Z5"))));
     // D1 should increment its cache counter.
-    ranker->ZeroStateResultsDisplayed({{"D1", 0.0f}});
+    ranker->ZeroStateResultsDisplayed({{"D1", 0}});
   }
 
   auto results_copy = results;
@@ -574,7 +574,7 @@ TEST_F(SearchResultRankerTest, ZeroStateCacheResetWhenTopResultChanges) {
                                        HasId("Z2"), HasId("Z3"), HasId("Z4"),
                                        HasId("D1"), HasId("Z5"), HasId("D2"))));
     // D1 should increment its cache counter.
-    ranker->ZeroStateResultsDisplayed({{"D1", 0.0f}});
+    ranker->ZeroStateResultsDisplayed({{"D1", 0}});
   }
 
   {

@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 
 namespace app_list {
@@ -115,8 +116,10 @@ void FrecencyStore::FromProto(const FrecencyStoreProto& proto) {
 
   ScoreTable values;
   for (const auto& pair : proto.values()) {
-    values[pair.first] = {pair.second.id(), pair.second.last_score(),
-                          pair.second.last_num_updates()};
+    values[pair.first] = {
+        pair.second.id(), pair.second.last_score(),
+        // Proto field defined as uint32.
+        base::saturated_cast<int32_t>(pair.second.last_num_updates())};
   }
   values_.swap(values);
 }

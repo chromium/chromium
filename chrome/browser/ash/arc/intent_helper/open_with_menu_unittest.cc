@@ -47,7 +47,8 @@ std::vector<LinkHandlerInfo> CreateLinkHandlerInfo(size_t num_apps) {
         base::UTF8ToUTF16(base::StringPrintf("App %" PRIuS, i)),
         // Use an empty image for the first item to test ModelChanged() with
         // both empty and non-empty icons.
-        (i == 0) ? gfx::Image() : gfx::Image(image_skia), i};
+        (i == 0) ? gfx::Image() : gfx::Image(image_skia),
+        static_cast<uint32_t>(i)};
     handlers.push_back(info);
   }
   return handlers;

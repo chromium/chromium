@@ -47,8 +47,10 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
 class GuestLoginWithLoginSwitchesTest : public GuestLoginTest {
  public:
   GuestLoginWithLoginSwitchesTest()
-      : scoped_feature_entries_({{"feature-name", "name-1", "description-1", -1,
-                                  SINGLE_VALUE_TYPE("feature-switch")}}) {}
+      : scoped_feature_entries_(
+            {{"feature-name", "name-1", "description-1",
+              /*supported_platforms=*/static_cast<unsigned short>(-1),  // All.
+              SINGLE_VALUE_TYPE("feature-switch")}}) {}
   ~GuestLoginWithLoginSwitchesTest() override = default;
 
   // GuestLoginTest:

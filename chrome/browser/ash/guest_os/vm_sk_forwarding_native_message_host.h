@@ -33,7 +33,7 @@ class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
   static const char* const kHostName;
   static const char* const kOrigins[];
   static const char* const kHostCreatedByExtensionNotSupportedError;
-  static const int kOriginCount;
+  static const size_t kOriginCount;
 
   using ResponseCallback =
       base::OnceCallback<void(const std::string& response)>;

@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
@@ -47,9 +48,10 @@ base::LazyThreadPoolSequencedTaskRunner g_non_blocking_task_runner =
 // without distorting the |image|.  Unused areas are cropped away.
 gfx::ImageSkia ScaleAspectRatioAndCropCenter(const gfx::Size& size,
                                              const gfx::ImageSkia& image) {
-  float scale = std::min(float{image.width()} / float{size.width()},
-                         float{image.height()} / float{size.height()});
-  gfx::Size scaled_size = {scale * size.width(), scale * size.height()};
+  float scale = std::min(static_cast<float>(image.width()) / size.width(),
+                         static_cast<float>(image.height()) / size.height());
+  gfx::Size scaled_size = {base::ClampFloor(scale * size.width()),
+                           base::ClampFloor(scale * size.height())};
   gfx::Rect bounds{{0, 0}, image.size()};
   bounds.ClampToCenteredSize(scaled_size);
   auto scaled_and_cropped_image = gfx::ImageSkiaOperations::CreateTiledImage(

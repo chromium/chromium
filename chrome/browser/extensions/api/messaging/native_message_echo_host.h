@@ -30,7 +30,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
  public:
   static const char* const kHostName;
   static const char* const kOrigins[];
-  static const int kOriginCount;
+  static const size_t kOriginCount;
 
   static std::unique_ptr<NativeMessageHost> Create(
       content::BrowserContext* browser_context);

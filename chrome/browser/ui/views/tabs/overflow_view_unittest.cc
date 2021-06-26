@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -86,11 +87,11 @@ class OverflowViewTest : public testing::Test {
     const int width =
         std::max(minimum.width(), bounds.width().min_of(preferred.width()));
     DCHECK_GT(preferred.width(), minimum.width());
-    double ratio =
-        double{width - minimum.width()} / (preferred.width() - minimum.width());
+    double ratio = static_cast<double>(width - minimum.width()) /
+                   (preferred.width() - minimum.width());
     const int height = bounds.height().min_of(
         minimum.height() +
-        int{ratio * (preferred.height() - minimum.height())});
+        base::ClampRound(ratio * (preferred.height() - minimum.height())));
     return gfx::Size(width, height);
   }
 

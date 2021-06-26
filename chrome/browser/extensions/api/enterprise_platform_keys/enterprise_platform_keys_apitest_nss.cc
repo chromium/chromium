@@ -180,7 +180,8 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
   SECItem pki_der_user = {
       siBuffer,
       // NSS requires non-const data even though it is just for input.
-      const_cast<unsigned char*>(pkcs8_der), pkcs8_der_size};
+      const_cast<unsigned char*>(pkcs8_der),
+      static_cast<unsigned int>(pkcs8_der_size)};
 
   SECKEYPrivateKey* seckey_raw = nullptr;
   ASSERT_EQ(SECSuccess, PK11_ImportDERPrivateKeyInfoAndReturnKey(

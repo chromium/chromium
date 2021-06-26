@@ -131,7 +131,8 @@ void UsbChooserDialogAndroid::OnItemSelected(
       base::android::ConvertJavaStringToUTF8(env, item_id_jstring);
   auto it = std::find(item_id_map_.begin(), item_id_map_.end(), item_id);
   DCHECK(it != item_id_map_.end());
-  controller_->Select({std::distance(item_id_map_.begin(), it)});
+  controller_->Select(
+      {static_cast<size_t>(std::distance(item_id_map_.begin(), it))});
   std::move(on_close_).Run();
 }
 

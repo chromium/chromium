@@ -450,7 +450,7 @@ jint BookmarkBridge::GetChildCount(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   const BookmarkNode* node = GetNodeByID(id, type);
-  return jint{node->children().size()};
+  return static_cast<jint>(node->children().size());
 }
 
 void BookmarkBridge::GetChildIDs(JNIEnv* env,
@@ -496,7 +496,8 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetChildAt(
 
   const BookmarkNode* parent = GetNodeByID(id, type);
   DCHECK(parent);
-  const BookmarkNode* child = parent->children()[size_t{index}].get();
+  const BookmarkNode* child =
+      parent->children()[static_cast<size_t>(index)].get();
   return JavaBookmarkIdCreateBookmarkId(
       env, child->id(), GetBookmarkType(child));
 }
@@ -726,7 +727,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddFolder(
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
   const BookmarkNode* new_node = bookmark_model_->AddFolder(
-      parent, size_t{index},
+      parent, static_cast<size_t>(index),
       base::android::ConvertJavaStringToUTF16(env, j_title));
   DCHECK(new_node);
   ScopedJavaLocalRef<jobject> new_java_obj =
@@ -795,7 +796,7 @@ void BookmarkBridge::MoveBookmark(
   const BookmarkNode* new_parent_node = GetNodeByID(bookmark_id, type);
   // Bookmark should not be moved to its own parent folder
   if (node->parent() != new_parent_node) {
-    bookmark_model_->Move(node, new_parent_node, size_t{index});
+    bookmark_model_->Move(node, new_parent_node, static_cast<size_t>(index));
   }
 }
 
@@ -813,7 +814,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
   const BookmarkNode* new_node = bookmark_model_->AddURL(
-      parent, size_t{index},
+      parent, static_cast<size_t>(index),
       base::android::ConvertJavaStringToUTF16(env, j_title),
       *url::GURLAndroid::ToNativeGURL(env, j_url));
   DCHECK(new_node);
@@ -1098,8 +1099,8 @@ void BookmarkBridge::BookmarkNodeMoved(BookmarkModel* model,
   if (obj.is_null())
     return;
   Java_BookmarkBridge_bookmarkNodeMoved(
-      env, obj, CreateJavaBookmark(old_parent), int{old_index},
-      CreateJavaBookmark(new_parent), int{new_index});
+      env, obj, CreateJavaBookmark(old_parent), static_cast<int>(old_index),
+      CreateJavaBookmark(new_parent), static_cast<int>(new_index));
 }
 
 void BookmarkBridge::BookmarkNodeAdded(BookmarkModel* model,
@@ -1113,7 +1114,7 @@ void BookmarkBridge::BookmarkNodeAdded(BookmarkModel* model,
   if (obj.is_null())
     return;
   Java_BookmarkBridge_bookmarkNodeAdded(env, obj, CreateJavaBookmark(parent),
-                                        int{index});
+                                        static_cast<int>(index));
 }
 
 void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
@@ -1129,7 +1130,7 @@ void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
   if (obj.is_null())
     return;
   Java_BookmarkBridge_bookmarkNodeRemoved(env, obj, CreateJavaBookmark(parent),
-                                          int{old_index},
+                                          static_cast<int>(old_index),
                                           CreateJavaBookmark(node));
 }
 

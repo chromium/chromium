@@ -46,7 +46,8 @@ const char* const
         "supported.\"}";
 
 // static
-const int VmSKForwardingNativeMessageHost::kOriginCount = base::size(kOrigins);
+const size_t VmSKForwardingNativeMessageHost::kOriginCount =
+    base::size(kOrigins);
 
 // static
 std::unique_ptr<extensions::NativeMessageHost>

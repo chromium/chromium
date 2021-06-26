@@ -166,13 +166,13 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
               (browser->profile() && browser->profile()->IsIncognitoProfile())
                   ? IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER
                   : IDR_ASH_SHELF_LIST_BROWSER);
-      items.push_back({app_menu_items.size() - 1,
+      items.push_back({static_cast<int>(app_menu_items.size() - 1),
                        controller->GetAppMenuTitle(tab), icon.AsImageSkia()});
     } else {
       for (int i = 0; i < tab_strip->count(); ++i) {
         auto* tab = tab_strip->GetWebContentsAt(i);
         app_menu_items.push_back({browser, i});
-        items.push_back({app_menu_items.size() - 1,
+        items.push_back({static_cast<int>(app_menu_items.size() - 1),
                          controller->GetAppMenuTitle(tab),
                          controller->GetAppMenuIcon(tab).AsImageSkia()});
       }

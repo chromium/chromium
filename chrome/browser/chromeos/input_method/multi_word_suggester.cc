@@ -132,7 +132,7 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
     suggestion_state_ = LastKnownSuggestionState{
         .start_pos = start_pos,
         .text = suggestion_text,
-        .confirmed_length = confirmed_length,
+        .confirmed_length = static_cast<size_t>(confirmed_length),
         .predicted_text_start_pos = predicted_text_start_pos,
         .predicted_text_length = predicted_text_length,
         .suggestion_mode = suggestion.mode,

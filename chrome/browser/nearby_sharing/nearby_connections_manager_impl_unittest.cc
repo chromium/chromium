@@ -45,7 +45,7 @@ const int64_t kPayloadId3 = 986777;
 const uint64_t kTotalSize = 5201314;
 const uint64_t kBytesTransferred = 721831;
 const uint8_t kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
-const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
+const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 const char kInvalidBluetoothMacAddress[] = {0x07, 0x07, 0x07};
 
 void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {

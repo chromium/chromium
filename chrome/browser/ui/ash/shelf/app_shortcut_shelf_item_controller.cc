@@ -327,7 +327,8 @@ AppShortcutShelfItemController::GetAppMenuItems(
   AppMenuItems items;
   auto add_menu_item = [&controller,
                         &items](content::WebContents* web_contents) {
-    items.push_back({items.size(), controller->GetAppMenuTitle(web_contents),
+    items.push_back({static_cast<int>(items.size()),
+                     controller->GetAppMenuTitle(web_contents),
                      controller->GetAppMenuIcon(web_contents).AsImageSkia()});
   };
 

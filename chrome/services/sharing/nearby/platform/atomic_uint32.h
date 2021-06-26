@@ -16,7 +16,7 @@ namespace chrome {
 // Concrete AtomicUint32 implementation.
 class AtomicUint32 : public api::AtomicUint32 {
  public:
-  explicit AtomicUint32(std::int32_t initial_value);
+  explicit AtomicUint32(std::uint32_t initial_value);
   ~AtomicUint32() override;
 
   AtomicUint32(const AtomicUint32&) = delete;

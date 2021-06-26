@@ -18,8 +18,8 @@ namespace policy {
 
 const int64_t kProductId = 0x0000aaaa;
 const char kDisplayName[] = "FakeDisplay";
-const char kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
-                             0x20, 0x20, 0x02, 0x10, 0x00, 0x00};
+const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
+                                0x20, 0x20, 0x02, 0x10, 0x00, 0x00};
 
 class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
@@ -38,9 +38,9 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
 
     // Create fake icc file.
     path = path.Append(quirks::IdToFileName(kProductId));
-    int bytes_written =
-        base::WriteFile(path, kFakeIccData, sizeof(kFakeIccData));
-    ASSERT_EQ(sizeof(kFakeIccData), static_cast<size_t>(bytes_written));
+    bool all_written = base::WriteFile(
+        path, base::span<const uint8_t>(kFakeIccData, sizeof(kFakeIccData)));
+    ASSERT_TRUE(all_written);
   }
 
  protected:

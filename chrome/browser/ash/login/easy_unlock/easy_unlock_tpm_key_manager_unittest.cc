@@ -41,7 +41,7 @@ const char kTestUserId[] = "user_id@somewhere.com";
 
 // Public part of the RSA key pair used as the RSA key pair associated with
 // test user's Easy Unlock service.
-const char kTestPublicKey[] = {
+const uint8_t kTestPublicKey[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
     0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x03, 0x82, 0x01, 0x0f, 0x00,
     0x30, 0x82, 0x01, 0x0a, 0x02, 0x82, 0x01, 0x01, 0x00, 0xcb, 0x5a, 0x8d,
@@ -303,7 +303,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
         siBuffer,
         // NSS requires non-const data even though it is just for input.
         const_cast<unsigned char*>(key),
-        key_size,
+        static_cast<unsigned int>(key_size),
     };
 
     return SECSuccess == PK11_ImportDERPrivateKeyInfo(test_system_slot_->slot(),
@@ -420,14 +420,16 @@ TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPairMultipleCallbacks) {
 TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefs) {
   SetLocalStatePublicKey(
       test_account_id_,
-      std::string(kTestPublicKey, base::size(kTestPublicKey)));
+      std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                  base::size(kTestPublicKey)));
 
   EXPECT_TRUE(user_key_manager()->PrepareTpmKey(
       /*check_private_key=*/false, base::BindOnce(&ExpectNotCalledCallback)));
 
   EXPECT_FALSE(user_key_manager()->GetPublicTpmKey(test_account_id_).empty());
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
-            std::string(kTestPublicKey, base::size(kTestPublicKey)));
+            std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                        base::size(kTestPublicKey)));
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 }
@@ -437,7 +439,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey) {
 
   SetLocalStatePublicKey(
       test_account_id_,
-      std::string(kTestPublicKey, base::size(kTestPublicKey)));
+      std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                  base::size(kTestPublicKey)));
 
   base::RunLoop run_loop;
   ASSERT_FALSE(user_key_manager()->PrepareTpmKey(true /* check_private_key */,
@@ -449,7 +452,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey) {
 
   EXPECT_FALSE(user_key_manager()->GetPublicTpmKey(test_account_id_).empty());
   EXPECT_NE(user_key_manager()->GetPublicTpmKey(test_account_id_),
-            std::string(kTestPublicKey, base::size(kTestPublicKey)));
+            std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                        base::size(kTestPublicKey)));
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 }
@@ -461,7 +465,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey_OK) {
   ASSERT_TRUE(ImportPrivateKey(kTestPrivateKey, base::size(kTestPrivateKey)));
   SetLocalStatePublicKey(
       test_account_id_,
-      std::string(kTestPublicKey, base::size(kTestPublicKey)));
+      std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                  base::size(kTestPublicKey)));
 
   int callback_count = 0;
   base::RunLoop run_loop;
@@ -477,7 +482,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, PublicKeySetInPrefsCheckPrivateKey_OK) {
   EXPECT_EQ(1, callback_count);
   EXPECT_FALSE(user_key_manager()->GetPublicTpmKey(test_account_id_).empty());
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
-            std::string(kTestPublicKey, base::size(kTestPublicKey)));
+            std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                        base::size(kTestPublicKey)));
   EXPECT_EQ(user_key_manager()->GetPublicTpmKey(test_account_id_),
             signin_key_manager()->GetPublicTpmKey(test_account_id_));
 
@@ -554,7 +560,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignData) {
   ASSERT_TRUE(ImportPrivateKey(kTestPrivateKey, base::size(kTestPrivateKey)));
   SetLocalStatePublicKey(
       test_account_id_,
-      std::string(kTestPublicKey, base::size(kTestPublicKey)));
+      std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                  base::size(kTestPublicKey)));
 
   base::RunLoop loop;
   std::string signed_data;
@@ -582,7 +589,8 @@ TEST_F(EasyUnlockTpmKeyManagerTest, SignNoPublicKeySet) {
 TEST_F(EasyUnlockTpmKeyManagerTest, SignDataNoPrivateKeyPresent) {
   SetLocalStatePublicKey(
       test_account_id_,
-      std::string(kTestPublicKey, base::size(kTestPublicKey)));
+      std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                  base::size(kTestPublicKey)));
 
   base::RunLoop loop;
   std::string signed_data;

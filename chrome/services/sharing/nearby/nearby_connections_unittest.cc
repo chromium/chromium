@@ -46,7 +46,7 @@ const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const int64_t kPayloadId = 612721831;
 const char kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
-const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
+const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 
 mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   bool use_ble = false;
@@ -1329,18 +1329,19 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
       endpoint_data.remote_endpoint_id,
       Payload(kPayloadId,
               [&input_stream]() -> InputStream& { return input_stream; }));
+  int64_t expected_payload_size = expected_payload.size();
   client_proxy->OnPayloadProgress(
       endpoint_data.remote_endpoint_id,
       {.payload_id = kPayloadId,
        .status = PayloadProgressInfo::Status::kInProgress,
-       .total_bytes = expected_payload.size(),
-       .bytes_transferred = expected_payload.size()});
+       .total_bytes = expected_payload_size,
+       .bytes_transferred = expected_payload_size});
   client_proxy->OnPayloadProgress(
       endpoint_data.remote_endpoint_id,
       {.payload_id = kPayloadId,
        .status = PayloadProgressInfo::Status::kSuccess,
-       .total_bytes = expected_payload.size(),
-       .bytes_transferred = expected_payload.size()});
+       .total_bytes = expected_payload_size,
+       .bytes_transferred = expected_payload_size});
 
   payload_run_loop.Run();
 }

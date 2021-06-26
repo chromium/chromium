@@ -100,7 +100,7 @@ TEST_F(SuggestionWindowViewTest, HighlightOneCandidateWhenIndexIsValid) {
 
 TEST_F(SuggestionWindowViewTest, HighlightNoCandidateWhenIndexIsInvalid) {
   suggestion_window_view_->ShowMultipleCandidates(window_);
-  for (int index : {-1, int{candidates_.size()}}) {
+  for (int index : {-1, static_cast<int>(candidates_.size())}) {
     candidate_button_.index = index;
     suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
@@ -175,7 +175,7 @@ TEST_F(SuggestionWindowViewTest, DoesNotUnhighlightCandidateIfOutOfRange) {
   candidate_button_.index = highlight_index;
   suggestion_window_view_->SetButtonHighlighted(candidate_button_, true);
 
-  for (int index : {-1, int{candidates_.size()}}) {
+  for (int index : {-1, static_cast<int>(candidates_.size())}) {
     candidate_button_.index = index;
     suggestion_window_view_->SetButtonHighlighted(candidate_button_, false);
 

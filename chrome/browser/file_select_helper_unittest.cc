@@ -162,7 +162,8 @@ TEST_F(FileSelectHelperTest, GetSanitizedFileName) {
   base::FilePath::CharType kBadName[] = {0xd801, 0xdc37, 0xdc17, 0};
 #else
   // Invalid UTF-8
-  base::FilePath::CharType kBadName[] = {0xe3, 0x81, 0x81, 0x81, 0x82, 0};
+  base::FilePath::CharType kBadName[] = {'\xe3', '\x81', '\x81',
+                                         '\x81', '\x82', '\0'};
 #endif
   base::FilePath bad_filename(kBadName);
   ASSERT_FALSE(bad_filename.empty());
@@ -369,15 +370,15 @@ TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
 
   std::vector<std::u16string> accept_types{
       // normal file extension
-      std::u16string{0x2e, 'm', 'p', '4'},
+      u".mp4",
       // file extension with some chinese
-      std::u16string{0x2e, 0x65a4, 0x62f7, 0x951f},
+      u".斤拷锟",
       // file extension with fire emoji
-      std::u16string{0x2e, 55357, 56613},
+      u".🔥",
       // mime type
-      std::u16string({'i', 'm', 'a', 'g', 'e', '/', 'p', 'n', 'g'}),
+      u"image/png",
       // non-ascii mime type which should be ignored
-      std::u16string({'t', 'e', 'x', 't', '/', 0x65a4, 0x62f7, 0x951f})};
+      u"text/斤拷锟"};
 
   std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_type_info =
       file_select_helper->GetFileTypesFromAcceptType(accept_types);
@@ -385,16 +386,9 @@ TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
   std::vector<std::vector<base::FilePath::StringType>> expected_extensions{
       std::vector<base::FilePath::StringType>{
 #if defined(OS_WIN)
-          L"mp4",
-          {0x65a4, 0x62f7, 0x951f},  // some chinese
-          {55357, 56613},            // fire emoji
-          L"png"}};
+          L"mp4", L"斤拷锟", L"🔥", L"png"}};
 #else
-          "mp4",
-          {0xe6, 0x96, 0xa4, 0xe6, 0x8b, 0xb7, 0xe9, 0x94,
-           0x9f},                    // some chinese
-          {0xf0, 0x9f, 0x94, 0xa5},  // fire emoji
-          "png"}};
+          "mp4", "斤拷锟", "🔥", "png"}};
 #endif
   ASSERT_EQ(expected_extensions, file_type_info->extensions);
 }

@@ -444,6 +444,8 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     int cursor_pos,
     int anchor_pos,
     int offset_pos) {
+  DCHECK_GE(cursor_pos, 0);
+  DCHECK_GE(anchor_pos, 0);
   assistive_suggester_->RecordAssistiveMatchMetrics(text, cursor_pos,
                                                     anchor_pos);
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
@@ -456,7 +458,8 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
   }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
-      std::vector<size_t> selection_indices = {anchor_pos, cursor_pos};
+      std::vector<size_t> selection_indices = {static_cast<size_t>(anchor_pos),
+                                               static_cast<size_t>(cursor_pos)};
       std::string utf8_text =
           base::UTF16ToUTF8AndAdjustOffsets(text, &selection_indices);
 

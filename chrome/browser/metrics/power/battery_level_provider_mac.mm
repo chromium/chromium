@@ -91,7 +91,11 @@ BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
       GetValueAsSInt64(description, max_capacity_key);
   if (!current_capacity.has_value() || !max_capacity.has_value())
     return BatteryInterface(true);
-  return BatteryInterface({is_connected, *current_capacity, *max_capacity});
+  DCHECK_GE(*current_capacity, 0);
+  DCHECK_GE(*max_capacity, 0);
+  return BatteryInterface({is_connected,
+                           static_cast<uint64_t>(*current_capacity),
+                           static_cast<uint64_t>(*max_capacity)});
 }
 
 std::vector<BatteryLevelProvider::BatteryInterface>

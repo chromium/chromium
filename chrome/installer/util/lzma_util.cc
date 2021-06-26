@@ -288,11 +288,13 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
                   base::File::FLAG_DELETE_ON_CLOSE |
                   base::File::FLAG_SHARE_DELETE);
           mapped_file_ok = mapped_file->Initialize(
-              std::move(temp_file), {0, folder_unpack_size},
+              std::move(temp_file),
+              {0, static_cast<size_t>(folder_unpack_size)},
               base::MemoryMappedFile::READ_WRITE_EXTEND);
         } else {
           mapped_file_ok = mapped_file->Initialize(
-              target_file.Duplicate(), {0, folder_unpack_size},
+              target_file.Duplicate(),
+              {0, static_cast<size_t>(folder_unpack_size)},
               base::MemoryMappedFile::READ_WRITE_EXTEND);
         }
         if (!mapped_file_ok) {
