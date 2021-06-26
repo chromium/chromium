@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -29,11 +30,11 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
       public ImageFactory {
  public:
   GpuMemoryBufferFactoryDXGI();
+  ~GpuMemoryBufferFactoryDXGI() override;
+
   GpuMemoryBufferFactoryDXGI(const GpuMemoryBufferFactoryDXGI&) = delete;
   GpuMemoryBufferFactoryDXGI& operator=(const GpuMemoryBufferFactoryDXGI&) =
       delete;
-
-  ~GpuMemoryBufferFactoryDXGI() override;
 
   // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
@@ -63,7 +64,12 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
   bool SupportsFormatRGB() override;
 
  private:
+  Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace gpu
