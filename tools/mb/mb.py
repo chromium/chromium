@@ -1185,6 +1185,26 @@ class MetaBuildWrapper(object):
         if self.Exists(path):
           self.RemoveFile(path)
 
+  def _FilterOutUneededSkylabDeps(self, deps):
+    """Filter out the runtime dependencies not used by Skylab.
+
+    Skylab is CrOS infra facilities for us to run hardware tests. These files
+    may appear in the test target's runtime_deps but unnecessary for our tests
+    to execute in a CrOS device.
+    """
+    file_ignore_list = [
+        re.compile(r'.*build/android.*'),
+        re.compile(r'.*build/chromeos.*'),
+        re.compile(r'.*build/cros_cache.*'),
+        # The following matches anything under //testing/ that isn't under
+        # //testing/buildbot/filters/.
+        re.compile(r'.*testing/(?!buildbot/filters).*'),
+        re.compile(r'.*third_party/chromite.*'),
+        # No test target should rely on files in [output_dir]/gen.
+        re.compile(r'^gen/.*'),
+    ]
+    return [f for f in deps if not any(r.match(f) for r in file_ignore_list)]
+
   def GenerateIsolates(self, vals, ninja_targets, isolate_map, build_dir):
     """
     Generates isolates for a list of ninja targets.
@@ -1217,6 +1237,8 @@ class MetaBuildWrapper(object):
 
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
+      if 'is_skylab=true' in vals['gn_args']:
+        runtime_deps = self._FilterOutUneededSkylabDeps(runtime_deps)
 
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
