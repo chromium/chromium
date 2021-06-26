@@ -14,6 +14,8 @@
 
 namespace device {
 struct OpenXrExtensionMethods {
+  OpenXrExtensionMethods();
+  ~OpenXrExtensionMethods();
   // D3D
   PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR{
       nullptr};
@@ -27,6 +29,19 @@ struct OpenXrExtensionMethods {
   PFN_xrCreateSpatialAnchorMSFT xrCreateSpatialAnchorMSFT{nullptr};
   PFN_xrDestroySpatialAnchorMSFT xrDestroySpatialAnchorMSFT{nullptr};
   PFN_xrCreateSpatialAnchorSpaceMSFT xrCreateSpatialAnchorSpaceMSFT{nullptr};
+
+  // Scene Understanding
+  PFN_xrEnumerateSceneComputeFeaturesMSFT xrEnumerateSceneComputeFeaturesMSFT{
+      nullptr};
+  PFN_xrCreateSceneObserverMSFT xrCreateSceneObserverMSFT{nullptr};
+  PFN_xrDestroySceneObserverMSFT xrDestroySceneObserverMSFT{nullptr};
+  PFN_xrCreateSceneMSFT xrCreateSceneMSFT{nullptr};
+  PFN_xrDestroySceneMSFT xrDestroySceneMSFT{nullptr};
+  PFN_xrComputeNewSceneMSFT xrComputeNewSceneMSFT{nullptr};
+  PFN_xrGetSceneComputeStateMSFT xrGetSceneComputeStateMSFT{nullptr};
+  PFN_xrGetSceneComponentsMSFT xrGetSceneComponentsMSFT{nullptr};
+  PFN_xrLocateSceneComponentsMSFT xrLocateSceneComponentsMSFT{nullptr};
+  PFN_xrGetSceneMeshBuffersMSFT xrGetSceneMeshBuffersMSFT{nullptr};
 };
 
 class OpenXrExtensionEnumeration {

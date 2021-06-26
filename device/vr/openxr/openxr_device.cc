@@ -124,8 +124,14 @@ void OpenXrDevice::RequestSession(
   const bool hand_input_supported =
       extension_helper_.ExtensionEnumeration()->ExtensionSupported(
           kMSFTHandInteractionExtensionName);
+  const bool hittest_required = base::Contains(
+      options->required_features, device::mojom::XRSessionFeature::HIT_TEST);
+  const bool hittest_supported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
   if ((anchors_required && !anchors_supported) ||
-      (hand_input_required && !hand_input_supported)) {
+      (hand_input_required && !hand_input_supported) ||
+      (hittest_required && !hittest_supported)) {
     // Reject session request
     std::move(callback).Run(nullptr);
     return;

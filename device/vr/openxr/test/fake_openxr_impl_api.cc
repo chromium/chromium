@@ -497,7 +497,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
   return XR_SUCCESS;
 }
 
-XrResult xrGetD3D11GraphicsRequirementsKHR(
+__stdcall XrResult xrGetD3D11GraphicsRequirementsKHR(
     XrInstance instance,
     XrSystemId system_id,
     XrGraphicsRequirementsD3D11KHR* graphics_requirements) {

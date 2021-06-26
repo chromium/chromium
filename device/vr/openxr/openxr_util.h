@@ -56,6 +56,7 @@ namespace device {
 XrPosef PoseIdentity();
 gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
+bool IsPoseValid(XrSpaceLocationFlags locationFlags);
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system);
 
@@ -65,6 +66,13 @@ XrResult CreateInstance(
 
 std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
                                                            XrSystemId system);
+
+// Insert an extension struct into the next chain of an xrStruct
+template <typename XrStruct, typename XrExtension>
+void InsertExtensionStruct(XrStruct& xrStruct, XrExtension& xrExtension) {
+  xrExtension.next = xrStruct.next;
+  xrStruct.next = &xrExtension;
+}
 
 }  // namespace device
 
