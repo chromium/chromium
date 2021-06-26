@@ -361,7 +361,8 @@ TEST_F(AudioBusTest, FromInterleaved) {
                                                       kTestVectorFrameCount);
     VerifyAreEqualWithEpsilon(
         bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint16_t>::max() + 1.0f));
+        1.0f /
+            (static_cast<float>(std::numeric_limits<uint16_t>::max()) + 1.0f));
   }
   {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
@@ -370,7 +371,7 @@ TEST_F(AudioBusTest, FromInterleaved) {
                                                       kTestVectorFrameCount);
     VerifyAreEqualWithEpsilon(
         bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint32_t>::max() + 1.0f));
+        1.0f / static_cast<float>(std::numeric_limits<uint32_t>::max()));
   }
   {
     SCOPED_TRACE("Float32SampleTypeTraits");

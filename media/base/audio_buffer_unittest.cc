@@ -374,21 +374,20 @@ TEST(AudioBufferTest, ReadS32) {
                                kSampleRate, 1, 1, frames, start_time);
   std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, frames);
   buffer->ReadFrames(frames, 0, 0, bus.get());
-  VerifyBus(bus.get(), frames, 1.0f / std::numeric_limits<int32_t>::max(),
-            1.0f / std::numeric_limits<int32_t>::max());
+  constexpr float kIncrement =
+      1.0f / static_cast<float>(std::numeric_limits<int32_t>::max());
+  VerifyBus(bus.get(), frames, kIncrement, kIncrement);
 
   // Read second 10 frames.
   bus->Zero();
   buffer->ReadFrames(10, 10, 0, bus.get());
-  VerifyBus(bus.get(), 10, 11.0f / std::numeric_limits<int32_t>::max(),
-            1.0f / std::numeric_limits<int32_t>::max());
+  VerifyBus(bus.get(), 10, 11.0f * kIncrement, kIncrement);
 
   // Verify ReadAllFrames() works for S32.
   bus->Zero();
   std::vector<float*> wrapped_channels = WrapChannelsAsVector(bus.get());
   buffer->ReadAllFrames(wrapped_channels);
-  VerifyBus(bus.get(), frames, 1.0f / std::numeric_limits<int32_t>::max(),
-            1.0f / std::numeric_limits<int32_t>::max());
+  VerifyBus(bus.get(), frames, kIncrement, kIncrement);
 }
 
 TEST(AudioBufferTest, ReadF32) {
