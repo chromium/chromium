@@ -668,13 +668,14 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
-      if (!app_history->DispatchNavigateEvent(
+      if (app_history->DispatchNavigateEvent(
               url, request.Form(), NavigateEventType::kCrossDocument,
               frame_load_type,
               request.GetTriggeringEventInfo() ==
                       mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                   ? UserNavigationInvolvement::kActivation
-                  : UserNavigationInvolvement::kNone)) {
+                  : UserNavigationInvolvement::kNone) !=
+          AppHistory::DispatchResult::kContinue) {
         return;
       }
     }

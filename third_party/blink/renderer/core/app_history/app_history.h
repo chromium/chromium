@@ -79,14 +79,14 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
 
-  // Returns true if the navigation should continue.
-  bool DispatchNavigateEvent(const KURL& url,
-                             HTMLFormElement* form,
-                             NavigateEventType,
-                             WebFrameLoadType,
-                             UserNavigationInvolvement,
-                             SerializedScriptValue* = nullptr,
-                             HistoryItem* destination_item = nullptr);
+  enum class DispatchResult { kContinue, kAbort, kRespondWith };
+  DispatchResult DispatchNavigateEvent(const KURL& url,
+                                       HTMLFormElement* form,
+                                       NavigateEventType,
+                                       WebFrameLoadType,
+                                       UserNavigationInvolvement,
+                                       SerializedScriptValue* = nullptr,
+                                       HistoryItem* destination_item = nullptr);
   void CancelOngoingNavigateEvent();
 
   int GetIndexFor(AppHistoryEntry*);

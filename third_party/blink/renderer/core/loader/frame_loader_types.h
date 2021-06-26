@@ -41,6 +41,7 @@ enum LoadStartType {
 enum SameDocumentNavigationSource {
   kSameDocumentNavigationDefault,
   kSameDocumentNavigationHistoryApi,
+  kSameDocumentNavigationAppHistoryRespondWith,
 };
 
 enum class SavePreviousDocumentResources {
@@ -58,6 +59,7 @@ enum SinglePageAppNavigationType {
   kSPANavTypeHistoryPushStateOrReplaceState = 0,
   kSPANavTypeSameDocumentBackwardOrForward = 1,
   kSPANavTypeOtherFragmentNavigation = 2,
+  kSPANavTypeAppHistoryRespondWith = 3,
   kSPANavTypeCount
 };
 

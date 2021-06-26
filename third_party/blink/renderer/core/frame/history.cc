@@ -302,15 +302,17 @@ void History::StateObjectAdded(
   }
 
   if (auto* app_history = AppHistory::appHistory(*DomWindow())) {
-    if (!app_history->DispatchNavigateEvent(
+    if (app_history->DispatchNavigateEvent(
             full_url, nullptr, NavigateEventType::kHistoryApi, type,
-            UserNavigationInvolvement::kNone, data.get())) {
+            UserNavigationInvolvement::kNone,
+            data.get()) != AppHistory::DispatchResult::kContinue) {
       return;
     }
   }
 
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      full_url, std::move(data), type, restoration_type);
+      full_url, kSameDocumentNavigationHistoryApi, std::move(data), type,
+      restoration_type);
 }
 
 }  // namespace blink

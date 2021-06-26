@@ -14,20 +14,27 @@ async_test(t => {
     }
     appHistory.onnavigatesuccess = t.step_func(e => {
       onnavigatesuccess_calls++;
-      if (onnavigatesuccess_calls == 2) {
-        assert_equals(appHistory.entries().length, 2);
+      if (onnavigatesuccess_calls == 3) {
+        assert_equals(appHistory.entries().length, 3);
+        assert_equals(appHistory.current.index, 1);
+        assert_equals(onnavigate_calls, 3);
+        history.back();
+      } else if (onnavigatesuccess_calls == 4) {
+        assert_equals(appHistory.entries().length, 3);
         assert_equals(appHistory.current.index, 0);
-        assert_equals(onnavigate_calls, 2);
+        assert_equals(onnavigate_calls, 4);
         t.done();
       }
     });
 
-    appHistory.navigate("?foo").then(t.step_func(() => {
-      assert_equals(appHistory.entries().length, 2);
-      assert_equals(appHistory.current.index, 1);
-      assert_equals(onnavigate_calls, 1);
-      history.back();
-    }));
+    appHistory.navigate("?foo")
+      .then(t.step_func(() => appHistory.navigate("?bar")))
+      .then(t.step_func(() => {
+        assert_equals(appHistory.entries().length, 3);
+        assert_equals(appHistory.current.index, 2);
+        assert_equals(onnavigate_calls, 2);
+        history.back();
+      }));
   }, 0);
 }, "AppHistoryNavigateEvent.respondWith can intercept same-document history.back()");
 </script>

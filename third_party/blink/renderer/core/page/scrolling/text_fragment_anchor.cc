@@ -491,7 +491,8 @@ bool TextFragmentAnchor::Dismiss() {
   // fragment shown in the URL matches the state of the highlight on the page.
   // This is equivalent to history.replaceState in javascript.
   frame_->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      url, /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
+      url, kSameDocumentNavigationDefault, /*data=*/nullptr,
+      WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType::kAuto);
 
   return dismissed_;

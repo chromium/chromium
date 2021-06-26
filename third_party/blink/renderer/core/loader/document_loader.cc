@@ -683,6 +683,8 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
       // WebFrameLoadType::kBackForward.
       DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
       return kSPANavTypeHistoryPushStateOrReplaceState;
+    case kSameDocumentNavigationAppHistoryRespondWith:
+      return kSPANavTypeAppHistoryRespondWith;
   }
   NOTREACHED();
   return kSPANavTypeSameDocumentBackwardOrForward;
@@ -690,13 +692,15 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
 
 void DocumentLoader::RunURLAndHistoryUpdateSteps(
     const KURL& new_url,
+    SameDocumentNavigationSource same_document_navigation_source,
     scoped_refptr<SerializedScriptValue> data,
     WebFrameLoadType type,
     mojom::blink::ScrollRestorationType scroll_restoration_type) {
+  DCHECK(!IsBackForwardLoadType(type));
   // We use the security origin of this frame since callers of this method must
   // already have performed same origin checks.
   UpdateForSameDocumentNavigation(
-      new_url, kSameDocumentNavigationHistoryApi, std::move(data),
+      new_url, same_document_navigation_source, std::move(data),
       scroll_restoration_type, type, frame_->DomWindow()->GetSecurityOrigin(),
       /*is_synchronously_committed=*/true);
 }
@@ -734,9 +738,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   original_url_ = new_url;
   url_ = new_url;
   replaces_current_history_item_ = type != WebFrameLoadType::kStandard;
-  bool is_history_api_navigation =
-      (same_document_navigation_source == kSameDocumentNavigationHistoryApi);
-  if (is_history_api_navigation) {
+  bool is_history_api_or_app_history_navigation =
+      (same_document_navigation_source != kSameDocumentNavigationDefault);
+  if (is_history_api_or_app_history_navigation) {
     // See spec:
     // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
     http_method_ = http_names::kGET;
@@ -763,12 +767,12 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   }
 
   SetHistoryItemStateForCommit(history_item_.Get(), type,
-                               is_history_api_navigation
+                               is_history_api_or_app_history_navigation
                                    ? HistoryNavigationType::kHistoryApi
                                    : HistoryNavigationType::kFragment,
                                CommitReason::kRegular);
   history_item_->SetDocumentState(frame_->GetDocument()->GetDocumentState());
-  if (is_history_api_navigation) {
+  if (is_history_api_or_app_history_navigation) {
     history_item_->SetStateObject(std::move(data));
     history_item_->SetScrollRestorationType(scroll_restoration_type);
   }
@@ -786,7 +790,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       history_item_.Get(), commit_type, is_synchronously_committed,
-      is_history_api_navigation, is_client_redirect_);
+      (same_document_navigation_source == kSameDocumentNavigationHistoryApi),
+      is_client_redirect_);
   probe::DidNavigateWithinDocument(frame_);
   if (!was_loading) {
     GetLocalFrameClient().DidStopLoading();
@@ -1272,10 +1277,22 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       involvement = UserNavigationInvolvement::kActivation;
     }
-    if (!app_history->DispatchNavigateEvent(
-            url, nullptr, NavigateEventType::kFragment, frame_load_type,
-            involvement, nullptr, history_item)) {
+    auto dispatch_result = app_history->DispatchNavigateEvent(
+        url, nullptr, NavigateEventType::kFragment, frame_load_type,
+        involvement, nullptr, history_item);
+    if (dispatch_result == AppHistory::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
+    if (dispatch_result == AppHistory::DispatchResult::kRespondWith) {
+      if (frame_load_type != WebFrameLoadType::kBackForward)
+        return mojom::blink::CommitResult::Aborted;
+      if (extra_data)
+        GetLocalFrameClient().UpdateDocumentLoader(this, std::move(extra_data));
+      history_item_ = history_item;
+      UpdateForSameDocumentNavigation(
+          url, kSameDocumentNavigationAppHistoryRespondWith, nullptr,
+          mojom::blink::ScrollRestorationType::kAuto, frame_load_type,
+          frame_->DomWindow()->GetSecurityOrigin(), false);
+      return mojom::blink::CommitResult::Ok;
     }
   }
 

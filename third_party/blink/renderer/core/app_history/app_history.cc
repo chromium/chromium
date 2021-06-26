@@ -345,10 +345,11 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
   // central location if we want to fire the navigate event for cross-document
   // back-forward navigations in general.
   if (!destination->sameDocument()) {
-    if (!DispatchNavigateEvent(
+    if (DispatchNavigateEvent(
             destination->url(), nullptr, NavigateEventType::kCrossDocument,
             WebFrameLoadType::kBackForward, UserNavigationInvolvement::kNone,
-            nullptr, destination->GetItem())) {
+            nullptr,
+            destination->GetItem()) != AppHistory::DispatchResult::kContinue) {
       exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                         "Navigation was aborted");
       return ScriptPromise();
@@ -396,15 +397,16 @@ ScriptPromise AppHistory::forward(ScriptState* script_state,
               exception_state);
 }
 
-bool AppHistory::DispatchNavigateEvent(const KURL& url,
-                                       HTMLFormElement* form,
-                                       NavigateEventType event_type,
-                                       WebFrameLoadType type,
-                                       UserNavigationInvolvement involvement,
-                                       SerializedScriptValue* state_object,
-                                       HistoryItem* destination_item) {
+AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
+    const KURL& url,
+    HTMLFormElement* form,
+    NavigateEventType event_type,
+    WebFrameLoadType type,
+    UserNavigationInvolvement involvement,
+    SerializedScriptValue* state_object,
+    HistoryItem* destination_item) {
   if (GetSupplementable()->document()->IsInitialEmptyDocument())
-    return true;
+    return DispatchResult::kContinue;
 
   // TODO(japhet): The draft spec says to cancel any ongoing navigate event
   // before invoked DispatchNavigateEvent(), because not all navigations will
@@ -461,15 +463,21 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   ongoing_navigate_event_ = nullptr;
 
   if (!GetSupplementable()->GetFrame())
-    return false;
+    return DispatchResult::kAbort;
 
   ScriptPromise promise = navigate_event->GetNavigationActionPromise();
+  bool respondWithCalled = false;
   if (!promise.IsEmpty()) {
-    if (type == WebFrameLoadType::kBackForward) {
-      UpdateForNavigation(*destination_item, type);
-    } else {
-      DocumentLoader* loader = GetSupplementable()->document()->Loader();
-      loader->RunURLAndHistoryUpdateSteps(url, state_object, type);
+    respondWithCalled = true;
+    // The spec says that at this point we should either run the URL and history
+    // update steps (for non-traverse cases) or we should do a same-document
+    // history traversal. In our implementation it's easier for the caller to do
+    // a history traversal since it has access to all the info it needs.
+    // TODO(japhet): Figure out how cross-document back-forward should work.
+    if (type != WebFrameLoadType::kBackForward) {
+      GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+          url, kSameDocumentNavigationAppHistoryRespondWith, state_object,
+          type);
     }
   }
 
@@ -496,7 +504,10 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
                             navigate_method_call_promise_resolver_);
   }
 
-  return !navigate_event->defaultPrevented();
+  if (!navigate_event->defaultPrevented())
+    return DispatchResult::kContinue;
+  return respondWithCalled ? DispatchResult::kRespondWith
+                           : DispatchResult::kAbort;
 }
 
 void AppHistory::CancelOngoingNavigateEvent() {
