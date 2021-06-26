@@ -11,6 +11,9 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPathMeasure.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -27,12 +30,63 @@ constexpr float kTrackOpacity = 0.3f;
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the sweep angle to use to represent the specified `progress`.
-// NOTE: The specified `progress` must be >= `0.f` and < `1.f`.
-float CalculateSweepAngle(float progress) {
-  DCHECK_GE(progress, 0.f);
-  DCHECK_LT(progress, 1.f);
-  return 360.f * progress;
+// Returns the segment of the specified `path` between `start` and `end`.
+// NOTE: It is required that: `0.f` <= `start` <= `end` <= `1.f`.
+SkPath CreatePathSegment(const SkPath& path, float start, float end) {
+  DCHECK_LE(0.f, start);
+  DCHECK_LE(start, end);
+  DCHECK_LE(end, 1.f);
+
+  SkPathMeasure measure(path, /*force_closed=*/false);
+  start *= measure.getLength();
+  end *= measure.getLength();
+
+  SkPath path_segment;
+  measure.getSegment(start, end, &path_segment, /*start_with_move_to=*/true);
+
+  return path_segment;
+}
+
+// Returns a rounded rect path from the specified `rect` and `corner_radius`.
+// NOTE: Unlike a typical rounded rect which starts from the *top-left* corner
+// and proceeds clockwise, the rounded rect returned by this method starts at
+// the *top-center*. This is a subtle but important detail as calling
+// `CreatePathSegment()` with a path created from this method will treat
+// *top-center* as the start point, as is needed when painting progress.
+SkPath CreateRoundedRectPath(const gfx::Rect& rect, float corner_radius) {
+  // Top center.
+  SkPoint top_center(SkPoint::Make(rect.width() / 2.f, 0.f));
+
+  // Top right.
+  SkPoint top_right(SkPoint::Make(rect.width(), 0.f));
+  SkPoint top_right_end(top_right);
+  top_right_end.offset(0.f, corner_radius);
+
+  // Bottom right.
+  SkPoint bottom_right(SkPoint::Make(rect.width(), rect.height()));
+  SkPoint bottom_right_end(bottom_right);
+  bottom_right_end.offset(-corner_radius, 0.f);
+
+  // Bottom left.
+  SkPoint bottom_left(SkPoint::Make(0.f, rect.height()));
+  SkPoint bottom_left_end(bottom_left);
+  bottom_left_end.offset(0.f, -corner_radius);
+
+  // Top left.
+  SkPoint top_left(SkPoint::Make(0.f, 0.f));
+  SkPoint top_left_end(top_left);
+  top_left_end.offset(corner_radius, 0.f);
+
+  // Build path in the order specified above.
+  return SkPathBuilder()
+      .moveTo(top_center)
+      .arcTo(top_right, top_right_end, corner_radius)
+      .arcTo(bottom_right, bottom_right_end, corner_radius)
+      .arcTo(bottom_left, bottom_left_end, corner_radius)
+      .arcTo(top_left, top_left_end, corner_radius)
+      .close()
+      .offset(rect.x(), rect.y())
+      .detach();
 }
 
 // HoldingSpaceControllerProgressRing ------------------------------------------
@@ -248,6 +302,9 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   gfx::Rect bounds(layer()->size());
   bounds.Inset(gfx::Insets(std::ceil(kStrokeWidth / 2.f)));
 
+  float corner_radius = std::min(bounds.width(), bounds.height()) / 2.f;
+  SkPath path(CreateRoundedRectPath(bounds, corner_radius));
+
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
@@ -259,16 +316,11 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
 
   // Track.
   flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity));
-  canvas->DrawCircle(gfx::PointF(bounds.CenterPoint()),
-                     std::min(bounds.height(), bounds.width()) / 2.f, flags);
+  canvas->DrawPath(path, flags);
 
   // Ring.
   flags.setColor(color);
-  canvas->DrawPath(
-      SkPath().arcTo(/*oval=*/gfx::RectToSkRect(bounds), /*start_angle=*/-90,
-                     /*sweep_angle=*/CalculateSweepAngle(progress.value()),
-                     /*forceMoveTo=*/false),
-      flags);
+  canvas->DrawPath(CreatePathSegment(path, 0.f, progress.value()), flags);
 }
 
 }  // namespace ash
