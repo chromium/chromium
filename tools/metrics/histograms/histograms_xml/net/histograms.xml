@@ -5445,7 +5445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TrustTokens.IssuanceHelperLocalFulfillResult"
-    enum="FulfillTrustTokenIssuanceAnswerStatus" expires_after="2021-10-04">
+    enum="FulfillTrustTokenIssuanceAnswerStatus" expires_after="2022-01-15">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5458,7 +5458,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2021-12-05">
+    enum="NetErrorCodes" expires_after="2022-01-15">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5473,7 +5473,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
-    enum="NetErrorCodes" expires_after="2021-12-05">
+    enum="NetErrorCodes" expires_after="2022-01-15">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5488,7 +5488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}{OptionalPlatformProvided}"
-    units="ms" expires_after="2021-07-30">
+    units="ms" expires_after="2022-01-15">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5526,7 +5526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TrustTokens.RedemptionRequestEmpty" enum="BooleanEmpty"
-    expires_after="2021-09-30">
+    expires_after="2022-01-15">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5539,7 +5539,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
-    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-12-05">
+    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2022-01-15">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
