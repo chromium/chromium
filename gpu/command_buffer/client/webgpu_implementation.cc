@@ -41,9 +41,9 @@ WebGPUImplementation::~WebGPUImplementation() {
     return;
   }
 
-  // Flush all commands and synchronously wait for them to finish.
+  // Commit all commands and synchronously wait for them to finish.
   // TODO(enga): Investigate if we can just Disconnect() instead.
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
   helper_->Finish();
 
   // Now that commands are finished, free the wire and serializers.
@@ -190,9 +190,19 @@ bool WebGPUImplementation::CanDecodeWithHardwareAcceleration(
 
 // InterfaceBase implementation.
 void WebGPUImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
+  // Need to commit the commands to the GPU command buffer first for SyncToken
+  // to work.
+#if BUILDFLAG(USE_DAWN)
+  wire_serializer_->Commit();
+#endif
   ImplementationBase::GenSyncToken(sync_token);
 }
 void WebGPUImplementation::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
+  // Need to commit the commands to the GPU command buffer first for SyncToken
+  // to work.
+#if BUILDFLAG(USE_DAWN)
+  wire_serializer_->Commit();
+#endif
   ImplementationBase::GenUnverifiedSyncToken(sync_token);
 }
 void WebGPUImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
@@ -200,7 +210,10 @@ void WebGPUImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
   ImplementationBase::VerifySyncTokens(sync_tokens, count);
 }
 void WebGPUImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
-  // Flush any commands before this, so we don't block more than necessary.
+  // TODO(magchen@): Replace FlushCommands() with wire_serializer_->Commit().
+  // Need to review all WebGPU WaitSyncToken calls before this replacement. Add
+  // FlushCommands to the calling functions if the callers rely on WaitSyncToken
+  // for GPU flush/execution.
   FlushCommands();
   ImplementationBase::WaitSyncToken(sync_token);
 }
@@ -371,7 +384,7 @@ const DawnProcTable& WebGPUImplementation::GetProcs() const {
 
 void WebGPUImplementation::FlushCommands() {
 #if BUILDFLAG(USE_DAWN)
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
   helper_->Flush();
 #endif
 }
@@ -398,7 +411,7 @@ void WebGPUImplementation::EnsureAwaitingFlush(bool* needs_flush) {
 void WebGPUImplementation::FlushAwaitingCommands() {
 #if BUILDFLAG(USE_DAWN)
   if (wire_serializer_->AwaitingFlush()) {
-    wire_serializer_->Flush();
+    wire_serializer_->Commit();
     helper_->Flush();
   }
 #endif
@@ -413,9 +426,9 @@ void WebGPUImplementation::DisconnectContextAndDestroyServer() {
 
 ReservedTexture WebGPUImplementation::ReserveTexture(WGPUDevice device) {
 #if BUILDFLAG(USE_DAWN)
-  // Flush because we need to make sure messages that free a previously used
+  // Commit because we need to make sure messages that free a previously used
   // texture are seen first. ReserveTexture may reuse an existing ID.
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
 
   auto reservation = wire_client_->ReserveTexture(device);
   ReservedTexture result;
@@ -493,9 +506,9 @@ void WebGPUImplementation::RequestDeviceAsync(
   DCHECK(request_device_callback_map_.find(request_device_serial) ==
          request_device_callback_map_.end());
 
-  // Flush because we need to make sure messages that free a previously used
+  // Commit because we need to make sure messages that free a previously used
   // device are seen first. ReserveDevice may reuse an existing ID.
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
 
   dawn_wire::ReservedDevice reservation = wire_client_->ReserveDevice();
 
@@ -565,11 +578,11 @@ void WebGPUImplementation::AssociateMailbox(GLuint device_id,
                                             GLuint usage,
                                             const GLbyte* mailbox) {
 #if BUILDFLAG(USE_DAWN)
-  // Flush previous Dawn commands as they may manipulate texture object IDs
+  // Commit previous Dawn commands as they may manipulate texture object IDs
   // and need to be resolved prior to the AssociateMailbox command. Otherwise
   // the service side might not know, for example that the previous texture
   // using that ID has been released.
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
   helper_->AssociateMailboxImmediate(device_id, device_generation, texture_id,
                                      texture_generation, usage, mailbox);
 #endif
@@ -578,9 +591,9 @@ void WebGPUImplementation::AssociateMailbox(GLuint device_id,
 void WebGPUImplementation::DissociateMailbox(GLuint texture_id,
                                              GLuint texture_generation) {
 #if BUILDFLAG(USE_DAWN)
-  // Flush previous Dawn commands that might be rendering to the texture, prior
+  // Commit previous Dawn commands that might be rendering to the texture, prior
   // to Dissociating the shared image from that texture.
-  wire_serializer_->Flush();
+  wire_serializer_->Commit();
   helper_->DissociateMailbox(texture_id, texture_generation);
 #endif
 }

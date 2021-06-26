@@ -102,7 +102,7 @@ void* DawnClientSerializer::GetCmdSpace(size_t size) {
   return buffer_.address();
 }
 
-bool DawnClientSerializer::Flush() {
+void DawnClientSerializer::Commit() {
   if (buffer_.valid()) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "DawnClientSerializer::Flush", "bytes", put_offset_);
@@ -120,7 +120,6 @@ bool DawnClientSerializer::Flush() {
 
     memory_transfer_service_->FreeHandles(helper_);
   }
-  return true;
 }
 
 void DawnClientSerializer::SetAwaitingFlush(bool awaiting_flush) {
@@ -133,6 +132,11 @@ void DawnClientSerializer::SetAwaitingFlush(bool awaiting_flush) {
 void DawnClientSerializer::Disconnect() {
   buffer_.Discard();
   transfer_buffer_ = nullptr;
+}
+
+bool DawnClientSerializer::Flush() {
+  Commit();
+  return true;
 }
 
 }  // namespace webgpu

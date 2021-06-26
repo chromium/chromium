@@ -40,7 +40,6 @@ class DawnClientSerializer final : public dawn_wire::CommandSerializer {
   // dawn_wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
-  bool Flush() final;
 
   // Signal that it's important that the previously encoded commands are
   // flushed. Calling |AwaitingFlush| will return whether or not a flush still
@@ -55,7 +54,14 @@ class DawnClientSerializer final : public dawn_wire::CommandSerializer {
   // |GetCmdSpace| will do nothing.
   void Disconnect();
 
+  // Marks the commands' place in the GPU command buffer without flushing for
+  // GPU execution.
+  void Commit();
+
  private:
+  // dawn_wire::CommandSerializer implementation
+  bool Flush() final;
+
   WebGPUImplementation* client_;
   WebGPUCmdHelper* helper_;
   DawnClientMemoryTransferService* memory_transfer_service_;
