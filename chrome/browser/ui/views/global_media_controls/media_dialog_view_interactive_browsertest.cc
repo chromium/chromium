@@ -833,8 +833,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   WaitForNotificationCount(1);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1224071
+#define MAYBE_PictureInPicture DISABLED_PictureInPicture
+#else
+#define MAYBE_PictureInPicture PictureInPicture
+#endif
 // Test is flaky crbug.com/1213256.
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, PictureInPicture) {
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_PictureInPicture) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
