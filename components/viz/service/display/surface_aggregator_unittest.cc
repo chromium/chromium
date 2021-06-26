@@ -803,16 +803,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassDeallocation) {
                         root_surface_id_.local_surface_id(),
                         device_scale_factor);
 
-  SurfaceId surface_id(root_sink_->frame_sink_id(),
-                       root_surface_id_.local_surface_id());
-
-  auto aggregated_frame = AggregateFrame(surface_id);
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
   auto id0 = aggregated_frame.render_pass_list[0]->id;
   auto id1 = aggregated_frame.render_pass_list[1]->id;
   EXPECT_NE(id1, id0);
 
   // Aggregated RenderPass ids should remain the same between frames.
-  aggregated_frame = AggregateFrame(surface_id);
+  aggregated_frame = AggregateFrame(root_surface_id_);
   EXPECT_EQ(id0, aggregated_frame.render_pass_list[0]->id);
   EXPECT_EQ(id1, aggregated_frame.render_pass_list[1]->id);
 
@@ -825,7 +822,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassDeallocation) {
                         device_scale_factor);
 
   // The RenderPass that still exists should keep the same ID.
-  aggregated_frame = AggregateFrame(surface_id);
+  aggregated_frame = AggregateFrame(root_surface_id_);
   auto id2 = aggregated_frame.render_pass_list[0]->id;
   EXPECT_NE(id2, id1);
   EXPECT_NE(id2, id0);
@@ -837,12 +834,111 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassDeallocation) {
 
   // |id1| didn't exist in the previous frame, so it should be
   // mapped to a new ID.
-  aggregated_frame = AggregateFrame(surface_id);
+  aggregated_frame = AggregateFrame(root_surface_id_);
   auto id3 = aggregated_frame.render_pass_list[0]->id;
   EXPECT_NE(id3, id2);
   EXPECT_NE(id3, id1);
+}
+
+// Ensure that the render pass ID map properly keeps and deletes entries.
+TEST_F(SurfaceAggregatorValidSurfaceTest, MultiSurfacePassDeallocation) {
+  std::vector<Quad> quads[2] = {
+      {Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
+       Quad::SolidColorQuad(SK_ColorLTGRAY, gfx::Rect(5, 5))},
+      {Quad::SolidColorQuad(SK_ColorGRAY, gfx::Rect(5, 5)),
+       Quad::SolidColorQuad(SK_ColorDKGRAY, gfx::Rect(5, 5))}};
+  std::vector<Pass> passes = {
+      Pass(quads[0], CompositorRenderPassId{2}, kSurfaceSize),
+      Pass(quads[1], CompositorRenderPassId{1}, kSurfaceSize)};
+  constexpr float device_scale_factor = 1.0f;
+
+  // 1. Submit a frame to the root surface.
+  SubmitCompositorFrame(root_sink_.get(), passes,
+                        root_surface_id_.local_surface_id(),
+                        device_scale_factor);
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  auto id0 = aggregated_frame.render_pass_list[0]->id;
+  auto id1 = aggregated_frame.render_pass_list[1]->id;
+  EXPECT_NE(id1, id0);
+
+  // 2. Add a child surface to the mix.
+  std::vector<Pass> child_passes = {
+      Pass(quads[0], CompositorRenderPassId{1}, kSurfaceSize)};
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  SubmitCompositorFrame(child_sink_.get(), child_passes,
+                        child_surface_id.local_surface_id(),
+                        device_scale_factor);
+  // Disallow merging so the child pass ids can be tested.
+  std::vector<Quad> child_surface_quads = {Quad::SurfaceQuad(
+      SurfaceRange(child_surface_id), SK_ColorBLACK, gfx::Rect(5, 5),
+      /*stretch_content_to_fill_bounds=*/false, /*allow_merge=*/false)};
+  std::vector<Pass> root_embedding_passes = {
+      Pass(child_surface_quads, CompositorRenderPassId{3}, kSurfaceSize),
+      Pass(quads[0], CompositorRenderPassId{2}, kSurfaceSize),
+      Pass(quads[1], CompositorRenderPassId{1}, kSurfaceSize),
+  };
+
+  SubmitCompositorFrame(root_sink_.get(), root_embedding_passes,
+                        root_surface_id_.local_surface_id(),
+                        device_scale_factor);
+  aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // The child pass should be added at the beginning of the pass list.
+  EXPECT_EQ(aggregated_frame.render_pass_list.size(), 4u);
+  auto child_id0 = aggregated_frame.render_pass_list[0]->id;
+  auto id3 = aggregated_frame.render_pass_list[1]->id;
+  // These should be mapped to different ids than the ones in the root pass.
+  EXPECT_NE(child_id0, id0);
+  EXPECT_NE(child_id0, id1);
   EXPECT_NE(id3, id0);
+  EXPECT_NE(id3, id1);
+  EXPECT_NE(child_id0, id3);
+  // These should have the same ids as they did in the first aggregated frame.
+  EXPECT_EQ(id0, aggregated_frame.render_pass_list[2]->id);
+  EXPECT_EQ(id1, aggregated_frame.render_pass_list[3]->id);
+
+  // 3. Submit a new root frame that still embeds the child surface.
+  SubmitCompositorFrame(root_sink_.get(), root_embedding_passes,
+                        root_surface_id_.local_surface_id(),
+                        device_scale_factor);
+  aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // All render pass ids should be the same as last frame.
+  EXPECT_EQ(aggregated_frame.render_pass_list.size(), 4u);
+  EXPECT_EQ(child_id0, aggregated_frame.render_pass_list[0]->id);
+  EXPECT_EQ(id3, aggregated_frame.render_pass_list[1]->id);
+  EXPECT_EQ(id0, aggregated_frame.render_pass_list[2]->id);
+  EXPECT_EQ(id1, aggregated_frame.render_pass_list[3]->id);
+
+  // 4. Now drop the child surface.
+  SubmitCompositorFrame(root_sink_.get(), passes,
+                        root_surface_id_.local_surface_id(),
+                        device_scale_factor);
+  aggregated_frame = AggregateFrame(root_surface_id_);
+
+  EXPECT_EQ(id0, aggregated_frame.render_pass_list[0]->id);
   EXPECT_EQ(id1, aggregated_frame.render_pass_list[1]->id);
+
+  // 5. Embed the child surface again.
+  SubmitCompositorFrame(child_sink_.get(), child_passes,
+                        child_surface_id.local_surface_id(),
+                        device_scale_factor);
+  SubmitCompositorFrame(root_sink_.get(), root_embedding_passes,
+                        root_surface_id_.local_surface_id(),
+                        device_scale_factor);
+  aggregated_frame = AggregateFrame(root_surface_id_);
+
+  EXPECT_EQ(aggregated_frame.render_pass_list.size(), 4u);
+  auto child_id1 = aggregated_frame.render_pass_list[0]->id;
+  // The child surface wasn't embedded in the last frame, so it's render pass
+  // and the embedder render pass should get new ids.
+  EXPECT_NE(child_id1, child_id0);
+  EXPECT_NE(id3, aggregated_frame.render_pass_list[1]->id);
+  // These should still have the same ids as they did in the first aggregated
+  // frame.
+  EXPECT_EQ(id0, aggregated_frame.render_pass_list[2]->id);
+  EXPECT_EQ(id1, aggregated_frame.render_pass_list[3]->id);
 }
 
 // This tests very simple embedding. root_surface has a frame containing a few

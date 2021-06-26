@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/resolved_frame_data.h"
 
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -46,7 +47,8 @@ ResolvedFrameData::~ResolvedFrameData() = default;
 
 ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
     const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
-        child_to_parent_map) {
+        child_to_parent_map,
+    AggregatedRenderPassId::Generator& render_pass_id_generator) {
   auto& compositor_frame = surface_->GetActiveOrInterpolatedFrame();
   auto& resource_list = compositor_frame.resource_list;
   auto& render_passes = compositor_frame.render_pass_list;
@@ -75,6 +77,12 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
     auto& resolved_pass = resolved_passes_[i];
 
     resolved_pass.render_pass = render_pass.get();
+
+    AggregatedRenderPassId& remapped_id = aggregated_id_map_[render_pass->id];
+    if (remapped_id.is_null()) {
+      remapped_id = render_pass_id_generator.GenerateNextId();
+    }
+    resolved_pass.remapped_id = remapped_id;
 
     bool add_quad_damage_to_root_damage_rect =
         i == num_render_pass - 1 && render_pass->has_per_quad_damage;
@@ -130,6 +138,11 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
 
   frame_index_ = surface_->GetActiveFrameIndex();
   DCHECK_NE(frame_index_, 0u);
+
+  // Clear id mappings that weren't used in this frame.
+  base::EraseIf(aggregated_id_map_, [this](auto& entry) {
+    return render_pass_id_map_.find(entry.first) == render_pass_id_map_.end();
+  });
 
   valid_ = true;
   return ResourceIdSet(std::move(referenced_resources));

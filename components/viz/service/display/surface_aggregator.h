@@ -21,7 +21,6 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/render_pass_id_remapper.h"
 #include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -150,7 +149,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       AggregatedRenderPass* dest_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
-  void CopyQuadsToPass(const ResolvedPassData& resolved_pass,
+  void CopyQuadsToPass(const ResolvedFrameData& resolved_frame,
+                       const ResolvedPassData& resolved_pass,
                        AggregatedRenderPass* dest_pass,
                        float parent_device_scale_factor,
                        const gfx::Transform& target_transform,
@@ -467,9 +467,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Persistent storage for ResolvedFrameData.
   std::map<Surface*, ResolvedFrameData> resolved_frames_;
 
-  // A helper class used to remap render pass IDs from the surface namespace to
-  // a common space, to avoid collisions.
-  RenderPassIdRemapper pass_id_remapper_;
+  // Used to generate new unique render pass ids in the aggregated namespace.
+  AggregatedRenderPassId::Generator render_pass_id_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceAggregator);
 };

@@ -95,6 +95,7 @@ class ResolvedFrameDataTest : public testing::Test {
 
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
       child_to_parent_map_;
+  AggregatedRenderPassId::Generator render_pass_id_generator_;
 };
 
 // Submits a CompositorFrame with three valid render passes then checks that
@@ -114,7 +115,8 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
 
   // Resolved frame data should be valid after adding resolved render pass data
   // and have three render passes.
-  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
+                                      render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.is_valid());
   EXPECT_EQ(resolved_frame.RenderPassCount(), 3u);
 
@@ -141,7 +143,8 @@ TEST_F(ResolvedFrameDataTest, DupliateRenderPassIds) {
   Surface* surface = SubmitCompositorFrame(std::move(frame));
   ResolvedFrameData resolved_frame(surface_id_, surface);
 
-  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
+                                      render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
 }
 
@@ -159,7 +162,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsSelfCycle) {
   Surface* surface = SubmitCompositorFrame(std::move(frame));
   ResolvedFrameData resolved_frame(surface_id_, surface);
 
-  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
+                                      render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
 }
 
@@ -182,7 +186,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsCycle) {
 
   // RenderPasses have duplicate IDs so the resolved frame should be marked as
   // invalid.
-  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
+                                      render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
 }
 
@@ -208,7 +213,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
   ResolvedFrameData resolved_frame(surface_id_, surface);
 
   child_to_parent_map_[resource_id] = resource_id;
-  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_,
+                                      render_pass_id_generator_);
   ASSERT_TRUE(resolved_frame.is_valid());
 
   // GetDamageRect() should be the union of render pass and quad damage if

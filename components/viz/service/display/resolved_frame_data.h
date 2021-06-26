@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -40,6 +41,7 @@ struct VIZ_SERVICE_EXPORT ResolvedPassData {
   ResolvedPassData& operator=(ResolvedPassData&& other);
 
   CompositorRenderPass* render_pass;
+  AggregatedRenderPassId remapped_id;
   std::vector<ResolvedQuadData> draw_quads;
 };
 
@@ -75,7 +77,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // ResolvedPassData will be cleared and is_valid() will return false.
   ResourceIdSet UpdateForActiveFrame(
       const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
-          child_to_parent_map);
+          child_to_parent_map,
+      AggregatedRenderPassId::Generator& render_pass_id_generator);
 
   // Sets frame index and marks as invalid. This also clears any existing
   // resolved pass data.
@@ -98,6 +101,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
       CompositorRenderPassId render_pass_id) const;
   const ResolvedPassData& GetRenderPassDataByIndex(size_t index) const;
   const ResolvedPassData& GetRootRenderPassData() const;
+  const std::vector<ResolvedPassData>& GetResolvedPasses() const {
+    return resolved_passes_;
+  }
 
   // Returns active frame damage rect. If |include_per_quad_damage| then the
   // damage_rect will include unioned per quad damage, otherwise it will be
@@ -116,6 +122,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   uint64_t frame_index_ = 0;
   std::vector<ResolvedPassData> resolved_passes_;
   base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
+  base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
+      aggregated_id_map_;
   gfx::Rect root_damage_rect_;
 
   // Track if the this resolved frame was used this frame.

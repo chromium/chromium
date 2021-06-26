@@ -744,8 +744,6 @@ void SurfaceAggregator::EmitSurfaceContent(
     size_t dq_size = source.quad_list.size();
     auto copy_pass = std::make_unique<AggregatedRenderPass>(sqs_size, dq_size);
 
-    auto remapped_pass_id = pass_id_remapper_.Remap(source.id, surface_id);
-
     gfx::Rect output_rect = source.output_rect;
     if (max_render_target_size_ > 0) {
       output_rect.set_width(
@@ -754,7 +752,7 @@ void SurfaceAggregator::EmitSurfaceContent(
           std::min(output_rect.height(), max_render_target_size_));
     }
     copy_pass->SetAll(
-        remapped_pass_id, output_rect, output_rect,
+        resolved_pass.remapped_id, output_rect, output_rect,
         source.transform_to_root_target, source.filters,
         source.backdrop_filters, source.backdrop_filter_bounds,
         root_content_color_usage_, source.has_transparent_background,
@@ -772,8 +770,9 @@ void SurfaceAggregator::EmitSurfaceContent(
     copy_pass->transform_to_root_target.ConcatTransform(
         dest_pass->transform_to_root_target);
 
-    CopyQuadsToPass(resolved_pass, copy_pass.get(), frame.device_scale_factor(),
-                    gfx::Transform(), {}, surface, MaskFilterInfoExt());
+    CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),
+                    frame.device_scale_factor(), gfx::Transform(), {}, surface,
+                    MaskFilterInfoExt());
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the
@@ -797,6 +796,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   const auto& last_pass = *render_pass_list.back();
+  const auto& resolved_root_pass = resolved_frame.GetRootRenderPassData();
   // This will check if all the surface_quads (including child surfaces) has
   // damage because HandleSurfaceQuad is a recursive call by calling
   // CopyQuadsToPass in it.
@@ -804,7 +804,7 @@ void SurfaceAggregator::EmitSurfaceContent(
       !DamageRectForSurface(resolved_frame, true).IsEmpty();
 
   if (merge_pass) {
-    CopyQuadsToPass(resolved_frame.GetRootRenderPassData(), dest_pass,
+    CopyQuadsToPass(resolved_frame, resolved_root_pass, dest_pass,
                     frame.device_scale_factor(), combined_transform, quads_clip,
                     surface, mask_filter_info);
   } else {
@@ -847,7 +847,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     // We can't produce content outside of |quad_rect|, so clip the visible
     // rect if necessary.
     quad_visible_rect.Intersect(quad_rect);
-    auto remapped_pass_id = pass_id_remapper_.Remap(last_pass.id, surface_id);
+    auto remapped_pass_id = resolved_root_pass.remapped_id;
     if (quad_visible_rect.IsEmpty()) {
       base::EraseIf(*dest_pass_list_,
                     [&remapped_pass_id](
@@ -967,7 +967,8 @@ void SurfaceAggregator::AddColorConversionPass() {
   CHECK(root_render_pass->transform_to_root_target == gfx::Transform());
 
   if (!color_conversion_render_pass_id_)
-    color_conversion_render_pass_id_ = pass_id_remapper_.NextAvailableId();
+    color_conversion_render_pass_id_ =
+        render_pass_id_generator_.GenerateNextId();
 
   auto color_conversion_pass = std::make_unique<AggregatedRenderPass>(1, 1);
   color_conversion_pass->SetNew(color_conversion_render_pass_id_, output_rect,
@@ -1011,7 +1012,8 @@ void SurfaceAggregator::AddDisplayTransformPass() {
   DCHECK(root_render_pass->transform_to_root_target == root_surface_transform_);
 
   if (!display_transform_render_pass_id_)
-    display_transform_render_pass_id_ = pass_id_remapper_.NextAvailableId();
+    display_transform_render_pass_id_ =
+        render_pass_id_generator_.GenerateNextId();
 
   auto display_transform_pass = std::make_unique<AggregatedRenderPass>(1, 1);
   display_transform_pass->SetAll(
@@ -1060,6 +1062,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
 }
 
 void SurfaceAggregator::CopyQuadsToPass(
+    const ResolvedFrameData& resolved_frame,
     const ResolvedPassData& resolved_pass,
     AggregatedRenderPass* dest_pass,
     float parent_device_scale_factor,
@@ -1204,7 +1207,7 @@ void SurfaceAggregator::CopyQuadsToPass(
             CompositorRenderPassDrawQuad::MaterialCast(quad);
         CompositorRenderPassId original_pass_id = pass_quad->render_pass_id;
         AggregatedRenderPassId remapped_pass_id =
-            pass_id_remapper_.Remap(original_pass_id, surface->surface_id());
+            resolved_frame.GetRenderPassDataById(original_pass_id).remapped_id;
 
         // If the CompositorRenderPassDrawQuad is referring to other render pass
         // with the |has_damage_from_contributing_content| set on it, then the
@@ -1271,6 +1274,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
   bool apply_surface_transform_to_root_pass = true;
   for (size_t i = 0; i < source_pass_list.size(); ++i) {
     const auto& source = *source_pass_list[i];
+    const auto& resolved_pass = resolved_frame.GetRenderPassDataByIndex(i);
     const bool is_root_pass = (i == source_pass_list.size() - 1);
 
     size_t sqs_size = source.shared_quad_state_list.size();
@@ -1284,9 +1288,6 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
     apply_surface_transform_to_root_pass =
         is_root_pass &&
         (copy_pass->copy_requests.empty() || surface_transform.IsIdentity());
-
-    auto remapped_pass_id =
-        pass_id_remapper_.Remap(source.id, surface->surface_id());
 
     gfx::Rect output_rect = source.output_rect;
     gfx::Transform transform_to_root_target = source.transform_to_root_target;
@@ -1305,11 +1306,11 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
     }
 
     copy_pass->SetAll(
-        remapped_pass_id, output_rect, output_rect, transform_to_root_target,
-        source.filters, source.backdrop_filters, source.backdrop_filter_bounds,
-        root_content_color_usage_, source.has_transparent_background,
-        source.cache_render_pass, source.has_damage_from_contributing_content,
-        source.generate_mipmap);
+        resolved_pass.remapped_id, output_rect, output_rect,
+        transform_to_root_target, source.filters, source.backdrop_filters,
+        source.backdrop_filter_bounds, root_content_color_usage_,
+        source.has_transparent_background, source.cache_render_pass,
+        source.has_damage_from_contributing_content, source.generate_mipmap);
 
     if (needs_surface_damage_rect_list_ && is_root_pass) {
       AddSurfaceDamageToDamageList(
@@ -1317,7 +1318,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
           /*clip_rect=*/{}, copy_pass.get(), &resolved_frame);
     }
 
-    CopyQuadsToPass(resolved_frame.GetRenderPassDataByIndex(i), copy_pass.get(),
+    CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),
                     frame.device_scale_factor(),
                     apply_surface_transform_to_root_pass ? surface_transform
                                                          : gfx::Transform(),
@@ -1364,22 +1365,19 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     const gfx::Transform& target_to_root_transform,
     bool in_moved_pixel_rp,
     PrewalkResult* result) {
-  const Surface* surface = resolved_frame.surface();
   const CompositorRenderPass& render_pass = *resolved_pass.render_pass;
 
   if (render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     has_pixel_moving_backdrop_filter_ = true;
   }
 
-  auto remapped_pass_id =
-      pass_id_remapper_.Remap(render_pass.id, surface->surface_id());
   // |moved_pixel_passes_| stores all the render passes affected by filters
   // that move pixels, so |in_moved_pixel_rp| should be set to true either
   // if the current render pass has pixel_moving_filter(s) or if it is inside an
   // ancestor render pass that has pixel_moving_filter(s).
   in_moved_pixel_rp |= render_pass.filters.HasFilterThatMovesPixels();
   if (in_moved_pixel_rp)
-    moved_pixel_passes_.insert(remapped_pass_id);
+    moved_pixel_passes_.insert(resolved_pass.remapped_id);
 
   // The damage on the root render pass of the surface comes from damage
   // accumulated from all quads in the surface, and needs to be expanded by any
@@ -1461,7 +1459,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           }
         }
         gfx::Rect child_rect = PrewalkSurface(
-            *child_resolved_frame, in_moved_pixel_rp, remapped_pass_id,
+            *child_resolved_frame, in_moved_pixel_rp, resolved_pass.remapped_id,
             will_draw, accumulated_damage_in_child_space, result);
         child_rect = gfx::ScaleToEnclosingRect(child_rect, x_scale, y_scale);
         quad_damage_rect.Union(child_rect);
@@ -1542,11 +1540,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
         }
       }
 
-      auto remapped_child_pass_id =
-          pass_id_remapper_.Remap(child_pass_id, surface->surface_id());
-
-      render_pass_dependencies_[remapped_pass_id].insert(
-          remapped_child_pass_id);
+      render_pass_dependencies_[resolved_pass.remapped_id].insert(
+          child_resolved_pass.remapped_id);
 
       const gfx::Transform child_to_root_transform(
           target_to_root_transform,
@@ -1597,7 +1592,7 @@ void SurfaceAggregator::ProcessResolvedFrame(
   stats_->declare_resources_count += resource_list.size();
 
   ResourceIdSet resource_set = resolved_frame.UpdateForActiveFrame(
-      provider_->GetChildToParentMap(child_id));
+      provider_->GetChildToParentMap(child_id), render_pass_id_generator_);
 
   // Declare the used resources to the provider. This will cause all resources
   // that were received but not used in the render passes to be unreferenced in
@@ -1631,15 +1626,14 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
 
   result->frame_sinks_changed |= CheckFrameSinksChanged(surface);
 
-  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
-  auto remapped_pass_id = pass_id_remapper_.Remap(
-      frame.render_pass_list.back()->id, surface->surface_id());
-  if (parent_pass_id)
-    render_pass_dependencies_[parent_pass_id].insert(remapped_pass_id);
-
   if (!resolved_frame.is_valid())
     return gfx::Rect();
   ++stats_->prewalked_surface_count;
+
+  auto remapped_root_pass_id =
+      resolved_frame.GetRootRenderPassData().remapped_id;
+  if (parent_pass_id)
+    render_pass_dependencies_[parent_pass_id].insert(remapped_root_pass_id);
 
   gfx::Rect damage_rect = DamageRectForSurface(resolved_frame, true);
 
@@ -1686,6 +1680,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   if (will_draw)
     surface->OnWillBeDrawn();
 
+  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
   for (const SurfaceRange& surface_range : frame.metadata.referenced_surfaces) {
     damage_ranges_[surface_range.end().frame_sink_id()].push_back(
         surface_range);
@@ -1706,11 +1701,10 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
     }
   }
 
-  for (const auto& render_pass : frame.render_pass_list) {
+  for (auto& resolved_pass : resolved_frame.GetResolvedPasses()) {
+    auto* render_pass = resolved_pass.render_pass;
     if (!render_pass->copy_requests.empty()) {
-      auto remapped_pass_id =
-          pass_id_remapper_.Remap(render_pass->id, surface->surface_id());
-      copy_request_passes_.insert(remapped_pass_id);
+      copy_request_passes_.insert(resolved_pass.remapped_id);
     }
     if (render_pass->cache_render_pass)
       has_cached_render_passes_ = true;
@@ -1980,7 +1974,6 @@ void SurfaceAggregator::ResetAfterAggregate() {
   contributing_content_damaged_passes_.clear();
   render_pass_dependencies_.clear();
   resolved_surface_ranges_.clear();
-  pass_id_remapper_.ClearUnusedMappings();
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
   video_capture_enabled_ = false;
@@ -2192,8 +2185,8 @@ void SurfaceAggregator::HandleDeJelly(Surface* surface) {
       skew_transform.Skew(0.0f, max_skew);
       // Ignore rectangles for now, these are updated in
       // CreateDeJellyRenderPassQuads.
-      sub_render_pass->SetNew(pass_id_remapper_.NextAvailableId(), gfx::Rect(),
-                              gfx::Rect(), skew_transform);
+      sub_render_pass->SetNew(render_pass_id_generator_.GenerateNextId(),
+                              gfx::Rect(), gfx::Rect(), skew_transform);
       // If blend mode is not kSrcOver, we apply it in the render pass.
       if (state->blend_mode != SkBlendMode::kSrcOver) {
         sub_render_pass_opacity = state->opacity;
