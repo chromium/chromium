@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 
 #include "base/values.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"

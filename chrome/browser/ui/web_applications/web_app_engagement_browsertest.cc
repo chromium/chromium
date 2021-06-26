@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/constants.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
