@@ -145,11 +145,12 @@ public class CableAuthenticatorUI
             mMode = Mode.QR;
         }
 
-        // GMSCore will immediately fail all requests if a screenlock
-        // isn't configured. In this case the device shouldn't have advertised
-        // itself via Sync, but it's possible for a request to come in soon
-        // after a screen lock was removed.
-        if (!hasScreenLockConfigured(context)) {
+        // GMSCore will immediately fail all requests if a screenlock isn't
+        // configured, except for server-link because PaaSK is specific.
+        // Outside of server-link, the device shouldn't have advertised itself
+        // via Sync, but it's possible for a request to come in soon after a
+        // screen lock was removed.
+        if (mMode != Mode.SERVER_LINK && !hasScreenLockConfigured(context)) {
             mMode = Mode.ERROR;
             mErrorCode = ERROR_NO_SCREENLOCK;
         }
