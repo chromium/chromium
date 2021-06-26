@@ -484,9 +484,17 @@ class PageContentAnnotationsServiceLoadEachExecutionNotStartupTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on Win 7 Tests x64: crbug.com/1223172
+#if defined(OS_WIN)
+#define MAYBE_ModelNotAvailableForFirstNavigation \
+  DISABLED_ModelNotAvailableForFirstNavigation
+#else
+#define MAYBE_ModelNotAvailableForFirstNavigation \
+  ModelNotAvailableForFirstNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(
     PageContentAnnotationsServiceLoadEachExecutionNotStartupTest,
-    ModelNotAvailableForFirstNavigation) {
+    MAYBE_ModelNotAvailableForFirstNavigation) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
