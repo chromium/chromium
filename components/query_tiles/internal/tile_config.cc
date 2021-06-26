@@ -114,6 +114,9 @@ const char kQueryTilesEnableTrendingExperimentTag[] =
 const char kQueryTilesMoreTrendingExperimentTag[] =
     "\"maxTrendingQueries\": \"10\"";
 
+// Json Experiment tag for ranking tiles on server based on client context.
+const char kQueryTilesRankTilesExperimentTag[] = "\"rankTiles\": \"true\"";
+
 const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
@@ -162,6 +165,11 @@ std::string TileConfig::GetExperimentTag() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesMoreTrending)) {
     experiment_tag.emplace_back(kQueryTilesMoreTrendingExperimentTag);
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kQueryTilesRankTiles)) {
+    experiment_tag.emplace_back(kQueryTilesRankTilesExperimentTag);
   }
 
   if (!experiment_tag.empty()) {

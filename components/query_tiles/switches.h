@@ -63,6 +63,10 @@ extern const char kQueryTilesEnableTrending[];
 
 // If set, the client will request more trending tiles from the server.
 extern const char kQueryTilesMoreTrending[];
+
+// If set, the server will rank all the tiles and send a subset of them
+// to the client based on user interest.
+extern const char kQueryTilesRankTiles[];
 }  // namespace switches
 }  // namespace query_tiles
 

@@ -49906,6 +49906,7 @@ from previous Chrome versions.
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>
   <int value="1831545645" label="query-tiles-single-tier"/>
   <int value="1831593339" label="stop-in-background:disabled"/>
+  <int value="1831777433" label="query-tiles-rank-tiles"/>
   <int value="1831835753" label="MaterialDesignIncognitoNTP:enabled"/>
   <int value="1832552562" label="EnableVirtualKeyboardUkm:enabled"/>
   <int value="1833340282" label="SmartSuggestionForLargeDownloads:enabled"/>

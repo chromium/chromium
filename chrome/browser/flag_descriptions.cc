@@ -3316,6 +3316,9 @@ const char kQueryTilesMoreTrendingName[] =
     "Query Tiles - more trending queries";
 const char kQueryTilesMoreTrendingDescription[] =
     "Request more trending queries from the server";
+const char kQueryTilesRankTilesName[] = "Query Tiles - rank tiles on server";
+const char kQueryTilesRankTilesDescription[] =
+    "Rank tiles on server based on client context";
 const char kQueryTilesSwapTrendingName[] =
     "Query Tiles - Swap trending queries";
 const char kQueryTilesSwapTrendingDescription[] =
