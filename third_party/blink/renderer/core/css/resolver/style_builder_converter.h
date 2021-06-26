@@ -230,7 +230,7 @@ class StyleBuilderConverter {
       GridTrackList&,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
-      Vector<GridTrackSize>& auto_repeat_track_sizes,
+      Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
       size_t& auto_repeat_insertion_point,

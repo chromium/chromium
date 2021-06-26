@@ -64,10 +64,10 @@ class CORE_EXPORT NGGridTrackList {
   wtf_size_t AutoRepeatSize() const;
 
   // Adds a non-auto repeater.
-  bool AddRepeater(const Vector<GridTrackSize>& repeater_track_sizes,
+  bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                    wtf_size_t repeat_count);
   // Adds an auto repeater.
-  bool AddAutoRepeater(const Vector<GridTrackSize>& repeater_track_sizes,
+  bool AddAutoRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                        NGGridTrackRepeater::RepeatType repeat_type);
   // Returns true if this list contains an auto repeater.
   bool HasAutoRepeater() const;
@@ -81,17 +81,17 @@ class CORE_EXPORT NGGridTrackList {
   bool operator==(const NGGridTrackList& o) const;
 
  private:
-  bool AddRepeater(const Vector<GridTrackSize>& repeater_track_sizes,
+  bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                    NGGridTrackRepeater::RepeatType repeat_type,
                    wtf_size_t repeat_count);
   // Returns the amount of tracks available before overflow.
   wtf_size_t AvailableTrackCount() const;
 
-  Vector<NGGridTrackRepeater> repeaters_;
+  Vector<NGGridTrackRepeater, 1> repeaters_;
 
   // Stores the track sizes of every repeater added to this list; tracks from
   // the same repeater group are stored consecutively.
-  Vector<GridTrackSize> repeater_track_sizes_;
+  Vector<GridTrackSize, 1> repeater_track_sizes_;
 
   // The index of the automatic repeater, if there is one; |kInvalidRangeIndex|
   // otherwise.
@@ -111,10 +111,10 @@ class GridTrackList {
 
   GridTrackList(const GridTrackList& other);
   explicit GridTrackList(const GridTrackSize& default_track_size);
-  explicit GridTrackList(Vector<GridTrackSize>& legacy_tracks);
+  explicit GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks);
 
-  Vector<GridTrackSize>& LegacyTrackList();
-  const Vector<GridTrackSize>& LegacyTrackList() const;
+  Vector<GridTrackSize, 1>& LegacyTrackList();
+  const Vector<GridTrackSize, 1>& LegacyTrackList() const;
 
   NGGridTrackList& NGTrackList();
   const NGGridTrackList& NGTrackList() const;
@@ -125,7 +125,7 @@ class GridTrackList {
 
  private:
   void AssignFrom(const GridTrackList& other);
-  Vector<GridTrackSize> legacy_track_list_;
+  Vector<GridTrackSize, 1> legacy_track_list_;
   NGGridTrackList ng_track_list_;
 };
 

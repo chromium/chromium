@@ -969,7 +969,7 @@ static void ConvertGridLineNamesList(
 GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
     StyleResolverState& state,
     const CSSValue& value) {
-  Vector<GridTrackSize> track_sizes;
+  Vector<GridTrackSize, 1> track_sizes;
   for (auto& curr_value : To<CSSValueList>(value)) {
     DCHECK(!curr_value->IsGridLineNamesValue());
     DCHECK(!curr_value->IsGridAutoRepeatValue());
@@ -985,7 +985,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     GridTrackList& track_sizes,
     NamedGridLinesMap& named_grid_lines,
     OrderedNamedGridLines& ordered_named_grid_lines,
-    Vector<GridTrackSize>& auto_repeat_track_sizes,
+    Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
     NamedGridLinesMap& auto_repeat_named_grid_lines,
     OrderedNamedGridLines& auto_repeat_ordered_named_grid_lines,
     size_t& auto_repeat_insertion_point,
@@ -1011,7 +1011,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   for (auto curr_value : To<CSSValueList>(value)) {
     if (auto* grid_auto_repeat_value =
             DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value.Get())) {
-      Vector<GridTrackSize> repeated_track_sizes;
+      Vector<GridTrackSize, 1> repeated_track_sizes;
       size_t auto_repeat_index = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
       DCHECK(auto_repeat_id == CSSValueID::kAutoFill ||
@@ -1049,7 +1049,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
           convert_line_name_or_track_size(*curr_repeat_value);
       }
       if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-        Vector<GridTrackSize> repeater_sizes;
+        Vector<GridTrackSize, 1> repeater_sizes;
         for (auto curr_repeat_value : *repeated_values) {
           if (!curr_repeat_value->IsGridLineNamesValue()) {
             repeater_sizes.push_back(

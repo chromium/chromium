@@ -73,10 +73,10 @@ LayoutUnit LayoutNGGrid::GridItemOffset(
   return LayoutUnit();
 }
 
-Vector<LayoutUnit> LayoutNGGrid::TrackSizesForComputedStyle(
+Vector<LayoutUnit, 1> LayoutNGGrid::TrackSizesForComputedStyle(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
-  Vector<LayoutUnit> track_sizes;
+  Vector<LayoutUnit, 1> track_sizes;
   const auto* grid_data = GetGridData();
   if (!grid_data)
     return track_sizes;

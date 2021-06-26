@@ -32,7 +32,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGMixin<LayoutBlock>,
       GridTrackSizingDirection direction) const final;
   LayoutUnit GridGap(GridTrackSizingDirection) const final;
   LayoutUnit GridItemOffset(GridTrackSizingDirection) const final;
-  Vector<LayoutUnit> TrackSizesForComputedStyle(
+  Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection direction) const final;
   Vector<LayoutUnit> RowPositions() const final;
   Vector<LayoutUnit> ColumnPositions() const final;

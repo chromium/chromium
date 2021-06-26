@@ -20,7 +20,7 @@ class LayoutNGGridInterface {
 
   virtual size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const = 0;
-  virtual Vector<LayoutUnit> TrackSizesForComputedStyle(
+  virtual Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection direction) const = 0;
   virtual Vector<LayoutUnit> RowPositions() const = 0;
   virtual Vector<LayoutUnit> ColumnPositions() const = 0;

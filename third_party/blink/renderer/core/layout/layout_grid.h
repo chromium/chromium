@@ -73,7 +73,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
     return this;
   }
 
-  Vector<LayoutUnit> TrackSizesForComputedStyle(
+  Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection) const final;
 
   Vector<LayoutUnit> ColumnPositions() const final {

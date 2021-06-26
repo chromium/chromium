@@ -30,6 +30,7 @@ ALIGNMENT_ORDER = [
     'RotateTransformOperation',
     'TranslateTransformOperation',
     'GridTrackList',
+    'Vector<GridTrackSize, 1>',
     'absl::optional<IntSize>',
     'double',
     # Aligns like a pointer (can be 32 or 64 bits)
@@ -38,7 +39,6 @@ ALIGNMENT_ORDER = [
     'NamedGridAreaMap',
     'TransformOperations',
     'Vector<CSSPropertyID>',
-    'Vector<GridTrackSize>',
     'Vector<AtomicString>',
     'GridPosition',
     'AtomicString',

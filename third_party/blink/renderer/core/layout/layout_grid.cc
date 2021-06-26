@@ -728,7 +728,7 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
   // There will be always at least 1 auto-repeat track, so take it already into
   // account when computing the total track size.
   LayoutUnit tracks_size = auto_repeat_tracks_size;
-  const Vector<GridTrackSize>& track_sizes =
+  const Vector<GridTrackSize, 1>& track_sizes =
       is_row_axis ? StyleRef().GridTemplateColumns().LegacyTrackList()
                   : StyleRef().GridTemplateRows().LegacyTrackList();
 
@@ -1248,7 +1248,7 @@ void LayoutGrid::DirtyGrid() {
   grid_->SetNeedsItemsPlacement(true);
 }
 
-Vector<LayoutUnit> LayoutGrid::TrackSizesForComputedStyle(
+Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   bool is_row_axis = direction == kForColumns;
@@ -1258,7 +1258,7 @@ Vector<LayoutUnit> LayoutGrid::TrackSizesForComputedStyle(
       is_row_axis ? offset_between_columns_.distribution_offset
                   : offset_between_rows_.distribution_offset;
 
-  Vector<LayoutUnit> tracks;
+  Vector<LayoutUnit, 1> tracks;
   if (num_positions < 2)
     return tracks;
 

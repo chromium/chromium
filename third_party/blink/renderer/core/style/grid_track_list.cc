@@ -87,7 +87,7 @@ wtf_size_t NGGridTrackList::AutoRepeatSize() const {
 }
 
 bool NGGridTrackList::AddRepeater(
-    const Vector<GridTrackSize>& repeater_track_sizes,
+    const Vector<GridTrackSize, 1>& repeater_track_sizes,
     wtf_size_t repeat_count) {
   return AddRepeater(repeater_track_sizes,
                      NGGridTrackRepeater::RepeatType::kNoAutoRepeat,
@@ -95,13 +95,13 @@ bool NGGridTrackList::AddRepeater(
 }
 
 bool NGGridTrackList::AddAutoRepeater(
-    const Vector<GridTrackSize>& repeater_track_sizes,
+    const Vector<GridTrackSize, 1>& repeater_track_sizes,
     NGGridTrackRepeater::RepeatType repeat_type) {
   return AddRepeater(repeater_track_sizes, repeat_type, 1u);
 }
 
 bool NGGridTrackList::AddRepeater(
-    const Vector<GridTrackSize>& repeater_track_sizes,
+    const Vector<GridTrackSize, 1>& repeater_track_sizes,
     NGGridTrackRepeater::RepeatType repeat_type,
     wtf_size_t repeat_count) {
   if (repeat_count == 0u || repeater_track_sizes.IsEmpty())
@@ -183,17 +183,17 @@ GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
   legacy_track_list_.push_back(default_track_size);
 }
 
-GridTrackList::GridTrackList(Vector<GridTrackSize>& legacy_tracks)
+GridTrackList::GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks)
     : legacy_track_list_(std::move(legacy_tracks)) {
   if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
     ng_track_list_.AddRepeater(legacy_track_list_, 1);
 }
 
-Vector<GridTrackSize>& GridTrackList::LegacyTrackList() {
+Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() {
   return legacy_track_list_;
 }
 
-const Vector<GridTrackSize>& GridTrackList::LegacyTrackList() const {
+const Vector<GridTrackSize, 1>& GridTrackList::LegacyTrackList() const {
   return legacy_track_list_;
 }
 

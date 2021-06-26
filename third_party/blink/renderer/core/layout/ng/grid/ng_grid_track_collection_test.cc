@@ -64,7 +64,7 @@ class NGGridTrackCollectionBaseTest : public NGGridTrackCollectionBase {
 
 class NGGridTrackCollectionTest : public NGLayoutTest {
  protected:
-  Vector<GridTrackSize> CreateTrackSizes(wtf_size_t track_count) {
+  Vector<GridTrackSize, 1> CreateTrackSizes(wtf_size_t track_count) {
     return {track_count, GridTrackSize(Length::Auto())};
   }
 
@@ -335,7 +335,7 @@ TEST_F(NGGridTrackCollectionTest,
   wtf_size_t expected_set_count = 0;
   NGGridTrackList explicit_tracks, implicit_tracks;
   for (wtf_size_t set_count : set_counts) {
-    Vector<GridTrackSize> track_sizes;
+    Vector<GridTrackSize, 1> track_sizes;
     for (wtf_size_t i = 0; i < set_count; ++i)
       track_sizes.emplace_back(GridLength(expected_set_count++));
     ASSERT_TRUE(explicit_tracks.AddRepeater(track_sizes, 1));
@@ -386,9 +386,9 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridTrackList explicit_tracks, implicit_tracks;
 
   // repeat(3, 1px 2px 3px)
-  Vector<GridTrackSize> track_sizes = {GridTrackSize(Length::Fixed(1)),
-                                       GridTrackSize(Length::Fixed(2)),
-                                       GridTrackSize(Length::Fixed(3))};
+  Vector<GridTrackSize, 1> track_sizes = {GridTrackSize(Length::Fixed(1)),
+                                          GridTrackSize(Length::Fixed(2)),
+                                          GridTrackSize(Length::Fixed(3))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(track_sizes, 3));
 
   // repeat(auto-fit, 4px 5px)
@@ -503,7 +503,7 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridTrackList explicit_tracks, implicit_tracks;
 
   // Explicit grid: 1px 2px 3px 4px
-  Vector<GridTrackSize> track_sizes = {
+  Vector<GridTrackSize, 1> track_sizes = {
       GridTrackSize(Length::Fixed(1)), GridTrackSize(Length::Fixed(2)),
       GridTrackSize(Length::Fixed(3)), GridTrackSize(Length::Fixed(4))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(track_sizes, 1));
@@ -587,7 +587,7 @@ TEST_F(NGGridTrackCollectionTest,
   NGGridTrackList explicit_tracks, implicit_tracks;
 
   // repeat(2, min-content 1fr 2px 3px)
-  Vector<GridTrackSize> track_sizes = {
+  Vector<GridTrackSize, 1> track_sizes = {
       GridTrackSize(Length::MinContent()), GridTrackSize(GridLength(1.0)),
       GridTrackSize(Length::Fixed(2)), GridTrackSize(Length::Fixed(3))};
   ASSERT_TRUE(explicit_tracks.AddRepeater(track_sizes, 2));

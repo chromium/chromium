@@ -1290,7 +1290,7 @@ void AddValuesForNamedGridLinesAtIndex(OrderedNamedLinesCollector& collector,
 CSSValue* ComputedStyleUtils::ValueForGridTrackSizeList(
     GridTrackSizingDirection direction,
     const ComputedStyle& style) {
-  const Vector<GridTrackSize>& auto_track_sizes =
+  const Vector<GridTrackSize, 1>& auto_track_sizes =
       direction == kForColumns ? style.GridAutoColumns().LegacyTrackList()
                                : style.GridAutoRows().LegacyTrackList();
 
@@ -1304,7 +1304,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackSizeList(
 template <typename T, typename F>
 void PopulateGridTrackList(CSSValueList* list,
                            OrderedNamedLinesCollector& collector,
-                           const Vector<T>& tracks,
+                           const Vector<T, 1>& tracks,
                            F getTrackSize,
                            int start,
                            int end,
@@ -1324,7 +1324,7 @@ void PopulateGridTrackList(CSSValueList* list,
 template <typename T, typename F>
 void PopulateGridTrackList(CSSValueList* list,
                            OrderedNamedLinesCollector& collector,
-                           const Vector<T>& tracks,
+                           const Vector<T, 1>& tracks,
                            F getTrackSize,
                            int offset = 0) {
   PopulateGridTrackList<T>(list, collector, tracks, getTrackSize, 0,
@@ -1336,10 +1336,10 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
   bool is_row_axis = direction == kForColumns;
-  const Vector<GridTrackSize>& track_sizes =
+  const Vector<GridTrackSize, 1>& track_sizes =
       is_row_axis ? style.GridTemplateColumns().LegacyTrackList()
                   : style.GridTemplateRows().LegacyTrackList();
-  const Vector<GridTrackSize>& auto_repeat_track_sizes =
+  const Vector<GridTrackSize, 1>& auto_repeat_track_sizes =
       is_row_axis ? style.GridAutoRepeatColumns() : style.GridAutoRepeatRows();
 
   bool is_layout_grid =
