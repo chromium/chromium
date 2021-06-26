@@ -7,6 +7,9 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include <list>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/logging.h"

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_OBJECT_PERMISSION_CONTEXT_BASE_H_
 #define COMPONENTS_PERMISSIONS_OBJECT_PERMISSION_CONTEXT_BASE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>

@@ -16,6 +16,7 @@
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"

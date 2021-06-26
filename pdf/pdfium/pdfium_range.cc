@@ -5,6 +5,7 @@
 #include "pdf/pdfium/pdfium_range.h"
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "ui/gfx/geometry/point.h"

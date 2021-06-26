@@ -35,6 +35,7 @@
 #include "base/base_export.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/checked_range.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"

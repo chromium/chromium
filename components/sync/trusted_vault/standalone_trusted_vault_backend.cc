@@ -16,6 +16,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
