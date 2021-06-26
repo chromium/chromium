@@ -21,7 +21,7 @@ std::vector<uint8_t> FetchData(const std::string& text) {
   int n = text.length();
   std::vector<uint8_t> data;
   for (int i = 0; i < n; i++) {
-    data.push_back(uint8_t{text[i]});
+    data.push_back(static_cast<uint8_t>(text[i]));
   }
   return data;
 }

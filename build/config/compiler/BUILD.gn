@@ -1568,12 +1568,6 @@ config("default_warnings") {
       # TODO(thakis): Consider -Wloop-analysis (turns on
       # -Wrange-loop-analysis too).
 
-      # This warns on using ints as initializers for floats in
-      # initializer lists (e.g. |int a = f(); CGSize s = { a, a };|),
-      # which happens in several places in chrome code. Not sure if
-      # this is worth fixing.
-      "-Wno-c++11-narrowing",
-
       # TODO(thakis): This used to be implied by -Wno-unused-function,
       # which we no longer use. Check if it makes sense to remove
       # this as well. http://crbug.com/316352
@@ -1769,6 +1763,10 @@ config("no_chromium_code") {
       # Lots of third-party libraries have unused variables. Instead of
       # suppressing them individually, we just blanket suppress them here.
       "-Wno-unused-variable",
+
+      # Similarly, we're not going to fix all the C++11 narrowing issues in
+      # third-party libraries.
+      "-Wno-c++11-narrowing",
     ]
     if (!is_nacl && (current_toolchain == host_toolchain || !use_xcode_clang)) {
       cflags += [

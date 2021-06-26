@@ -603,8 +603,9 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
       // the next capture then they'll already be marked and will be included
       // in the capture at that time.
       if (thread_marked && all_threads_marked) {
-        hung_watch_state_copies_.push_back(
-            WatchStateCopy{deadline, watch_state.get()->GetThreadID()});
+        hung_watch_state_copies_.push_back(WatchStateCopy{
+            deadline,
+            static_cast<PlatformThreadId>(watch_state.get()->GetThreadID())});
       } else {
         all_threads_marked = false;
       }
