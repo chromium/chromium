@@ -799,6 +799,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncTrustedVaultPassphraseRecoveryDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::switches::kSyncTrustedVaultPassphraseRecovery)},
+    {"enable-ntp-memory-enhancement",
+     flag_descriptions::kEnableNTPMemoryEnhancementName,
+     flag_descriptions::kEnableNTPMemoryEnhancementDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableNTPMemoryEnhancement)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

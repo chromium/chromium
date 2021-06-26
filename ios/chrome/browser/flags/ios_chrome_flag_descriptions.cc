@@ -210,6 +210,10 @@ const char kEnableManualPasswordGenerationDescription[] =
     "Enable UI that allows to generate a strong password for any password "
     "field";
 
+const char kEnableNTPMemoryEnhancementName[] = "Enable NTP Memory Enhancement";
+const char kEnableNTPMemoryEnhancementDescription[] =
+    "NTP will consume less memory.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"

@@ -15,6 +15,9 @@ extern const base::Feature kRefactoredNTP;
 // the feed context menu.
 extern const base::Feature kEnableDiscoverFeedPreview;
 
+// Feature flag to enable improving the usage of memory of the NTP.
+extern const base::Feature kEnableNTPMemoryEnhancement;
+
 // Parameter to enable/disable the logging of the refactoredNTP.
 extern const char kRefactoredNTPLoggingEnabled[];
 
