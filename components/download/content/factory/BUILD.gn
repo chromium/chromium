@@ -15,8 +15,9 @@ source_set("factory") {
   deps = [
     "//base",
     "//components/download/content/internal",
+    "//components/download/internal/background_service:common",
     "//components/download/internal/background_service:internal",
-    "//components/download/internal/background_service:service_config",
+    "//components/download/internal/background_service:storage",
     "//components/download/internal/background_service/proto",
     "//components/download/network",
     "//components/keyed_service/content",

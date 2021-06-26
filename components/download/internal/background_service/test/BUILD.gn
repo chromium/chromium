@@ -43,6 +43,7 @@ source_set("test_support") {
 
   deps = [
     "//components/download/internal/background_service:internal",
+    "//components/download/internal/background_service:storage",
     "//components/download/network",
     "//services/network:test_support",
     "//services/network/public/cpp",

@@ -21,24 +21,16 @@ if (!is_ios) {
       "background_download_service_impl.h",
       "blob_task_proxy.cc",
       "blob_task_proxy.h",
-      "client_set.cc",
-      "client_set.h",
       "controller.h",
       "controller_impl.cc",
       "controller_impl.h",
-      "debugging_client.cc",
-      "debugging_client.h",
       "download_blockage_status.cc",
       "download_blockage_status.h",
       "download_driver.h",
-      "download_store.cc",
-      "download_store.h",
       "driver_entry.cc",
       "driver_entry.h",
       "empty_file_monitor.cc",
       "empty_file_monitor.h",
-      "entry.cc",
-      "entry.h",
       "entry_utils.cc",
       "entry_utils.h",
       "file_monitor.h",
@@ -52,16 +44,8 @@ if (!is_ios) {
       "log_source.h",
       "logger_impl.cc",
       "logger_impl.h",
-      "memory_tracker.h",
-      "model.h",
-      "model_impl.cc",
-      "model_impl.h",
       "navigation_monitor_impl.cc",
       "navigation_monitor_impl.h",
-      "noop_store.cc",
-      "noop_store.h",
-      "proto_conversions.cc",
-      "proto_conversions.h",
       "scheduler/battery_status_listener.h",
       "scheduler/battery_status_listener_impl.cc",
       "scheduler/battery_status_listener_impl.h",
@@ -76,16 +60,15 @@ if (!is_ios) {
       "startup_status.h",
       "stats.cc",
       "stats.h",
-      "store.h",
     ]
 
     deps = [
-      ":service_config",
+      ":common",
+      ":memory_tracker",
+      ":storage",
       "//base",
-      "//components/download/internal/background_service/proto",
       "//components/download/network",
       "//components/download/public/background_service:public",
-      "//components/leveldb_proto",
       "//net",
       "//services/network/public/cpp",
       "//storage/browser",
@@ -125,10 +108,14 @@ if (is_android) {
   }
 }
 
-source_set("service_config") {
+source_set("common") {
   sources = [
+    "client_set.cc",
+    "client_set.h",
     "config.cc",
     "config.h",
+    "debugging_client.cc",
+    "debugging_client.h",
     "service_config_impl.cc",
     "service_config_impl.h",
   ]
@@ -142,6 +129,49 @@ source_set("service_config") {
   deps = [
     "//base",
     "//components/download/public/background_service:public",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("memory_tracker") {
+  sources = [ "memory_tracker.h" ]
+  visibility = [ ":*" ]
+  deps = [ "//base" ]
+}
+
+source_set("storage") {
+  sources = [
+    "download_store.cc",
+    "download_store.h",
+    "entry.cc",
+    "entry.h",
+    "model.h",
+    "model_impl.cc",
+    "model_impl.h",
+    "model_stats.cc",
+    "model_stats.h",
+    "noop_store.cc",
+    "noop_store.h",
+    "proto_conversions.cc",
+    "proto_conversions.h",
+    "store.h",
+  ]
+
+  visibility = [
+    ":*",
+    "//components/download/content/factory",
+    "//components/download/internal/background_service/ios:background_service",
+    "//components/download/internal/background_service/test:test_support",
+  ]
+
+  deps = [
+    ":memory_tracker",
+    "//base",
+    "//components/download/internal/background_service/proto",
+    "//components/download/public/background_service:public",
+    "//components/leveldb_proto",
+    "//net",
+    "//url",
   ]
 }
 
@@ -168,7 +198,8 @@ source_set("unit_tests") {
   }
 
   deps = [
-    ":service_config",
+    ":common",
+    ":storage",
     "//testing/gmock",
     "//testing/gtest",
   ]

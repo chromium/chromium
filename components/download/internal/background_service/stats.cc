@@ -55,28 +55,6 @@ std::string TaskTypeToHistogramSuffix(DownloadTaskType task_type) {
   return std::string();
 }
 
-// Converts Entry::State to histogram suffix.
-// Should maps to suffix string in histograms.xml.
-std::string EntryStateToHistogramSuffix(Entry::State state) {
-  std::string suffix;
-  switch (state) {
-    case Entry::State::NEW:
-      return "New";
-    case Entry::State::AVAILABLE:
-      return "Available";
-    case Entry::State::ACTIVE:
-      return "Active";
-    case Entry::State::PAUSED:
-      return "Paused";
-    case Entry::State::COMPLETE:
-      return "Complete";
-    case Entry::State::COUNT:
-      break;
-  }
-  NOTREACHED();
-  return std::string();
-}
-
 // Converts DownloadClient to histogram suffix.
 // Should maps to suffix string in histograms.xml.
 std::string ClientToHistogramSuffix(DownloadClient client) {
@@ -135,13 +113,6 @@ void LogStartUpResult(bool in_recovery, StartUpResult result) {
         "Download.Service.StartUpStatus.Initialization", result,
         StartUpResult::COUNT);
   }
-}
-
-// Helper method to log the number of entries under a particular state.
-void LogDatabaseRecords(Entry::State state, uint32_t record_count) {
-  std::string name("Download.Service.Db.Records");
-  name.append(".").append(EntryStateToHistogramSuffix(state));
-  base::UmaHistogramCustomCounts(name, record_count, 1, 500, 50);
 }
 
 // Helper method to log the pause reason for a particular download.
@@ -222,32 +193,6 @@ void LogDownloadPauseReason(const DownloadBlockageStatus& blockage_status,
   if (blockage_status.blocked_by_downloads)
     LogDownloadPauseReason(PauseReason::EXTERNAL_DOWNLOAD,
                            currently_in_progress);
-}
-
-void LogModelOperationResult(ModelAction action, bool success) {
-  if (success) {
-    UMA_HISTOGRAM_ENUMERATION("Download.Service.Db.Operation.Success", action,
-                              ModelAction::COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Download.Service.Db.Operation.Failure", action,
-                              ModelAction::COUNT);
-  }
-}
-
-void LogEntries(std::map<Entry::State, uint32_t>& entries_count) {
-  uint32_t total_records = 0;
-  for (const auto& entry_count : entries_count)
-    total_records += entry_count.second;
-
-  // Total number of records in database.
-  base::UmaHistogramCustomCounts("Download.Service.Db.Records", total_records,
-                                 1, 500, 50);
-
-  // Number of records for each Entry::State.
-  for (Entry::State state = Entry::State::NEW; state != Entry::State::COUNT;
-       state = (Entry::State)((int)(state) + 1)) {
-    LogDatabaseRecords(state, entries_count[state]);
-  }
 }
 
 void LogScheduledTaskStatus(DownloadTaskType task_type,
