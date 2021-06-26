@@ -398,15 +398,25 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
-    // Load all possible printers.
-    for (const printerType of this.typesToSearch_) {
-      if (printerType === PrinterType.CLOUD_PRINTER) {
+    // Check for Cloud Print printers and remove them if the interface is not
+    // present. This indicates that Cloud Print is unavailable for this user.
+    if (this.typesToSearch_.has(PrinterType.CLOUD_PRINTER)) {
+      if (this.cloudPrintInterface_ === null) {
+        this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
+      } else {
         // Accounts are not known on startup. Send an initial search query to
         // get tokens and user accounts.
         this.cloudPrintInterface_.search();
-      } else if (
-          printerType !== PrinterType.PRIVET_PRINTER ||
-          loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
+      }
+    }
+
+    // Load all possible printers except for Cloud Print printers since they're
+    // fetched by Javascript instead of through the native layer (which
+    // startLoadDestinations_ invokes).
+    for (const printerType of this.typesToSearch_) {
+      if (printerType !== PrinterType.CLOUD_PRINTER &&
+          (printerType !== PrinterType.PRIVET_PRINTER ||
+           loadTimeData.getBoolean('forceEnablePrivetPrinting'))) {
         this.startLoadDestinations_(printerType);
       }
     }

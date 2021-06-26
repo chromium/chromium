@@ -601,6 +601,12 @@ TEST_F(
     });
 
 TEST_F(
+    'PrintPreviewDestinationStoreTest', 'RecentCloudPrintFallback', function() {
+      this.runMochaTest(
+          destination_store_test.TestNames.RecentCloudPrintFallback);
+    });
+
+TEST_F(
     'PrintPreviewDestinationStoreTest', 'MultipleRecentDestinations',
     function() {
       this.runMochaTest(
@@ -612,6 +618,13 @@ TEST_F(
     function() {
       this.runMochaTest(destination_store_test.TestNames
                             .MultipleRecentDestinationsOneRequest);
+    });
+
+TEST_F(
+    'PrintPreviewDestinationStoreTest',
+    'MultipleRecentDestinationsAndCloudPrint', function() {
+      this.runMochaTest(destination_store_test.TestNames
+                            .MultipleRecentDestinationsAndCloudPrint);
     });
 
 TEST_F(
@@ -771,7 +784,6 @@ var PrintPreviewDestinationDialogCrosTest = class extends PrintPreviewTest {
   get suiteName() {
     return destination_dialog_cros_test.suiteName;
   }
-
 };
 
 TEST_F('PrintPreviewDestinationDialogCrosTest', 'PrinterList', function() {
