@@ -78,6 +78,12 @@ class ConversionStorage {
     // dynamic criteria.
     virtual StorableImpression::AttributionLogic SelectAttributionLogic(
         const StorableImpression& impression) const = 0;
+
+    // Returns random data for falsely attributed event sources. Only present on
+    // the delegate interface so it can be overridden to return deterministic
+    // data in tests. The data must be sanitized in the same way it would be for
+    // `ConversionPolicy::GetNoisedEventSourceTriggerData()`.
+    virtual uint64_t GetFakeEventSourceTriggerData() const = 0;
   };
   virtual ~ConversionStorage() = default;
 

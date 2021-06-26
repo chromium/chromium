@@ -37,6 +37,17 @@ class CONTENT_EXPORT ConversionPolicy {
     // data for 95%. Virtual for testing.
     virtual uint64_t GetNoisedEventSourceTriggerData(
         uint64_t event_source_trigger_data) const;
+
+   private:
+    friend class ConversionStorageDelegateImpl;
+
+    // Returns a noised value of `event_source_trigger_data`. This reports
+    // completely random data for 5% of conversions, and sends the real data for
+    // 95%. Exposed for reuse in both
+    // `ConversionStorageDelegateImpl::GetFakeEventSourceTriggerData()` and
+    // `ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerData()`.
+    static uint64_t GetNoisedEventSourceTriggerDataImpl(
+        uint64_t event_source_trigger_data);
   };
 
   static std::unique_ptr<ConversionPolicy> CreateForTesting(

@@ -88,6 +88,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   StorableImpression::AttributionLogic SelectAttributionLogic(
       const StorableImpression& impression) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
+  uint64_t GetFakeEventSourceTriggerData() const override;
 
   void set_max_conversions_per_impression(int max) {
     max_conversions_per_impression_ = max;
@@ -112,6 +113,10 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
     attribution_logic_ = attribution_logic;
   }
 
+  void set_fake_event_source_trigger_data(uint64_t data) {
+    fake_event_source_trigger_data_ = data;
+  }
+
   void set_report_time_ms(int report_time_ms) {
     report_time_ms_ = report_time_ms;
   }
@@ -129,6 +134,8 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
 
   StorableImpression::AttributionLogic attribution_logic_ =
       StorableImpression::AttributionLogic::kTruthfully;
+
+  uint64_t fake_event_source_trigger_data_ = 0;
 
   int report_time_ms_ = 0;
 };

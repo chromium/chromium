@@ -112,6 +112,9 @@ ConfigurableStorageDelegate::SelectAttributionLogic(
     const StorableImpression& impression) const {
   return attribution_logic_;
 }
+uint64_t ConfigurableStorageDelegate::GetFakeEventSourceTriggerData() const {
+  return fake_event_source_trigger_data_;
+}
 
 ConversionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {

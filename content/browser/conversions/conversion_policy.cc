@@ -36,8 +36,9 @@ uint64_t ConversionPolicy::NoiseProvider::GetNoisedConversionData(
   return static_cast<uint64_t>(base::RandInt(0, kMaxAllowedConversionValues));
 }
 
-uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerData(
-    uint64_t event_source_trigger_data) const {
+// static
+uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerDataImpl(
+    uint64_t event_source_trigger_data) {
   // Return |event_source_trigger_data| without any noise 95% of the time.
   if (base::RandDouble() > .05)
     return event_source_trigger_data;
@@ -48,6 +49,11 @@ uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerData(
   // kMaxAllowedEventSourceTriggerDataValues percent of the time.
   return static_cast<uint64_t>(
       base::RandInt(0, kMaxAllowedEventSourceTriggerDataValues));
+}
+
+uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerData(
+    uint64_t event_source_trigger_data) const {
+  return GetNoisedEventSourceTriggerDataImpl(event_source_trigger_data);
 }
 
 // static

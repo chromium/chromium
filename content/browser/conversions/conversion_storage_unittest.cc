@@ -1167,4 +1167,42 @@ TEST_F(ConversionStorageTest, MultipleImpressions_CorrectDeactivation) {
   EXPECT_EQ(5u, active_impressions[0].impression_data());
 }
 
+TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kFalsely);
+  delegate()->set_fake_event_source_trigger_data(7);
+  delegate()->set_max_conversions_per_impression(1);
+
+  const auto impression =
+      ImpressionBuilder(clock()->Now())
+          .SetData(4)
+          .SetSourceType(StorableImpression::SourceType::kEvent)
+          .SetPriority(100)
+          .Build();
+  storage()->StoreImpression(impression);
+
+  const ConversionReport expected_report(
+      impression, /*conversion_data=*/7,
+      /*conversion_time=*/clock()->Now(),
+      /*report_time=*/clock()->Now() +
+          base::TimeDelta::FromMilliseconds(kReportTime),
+      /*conversion_id=*/absl::nullopt);
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+
+  EXPECT_TRUE(storage()->GetActiveImpressions().empty());
+
+  // The falsely attributed impression should not be eligible for further
+  // attribution.
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  actual_reports = storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+}
+
 }  // namespace content

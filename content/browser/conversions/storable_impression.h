@@ -33,13 +33,15 @@ class CONTENT_EXPORT StorableImpression {
   };
 
   // Denotes the attribution logic for an impression.
-  // TODO(apaseltiner): Add `kFalsely`.
   enum class AttributionLogic {
     // Never send a report for this impression even if it gets attributed.
     kNever = 0,
     // Attribute the impression truthfully.
     kTruthfully = 1,
-    kMaxValue = kTruthfully,
+    // The browser generates a fake conversion for the source, causing a report
+    // to always be sent for it.
+    kFalsely = 2,
+    kMaxValue = kFalsely,
   };
 
   StorableImpression(uint64_t impression_data,

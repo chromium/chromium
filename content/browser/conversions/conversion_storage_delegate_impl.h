@@ -39,6 +39,7 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   RateLimitConfig GetRateLimits() const override;
   StorableImpression::AttributionLogic SelectAttributionLogic(
       const StorableImpression& impression) const override;
+  uint64_t GetFakeEventSourceTriggerData() const override;
 
  private:
   // Whether the API is running in debug mode, meaning that there should be

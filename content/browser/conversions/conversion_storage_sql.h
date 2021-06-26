@@ -101,6 +101,11 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool EnsureCapacityForPendingDestinationLimit(
       const StorableImpression& impression);
 
+  // Stores |report| in the database, but uses |impression_id| rather than
+  // |ConversionReport::impression::impression_id()|, which may be null.
+  bool StoreConversionReport(const ConversionReport& report,
+                             int64_t impression_id);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.

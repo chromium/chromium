@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -190,13 +191,17 @@ void ConversionStorageSql::StoreImpression(
   deactivate_statement.BindString(1, serialized_reporting_origin);
   deactivate_statement.Run();
 
+  const StorableImpression::AttributionLogic attribution_logic =
+      delegate_->SelectAttributionLogic(impression);
+
   const char kInsertImpressionSql[] =
       "INSERT INTO impressions"
       "(impression_data, impression_origin, conversion_origin, "
       "conversion_destination, "
       "reporting_origin, impression_time, expiry_time, source_type, "
-      "attributed_truthfully, priority, impression_site) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+      "attributed_truthfully, priority, impression_site, "
+      "num_conversions, active) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindString(
@@ -208,11 +213,40 @@ void ConversionStorageSql::StoreImpression(
   statement.BindTime(5, impression.impression_time());
   statement.BindTime(6, impression.expiry_time());
   statement.BindInt(7, static_cast<int>(impression.source_type()));
-  statement.BindInt(
-      8, static_cast<int>(delegate_->SelectAttributionLogic(impression)));
+  statement.BindInt(8, static_cast<int>(attribution_logic));
   statement.BindInt64(9, impression.priority());
   statement.BindString(10, impression.ImpressionSite().Serialize());
-  statement.Run();
+
+  if (attribution_logic == StorableImpression::AttributionLogic::kFalsely) {
+    // Falsely attributed impressions are immediately stored with
+    // `num_conversions == 1` and `active == 0`, as they will be attributed via
+    // the below call to `StoreConversionReport()` in the same transaction.
+    statement.BindInt(11, 1);  // num_conversions
+    statement.BindInt(12, 0);  // active
+  } else {
+    statement.BindInt(11, 0);  // num_conversions
+    statement.BindInt(12, 1);  // active
+  }
+
+  if (!statement.Run())
+    return;
+
+  if (attribution_logic == StorableImpression::AttributionLogic::kFalsely) {
+    DCHECK_EQ(StorableImpression::SourceType::kEvent, impression.source_type());
+
+    int64_t impression_id = db_->GetLastInsertRowId();
+    uint64_t event_source_trigger_data =
+        delegate_->GetFakeEventSourceTriggerData();
+
+    ConversionReport report(impression, event_source_trigger_data,
+                            /*conversion_time=*/impression.impression_time(),
+                            /*report_time=*/impression.impression_time(),
+                            /*conversion_id=*/absl::nullopt);
+    report.report_time = delegate_->GetReportTime(report);
+
+    if (!StoreConversionReport(report, impression_id))
+      return;
+  }
 
   transaction.Commit();
 }
@@ -284,6 +318,10 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
 
+    // There should never be an unattributed impression with `kFalsely`.
+    DCHECK_NE(attribution_logic,
+              StorableImpression::AttributionLogic::kFalsely);
+
     // Select the row to attribute to the conversion. All other matching rows
     // will be deleted by the attribution logic.
     if (ShouldReplaceImpressionToAttribute(impression_to_attribute,
@@ -333,18 +371,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
                              StorableImpression::AttributionLogic::kTruthfully;
 
   if (create_report) {
-    const char kStoreConversionSql[] =
-        "INSERT INTO conversions "
-        "(impression_id, conversion_data, conversion_time, report_time) "
-        "VALUES(?,?,?,?)";
-    sql::Statement store_conversion_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
-    store_conversion_statement.BindInt64(0, *report.impression.impression_id());
-    store_conversion_statement.BindString(
-        1, SerializeImpressionOrConversionData(report.conversion_data));
-    store_conversion_statement.BindTime(2, current_time);
-    store_conversion_statement.BindTime(3, report.report_time);
-    if (!store_conversion_statement.Run())
+    DCHECK(report.impression.impression_id().has_value());
+    if (!StoreConversionReport(report, *report.impression.impression_id()))
       return false;
   }
 
@@ -402,6 +430,24 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     return false;
 
   return create_report;
+}
+
+bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
+                                                 int64_t impression_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const char kStoreConversionSql[] =
+      "INSERT INTO conversions "
+      "(impression_id, conversion_data, conversion_time, report_time) "
+      "VALUES(?,?,?,?)";
+  sql::Statement store_conversion_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
+  store_conversion_statement.BindInt64(0, impression_id);
+  store_conversion_statement.BindString(
+      1, SerializeImpressionOrConversionData(report.conversion_data));
+  store_conversion_statement.BindTime(2, report.conversion_time);
+  store_conversion_statement.BindTime(3, report.report_time);
+  return store_conversion_statement.Run();
 }
 
 std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
