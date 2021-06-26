@@ -548,7 +548,7 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
 }
 
 void SharedImageStub::OnError() {
-  channel_->OnChannelError();
+  channel_->Stop();
 }
 
 void SharedImageStub::TrackMemoryAllocatedChange(int64_t delta) {

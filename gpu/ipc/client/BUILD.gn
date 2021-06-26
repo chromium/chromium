@@ -41,8 +41,5 @@ source_set("ipc_client_sources") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-  public_deps = [
-    "//gpu/ipc/common:ipc_common_sources",
-    "//ipc",
-  ]
+  public_deps = [ "//gpu/ipc/common:ipc_common_sources" ]
 }

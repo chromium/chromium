@@ -23,13 +23,9 @@
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "ipc/ipc_listener.h"
-#include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-
-namespace IPC {
-class ChannelMojo;
-}
 
 namespace gpu {
 class ClientSharedImageInterface;
@@ -157,32 +153,6 @@ class GPU_EXPORT GpuChannelHost
     std::atomic_bool is_connected_{true};
   };
 
-  // A filter used internally to route incoming messages from the IO thread
-  // to the correct message loop. It also maintains some shared state between
-  // all the contexts.
-  class GPU_EXPORT Listener : public IPC::Listener {
-   public:
-    Listener();
-    ~Listener() override;
-
-    // Called on the GpuChannelHost's thread.
-    void Initialize(mojo::ScopedMessagePipeHandle handle,
-                    mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
-                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-
-    // Called on the IO thread.
-    void Close();
-
-    // IPC::Listener implementation
-    // (called on the IO thread):
-    bool OnMessageReceived(const IPC::Message& msg) override;
-    void OnChannelError() override;
-
-   private:
-    mutable base::Lock lock_;
-    std::unique_ptr<IPC::ChannelMojo> channel_ GUARDED_BY(lock_);
-  };
-
   struct OrderingBarrierInfo {
     OrderingBarrierInfo();
     ~OrderingBarrierInfo();
@@ -215,17 +185,12 @@ class GPU_EXPORT GpuChannelHost
   const gpu::GPUInfo gpu_info_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
 
-  // Lifetime/threading notes: Listener only operates on the IO thread, and
-  // outlives |this|. It is therefore safe to PostTask calls to the IO thread
-  // with base::Unretained(listener_).
-  std::unique_ptr<Listener, base::OnTaskRunnerDeleter> listener_;
-
   // Atomically tracks whether the GPU connection has been lost. This can be
   // queried from any thread by IsLost() but is always set on the IO thread as
   // soon as disconnection is detected.
   const scoped_refptr<ConnectionTracker> connection_tracker_;
 
-  mojo::SharedAssociatedRemote<mojom::GpuChannel> gpu_channel_;
+  mojo::SharedRemote<mojom::GpuChannel> gpu_channel_;
   SharedImageInterfaceProxy shared_image_interface_;
 
   // A client-side helper to send image decode requests to the GPU process.

@@ -27,16 +27,11 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gpu_preference.h"
-
-namespace base {
-class WaitableEvent;
-}
 
 namespace gpu {
 class GpuChannelManager;
@@ -50,11 +45,11 @@ class SyncPointManager;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
 // process. On the renderer side there's a corresponding GpuChannelHost.
-class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
+class GPU_IPC_SERVICE_EXPORT GpuChannel {
  public:
   GpuChannel(const GpuChannel&) = delete;
   GpuChannel& operator=(const GpuChannel&) = delete;
-  ~GpuChannel() override;
+  ~GpuChannel();
 
   static std::unique_ptr<GpuChannel> Create(
       GpuChannelManager* gpu_channel_manager,
@@ -69,12 +64,20 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
       bool is_gpu_host,
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
 
-  // Init() sets up the underlying IPC channel.  Use a separate method because
-  // we don't want to do that in tests.
-  void Init(IPC::ChannelHandle channel_handle,
-            base::WaitableEvent* shutdown_event);
+  // Starts receiving messages on the GpuChannel interface and scheduling
+  // appropriate tasks to handle them as needed. `pipe` is expected to receive
+  // GpuChannel interface messages.
+  //
+  // TODO(crbug.com/1196476): Change this pipe handle to a strongly-typed
+  // PendingReceiver for GpuChannel. This requires some gnarly rewiring of
+  // dependencies among //gpu and Viz, since Viz calls this method but currently
+  // has no dependency on the GpuChannel interface definition.
+  void Start(mojo::ScopedMessagePipeHandle pipe);
 
-  void InitForTesting(IPC::Channel* channel);
+  // Stops receiving messages on the GpuChannel interface and scheduling tasks
+  // for them. This is asynchronous, and once completed the GpuChannel will be
+  // destroyed.
+  void Stop();
 
   base::WeakPtr<GpuChannel> AsWeakPtr();
 
@@ -116,10 +119,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   }
 
   bool is_gpu_host() const { return is_gpu_host_; }
-
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& msg) override;
-  void OnChannelError() override;
 
   void OnCommandBufferScheduled(CommandBufferStub* stub);
   void OnCommandBufferDescheduled(CommandBufferStub* stub);
@@ -204,6 +203,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 #endif  // defined(OS_FUCHSIA)
 
  private:
+  friend class GpuChannelMessageFilter;
+
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,
              const base::UnguessableToken& channel_token,
@@ -222,8 +223,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // Message handlers for control messages.
   bool CreateSharedImageStub();
 
-  std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
-  IPC::Sender* channel_;  // Same as sync_channel_.get() except in tests.
+  // Immediately destroys this GpuChannel. Most only be called if the channel is
+  // already disconnected.
+  void Destroy();
 
   base::ProcessId client_pid_ = base::kNullProcessId;
 

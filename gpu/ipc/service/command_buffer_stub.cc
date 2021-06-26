@@ -37,7 +37,6 @@
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/ipc/service/image_transport_surface.h"
-#include "ipc/ipc_mojo_bootstrap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -675,7 +674,6 @@ void CommandBufferStub::BindEndpoints(
   DCHECK(!receiver_);
   DCHECK(!client_);
 
-  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), scheduler_task_runner_);
   client_.Bind(std::move(client), std::move(io_task_runner));
 }

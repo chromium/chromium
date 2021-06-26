@@ -29,7 +29,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "ipc/ipc_mojo_bootstrap.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -113,7 +112,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
   // TODO(piman): Make this asynchronous (http://crbug.com/125248).
   ContextResult result = ContextResult::kSuccess;
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
-  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   bool sent = channel->GetGpuChannel().CreateCommandBuffer(
       std::move(params), route_id_, std::move(region),
       command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
