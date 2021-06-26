@@ -77,7 +77,7 @@ const base::Feature kPasswordProtectionWithToken{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPromptEsbForDeepScanning{
-    "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingCTDownloadWarning{
     "SafeBrowsingCTDownloadWarning", base::FEATURE_DISABLED_BY_DEFAULT};

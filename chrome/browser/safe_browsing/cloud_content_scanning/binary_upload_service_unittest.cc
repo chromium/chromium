@@ -607,9 +607,6 @@ TEST_F(BinaryUploadServiceTest,
   safe_browsing::SetEnhancedProtectionPrefForTests(profile_.GetPrefs(),
                                                    /*value*/ true);
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kPromptEsbForDeepScanning);
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -635,37 +632,6 @@ TEST_F(BinaryUploadServiceTest,
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
-}
-
-TEST_F(BinaryUploadServiceTest, EnhancedProtectionMalwareRequestUnauthorized) {
-  safe_browsing::SetEnhancedProtectionPrefForTests(profile_.GetPrefs(),
-                                                   /*value*/ true);
-
-  BinaryUploadService::Result scanning_result =
-      BinaryUploadService::Result::UNKNOWN;
-  enterprise_connectors::ContentAnalysisResponse scanning_response;
-  std::unique_ptr<MockRequest> request =
-      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ true);
-  request->add_tag("malware");
-
-  enterprise_connectors::ContentAnalysisResponse simulated_response;
-
-  auto* malware_result = simulated_response.add_results();
-  malware_result->set_status(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  malware_result->set_tag("malware");
-  ExpectNetworkResponse(true, simulated_response);
-
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
-
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
-
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
-
-  content::RunAllTasksUntilIdle();
-
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
 TEST_F(BinaryUploadServiceTest, ConnectorUrlParams) {
@@ -766,17 +732,7 @@ TEST_F(BinaryUploadServiceTest, GetUploadUrl) {
                 /*is_consumer_scan_eligible */ false),
             GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan"));
 
-  // testing APP scenario without Deep Scanning for ESB Feature enabled
-  AdvancedProtectionStatusManagerFactory::GetForProfile(&profile_)
-      ->SetAdvancedProtectionStatusForTesting(/*enrolled=*/true);
-  ASSERT_EQ(safe_browsing::BinaryUploadService::GetUploadUrl(
-                /*is_consumer_scan_eligible */ true),
-            GURL("https://safebrowsing.google.com/safebrowsing/uploads/app"));
-
   // testing APP scenario with Deep Scanning for ESB Feature enabled
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kPromptEsbForDeepScanning);
   ASSERT_EQ(
       safe_browsing::BinaryUploadService::GetUploadUrl(
           /*is_consumer_scan_eligible */ true),
