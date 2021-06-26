@@ -14,16 +14,29 @@ namespace chromecast {
 
 WeightedMovingLinearRegression::WeightedMovingLinearRegression(
     int64_t max_x_range)
-    : max_x_range_(max_x_range),
-      covariance_(0),
-      slope_(0),
-      slope_variance_(0),
-      intercept_variance_(0),
-      has_estimate_(false) {
+    : max_x_range_(max_x_range) {
   DCHECK_GE(max_x_range_, 0);
 }
 
-WeightedMovingLinearRegression::~WeightedMovingLinearRegression() {}
+WeightedMovingLinearRegression::~WeightedMovingLinearRegression() = default;
+
+void WeightedMovingLinearRegression::Reserve(int count) {
+  Sample sample = {0, 0, 0};
+  samples_.insert(samples_.end(), count, sample);
+  samples_.erase(samples_.end() - count, samples_.end());
+}
+
+void WeightedMovingLinearRegression::Reset() {
+  x_mean_.Reset();
+  y_mean_.Reset();
+  covariance_ = 0.0;
+  samples_.clear();
+  slope_ = 0.0;
+  slope_variance_ = 0.0;
+  intercept_variance_ = 0.0;
+
+  has_estimate_ = false;
+}
 
 void WeightedMovingLinearRegression::AddSample(int64_t x,
                                                int64_t y,

@@ -59,6 +59,12 @@ class WeightedMovingLinearRegression {
   // useful for debugging.
   const std::deque<Sample>& samples() { return samples_; }
 
+  // Reserves space for |count| samples, to reduce memory allocation during use.
+  void Reserve(int count);
+
+  // Resets to initial state.
+  void Reset();
+
  private:
   // Adds (x, y) to the set if |weight| is positive; removes (x, y) from the
   // set if |weight| is negative.
@@ -67,14 +73,14 @@ class WeightedMovingLinearRegression {
   const int64_t max_x_range_;
   WeightedMean x_mean_;
   WeightedMean y_mean_;
-  double covariance_;
+  double covariance_ = 0.0;
   std::deque<Sample> samples_;
 
-  double slope_;
-  double slope_variance_;
-  double intercept_variance_;
+  double slope_ = 0.0;
+  double slope_variance_ = 0.0;
+  double intercept_variance_ = 0.0;
 
-  bool has_estimate_;
+  bool has_estimate_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WeightedMovingLinearRegression);
 };

@@ -147,8 +147,6 @@ int PlaybackRateShifter::DrainBufferedData(int num_frames,
 
   if (filled < num_frames) {
     // Now there is no data buffered in the rate shifter.
-    // rate_shifter_.reset();
-
     float* fill_channel_data[kMaxChannels];
     for (size_t c = 0; c < num_channels_; ++c) {
       fill_channel_data[c] = channel_data[c] + filled;

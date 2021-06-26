@@ -6,14 +6,12 @@
 #define CHROMECAST_MEDIA_AUDIO_RATE_ADJUSTER_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "chromecast/base/statistics/weighted_moving_linear_regression.h"
 
 namespace chromecast {
-class WeightedMovingLinearRegression;
-
 namespace media {
 
 // RateAdjuster handles adjusting a clock rate to minimize errors over time.
@@ -63,11 +61,19 @@ class RateAdjuster {
   // synchronously within this method via the callback, if necessary.
   void AddError(int64_t error, int64_t timestamp);
 
+  // Reserves space for |count| error samples, to reduce memory allocation
+  // during use.
+  void Reserve(int count);
+
+  // Resets to initial state.
+  void Reset();
+
  private:
   const Config config_;
   RateChangeCallback change_clock_rate_;
 
-  std::unique_ptr<WeightedMovingLinearRegression> linear_error_;
+  WeightedMovingLinearRegression linear_error_;
+  bool initialized_ = false;
   int64_t clock_rate_start_timestamp_ = 0;
   int64_t initial_timestamp_ = 0;
   double clock_rate_error_base_ = 0.0;

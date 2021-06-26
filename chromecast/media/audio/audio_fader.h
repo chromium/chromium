@@ -39,6 +39,10 @@ class AudioFader : public AudioProvider {
   size_t num_channels() const override;
   int sample_rate() const override;
 
+  void set_playback_rate(double playback_rate) {
+    playback_rate_ = playback_rate;
+  }
+
   // Returns the total number of frames that will be requested from the source
   // (potentially over multiple calls to source_->FillFaderFrames()) if
   // FillFrames() is called to fill |num_fill_frames| frames.
@@ -81,7 +85,7 @@ class AudioFader : public AudioProvider {
   const int fade_frames_;
   const size_t num_channels_;
   const int sample_rate_;
-  const double playback_rate_;
+  double playback_rate_;
 
   State state_ = State::kSilent;
   std::unique_ptr<CastAudioBus> fade_buffer_;

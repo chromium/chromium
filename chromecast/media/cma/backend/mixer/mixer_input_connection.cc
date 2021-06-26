@@ -19,9 +19,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
+#include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
+#include "chromecast/media/audio/audio_provider.h"
 #include "chromecast/media/audio/mixer_service/conversions.h"
 #include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/rate_adjuster.h"
 #include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
@@ -32,6 +35,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/filters/audio_renderer_algorithm.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -44,6 +48,7 @@ constexpr base::TimeDelta kDefaultFillTime =
 constexpr base::TimeDelta kDefaultFadeTime =
     base::TimeDelta::FromMilliseconds(5);
 constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr int64_t kDefaultMaxTimestampError = 2000;
 
 constexpr int kAudioMessageHeaderSize =
     mixer_service::MixerSocket::kAudioMessageHeaderSize;
@@ -84,6 +89,14 @@ int GetQueueSize(const mixer_service::OutputStreamParams& params) {
               << " to match start threshold";
   }
   return queue_size;
+}
+
+int64_t GetMaxTimestampError(const mixer_service::OutputStreamParams& params) {
+  int64_t result = params.timestamped_audio_config().max_timestamp_error();
+  if (result == 0) {
+    result = kDefaultMaxTimestampError;
+  }
+  return result;
 }
 
 template <typename T>
@@ -137,6 +150,25 @@ int64_t GetTimestamp(net::IOBuffer* buffer) {
   return timestamp;
 }
 
+void AdjustTimestamp(net::IOBuffer* buffer, int64_t adjustment) {
+  void* ptr = buffer->data() + sizeof(int32_t);
+  int64_t timestamp;
+  memcpy(&timestamp, ptr, sizeof(timestamp));
+  timestamp += adjustment;
+  memcpy(ptr, &timestamp, sizeof(timestamp));
+}
+
+void AdjustTimestampForRateChange(net::IOBuffer* buffer,
+                                  double ratio,
+                                  int64_t base_timestamp) {
+  void* ptr = buffer->data() + sizeof(int32_t);
+  int64_t timestamp;
+  memcpy(&timestamp, ptr, sizeof(timestamp));
+  int64_t diff = timestamp - base_timestamp;
+  timestamp = base_timestamp + diff * ratio;
+  memcpy(ptr, &timestamp, sizeof(timestamp));
+}
+
 float* GetAudioData(net::IOBuffer* buffer) {
   return reinterpret_cast<float*>(buffer->data() + kAudioMessageHeaderSize);
 }
@@ -150,7 +182,161 @@ float* GetAudioData(net::IOBuffer* buffer) {
       ConvertChannelLayout(layout));
 }
 
+std::unique_ptr<RateAdjuster> CreateRateAdjuster(
+    const mixer_service::OutputStreamParams& params,
+    RateAdjuster::RateChangeCallback callback) {
+  const auto& c = params.timestamped_audio_config();
+  media::RateAdjuster::Config config;
+  if (c.has_rate_change_interval()) {
+    config.rate_change_interval =
+        base::TimeDelta::FromMicroseconds(c.rate_change_interval());
+  }
+  if (c.has_linear_regression_window()) {
+    config.linear_regression_window =
+        base::TimeDelta::FromMicroseconds(c.linear_regression_window());
+  }
+  if (c.has_max_ignored_current_error()) {
+    config.max_ignored_current_error = c.max_ignored_current_error();
+  }
+  if (c.has_max_current_error_correction()) {
+    config.max_current_error_correction = c.max_current_error_correction();
+  }
+  if (c.has_min_rate_change()) {
+    config.min_rate_change = c.min_rate_change();
+  }
+
+  auto adjuster =
+      std::make_unique<RateAdjuster>(config, std::move(callback), 1.0);
+  int64_t expected_error_samples =
+      config.linear_regression_window.InSecondsF() * params.sample_rate() /
+      GetFillSize(params);
+  adjuster->Reserve(2 * expected_error_samples);
+  return adjuster;
+}
+
 }  // namespace
+
+class MixerInputConnection::TimestampedFader : public AudioProvider {
+  class FaderProvider : public AudioProvider {
+   public:
+    FaderProvider(TimestampedFader& owner, int num_channels, int sample_rate)
+        : owner_(owner),
+          num_channels_(num_channels),
+          sample_rate_(sample_rate) {}
+
+    // AudioProvider implementation:
+    size_t num_channels() const override { return num_channels_; }
+    int sample_rate() const override { return sample_rate_; }
+    int FillFrames(int num_frames,
+                   int64_t playout_timestamp,
+                   float* const* channel_data) override;
+
+   private:
+    TimestampedFader& owner_;
+    const int num_channels_;
+    const int sample_rate_;
+  };
+
+ public:
+  TimestampedFader(MixerInputConnection* mixer_input, int fade_frames)
+      : mixer_input_(mixer_input),
+        num_channels_(mixer_input_->num_channels()),
+        sample_rate_(mixer_input_->sample_rate()),
+        fader_provider_(*this, num_channels_, sample_rate_),
+        fader_(&fader_provider_, fade_frames, 1.0) {}
+
+  ~TimestampedFader() override = default;
+
+  int BufferedFrames() { return fader_.buffered_frames(); }
+
+  void SetPlaybackRate(double rate) { fader_.set_playback_rate(rate); }
+
+  // AudioProvider implementation:
+  int FillFrames(int num_frames,
+                 int64_t expected_playout_time,
+                 float* const* channels) override NO_THREAD_SAFETY_ANALYSIS {
+    int filled = 0;
+    while (filled < num_frames) {
+      int remaining = num_frames - filled;
+      const int64_t playout_time =
+          expected_playout_time +
+          SamplesToMicroseconds(filled / mixer_input_->playback_rate_,
+                                sample_rate_);
+      float* fill_channel_data[AudioClockSimulator::kMaxChannels];
+      for (int c = 0; c < num_channels_; ++c) {
+        fill_channel_data[c] = channels[c] + filled;
+      }
+      int faded = fader_.FillFrames(remaining, playout_time, fill_channel_data);
+      filled += faded;
+      if (faded == remaining) {
+        if (pending_silence_) {
+          // Still waiting for fade to complete, but we should re-evaluate how
+          // much silence to add for the next fill.
+          pending_silence_.emplace(0);
+        }
+        return filled;
+      }
+
+      if (!pending_silence_) {
+        // No pending silence, and we are not able to fill any more.
+        for (int c = 0; c < num_channels_; ++c) {
+          std::fill_n(channels[c] + filled, num_frames - filled, 0.0f);
+        }
+        return num_frames;
+      }
+
+      if (faded == 0) {
+        // Fade complete; fill some silence.
+        int silence_frames =
+            std::min(pending_silence_.value(), num_frames - filled);
+        for (int c = 0; c < num_channels_; ++c) {
+          std::fill_n(channels[c] + filled, silence_frames, 0.0f);
+        }
+        filled += silence_frames;
+        // Reset since we'll want to re-evaluate for the next fill.
+        pending_silence_.reset();
+        after_silence_ = true;
+      }
+    }
+    return filled;
+  }
+
+  void AddSilence(int frames) { pending_silence_.emplace(frames); }
+
+ private:
+  int FillFramesForFader(int num_frames,
+                         int64_t playout_timestamp,
+                         float* const* channel_data) NO_THREAD_SAFETY_ANALYSIS {
+    if (pending_silence_) {
+      return 0;
+    }
+    int filled = mixer_input_->FillAudio(num_frames, playout_timestamp,
+                                         channel_data, after_silence_);
+    if (filled) {
+      after_silence_ = false;
+    }
+    return filled;
+  }
+
+  size_t num_channels() const override { return num_channels_; }
+  int sample_rate() const override { return sample_rate_; }
+
+  MixerInputConnection* const mixer_input_;
+  const int num_channels_;
+  const int sample_rate_;
+
+  absl::optional<int> pending_silence_;
+  FaderProvider fader_provider_;
+  AudioFader fader_;
+  bool after_silence_ = true;
+};
+
+int MixerInputConnection::TimestampedFader::FaderProvider::FillFrames(
+    int num_frames,
+    int64_t playout_timestamp,
+    float* const* channel_data) {
+  return owner_.FillFramesForFader(num_frames, playout_timestamp, channel_data);
+}
 
 MixerInputConnection::MixerInputConnection(
     StreamMixer* mixer,
@@ -179,24 +365,34 @@ MixerInputConnection::MixerInputConnection(
                       ? mixer_service::ConvertContentType(params.focus_type())
                       : content_type_),
       playout_channel_(params.channel_selection()),
+      pts_is_timestamp_(params.has_timestamped_audio_config()),
+      max_timestamp_error_(GetMaxTimestampError(params)),
+      never_crop_(params.timestamped_audio_config().never_crop()),
       effective_playout_channel_(playout_channel_),
       io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       max_queued_frames_(std::max(GetQueueSize(params), algorithm_fill_size_)),
       start_threshold_frames_(GetStartThreshold(params)),
       never_timeout_connection_(params.never_timeout_connection()),
-      rate_shifter_(this,
+      rate_adjuster_(
+          pts_is_timestamp_
+              ? CreateRateAdjuster(
+                    params,
+                    base::BindRepeating(&MixerInputConnection::ChangeAudioRate,
+                                        base::Unretained(this)))
+              : nullptr),
+      timestamped_fader_(std::make_unique<TimestampedFader>(
+          this,
+          params.has_fade_frames()
+              ? params.fade_frames()
+              : ::media::AudioTimestampHelper::TimeToFrames(
+                    kDefaultFadeTime,
+                    input_samples_per_second_))),
+      rate_shifter_(timestamped_fader_.get(),
                     channel_layout_,
                     num_channels_,
                     input_samples_per_second_,
                     algorithm_fill_size_),
-      fader_(&rate_shifter_,
-             params.has_fade_frames()
-                 ? params.fade_frames()
-                 : ::media::AudioTimestampHelper::TimeToFrames(
-                       kDefaultFadeTime,
-                       input_samples_per_second_),
-             1.0 /* playback_rate */),
-      audio_clock_simulator_(&fader_),
+      audio_clock_simulator_(&rate_shifter_),
       use_start_timestamp_(params.use_start_timestamp()),
       playback_start_timestamp_(use_start_timestamp_ ? INT64_MAX : INT64_MIN),
       weak_factory_(this) {
@@ -210,7 +406,7 @@ MixerInputConnection::MixerInputConnection(
             << ", input sample rate: " << input_samples_per_second_
             << ", start threshold: " << start_threshold_frames_
             << ", max queue size: " << max_queued_frames_
-            << ", socket: " << socket_.get();
+            << ", pts_is_timestamp: " << pts_is_timestamp_;
   DCHECK(mixer_);
   DCHECK(socket_);
   CHECK_GT(num_channels_, 0);
@@ -277,6 +473,9 @@ bool MixerInputConnection::HandleMetadata(
   }
   if (message.has_set_paused()) {
     SetPaused(message.set_paused().paused());
+  }
+  if (message.has_timestamp_adjustment()) {
+    AdjustTimestamps(message.timestamp_adjustment().adjustment());
   }
   if (message.has_eos_played_out()) {
     // Explicit EOS.
@@ -389,6 +588,7 @@ void MixerInputConnection::OnConnectionError() {
     base::AutoLock lock(lock_);
     pending_data_ = nullptr;
     state_ = State::kRemoved;
+    SetMediaPlaybackRateLocked(1.0);
     remove_self = mixer_error_;
   }
 
@@ -441,8 +641,22 @@ void MixerInputConnection::SetMediaPlaybackRate(double rate) {
   DCHECK_GT(rate, 0);
 
   base::AutoLock lock(lock_);
+  if (state_ == State::kGotEos || state_ == State::kRemoved) {
+    LOG(INFO) << this << " ignore playback rate change after EOS/removed";
+    return;
+  }
+  SetMediaPlaybackRateLocked(rate);
+}
+
+void MixerInputConnection::SetMediaPlaybackRateLocked(double rate) {
+  double old_rate = playback_rate_;
   rate_shifter_.SetPlaybackRate(rate);
   playback_rate_ = rate_shifter_.playback_rate();
+  if (rate_adjuster_) {
+    rate_adjuster_->Reset();
+    total_filled_frames_ = 0;
+  }
+  timestamped_fader_->SetPlaybackRate(playback_rate_);
   if (playback_rate_ == 1.0) {
     effective_playout_channel_.store(playout_channel_,
                                      std::memory_order_relaxed);
@@ -450,13 +664,51 @@ void MixerInputConnection::SetMediaPlaybackRate(double rate) {
     // Always play all channels when playback is rate-shifted (b/151393870).
     effective_playout_channel_.store(kChannelAll, std::memory_order_relaxed);
   }
+
+  // Adjust timestamps.
+  if (pts_is_timestamp_ && !queue_.empty()) {
+    double timestamp_ratio = old_rate / playback_rate_;
+    auto it = queue_.begin();
+    int64_t base_timestamp = GetTimestamp(it->get());
+    for (++it; it != queue_.end(); ++it) {
+      AdjustTimestampForRateChange(it->get(), timestamp_ratio, base_timestamp);
+    }
+    if (pending_data_) {
+      AdjustTimestampForRateChange(pending_data_.get(), timestamp_ratio,
+                                   base_timestamp);
+    }
+  }
 }
 
 void MixerInputConnection::SetAudioClockRate(double rate) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  if (pts_is_timestamp_) {
+    AUDIO_LOG(ERROR) << "Cannot set audio clock rate in timestamped mode";
+    return;
+  }
 
   base::AutoLock lock(lock_);
   audio_clock_simulator_.SetRate(rate);
+}
+
+double MixerInputConnection::ChangeAudioRate(double desired_clock_rate,
+                                             double error_slope,
+                                             double current_error) {
+  return audio_clock_simulator_.SetRate(desired_clock_rate);
+}
+
+void MixerInputConnection::AdjustTimestamps(int64_t timestamp_adjustment) {
+  if (timestamp_adjustment == 0) {
+    return;
+  }
+
+  base::AutoLock lock(lock_);
+  if (pending_data_) {
+    AdjustTimestamp(pending_data_.get(), timestamp_adjustment);
+  }
+  for (const auto& buffer : queue_) {
+    AdjustTimestamp(buffer.get(), timestamp_adjustment);
+  }
 }
 
 void MixerInputConnection::SetPaused(bool paused) {
@@ -476,12 +728,24 @@ void MixerInputConnection::SetPaused(bool paused) {
     }
 
     paused_ = paused;
+    if (paused_) {
+      // Drain data out of the rate shifter.
+      rate_shifter_.SetPlaybackRate(1.0);
+    } else {
+      rate_shifter_.SetPlaybackRate(playback_rate_);
+      playback_rate_ = rate_shifter_.playback_rate();
+    }
     mixer_rendering_delay_ = RenderingDelay();
     // Clear start timestamp, since a pause should invalidate the start
     // timestamp anyway. The AV sync code can restart (hard correction) on
     // resume if needed.
     use_start_timestamp_ = false;
     playback_start_timestamp_ = INT64_MIN;
+    filled_some_since_resume_ = false;
+    if (rate_adjuster_) {
+      rate_adjuster_->Reset();
+      total_filled_frames_ = 0;
+    }
   }
   mixer_->UpdateStreamCounts();
 }
@@ -535,9 +799,13 @@ void MixerInputConnection::WritePcm(scoped_refptr<net::IOBuffer> data) {
   {
     base::AutoLock lock(lock_);
     if (state_ == State::kUninitialized ||
-        queued_frames_ + fader_.buffered_frames() >= max_queued_frames_) {
+        queued_frames_ >= max_queued_frames_) {
       if (pending_data_) {
-        LOG(ERROR) << "Got unexpected audio data for " << this;
+        if (pts_is_timestamp_) {
+          QueueData(std::move(pending_data_));
+        } else {
+          LOG(ERROR) << "Got unexpected audio data for " << this;
+        }
       }
       pending_data_ = std::move(data);
       queued = false;
@@ -560,10 +828,11 @@ int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
   if (frames == 0) {
     AUDIO_LOG(INFO) << "End of stream for " << this;
     state_ = State::kGotEos;
+    SetMediaPlaybackRateLocked(1.0);
     if (!started_) {
       io_task_runner_->PostTask(FROM_HERE, ready_for_playback_task_);
     }
-  } else if (started_ ||
+  } else if (pts_is_timestamp_ || started_ ||
              GetTimestamp(data.get()) +
                      SamplesToMicroseconds(frames, input_samples_per_second_) >=
                  playback_start_pts_) {
@@ -578,31 +847,28 @@ int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
 
   if (!started_ || paused_ ||
       mixer_rendering_delay_.timestamp_microseconds == INT64_MIN) {
-    // Note that if we are waiting for the rate shifter to fill, we can't report
-    // accurate rendering delay because we don't know when the audio will start
-    // being filled to the mixer again (depends on how long it takes to fill the
-    // rate shifter).
     return INT64_MIN;
   }
 
+  int64_t mixer_timestamp = mixer_rendering_delay_.timestamp_microseconds +
+                            mixer_rendering_delay_.delay_microseconds;
+  return mixer_timestamp +
+         SamplesToMicroseconds(ExtraDelayFrames(), input_samples_per_second_);
+}
+
+double MixerInputConnection::ExtraDelayFrames() {
   // The next playback timestamp will be the timestamp from the last mixer fill
   // request, plus the time required to play out the other data in the pipeline.
   // The other data includes:
   //   * The number of frames of the last mixer fill (since that will be played
   //     out starting at the last mixer rendering delay).
   //   * Data in the audio clock simulator.
+  //   * Data in the rate shifter.
   //   * Data buffered in the fader.
-  //   * Data in the rate shifter, if any.
   //   * Queued data in |queue_|.
-  double extra_delay_frames =
-      mixer_read_size_ + audio_clock_simulator_.DelayFrames() +
-      fader_.buffered_frames() + rate_shifter_.BufferedFrames() +
-      (queued_frames_ / playback_rate_);
-
-  int64_t mixer_timestamp = mixer_rendering_delay_.timestamp_microseconds +
-                            mixer_rendering_delay_.delay_microseconds;
-  return mixer_timestamp +
-         SamplesToMicroseconds(extra_delay_frames, input_samples_per_second_);
+  return mixer_read_size_ + audio_clock_simulator_.DelayFrames() +
+         rate_shifter_.BufferedFrames() + timestamped_fader_->BufferedFrames() +
+         (queued_frames_ / playback_rate_);
 }
 
 void MixerInputConnection::InitializeAudioPlayback(
@@ -625,8 +891,7 @@ void MixerInputConnection::InitializeAudioPlayback(
       DCHECK_EQ(state_, State::kRemoved);
     }
 
-    if (pending_data_ &&
-        queued_frames_ + fader_.buffered_frames() < max_queued_frames_) {
+    if (pending_data_ && queued_frames_ < max_queued_frames_) {
       next_playback_timestamp_ = QueueData(std::move(pending_data_));
       queued_data = true;
     }
@@ -643,15 +908,20 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
   DCHECK(state_ == State::kNormalPlayback || state_ == State::kGotEos);
   DCHECK(!started_);
 
-  const int frames_needed_to_start = std::max(
-      start_threshold_frames_, fader_.FramesNeededFromSource(num_frames));
-  if (max_queued_frames_ < frames_needed_to_start) {
-    AUDIO_LOG(INFO) << "Boost queue size to " << frames_needed_to_start
+  if (pts_is_timestamp_) {
+    remaining_silence_frames_ = 0;
+    AUDIO_LOG(INFO) << "Start " << this;
+    started_ = true;
+    return;
+  }
+
+  if (max_queued_frames_ < start_threshold_frames_) {
+    AUDIO_LOG(INFO) << "Boost queue size to " << start_threshold_frames_
                     << " to allow stream to start";
-    max_queued_frames_ = frames_needed_to_start;
+    max_queued_frames_ = start_threshold_frames_;
   }
   const bool have_enough_queued_frames =
-      (state_ == State::kGotEos || queued_frames_ >= frames_needed_to_start);
+      (state_ == State::kGotEos || queued_frames_ >= start_threshold_frames_);
   if (!have_enough_queued_frames) {
     return;
   }
@@ -689,8 +959,7 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
     DropAudio(::media::AudioTimestampHelper::TimeToFrames(
         base::TimeDelta::FromMicroseconds(drop_us), input_samples_per_second_));
     // Only start if we still have enough data to do so.
-    started_ = (queued_frames_ >= start_threshold_frames_ &&
-                queued_frames_ >= fader_.FramesNeededFromSource(num_frames));
+    started_ = (queued_frames_ >= start_threshold_frames_);
 
     if (started_) {
       int64_t start_pts = GetTimestamp(queue_.front().get()) +
@@ -752,7 +1021,7 @@ int MixerInputConnection::FillAudioPlaybackFrames(
                                         rendering_delay.timestamp_microseconds;
 
   int filled = 0;
-  bool queued_more_data = false;
+  bool post_pcm_completion = false;
   bool signal_eos = false;
   bool remove_self = false;
   {
@@ -791,29 +1060,39 @@ int MixerInputConnection::FillAudioPlaybackFrames(
     mixer_rendering_delay_ = rendering_delay;
 
     // See if we can accept more data into the queue.
-    if (pending_data_ &&
-        queued_frames_ + fader_.buffered_frames() < max_queued_frames_) {
+    if (pending_data_ && queued_frames_ < max_queued_frames_) {
       next_playback_timestamp_ = QueueData(std::move(pending_data_));
-      queued_more_data = true;
+      post_pcm_completion = true;
+    } else if (pts_is_timestamp_) {
+      next_playback_timestamp_ =
+          playback_absolute_timestamp +
+          SamplesToMicroseconds(ExtraDelayFrames(), input_samples_per_second_);
     }
 
     // Check if we have played out EOS.
     if (state_ == State::kGotEos && queued_frames_ == 0 &&
-        fader_.buffered_frames() == 0) {
+        timestamped_fader_->BufferedFrames() == 0 &&
+        rate_shifter_.BufferedFrames() == 0) {
       signal_eos = true;
       state_ = State::kSignaledEos;
     }
 
     // If the caller has removed this source, delete once we have faded out.
-    if (state_ == State::kRemoved && fader_.buffered_frames() == 0) {
+    if (state_ == State::kRemoved &&
+        timestamped_fader_->BufferedFrames() == 0 &&
+        rate_shifter_.BufferedFrames() == 0) {
       if (fed_one_silence_buffer_after_removal_) {
         remove_self = true;
       }
       fed_one_silence_buffer_after_removal_ = true;
     }
+
+    if (pts_is_timestamp_ && queued_frames_ < max_queued_frames_) {
+      post_pcm_completion = true;
+    }
   }
 
-  if (queued_more_data) {
+  if (post_pcm_completion) {
     io_task_runner_->PostTask(FROM_HERE, pcm_completion_task_);
   }
   if (signal_eos) {
@@ -827,16 +1106,39 @@ int MixerInputConnection::FillAudioPlaybackFrames(
   return filled;
 }
 
-int MixerInputConnection::FillFrames(int num_frames,
-                                     int64_t playout_timestamp,
-                                     float* const* channels) {
-  if (!started_ || paused_ || state_ == State::kRemoved || num_frames == 0) {
+int MixerInputConnection::FillAudio(int num_frames,
+                                    int64_t expected_playout_time,
+                                    float* const* channels,
+                                    bool after_silence) {
+  if (paused_ || state_ == State::kRemoved) {
     return 0;
   }
 
-  int filled = FillAudio(num_frames, channels);
+  DCHECK(channels);
+  if (pts_is_timestamp_) {
+    return FillTimestampedAudio(num_frames, expected_playout_time, channels,
+                                after_silence);
+  }
+
+  if (!started_ || num_frames == 0) {
+    return 0;
+  }
+
+  int num_filled = 0;
+  int frames_left = num_frames;
+  while (frames_left && !queue_.empty()) {
+    int copied = FillFromQueue(frames_left, channels, num_filled);
+    frames_left -= copied;
+    num_filled += copied;
+  }
+
+  LogUnderrun(num_frames, num_filled);
+  return num_filled;
+}
+
+void MixerInputConnection::LogUnderrun(int num_frames, int filled) {
   if (filled != num_frames) {
-    if (!in_underrun_) {
+    if (!in_underrun_ && state_ == State::kNormalPlayback) {
       AUDIO_LOG(INFO) << "Stream underrun for " << this;
       in_underrun_ = true;
       io_task_runner_->PostTask(FROM_HERE, post_stream_underrun_task_);
@@ -845,46 +1147,120 @@ int MixerInputConnection::FillFrames(int num_frames,
     AUDIO_LOG(INFO) << "Stream underrun recovered for " << this;
     in_underrun_ = false;
   }
+}
+
+int MixerInputConnection::FillTimestampedAudio(int num_frames,
+                                               int64_t expected_playout_time,
+                                               float* const* channels,
+                                               bool after_silence) {
+  int filled = 0;
+  while (filled < num_frames && !queue_.empty()) {
+    net::IOBuffer* buffer = queue_.front().get();
+
+    const int64_t buffer_timestamp = GetTimestamp(buffer);
+    const int64_t playout_time =
+        expected_playout_time +
+        SamplesToMicroseconds(filled / playback_rate_,
+                              input_samples_per_second_);
+    const int64_t desired_playout_time =
+        buffer_timestamp +
+        SamplesToMicroseconds(current_buffer_offset_ / playback_rate_,
+                              input_samples_per_second_);
+
+    const int64_t error = playout_time - desired_playout_time;
+    if (error < -max_timestamp_error_ ||
+        (after_silence &&
+         error < -1e6 / (input_samples_per_second_ * playback_rate_))) {
+      int64_t silence_frames =
+          std::round(-error * input_samples_per_second_ * playback_rate_ / 1e6);
+      if (filled_some_since_resume_) {
+        AUDIO_LOG(INFO) << this << " adding " << silence_frames
+                        << " frames of silence, buffer ts = "
+                        << buffer_timestamp;
+      }
+      timestamped_fader_->AddSilence(silence_frames);
+      rate_adjuster_->Reset();
+      total_filled_frames_ = 0;
+      return filled;  // Need to fade out.
+    } else if (error > max_timestamp_error_ || (after_silence && error > 0)) {
+      // Crop buffer that would be played too late.
+      rate_adjuster_->Reset();
+      total_filled_frames_ = 0;
+      const int buffer_frames = GetFrameCount(buffer) - current_buffer_offset_;
+      const int frames_to_crop =
+          (never_crop_ ? 0
+                       : std::round(error * input_samples_per_second_ *
+                                    playback_rate_ / 1e6));
+      if (frames_to_crop > 0 && filled_some_since_resume_) {
+        AUDIO_LOG(INFO) << this << " cropping " << frames_to_crop
+                        << " frames, buffer ts = " << buffer_timestamp;
+      }
+      if (frames_to_crop >= buffer_frames) {
+        queued_frames_ -= buffer_frames;
+        queue_.pop_front();
+        current_buffer_offset_ = 0;
+        if (after_silence) {
+          continue;  // Continue to next buffer in the queue.
+        }
+      } else {
+        current_buffer_offset_ += frames_to_crop;
+        queued_frames_ -= frames_to_crop;
+      }
+
+      if (!after_silence) {
+        timestamped_fader_->AddSilence(0);
+        return filled;  // Fade out.
+      }
+    } else {
+      rate_adjuster_->AddError(
+          error, SamplesToMicroseconds(total_filled_frames_ / playback_rate_,
+                                       input_samples_per_second_));
+    }
+
+    int f = FillFromQueue(num_frames - filled, channels, filled);
+    filled += f;
+    total_filled_frames_ += f;
+    after_silence = false;
+  }
+
+  if (filled_some_since_resume_) {
+    LogUnderrun(num_frames, filled);
+  }
+  if (filled > 0) {
+    if (!filled_some_since_resume_) {
+      AUDIO_LOG(INFO) << "Start timestamped playback";
+    }
+    filled_some_since_resume_ = true;
+  }
   return filled;
 }
 
-int MixerInputConnection::FillAudio(int num_frames, float* const* channels) {
-  DCHECK(channels);
+int MixerInputConnection::FillFromQueue(int num_frames,
+                                        float* const* channels,
+                                        int write_offset) {
+  net::IOBuffer* buffer = queue_.front().get();
+  const int buffer_frames = GetFrameCount(buffer);
+  const int frames_to_copy =
+      std::min(num_frames, buffer_frames - current_buffer_offset_);
+  DCHECK(frames_to_copy >= 0 && frames_to_copy <= num_frames)
+      << " frames_to_copy=" << frames_to_copy << " num_frames=" << num_frames
+      << " buffer_frames=" << buffer_frames << " write_offset=" << write_offset
+      << " current_buffer_offset_=" << current_buffer_offset_;
 
-  int num_filled = 0;
-  while (num_frames) {
-    if (queue_.empty()) {
-      return num_filled;
-    }
-
-    net::IOBuffer* buffer = queue_.front().get();
-    const int buffer_frames = GetFrameCount(buffer);
-    const int frames_to_copy =
-        std::min(num_frames, buffer_frames - current_buffer_offset_);
-    DCHECK(frames_to_copy >= 0 && frames_to_copy <= num_frames)
-        << " frames_to_copy=" << frames_to_copy << " num_frames=" << num_frames
-        << " buffer_frames=" << buffer_frames << " num_filled=" << num_filled
-        << " current_buffer_offset_=" << current_buffer_offset_;
-
-    const float* buffer_samples = GetAudioData(buffer);
-    for (int c = 0; c < num_channels_; ++c) {
-      const float* buffer_channel = buffer_samples + (buffer_frames * c);
-      std::copy_n(buffer_channel + current_buffer_offset_, frames_to_copy,
-                  channels[c] + num_filled);
-    }
-
-    num_frames -= frames_to_copy;
-    queued_frames_ -= frames_to_copy;
-    num_filled += frames_to_copy;
-
-    current_buffer_offset_ += frames_to_copy;
-    if (current_buffer_offset_ == buffer_frames) {
-      queue_.pop_front();
-      current_buffer_offset_ = 0;
-    }
+  const float* buffer_samples = GetAudioData(buffer);
+  for (int c = 0; c < num_channels_; ++c) {
+    const float* buffer_channel = buffer_samples + (buffer_frames * c);
+    std::copy_n(buffer_channel + current_buffer_offset_, frames_to_copy,
+                channels[c] + write_offset);
   }
+  queued_frames_ -= frames_to_copy;
 
-  return num_filled;
+  current_buffer_offset_ += frames_to_copy;
+  if (current_buffer_offset_ == buffer_frames) {
+    queue_.pop_front();
+    current_buffer_offset_ = 0;
+  }
+  return frames_to_copy;
 }
 
 void MixerInputConnection::PostPcmCompletion() {

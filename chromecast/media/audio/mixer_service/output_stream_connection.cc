@@ -39,6 +39,7 @@ enum MessageTypes : int {
   kStreamVolume,
   kPauseResume,
   kEndOfStream,
+  kTimestampAdjustment,
 };
 
 }  // namespace
@@ -156,8 +157,19 @@ void OutputStreamConnection::Resume() {
   paused_ = false;
   if (socket_) {
     Generic message;
-    message.mutable_set_paused()->set_paused(false);
+    auto* pause_message = message.mutable_set_paused();
+    pause_message->set_paused(false);
     socket_->SendProto(kPauseResume, message);
+  }
+}
+
+void OutputStreamConnection::SendTimestampAdjustment(
+    int64_t timestamp_adjustment) {
+  if (socket_) {
+    Generic message;
+    auto* adjustment_message = message.mutable_timestamp_adjustment();
+    adjustment_message->set_adjustment(timestamp_adjustment);
+    socket_->SendProto(kTimestampAdjustment, message);
   }
 }
 

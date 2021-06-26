@@ -112,7 +112,16 @@ int AudioFader::FillFrames(int num_frames,
   if (complete) {
     CompleteFill(channel_data, filled_frames);
   } else {
-    IncompleteFill(channel_data, filled_frames);
+    if (state_ == State::kPlaying) {
+      int extra_frames =
+          std::max(filled_frames + buffered_frames_ - fade_frames_, 0);
+      for (size_t c = 0; c < num_channels_; ++c) {
+        fill_channel_data[c] = channel_data[c] + extra_frames;
+      }
+      IncompleteFill(fill_channel_data, filled_frames - extra_frames);
+    } else {
+      IncompleteFill(channel_data, filled_frames);
+    }
   }
 
   return filled_frames;
