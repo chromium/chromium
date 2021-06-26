@@ -616,7 +616,11 @@ export class DestinationStore extends EventTarget {
     const origins = [];
     if (isLocal) {
       origins.push(DestinationOrigin.LOCAL);
-      origins.push(DestinationOrigin.PRIVET);
+      // TODO (rbpotter): Remove the code below once this flag and policy are no
+      // longer supported. Remove the privet flag in M90.
+      if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
+        origins.push(DestinationOrigin.PRIVET);
+      }
       origins.push(DestinationOrigin.EXTENSION);
       origins.push(DestinationOrigin.CROS);
     }
@@ -859,8 +863,8 @@ export class DestinationStore extends EventTarget {
       PrinterType.LOCAL_PRINTER,
     ];
 
-    // TODO (rbpotter): Remove the code below once this flag and policy are no
-    // longer supported. Remove the privet flag in M90.
+    // TODO (https://crbug.com/1223593): Remove the code below once this policy
+    // is no longer supported.
     if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
       types.push(PrinterType.PRIVET_PRINTER);
     }
