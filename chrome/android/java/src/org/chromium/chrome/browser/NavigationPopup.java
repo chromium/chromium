@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,10 +31,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -64,6 +63,17 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         int TABLET_FORWARD = 2;
     }
 
+    /** Delegate to display navigation history. */
+    public interface HistoryDelegate {
+        /**
+         * Show navigation history.
+         * @param activity The Activity that owns the associated history manager.
+         * @param tab The tab whose navigation history is to used.
+         * @param isIncognitoSelected Whether the incognito tab model is selected.
+         */
+        void show(Activity activity, Tab tab, boolean isIncognitoSelected);
+    }
+
     private final Profile mProfile;
     private final Context mContext;
     private final ListPopupWindow mPopup;
@@ -75,6 +85,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     @Nullable
     private final OnLayoutChangeListener mAnchorViewLayoutChangeListener;
     private final Supplier<Tab> mCurrentTabSupplier;
+    private final HistoryDelegate mHistoryDelegate;
 
     private DefaultFaviconHelper mDefaultFaviconHelper;
 
@@ -94,16 +105,18 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
      * @param navigationController The controller which takes care of page navigations.
      * @param type The type of navigation popup being triggered.
      * @param currentTabSupplier Supplies the current tab.
+     * @param historyDelegate Delegate used to display navigation history.
      */
     public NavigationPopup(Profile profile, Context context,
             NavigationController navigationController, @Type int type,
-            Supplier<Tab> currentTabSupplier) {
+            Supplier<Tab> currentTabSupplier, HistoryDelegate historyDelegate) {
         mProfile = profile;
         mContext = context;
         Resources resources = mContext.getResources();
         mNavigationController = navigationController;
         mType = type;
         mCurrentTabSupplier = currentTabSupplier;
+        mHistoryDelegate = historyDelegate;
 
         boolean isForward = type == Type.TABLET_FORWARD;
         boolean anchorToBottom = type == Type.ANDROID_SYSTEM_BACK;
@@ -252,9 +265,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
             Tab currentTab = mCurrentTabSupplier.get();
-            HistoryManagerUtils.showHistoryManager(TabUtils.getActivity(currentTab), currentTab,
-                    /* isIncognitoSelected= */ currentTab == null ? false
-                                                                  : currentTab.isIncognito());
+            mHistoryDelegate.show(currentTab.getWindowAndroid().getActivity().get(), currentTab,
+                    /* isIncognitoSelected= */ currentTab != null && currentTab.isIncognito());
         } else {
             // 1-based index to keep in line with Desktop implementation.
             RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));

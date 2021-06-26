@@ -9,9 +9,9 @@ import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,15 +45,18 @@ class TabSwitcherModeTTCoordinatorPhone {
     private final boolean mIsGridTabSwitcherEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
     private final boolean mIsStartSurfaceEnabled;
+    private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
     TabSwitcherModeTTCoordinatorPhone(ViewStub tabSwitcherToolbarStub,
             MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled) {
+            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsStartSurfaceEnabled = isStartSurfaceEnabled;
+        mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
     }
 
     /**
@@ -156,8 +159,8 @@ class TabSwitcherModeTTCoordinatorPhone {
 
     private void initializeTabSwitcherToolbar() {
         mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
-        mTabSwitcherModeToolbar.initialize(
-                mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled, mIsStartSurfaceEnabled);
+        mTabSwitcherModeToolbar.initialize(mIsGridTabSwitcherEnabled, mIsTabToGtsAnimationEnabled,
+                mIsStartSurfaceEnabled, mIsIncognitoModeEnabledSupplier);
         mMenuButtonCoordinator.setMenuButton(
                 mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
 
@@ -187,7 +190,7 @@ class TabSwitcherModeTTCoordinatorPhone {
 
     private boolean isNewTabVariationEnabled() {
         return mIsGridTabSwitcherEnabled && ChromeFeatureList.isInitialized()
-                && IncognitoUtils.isIncognitoModeEnabled()
+                && mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && !ChromeFeatureList
                             .getFieldTrialParamByFeature(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                     "tab_grid_layout_android_new_tab")

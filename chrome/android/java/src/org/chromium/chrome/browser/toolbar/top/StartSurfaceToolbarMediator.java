@@ -37,9 +37,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -67,6 +67,7 @@ class StartSurfaceToolbarMediator {
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
     private final UserEducationHelper mUserEducationHelper;
+    private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -98,8 +99,8 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
-            boolean isTabGroupsAndroidContinuationEnabled,
-            UserEducationHelper userEducationHelper) {
+            boolean isTabGroupsAndroidContinuationEnabled, UserEducationHelper userEducationHelper,
+            BooleanSupplier isIncognitoModeEnabledSupplier) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -108,6 +109,7 @@ class StartSurfaceToolbarMediator {
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
         mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
         mUserEducationHelper = userEducationHelper;
+        mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
             // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
@@ -277,7 +279,7 @@ class StartSurfaceToolbarMediator {
     }
 
     private void maybeInitializeIncognitoToggle() {
-        if (IncognitoUtils.isIncognitoModeEnabled()) {
+        if (mIsIncognitoModeEnabledSupplier.getAsBoolean()) {
             assert mTabCountProvider != null;
             mPropertyModel.set(INCOGNITO_TAB_COUNT_PROVIDER, mTabCountProvider);
             mPropertyModel.set(INCOGNITO_TAB_MODEL_SELECTOR, mTabModelSelector);

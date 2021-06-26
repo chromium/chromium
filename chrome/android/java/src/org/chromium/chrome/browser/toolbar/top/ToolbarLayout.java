@@ -27,7 +27,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.findinpage.FindToolbar;
+import org.chromium.chrome.browser.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.ui.UiUtils;
@@ -72,6 +73,8 @@ public abstract class ToolbarLayout
 
     @Nullable
     protected ToolbarProgressBar mProgressBar;
+    @Nullable
+    protected BooleanSupplier mPartnerHomepageEnabledSupplier;
 
     private boolean mNativeLibraryReady;
     private boolean mUrlHasFocus;
@@ -113,14 +116,20 @@ public abstract class ToolbarLayout
      * @param tabController       The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      * @param isInVrSupplier A supplier of the state of VR mode.
+     * @param historyDelegate Delegate used to display navigation history.
+     * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
+     *        homepage is enabled.
+     * @param offlineDownloader Triggers downloading an offline page.
      */
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
-            BooleanSupplier isInVrSupplier) {
+            BooleanSupplier isInVrSupplier, HistoryDelegate historyDelegate,
+            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
         mProgressBar = createProgressBar(isInVrSupplier);
     }
 

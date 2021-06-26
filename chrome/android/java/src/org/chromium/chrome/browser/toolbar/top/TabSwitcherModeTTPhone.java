@@ -16,9 +16,9 @@ import android.view.ViewStub;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
@@ -41,6 +41,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     private TabCountProvider mTabCountProvider;
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
+    private BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
     private @Nullable IncognitoToggleTabLayout mIncognitoToggleTabLayout;
     // The following view is used as a variation for mNewTabImageButton. When this view is showing
@@ -86,9 +87,10 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     }
 
     void initialize(boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
-            boolean isStartSurfaceEnabled) {
+            boolean isStartSurfaceEnabled, BooleanSupplier isIncognitoModeEnabledSupplier) {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
+        mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
 
         mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
         mNewTabImageButton.setStartSurfaceEnabled(isStartSurfaceEnabled);
@@ -361,6 +363,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
      *         and incognito status.
      */
     private boolean shouldShowIncognitoToggle() {
-        return mIsGridTabSwitcherEnabled && IncognitoUtils.isIncognitoModeEnabled();
+        return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean();
     }
 }

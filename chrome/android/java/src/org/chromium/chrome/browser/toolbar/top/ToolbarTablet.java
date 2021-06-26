@@ -29,7 +29,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.NavigationPopup;
-import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -62,6 +62,15 @@ import java.util.Collection;
 @SuppressLint("Instantiatable")
 public class ToolbarTablet extends ToolbarLayout
         implements OnClickListener, View.OnLongClickListener, TabCountObserver {
+    /** Downloads page for offline access. */
+    public interface OfflineDownloader {
+        /**
+         * Trigger the download of a page.
+         * @param context Context to pull resources from.
+         * @param tab Tab containing the page to download.
+         */
+        void downloadPage(Context context, Tab tab);
+    }
     private HomeButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
@@ -89,6 +98,8 @@ public class ToolbarTablet extends ToolbarLayout
     private final int mStartPaddingWithoutButtons;
     private boolean mShouldAnimateButtonVisibilityChange;
     private AnimatorSet mButtonVisibilityAnimators;
+    private HistoryDelegate mHistoryDelegate;
+    private OfflineDownloader mOfflineDownloader;
 
     /**
      * Constructs a ToolbarTablet object.
@@ -291,7 +302,7 @@ public class ToolbarTablet extends ToolbarLayout
         mNavigationPopup = new NavigationPopup(Profile.fromWebContents(tab.getWebContents()),
                 getContext(), tab.getWebContents().getNavigationController(),
                 isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK,
-                getToolbarDataProvider()::getTab);
+                getToolbarDataProvider()::getTab, mHistoryDelegate);
         mNavigationPopup.show(anchorView);
     }
 
@@ -313,7 +324,7 @@ public class ToolbarTablet extends ToolbarLayout
                 RecordUserAction.record("MobileToolbarToggleBookmark");
             }
         } else if (mSaveOfflineButton == v) {
-            DownloadUtils.downloadOfflinePage(getContext(), getToolbarDataProvider().getTab());
+            mOfflineDownloader.downloadPage(getContext(), getToolbarDataProvider().getTab());
             RecordUserAction.record("MobileToolbarDownloadPage");
         }
     }
@@ -478,8 +489,12 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
-            BooleanSupplier isInVrSupplier) {
-        super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator, isInVrSupplier);
+            BooleanSupplier isInVrSupplier, HistoryDelegate historyDelegate,
+            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader) {
+        super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator, isInVrSupplier,
+                historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
+        mHistoryDelegate = historyDelegate;
+        mOfflineDownloader = offlineDownloader;
         menuButtonCoordinator.setVisibility(true);
     }
 

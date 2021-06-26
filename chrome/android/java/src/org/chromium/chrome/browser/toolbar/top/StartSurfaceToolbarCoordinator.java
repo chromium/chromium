@@ -12,6 +12,7 @@ import android.view.ViewStub;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -61,8 +62,8 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler,
-            boolean isTabGroupsAndroidContinuationEnabled) {
+            OnClickListener homeButtonOnClickHandler, boolean isTabGroupsAndroidContinuationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier) {
         mStub = startSurfaceToolbarStub;
 
         layoutStateProviderSupplier.onAvailable(
@@ -95,7 +96,8 @@ public class StartSurfaceToolbarCoordinator {
                 homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
-                isTabGroupsAndroidContinuationEnabled, userEducationHelper);
+                isTabGroupsAndroidContinuationEnabled, userEducationHelper,
+                isIncognitoModeEnabledSupplier);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

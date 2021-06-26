@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -146,7 +147,8 @@ public class NavigationPopupTest {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             NavigationPopup popup = new NavigationPopup(mProfile, mActivityTestRule.getActivity(),
                     controller, NavigationPopup.Type.TABLET_FORWARD,
-                    mActivityTestRule.getActivity().getActivityTabProvider());
+                    mActivityTestRule.getActivity().getActivityTabProvider(),
+                    HistoryManagerUtils::showHistoryManager);
             popup.show(mActivityTestRule.getActivity()
                                .getToolbarManager()
                                .getToolbarLayoutForTesting());
