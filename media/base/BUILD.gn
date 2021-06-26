@@ -94,6 +94,8 @@ source_set("base") {
     "bit_reader.h",
     "bit_reader_core.cc",
     "bit_reader_core.h",
+    "bitrate.cc",
+    "bitrate.h",
     "bitstream_buffer.cc",
     "bitstream_buffer.h",
     "buffering_state.cc",
