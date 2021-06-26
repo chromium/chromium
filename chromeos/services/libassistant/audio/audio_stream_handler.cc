@@ -133,8 +133,8 @@ void AudioStreamHandler::OnDecoderInitialized(bool success,
       bytes_per_sample == 2
           ? assistant_client::OutputStreamEncoding::STREAM_PCM_S16
           : assistant_client::OutputStreamEncoding::STREAM_PCM_S32,
-      /*pcm_sample_rate=*/samples_per_second,
-      /*pcm_num_channels=*/channels};
+      /*pcm_sample_rate=*/static_cast<int>(samples_per_second),
+      /*pcm_num_channels=*/static_cast<int>(channels)};
   if (start_device_owner_on_main_thread_) {
     DCHECK(!on_filled_);
     std::move(start_device_owner_on_main_thread_).Run(format);
