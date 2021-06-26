@@ -89,11 +89,11 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
   static crash_reporter::CrashKeyString<16> crash_key_process_type(
       "process_type");
   crash_key_process_type.Set("updater");
-  if (CrashClient::GetInstance()->InitializeCrashReporting(updater_scope))
-    VLOG(1) << "Crash reporting initialized.";
-  else
+  if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
-  StartCrashReporter(updater_scope, kUpdaterVersion);
+    return;
+  }
+  VLOG(1) << "Crash reporting initialized.";
 }
 
 int HandleUpdaterCommands(UpdaterScope updater_scope,
@@ -102,15 +102,17 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   if (command_line->HasSwitch(kTestSwitch))
     return 0;
 
-  // Start the crash handler as early as possible.
   if (command_line->HasSwitch(kCrashHandlerSwitch)) {
     const int retval = CrashReporterMain();
 
     // The crash handler mutates the logging object, so the updater process
-    // stops logging to the log file.
+    // stops logging to the log file aftern `CrashReporterMain()` returns.
     ReinitializeLoggingAfterCrashHandler(updater_scope);
     return retval;
   }
+
+  // Starts and connects to the external crash handler as early as possible.
+  StartCrashReporter(updater_scope, kUpdaterVersion);
 
   InitializeCrashReporting(updater_scope);
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);

@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -30,11 +31,8 @@
 namespace updater {
 namespace {
 
-// True if the current process is connected to a crash handler process.
-bool g_is_connected_to_crash_handler = false;
-
-crashpad::CrashpadClient* GetCrashpadClient() {
-  static auto* crashpad_client = new crashpad::CrashpadClient();
+crashpad::CrashpadClient& GetCrashpadClient() {
+  static crashpad::CrashpadClient crashpad_client;
   return crashpad_client;
 }
 
@@ -80,23 +78,22 @@ void StartCrashReporter(UpdaterScope updater_scope,
     return;
   }
 
-  std::map<std::string, std::string> annotations;  // Crash keys.
+  std::map<std::string, std::string> annotations;
   annotations["ver"] = version;
   annotations["prod"] = PRODUCT_FULLNAME_STRING;
 
   // TODO(crbug.com/1163583): use the production front end instead of staging.
-  crashpad::CrashpadClient* client = GetCrashpadClient();
-  if (!client->StartHandler(handler_path, *database_path,
-                            /*metrics_dir=*/base::FilePath(),
-                            CRASH_STAGING_UPLOAD_URL, annotations,
-                            MakeCrashHandlerArgs(updater_scope),
-                            /*restartable=*/true,
-                            /*asynchronous_start=*/false)) {
+  crashpad::CrashpadClient& client = GetCrashpadClient();
+  if (!client.StartHandler(handler_path, *database_path,
+                           /*metrics_dir=*/base::FilePath(),
+                           CRASH_STAGING_UPLOAD_URL, annotations,
+                           MakeCrashHandlerArgs(updater_scope),
+                           /*restartable=*/true,
+                           /*asynchronous_start=*/false)) {
     LOG(DFATAL) << "Failed to start handler.";
     return;
   }
 
-  g_is_connected_to_crash_handler = true;
   VLOG(1) << "Crash handler launched and ready.";
 }
 
@@ -135,27 +132,5 @@ int CrashReporterMain() {
   return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
                                /*user_stream_sources=*/nullptr);
 }
-
-#if defined(OS_WIN)
-
-std::wstring GetCrashReporterIPCPipeName() {
-  return g_is_connected_to_crash_handler
-             ? GetCrashpadClient()->GetHandlerIPCPipe()
-             : std::wstring();
-}
-
-void UseCrashReporter(const std::wstring& ipc_pipe_name) {
-  DCHECK(!ipc_pipe_name.empty());
-  crashpad::CrashpadClient* crashpad_client = GetCrashpadClient();
-  if (!crashpad_client->SetHandlerIPCPipe(ipc_pipe_name)) {
-    LOG(DFATAL) << "Failed to set handler IPC pipe name: " << ipc_pipe_name;
-    return;
-  }
-
-  g_is_connected_to_crash_handler = true;
-  VLOG(1) << "Crash handler is ready.";
-}
-
-#endif  // OS_WIN
 
 }  // namespace updater

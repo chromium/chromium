@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -24,20 +25,17 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/win/wrapped_window_proc.h"
-#endif
 
 namespace {
-
-#if defined(OS_WIN)
 
 int __cdecl HandleWinProcException(EXCEPTION_POINTERS* exception_pointers) {
   crashpad::CrashpadClient::DumpAndCrash(exception_pointers);
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
-#endif
-
 }  // namespace
+
+#endif  // OS_WIN
 
 namespace updater {
 
@@ -74,6 +72,10 @@ bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {
 
 bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static bool initialized = false;
+  DCHECK(!initialized);
+  initialized = true;
 
   if (!InitializeDatabaseOnly(updater_scope))
     return false;
@@ -124,39 +126,6 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   crashpad_settings->SetUploadsEnabled(true);
 
   return true;
-}
-
-// static
-std::string CrashClient::GetClientId() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance()->sequence_checker_);
-  DCHECK(GetInstance()->database_) << "Crash reporting not initialized";
-  crashpad::Settings* settings = GetInstance()->database_->GetSettings();
-  DCHECK(settings);
-
-  crashpad::UUID uuid;
-  if (!settings->GetClientID(&uuid)) {
-    LOG(ERROR) << "Unable to retrieve client ID from Crashpad database";
-    return {};
-  }
-
-  std::string uuid_string = uuid.ToString();
-  base::ReplaceSubstringsAfterOffset(&uuid_string, 0, "-", "");
-  return uuid_string;
-}
-
-// static
-bool CrashClient::IsUploadEnabled() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetInstance()->sequence_checker_);
-  DCHECK(GetInstance()->database_) << "Crash reporting not initialized";
-  crashpad::Settings* settings = GetInstance()->database_->GetSettings();
-  DCHECK(settings);
-
-  bool upload_enabled = false;
-  if (!settings->GetUploadsEnabled(&upload_enabled)) {
-    LOG(ERROR) << "Unable to verify if crash uploads are enabled or not";
-    return false;
-  }
-  return upload_enabled;
 }
 
 }  // namespace updater
