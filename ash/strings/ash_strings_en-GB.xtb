@@ -204,6 +204,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
+<translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2582112259361606227">Restart to update</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
@@ -350,6 +351,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3771549900096082774">High contrast mode</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
+<translation id="3779139509281456663">Connecting <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lock</translation>
 <translation id="3796746699333205839">An application is using your camera and microphone</translation>
@@ -704,6 +706,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wants to use the microphone</translation>
+<translation id="6630773993843701741">Open Bluetooth settings to pair the device manually</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
@@ -789,6 +792,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
+<translation id="7366890467478514168">Connect <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
@@ -1039,6 +1043,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9193626018745640770">Casting on an unknown receiver</translation>
 <translation id="9194617393863864469">Sign in another user...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> resolution changed to <ph name="RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Connect <ph name="NAME" /> to this Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, managed by your administrator</translation>
 <translation id="9210037371811586452">Exiting unified desktop mode</translation>
 <translation id="9211490828691860325">All desks</translation>
