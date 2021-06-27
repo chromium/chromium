@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,11 +83,19 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   EXPECT_FALSE(was_uninstalled);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1224161
+#define MAYBE_TrackParentWindowDestructionAfterViewCreation \
+  DISABLED_TrackParentWindowDestructionAfterViewCreation
+#else
+#define MAYBE_TrackParentWindowDestructionAfterViewCreation \
+  TrackParentWindowDestructionAfterViewCreation
+#endif
 // Test that WebAppUninstallDialog cancels the uninstall if the Window
 // which is passed to WebAppUninstallDialog::Create() is destroyed after
 // WebAppUninstallDialogDelegateView is created.
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
-                       TrackParentWindowDestructionAfterViewCreation) {
+                       MAYBE_TrackParentWindowDestructionAfterViewCreation) {
   AppId app_id = InstallTestWebApp(browser()->profile());
 
   std::unique_ptr<web_app::WebAppUninstallDialog> dialog(
