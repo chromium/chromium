@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 // WARNING: This block must come before the base/numerics headers are included.
 // These tests deliberately cause arithmetic boundary errors. If the compiler is
@@ -29,7 +30,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(COMPILER_MSVC) && defined(ARCH_CPU_32_BITS)
@@ -997,7 +997,7 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
         // At least twice larger type.
         TEST_EXPECTED_SUCCESS(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_VALUE(SrcLimits::max() * clamped_dst,
-                            Dst(SrcLimits::max()) * SrcLimits::max());
+                            Dst(SrcLimits::max()) * Dst(SrcLimits::max()));
       } else {  // Larger, but not at least twice as large.
         TEST_EXPECTED_FAILURE(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_SUCCESS(checked_dst + 1);
@@ -1673,7 +1673,7 @@ TEST(SafeNumerics, VariadicNumericOperations) {
 }
 
 TEST(SafeNumerics, CeilInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1697,7 +1697,7 @@ TEST(SafeNumerics, CeilInt) {
 }
 
 TEST(SafeNumerics, FloorInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1721,7 +1721,7 @@ TEST(SafeNumerics, FloorInt) {
 }
 
 TEST(SafeNumerics, RoundInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1749,7 +1749,8 @@ TEST(SafeNumerics, RoundInt) {
 }
 
 TEST(SafeNumerics, Int64) {
-  constexpr double kMax = std::numeric_limits<int64_t>::max();
+  constexpr double kMax =
+      static_cast<double>(std::numeric_limits<int64_t>::max());
   constexpr double kMin = std::numeric_limits<int64_t>::min();
   constexpr double kInfinity = std::numeric_limits<double>::infinity();
   constexpr double kNaN = std::numeric_limits<double>::quiet_NaN();

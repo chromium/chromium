@@ -91,12 +91,12 @@ TEST(RandUtilTest, RandGeneratorIsUniform) {
   // top half. A bit of calculus care of jar@ shows that the largest
   // measurable delta is when the top of the range is 3/4ths of the
   // way, so that's what we use in the test.
-  const uint64_t kTopOfRange =
+  constexpr uint64_t kTopOfRange =
       (std::numeric_limits<uint64_t>::max() / 4ULL) * 3ULL;
-  const uint64_t kExpectedAverage = kTopOfRange / 2ULL;
-  const uint64_t kAllowedVariance = kExpectedAverage / 50ULL;  // +/- 2%
-  const int kMinAttempts = 1000;
-  const int kMaxAttempts = 1000000;
+  constexpr double kExpectedAverage = static_cast<double>(kTopOfRange / 2);
+  constexpr double kAllowedVariance = kExpectedAverage / 50.0;  // +/- 2%
+  constexpr int kMinAttempts = 1000;
+  constexpr int kMaxAttempts = 1000000;
 
   double cumulative_average = 0.0;
   int count = 0;

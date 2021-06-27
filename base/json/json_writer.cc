@@ -12,6 +12,7 @@
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -83,8 +84,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
     case Value::Type::DOUBLE: {
       double value = node.GetDouble();
       if (omit_double_type_preservation_ &&
-          value <= std::numeric_limits<int64_t>::max() &&
-          value >= std::numeric_limits<int64_t>::min() &&
+          IsValueInRangeForNumericType<int64_t>(value) &&
           std::floor(value) == value) {
         json_string_->append(NumberToString(static_cast<int64_t>(value)));
         return true;
