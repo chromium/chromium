@@ -210,15 +210,14 @@ void ServiceWorkerContainerHost::Register(
       std::move(callback), blink::mojom::ServiceWorkerErrorType::kUnknown,
       std::string(), nullptr);
 
-  // We record the requesting frame host and pass it down, so that we can use
-  // this context for things like printing console error if the service worker
-  // does not have a process yet.
-  GlobalRenderFrameHostId requesting_frame_id;
-  FrameTreeNode* requesting_frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id());
-  if (requesting_frame_tree_node)
-    requesting_frame_id =
-        requesting_frame_tree_node->current_frame_host()->GetGlobalId();
+  // We pass the requesting frame host id, so that we can use this context for
+  // things like printing console error if the service worker does not have a
+  // process yet. This must be after commit so it should be populated, while
+  // it's possible the RenderFrameHost has already been destroyed due to IPC
+  // ordering.
+  DCHECK_NE(process_id_, ChildProcessHost::kInvalidUniqueID);
+  DCHECK_NE(frame_routing_id_, MSG_ROUTING_NONE);
+  GlobalRenderFrameHostId global_frame_id(process_id_, frame_routing_id_);
 
   // Registrations could come from different origins when "disable-web-security"
   // is active, we need to make sure we get the correct key.
@@ -232,7 +231,7 @@ void ServiceWorkerContainerHost::Register(
                      weak_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
-      requesting_frame_id);
+      global_frame_id);
 }
 
 void ServiceWorkerContainerHost::GetRegistration(
@@ -793,9 +792,9 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   if (controller_)
     controller_->UpdateForegroundPriority();
 
-  DCHECK_EQ(MSG_ROUTING_NONE, frame_id_);
+  DCHECK_EQ(MSG_ROUTING_NONE, frame_routing_id_);
   DCHECK_NE(MSG_ROUTING_NONE, container_frame_id);
-  frame_id_ = container_frame_id;
+  frame_routing_id_ = container_frame_id;
 
   DCHECK(!cross_origin_embedder_policy_.has_value());
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
@@ -834,7 +833,7 @@ void ServiceWorkerContainerHost::OnEndNavigationCommit() {
 
   if (controller_) {
     controller_->OnControlleeNavigationCommitted(client_uuid_, process_id_,
-                                                 frame_id_);
+                                                 frame_routing_id_);
   }
 }
 

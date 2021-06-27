@@ -416,7 +416,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   base::TimeTicks create_time() const { return create_time_; }
   int process_id() const { return process_id_; }
-  int frame_id() const { return frame_id_; }
+  // TODO(falken): Replace with a getter for GlobalRenderFrameHostId.
+  int frame_id() const { return frame_routing_id_; }
   int frame_tree_node_id() const { return client_info_->GetFrameTreeNodeId(); }
 
   // For service worker clients.
@@ -709,9 +710,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // on the GUID format.
   base::UnguessableToken fetch_request_window_id_;
 
-  // The ID of the RenderFrameHost used for the navigation. Set on response
-  // commit.
-  int frame_id_ = MSG_ROUTING_NONE;
+  // The routing ID of the RenderFrameHost that hosts this client. Set on
+  // navigation commit.
+  int frame_routing_id_ = MSG_ROUTING_NONE;
 
   // The embedder policy of the client. Set on response commit.
   absl::optional<network::CrossOriginEmbedderPolicy>

@@ -171,7 +171,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
 
   void SetContainerHostRenderFrameId(ServiceWorkerContainerHost* container_host,
                                      int render_frame_id) {
-    container_host->frame_id_ = render_frame_id;
+    container_host->frame_routing_id_ = render_frame_id;
   }
 
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
