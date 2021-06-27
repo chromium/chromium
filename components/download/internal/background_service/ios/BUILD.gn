@@ -7,6 +7,8 @@ source_set("background_service") {
   sources = [
     "background_download_service_impl.cc",
     "background_download_service_impl.h",
+    "background_download_task_helper.h",
+    "background_download_task_helper.mm",
   ]
 
   visibility = [
@@ -18,6 +20,23 @@ source_set("background_service") {
     "//components/download/internal/background_service:common",
     "//components/download/internal/background_service:storage",
   ]
-
+  frameworks = [ "Foundation.framework" ]
   public_deps = [ "//components/download/public/background_service:public" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  assert(is_ios)
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":background_service",
+    "//base",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "background_download_task_helper_unittest.mm" ]
 }

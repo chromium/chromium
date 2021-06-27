@@ -15,6 +15,9 @@ group("unit_tests") {
       "//components/download/public/common:unit_tests",
       "//components/download/public/task:unit_tests",
     ]
+  } else {
+    deps =
+        [ "//components/download/internal/background_service/ios:unit_tests" ]
   }
 
   data_deps = [ ":components_unittests_gtest_filter" ]

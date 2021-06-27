@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_TASK_HELPER_H_
+#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_TASK_HELPER_H_
+
+#import <Foundation/Foundation.h>
+
+#include <memory>
+#include <string>
+
+#include "base/callback.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace download {
+struct DownloadParams;
+
+// Helper class to perform background download with iOS platform API.
+// Notes:
+// 1. Needs to debug on real device, with Xcode debugger detached to make the
+// device enter background session.
+// 2. If the user kills the app in multitask window, the session is deleted, the
+// app will not be waked up to resume the download.
+class BackgroundDownloadTaskHelper {
+ public:
+  // Callback with whether download is succeeded and the file path of the
+  // succeeded download.
+  using CompletionCallback =
+      base::RepeatingCallback<void(bool, const base::FilePath&)>;
+  static std::unique_ptr<BackgroundDownloadTaskHelper> Create(
+      const base::FilePath& download_dir);
+
+  BackgroundDownloadTaskHelper() = default;
+  virtual ~BackgroundDownloadTaskHelper() = default;
+  BackgroundDownloadTaskHelper(const BackgroundDownloadTaskHelper&) = delete;
+  BackgroundDownloadTaskHelper& operator=(const BackgroundDownloadTaskHelper&) =
+      delete;
+
+  // Starts a download.
+  virtual void StartDownload(const DownloadParams& download_params,
+                             CompletionCallback completion_callback) = 0;
+};
+
+}  // namespace download
+
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_TASK_HELPER_H_
