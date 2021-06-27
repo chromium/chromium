@@ -1386,8 +1386,15 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1224129
+#define MAYBE_PrerenderingPageIframeSetsCookie \
+  DISABLED_PrerenderingPageIframeSetsCookie
+#else
+#define MAYBE_PrerenderingPageIframeSetsCookie PrerenderingPageIframeSetsCookie
+#endif
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
-                       PrerenderingPageIframeSetsCookie) {
+                       MAYBE_PrerenderingPageIframeSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
   const GURL iframe_url =
