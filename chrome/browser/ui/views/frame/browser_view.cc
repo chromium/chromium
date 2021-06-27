@@ -125,6 +125,7 @@
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -811,8 +812,10 @@ int BrowserView::GetTabStripHeight() const {
   return GetTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
 }
 
-TabSearchButton* BrowserView::GetTabSearchButton() {
-  return tab_strip_region_view_->tab_search_button();
+TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
+  auto* tab_search_button = tab_strip_region_view_->tab_search_button();
+  return tab_search_button ? tab_search_button->tab_search_bubble_host()
+                           : nullptr;
 }
 
 bool BrowserView::GetTabStripVisible() const {
@@ -2774,13 +2777,13 @@ void BrowserView::CreateTabSearchBubble() {
     return;
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-  DCHECK(GetTabSearchButton());
-  GetTabSearchButton()->ShowTabSearchBubble(true);
+  if (auto* tab_search_host = GetTabSearchBubbleHost())
+    tab_search_host->ShowTabSearchBubble(true);
 }
 
 void BrowserView::CloseTabSearchBubble() {
-  if (GetTabSearchButton())
-    GetTabSearchButton()->CloseTabSearchBubble();
+  if (auto* tab_search_host = GetTabSearchBubbleHost())
+    tab_search_host->CloseTabSearchBubble();
 }
 
 void BrowserView::RevealTabStripIfNeeded() {

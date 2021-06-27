@@ -70,7 +70,7 @@ class InfoBarContainerView;
 class LocationBarView;
 class SidePanel;
 class StatusBubbleViews;
-class TabSearchButton;
+class TabSearchBubbleHost;
 class TabStrip;
 class TabStripRegionView;
 class ToolbarButtonProvider;
@@ -232,8 +232,8 @@ class BrowserView : public BrowserWindow,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Accessor for the BrowserView's TabSearchButton instance.
-  TabSearchButton* GetTabSearchButton();
+  // Accessor for the BrowserView's TabSearchBubbleHost instance.
+  TabSearchBubbleHost* GetTabSearchBubbleHost();
 
   // Returns true if various window components are visible.
   bool GetTabStripVisible() const;
