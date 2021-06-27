@@ -13,6 +13,7 @@
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -448,6 +449,10 @@ TEST(DiscardableSharedMemoryHeapTest, DetailedDumpsDontContainRedundantData) {
 }
 
 TEST(DiscardableSharedMemoryHeapTest, MarkSpans) {
+  base::test::ScopedFeatureList fl;
+  fl.InitAndDisableFeature(
+      discardable_memory::kReleaseDiscardableFreeListPages);
+
   DiscardableSharedMemoryHeap heap;
 
   const size_t block_size = base::GetPageSize();
