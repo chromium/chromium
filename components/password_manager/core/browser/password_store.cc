@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -95,7 +96,7 @@ bool PasswordStore::Init(PrefService* prefs,
   prefs_ = prefs;
 
   if (IsPasswordReuseDetectionEnabled()) {
-    reuse_manager_ = std::make_unique<PasswordReuseManager>();
+    reuse_manager_ = std::make_unique<PasswordReuseManagerImpl>();
   }
 
   if (background_task_runner_) {

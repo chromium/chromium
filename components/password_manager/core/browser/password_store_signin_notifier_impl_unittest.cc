@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -20,27 +20,10 @@ using testing::_;
 namespace password_manager {
 namespace {
 
-// TODO(crbug.com/1221135): Mock an interface of PasswordReuseManager.
-class MockPasswordReuseManager : public PasswordReuseManager {
- public:
-  MOCK_METHOD(void, ClearAllGaiaPasswordHash, (), (override));
-  MOCK_METHOD(void,
-              ClearGaiaPasswordHash,
-              (const std::string& username),
-              (override));
-};
-
 class PasswordStoreSigninNotifierImplTest : public testing::Test {
  public:
-  PasswordStoreSigninNotifierImplTest() {
-    store_ = new MockPasswordStore();
-    store_->Init(nullptr);
-    reuse_manager_.Init(nullptr, store_.get());
-  }
-
-  ~PasswordStoreSigninNotifierImplTest() override {
-    store_->ShutdownOnUIThread();
-  }
+  PasswordStoreSigninNotifierImplTest() = default;
+  ~PasswordStoreSigninNotifierImplTest() override = default;
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -53,7 +36,6 @@ class PasswordStoreSigninNotifierImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  scoped_refptr<MockPasswordStore> store_;
   MockPasswordReuseManager reuse_manager_;
 };
 
@@ -64,7 +46,6 @@ TEST_F(PasswordStoreSigninNotifierImplTest, Subscribed) {
   notifier.SubscribeToSigninEvents(&reuse_manager_);
   identity_test_env()->MakePrimaryAccountAvailable("test@example.com",
                                                    signin::ConsentLevel::kSync);
-  testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
   EXPECT_CALL(reuse_manager_, ClearAllGaiaPasswordHash());
   identity_test_env()->ClearPrimaryAccount();
   notifier.UnsubscribeFromSigninEvents();
@@ -92,7 +73,6 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
 
   identity_test_env()->MakePrimaryAccountAvailable("username",
                                                    signin::ConsentLevel::kSync);
-  testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
   EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username2"));
   auto* identity_manager = identity_test_env()->identity_manager();
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
@@ -108,7 +88,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
       CoreAccountId("secondary_account_id"),
       signin_metrics::SourceForRefreshTokenOperation::kUserMenu_RemoveAccount);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
-
+  EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username"));
   EXPECT_CALL(reuse_manager_, ClearAllGaiaPasswordHash());
   identity_test_env()->ClearPrimaryAccount();
   notifier.UnsubscribeFromSigninEvents();

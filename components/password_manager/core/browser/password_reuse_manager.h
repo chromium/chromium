@@ -7,12 +7,10 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
 
 class PrefService;
 
@@ -25,128 +23,88 @@ using metrics_util::GaiaPasswordHashChange;
 
 // Per-store class responsible for detection of password reuse, i.e. that the
 // user input on some site contains the password saved on another site.
-class PasswordReuseManager : public PasswordStoreConsumer {
+class PasswordReuseManager {
  public:
-  PasswordReuseManager();
-  ~PasswordReuseManager() override;
+  PasswordReuseManager() = default;
+  virtual ~PasswordReuseManager() = default;
 
   PasswordReuseManager(const PasswordReuseManager&) = delete;
   PasswordReuseManager& operator=(const PasswordReuseManager&) = delete;
 
   // Always call this on the UI thread.
-  void Init(PrefService* prefs, PasswordStoreInterface* store);
+  virtual void Init(PrefService* prefs, PasswordStoreInterface* store) = 0;
 
   // Log whether a sync password hash saved.
-  void ReportMetrics(const std::string& username,
-                     bool is_under_advanced_protection);
+  virtual void ReportMetrics(const std::string& username,
+                             bool is_under_advanced_protection) = 0;
 
   // Immediately called after |Init()| to retrieve password hash data for
   // reuse detection.
-  void PreparePasswordHashData(const std::string& sync_username,
-                               bool is_signed_in);
+  virtual void PreparePasswordHashData(const std::string& sync_username,
+                                       bool is_signed_in) = 0;
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain|.
   // If such suffix is found, |consumer|->OnReuseFound() is called on the main
   // sequence.
   // |consumer| must not be null.
-  void CheckReuse(const std::u16string& input,
-                  const std::string& domain,
-                  PasswordReuseDetectorConsumer* consumer);
+  virtual void CheckReuse(const std::u16string& input,
+                          const std::string& domain,
+                          PasswordReuseDetectorConsumer* consumer) = 0;
 
   // Saves |username| and a hash of |password| for GAIA password reuse checking.
   // |event| is used for metric logging and for distinguishing sync password
   // hash change event and other non-sync GAIA password change event.
   // |is_primary_account| is whether account belong to the password is a
   // primary account.
-  void SaveGaiaPasswordHash(const std::string& username,
-                            const std::u16string& password,
-                            bool is_primary_account,
-                            GaiaPasswordHashChange event);
+  virtual void SaveGaiaPasswordHash(const std::string& username,
+                                    const std::u16string& password,
+                                    bool is_primary_account,
+                                    GaiaPasswordHashChange event) = 0;
 
   // Saves |username| and a hash of |password| for enterprise password reuse
   // checking.
-  void SaveEnterprisePasswordHash(const std::string& username,
-                                  const std::u16string& password);
+  virtual void SaveEnterprisePasswordHash(const std::string& username,
+                                          const std::u16string& password) = 0;
 
   // Saves |sync_password_data| for sync password reuse checking.
   // |event| is used for metric logging.
-  void SaveSyncPasswordHash(const PasswordHashData& sync_password_data,
-                            GaiaPasswordHashChange event);
+  virtual void SaveSyncPasswordHash(const PasswordHashData& sync_password_data,
+                                    GaiaPasswordHashChange event) = 0;
 
   // Clears the saved GAIA password hash for |username|.
-  // TODO(crbug.bom/715987): Remove virtual and make and abstract base class.
-  virtual void ClearGaiaPasswordHash(const std::string& username);
+  virtual void ClearGaiaPasswordHash(const std::string& username) = 0;
 
   // Clears all the GAIA password hash.
-  // TODO(crbug.bom/715987): Remove virtual and make and abstract base class.
-  virtual void ClearAllGaiaPasswordHash();
+  virtual void ClearAllGaiaPasswordHash() = 0;
 
   // Clears all (non-GAIA) enterprise password hash.
-  void ClearAllEnterprisePasswordHash();
+  virtual void ClearAllEnterprisePasswordHash() = 0;
 
   // Clear all GAIA password hash that is not associated with a Gmail account.
-  void ClearAllNonGmailPasswordHash();
+  virtual void ClearAllNonGmailPasswordHash() = 0;
 
   // Adds a listener on |hash_password_manager_| for when |kHashPasswordData|
   // list might have changed. Should only be called on the UI thread.
-  base::CallbackListSubscription RegisterStateCallbackOnHashPasswordManager(
+  virtual base::CallbackListSubscription
+  RegisterStateCallbackOnHashPasswordManager(
       const base::RepeatingCallback<void(const std::string& username)>&
-          callback);
+          callback) = 0;
 
   // Shouldn't be called more than once, |notifier| must be not nullptr.
-  void SetPasswordStoreSigninNotifier(
-      std::unique_ptr<PasswordStoreSigninNotifier> notifier);
+  virtual void SetPasswordStoreSigninNotifier(
+      std::unique_ptr<PasswordStoreSigninNotifier> notifier) = 0;
 
   // Schedules the update of password hashes used by reuse detector.
   // |does_primary_account_exists| and |is_signed_in| fields are only used if
   // |should_log_metrics| is true.
-  void SchedulePasswordHashUpdate(bool should_log_metrics,
-                                  bool does_primary_account_exists,
-                                  bool is_signed_in);
+  virtual void SchedulePasswordHashUpdate(bool should_log_metrics,
+                                          bool does_primary_account_exists,
+                                          bool is_signed_in) = 0;
 
   // Schedules the update of enterprise login and change password URLs.
   // These URLs are used in enterprise password reuse detection.
-  void ScheduleEnterprisePasswordURLUpdate();
-
- private:
-  // PasswordStoreConsumer.
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-
-  // Saves |username| and a hash of |password| for password reuse checking.
-  // |is_gaia_password| indicates if it is a Gaia account. |event| is used for
-  // metric logging. |is_primary_account| is whether account belong to the
-  // password is a primary account.
-  void SaveProtectedPasswordHash(const std::string& username,
-                                 const std::u16string& password,
-                                 bool is_primary_account,
-                                 bool is_gaia_password,
-                                 GaiaPasswordHashChange event);
-
-  // Schedules the given |task| to be run on the 'background_task_runner_'.
-  bool ScheduleTask(base::OnceClosure task);
-
-  // TaskRunner for tasks that run on the main sequence (the UI thread).
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-
-  // TaskRunner for all the background operations.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  PrefService* prefs_ = nullptr;
-
-  // The 'reuse_detector_', owned by this PasswordReuseManager instance, but
-  // living on the background thread. It will be deleted asynchronously during
-  // shutdown on the background thread, so it will outlive |this| along with all
-  // its in-flight tasks.
-  PasswordReuseDetector* reuse_detector_ = nullptr;
-
-  // Notifies PasswordReuseManager about sign-in events.
-  std::unique_ptr<PasswordStoreSigninNotifier> notifier_;
-
-  // Responsible for saving, clearing, retrieving and encryption of a password
-  // hash data in preferences.
-  HashPasswordManager hash_password_manager_;
+  virtual void ScheduleEnterprisePasswordURLUpdate() = 0;
 };
 
 }  // namespace password_manager

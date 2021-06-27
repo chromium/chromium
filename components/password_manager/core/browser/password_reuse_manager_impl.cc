@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
@@ -73,9 +73,9 @@ void CheckReuseHelper(std::unique_ptr<CheckReuseRequest> request,
 
 }  // namespace
 
-PasswordReuseManager::PasswordReuseManager() = default;
+PasswordReuseManagerImpl::PasswordReuseManagerImpl() = default;
 
-PasswordReuseManager::~PasswordReuseManager() {
+PasswordReuseManagerImpl::~PasswordReuseManagerImpl() {
   if (notifier_)
     notifier_->UnsubscribeFromSigninEvents();
 
@@ -85,8 +85,8 @@ PasswordReuseManager::~PasswordReuseManager() {
   }
 }
 
-void PasswordReuseManager::Init(PrefService* prefs,
-                                PasswordStoreInterface* store) {
+void PasswordReuseManagerImpl::Init(PrefService* prefs,
+                                    PasswordStoreInterface* store) {
   prefs_ = prefs;
   hash_password_manager_.set_prefs(prefs_);
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
@@ -106,8 +106,9 @@ void PasswordReuseManager::Init(PrefService* prefs,
   }
 }
 
-void PasswordReuseManager::ReportMetrics(const std::string& username,
-                                         bool is_under_advanced_protection) {
+void PasswordReuseManagerImpl::ReportMetrics(
+    const std::string& username,
+    bool is_under_advanced_protection) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (username.empty())
     return;
@@ -121,9 +122,10 @@ void PasswordReuseManager::ReportMetrics(const std::string& username,
                                            is_under_advanced_protection);
 }
 
-void PasswordReuseManager::CheckReuse(const std::u16string& input,
-                                      const std::string& domain,
-                                      PasswordReuseDetectorConsumer* consumer) {
+void PasswordReuseManagerImpl::CheckReuse(
+    const std::u16string& input,
+    const std::string& domain,
+    PasswordReuseDetectorConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!reuse_detector_) {
     consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0);
@@ -134,7 +136,7 @@ void PasswordReuseManager::CheckReuse(const std::u16string& input,
       domain, base::Unretained(reuse_detector_)));
 }
 
-void PasswordReuseManager::PreparePasswordHashData(
+void PasswordReuseManagerImpl::PreparePasswordHashData(
     const std::string& sync_username,
     const bool is_signed_in) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -143,16 +145,17 @@ void PasswordReuseManager::PreparePasswordHashData(
   ScheduleEnterprisePasswordURLUpdate();
 }
 
-void PasswordReuseManager::SaveGaiaPasswordHash(const std::string& username,
-                                                const std::u16string& password,
-                                                bool is_primary_account,
-                                                GaiaPasswordHashChange event) {
+void PasswordReuseManagerImpl::SaveGaiaPasswordHash(
+    const std::string& username,
+    const std::u16string& password,
+    bool is_primary_account,
+    GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   SaveProtectedPasswordHash(username, password, is_primary_account,
                             /*is_gaia_password=*/true, event);
 }
 
-void PasswordReuseManager::SaveEnterprisePasswordHash(
+void PasswordReuseManagerImpl::SaveEnterprisePasswordHash(
     const std::string& username,
     const std::u16string& password) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -162,7 +165,7 @@ void PasswordReuseManager::SaveEnterprisePasswordHash(
       GaiaPasswordHashChange::NON_GAIA_ENTERPRISE_PASSWORD_CHANGE);
 }
 
-void PasswordReuseManager::SaveProtectedPasswordHash(
+void PasswordReuseManagerImpl::SaveProtectedPasswordHash(
     const std::string& username,
     const std::u16string& password,
     bool is_primary_account,
@@ -182,7 +185,7 @@ void PasswordReuseManager::SaveProtectedPasswordHash(
   }
 }
 
-void PasswordReuseManager::SaveSyncPasswordHash(
+void PasswordReuseManagerImpl::SaveSyncPasswordHash(
     const PasswordHashData& sync_password_data,
     GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -195,7 +198,8 @@ void PasswordReuseManager::SaveSyncPasswordHash(
   }
 }
 
-void PasswordReuseManager::ClearGaiaPasswordHash(const std::string& username) {
+void PasswordReuseManagerImpl::ClearGaiaPasswordHash(
+    const std::string& username) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   hash_password_manager_.ClearSavedPasswordHash(username,
                                                 /*is_gaia_password=*/true);
@@ -205,7 +209,7 @@ void PasswordReuseManager::ClearGaiaPasswordHash(const std::string& username) {
                               base::Unretained(reuse_detector_), username));
 }
 
-void PasswordReuseManager::ClearAllGaiaPasswordHash() {
+void PasswordReuseManagerImpl::ClearAllGaiaPasswordHash() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   hash_password_manager_.ClearAllPasswordHash(/* is_gaia_password= */ true);
   if (!reuse_detector_)
@@ -214,7 +218,7 @@ void PasswordReuseManager::ClearAllGaiaPasswordHash() {
                               base::Unretained(reuse_detector_)));
 }
 
-void PasswordReuseManager::ClearAllEnterprisePasswordHash() {
+void PasswordReuseManagerImpl::ClearAllEnterprisePasswordHash() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   hash_password_manager_.ClearAllPasswordHash(/* is_gaia_password= */ false);
   if (!reuse_detector_)
@@ -224,7 +228,7 @@ void PasswordReuseManager::ClearAllEnterprisePasswordHash() {
                      base::Unretained(reuse_detector_)));
 }
 
-void PasswordReuseManager::ClearAllNonGmailPasswordHash() {
+void PasswordReuseManagerImpl::ClearAllNonGmailPasswordHash() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   hash_password_manager_.ClearAllNonGmailPasswordHash();
   if (!reuse_detector_)
@@ -235,14 +239,14 @@ void PasswordReuseManager::ClearAllNonGmailPasswordHash() {
 }
 
 base::CallbackListSubscription
-PasswordReuseManager::RegisterStateCallbackOnHashPasswordManager(
+PasswordReuseManagerImpl::RegisterStateCallbackOnHashPasswordManager(
     const base::RepeatingCallback<void(const std::string& username)>&
         callback) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   return hash_password_manager_.RegisterStateCallback(callback);
 }
 
-void PasswordReuseManager::SetPasswordStoreSigninNotifier(
+void PasswordReuseManagerImpl::SetPasswordStoreSigninNotifier(
     std::unique_ptr<PasswordStoreSigninNotifier> notifier) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!notifier_);
@@ -251,7 +255,7 @@ void PasswordReuseManager::SetPasswordStoreSigninNotifier(
   notifier_->SubscribeToSigninEvents(this);
 }
 
-void PasswordReuseManager::SchedulePasswordHashUpdate(
+void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
     bool should_log_metrics,
     bool does_primary_account_exists,
     bool is_signed_in) {
@@ -287,7 +291,7 @@ void PasswordReuseManager::SchedulePasswordHashUpdate(
                      std::move(enterprise_password_hash_list)));
 }
 
-void PasswordReuseManager::ScheduleEnterprisePasswordURLUpdate() {
+void PasswordReuseManagerImpl::ScheduleEnterprisePasswordURLUpdate() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   if (!prefs_)
@@ -305,7 +309,7 @@ void PasswordReuseManager::ScheduleEnterprisePasswordURLUpdate() {
                               std::move(enterprise_change_password_url)));
 }
 
-void PasswordReuseManager::OnGetPasswordStoreResults(
+void PasswordReuseManagerImpl::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!reuse_detector_)
@@ -315,7 +319,7 @@ void PasswordReuseManager::OnGetPasswordStoreResults(
                               std::move(results)));
 }
 
-bool PasswordReuseManager::ScheduleTask(base::OnceClosure task) {
+bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {
   return background_task_runner_ &&
          background_task_runner_->PostTask(FROM_HERE, std::move(task));
 }

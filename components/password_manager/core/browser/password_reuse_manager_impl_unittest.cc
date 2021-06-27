@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -63,9 +63,10 @@ class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
   MOCK_METHOD(void, UnsubscribeFromSigninEvents, (), (override));
 };
 
-class PasswordReuseManagerTest : public testing::Test {
+class PasswordReuseManagerImplTest : public testing::Test {
  public:
-  PasswordReuseManagerTest() = default;
+  PasswordReuseManagerImplTest() = default;
+  ~PasswordReuseManagerImplTest() override = default;
 
   void SetUp() override {
     // Mock OSCrypt. There is a call to OSCrypt on initializling
@@ -92,8 +93,6 @@ class PasswordReuseManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  ~PasswordReuseManagerTest() override = default;
-
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   TestPasswordStore* store() { return store_.get(); }
   PasswordReuseManager* reuse_manager() {
@@ -108,7 +107,7 @@ class PasswordReuseManagerTest : public testing::Test {
   scoped_refptr<TestPasswordStore> store_;
 };
 
-TEST_F(PasswordReuseManagerTest, CheckPasswordReuse) {
+TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
   std::vector<PasswordForm> forms = {
       CreateForm("https://www.google.com", u"username1", u"password"),
       CreateForm("https://facebook.com", u"username2", u"topsecret")};
@@ -149,7 +148,7 @@ TEST_F(PasswordReuseManagerTest, CheckPasswordReuse) {
   }
 }
 
-TEST_F(PasswordReuseManagerTest, BasicSynced) {
+TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string sync_password = u"password";
@@ -174,7 +173,7 @@ TEST_F(PasswordReuseManagerTest, BasicSynced) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, BasicUnsynced) {
+TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -197,7 +196,7 @@ TEST_F(PasswordReuseManagerTest, BasicUnsynced) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, ClearGaiaPasswordHash) {
+TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -222,7 +221,7 @@ TEST_F(PasswordReuseManagerTest, ClearGaiaPasswordHash) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, ClearAllGaiaPasswordHash) {
+TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
@@ -248,7 +247,7 @@ TEST_F(PasswordReuseManagerTest, ClearAllGaiaPasswordHash) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, SaveEnterprisePasswordHash) {
+TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
@@ -269,7 +268,7 @@ TEST_F(PasswordReuseManagerTest, SaveEnterprisePasswordHash) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, ClearAllEnterprisePasswordHash) {
+TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
   ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
@@ -292,7 +291,7 @@ TEST_F(PasswordReuseManagerTest, ClearAllEnterprisePasswordHash) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, ClearAllNonGmailPasswordHash) {
+TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
   const std::u16string non_sync_gaia_password = u"3password";
   const std::u16string gmail_password = u"gmailpass";
 
@@ -339,7 +338,7 @@ TEST_F(PasswordReuseManagerTest, ClearAllNonGmailPasswordHash) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordReuseManagerTest, ReportMetrics) {
+TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
   // Hash does not exist yet.
   base::HistogramTester histogram_tester;
   reuse_manager()->ReportMetrics("not_sync_username",
@@ -368,7 +367,7 @@ TEST_F(PasswordReuseManagerTest, ReportMetrics) {
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE, 1);
 }
 
-TEST_F(PasswordReuseManagerTest,
+TEST_F(PasswordReuseManagerImplTest,
        SubscriptionAndUnsubscriptionFromSignInEvents) {
   std::unique_ptr<MockPasswordStoreSigninNotifier> notifier =
       std::make_unique<MockPasswordStoreSigninNotifier>();
