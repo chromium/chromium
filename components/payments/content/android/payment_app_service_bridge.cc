@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/android/payment_app_service_bridge.h"
+#include "components/payments/content/android/payment_app_service_bridge.h"
 
 #include <string>
 #include <vector>
@@ -14,8 +14,8 @@
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
-#include "chrome/browser/payments/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
+#include "components/payments/content/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
 #include "components/payments/content/payment_app_service.h"

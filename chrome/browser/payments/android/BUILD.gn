@@ -9,10 +9,7 @@ import("//build/config/android/rules.gni")
 # from //chrome/browser/BUILD.gn into an independent build target here.
 
 generate_jni("jni_headers") {
-  sources = [
-    "../../../android/java/src/org/chromium/chrome/browser/payments/PaymentAppServiceBridge.java",
-    "../../../android/java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
-  ]
+  sources = [ "../../../android/java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java" ]
 }
 
 # TODO(crbug.com/1164979): remove the dependency on chrome_java.

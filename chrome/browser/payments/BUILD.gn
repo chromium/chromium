@@ -101,6 +101,7 @@ source_set("unittests") {
     deps += [
       "//components/payments/content",
       "//components/payments/content:utils",
+      "//components/payments/content/android",
     ]
   }
 }

@@ -28,6 +28,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;

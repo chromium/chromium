@@ -29,6 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;

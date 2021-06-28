@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAYMENTS_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_
-#define CHROME_BROWSER_PAYMENTS_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_
 
 #include <map>
 #include <memory>
@@ -130,4 +130,4 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
 
 }  // namespace payments
 
-#endif  // CHROME_BROWSER_PAYMENTS_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_APP_SERVICE_BRIDGE_H_

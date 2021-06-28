@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/android/payment_app_service_bridge.h"
-
 #include <vector>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/payments/content/android/payment_app_service_bridge.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "content/public/browser/web_contents.h"

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppFactoryInterface;
-import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -23,7 +19,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
     private static boolean sCanMakePaymentForTesting;
 
-    /* package */ PaymentAppServiceBridge() {}
+    public PaymentAppServiceBridge() {}
 
     /**
      * Make canMakePayment() return true always for testing purpose.
