@@ -11,8 +11,8 @@ import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {util} from '../../../common/js/util.js';
-import {DialogType} from '../dialog_type.m.js';
-import {FileListModel} from '../file_list_model.m.js';
+import {DialogType} from '../dialog_type.js';
+import {FileListModel} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
 import {FileGrid} from './file_grid.js';

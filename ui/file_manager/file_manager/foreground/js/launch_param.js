@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
-import {DialogType} from './dialog_type.m.js';
+import {DialogType} from './dialog_type.js';
 
 export class LaunchParam {
   /**

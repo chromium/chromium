@@ -17,10 +17,10 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.m.js';
-import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
-import {FileListModel} from './file_list_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DialogType} from './dialog_type.js';
+import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
+import {FileListModel} from './file_list_model.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';

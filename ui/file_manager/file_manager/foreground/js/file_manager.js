@@ -2,88 +2,88 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// #import {FilesMessage} from '../elements/files_message.js';
-// #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
-// #import {A11yAnnounce} from './ui/a11y_announce.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.js';
-// #import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.js';
-// #import {BackgroundWindow} from '../../externs/background_window.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
-// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
-// #import {Crostini} from '../../externs/background/crostini.js';
-// #import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
-// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {ProgressItemState} from '../../common/js/progress_center_common.js';
-// #import {xfm} from '../../common/js/xfm.js';
-// #import {crossoverSearchUtils} from './crossover_search_utils.js';
-// #import {FileTasks} from './file_tasks.m.js';
-// #import {CrostiniController} from './crostini_controller.js';
-// #import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
-// #import {DirectoryTree} from './ui/directory_tree.js';
-// #import {NavigationUma} from './navigation_uma.m.js';
-// #import {FileTypeFiltersController} from './file_type_filters_controller.js';
-// #import {DialogActionController} from './dialog_action_controller.m.js';
-// #import {SpinnerController} from './spinner_controller.js';
-// #import {DirectoryTreeNamingController} from './directory_tree_naming_controller.m.js';
-// #import {SearchController} from './search_controller.js';
-// #import {TaskController} from './task_controller.js';
-// #import {NamingController} from './naming_controller.js';
-// #import {MetadataUpdateController} from './metadata_update_controller.js';
-// #import {ColumnVisibilityController} from './column_visibility_controller.js';
-// #import {ListThumbnailLoader} from './list_thumbnail_loader.js';
-// #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
-// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-// #import {AndroidAppListModel} from './android_app_list_model.js';
-// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {FileGrid} from './ui/file_grid.js';
-// #import {FileTable} from './ui/file_table.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {FileFilter} from './directory_contents.m.js';
-// #import {ProvidersModel} from './providers_model.js';
-// #import {ThumbnailModel} from './metadata/thumbnail_model.js';
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {ContentMetadataProvider} from './metadata/content_metadata_provider.js';
-// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-// #import {LaunchParam} from './launch_param.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {CommandButton} from './ui/commandbutton.js';
-// #import {CommandHandler, CommandUtil} from './file_manager_commands.m.js';
-// #import {FileTransferController} from './file_transfer_controller.js';
-// #import {Banners} from './ui/banners.js';
-// #import {MainWindowComponent} from './main_window_component.js';
-// #import {QuickViewController} from './quick_view_controller.js';
-// #import {MetadataBoxController} from './metadata_box_controller.js';
-// #import {QuickViewUma} from './quick_view_uma.js';
-// #import {QuickViewModel} from './quick_view_model.js';
-// #import {LastModifiedController} from './last_modified_controller.js';
-// #import {ActionsController} from './actions_controller.js';
-// #import {EmptyFolderController} from './empty_folder_controller.m.js';
-// #import {ToolbarController} from './toolbar_controller.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {util, str} from '../../common/js/util.js';
-// #import {SelectionMenuController} from './selection_menu_controller.js';
-// #import {GearMenuController} from './gear_menu_controller.js';
-// #import {SortMenuController} from './sort_menu_controller.js';
-// #import {ScanController} from './scan_controller.js';
-// #import {DriveDialogController} from './drive_dialog_controller.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.js';
-// #import {AppStateController} from './app_state_controller.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {importer} from './import_controller.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {importElements} from './elements_importer.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
+import {metrics} from '../../common/js/metrics.js';
+import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {str, util} from '../../common/js/util.js';
+import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
+import {Crostini} from '../../externs/background/crostini.js';
+import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
+import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {BackgroundWindow} from '../../externs/background_window.js';
+import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesMessage} from '../elements/files_message.js';
+
+import {ActionsController} from './actions_controller.js';
+import {AndroidAppListModel} from './android_app_list_model.js';
+import {AppStateController} from './app_state_controller.js';
+import {ColumnVisibilityController} from './column_visibility_controller.js';
+import {crossoverSearchUtils} from './crossover_search_utils.js';
+import {CrostiniController} from './crostini_controller.js';
+import {DialogActionController} from './dialog_action_controller.js';
+import {DialogType} from './dialog_type.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
+import {DriveDialogController} from './drive_dialog_controller.js';
+import {importElements} from './elements_importer.js';
+import {EmptyFolderController} from './empty_folder_controller.js';
+import {CommandHandler, CommandUtil} from './file_manager_commands.js';
+import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import {FileTasks} from './file_tasks.js';
+import {FileTransferController} from './file_transfer_controller.js';
+import {FileTypeFiltersController} from './file_type_filters_controller.js';
+import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import {GearMenuController} from './gear_menu_controller.js';
+import {importer} from './import_controller.js';
+import {LastModifiedController} from './last_modified_controller.js';
+import {LaunchParam} from './launch_param.js';
+import {ListThumbnailLoader} from './list_thumbnail_loader.js';
+import {MainWindowComponent} from './main_window_component.js';
+import {ContentMetadataProvider} from './metadata/content_metadata_provider.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {ThumbnailModel} from './metadata/thumbnail_model.js';
+import {MetadataBoxController} from './metadata_box_controller.js';
+import {MetadataUpdateController} from './metadata_update_controller.js';
+import {NamingController} from './naming_controller.js';
+import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
+import {NavigationUma} from './navigation_uma.js';
+import {ProvidersModel} from './providers_model.js';
+import {QuickViewController} from './quick_view_controller.js';
+import {QuickViewModel} from './quick_view_model.js';
+import {QuickViewUma} from './quick_view_uma.js';
+import {ScanController} from './scan_controller.js';
+import {SearchController} from './search_controller.js';
+import {SelectionMenuController} from './selection_menu_controller.js';
+import {SortMenuController} from './sort_menu_controller.js';
+import {SpinnerController} from './spinner_controller.js';
+import {TaskController} from './task_controller.js';
+import {ToolbarController} from './toolbar_controller.js';
+import {A11yAnnounce} from './ui/a11y_announce.js';
+import {Banners} from './ui/banners.js';
+import {CommandButton} from './ui/commandbutton.js';
+import {DirectoryTree} from './ui/directory_tree.js';
+import {FileGrid} from './ui/file_grid.js';
+import {FileListSelectionModel} from './ui/file_list_selection_model.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
+import {FileTable} from './ui/file_table.js';
 
 /**
  * FileManager constructor.
@@ -93,7 +93,7 @@
  *
  * @implements {CommandHandlerDeps}
  */
-/* #export */ class FileManager extends cr.EventTarget {
+export class FileManager extends EventTarget {
   constructor() {
     super();
 
@@ -682,7 +682,7 @@
         assert(this.providersModel_));
     this.selectionMenuController_ = new SelectionMenuController(
         this.ui_.selectionMenuButton,
-        util.queryDecoratedElement('#file-context-menu', cr.ui.Menu));
+        util.queryDecoratedElement('#file-context-menu', Menu));
     this.toolbarController_ = new ToolbarController(
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
         assert(this.ui_.locationLine), this.selectionHandler_,
@@ -840,7 +840,7 @@
       touchInduced = false;
     });
 
-    cr.ui.contextMenuHandler.setContextMenu(input, this.ui_.textContextMenu);
+    contextMenuHandler.setContextMenu(input, this.ui_.textContextMenu);
     this.registerInputCommands_(input);
   }
 
@@ -887,16 +887,10 @@
     this.document_ = this.dialogDom_.ownerDocument;
 
     metrics.startInterval('Load.InitDocuments');
-    if (window.importElementsPromise) {
-      // For non-js modules version these promises can run in parallel.
-      await Promise.all(
-          [this.initBackgroundPagePromise_, window.importElementsPromise]);
-    } else if (window.importElements) {
-      // importElements depend on loadTimeData which is initialized in the
-      // initBackgroundPagePromise_.
-      await this.initBackgroundPagePromise_;
-      await window.importElements();
-    }
+    // importElements depend on loadTimeData which is initialized in the
+    // initBackgroundPagePromise_.
+    await this.initBackgroundPagePromise_;
+    await importElements();
     metrics.recordInterval('Load.InitDocuments');
 
     metrics.startInterval('Load.InitUI');
@@ -1662,14 +1656,14 @@
   }
 
   /**
-   * @return {cr.ui.ArrayDataModel} File list.
+   * @return {ArrayDataModel} File list.
    */
   getFileList() {
     return this.directoryModel_.getFileList();
   }
 
   /**
-   * @return {!cr.ui.List} Current list object.
+   * @return {!List} Current list object.
    */
   getCurrentList() {
     return this.ui.listContainer.currentList;

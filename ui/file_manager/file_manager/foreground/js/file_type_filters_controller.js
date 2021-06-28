@@ -5,7 +5,7 @@
 import {str, util} from '../../common/js/util.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 
 /**
  * This class controls wires file-type filter UI and the filter settings in

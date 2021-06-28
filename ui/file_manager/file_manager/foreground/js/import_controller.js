@@ -17,7 +17,7 @@ import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {FileSelectionHandler} from './file_selection.m.js';
+import {FileSelectionHandler} from './file_selection.js';
 
 /** @private @enum {string} */
 importer.ActivityState = {

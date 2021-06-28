@@ -7,7 +7,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {TaskController} from './task_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {LocationLine} from './ui/location_line.js';

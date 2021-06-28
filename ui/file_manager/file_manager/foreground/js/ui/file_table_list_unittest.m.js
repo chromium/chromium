@@ -8,8 +8,8 @@ import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
-import {DirectoryModel} from '../directory_model.m.js';
-import {FileListModel} from '../file_list_model.m.js';
+import {DirectoryModel} from '../directory_model.js';
+import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
 

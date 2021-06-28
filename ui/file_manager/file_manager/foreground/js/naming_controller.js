@@ -7,9 +7,9 @@ import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.
 
 import {strf, util} from '../../common/js/util.js';
 
-import {FileFilter} from './directory_contents.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {ListContainer} from './ui/list_container.js';
 
 /**

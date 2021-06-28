@@ -6,7 +6,7 @@ import '../elements/files_toggle_ripple.js';
 
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {FileListModel} from './file_list_model.m.js';
+import {FileListModel} from './file_list_model.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 
 export class SortMenuController {

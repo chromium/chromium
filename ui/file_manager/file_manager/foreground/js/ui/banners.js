@@ -13,7 +13,7 @@ import {xfm} from '../../../common/js/xfm.js';
 import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {constants} from '../constants.js';
-import {DirectoryModel} from '../directory_model.m.js';
+import {DirectoryModel} from '../directory_model.js';
 import {HoldingSpaceUtil} from '../holding_space_util.js';
 
 

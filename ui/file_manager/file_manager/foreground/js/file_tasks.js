@@ -2,41 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.js';
-// #import {Crostini} from '../../externs/background/crostini.js';
-// #import {NamingController} from './naming_controller.js';
-// #import {TaskHistory} from './task_history.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FilesMenuItem} from './ui/files_menu.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
-// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.js';
-// #import {FileTransferController} from './file_transfer_controller.js';
-// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {FileType} from '../../common/js/file_type.js';
-// #import {constants} from './constants.js';
-// #import {util, strf, str} from '../../common/js/util.js';
-// #import {AsyncUtil} from '../../common/js/async_util.js'
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {DefaultTaskDialog} from './ui/default_task_dialog.js';
-// #import {ComboButton} from './ui/combobutton.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FileType} from '../../common/js/file_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Crostini} from '../../externs/background/crostini.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
+
+import {constants} from './constants.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileTransferController} from './file_transfer_controller.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {NamingController} from './naming_controller.js';
+import {TaskHistory} from './task_history.js';
+import {ComboButton} from './ui/combobutton.js';
+import {DefaultTaskDialog} from './ui/default_task_dialog.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
+import {FilesMenuItem} from './ui/files_menu.js';
+import {MultiMenuButton} from './ui/multi_menu_button.js';
 
 /**
  * Represents a collection of available tasks to execute for a specific list
  * of entries.
  */
-/* #export */ class FileTasks {
+export class FileTasks {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!MetadataModel} metadataModel
@@ -1009,9 +1009,9 @@
    * Displays the list of tasks in a open task picker combobutton and a share
    * options menu.
    *
-   * @param {!cr.ui.ComboButton} openCombobutton The open task picker
+   * @param {!ComboButton} openCombobutton The open task picker
    *     combobutton.
-   * @param {!cr.ui.MultiMenuButton} shareMenuButton Button for share options.
+   * @param {!MultiMenuButton} shareMenuButton Button for share options.
    * @public
    */
   display(openCombobutton, shareMenuButton) {
@@ -1032,7 +1032,7 @@
    * Setup a task picker combobutton based on the given tasks. The combobutton
    * is not shown if there are no tasks, or if any entry is a directory.
    *
-   * @param {!cr.ui.ComboButton} combobutton
+   * @param {!ComboButton} combobutton
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
    */
   updateOpenComboButton_(combobutton, tasks) {
@@ -1080,7 +1080,7 @@
 
   /**
    * Setup a menu button for sharing options based on the given tasks.
-   * @param {!cr.ui.MultiMenuButton} shareMenuButton
+   * @param {!MultiMenuButton} shareMenuButton
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
    */
   updateShareMenuButton_(shareMenuButton, tasks) {
@@ -1136,7 +1136,7 @@
 
     // Add menu items for the new tasks.
     const items = this.createItems_(tasks);
-    let menu = /** @type {!cr.ui.Menu} */ (shareMenuButton.menu);
+    let menu = /** @type {!Menu} */ (shareMenuButton.menu);
     for (let i = 0; i < items.length; i++) {
       // If we have at least 10 entries, split off into a sub-menu
       if (i == NUM_TOP_LEVEL_ENTRIES && MAX_NON_SPLIT_ENTRIES <= items.length) {
@@ -1145,7 +1145,7 @@
         menu = shareMenuButton.overflow;
       }
       const menuitem = menu.addMenuItem(items[i]);
-      cr.ui.decorate(menuitem, cr.ui.FilesMenuItem);
+      decorate(menuitem, FilesMenuItem);
       menuitem.data = items[i];
       if (items[i].iconType) {
         menuitem.style.backgroundImage = '';
@@ -1231,7 +1231,7 @@
   /**
    * Shows modal task picker dialog with currently available list of tasks.
    *
-   * @param {cr.filebrowser.DefaultTaskDialog} taskDialog Task dialog to show
+   * @param {DefaultTaskDialog} taskDialog Task dialog to show
    *     and update.
    * @param {string} title Title to use.
    * @param {string} message Message to use.

@@ -17,8 +17,8 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
-import {DirectoryModel} from './directory_model.m.js';
-import {FileTasks} from './file_tasks.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {NamingController} from './naming_controller.js';

@@ -11,10 +11,10 @@ import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
-import {FileTasks} from './file_tasks.m.js';
+import {DialogType} from './dialog_type.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';

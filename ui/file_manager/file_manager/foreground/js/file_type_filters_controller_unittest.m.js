@@ -11,7 +11,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
 
 /**

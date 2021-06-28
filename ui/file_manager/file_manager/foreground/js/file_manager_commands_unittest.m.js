@@ -10,8 +10,8 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
-import {CommandHandler, CommandUtil} from './file_manager_commands.m.js';
-import {FileTasks} from './file_tasks.m.js';
+import {CommandHandler, CommandUtil} from './file_manager_commands.js';
+import {FileTasks} from './file_tasks.js';
 
 /**
  * Checks that a correct sharing action source is extracted from an event.

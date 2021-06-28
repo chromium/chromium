@@ -86,6 +86,22 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/test_util.js",
 
     # Externs:
+    "file_manager/foreground/js/fake_file_selection_handler.js",
+    "file_manager/foreground/js/file_tasks.js",
+    "file_manager/foreground/js/file_selection.js",
+    "file_manager/foreground/js/file_manager_commands.js",
+    "file_manager/foreground/js/file_manager.js",
+    "file_manager/foreground/js/file_list_model.js",
+    "file_manager/foreground/js/empty_folder_controller.js",
+    "file_manager/foreground/js/elements_importer.js",
+    "file_manager/foreground/js/drop_effect_and_label.js",
+    "file_manager/foreground/js/drive_dialog_controller.js",
+    "file_manager/foreground/js/directory_tree_naming_controller.js",
+    "file_manager/foreground/js/navigation_uma.js",
+    "file_manager/foreground/js/directory_model.js",
+    "file_manager/foreground/js/directory_contents.js",
+    "file_manager/foreground/js/dialog_type.js",
+    "file_manager/foreground/js/dialog_action_controller.js",
     "file_manager/foreground/js/crostini_controller.js",
     "file_manager/foreground/js/crossover_search_utils.js",
     "file_manager/foreground/js/constants.js",
@@ -250,7 +266,6 @@ preprocess_if_expr("preprocess_static") {
 
     # Files app Foreground
     "file_manager/foreground/js/deferred_elements.m.js",
-    "file_manager/foreground/js/elements_importer.m.js",
     "file_manager/foreground/elements/files_password_dialog.js",
     "file_manager/foreground/elements/files_message.js",
     "file_manager/foreground/elements/xf_panel_item.js",
@@ -354,20 +369,6 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/elements/repeat_button.js",
 
     # Files app Foreground:
-    "file_manager/foreground/js/dialog_action_controller.m.js",
-    "file_manager/foreground/js/dialog_type.m.js",
-    "file_manager/foreground/js/directory_contents.m.js",
-    "file_manager/foreground/js/directory_model.m.js",
-    "file_manager/foreground/js/directory_tree_naming_controller.m.js",
-    "file_manager/foreground/js/drive_dialog_controller.m.js",
-    "file_manager/foreground/js/drop_effect_and_label.m.js",
-    "file_manager/foreground/js/empty_folder_controller.m.js",
-    "file_manager/foreground/js/file_list_model.m.js",
-    "file_manager/foreground/js/file_manager.m.js",
-    "file_manager/foreground/js/file_manager_commands.m.js",
-    "file_manager/foreground/js/file_selection.m.js",
-    "file_manager/foreground/js/file_tasks.m.js",
-    "file_manager/foreground/js/navigation_uma.m.js",
 
     # Files app Elements:
     "file_manager/foreground/elements/icons.js",
@@ -387,7 +388,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
-    "//ui/file_manager/file_manager/foreground/js:modulize",
   ]
 }
 

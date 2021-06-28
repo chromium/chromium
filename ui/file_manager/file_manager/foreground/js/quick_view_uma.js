@@ -9,8 +9,8 @@ import {metrics} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.m.js';
-import {FileTasks} from './file_tasks.m.js';
+import {DialogType} from './dialog_type.js';
+import {FileTasks} from './file_tasks.js';
 
 /**
  * UMA exporter for Quick View.

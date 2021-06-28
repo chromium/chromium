@@ -17,10 +17,10 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DialogType} from './dialog_type.js';
+import {DirectoryModel} from './directory_model.js';
+import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {NamingController} from './naming_controller.js';

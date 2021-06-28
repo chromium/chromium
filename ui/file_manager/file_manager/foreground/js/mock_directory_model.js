@@ -6,8 +6,8 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {FileFilter} from './directory_contents.m.js';
-import {DirectoryModel} from './directory_model.m.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
 
 /**
  * @returns {!FileFilter} fake for unittests.

@@ -6,13 +6,17 @@
  * Drop effect names supported as a value of DataTransfer.dropEffect.
  * @enum {string}
  */
-/* #export */ const DropEffectType =
-    {NONE: 'none', COPY: 'copy', MOVE: 'move', LINK: 'link'};
+export const DropEffectType = {
+  NONE: 'none',
+  COPY: 'copy',
+  MOVE: 'move',
+  LINK: 'link'
+};
 
 /**
  * Represents a drop effect and a label to describe it.
  */
-/* #export */ class DropEffectAndLabel {
+export class DropEffectAndLabel {
   /**
    * @param {!DropEffectType} dropEffect
    * @param {?string} label

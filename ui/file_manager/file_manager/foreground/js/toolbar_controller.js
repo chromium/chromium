@@ -12,8 +12,8 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {ListContainer} from './ui/list_container.js';

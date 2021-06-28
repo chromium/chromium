@@ -7,7 +7,7 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationModelVolumeItem} from './navigation_list_model.js';
 
 /**

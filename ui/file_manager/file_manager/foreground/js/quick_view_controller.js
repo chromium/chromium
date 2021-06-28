@@ -14,10 +14,10 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
 import {constants} from './constants.js';
-import {DialogType} from './dialog_type.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
-import {FileTasks} from './file_tasks.m.js';
+import {DialogType} from './dialog_type.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';

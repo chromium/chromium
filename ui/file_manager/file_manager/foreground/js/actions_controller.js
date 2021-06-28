@@ -8,8 +8,8 @@ import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {Action, ActionsModel} from './actions_model.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';

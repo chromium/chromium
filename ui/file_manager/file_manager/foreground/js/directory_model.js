@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
-// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.js';
-// #import {FileWatcher} from './file_watcher.js';
-// #import {FileListModel} from './file_list_model.m.js';
-// #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
-// #import {constants} from './constants.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {util} from '../../common/js/util.js';
-// #import {AsyncUtil} from '../../common/js/async_util.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
+import {FileListModel} from './file_list_model.js';
+import {FileWatcher} from './file_watcher.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
 
 // If directory files changes too often, don't rescan directory more than once
 // per specified interval
@@ -34,7 +34,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 /**
  * Data model of the file manager.
  */
-/* #export */ class DirectoryModel extends cr.EventTarget {
+export class DirectoryModel extends EventTarget {
   /**
    * @param {boolean} singleSelection True if only one file could be selected
    *                                  at the time.
@@ -265,7 +265,7 @@ const SHORT_RESCAN_INTERVAL = 100;
    * If updateFunc returns true, it force to dispatch the change event even if
    * the selection index is not changed.
    *
-   * @param {cr.ui.ListSelectionModel|cr.ui.ListSingleSelectionModel} selection
+   * @param {ListSelectionModel|ListSingleSelectionModel} selection
    *     Selection to be updated.
    * @param {function(): boolean} updateFunc Function updating the selection.
    * @private
@@ -555,7 +555,7 @@ const SHORT_RESCAN_INTERVAL = 100;
     const successCallback = () => {
       if (sequence === this.changeDirectorySequence_) {
         this.replaceDirectoryContents_(dirContents);
-        cr.dispatchSimpleEvent(this, 'rescan-completed');
+        dispatchSimpleEvent(this, 'rescan-completed');
       }
     };
 
@@ -601,7 +601,7 @@ const SHORT_RESCAN_INTERVAL = 100;
         return;
       }
 
-      cr.dispatchSimpleEvent(this, 'scan-completed');
+      dispatchSimpleEvent(this, 'scan-completed');
       callback(true);
     };
 
@@ -624,12 +624,12 @@ const SHORT_RESCAN_INTERVAL = 100;
 
       if (this.changeDirectorySequence_ !== sequence) {
         cancelled = true;
-        cr.dispatchSimpleEvent(this, 'scan-cancelled');
+        dispatchSimpleEvent(this, 'scan-cancelled');
         callback(false);
         return;
       }
 
-      cr.dispatchSimpleEvent(this, 'scan-updated');
+      dispatchSimpleEvent(this, 'scan-updated');
     };
 
     const onCancelled = () => {
@@ -638,7 +638,7 @@ const SHORT_RESCAN_INTERVAL = 100;
       }
 
       cancelled = true;
-      cr.dispatchSimpleEvent(this, 'scan-cancelled');
+      dispatchSimpleEvent(this, 'scan-cancelled');
       callback(false);
     };
 
@@ -660,7 +660,7 @@ const SHORT_RESCAN_INTERVAL = 100;
     }
 
     // Clear the table, and start scanning.
-    cr.dispatchSimpleEvent(this, 'scan-started');
+    dispatchSimpleEvent(this, 'scan-started');
     fileList.splice(0, fileList.length);
     this.scan_(
         this.currentDirContents_, false, onDone, onFailed, onUpdated,
@@ -706,7 +706,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 
     const onCompleted = () => {
       onFinish();
-      cr.dispatchSimpleEvent(this, 'rescan-completed');
+      dispatchSimpleEvent(this, 'rescan-completed');
     };
 
     const onFailure = () => {
@@ -832,7 +832,7 @@ const SHORT_RESCAN_INTERVAL = 100;
     console.assert(
         this.currentDirContents_ !== dirContents,
         'Give directory contents instance must be different from current one.');
-    cr.dispatchSimpleEvent(this, 'begin-update-files');
+    dispatchSimpleEvent(this, 'begin-update-files');
     this.updateSelectionAndPublishEvent_(this.fileListSelection_, () => {
       const selectedEntries = this.getSelectedEntries_();
       const selectedIndices = this.fileListSelection_.selectedIndexes;
@@ -870,7 +870,7 @@ const SHORT_RESCAN_INTERVAL = 100;
       return forceChangeEvent;
     });
 
-    cr.dispatchSimpleEvent(this, 'end-update-files');
+    dispatchSimpleEvent(this, 'end-update-files');
   }
 
   /**

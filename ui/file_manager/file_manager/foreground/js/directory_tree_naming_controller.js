@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {util} from '../../common/js/util.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+import {util} from '../../common/js/util.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 
 /**
  * Naming controller for directory tree.
  */
-/* #export */ class DirectoryTreeNamingController {
+export class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!DirectoryTree} directoryTree
-   * @param {!cr.ui.dialogs.AlertDialog} alertDialog
+   * @param {!AlertDialog} alertDialog
    */
   constructor(directoryModel, directoryTree, alertDialog) {
     /** @private @const {!DirectoryModel} */
@@ -25,7 +27,7 @@
     /** @private @const {!DirectoryTree} */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const {!cr.ui.dialogs.AlertDialog} */
+    /** @private @const {!AlertDialog} */
     this.alertDialog_ = alertDialog;
 
     /** @private {?DirectoryItem} */

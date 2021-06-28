@@ -8,8 +8,8 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {str, util} from '../../../common/js/util.js';
-import {DialogType} from '../dialog_type.m.js';
-import {FileListModel} from '../file_list_model.m.js';
+import {DialogType} from '../dialog_type.js';
+import {FileListModel} from '../file_list_model.js';
 
 /**
  * Footer shown when the Files app is opened as a file/folder selecting dialog.

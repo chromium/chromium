@@ -15,7 +15,7 @@ import {reportPromise, waitUntil} from '../../../common/js/test_error_reporting.
 import {str} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
-import {DirectoryModel} from '../directory_model.m.js';
+import {DirectoryModel} from '../directory_model.js';
 import {createFakeAndroidAppListModel} from '../fake_android_app_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {createFakeDirectoryModel} from '../mock_directory_model.js';

@@ -19,9 +19,9 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DirectoryModel} from './directory_model.m.js';
-import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';

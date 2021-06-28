@@ -12,8 +12,8 @@ import {FilesMessage} from '../elements/files_message.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {constants} from './constants.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {CommandHandler} from './file_manager_commands.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 

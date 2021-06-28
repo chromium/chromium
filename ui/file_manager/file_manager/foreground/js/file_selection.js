@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {ListContainer} from './ui/list_container.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {AllowedPaths} from '../../common/js/volume_manager_types.js';
-// #import {util} from '../../common/js/util.js';
-// #import {constants} from './constants.js';
-// #import {FileType} from '../../common/js/file_type.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {util} from '../../common/js/util.js';
+import {AllowedPaths} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {DirectoryModel} from './directory_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * The current selection object.
  */
-/* #export */ class FileSelection {
+export class FileSelection {
   /**
    * @param {!Array<number>} indexes
    * @param {!Array<Entry>} entries
@@ -146,7 +146,7 @@
 /**
  * This object encapsulates everything related to current selection.
  */
-/* #export */ class FileSelectionHandler extends cr.EventTarget {
+export class FileSelectionHandler extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!FileOperationManager} fileOperationManager
@@ -252,7 +252,7 @@
       this.updateFileSelectionAsync_(selection);
     }, updateDelay);
 
-    cr.dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
+    dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
   }
 
   /**
@@ -274,7 +274,7 @@
 
       this.nextThrottledEventTime_ =
           Date.now() + FileSelectionHandler.UPDATE_DELAY;
-      cr.dispatchSimpleEvent(
+      dispatchSimpleEvent(
           this, FileSelectionHandler.EventType.CHANGE_THROTTLED);
     });
   }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DirectoryModel} from './directory_model.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {SpinnerController} from './spinner_controller.js';
 import {ListContainer} from './ui/list_container.js';
 

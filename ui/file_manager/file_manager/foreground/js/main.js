@@ -10,7 +10,7 @@ import '../../common/js/error_counter.js';
 import './metrics_start.js';
 
 import {util} from '../../common/js/util.js';
-import {FileManager} from './file_manager.m.js';
+import {FileManager} from './file_manager.js';
 
 
 const fileManager = new FileManager();

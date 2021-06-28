@@ -9,10 +9,10 @@ import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {AppStateController} from './app_state_controller.js';
-import {DialogType} from './dialog_type.m.js';
-import {FileFilter} from './directory_contents.m.js';
-import {DirectoryModel} from './directory_model.m.js';
-import {FileSelectionHandler} from './file_selection.m.js';
+import {DialogType} from './dialog_type.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {NamingController} from './naming_controller.js';
 import {TaskController} from './task_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';

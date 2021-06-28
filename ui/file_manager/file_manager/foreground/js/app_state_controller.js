@@ -8,8 +8,8 @@ import {appUtil} from '../../common/js/app_util.js';
 import {util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 
-import {DialogType} from './dialog_type.m.js';
-import {DirectoryModel} from './directory_model.m.js';
+import {DialogType} from './dialog_type.js';
+import {DirectoryModel} from './directory_model.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {ListContainer} from './ui/list_container.js';
 

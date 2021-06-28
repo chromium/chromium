@@ -4,7 +4,7 @@
 
 import {util} from '../../common/js/util.js';
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {FileTable} from './ui/file_table.js';
 
 /**

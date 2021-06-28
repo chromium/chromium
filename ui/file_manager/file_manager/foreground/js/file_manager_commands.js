@@ -7,42 +7,43 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {TrashEntry} from '../../common/js/trash.js';
-// #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
-// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {FileType} from '../../common/js/file_type.js';
-// #import {constants} from './constants.js';
-// #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
-// #import {ActionsModel} from './actions_model.js';
-// #import {PathComponent} from './path_component.js';
-// #import {HoldingSpaceUtil} from './holding_space_util.js';
-// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.js';
-// #import {EntryList} from '../../common/js/files_app_entry_types.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {util, str, strf} from '../../common/js/util.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {FileTasks} from './file_tasks.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import './webui_command_extender.js';
-// clang-format on
+import './webui_command_extender.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {FileType} from '../../common/js/file_type.js';
+import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {metrics} from '../../common/js/metrics.js';
+import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
+import {TrashEntry} from '../../common/js/trash.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {ActionsModel} from './actions_model.js';
+import {constants} from './constants.js';
+import {DialogType} from './dialog_type.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import {FileTasks} from './file_tasks.js';
+import {HoldingSpaceUtil} from './holding_space_util.js';
+import {PathComponent} from './path_component.js';
+import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 
 
 /**
  * A command.
  * @abstract
  */
-/* #export */ class FilesCommand {
+export class FilesCommand {
   /**
    * Handles the execute event.
    * @param {!Event} event Command event.
@@ -162,7 +163,7 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
     }
   }
 
-  // File list (cr.ui.List).
+  // File list (List).
   if (element.selectedItems && element.selectedItems.length) {
     const entries = element.selectedItems;
     // Check if it is Entry or not by checking for toURL().
@@ -205,7 +206,7 @@ CommandUtil.getParentEntry = (element, directoryModel) => {
   } else if (element.parentItem && element.parentItem.entry) {
     // DirectoryItem has parentItem.
     return element.parentItem.entry;
-  } else if (element instanceof cr.ui.List) {
+  } else if (element instanceof List) {
     return directoryModel ? directoryModel.getCurrentDirEntry() : null;
   } else {
     return null;
@@ -255,11 +256,11 @@ CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
  */
 CommandUtil.forceDefaultHandler = (node, commandId) => {
   const doc = node.ownerDocument;
-  const command = /** @type {!cr.ui.Command} */ (
+  const command = /** @type {!Command} */ (
       doc.body.querySelector('command[id="' + commandId + '"]'));
   node.addEventListener('keydown', e => {
     if (command.matchesEvent(e)) {
-      // Prevent cr.ui.CommandManager of handling it and leave it
+      // Prevent CommandManager of handling it and leave it
       // for the default handler.
       e.stopPropagation();
     }
@@ -471,7 +472,7 @@ CommandUtil.getEventEntry = (event, fileManager) => {
 /**
  * Handle of the command events.
  */
-/* #export */ class CommandHandler {
+export class CommandHandler {
   /**
    * @param {!CommandHandlerDeps} fileManager Classes |CommandHalder| depends.
    * @param {!FileSelectionHandler} selectionHandler
@@ -485,7 +486,7 @@ CommandUtil.getEventEntry = (event, fileManager) => {
 
     /**
      * Command elements.
-     * @private @const {Object<cr.ui.Command>}
+     * @private @const {Object<Command>}
      */
     this.commands_ = {};
 
@@ -496,8 +497,8 @@ CommandUtil.getEventEntry = (event, fileManager) => {
     const commands = fileManager.document.querySelectorAll('command');
 
     for (let i = 0; i < commands.length; i++) {
-      if (cr.ui.Command.decorate) {
-        cr.ui.Command.decorate(commands[i]);
+      if (Command.decorate) {
+        Command.decorate(commands[i]);
       }
       this.commands_[commands[i].id] = commands[i];
     }
@@ -508,9 +509,9 @@ CommandUtil.getEventEntry = (event, fileManager) => {
     fileManager.document.addEventListener(
         'canExecute', this.onCanExecute_.bind(this));
 
-    cr.ui.contextMenuHandler.addEventListener(
+    contextMenuHandler.addEventListener(
         'show', this.onContextMenuShow_.bind(this));
-    cr.ui.contextMenuHandler.addEventListener(
+    contextMenuHandler.addEventListener(
         'hide', this.onContextMenuHide_.bind(this));
   }
 
@@ -3009,4 +3010,4 @@ CommandHandler.COMMANDS_['show-providers-submenu'] =
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {CommandUtil};
+export {CommandUtil};

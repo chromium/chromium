@@ -4,7 +4,7 @@
 
 import {util} from '../../common/js/util.js';
 
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 import {ListContainer} from './ui/list_container.js';

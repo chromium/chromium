@@ -67,4 +67,4 @@ DialogType.isFolderDialog = type => {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {DialogType};
+export {DialogType};

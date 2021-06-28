@@ -15,7 +15,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
-import {DirectoryModel} from './directory_model.m.js';
+import {DirectoryModel} from './directory_model.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 
 /**

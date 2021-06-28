@@ -6,8 +6,8 @@ import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 
-import {DirectoryModel} from './directory_model.m.js';
-import {CommandHandler} from './file_manager_commands.m.js';
+import {DirectoryModel} from './directory_model.js';
+import {CommandHandler} from './file_manager_commands.js';
 import {ProvidersModel} from './providers_model.js';
 import {GearMenu} from './ui/gear_menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';

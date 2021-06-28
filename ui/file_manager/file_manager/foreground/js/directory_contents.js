@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {FileListModel} from './file_list_model.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.js';
-// #import {constants} from './constants.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {util} from '../../common/js/util.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {FileListModel} from './file_list_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
 
 /**
  * Scanner of the entries.
  */
-/* #export */ class ContentScanner {
+export class ContentScanner {
   constructor() {
     this.cancelled_ = false;
   }
@@ -51,7 +51,7 @@
 /**
  * Scanner of the entries in a directory.
  */
-/* #export */ class DirectoryContentScanner extends ContentScanner {
+export class DirectoryContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry|FilesAppDirEntry} entry The directory to be read.
    */
@@ -100,7 +100,7 @@
 /**
  * Scanner of the entries for the search results on Drive File System.
  */
-/* #export */ class DriveSearchContentScanner extends ContentScanner {
+export class DriveSearchContentScanner extends ContentScanner {
   /** @param {string} query The query string. */
   constructor(query) {
     super();
@@ -175,7 +175,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
  * Scanner of the entries of the file name search on the directory tree, whose
  * root is entry.
  */
-/* #export */ class LocalSearchContentScanner extends ContentScanner {
+export class LocalSearchContentScanner extends ContentScanner {
   /**
    * @param {DirectoryEntry} entry The root of the search target directory tree.
    * @param {string} query The query of the search.
@@ -204,7 +204,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
 /**
  * Scanner of the entries for the metadata search on Drive File System.
  */
-/* #export */ class DriveMetadataSearchContentScanner extends ContentScanner {
+export class DriveMetadataSearchContentScanner extends ContentScanner {
   /**
    * @param {!chrome.fileManagerPrivate.SearchType} searchType The
    *     option of the search.
@@ -247,7 +247,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
   }
 }
 
-/* #export */ class RecentContentScanner extends ContentScanner {
+export class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
@@ -298,7 +298,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
 /**
  * Scanner of media-view volumes.
  */
-/* #export */ class MediaViewContentScanner extends ContentScanner {
+export class MediaViewContentScanner extends ContentScanner {
   /**
    * @param {!DirectoryEntry} rootEntry The root entry of the media-view volume.
    */
@@ -341,7 +341,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
  * is mounted as a disk volume and hide the fake root item while the
  * disk volume exists.
  */
-/* #export */ class CrostiniMounter extends ContentScanner {
+export class CrostiniMounter extends ContentScanner {
   /**
    * @override
    */
@@ -363,7 +363,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
  * This class manages filters and determines a file should be shown or not.
  * When filters are changed, a 'changed' event is fired.
  */
-/* #export */ class FileFilter extends cr.EventTarget {
+export class FileFilter extends EventTarget {
   /** @param {!VolumeManager} volumeManager */
   constructor(volumeManager) {
     super();
@@ -393,7 +393,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
    */
   addFilter(name, callback) {
     this.filters_[name] = callback;
-    cr.dispatchSimpleEvent(this, 'changed');
+    dispatchSimpleEvent(this, 'changed');
   }
 
   /**
@@ -401,7 +401,7 @@ DriveSearchContentScanner.MAX_RESULTS_ = 100;
    */
   removeFilter(name) {
     delete this.filters_[name];
-    cr.dispatchSimpleEvent(this, 'changed');
+    dispatchSimpleEvent(this, 'changed');
   }
 
   /**
@@ -521,7 +521,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
  * A context of DirectoryContents.
  * TODO(yoshiki): remove this. crbug.com/224869.
  */
-/* #export */ class FileListContext {
+export class FileListContext {
   /**
    * @param {FileFilter} fileFilter The file-filter context.
    * @param {!MetadataModel} metadataModel
@@ -586,7 +586,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
  * results.
  * TODO(hidehiko): Remove EventTarget from this.
  */
-/* #export */ class DirectoryContents extends cr.EventTarget {
+export class DirectoryContents extends EventTarget {
   /**
    *
    * @param {FileListContext} context The file list context.
@@ -852,7 +852,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
     this.onScanFinished_();
 
     this.processNewEntriesQueue_.cancel();
-    cr.dispatchSimpleEvent(this, 'scan-cancelled');
+    dispatchSimpleEvent(this, 'scan-cancelled');
   }
 
   /**
@@ -879,7 +879,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
       // handlers.
       callback();
 
-      cr.dispatchSimpleEvent(this, 'scan-completed');
+      dispatchSimpleEvent(this, 'scan-completed');
     });
   }
 
@@ -948,7 +948,7 @@ FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
           });
           // Update the filelist without waiting the metadata.
           this.fileList_.push.apply(this.fileList_, entriesFiltered);
-          cr.dispatchSimpleEvent(this, 'scan-updated');
+          dispatchSimpleEvent(this, 'scan-updated');
         }
         callbackOuter();
       };

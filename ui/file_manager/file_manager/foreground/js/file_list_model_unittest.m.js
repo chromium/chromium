@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertArrayEquals, assertEquals} from 'chrome://test/chai_assert.js';
-import {FileListModel} from './file_list_model.m.js';
+import {FileListModel} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 const TEST_METADATA = {

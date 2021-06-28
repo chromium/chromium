@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {LaunchParam} from './launch_param.js';
-// #import {NamingController} from './naming_controller.js';
-// #import {FileFilter} from './directory_contents.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {DialogFooter} from './ui/dialog_footer.js';
-// #import {util, str} from '../../common/js/util.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {metrics} from '../../common/js/metrics.js';
-// #import {$} from 'chrome://resources/js/util.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// clang-format on
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {metrics} from '../../common/js/metrics.js';
+import {str, util} from '../../common/js/util.js';
+import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DialogType} from './dialog_type.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {LaunchParam} from './launch_param.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {NamingController} from './naming_controller.js';
+import {DialogFooter} from './ui/dialog_footer.js';
 
 /**
  * Controler for handling behaviors of the Files app opened as a file/folder
  * selection dialog.
  */
-/* #export */ class DialogActionController {
+export class DialogActionController {
   /**
    * @param {!DialogType} dialogType Dialog type.
    * @param {!DialogFooter} dialogFooter Dialog footer.
@@ -99,7 +99,7 @@
     this.onFileTypeFilterChanged_();
 
     this.newFolderCommand_ =
-        /** @type {cr.ui.Command} */ ($('new-folder'));
+        /** @type {Command} */ ($('new-folder'));
     this.newFolderCommand_.addEventListener(
         'disabledChange', this.updateNewFolderButton_.bind(this));
   }
