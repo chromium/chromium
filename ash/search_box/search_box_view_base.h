@@ -81,6 +81,7 @@ class SearchBoxViewBase : public views::View,
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
@@ -128,6 +129,7 @@ class SearchBoxViewBase : public views::View,
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
+  SearchBoxViewDelegate* delegate() { return delegate_; }
   views::BoxLayout* box_layout() { return box_layout_; }
 
   void SetSearchBoxBackgroundCornerRadius(int corner_radius);

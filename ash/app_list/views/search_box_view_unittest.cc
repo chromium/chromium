@@ -202,6 +202,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void BackButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
+  void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
+  bool CanSelectSearchResults() override { return true; }
 
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;

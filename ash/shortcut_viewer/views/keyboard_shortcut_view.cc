@@ -350,6 +350,10 @@ void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   UpdateViewsLayout(is_search_box_active);
 }
 
+bool KeyboardShortcutView::CanSelectSearchResults() {
+  return true;
+}
+
 KeyboardShortcutView::KeyboardShortcutView() {
   DCHECK_EQ(g_ksv_view, nullptr);
   g_ksv_view = this;

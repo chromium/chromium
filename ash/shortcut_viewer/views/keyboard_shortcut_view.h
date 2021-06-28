@@ -58,6 +58,8 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   void BackButtonPressed() override;
   void ActiveChanged(ash::SearchBoxViewBase* sender) override;
   void SearchBoxFocusChanged(ash::SearchBoxViewBase* sender) override {}
+  void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
+  bool CanSelectSearchResults() override;
 
  private:
   friend class KeyboardShortcutViewTest;

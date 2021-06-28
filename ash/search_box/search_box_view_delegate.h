@@ -5,6 +5,10 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_DELEGATE_H_
 
+namespace ui {
+class KeyEvent;
+}  // namespace ui
+
 namespace ash {
 
 class SearchBoxViewBase;
@@ -25,6 +29,14 @@ class SearchBoxViewDelegate {
 
   // Invoked when search box focus is changed.
   virtual void SearchBoxFocusChanged(SearchBoxViewBase* sender) = 0;
+
+  // Invoked for key events on the search box itself (e.g. arrow keys when one
+  // of the buttons is focused).
+  virtual void OnSearchBoxKeyEvent(ui::KeyEvent* event) = 0;
+
+  // Returns true if search results can be selected with the keyboard (e.g.
+  // search results exist and are visible to the user).
+  virtual bool CanSelectSearchResults() = 0;
 
  protected:
   virtual ~SearchBoxViewDelegate() = default;

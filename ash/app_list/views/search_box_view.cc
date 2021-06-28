@@ -16,10 +16,8 @@
 #include "ash/app_list/resources/grit/app_list_resources.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_base_view.h"
-#include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
@@ -31,7 +29,6 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -310,40 +307,6 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
             ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
             : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
   }
-}
-
-void SearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
-  // TODO(crbug.com/1216082): Keyboard navigation for bubble launcher.
-  if (!app_list_view_) {
-    NOTIMPLEMENTED_LOG_ONCE();
-    return;
-  }
-
-  app_list_view_->RedirectKeyEventToSearchBox(event);
-
-  if (!IsUnhandledUpDownKeyEvent(*event))
-    return;
-
-  // Handles arrow key events from the search box while the search box is
-  // inactive. This covers both folder traversal and apps grid traversal. Search
-  // result traversal is handled in |HandleKeyEvent|
-  AppListPage* page =
-      contents_view_->GetPageView(contents_view_->GetActivePageIndex());
-  views::View* arrow_view = contents_view_->expand_arrow_view();
-  views::View* next_view = nullptr;
-
-  if (event->key_code() == ui::VKEY_UP) {
-    if (arrow_view && arrow_view->IsFocusable())
-      next_view = arrow_view;
-    else
-      next_view = page->GetLastFocusableView();
-  } else {
-    next_view = page->GetFirstFocusableView();
-  }
-
-  if (next_view)
-    next_view->RequestFocus();
-  event->SetHandled();
 }
 
 bool SearchBoxView::OnMouseWheel(const ui::MouseWheelEvent& event) {
@@ -640,11 +603,8 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
   // Nothing to do if no results are available (the rest of the method handles
   // result actions and result traversal). This might happen if zero state
   // suggestions are not enabled, and search box textfield is empty.
-  // TODO(crbug.com/1216082): Handle this case for bubble launcher.
-  if (contents_view_ &&
-      !contents_view_->search_result_page_view()->first_result_view()) {
+  if (!delegate()->CanSelectSearchResults())
     return false;
-  }
 
   // When search box is active, the focus cycles between close button and the
   // search_box - when close button is focused, traversal keys (arrows and

@@ -189,4 +189,13 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   view_delegate_->StartSearch(query);
 }
 
+void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
+  // TODO(crbug.com/1216082): Keyboard navigation for bubble launcher.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool AppListBubbleView::CanSelectSearchResults() {
+  return search_page_->GetVisible() && search_page_->CanSelectSearchResults();
+}
+
 }  // namespace ash

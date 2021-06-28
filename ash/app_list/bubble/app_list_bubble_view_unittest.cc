@@ -5,18 +5,22 @@
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_search_page.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -62,6 +66,15 @@ void AddAppItems(int num_apps) {
         std::make_unique<AppListItem>(
             /*app_id=*/base::NumberToString(i + num_apps_already_added)));
   }
+}
+
+void AddSearchResult(const std::string& id, const std::u16string& title) {
+  auto search_result = std::make_unique<TestSearchResult>();
+  search_result->set_result_id(id);
+  search_result->set_display_type(SearchResultDisplayType::kList);
+  search_result->set_title(title);
+  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+      std::move(search_result));
 }
 
 AppListBubblePresenter* GetBubblePresenter() {
@@ -222,6 +235,33 @@ TEST_F(AppListBubbleViewTest, TypingTextStartsSearch) {
 
   PressAndReleaseKey(ui::VKEY_B);
   EXPECT_EQ(client->last_search_query(), u"ab");
+}
+
+TEST_F(AppListBubbleViewTest, CanSelectSearchResults) {
+  ShowAppList();
+
+  // Can't select results, search page isn't visible.
+  AppListBubbleView* view = GetBubblePresenter()->bubble_view_for_test();
+  EXPECT_FALSE(view->CanSelectSearchResults());
+
+  // Typing a key switches to the search page, but we still don't have results.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_FALSE(view->CanSelectSearchResults());
+
+  // Search results becoming available allows keyboard selection.
+  AddSearchResult("id", u"title");
+  base::RunLoop().RunUntilIdle();  // Update search model observers.
+  EXPECT_TRUE(view->CanSelectSearchResults());
+}
+
+TEST_F(AppListBubbleViewTest, KeyboardNavigation) {
+  ShowAppList();
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  // No crash.
+  PressAndReleaseKey(ui::VKEY_UP);
+  // No crash.
+
+  // TODO(crbug.com/1216082): More tests when keyboard navigation works.
 }
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {

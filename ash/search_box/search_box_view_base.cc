@@ -395,6 +395,10 @@ const char* SearchBoxViewBase::GetClassName() const {
   return "SearchBoxView";
 }
 
+void SearchBoxViewBase::OnKeyEvent(ui::KeyEvent* event) {
+  delegate_->OnSearchBoxKeyEvent(event);
+}
+
 void SearchBoxViewBase::OnGestureEvent(ui::GestureEvent* event) {
   HandleSearchBoxEvent(event);
 }

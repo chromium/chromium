@@ -534,10 +534,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   // Add search results for test on focus movement.
   void SetUpSearchResults(int tile_results_num, int list_results_num) {
     std::vector<std::pair<SearchResult::DisplayType, int>> result_types;
-    result_types.push_back(
-        std::make_pair(ash::SearchResultDisplayType::kTile, tile_results_num));
-    result_types.push_back(
-        std::make_pair(ash::SearchResultDisplayType::kList, list_results_num));
+    result_types.emplace_back(SearchResultDisplayType::kTile, tile_results_num);
+    result_types.emplace_back(SearchResultDisplayType::kList, list_results_num);
 
     SearchModel::SearchResults* results =
         delegate_->GetSearchModel()->results();

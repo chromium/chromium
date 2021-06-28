@@ -38,6 +38,9 @@ class ASH_EXPORT AppListBubbleSearchPage
   void OnSearchResultContainerResultsChanging() override;
   void OnSearchResultContainerResultsChanged() override;
 
+  // Returns true if there are search results that can be keyboard selected.
+  bool CanSelectSearchResults();
+
   const auto& result_container_views_for_test() {
     return result_container_views_;
   }

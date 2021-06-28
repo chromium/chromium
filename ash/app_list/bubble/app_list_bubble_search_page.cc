@@ -104,6 +104,11 @@ void AppListBubbleSearchPage::OnSelectedResultChanged() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
+bool AppListBubbleSearchPage::CanSelectSearchResults() {
+  DCHECK(!result_container_views_.empty());
+  return result_container_views_.front()->num_results() > 0;
+}
+
 BEGIN_METADATA(AppListBubbleSearchPage, views::View)
 END_METADATA
 
