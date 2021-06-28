@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
 <translation id="1989112275319619282">ເປີດ​ເບິ່ງ</translation>
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
+<translation id="2021670401941426298">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="2022352537516230970">ສ້າງມາສຳລັບ iPhone ຂອງທ່ານ</translation>
 <translation id="2073572773299281212">ນຳໃຊ້ເມື່ອ <ph name="DAYS" /> ກ່ອນ</translation>
 <translation id="2074131957428911366">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">ໝາຍ...</translation>
 <translation id="3131206671572504478">ບລັອກທັງໝົດ</translation>
 <translation id="313283613037595347">ສ້າງແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່.</translation>
+<translation id="3134493362339304186">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ. ທ່ານຈະບໍ່ຖືກພາອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ເພື່ອລຶບລ້າງປະຫວັດຮູບແບບອື່ນໆ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ການ​ເຄື່ອນ​ໄຫວ Google ຂອງຂ້ອຍ<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">ບັນທຶກບັດ</translation>
 <translation id="3157387275655328056">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="3157684681743766797">ໝາຍທັງໝົດ…</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">ແບ່ງປັນໜ້າ...</translation>
 <translation id="3290875554372353449">ເລືອກບັນຊີ</translation>
 <translation id="3311748811247479259">ປິດ</translation>
+<translation id="3317580614754548493">ທ່ານຈະບໍ່ຖືກພາອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ເພື່ອລຶບລ້າງ <ph name="BEGIN_LINK" />ການຊອກຫາ<ph name="END_LINK" /> ຫຼື ປະຫວັດໃນຮູບແບບອື່ນ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ບັນຊີ Google ຂອງຂ້ອຍ<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="3329904751041170572">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຊີບ​ເວີ​ໄດ້.</translation>
@@ -557,6 +560,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 ພະຍາຍາມໃຊ້ລະຫັດຜ່ານສະເພາະສຳລັບທຸກໆເວັບໄຊ.</translation>
 <translation id="651505212789431520">ຍົກເລີກການຊິ້ງຂໍ້ມູນບໍ? ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="6524918542306337007">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="6560725150890787329">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE_NAME" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ. ທ່ານຈະບໍ່ຖືກພາອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ເພື່ອລຶບລ້າງປະຫວັດຮູບແບບອື່ນໆ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ການ​ເຄື່ອນ​ໄຫວ Google ຂອງຂ້ອຍ<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">ຊຸມເຂົ້າ</translation>
 <translation id="6585618849026997638">ທ່ານສາມາດກັບໄປຫາໜ້າທີ່ສຳຄັນຕໍ່ກັບທ່ານໂດຍການເພີ່ມບຸກມາກໄດ້</translation>
 <translation id="6603393121510733479">ອົງການຂອງທ່ານໄດ້ປິດການທ່ອງເວັບແບບສ່ວນຕົວແລ້ວ.
@@ -801,6 +805,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8976382372951310360">ຊ່ວຍເຫຼືອ</translation>
 <translation id="8981454092730389528">ການຄວບຄຸມກິດຈະກຳ Google</translation>
 <translation id="8985320356172329008">ເຂົ້າສູ່ລະບົບ Google ເປັນ</translation>
+<translation id="9000089900434778519">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE_NAME" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="9034759925968272072">ທ່ານຈະບໍ່ຖືກນຳອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນຢູ່ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">ສະແດງຕົ້ນສະບັບ</translation>
 <translation id="9039373489628511875">ແບນ​ວິດ</translation>

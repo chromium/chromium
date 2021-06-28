@@ -76,6 +76,7 @@
 <translation id="1076882167394279216">ບໍ່ສາມາດດາວໂຫຼດວັດຈະນານຸກົມສຳລັບກວດຄຳຜິດສຳລັບ <ph name="LANGUAGE" /> ໄດ້. ກະລຸນາລອງໃໝ່ອີກ.</translation>
 <translation id="1079766198702302550">ບລັອກການເຂົ້າໃຊ້ກ້ອງຖ່າຍຮູບທຸກຄັ້ງ</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ແຖບ}other{<ph name="GROUP_TITLE" /> - # ແຖບ}}</translation>
+<translation id="1082214733466244292">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກຄຸນສົມບັດບາງຢ່າງສຳລັບອຸປະກອນນີ້ໄວ້</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ຕ້ອງ​ການ​ກູ້​ຄືນ​ການ​ຕັ້ງ​ຄ່າ Chrome ຂອງ​ທ່ານ​ເປັນ​ຄ່າເລີ່ມຕົ້ນເດີ​ມ​ຂອງ​ພວກ​ມັນ. ອັນນີ້ຈະຕັ້ງຄ່າໜ້າຫຼັກ, ໜ້າແຖບໃໝ່ ແລະ ໂປຣແກຣມຄົ້ນຫາຂອງທ່ານຄືນໃໝ່, ປິດໃຊ້ງານສ່ວນຂະຫຍາຍຂອງທ່ານ ແລະຖອນປັກໝຸກທຸກແຖບ. ມັນຍັງຈະລຶບຂໍ້ມູນຊົ່ວຄາວ ແລະຂໍ້ມູນທີ່ແຄຊ໌ໄວ້ອື່ນນຳອີກ ເຊັ່ນ ຄຸກກີ້, ເນື້ອໃນ ແລະ ຂໍ້ມູນເວັບໄຊທ໌.</translation>
 <translation id="1084096383128641877">ການລຶບລະຫັດຜ່ານນີ້ອອກຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="DOMAIN" />. ການປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ຫຼື ລຶບບັນຊີຂອງທ່ານໃນ <ph name="DOMAIN_LINK" /> ເພື່ອຮັກສາໃຫ້ມັນປອດໄພຈາກຄົນອື່ນ.</translation>
 <translation id="1084824384139382525">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
@@ -582,6 +583,7 @@
 <translation id="1627408615528139100">ດາວໂຫຼດຮຽບຮ້ອຍແລ້ວ</translation>
 <translation id="1628948239858170093">ສະແກນໄຟລ໌ກ່ອນທີ່ຈະເປີດບໍ?</translation>
 <translation id="1629314197035607094">ລະຫັດຜ່ານໝົດອາຍຸແລ້ວ</translation>
+<translation id="1630300831289687074">ທ່ານຈະສາມາດໃຊ້ Chromebook ຂອງທ່ານໃນອີກບໍ່ດົນ.</translation>
 <translation id="163072119192489970">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຮັດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນ</translation>
 <translation id="1630768113285622200">ຣີສະຕາດ ແລະ ສືບຕໍ່</translation>
 <translation id="1632082166874334883">ເກັບລະຫັດຜ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ</translation>
@@ -970,6 +972,7 @@
 <translation id="202918510990975568">ປ້ອນລະຫັດຜ່ານຂອງທ່ານເພື່ອຕັ້ງຄ່າຄວາມປອດໄພ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2030455719695904263">ແທຣັກແຜດ</translation>
 <translation id="2031639749079821948">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="2031914984822377766">ເພີ່ມ <ph name="LINK_BEGIN" />ພາສາເວັບໄຊ<ph name="LINK_END" /> ທີ່ທ່ານຕ້ອງການ. ພາສາທີ່ຢູ່ເທິງສຸດຂອງລາຍຊື່ຈະຖືກໃຊ້ສຳລັບການແປພາສາ.</translation>
 <translation id="2034346955588403444">ເພີ່ມເຄືອຂ່າຍ WiFi ອື່ນ</translation>
 <translation id="203574396658008164">ເປີດນຳໃຊ້ການຈົດບັນທຶກຈາກໜ້າຈໍລັອກ</translation>
 <translation id="2037445849770872822">ມີການຕັ້ງຄ່າການຄວບຄຸມເບິ່ງແຍງສຳລັບບັນຊີ Google ນີ້. ເພື່ອຕັ້ງຄ່າການຄວບຄຸມຂອງພໍ່ແມ່ເພີ່ມເຕີມ, ກະລຸນາເລືອກ ສືບຕໍ່.
@@ -2527,6 +2530,7 @@
 <translation id="3713047097299026954">ກະແຈຄວາມປອດໄພນີ້ບໍ່ມີຂໍ້ມູນການເຂົ້າສູ່ລະບົບໃດໆ.</translation>
 <translation id="3714195043138862580">ອຸປະກອນສາທິດນີ້ໄດ້ຖືກກຳນົດໃຫ້ຢູ່ໃນສະຖານະຍົກເລີກການຈັດສັນ.</translation>
 <translation id="3714633008798122362">ປະ​ຕິ​ທິນ​ເວັບ​</translation>
+<translation id="3716758537211256894">ກວດສອບເຄືອຂ່າຍຂອງຂ້ອຍ</translation>
 <translation id="3719826155360621982">ຫນ້າ​ຫຼັກ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ທ່ານ ແລະ Google</translation>
@@ -2621,6 +2625,7 @@
 <translation id="381202950560906753">ເພີ່ມອັນອື່ນ</translation>
 <translation id="3812525830114410218">ໃບ​ຢັ້ງ​ຢືນ​​ບໍ່​ດີ</translation>
 <translation id="3813296892522778813">ໄປຫາ <ph name="BEGIN_LINK_CHROMIUM" />ຄວາມຊ່ວຍເຫຼືອ Google Chrome<ph name="END_LINK_CHROMIUM" /> ຖ້າທ່ານບໍ່ສາມາດຊອກເຫັນສິ່ງທີ່ທ່ານກຳລັງຊອກຫາ</translation>
+<translation id="3813358687923336574">ພາສາທີ່ໃຊ້ສຳລັບການແປພາສາໜ້າ ແລະ ຄຳຕອບດ່ວນ</translation>
 <translation id="3814529970604306954">ບັນຊີໂຮງຮຽນ</translation>
 <translation id="3816118180265633665">ສີຂອງ Chrome</translation>
 <translation id="3817524650114746564">ເປີດການຕັ້ງຄ່າພຣັອກຊີຂອງຄອມພິວເຕີຂອງທ່ານ</translation>
@@ -4594,6 +4599,7 @@
 <translation id="6051354611314852653">ອຸ້ຍ!  ລະບົບໃຫ້ສິດການເຂົ້າ​ຫາ API ສໍາລັບອຸປະກອນນີ້ບໍ່ໄດ້.</translation>
 <translation id="6052976518993719690">​ໜ່ວຍ​ງານ​ໃຫ້ການຢັ້ງ​ຢືນ SSL</translation>
 <translation id="6053401458108962351">ລຶບຂໍ້​ມູນ​ການທ່ອງເນັດ...</translation>
+<translation id="6054284857788651331">ກຸ່ມແຖບທີ່ປິດຫຼ້າສຸດ</translation>
 <translation id="6054961935262556546">ປ່ຽນການແບ່ງປັນ</translation>
 <translation id="6055171183283175969">ລະຫັດຜ່ານທີ່ທ່ານປ້ອນເຂົ້າບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
@@ -5445,6 +5451,7 @@
 <translation id="6991665348624301627">ເລືອກປາຍ​ທາງ</translation>
 <translation id="6992554835374084304">ເປີດການກວດການສະກົດຄຳທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
 <translation id="6993000214273684335">ລຶບແຖບອອກຈາກກຸ່ມທີ່ບໍ່ມີຊື່ - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
+<translation id="6993050154661569036">ກຳລັງອັບເດດໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
 <translation id="6994069045767983299">ສີສະຫຼັບ</translation>
 <translation id="6995899638241819463">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ບັນທຶກການເຄື່ອນໄຫວ</translation>
@@ -5818,6 +5825,7 @@
 <translation id="7415454883318062233">ຕັ້ງຄ່າສຳເລັດແລ້ວ</translation>
 <translation id="7416362041876611053">ຄວາມຜິດພາດ​ຂອງເຄືອຂ່າຍທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="741906494724992817">ແອັບນີ້ບໍ່​ຕ້ອງມີ​ການ​ອະ​ນຸ​ຍາດ​ເປັນ​ພິ​ເສດ​.</translation>
+<translation id="7421067045979951561">ຕົວຈັດການໂປຣໂຕຄໍ</translation>
 <translation id="742130257665691897">ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="7421925624202799674">ເບິ່ງແຫຼ່ງທີ່ມາຂອງໜ້າ</translation>
 <translation id="7422192691352527311">ຄວາມມັກ...</translation>
@@ -6016,6 +6024,7 @@
 <translation id="7634566076839829401">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ. ກະ​ລຸ​ນາ​ລອງ​ໃໝ່​ພາຍຫຼັງ.</translation>
 <translation id="7635048370253485243">ປັກໝຸດໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="763632859238619983">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃດຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
+<translation id="7636422033092045734">ຕອນນີ້ທ່ານມີປຸ່ມກົດໃຫ້ນຳທາງຫຼາຍຂຶ້ນ, ລະບົບໄດ້ປິດການສະແກນອັດຕະໂນມັດແລ້ວ. ໃຫ້ນຳທາງໄປຫາປຸ່ມກົດແລ້ວໆ ແລະ ກົດປຸ່ມເລືອກເພື່ອປິດຄຳແນະນຳ.</translation>
 <translation id="7636919061354591437">ຕິດຕັ້ງໃນອຸປະກອນນີ້</translation>
 <translation id="7637593984496473097">ບ່ອນຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ</translation>
 <translation id="7638605456503525968">ຜອດອະນຸກຳ</translation>
@@ -6112,6 +6121,7 @@
 <translation id="7719588063158526969">ຊື່ອຸປະກອນຍາວເກີນໄປ</translation>
 <translation id="7721179060400456005">ອະນຸຍາດໃຫ້ໜ້າຈໍຂະຫຍາຍການສະແດງຜົນ</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">ອົງການຂອງທ່ານບັງຄັບໃຫ້ມີໂປຣໄຟລ໌</translation>
 <translation id="7722040605881499779">ຈຳເປັນຕ້ອງມີເພື່ອອັບເດດ: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7728465250249629478">ປ່ຽນພາສາຂອງອຸປະກອນ</translation>
@@ -6862,6 +6872,7 @@
 <translation id="8553342806078037065">ຈັດການບູກຄົນອື່ນ</translation>
 <translation id="8554899698005018844">ບໍ່ມີພາສາ</translation>
 <translation id="8557022314818157177">ສືບຕໍ່ແຕະກະແຈຄວາມປອດໄພຈົນກວ່າວ່າໄດ້ບັນທຶກລາຍນິ້ວມືຂອງທ່ານໄວ້ແລ້ວ</translation>
+<translation id="8557180006508471423">ເປີດໃຊ້ "Google Chrome" ໃນບໍລິການສະຖານທີ່ຢູ່ Mac ຂອງທ່ານ</translation>
 <translation id="8557930019681227453">ໃບລາຍການ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="8561206103590473338">ຊ້າງ</translation>
