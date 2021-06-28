@@ -210,11 +210,11 @@ void WebGPUImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
   ImplementationBase::VerifySyncTokens(sync_tokens, count);
 }
 void WebGPUImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
-  // TODO(magchen@): Replace FlushCommands() with wire_serializer_->Commit().
-  // Need to review all WebGPU WaitSyncToken calls before this replacement. Add
-  // FlushCommands to the calling functions if the callers rely on WaitSyncToken
-  // for GPU flush/execution.
-  FlushCommands();
+  // Need to commit the commands to the GPU command buffer first for SyncToken
+  // to work.
+#if BUILDFLAG(USE_DAWN)
+  wire_serializer_->Commit();
+#endif
   ImplementationBase::WaitSyncToken(sync_token);
 }
 void WebGPUImplementation::ShallowFlushCHROMIUM() {
