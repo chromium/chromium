@@ -6,6 +6,15 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("../../oobe_auto_imports.gni")
 
+group("polymer3_elements") {
+  public_deps = [
+    ":oobe_back_button_module",
+    ":oobe_icon_button_module",
+    ":oobe_next_button_module",
+    ":oobe_text_button_module",
+  ]
+}
+
 js_type_check("closure_compile") {
   deps = [
       ":oobe_back_button",
@@ -24,7 +33,6 @@ js_type_check("closure_compile_module") {
     ":oobe_icon_button.m",
   ]
 }
-
 
 js_library("oobe_back_button") {
   deps = [ "../behaviors:oobe_i18n_behavior" ]

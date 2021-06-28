@@ -43,6 +43,16 @@ group("closure_compile_module") {
   ]
 }
 
+group("polymer3_elements") {
+  public_deps = [
+    "buttons:polymer3_elements",
+    "behaviors:modulize",
+
+    # Local targets
+    ":oobe_icons_module"
+  ]
+}
+
 
 ###############################
 # Closure compiler libraries below
