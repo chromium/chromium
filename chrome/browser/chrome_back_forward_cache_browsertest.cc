@@ -442,14 +442,9 @@ class MetricsChromeBackForwardCacheBrowserTest
   }
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_FirstInputDelay DISABLED_FirstInputDelay
-#else
-#define MAYBE_FirstInputDelay FirstInputDelay
-#endif
+// Flaky https://crbug.com/1223445
 IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
-                       MAYBE_FirstInputDelay) {
+                       DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
