@@ -85,6 +85,12 @@ const feedstore::Content* StreamModel::FindContent(
     ContentRevision revision) const {
   return GetFinalFeatureTree()->FindContent(revision);
 }
+
+feedwire::ContentId StreamModel::FindContentId(ContentRevision revision) const {
+  const feedstore::Content* content = FindContent(revision);
+  return content ? content->content_id() : feedwire::ContentId();
+}
+
 const std::string* StreamModel::FindSharedStateData(
     const std::string& id) const {
   auto iter = shared_states_.find(id);

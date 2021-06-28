@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "components/feed/core/v2/ios_shared_prefs.h"
-#include "components/feed/core/v2/notice_card_tracker.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/stream/notice_card_tracker.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,24 +24,6 @@ bool UploadCriteria::CanUploadActions() const {
          !feed::prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
 }
 
-void UploadCriteria::OnSliceViewed(bool signed_in, int viewed_slice_index) {
-  constexpr int kShownSlicesThreshold = 2;
-  // Don't take shown slices into consideration when the upload conditions has
-  // already been reached.
-  if (HasReachedConditionsToUploadActionsWithNoticeCard() || !signed_in) {
-    return;
-  }
-
-  if (viewed_slice_index + 1 >= kShownSlicesThreshold) {
-    // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-    if (base::FeatureList::IsEnabled(
-            feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-      feed::prefs::SetHasReachedClickAndViewActionsUploadConditions(
-          *profile_prefs_, true);
-    }
-  }
-}
-
 void UploadCriteria::SurfaceOpenedOrClosed() {
   UpdateCanUploadActionsWithNoticeCard();
 }
@@ -55,7 +37,6 @@ void UploadCriteria::Clear() {
 }
 
 bool UploadCriteria::HasReachedConditionsToUploadActionsWithNoticeCard() {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   if (base::FeatureList::IsEnabled(
           feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
     return feed::prefs::GetHasReachedClickAndViewActionsUploadConditions(
@@ -68,7 +49,6 @@ bool UploadCriteria::HasReachedConditionsToUploadActionsWithNoticeCard() {
 }
 
 void UploadCriteria::UpdateCanUploadActionsWithNoticeCard() {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   can_upload_actions_with_notice_card_ =
       HasReachedConditionsToUploadActionsWithNoticeCard();
 }

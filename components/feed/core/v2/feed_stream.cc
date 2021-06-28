@@ -48,8 +48,8 @@
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
@@ -1073,10 +1073,10 @@ void FeedStream::ReportOpenAction(const GURL& url,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenAction(stream_type, index);
-  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
-  // stream.
-  if (stream_type.IsForYou()) {
-    notice_card_tracker_.OnOpenAction(index);
+
+  if (stream.model) {
+    notice_card_tracker_.OnOpenAction(
+        stream.model->FindContentId(ToContentRevision(slice_id)));
   }
 }
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
@@ -1094,10 +1094,10 @@ void FeedStream::ReportOpenInNewTabAction(const GURL& url,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenInNewTabAction(stream_type, index);
-  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
-  // stream.
-  if (stream_type.IsForYou()) {
-    notice_card_tracker_.OnOpenAction(index);
+
+  if (stream.model) {
+    notice_card_tracker_.OnOpenAction(
+        stream.model->FindContentId(ToContentRevision(slice_id)));
   }
 }
 
@@ -1116,11 +1116,10 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
     }
     metrics_reporter_->ContentSliceViewed(stream_type, index);
   }
-  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
-  // stream.
-  if (stream_type.IsForYou()) {
-    upload_criteria_.OnSliceViewed(stream.model->signed_in(), index);
-    notice_card_tracker_.OnSliceViewed(index);
+  if (stream.model) {
+    notice_card_tracker_.OnCardViewed(
+        stream.model->signed_in(),
+        stream.model->FindContentId(ToContentRevision(slice_id)));
   }
 }
 

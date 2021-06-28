@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
-#define COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
+#ifndef COMPONENTS_FEED_CORE_V2_STREAM_NOTICE_CARD_TRACKER_H_
+#define COMPONENTS_FEED_CORE_V2_STREAM_NOTICE_CARD_TRACKER_H_
+
+#include "base/time/time.h"
 
 class PrefService;
 
+namespace feedwire {
+class ContentId;
+}
 namespace feed {
 
 constexpr char kNoticeCardViewsCountThresholdParamName[] =
     "notice-card-views-count-threshold";
 constexpr char kNoticeCardClicksCountThresholdParamName[] =
     "notice-card-clicks-count-threshold";
-
-int GetNoticeCardExpectedIndex();
 
 // Tracker for the notice card related actions that also provide signals based
 // on those.
@@ -27,8 +30,10 @@ class NoticeCardTracker {
 
   // Capture the actions.
 
-  void OnSliceViewed(int index);
-  void OnOpenAction(int index);
+  // Should be called whenever a card has been viewed.
+  void OnCardViewed(bool is_signed_in, const feedwire::ContentId& content_id);
+  // Should be called whenever a card on the Feed is tapped.
+  void OnOpenAction(const feedwire::ContentId& content_id);
 
   // Get signals based on the actions.
 
@@ -37,8 +42,6 @@ class NoticeCardTracker {
   bool HasAcknowledgedNoticeCard() const;
 
  private:
-  bool HasNoticeCardActionsCountPrerequisites(int index);
-  void MaybeUpdateNoticeCardViewsCount(int index);
   void MaybeUpdateNoticeCardClicksCount(int index);
 
   PrefService* profile_prefs_;
@@ -56,8 +59,11 @@ class NoticeCardTracker {
   // The number of clicks/taps of the notice card to consider it acknowledged by
   // the user.
   int clicks_count_threshold_;
+
+  // Whether there was previously a notice card view reported this session.
+  base::TimeTicks last_view_time_;
 };
 
 }  // namespace feed
 
-#endif  // COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
+#endif  // COMPONENTS_FEED_CORE_V2_STREAM_NOTICE_CARD_TRACKER_H_

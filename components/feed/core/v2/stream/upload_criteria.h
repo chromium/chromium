@@ -20,7 +20,6 @@ class UploadCriteria {
   bool CanUploadActions() const;
 
   // Events to update criteria.
-  void OnSliceViewed(bool signed_in, int viewed_slice_index);
   void SurfaceOpenedOrClosed();
   void Clear();
 

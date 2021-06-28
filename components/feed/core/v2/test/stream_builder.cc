@@ -35,6 +35,10 @@ ContentId MakeContentContentId(int id_number) {
   return MakeContentId(ContentId::FEATURE, "stories", id_number);
 }
 
+ContentId MakeNoticeCardContentContentId(int id_number) {
+  return MakeContentId(ContentId::FEATURE, "privacynoticecard.f", id_number);
+}
+
 ContentId MakeSharedStateContentId(int id_number) {
   return MakeContentId(ContentId::TYPE_UNDEFINED, "shared", id_number);
 }
@@ -65,11 +69,31 @@ feedstore::StreamStructure MakeCluster(int id_number, ContentId parent) {
   return result;
 }
 
+feedstore::StreamStructure MakeNoticeCardCluster(int id_number,
+                                                 ContentId parent) {
+  feedstore::StreamStructure result;
+  result.set_type(feedstore::StreamStructure::CLUSTER);
+  result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  *result.mutable_content_id() = MakeClusterId(id_number);
+  *result.mutable_parent_id() = parent;
+  return result;
+}
+
 feedstore::StreamStructure MakeContentNode(int id_number, ContentId parent) {
   feedstore::StreamStructure result;
   result.set_type(feedstore::StreamStructure::CONTENT);
   result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
   *result.mutable_content_id() = MakeContentContentId(id_number);
+  *result.mutable_parent_id() = parent;
+  return result;
+}
+
+feedstore::StreamStructure MakeNoticeCardContentNode(int id_number,
+                                                     ContentId parent) {
+  feedstore::StreamStructure result;
+  result.set_type(feedstore::StreamStructure::CONTENT);
+  result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  *result.mutable_content_id() = MakeNoticeCardContentContentId(id_number);
   *result.mutable_parent_id() = parent;
   return result;
 }
@@ -109,6 +133,13 @@ feedstore::Content MakeContent(int id_number) {
   prefetch_metadata.set_image_url("http://image" + suffix);
   prefetch_metadata.set_favicon_url("http://favicon" + suffix);
   prefetch_metadata.set_badge_id("app/badge" + suffix);
+  return result;
+}
+
+feedstore::Content MakeNoticeCardContent(int id_number) {
+  feedstore::Content result;
+  *result.mutable_content_id() = MakeNoticeCardContentContentId(id_number);
+  result.set_frame("f:" + base::NumberToString(0));
   return result;
 }
 
@@ -168,19 +199,27 @@ StreamModelUpdateRequestGenerator::~StreamModelUpdateRequestGenerator() =
 
 std::unique_ptr<StreamModelUpdateRequest>
 StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
+  bool include_notice_card =
+      (privacy_notice_fulfilled && first_cluster_id == 0);
+
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
   const int i = first_cluster_id;
   const int j = first_cluster_id + 1;
   initial_update->source =
       StreamModelUpdateRequest::Source::kInitialLoadFromStore;
-  initial_update->content.push_back(MakeContent(i));
+  initial_update->content.push_back(
+      include_notice_card ? MakeNoticeCardContent(i) : MakeContent(i));
   initial_update->content.push_back(MakeContent(j));
-  initial_update->stream_structures = {MakeClearAll(),
-                                       MakeStream(),
-                                       MakeCluster(i, MakeRootId()),
-                                       MakeContentNode(i, MakeClusterId(i)),
-                                       MakeCluster(j, MakeRootId()),
-                                       MakeContentNode(j, MakeClusterId(j))};
+
+  initial_update->stream_structures = {
+      MakeClearAll(),
+      MakeStream(),
+      include_notice_card ? MakeNoticeCardCluster(i, MakeRootId())
+                          : MakeCluster(i, MakeRootId()),
+      include_notice_card ? MakeNoticeCardContentNode(i, MakeClusterId(i))
+                          : MakeContentNode(i, MakeClusterId(i)),
+      MakeCluster(j, MakeRootId()),
+      MakeContentNode(j, MakeClusterId(j))};
 
   initial_update->shared_states.push_back(MakeSharedState(i));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
@@ -190,8 +229,11 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  initial_update->stream_data.add_content_ids(MakeContent(i).content_id().id());
-  initial_update->stream_data.add_content_ids(MakeContent(j).content_id().id());
+
+  initial_update->stream_data.add_content_ids(
+      initial_update->content[0].content_id().id());
+  initial_update->stream_data.add_content_ids(
+      initial_update->content[1].content_id().id());
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;

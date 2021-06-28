@@ -27,17 +27,23 @@ ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
                         int id_number);
 ContentId MakeClusterId(int id_number);
+ContentId MakeNoticeCardClusterId();
 ContentId MakeContentContentId(int id_number);
+ContentId MakeNoticeCardContentContentId(int id_number);
 ContentId MakeSharedStateContentId(int id_number);
 ContentId MakeRootId(int id_number = 0);
 ContentId MakeSharedStateId(int id_number = 0);
 feedstore::StreamStructure MakeStream(int id_number = 0);
 feedstore::StreamStructure MakeCluster(int id_number, ContentId parent);
+feedstore::StreamStructure MakeNoticeCardCluster(ContentId parent);
 feedstore::StreamStructure MakeContentNode(int id_number, ContentId parent);
+feedstore::StreamStructure MakeNoticeCardContentNode(int id_number,
+                                                     ContentId parent);
 feedstore::StreamSharedState MakeSharedState(int id_number);
 feedstore::StreamStructure MakeRemove(ContentId id);
 feedstore::StreamStructure MakeClearAll();
 feedstore::Content MakeContent(int id_number);
+feedstore::Content MakeNoticeCardContent();
 feedstore::DataOperation MakeOperation(feedstore::StreamStructure structure);
 feedstore::DataOperation MakeOperation(feedstore::Content content);
 feedstore::Record MakeRecord(feedstore::Content content);
@@ -53,7 +59,7 @@ struct StreamModelUpdateRequestGenerator {
   base::Time last_added_time = kTestTimeEpoch;
   bool signed_in = true;
   bool logging_enabled = true;
-  bool privacy_notice_fulfilled = true;
+  bool privacy_notice_fulfilled = false;
 
   StreamModelUpdateRequestGenerator();
   ~StreamModelUpdateRequestGenerator();
@@ -79,7 +85,7 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     base::Time last_added_time = kTestTimeEpoch,
     bool signed_in = true,
     bool logging_enabled = true,
-    bool privacy_notice_fulfilled = true);
+    bool privacy_notice_fulfilled = false);
 // Root
 // |-Cluster 2
 // |  |-Content 2

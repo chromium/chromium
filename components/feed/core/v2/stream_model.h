@@ -117,6 +117,9 @@ class StreamModel {
   // Returns the content identified by |ContentRevision|.
   const feedstore::Content* FindContent(ContentRevision revision) const;
 
+  // Returns the ContentId of the content.
+  feedwire::ContentId FindContentId(ContentRevision revision) const;
+
   // Returns the shared state data identified by |id|.
   const std::string* FindSharedStateData(const std::string& id) const;
 

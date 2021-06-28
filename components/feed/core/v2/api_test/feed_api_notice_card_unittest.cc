@@ -8,7 +8,11 @@
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/proto_util.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/core/v2/test/proto_printer.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,21 +20,29 @@
 namespace feed {
 namespace test {
 namespace {
+class FeedApiNoticeCardTest : public FeedApiTest {
+  void SetUp() override {
+    FeedApiTest::SetUp();
+    model_generator_.privacy_notice_fulfilled = true;
+  }
 
-class FeedStreamConditionalActionsUploadTest : public FeedApiTest {
+ protected:
+  StreamModelUpdateRequestGenerator model_generator_;
+};
+
+class FeedStreamConditionalActionsUploadTest : public FeedApiNoticeCardTest {
   void SetupFeatures() override {
     scoped_feature_list_.InitAndEnableFeature(
         feed::kInterestFeedV2ClicksAndViewsConditionalUpload);
   }
 };
 
-TEST_F(FeedApiTest, LoadStreamSendsNoticeCardAcknowledgement) {
+TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       feed::kInterestFeedNoticeCardAutoDismiss);
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
 
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -43,13 +55,15 @@ TEST_F(FeedApiTest, LoadStreamSendsNoticeCardAcknowledgement) {
           .slice_id();
   stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
                              slice_id);
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
                              slice_id);
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
                              slice_id);
   stream_->ReportOpenAction(GURL(), surface.GetStreamType(), slice_id);
 
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   stream_->UnloadModel(surface.GetStreamType());
   stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
   WaitForIdleTaskQueue();
@@ -69,8 +83,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   //   that should be dropped => (5) Simulate the backgrounding of the app to
   //   enable actions upload => (6) Trigger an upload which will upload the
   //   stored ThereAndBackAgain action.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
+  TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   // Process the view action and the ThereAndBackAgain action while the upload
@@ -95,7 +109,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   // Reach conditions.
   stream_->ReportSliceViewed(
       surface.GetSurfaceId(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
+      surface.initial_state->updated_slices(0).slice().slice_id());
 
   // Verify that the view action is still dropped because we haven't
   // transitioned out of the current surface.
@@ -115,7 +129,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -127,14 +141,14 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
   // Reach conditions.
   stream_->ReportSliceViewed(
       surface.GetSurfaceId(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
+      surface.initial_state->updated_slices(0).slice().slice_id());
 
   // Attach a new surface to update the bit to enable uploads.
   TestForYouSurface surface2(stream_.get());
 
   // Trigger an upload through load more to isolate the effect of the on-attach
   // event on enabling uploads.
-  response_translator_.InjectResponse(MakeTypicalNextPageState());
+  response_translator_.InjectResponse(model_generator_.MakeNextPage());
   stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
@@ -144,7 +158,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -156,7 +170,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
   // Reach conditions.
   stream_->ReportSliceViewed(
       surface.GetSurfaceId(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
+      surface.initial_state->updated_slices(0).slice().slice_id());
 
   surface.Detach();
   stream_->OnEnterBackground();
@@ -169,9 +183,8 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
        AllowActionsUploadWhenNoticeCardNotPresentRegardlessOfConditions) {
-  auto model_state = MakeTypicalInitialModelState();
-  model_state->stream_data.set_privacy_notice_fulfilled(false);
-  response_translator_.InjectResponse(std::move(model_state));
+  model_generator_.privacy_notice_fulfilled = false;
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
@@ -195,14 +208,14 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
        ResetTheUploadEnableBitsOnClearAll) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   // Reach conditions.
   stream_->ReportSliceViewed(
       surface.GetSurfaceId(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
+      surface.initial_state->updated_slices(0).slice().slice_id());
   surface.Detach();
   stream_->OnEnterBackground();
   ASSERT_TRUE(stream_->CanUploadActions());
@@ -214,12 +227,12 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   ASSERT_FALSE(stream_->CanUploadActions());
 }
 
-TEST_F(FeedApiTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
+TEST_F(FeedApiNoticeCardTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
   base::HistogramTester histograms;
 
   // Trigger a stream refresh that updates the histogram.
   {
-    auto model_state = MakeTypicalInitialModelState();
+    auto model_state = model_generator_.MakeFirstPage();
     model_state->stream_data.set_privacy_notice_fulfilled(false);
     response_translator_.InjectResponse(std::move(model_state));
 
@@ -232,7 +245,7 @@ TEST_F(FeedApiTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
 
   // Trigger another stream refresh that updates the histogram.
   {
-    auto model_state = MakeTypicalInitialModelState();
+    auto model_state = model_generator_.MakeFirstPage();
     model_state->stream_data.set_privacy_notice_fulfilled(true);
     response_translator_.InjectResponse(std::move(model_state));
 
@@ -250,7 +263,7 @@ TEST_F(FeedApiTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
        DontTriggerActionsUploadWhenWasNotSignedIn) {
-  auto update_request = MakeTypicalInitialModelState();
+  auto update_request = model_generator_.MakeFirstPage();
   update_request->stream_data.set_signed_in(false);
   response_translator_.InjectResponse(std::move(update_request));
   TestForYouSurface surface(stream_.get());
@@ -274,17 +287,14 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 TEST_F(FeedStreamConditionalActionsUploadTest,
        LoadMoreDoesntUpdateNoticeCardPrefAndHistogram) {
   // The initial stream load has the notice card.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
   // Inject a response for the LoadMore fetch that doesn't have the notice card.
   // It shouldn't overwrite the notice card pref.
-  response_translator_.InjectResponse(MakeTypicalNextPageState(
-      /* page_number= */ 0,
-      /* last_added_time= */ kTestTimeEpoch,
-      /* signed_in= */ true,
-      /* logging_enabled= */ false));
+  model_generator_.privacy_notice_fulfilled = false;
+  response_translator_.InjectResponse(model_generator_.MakeNextPage());
 
   // Start tracking histograms after the initial stream load to isolate the
   // effect of load more.
