@@ -710,7 +710,7 @@ TYPED_TEST(ClipboardTest, PickleTest) {
   this->clipboard().ReadData(kFormat, /* data_dst = */ nullptr, &output);
   ASSERT_FALSE(output.empty());
 
-  base::Pickle read_pickle(output.data(), static_cast<int>(output.size()));
+  base::Pickle read_pickle(output.data(), output.size());
   base::PickleIterator iter(read_pickle);
   std::string unpickled_string;
   ASSERT_TRUE(iter.ReadString(&unpickled_string));
@@ -747,7 +747,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   this->clipboard().ReadData(kFormat2, /* data_dst = */ nullptr, &output2);
   ASSERT_FALSE(output2.empty());
 
-  base::Pickle read_pickle2(output2.data(), static_cast<int>(output2.size()));
+  base::Pickle read_pickle2(output2.data(), output2.size());
   base::PickleIterator iter2(read_pickle2);
   std::string unpickled_string2;
   ASSERT_TRUE(iter2.ReadString(&unpickled_string2));
@@ -770,7 +770,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   this->clipboard().ReadData(kFormat1, /* data_dst = */ nullptr, &output1);
   ASSERT_FALSE(output1.empty());
 
-  base::Pickle read_pickle1(output1.data(), static_cast<int>(output1.size()));
+  base::Pickle read_pickle1(output1.data(), output1.size());
   base::PickleIterator iter1(read_pickle1);
   std::string unpickled_string1;
   ASSERT_TRUE(iter1.ReadString(&unpickled_string1));
@@ -868,7 +868,7 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
 #if defined(OS_APPLE)
   EXPECT_THAT(raw_types, Contains(u"public.utf8-plain-text"));
   EXPECT_THAT(raw_types, Contains(u"NSStringPboardType"));
-  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(2));
+  EXPECT_EQ(raw_types.size(), 2u);
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
@@ -880,22 +880,22 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));
-    EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(5));
+    EXPECT_EQ(raw_types.size(), 5u);
     return;
   }
 #endif  // USE_OZONE
 #if defined(USE_X11)
   EXPECT_FALSE(features::IsUsingOzonePlatform());
-  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(4));
+  EXPECT_EQ(raw_types.size(), 4u);
 #endif  // USE_X11
 #elif defined(OS_WIN)
   EXPECT_THAT(raw_types, Contains(u"CF_UNICODETEXT"));
   EXPECT_THAT(raw_types, Contains(u"CF_TEXT"));
   EXPECT_THAT(raw_types, Contains(u"CF_OEMTEXT"));
-  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(3));
+  EXPECT_EQ(raw_types.size(), 3u);
 #elif defined(USE_AURA) || defined(OS_ANDROID)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
-  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(1));
+  EXPECT_EQ(raw_types.size(), 1u);
 #else
 #error Unsupported platform
 #endif
