@@ -17,14 +17,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage_sql.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
+#include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -126,6 +129,25 @@ TEST_F(ConversionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   // Verify that each field was stored as expected.
   EXPECT_TRUE(ImpressionsEqual(impression, stored_impressions[0]));
 }
+
+#if defined(OS_ANDROID)
+TEST_F(ConversionStorageTest,
+       ImpressionStoredAndRetrieved_ValuesIdentical_AndroidApp) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+  auto impression = ImpressionBuilder(clock()->Now())
+                        .SetImpressionOrigin(url::Origin::Create(
+                            GURL("android-app:com.any.app")))
+                        .Build();
+  storage()->StoreImpression(impression);
+  std::vector<StorableImpression> stored_impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, stored_impressions.size());
+
+  // Verify that each field was stored as expected.
+  EXPECT_TRUE(ImpressionsEqual(impression, stored_impressions[0]));
+}
+#endif
 
 TEST_F(ConversionStorageTest,
        GetWithNoMatchingImpressions_NoImpressionsReturned) {

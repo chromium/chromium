@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -749,6 +752,32 @@ TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
     SetBrowserClientForTesting(old_browser_client);
   }
 }
+
+#if defined(OS_ANDROID)
+TEST_F(ConversionHostTest, AndroidConversion) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation->set_initiator_origin(
+      url::Origin::Create(GURL("android-app:com.any.app")));
+  navigation->set_impression(CreateValidImpression());
+  navigation->Commit();
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+}
+
+TEST_F(ConversionHostTest, AndroidConversion_BadScheme) {
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation->set_initiator_origin(
+      url::Origin::Create(GURL("https://com.any.app")));
+  navigation->set_impression(CreateValidImpression());
+  navigation->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+}
+#endif
 
 class ConversionHostNoInitTest : public ::testing::Test {};
 

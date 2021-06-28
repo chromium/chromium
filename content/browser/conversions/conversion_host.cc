@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_page_metrics.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -68,6 +70,14 @@ void RecordRegisterImpressionAllowed(bool allowed) {
   base::UmaHistogramBoolean("Conversions.RegisterImpressionAllowed", allowed);
 }
 
+bool IsAndroidAppOrigin(absl::optional<url::Origin> origin) {
+#if defined(OS_ANDROID)
+  return origin && origin->scheme() == kAndroidAppScheme;
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // static
@@ -105,6 +115,11 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       !conversion_manager_provider_->GetManager(web_contents())) {
     return;
   }
+
+  // There's no initiator frame for App-initiated origins, and so no work is
+  // required at navigation start time.
+  if (IsAndroidAppOrigin(navigation_handle->GetInitiatorOrigin()))
+    return;
 
   RenderFrameHostImpl* initiator_frame_host =
       navigation_handle->GetInitiatorFrameToken().has_value()
@@ -173,11 +188,16 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   conversion_page_metrics_ = std::make_unique<ConversionPageMetrics>();
+  bool is_android_app_origin =
+      IsAndroidAppOrigin(navigation_handle->GetInitiatorOrigin());
 
-  // If we were not able to access the impression origin, ignore the navigation.
-  if (!it)
+  // If we were not able to access the impression origin, ignore the
+  // navigation.
+  if (!it && !is_android_app_origin)
     return;
-  url::Origin impression_origin = std::move((*it.get())->second);
+  url::Origin impression_origin = is_android_app_origin
+                                      ? *navigation_handle->GetInitiatorOrigin()
+                                      : std::move((*it.get())->second);
   DCHECK(navigation_handle->GetImpression());
   const blink::Impression& impression = *(navigation_handle->GetImpression());
 
@@ -214,8 +234,11 @@ void ConversionHost::VerifyAndStoreImpression(
   if (!allowed)
     return;
 
+  const bool impression_origin_trustworthy =
+      network::IsOriginPotentiallyTrustworthy(impression_origin) ||
+      IsAndroidAppOrigin(impression_origin);
   // Conversion measurement is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
+  if (!impression_origin_trustworthy ||
       !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
       !network::IsOriginPotentiallyTrustworthy(
           impression.conversion_destination)) {

@@ -1043,6 +1043,8 @@ void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
       load_url_params.transition_type = transition_;
       load_url_params.should_replace_current_entry =
           should_replace_current_entry_;
+      load_url_params.initiator_origin = initiator_origin_;
+      load_url_params.impression = impression_;
       if (initial_method_ == "POST")
         load_url_params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
 
