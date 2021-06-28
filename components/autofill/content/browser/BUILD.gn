@@ -26,7 +26,10 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//skia",
+    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     "//base",
@@ -40,9 +43,7 @@ static_library("browser") {
     "//components/version_info",
     "//components/webauthn/core/browser",
     "//content/public/browser",
-    "//content/public/common",
     "//gpu/config",
-    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
     "//ppapi/buildflags",
@@ -50,7 +51,6 @@ static_library("browser") {
     "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
     "//sql",
-    "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",
