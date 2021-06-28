@@ -264,8 +264,9 @@ class LayerTreeHostImplTest : public testing::Test,
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {
-    // TODO(crbug.com/1217717): Investigate and remove.
-    (void)std::move(activated.main_thread_callbacks);
+    // We don't call main thread callbacks in this test.
+    activated.main_thread_callbacks.clear();
+
     host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
         frame_token, std::move(activated.compositor_thread_callbacks), details);
   }
