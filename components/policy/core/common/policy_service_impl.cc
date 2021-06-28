@@ -15,9 +15,8 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -219,20 +218,20 @@ PolicyServiceImpl::CreateWithThrottledInitialization(Providers providers,
 }
 
 PolicyServiceImpl::~PolicyServiceImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* provider : providers_)
     provider->RemoveObserver(this);
 }
 
 void PolicyServiceImpl::AddObserver(PolicyDomain domain,
                                     PolicyService::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_[domain].AddObserver(observer);
 }
 
 void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
                                        PolicyService::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = observers_.find(domain);
   if (it == observers_.end())
     return;
@@ -244,44 +243,44 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
 
 void PolicyServiceImpl::AddProviderUpdateObserver(
     ProviderUpdateObserver* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   provider_update_observers_.AddObserver(observer);
 }
 
 void PolicyServiceImpl::RemoveProviderUpdateObserver(
     ProviderUpdateObserver* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   provider_update_observers_.RemoveObserver(observer);
 }
 
 bool PolicyServiceImpl::HasProvider(
     ConfigurationPolicyProvider* provider) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Contains(providers_, provider);
 }
 
 const PolicyMap& PolicyServiceImpl::GetPolicies(
     const PolicyNamespace& ns) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return policy_bundle_.Get(ns);
 }
 
 bool PolicyServiceImpl::IsInitializationComplete(PolicyDomain domain) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(domain >= 0 && domain < POLICY_DOMAIN_SIZE);
   return !initialization_throttled_ &&
          policy_domain_status_[domain] != PolicyDomainStatus::kUninitialized;
 }
 
 bool PolicyServiceImpl::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(domain >= 0 && domain < POLICY_DOMAIN_SIZE);
   return !initialization_throttled_ &&
          policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady;
 }
 
 void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!callback.is_null())
     refresh_callbacks_.push_back(std::move(callback));
@@ -290,7 +289,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
     // Refresh is immediately complete if there are no providers. See the note
     // on OnUpdatePolicy() about why this is a posted task.
     update_task_ptr_factory_.InvalidateWeakPtrs();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                   update_task_ptr_factory_.GetWeakPtr()));
   } else {
@@ -313,7 +312,7 @@ android::PolicyServiceAndroid* PolicyServiceImpl::GetPolicyServiceAndroid() {
 #endif
 
 void PolicyServiceImpl::UnthrottleInitialization() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!initialization_throttled_)
     return;
 
@@ -338,7 +337,7 @@ void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
   // MergeAndTriggerUpdates. Also, cancel a pending update if there is any,
   // since both will produce the same PolicyBundle.
   update_task_ptr_factory_.InvalidateWeakPtrs();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                 update_task_ptr_factory_.GetWeakPtr()));
 }
@@ -347,7 +346,7 @@ void PolicyServiceImpl::NotifyNamespaceUpdated(
     const PolicyNamespace& ns,
     const PolicyMap& previous,
     const PolicyMap& current) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {
     for (auto& observer : iterator->second)
@@ -478,7 +477,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 }
 
 std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PolicyDomain> updated_domains;
 

@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -53,6 +53,9 @@ class POLICY_EXPORT PolicyServiceImpl
   static std::unique_ptr<PolicyServiceImpl> CreateWithThrottledInitialization(
       Providers providers,
       Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
+
+  PolicyServiceImpl(const PolicyServiceImpl&) = delete;
+  PolicyServiceImpl& operator=(const PolicyServiceImpl&) = delete;
 
   ~PolicyServiceImpl() override;
 
@@ -170,8 +173,8 @@ class POLICY_EXPORT PolicyServiceImpl
   std::unique_ptr<android::PolicyServiceAndroid> policy_service_android_;
 #endif
 
-  // Used to verify thread-safe usage.
-  base::ThreadChecker thread_checker_;
+  // Used to verify usage in correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to create tasks to delay new policy updates while we may be already
   // processing previous policy updates.
@@ -180,8 +183,6 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Used to protect against crbug.com/747817 until crbug.com/1221454 is done.
   base::WeakPtrFactory<PolicyServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceImpl);
 };
 
 }  // namespace policy
