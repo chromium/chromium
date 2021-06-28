@@ -488,7 +488,8 @@ TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
   EXPECT_FALSE(content_view());
 }
 
-TEST_F(PhoneHubTrayTest, OnSessionChanged) {
+// Flaky. See https://crbug.com/1224275.
+TEST_F(PhoneHubTrayTest, DISABLED_OnSessionChanged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
