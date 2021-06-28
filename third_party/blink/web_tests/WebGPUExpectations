@@ -204,9 +204,6 @@ crbug.com/1192234 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 
-# Assert in debug build
-crbug.com/dawn/614 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:binding_must_contain_resource_defined_in_layout:* [ Crash ]
-
 # filtering/non-filtering not implemented
 crbug.com/dawn/367 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:binding_must_contain_resource_defined_in_layout:resourceType="filtSamp";entry={"sampler":{"type":"non-filtering"}} [ Failure ]
 
