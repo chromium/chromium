@@ -199,7 +199,8 @@ class SwitchAccessTest : public InProcessBrowserTest {
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, ConsumesKeyEvents) {
+// Flaky. See https://crbug.com/1224254.
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
   // Load a webpage with a text box.
