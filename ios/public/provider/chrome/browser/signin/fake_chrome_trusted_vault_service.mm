@@ -57,6 +57,15 @@ void FakeChromeTrustedVaultService::FetchKeys(
     ChromeIdentity* chrome_identity,
     base::OnceCallback<void(const TrustedVaultSharedKeyList&)> callback) {}
 
+void FakeChromeTrustedVaultService::GetDegradedRecoverabilityStatus(
+    ChromeIdentity* chrome_identity,
+    base::OnceCallback<void(bool)> callback) {}
+
+void FakeChromeTrustedVaultService::FixDegradedRecoverability(
+    ChromeIdentity* chrome_identity,
+    UIViewController* presentingViewController,
+    void (^callback)(BOOL success, NSError* error)) {}
+
 void FakeChromeTrustedVaultService::ReauthenticationForFetchKeys(
     ChromeIdentity* chrome_identity,
     UIViewController* presenting_view_controller,

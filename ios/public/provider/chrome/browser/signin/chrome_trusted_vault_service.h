@@ -43,10 +43,9 @@ class ChromeTrustedVaultService {
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
-  // TODO(crbug.com/1100278): Make pure.
   virtual void GetDegradedRecoverabilityStatus(
       ChromeIdentity* chrome_identity,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Presents the trusted vault key reauthentication UI for |identity| for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
@@ -72,7 +71,7 @@ class ChromeTrustedVaultService {
   virtual void FixDegradedRecoverability(
       ChromeIdentity* chrome_identity,
       UIViewController* presentingViewController,
-      void (^callback)(BOOL success, NSError* error));
+      void (^callback)(BOOL success, NSError* error)) = 0;
 
   // Presents the trusted vault key reauthentication UI for |identity| for the
   // purpose of opting into trusted vault passphrase. Once the reauth is done
@@ -89,10 +88,7 @@ class ChromeTrustedVaultService {
   // FixDegradedRecoverability(). The reauthentication callback
   // will not be called. If no reauthentication dialog is not present,
   // |callback| is called synchronously.
-  virtual void CancelDialog(BOOL animated, void (^callback)(void));
-
-  // Deprecated, use CancelDialog().
-  virtual void CancelReauthentication(BOOL animated, void (^callback)(void));
+  virtual void CancelDialog(BOOL animated, void (^callback)(void)) = 0;
 
  protected:
   // Functions to notify observers.

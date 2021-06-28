@@ -29,6 +29,13 @@ class TestChromeTrustedVaultService : public ChromeTrustedVaultService {
   void FetchKeys(ChromeIdentity* chrome_identity,
                  base::OnceCallback<void(const TrustedVaultSharedKeyList&)>
                      callback) override {}
+  void GetDegradedRecoverabilityStatus(
+      ChromeIdentity* chrome_identity,
+      base::OnceCallback<void(bool)> callback) override {}
+  void FixDegradedRecoverability(ChromeIdentity* chrome_identity,
+                                 UIViewController* presentingViewController,
+                                 void (^callback)(BOOL success,
+                                                  NSError* error)) override {}
   void Reauthentication(ChromeIdentity* chrome_identity,
                         UIViewController* presentingViewController,
                         void (^callback)(BOOL success,
