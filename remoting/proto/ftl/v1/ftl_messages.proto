@@ -188,16 +188,6 @@ message SignInGaiaResponse {
   AuthToken auth_token = 4;
 }
 
-message PullMessagesRequest {
-  RequestHeader header = 1;
-}
-
-message PullMessagesResponse {
-  ResponseHeader header = 1;
-  repeated InboxMessage messages = 2;
-  bool pulled_all = 3;
-}
-
 message BatchAckMessagesRequest {
   RequestHeader header = 1;
   repeated string message_ids = 4;

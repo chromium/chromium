@@ -87,8 +87,6 @@ void FtlServicesPlayground::StartAndAuthenticate() {
 
 void FtlServicesPlayground::StartLoop() {
   std::vector<test::CommandOption> options{
-      {"PullMessages", base::BindRepeating(&FtlServicesPlayground::PullMessages,
-                                           weak_factory_.GetWeakPtr())},
       {"ReceiveMessages",
        base::BindRepeating(&FtlServicesPlayground::StartReceivingMessages,
                            weak_factory_.GetWeakPtr())},
@@ -153,25 +151,6 @@ void FtlServicesPlayground::OnSignInGaiaResponse(
                      &registration_id_base64);
   printf("Service signed in. registration_id(base64)=%s\n",
          registration_id_base64.c_str());
-  std::move(on_done).Run();
-}
-
-void FtlServicesPlayground::PullMessages(base::OnceClosure on_done) {
-  DCHECK(messaging_client_);
-  VLOG(0) << "Running PullMessages...";
-
-  messaging_client_->PullMessages(
-      base::BindOnce(&FtlServicesPlayground::OnPullMessagesResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
-}
-
-void FtlServicesPlayground::OnPullMessagesResponse(
-    base::OnceClosure on_done,
-    const ProtobufHttpStatus& status) {
-  if (!status.ok()) {
-    HandleStatusError(std::move(on_done), status);
-    return;
-  }
   std::move(on_done).Run();
 }
 

@@ -45,9 +45,6 @@ class FtlServicesPlayground {
   void OnSignInGaiaResponse(base::OnceClosure on_done,
                             const ProtobufHttpStatus& status);
 
-  void PullMessages(base::OnceClosure on_done);
-  void OnPullMessagesResponse(base::OnceClosure on_done,
-                              const ProtobufHttpStatus& status);
   void SendMessage(base::OnceClosure on_done);
   void DoSendMessage(const std::string& receiver_id,
                      const std::string& registration_id,

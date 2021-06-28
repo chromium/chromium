@@ -83,8 +83,6 @@ class FakeMessagingClient : public MessagingClient {
     return callback_list_.Add(callback);
   }
 
-  void PullMessages(DoneCallback on_done) override { NOTREACHED(); }
-
   void StartReceivingMessages(base::OnceClosure on_started,
                               DoneCallback on_closed) override {
     if (is_receiving_messages_) {

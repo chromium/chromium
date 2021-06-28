@@ -27,7 +27,6 @@ namespace remoting {
 namespace {
 
 constexpr char kBatchAckMessagesPath[] = "/v1/message:batchAckMessages";
-constexpr char kPullMessagesPath[] = "/v1/message:pull";
 constexpr char kReceiveMessagesPath[] = "/v1/messages:receive";
 constexpr char kSendMessagePath[] = "/v1/message:send";
 
@@ -148,17 +147,6 @@ base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
   return callback_list_.Add(callback);
 }
 
-void FtlMessagingClient::PullMessages(DoneCallback on_done) {
-  auto request = std::make_unique<ftl::PullMessagesRequest>();
-  *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
-      registration_manager_->GetFtlAuthToken());
-  // We use the same annotation, as PullMessages is just the non-streaming
-  // version of ReceiveMessages.
-  ExecuteRequest(
-      kReceiveMessagesTrafficAnnotation, kPullMessagesPath, std::move(request),
-      &FtlMessagingClient::OnPullMessagesResponse, std::move(on_done));
-}
-
 void FtlMessagingClient::SendMessage(
     const std::string& destination,
     const std::string& destination_registration_id,
@@ -218,35 +206,6 @@ void FtlMessagingClient::ExecuteRequest(
   http_request->SetResponseCallback(base::BindOnce(
       callback_functor, base::Unretained(this), std::move(on_done)));
   client_->ExecuteRequest(std::move(http_request));
-}
-
-void FtlMessagingClient::OnPullMessagesResponse(
-    DoneCallback on_done,
-    const ProtobufHttpStatus& status,
-    std::unique_ptr<ftl::PullMessagesResponse> response) {
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to pull messages. "
-               << "Error code: " << static_cast<int>(status.error_code())
-               << ", message: " << status.error_message();
-    std::move(on_done).Run(status);
-    return;
-  }
-
-  ftl::BatchAckMessagesRequest request;
-  *request.mutable_header() = FtlServicesContext::CreateRequestHeader(
-      registration_manager_->GetFtlAuthToken());
-  for (const auto& message : response->messages()) {
-    RunMessageCallbacks(message);
-    request.add_message_ids(message.message_id());
-  }
-
-  if (request.message_ids_size() == 0) {
-    LOG(WARNING) << "No new message is received.";
-    std::move(on_done).Run(status);
-    return;
-  }
-
-  BatchAckMessages(request, std::move(on_done));
 }
 
 void FtlMessagingClient::OnSendMessageResponse(

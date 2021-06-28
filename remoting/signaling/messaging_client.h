@@ -37,14 +37,6 @@ class MessagingClient {
   virtual base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) = 0;
 
-  // Retrieves messages from the user's inbox over slow path and calls the
-  // registered MessageCallback on every received message.
-  // |on_done| is called once the messages have been received and acked on the
-  // server's inbox.
-  // TODO(yuweih): PullMessages is not being used in production. Remove this and
-  // update unit tests to verify things with ReceiveMessages instead of
-  // PullMessages.
-  virtual void PullMessages(DoneCallback on_done) = 0;
   virtual void SendMessage(const std::string& destination,
                            const std::string& destination_registration_id,
                            const ftl::ChromotingMessage& message,
