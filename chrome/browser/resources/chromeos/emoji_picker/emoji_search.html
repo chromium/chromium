@@ -14,9 +14,9 @@
     --cr-search-field-input-padding-top: 0;
     --cr-search-field-input-width: 100%;
     --cr-search-field-placeholder-color:
-      rgba(var(--google-grey-900-rgb), .38);
+      var(--cros-textfield-input-color-disabled);
     --cr-search-field-search-icon-display: none;
-    --cr-search-field-search-icon-fill: var(--cr-secondary-text-color);
+    --cr-search-field-search-icon-fill: var(--cros-text-color-secondary);
     --cr-search-field-search-icon-inline-display: block;
     --cr-search-field-search-icon-inline-margin-start:
       var(--emoji-picker-search-margins);
@@ -31,7 +31,7 @@
   }
 
   cr-search-field:focus-within {
-    border: 2px solid var(--cr-focus-outline-color);
+    border: 2px solid var(--cros-focus-ring-color);
   }
 
   .result {
@@ -42,14 +42,14 @@
   }
   .result:focus,
   .result:active {
-    border-color: var(--cr-focus-outline-color);
+    border-color: var(--cros-focus-ring-color);
     border-style: solid;
     border-width: 2px;
     outline-style: none;
   }
 
   .result:hover {
-    background-color: var(--cr-hover-background-color);
+    background-color: var(--cros-ink-ripple-color);
   }
 
   emoji-button {
@@ -82,7 +82,7 @@
     transform: translate(-50%, -50%);
   }
   #search-shadow {
-    background-color: var(--cr-card-background-color);
+    background-color: var(--cros-bg-color);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
     padding-inline-end: var(--emoji-picker-side-padding);
