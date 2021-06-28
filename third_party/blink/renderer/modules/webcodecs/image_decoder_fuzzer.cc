@@ -154,6 +154,11 @@ DEFINE_BINARY_PROTO_FUZZER(
       image_decoder->close();
       image_decoder = nullptr;
       base::RunLoop().RunUntilIdle();
+
+      // Collect what we can after the first fuzzing loop; this keeps memory
+      // pressure down during ReadableStream fuzzing.
+      V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+          v8::Isolate::kFullGarbageCollection);
     }
 
     Persistent<TestUnderlyingSource> underlying_source =
@@ -200,6 +205,7 @@ DEFINE_BINARY_PROTO_FUZZER(
   // a chain of persistent handles), so some objects may not be collected until
   // a subsequent iteration. This is slow enough as is, so we compromise on one
   // major GC, as opposed to the 5 used in V8GCController for unit tests.
+  base::RunLoop().RunUntilIdle();
   V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
       v8::Isolate::kFullGarbageCollection);
 }
