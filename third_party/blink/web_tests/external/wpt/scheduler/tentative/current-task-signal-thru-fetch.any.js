@@ -5,7 +5,7 @@
 promise_test(t => {
   const controller = new TaskController('user-blocking');
   return scheduler.postTask(async () => {
-    await fetch('support/dummy.txt');
+    await fetch('support/empty.txt');
     const task = scheduler.postTask(() => {}, {signal: scheduler.currentTaskSignal});
     controller.abort();
     await promise_rejects_dom(t, 'AbortError', task);

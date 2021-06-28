@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>Scheduling>APIs"
+}
+team_email: "scheduling-apis@chromium.org"
+wpt {
+  notify: YES
+}
+
