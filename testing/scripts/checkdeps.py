@@ -26,10 +26,8 @@ def main_run(args):
     for violation in result['violations']:
       result_set.add((result['dependee_path'], violation['include_path']))
 
-  json.dump({
-      'valid': True,
-      'failures': ['%s: %s' % (r[0], r[1]) for r in result_set],
-  }, args.output)
+  failures = ['%s: %s' % (r[0], r[1]) for r in result_set]
+  common.record_local_script_results('checkdeps', args.output, failures, True)
 
   return rc
 

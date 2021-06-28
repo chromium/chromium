@@ -52,10 +52,8 @@ def main_run(args):
     with open(tempfile_path) as f:
       checkbins_results = json.load(f)
 
-  json.dump({
-      'valid': True,
-      'failures': checkbins_results,
-  }, args.output)
+  common.record_local_script_results(
+      'checkbins', args.output, checkbins_results, True)
 
   return rc
 
