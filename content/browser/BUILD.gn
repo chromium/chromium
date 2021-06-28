@@ -3019,7 +3019,7 @@ group("for_content_tests") {
 
 # Meant for internal components to facilitate WebAuthn.
 group("for_internal_webauthn") {
-  visibility = [ "//components/autofill/content/browser/webauthn" ]
+  visibility = [ "//components/webauthn/content/browser" ]
   if (!is_component_build) {
     public_deps = [ ":browser" ]
   }

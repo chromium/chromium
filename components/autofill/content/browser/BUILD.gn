@@ -38,6 +38,7 @@ static_library("browser") {
     "//components/strings",
     "//components/user_prefs",
     "//components/version_info",
+    "//components/webauthn/core/browser",
     "//content/public/browser",
     "//content/public/common",
     "//gpu/config",
@@ -58,7 +59,7 @@ static_library("browser") {
   ]
 
   if (!is_android) {
-    deps += [ "//components/autofill/content/browser/webauthn" ]
+    deps += [ "//components/webauthn/content/browser" ]
   }
 }
 

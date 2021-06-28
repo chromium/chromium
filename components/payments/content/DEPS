@@ -12,6 +12,7 @@ include_rules = [
   "+components/strings",
   "+components/ukm/content",
   "+components/url_formatter",
+  "+components/webauthn",
   "+components/webdata/common",
   "+components/webdata_services",
   "+content/public",

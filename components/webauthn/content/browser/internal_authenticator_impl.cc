@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
+#include "components/webauthn/content/browser/internal_authenticator_impl.h"
 
 #include <string>
 #include <utility>

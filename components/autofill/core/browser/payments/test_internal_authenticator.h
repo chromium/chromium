@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_INTERNAL_AUTHENTICATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_INTERNAL_AUTHENTICATOR_H_
 
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 

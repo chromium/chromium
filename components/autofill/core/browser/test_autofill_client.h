@@ -32,7 +32,7 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 
 #if !defined(OS_IOS)
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
 namespace autofill {

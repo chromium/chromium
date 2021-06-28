@@ -213,6 +213,7 @@ test("vr_android_unittests") {
     "//testing/android/native_test:native_test_native_code",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:blink",
     "//ui/android:ui_java",  # TODO: Remove once http://crbug.com/951419 is
                              # fixed!
   ]

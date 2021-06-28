@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_WEBAUTHN_INTERNAL_AUTHENTICATOR_IMPL_H_
-#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_WEBAUTHN_INTERNAL_AUTHENTICATOR_IMPL_H_
+#ifndef COMPONENTS_WEBAUTHN_CONTENT_BROWSER_INTERNAL_AUTHENTICATOR_IMPL_H_
+#define COMPONENTS_WEBAUTHN_CONTENT_BROWSER_INTERNAL_AUTHENTICATOR_IMPL_H_
 
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/macros.h"
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,7 +33,9 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
                                   public WebContentsObserver {
  public:
   explicit InternalAuthenticatorImpl(RenderFrameHost* render_frame_host);
-
+  InternalAuthenticatorImpl(const InternalAuthenticatorImpl&) = delete;
+  InternalAuthenticatorImpl& operator=(const InternalAuthenticatorImpl&) =
+      delete;
   ~InternalAuthenticatorImpl() override;
 
   // InternalAuthenticator:
@@ -65,10 +67,8 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 
   base::WeakPtrFactory<InternalAuthenticatorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InternalAuthenticatorImpl);
 };
 
 }  // namespace content
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_WEBAUTHN_INTERNAL_AUTHENTICATOR_IMPL_H_
+#endif  // COMPONENTS_WEBAUTHN_CONTENT_BROWSER_INTERNAL_AUTHENTICATOR_IMPL_H_

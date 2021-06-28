@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_INTERNAL_AUTHENTICATOR_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_INTERNAL_AUTHENTICATOR_H_
+#ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
+#define COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
 
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
@@ -59,4 +59,4 @@ class InternalAuthenticator {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_INTERNAL_AUTHENTICATOR_H_
+#endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_

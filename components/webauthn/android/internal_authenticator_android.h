@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
-#define CHROME_BROWSER_AUTOFILL_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
+#ifndef COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
+#define COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -77,4 +77,4 @@ class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
       IsUserVerifyingPlatformAuthenticatorAvailableCallback is_uvpaa_callback_;
 };
 
-#endif  // CHROME_BROWSER_AUTOFILL_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
+#endif  // COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_

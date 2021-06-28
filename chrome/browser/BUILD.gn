@@ -2908,8 +2908,6 @@ static_library("browser") {
       "autofill/address_accessory_controller.h",
       "autofill/address_accessory_controller_impl.cc",
       "autofill/address_accessory_controller_impl.h",
-      "autofill/android/internal_authenticator_android.cc",
-      "autofill/android/internal_authenticator_android.h",
       "autofill/android/personal_data_manager_android.cc",
       "autofill/android/personal_data_manager_android.h",
       "autofill/android/phone_number_util_android.cc",
@@ -5524,7 +5522,6 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/ui/webui/discards:mojo_bindings",
-      "//components/autofill/content/browser/webauthn",
       "//components/media_router/browser",
       "//components/mirroring/browser",
       "//components/mirroring/mojom:host",
@@ -5532,6 +5529,7 @@ static_library("browser") {
       "//components/mirroring/service:mirroring_service",
       "//components/payments/content",
       "//components/payments/content:utils",
+      "//components/webauthn/content/browser",
       "//media/cast:net",
     ]
   }

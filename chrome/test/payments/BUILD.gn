@@ -21,6 +21,7 @@ static_library("test_support") {
     "//components/autofill/core/browser:test_support",
     "//components/payments/content",
     "//components/payments/content:utils",
+    "//components/webauthn/core/browser",
     "//content/test:test_support",
     "//net:test_support",
   ]
@@ -43,7 +44,7 @@ static_library("test_support") {
 
     deps += [
       "//chrome/test:test_support_ui",
-      "//components/autofill/content/browser/webauthn",
+      "//components/webauthn/content/browser",
     ]
   }
 }

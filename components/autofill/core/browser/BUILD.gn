@@ -394,7 +394,6 @@ static_library("browser") {
       "payments/credit_card_fido_authenticator.h",
       "payments/fido_authentication_strike_database.cc",
       "payments/fido_authentication_strike_database.h",
-      "payments/internal_authenticator.h",
     ]
   }
 
@@ -466,7 +465,10 @@ static_library("browser") {
   ]
 
   if (!is_ios) {
-    deps += [ "//third_party/blink/public/common" ]
+    deps += [
+      "//components/webauthn/core/browser",
+      "//third_party/blink/public/common",
+    ]
   }
 
   if (!is_android && !is_ios) {
@@ -601,7 +603,10 @@ static_library("test_support") {
 
     public_deps += [ "//components/autofill/content/browser" ]
 
-    deps += [ "//third_party/blink/public/common" ]
+    deps += [
+      "//components/webauthn/core/browser",
+      "//third_party/blink/public/common",
+    ]
   }
 
   if (!is_ios && !is_android) {

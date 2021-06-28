@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/webauthn/Fido2Helper.java" ]
+  sources = [
+    "java/src/org/chromium/components/webauthn/Fido2Helper.java",
+    "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
+  ]
 }
 
 android_library("java") {
@@ -17,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2Helper.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
   ]
@@ -54,12 +58,19 @@ android_library("test_support_java") {
 }
 
 source_set("android") {
-  sources = [ "fido2helper_native_android.cc" ]
+  sources = [
+    "fido2helper_native_android.cc",
+    "internal_authenticator_android.cc",
+    "internal_authenticator_android.h",
+  ]
   deps = [
     ":jni_headers",
     "//base",
     "//components/cbor",
+    "//components/webauthn/core/browser",
+    "//content/public/browser",
     "//device/fido",
+    "//third_party/blink/public/mojom:android_mojo_bindings_blink",
     "//third_party/boringssl",
   ]
 }

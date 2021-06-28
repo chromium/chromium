@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill;
+package org.chromium.components.webauthn;
 
 import android.os.Build;
 
@@ -12,7 +12,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.Origin;
 
@@ -20,7 +19,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Acts as a bridge from InternalAuthenticator declared in
- * //chrome/browser/autofill/android/internal_authenticator_android.h to AuthenticatorImpl.
+ * //components/webauthn/android/internal_authenticator_android.h to AuthenticatorImpl.
  *
  * The origin associated with requests on InternalAuthenticator should be set by calling
  * setEffectiveOrigin() first.

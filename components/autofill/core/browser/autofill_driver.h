@@ -17,7 +17,7 @@
 #include "url/origin.h"
 
 #if !defined(OS_IOS)
-#include "components/autofill/core/browser/payments/internal_authenticator.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
 namespace network {
