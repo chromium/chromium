@@ -3421,6 +3421,17 @@
           'gtest_tests': 'chromium_win_gtests',
         },
       },
+      'win10.20h2-blink-rel-dummy': {
+        'mixins': [
+            'win10-20h2',
+        ],
+        'swarming': {
+          'hard_timeout': 900,
+        },
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'win7-blink-rel-dummy': {
         'swarming': {
           'dimension_sets': [

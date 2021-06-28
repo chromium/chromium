@@ -81,6 +81,17 @@
       "use_goma": true
     }
   },
+  "win10.20h2-blink-rel": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
   "win7-blink-rel": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
