@@ -34,11 +34,15 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import sys
 
-from unexpected_passes import builders
-from unexpected_passes import expectations
-from unexpected_passes import queries
-from unexpected_passes import result_output
+CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
+
+from unexpected_passes_common import builders
+from unexpected_passes_common import expectations
+from unexpected_passes_common import queries
+from unexpected_passes_common import result_output
 
 SUITE_TO_EXPECTATIONS_MAP = {
     'power': 'power_measurement',

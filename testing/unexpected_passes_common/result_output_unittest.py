@@ -12,10 +12,10 @@ import unittest
 
 from pyfakefs import fake_filesystem_unittest
 
-from unexpected_passes import data_types
-from unexpected_passes import expectations
-from unexpected_passes import result_output
-from unexpected_passes import unittest_utils as uu
+from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
+from unexpected_passes_common import result_output
+from unexpected_passes_common import unittest_utils as uu
 
 
 def CreateTextOutputPermutations(text, inputs):

@@ -5,8 +5,8 @@
 
 from __future__ import print_function
 
-from unexpected_passes import data_types
-from unexpected_passes import queries
+from unexpected_passes_common import data_types
+from unexpected_passes_common import queries
 
 
 def CreateStatsWithPassFails(passes, fails):

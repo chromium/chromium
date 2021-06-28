@@ -14,11 +14,13 @@ import subprocess
 import threading
 import time
 
+import six
+
 from typ import expectations_parser
-from unexpected_passes import builders as builders_module
-from unexpected_passes import data_types
-from unexpected_passes import expectations
-from unexpected_passes import multiprocessing_utils
+from unexpected_passes_common import builders as builders_module
+from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
+from unexpected_passes_common import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
@@ -552,7 +554,7 @@ class _SplitQueryTestFilter(_BaseQueryTestFilter):
       test_ids: A list of test IDs to split and assign to the _test_id_lists
           member.
     """
-    assert (isinstance(test_ids[0], str) or isinstance(test_ids[0], unicode))
+    assert isinstance(test_ids[0], six.string_types)
 
     num_lists = int(math.ceil(float(len(test_ids)) / self._target_num_samples))
     list_size = int(math.ceil(float(len(test_ids)) / num_lists))

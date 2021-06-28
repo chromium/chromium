@@ -21,10 +21,10 @@ from pyfakefs import fake_filesystem_unittest
 
 import validate_tag_consistency
 
-from unexpected_passes import data_types
-from unexpected_passes import expectations
-from unexpected_passes import result_output
-from unexpected_passes import unittest_utils as uu
+from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
+from unexpected_passes_common import result_output
+from unexpected_passes_common import unittest_utils as uu
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
@@ -1304,9 +1304,7 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
       self.fs.CreateFile(*args, **kwargs)
 
   def setUp(self):
-    expectations_dir = os.path.realpath(
-        os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
-                     'test_expectations'))
+    expectations_dir = expectations.EXPECTATIONS_DIR
     # Make sure our fake expectations are where the real ones actually are.
     self.assertTrue(os.path.exists(expectations_dir))
     self.setUpPyfakefs()

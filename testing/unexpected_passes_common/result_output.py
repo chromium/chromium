@@ -15,7 +15,7 @@ import tempfile
 
 import six
 
-from unexpected_passes import data_types
+from unexpected_passes_common import data_types
 
 FULL_PASS = 'Fully passed in the following'
 PARTIAL_PASS = 'Partially passed in the following'

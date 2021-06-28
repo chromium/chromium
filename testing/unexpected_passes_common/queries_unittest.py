@@ -5,7 +5,6 @@
 
 from __future__ import print_function
 
-import copy
 import json
 import subprocess
 import sys
@@ -16,10 +15,10 @@ if sys.version_info[0] == 2:
 else:
   import unittest.mock as mock
 
-from unexpected_passes import data_types
-from unexpected_passes import multiprocessing_utils
-from unexpected_passes import queries
-from unexpected_passes import unittest_utils
+from unexpected_passes_common import data_types
+from unexpected_passes_common import multiprocessing_utils
+from unexpected_passes_common import queries
+from unexpected_passes_common import unittest_utils
 
 queries.QUERY_DELAY = 0
 
@@ -189,6 +188,7 @@ class QueryBuilderUnittest(unittest.TestCase):
 
   def testSuiteExceptionMap(self):
     """Tests that the suite passed to the query changes for some suites."""
+
     def assertSuiteInQuery(suite, call_args):
       query = call_args[0][0][0]
       s = 'r"gpu_tests\\.%s\\."' % suite

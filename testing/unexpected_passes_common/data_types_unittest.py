@@ -13,7 +13,7 @@ if sys.version_info[0] == 2:
 else:
   import unittest.mock as mock
 
-from unexpected_passes import data_types
+from unexpected_passes_common import data_types
 
 GENERIC_EXPECTATION = data_types.Expectation('test', ['tag1', 'tag2'], ['Pass'])
 GENERIC_RESULT = data_types.Result('test', ['tag1', 'tag2'], 'Pass',

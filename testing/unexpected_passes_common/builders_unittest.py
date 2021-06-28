@@ -8,7 +8,6 @@ from __future__ import print_function
 import json
 import os
 import sys
-import tempfile
 import unittest
 
 if sys.version_info[0] == 2:
@@ -18,9 +17,9 @@ else:
 
 from pyfakefs import fake_filesystem_unittest
 
-from unexpected_passes import builders
-from unexpected_passes import multiprocessing_utils
-from unexpected_passes import unittest_utils
+from unexpected_passes_common import builders
+from unexpected_passes_common import multiprocessing_utils
+from unexpected_passes_common import unittest_utils
 
 
 class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):

@@ -37,14 +37,6 @@ def CommonChecks(input_api, output_api):
   ]
   results.extend(input_api.RunTests(gpu_tests))
 
-  results.extend(
-      input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api,
-          output_api,
-          input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                 'unexpected_passes'), [r'^.+_unittest\.py$'],
-          env=gpu_env))
-
   pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
   results.extend(input_api.RunTests(pylint_checks))
 

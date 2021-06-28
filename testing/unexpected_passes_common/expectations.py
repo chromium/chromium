@@ -14,9 +14,12 @@ import sys
 import validate_tag_consistency
 
 from typ import expectations_parser
-from unexpected_passes import data_types
-from unexpected_passes import result_output
+from unexpected_passes_common import data_types
+from unexpected_passes_common import result_output
 
+EXPECTATIONS_DIR = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), '..', '..', 'content', 'test',
+                 'gpu', 'gpu_tests', 'test_expectations'))
 
 FINDER_DISABLE_COMMENT = 'finder:disable'
 FINDER_ENABLE_COMMENT = 'finder:enable'
@@ -441,7 +444,7 @@ def _WaitForAnyUserInput():
 
   Split out for testing purposes.
   """
-  raw_input('Press any key to continue')
+  _get_input('Press any key to continue')
 
 
 def _WaitForUserInputOnModification():
@@ -456,10 +459,10 @@ def _WaitForUserInputOnModification():
   valid_inputs = ['i', 'm', 'r']
   prompt = ('How should this expectation be handled? (i)gnore/(m)anually '
             'modify/(r)emove: ')
-  response = raw_input(prompt).lower()
+  response = _get_input(prompt).lower()
   while response not in valid_inputs:
     print('Invalid input, valid inputs are %s' % (', '.join(valid_inputs)))
-    response = raw_input(prompt).lower()
+    response = _get_input(prompt).lower()
   return response
 
 
@@ -591,15 +594,12 @@ def FindOrphanedBugs(affected_urls):
     A set containing a subset of |affected_urls| who no longer have any
     associated expectations in any expectation files.
   """
-  expectations_dir = os.path.realpath(
-      os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
-                   'test_expectations'))
   seen_bugs = set()
 
-  for expectation_file in os.listdir(expectations_dir):
+  for expectation_file in os.listdir(EXPECTATIONS_DIR):
     if not expectation_file.endswith('_expectations.txt'):
       continue
-    with open(os.path.join(expectations_dir, expectation_file)) as infile:
+    with open(os.path.join(EXPECTATIONS_DIR, expectation_file)) as infile:
       contents = infile.read()
     for url in affected_urls:
       if url in seen_bugs:
@@ -607,3 +607,9 @@ def FindOrphanedBugs(affected_urls):
       if url in contents:
         seen_bugs.add(url)
   return set(affected_urls) - seen_bugs
+
+
+def _get_input(prompt):
+  if sys.version_info[0] == 2:
+    return raw_input(prompt)
+  return input(prompt)
