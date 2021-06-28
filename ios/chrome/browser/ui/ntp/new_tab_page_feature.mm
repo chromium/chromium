@@ -15,6 +15,9 @@
 const base::Feature kRefactoredNTP{"RefactoredNTP",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableNTPMemoryEnhancement{
+    "EnableNTPMemoryEnhancement", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const char kRefactoredNTPLoggingEnabled[] = "RefactoredNTPLoggingEnabled";
 
 bool IsRefactoredNTP() {

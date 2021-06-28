@@ -746,7 +746,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableAccountWalletStorage)},
-
+    {"enable-ntp-memory-enhancement",
+     flag_descriptions::kEnableNTPMemoryEnhancementName,
+     flag_descriptions::kEnableNTPMemoryEnhancementDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableNTPMemoryEnhancement)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
