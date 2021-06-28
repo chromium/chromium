@@ -216,7 +216,8 @@ void TargetAutoAttacher::DidFinishNavigation(
 }
 
 class BrowserAutoAttacher : public TargetAutoAttacher,
-                            public ServiceWorkerDevToolsManager::Observer {
+                            public ServiceWorkerDevToolsManager::Observer,
+                            public DevToolsAgentHostObserver {
  public:
   BrowserAutoAttacher() = default;
   ~BrowserAutoAttacher() final = default;
@@ -245,11 +246,36 @@ class BrowserAutoAttacher : public TargetAutoAttacher,
   void UpdateAutoAttach(base::OnceClosure callback) override {
     if (auto_attach()) {
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+      DevToolsAgentHost::AddObserver(this);
       ReattachServiceWorkers();
     } else {
+      DevToolsAgentHost::RemoveObserver(this);
       ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
     }
     std::move(callback).Run();
+  }
+
+  // DevToolsAgentHostObserver overrides.
+  void DevToolsAgentHostCreated(DevToolsAgentHost* host) override {
+    DCHECK(auto_attach());
+    // In the top level target handler auto-attach to pages as soon as they
+    // are created, otherwise if they don't incur any network activity we'll
+    // never get a chance to throttle them (and auto-attach there).
+    if (IsMainFrameHost(host))
+      delegate()->AutoAttach(host, wait_for_debugger_on_start());
+  }
+
+  bool ShouldForceDevToolsAgentHostCreation() override { return true; }
+
+  static bool IsMainFrameHost(DevToolsAgentHost* host) {
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(host->GetWebContents());
+    if (!web_contents)
+      return false;
+    FrameTreeNode* frame_tree_node = web_contents->GetFrameTree()->root();
+    if (!frame_tree_node)
+      return false;
+    return host == RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
   }
 };
 

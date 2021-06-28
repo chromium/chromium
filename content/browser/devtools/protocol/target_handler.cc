@@ -686,16 +686,13 @@ void TargetHandler::SetAutoAttachInternal(bool auto_attach,
   }
   auto_attacher_->SetAutoAttach(auto_attach, wait_for_debugger_on_start,
                                 std::move(callback));
-  UpdateAgentHostObserver();
 }
 
 void TargetHandler::UpdateAgentHostObserver() {
-  bool should_observe = discover_ || (access_mode_ == AccessMode::kBrowser &&
-                                      auto_attacher_->auto_attach());
-  if (should_observe == observing_agent_hosts_)
+  if (discover_ == observing_agent_hosts_)
     return;
-  observing_agent_hosts_ = should_observe;
-  if (should_observe)
+  observing_agent_hosts_ = discover_;
+  if (observing_agent_hosts_)
     DevToolsAgentHost::AddObserver(this);
   else
     DevToolsAgentHost::RemoveObserver(this);
@@ -963,33 +960,13 @@ bool TargetHandler::ShouldForceDevToolsAgentHostCreation() {
   return true;
 }
 
-static bool IsMainFrameHost(DevToolsAgentHost* host) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(host->GetWebContents());
-  if (!web_contents)
-    return false;
-  FrameTreeNode* frame_tree_node = web_contents->GetFrameTree()->root();
-  if (!frame_tree_node)
-    return false;
-  return host == RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-}
-
 void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
-  if (discover_) {
-    // If we start discovering late, all existing agent hosts will be reported,
-    // but we could have already attached to some.
-    if (reported_hosts_.find(host) == reported_hosts_.end()) {
-      frontend_->TargetCreated(CreateInfo(host));
-      reported_hosts_.insert(host);
-    }
-  }
-  // In the top level target handler auto-attach to pages as soon as they
-  // are created, otherwise if they don't incur any network activity we'll
-  // never get a chance to throttle them (and auto-attach there).
-  if (access_mode_ == AccessMode::kBrowser && auto_attacher_->auto_attach() &&
-      IsMainFrameHost(host)) {
-    // TODO(caseq): move this logic within BrowserTargetAutoAttacher instead.
-    AutoAttach(host, auto_attacher_->wait_for_debugger_on_start());
+  DCHECK(discover_);
+  // If we start discovering late, all existing agent hosts will be reported,
+  // but we could have already attached to some.
+  if (reported_hosts_.find(host) == reported_hosts_.end()) {
+    frontend_->TargetCreated(CreateInfo(host));
+    reported_hosts_.insert(host);
   }
 }
 
