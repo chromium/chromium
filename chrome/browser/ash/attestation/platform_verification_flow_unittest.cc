@@ -42,42 +42,20 @@ const char kTestID[] = "test_id";
 const char kTestChallenge[] = "test_challenge";
 const char kTestCertificate[] = "test_certificate";
 const char kTestEmail[] = "test_email@chromium.org";
-const char kTestURL[] = "http://mytestdomain/test";
 
 class FakeDelegate : public PlatformVerificationFlow::Delegate {
  public:
-  FakeDelegate()
-      : url_(kTestURL),
-        is_permitted_by_user_(true),
-        is_in_supported_mode_(true) {
+  FakeDelegate() : is_in_supported_mode_(true) {
     // Configure a user for the mock user manager.
     mock_user_manager_.SetActiveUser(AccountId::FromUserEmail(kTestEmail));
   }
   ~FakeDelegate() override {}
 
-  const GURL& GetURL(content::WebContents* web_contents) override {
-    return url_;
-  }
-
   user_manager::User* GetUser(content::WebContents* web_contents) override {
     return mock_user_manager_.GetActiveUser();
   }
 
-  bool IsPermittedByUser(content::WebContents* web_contents) override {
-    return is_permitted_by_user_;
-  }
-
-  bool IsInSupportedMode(content::WebContents* web_contents) override {
-    return is_in_supported_mode_;
-  }
-
-  void set_url(const GURL& url) {
-    url_ = url;
-  }
-
-  void set_is_permitted_by_user(bool is_permitted_by_user) {
-    is_permitted_by_user_ = is_permitted_by_user;
-  }
+  bool IsInSupportedMode() override { return is_in_supported_mode_; }
 
   void set_is_in_supported_mode(bool is_in_supported_mode) {
     is_in_supported_mode_ = is_in_supported_mode;
@@ -85,8 +63,6 @@ class FakeDelegate : public PlatformVerificationFlow::Delegate {
 
  private:
   MockUserManager mock_user_manager_;
-  GURL url_;
-  bool is_permitted_by_user_;
   bool is_in_supported_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDelegate);
@@ -194,14 +170,6 @@ TEST_F(PlatformVerificationFlowTest, Success) {
       AttestationClient::Get()
           ->GetTestInterface()
           ->VerifySimpleChallengeResponse(kTestChallenge, challenge_respoonse));
-}
-
-TEST_F(PlatformVerificationFlowTest, NotPermittedByUser) {
-  fake_delegate_.set_is_permitted_by_user(false);
-  verifier_->ChallengePlatformKey(nullptr, kTestID, kTestChallenge,
-                                  CreateChallengeCallback());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(PlatformVerificationFlow::USER_REJECTED, result_);
 }
 
 TEST_F(PlatformVerificationFlowTest, FeatureDisabledByPolicy) {

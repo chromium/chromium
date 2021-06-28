@@ -30,6 +30,10 @@
 #include "chromeos/settings/cros_settings_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/media/platform_verification_chromeos.h"
+#endif
+
 #if defined(OS_WIN)
 #include "chrome/browser/media/cdm_pref_service_helper.h"
 #endif  // defined(OS_WIN)
@@ -89,6 +93,15 @@ void CdmDocumentServiceImpl::ChallengePlatform(
 
   // TODO(crbug.com/676224). This should be commented out at the mojom
   // level so that it's only available for ChromeOS.
+
+#if defined(OS_CHROMEOS)
+  bool success = platform_verification::PerformBrowserChecks(
+      content::WebContents::FromRenderFrameHost(render_frame_host()));
+  if (!success) {
+    std::move(callback).Run(false, std::string(), std::string(), std::string());
+    return;
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)

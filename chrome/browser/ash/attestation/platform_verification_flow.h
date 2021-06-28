@@ -67,7 +67,6 @@ class PlatformVerificationFlow
     PLATFORM_NOT_VERIFIED,  // The platform cannot be verified.  For example:
                             // - It is not a Chrome device.
                             // - It is not running a verified OS image.
-    USER_REJECTED,          // The user explicitly rejected the operation.
     POLICY_REJECTED,        // The operation is not allowed by policy/settings.
     TIMEOUT,                // The operation timed out.
     RESULT_MAX
@@ -89,22 +88,15 @@ class PlatformVerificationFlow
    public:
     virtual ~Delegate() {}
 
-    // Gets the URL associated with the given |web_contents|.
-    virtual const GURL& GetURL(content::WebContents* web_contents) = 0;
-
     // Gets the user associated with the given |web_contents|.  NULL may be
     // returned.
     virtual const user_manager::User* GetUser(
         content::WebContents* web_contents) = 0;
 
-    // Checks whether attestation is permitted by user.
-    virtual bool IsPermittedByUser(content::WebContents* web_contents) = 0;
-
     // Returns true iff the device is in a mode that supports platform
-    // verification. For example, platform verification is not supported in
-    // guest or incognito mode. It is also not supported in dev mode unless
-    // overridden by a flag.
-    virtual bool IsInSupportedMode(content::WebContents* web_contents) = 0;
+    // verification. For example, platform verification is not supported in dev
+    // mode unless overridden by a flag.
+    virtual bool IsInSupportedMode() = 0;
   };
 
   // This callback will be called when a challenge operation completes.  If
@@ -149,6 +141,9 @@ class PlatformVerificationFlow
   void set_timeout_delay(const base::TimeDelta& timeout_delay) {
     timeout_delay_ = timeout_delay;
   }
+
+  // Public for tests.
+  static bool IsAttestationAllowedByPolicy();
 
  private:
   friend class base::RefCountedThreadSafe<PlatformVerificationFlow>;
@@ -223,9 +218,6 @@ class PlatformVerificationFlow
                         const std::string& certificate_chain,
                         bool is_expiring_soon,
                         const ::attestation::SignSimpleChallengeReply& reply);
-
-  // Checks whether attestation for content protection is allowed by policy.
-  bool IsAttestationAllowedByPolicy();
 
   // Checks if |certificate_chain| is a PEM certificate chain that contains a
   // certificate this is expired or expiring soon. Returns the expiry status.

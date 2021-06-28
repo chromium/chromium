@@ -241,6 +241,14 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
+  // Helper to set the content protection policy
+  void SetContentProtection(bool content_protection) {
+    em::AttestationSettingsProto* proto =
+        device_policy_->payload().mutable_attestation_settings();
+    proto->set_content_protection_enabled(content_protection);
+    BuildAndInstallDevicePolicy();
+  }
+
   // Helper routine to set HostnameTemplate policy.
   void SetHostnameTemplate(const std::string& hostname_template) {
     em::NetworkHostnameProto* proto =
@@ -1271,6 +1279,36 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledReboot) {
   expected_val.SetKey("day_of_month", base::Value(15));
   SetDeviceScheduledReboot(json_string);
   VerifyPolicyValue(kDeviceScheduledReboot, &expected_val);
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionDefault) {
+  BuildAndInstallDevicePolicy();
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionEnable) {
+  SetContentProtection(true);
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionDisable) {
+  SetContentProtection(false);
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 }  // namespace ash

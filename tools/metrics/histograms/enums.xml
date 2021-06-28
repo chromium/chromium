@@ -10934,6 +10934,17 @@ histogram as enum -->
   <int value="3" label="Fail to parse PSI CPU values"/>
 </enum>
 
+<enum name="ChromeOSPlatformVerificationBrowserResult">
+  <summary>
+    Possible results of a platform verification attempt at the browser layer.
+    See chrome/browser/media/platform_verification_chromeos.cc.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Unsupported Profile"/>
+  <int value="3" label="Rejected by User"/>
+</enum>
+
 <enum name="ChromeOSPlatformVerificationExpiryStatus">
   <summary>
     Possible results of a platform verification expiry check. See
@@ -10957,6 +10968,18 @@ histogram as enum -->
   <int value="3" label="Rejected by User"/>
   <int value="4" label="Rejected by Policy"/>
   <int value="5" label="Timeout"/>
+</enum>
+
+<enum name="ChromeOSPlatformVerificationResult2">
+  <summary>
+    Possible results of a platform verification attempt. See
+    chrome/browser/ash/attestation/platform_verification.h.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal Error"/>
+  <int value="2" label="Platform Not Verified"/>
+  <int value="3" label="Rejected by Policy"/>
+  <int value="4" label="Timeout"/>
 </enum>
 
 <enum name="ChromeOSProcessTypeCollectionStatus">

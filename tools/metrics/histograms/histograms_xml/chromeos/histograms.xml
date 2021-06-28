@@ -938,13 +938,39 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.PlatformVerification.BrowserResult"
+    enum="ChromeOSPlatformVerificationBrowserResult" expires_after="2022-05-21">
+  <owner>erikchen@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The result of a platform verification attempt for content protection on
+    Chrome OS, limited to the browser-specific checks. It's still possible for
+    platform verification to fail at later layers.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.PlatformVerification.Result"
     enum="ChromeOSPlatformVerificationResult" expires_after="2021-12-21">
+  <obsolete>
+    Replaced with pattern histogram ChromeOS.PlatformVerification.Result2.
+    (2021-06 // M93).
+  </obsolete>
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The result of a platform verification attempt for content protection on
     Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PlatformVerification.Result2"
+    enum="ChromeOSPlatformVerificationResult2" expires_after="2021-12-21">
+  <owner>erikchen@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The result of a platform verification attempt for content protection on
+    Chrome OS. Does not include browser-related failures. Those are tracked in
+    ChromeOS.PlatformVerification.BrowserResult.
   </summary>
 </histogram>
 

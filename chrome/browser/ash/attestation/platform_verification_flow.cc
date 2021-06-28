@@ -51,7 +51,7 @@ using ash::attestation::PlatformVerificationFlow;
 
 const int kTimeoutInSeconds = 8;
 const char kAttestationResultHistogram[] =
-    "ChromeOS.PlatformVerification.Result";
+    "ChromeOS.PlatformVerification.Result2";
 const char kAttestationAvailableHistogram[] =
     "ChromeOS.PlatformVerification.Available";
 const int kOpportunisticRenewalThresholdInDays = 30;
@@ -75,43 +75,13 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
   DefaultDelegate() {}
   ~DefaultDelegate() override {}
 
-  const GURL& GetURL(content::WebContents* web_contents) override {
-    const GURL& url = web_contents->GetLastCommittedURL();
-    if (!url.is_valid())
-      return web_contents->GetVisibleURL();
-    return url;
-  }
-
   const user_manager::User* GetUser(
       content::WebContents* web_contents) override {
     return ProfileHelper::Get()->GetUserByProfile(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   }
 
-  bool IsPermittedByUser(content::WebContents* web_contents) override {
-    // TODO(xhwang): Using delegate_->GetURL() here is not right. The platform
-    // verification may be requested by a frame from a different origin. This
-    // will be solved when http://crbug.com/454847 is fixed.
-    const GURL& requesting_origin = GetURL(web_contents).GetOrigin();
-
-    GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
-    ContentSetting content_setting =
-        PermissionManagerFactory::GetForProfile(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-            ->GetPermissionStatus(
-                ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-                requesting_origin, embedding_origin)
-            .content_setting;
-
-    return content_setting == CONTENT_SETTING_ALLOW;
-  }
-
-  bool IsInSupportedMode(content::WebContents* web_contents) override {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    if (profile->IsOffTheRecord() || profile->IsGuestSession())
-      return false;
-
+  bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
            command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode);
@@ -167,18 +137,30 @@ PlatformVerificationFlow::PlatformVerificationFlow(
 
 PlatformVerificationFlow::~PlatformVerificationFlow() = default;
 
+// static
+bool PlatformVerificationFlow::IsAttestationAllowedByPolicy() {
+  // Check the device policy for the feature.
+  bool enabled_for_device = false;
+  if (!CrosSettings::Get()->GetBoolean(kAttestationForContentProtectionEnabled,
+                                       &enabled_for_device)) {
+    LOG(ERROR) << "Failed to get device setting.";
+    return false;
+  }
+  if (!enabled_for_device) {
+    VLOG(1) << "Platform verification denied because Verified Access is "
+            << "disabled for the device.";
+    return false;
+  }
+
+  return true;
+}
+
 void PlatformVerificationFlow::ChallengePlatformKey(
     content::WebContents* web_contents,
     const std::string& service_id,
     const std::string& challenge,
     ChallengeCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!delegate_->GetURL(web_contents).is_valid()) {
-    LOG(WARNING) << "PlatformVerificationFlow: Invalid URL.";
-    ReportError(std::move(callback), INTERNAL_ERROR);
-    return;
-  }
 
   // Note: The following checks are performed when use of the protected media
   // identifier is indicated. The first two in GetPermissionStatus and the third
@@ -195,15 +177,9 @@ void PlatformVerificationFlow::ChallengePlatformKey(
     return;
   }
 
-  if (!delegate_->IsInSupportedMode(web_contents)) {
+  if (!delegate_->IsInSupportedMode()) {
     LOG(ERROR) << "Platform verification not supported in the current mode.";
     ReportError(std::move(callback), PLATFORM_NOT_VERIFIED);
-    return;
-  }
-
-  if (!delegate_->IsPermittedByUser(web_contents)) {
-    VLOG(1) << "Platform verification not permitted by user.";
-    ReportError(std::move(callback), USER_REJECTED);
     return;
   }
 
@@ -351,23 +327,6 @@ void PlatformVerificationFlow::OnChallengeReady(
                         // generated.
         std::move(renew_callback));
   }
-}
-
-bool PlatformVerificationFlow::IsAttestationAllowedByPolicy() {
-  // Check the device policy for the feature.
-  bool enabled_for_device = false;
-  if (!CrosSettings::Get()->GetBoolean(kAttestationForContentProtectionEnabled,
-                                       &enabled_for_device)) {
-    LOG(ERROR) << "Failed to get device setting.";
-    return false;
-  }
-  if (!enabled_for_device) {
-    VLOG(1) << "Platform verification denied because Verified Access is "
-            << "disabled for the device.";
-    return false;
-  }
-
-  return true;
 }
 
 PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
