@@ -117,6 +117,9 @@ interface PublicKeyCredential : Credential
 interface AuthenticatorResponse
 interface AuthenticatorAttestationResponse : AuthenticatorResponse
 
+# WebOTP API should not be exposed in WebView, crbug.com/1224417
+interface OTPCredential : Credential
+
 # Picture-in-Picture API is disabled in Android WebView, crbug.com/852449
 interface PictureInPictureEvent : Event
 interface PictureInPictureWindow : EventTarget
