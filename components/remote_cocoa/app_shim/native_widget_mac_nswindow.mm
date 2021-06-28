@@ -127,17 +127,12 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if ([keyPath isEqual:@"visible"]) {
-    DCHECK(_isEnforcingNeverMadeVisible);
-    DCHECK_EQ(object, self);
-    DCHECK_EQ(context, nil);
-    if ([change[NSKeyValueChangeNewKey] boolValue])
-      base::debug::DumpWithoutCrashing();
-  }
-  [super observeValueForKeyPath:keyPath
-                       ofObject:object
-                         change:change
-                        context:context];
+  DCHECK(_isEnforcingNeverMadeVisible);
+  DCHECK([keyPath isEqual:@"visible"]);
+  DCHECK_EQ(object, self);
+  DCHECK_EQ(context, nil);
+  if ([change[NSKeyValueChangeNewKey] boolValue])
+    base::debug::DumpWithoutCrashing();
 }
 
 // Public methods.
