@@ -1377,7 +1377,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->url = navigation_url_;
   params->referrer = mojo::Clone(referrer_);
   params->contents_mime_type = contents_mime_type_;
-  params->transition = transition_;
   if (request_) {
     params->gesture = request_->common_params().has_user_gesture
                           ? NavigationGestureUser
@@ -1387,14 +1386,15 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
         has_user_gesture_ ? NavigationGestureUser : NavigationGestureAuto;
   }
   params->history_list_was_cleared = history_list_was_cleared_;
-  params->did_create_new_entry = DidCreateNewEntry();
 
   const bool is_history_navigation = (session_history_offset_ != 0);
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
   // See CalculateShouldReplaceCurrentEntry() in RenderFrameHostImpl on why we
   // calculate "should_replace_current_entry" in this way.
-  params->should_replace_current_entry = should_replace_current_entry_;
+  params->should_replace_current_entry =
+      should_replace_current_entry_ ||
+      (request_ && request_->common_params().should_replace_current_entry);
   if (same_document) {
     params->should_replace_current_entry |=
         (is_history_navigation ||
@@ -1405,6 +1405,14 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
          frame_tree_node_
              ->is_on_initial_empty_document_or_subsequent_empty_documents());
   }
+
+  if (params->should_replace_current_entry &&
+      PageTransitionCoreTypeIs(transition_,
+                               ui::PAGE_TRANSITION_MANUAL_SUBFRAME)) {
+    transition_ = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+  }
+  params->transition = transition_;
+  params->did_create_new_entry = DidCreateNewEntry();
 
   params->navigation_token = request_
                                  ? request_->commit_params().navigation_token

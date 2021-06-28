@@ -483,7 +483,6 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
       return WebFrameLoadType::kStandard;
     if (!has_origin_window || is_client_reload)
       return WebFrameLoadType::kReload;
-    return WebFrameLoadType::kReplaceCurrentItem;
   }
 
   if (failing_url == document_loader_->UrlForHistory() &&

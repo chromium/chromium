@@ -702,7 +702,7 @@ TEST_F(TabMetricsTest, Navigations) {
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
       ui::PAGE_TRANSITION_RELOAD;
-  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
+  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value();
   expected_metrics[TabManager_TabMetrics::kPageTransitionFromAddressBarName] =
       false;
   expected_metrics[TabManager_TabMetrics::kPageTransitionIsRedirectName] =
@@ -730,7 +730,7 @@ TEST_F(TabMetricsTest, Navigations) {
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
       ui::PAGE_TRANSITION_FORM_SUBMIT;
-  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
+  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value();
   {
     SCOPED_TRACE("");
     ExpectNewEntry(TestUrls()[1], expected_metrics);

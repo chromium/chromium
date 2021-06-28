@@ -1386,6 +1386,8 @@ class CONTENT_EXPORT NavigationRequest
   bool ShouldRenderFallbackContentForResponse(
       const net::HttpResponseHeaders& response_head) const;
 
+  bool ShouldReplaceCurrentEntryForSameUrlNavigation() const;
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 

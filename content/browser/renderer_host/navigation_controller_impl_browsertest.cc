@@ -2581,8 +2581,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 // Verify that navigations to the same WebUI URL are correctly classified as
-// EXISTING_ENTRY (if it becomes a reload) or NEW_ENTRY (if it becomes a
-// replacement navigation).
+// EXISTING_ENTRY (it becomes a reload).
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     NavigationTypeClassification_ExistingEntrySameURL_WebUI) {
@@ -2623,23 +2622,19 @@ IN_PROC_BROWSER_TEST_P(
   {
     // Navigate to the same WebUI URL (renderer-initiated). This will go through
     // the "browser-initiated" path in the browser (OpenURL instead of
-    // BeginNavigation), but should still behave like a renderer-initiated
-    // navigation, which will do a replacement instead of reload for same-URL
-    // navigations.
+    // BeginNavigation). This would behave like a normal renderer-initiated
+    // navigation if https://crbug.com/883549 were resolved.
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(ExecJs(contents(), JsReplace("location.href = $1", web_ui_url),
                        EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
     capturer.Wait();
-    // We're classifying this as NEW_ENTRY.
-    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    // The navigation got converted into a reload, and we're classifying this as
+    // EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
 
-    // The navigation replaced the previously committed entry with a new entry.
-    // This differs than the browser-initiated case's behavior, but it's OK.
-    // The renderer-initiated navigation follows the spec at
-    // https://html.spec.whatwg.org/#navigating-across-documents:hh-replace-3,
-    // while the browser-initiated version got converted into a reload.
-    EXPECT_TRUE(capturer.did_replace_entry());
-    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    // We reuse the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
   }
 }

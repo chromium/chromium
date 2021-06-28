@@ -1822,6 +1822,9 @@ void NavigationRequest::StartNavigation() {
         common_params_->url, *common_params_->referrer);
   }
 
+  if (ShouldReplaceCurrentEntryForSameUrlNavigation())
+    common_params_->should_replace_current_entry = true;
+
   DCHECK(!IsNavigationStarted());
   SetState(WILL_START_REQUEST);
   is_navigation_started_ = true;
@@ -6447,6 +6450,29 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
   return frame_tree_node()->frame_owner_element_type() ==
              blink::mojom::FrameOwnerElementType::kObject &&
          !network::cors::IsOkStatus(http_headers.response_code());
+}
+
+// https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
+bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
+  // Not a same-url navigation.
+  if (common_params_->url !=
+      frame_tree_node_->current_frame_host()->last_url_in_renderer()) {
+    return false;
+  }
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
+  // Reloads and history navigations have special handling and don't need to
+  // set |common_params_->should_replace_current_entry|.
+  if (common_params_->navigation_type !=
+      mojom::NavigationType::DIFFERENT_DOCUMENT) {
+    return false;
+  }
+  // Form submissions to the same url should not replace.
+  if (begin_params_->is_form_submission)
+    return false;
+  // Otherwise, replace current entry.
+  return true;
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {
