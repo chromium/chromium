@@ -574,7 +574,7 @@ void TabsEventRouter::DispatchEvent(
     return;
 
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       args->TakeList(), profile);
+                                       std::move(*args).TakeList(), profile);
   event->user_gesture = user_gesture;
   event_router->BroadcastEvent(std::move(event));
 }
@@ -600,9 +600,9 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
   // WillDispatchTabUpdatedEvent.
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
-  auto event = std::make_unique<Event>(events::TABS_ON_UPDATED,
-                                       api::tabs::OnUpdated::kEventName,
-                                       args_base->TakeList(), profile);
+  auto event = std::make_unique<Event>(
+      events::TABS_ON_UPDATED, api::tabs::OnUpdated::kEventName,
+      std::move(*args_base).TakeList(), profile);
   event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,

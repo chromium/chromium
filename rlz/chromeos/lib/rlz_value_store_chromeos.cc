@@ -478,7 +478,7 @@ bool RlzValueStoreChromeOS::RemoveValueFromList(const std::string& list_name,
   if (!list_value)
     return false;
 
-  base::Value::ListStorage storage = list_value->TakeList();
+  base::Value::ListStorage storage = std::move(*list_value).TakeList();
   base::EraseIf(storage, [&to_remove](const base::Value& value) {
     return value == to_remove;
   });

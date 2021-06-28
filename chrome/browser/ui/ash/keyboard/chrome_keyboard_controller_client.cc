@@ -348,7 +348,7 @@ void ChromeKeyboardControllerClient::OnKeyboardVisibleBoundsChanged(
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_BOUNDS_CHANGED,
       virtual_keyboard_private::OnBoundsChanged::kEventName,
-      event_args->TakeList(), profile);
+      std::move(*event_args).TakeList(), profile);
   router->BroadcastEvent(std::move(event));
 }
 

@@ -455,7 +455,7 @@ TEST(ValuesTest, TakeDict) {
   Value value(std::move(storage));
 
   // Take ownership of the dict and make sure its contents are what we expect.
-  auto dict = value.TakeDict();
+  auto dict = std::move(value).TakeDict();
   EXPECT_EQ(8u, dict.size());
   EXPECT_TRUE(dict["null"].is_none());
   EXPECT_TRUE(dict["bool"].is_bool());
@@ -497,7 +497,7 @@ TEST(ValuesTest, TakeList) {
   value.Append(Value(Value::Type::DICTIONARY));
 
   // Take ownership of the list and make sure its contents are what we expect.
-  auto list = value.TakeList();
+  auto list = std::move(value).TakeList();
   EXPECT_EQ(8u, list.size());
   EXPECT_TRUE(list[0].is_none());
   EXPECT_TRUE(list[1].is_bool());

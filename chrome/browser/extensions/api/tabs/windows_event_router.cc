@@ -314,9 +314,9 @@ void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        const std::string& event_name,
                                        WindowController* window_controller,
                                        std::unique_ptr<base::ListValue> args) {
-  auto event =
-      std::make_unique<Event>(histogram_value, event_name, args->TakeList(),
-                              window_controller->profile());
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(*args).TakeList(),
+                                       window_controller->profile());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));

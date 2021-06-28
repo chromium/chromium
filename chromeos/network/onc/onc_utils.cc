@@ -990,7 +990,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
     base::Value* validated_certs = validated_toplevel_onc->FindKeyOfType(
         ::onc::toplevel_config::kCertificates, base::Value::Type::LIST);
     if (validated_certs)
-      *certificates = base::ListValue(validated_certs->TakeList());
+      *certificates = base::ListValue(std::move(*validated_certs).TakeList());
   }
 
   // Note that this processing is performed even if |network_configs| is

@@ -96,7 +96,7 @@ class MessageSender : public content::NotificationObserver {
       GURL event_url) {
     auto event =
         std::make_unique<Event>(events::TEST_ON_MESSAGE, "test.onMessage",
-                                event_args->TakeList(), profile);
+                                std::move(*event_args).TakeList(), profile);
     event->event_url = event_url;
     return event;
   }

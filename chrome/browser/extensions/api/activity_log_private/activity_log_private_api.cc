@@ -104,8 +104,8 @@ void ActivityLogAPI::OnExtensionActivity(scoped_refptr<Action> activity) {
   value->Append(activity_arg.ToValue());
   auto event = std::make_unique<Event>(
       events::ACTIVITY_LOG_PRIVATE_ON_EXTENSION_ACTIVITY,
-      activity_log_private::OnExtensionActivity::kEventName, value->TakeList(),
-      browser_context_);
+      activity_log_private::OnExtensionActivity::kEventName,
+      std::move(*value).TakeList(), browser_context_);
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

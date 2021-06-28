@@ -143,8 +143,9 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
 
   content::BrowserContext* browser_context =
       navigation_handle->GetWebContents()->GetBrowserContext();
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       args->TakeList(), browser_context);
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name,
+                              std::move(*args).TakeList(), browser_context);
   DispatchEvent(browser_context, std::move(event), url);
 }
 

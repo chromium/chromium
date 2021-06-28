@@ -274,7 +274,7 @@ base::Value BasicGpuInfoAsListValue(const gpu::GPUInfo& gpu_info,
             gpu_extra_info);
     DCHECK(gpu_extra_info_as_list_value.is_list());
     {
-      auto pairs = gpu_extra_info_as_list_value.TakeList();
+      auto pairs = std::move(gpu_extra_info_as_list_value).TakeList();
       for (auto& pair : pairs) {
         if (pair.FindStringKey("description") == nullptr ||
             pair.FindKey("value") == nullptr) {

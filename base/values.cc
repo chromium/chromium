@@ -346,7 +346,7 @@ Value::ConstListView Value::GetList() const {
   return list();
 }
 
-Value::ListStorage Value::TakeList() {
+Value::ListStorage Value::TakeList() && {
   return std::exchange(list(), {});
 }
 
@@ -767,7 +767,7 @@ Value::const_dict_iterator_proxy Value::DictItems() const {
   return const_dict_iterator_proxy(&dict());
 }
 
-Value::DictStorage Value::TakeDict() {
+Value::DictStorage Value::TakeDict() && {
   DictStorage storage;
   storage.reserve(dict().size());
   for (auto& pair : dict()) {

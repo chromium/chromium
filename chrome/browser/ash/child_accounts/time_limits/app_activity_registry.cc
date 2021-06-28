@@ -698,7 +698,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
   base::ListValue* list_value = update.Get();
 
   // base::Value::ListStorage is an alias for std::vector<base::Value>.
-  base::Value::ListStorage list_storage = list_value->TakeList();
+  base::Value::ListStorage list_storage = std::move(*list_value).TakeList();
 
   for (size_t index = 0; index < list_storage.size();) {
     base::Value& entry = list_storage[index];

@@ -51,9 +51,9 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
     std::unique_ptr<base::ListValue> args(new base::ListValue());
     args->Append(alarm.js_alarm->ToValue());
-    std::unique_ptr<Event> event(new Event(events::ALARMS_ON_ALARM,
-                                           alarms::OnAlarm::kEventName,
-                                           args->TakeList(), browser_context_));
+    std::unique_ptr<Event> event(
+        new Event(events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName,
+                  std::move(*args).TakeList(), browser_context_));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }

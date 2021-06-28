@@ -86,7 +86,7 @@ void ExtensionDictionaryEventRouter::OnCustomDictionaryChanged(
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_DICTIONARY_CHANGED,
-      OnDictionaryChanged::kEventName, args->TakeList(), context_);
+      OnDictionaryChanged::kEventName, std::move(*args).TakeList(), context_);
   router->BroadcastEvent(std::move(event));
 }
 

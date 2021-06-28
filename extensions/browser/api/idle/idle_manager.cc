@@ -57,7 +57,7 @@ void DefaultEventDelegate::OnStateChanged(const std::string& extension_id,
   args->Append(IdleManager::CreateIdleValue(new_state));
   auto event = std::make_unique<Event>(events::IDLE_ON_STATE_CHANGED,
                                        idle::OnStateChanged::kEventName,
-                                       args->TakeList(), context_);
+                                       std::move(*args).TakeList(), context_);
   EventRouter::Get(context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }

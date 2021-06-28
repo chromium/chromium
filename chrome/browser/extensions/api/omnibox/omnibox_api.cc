@@ -117,7 +117,7 @@ bool ExtensionOmniboxEventRouter::OnInputChanged(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CHANGED,
                                        omnibox::OnInputChanged::kEventName,
-                                       args->TakeList(), profile);
+                                       std::move(*args).TakeList(), profile);
   event_router->DispatchEventToExtension(extension_id, std::move(event));
   return true;
 }
@@ -149,7 +149,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
                                        omnibox::OnInputEntered::kEventName,
-                                       args->TakeList(), profile);
+                                       std::move(*args).TakeList(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
@@ -178,7 +178,7 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
                                        omnibox::OnDeleteSuggestion::kEventName,
-                                       args->TakeList(), profile);
+                                       std::move(*args).TakeList(), profile);
 
   EventRouter::Get(profile)->DispatchEventToExtension(extension_id,
                                                       std::move(event));

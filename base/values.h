@@ -221,7 +221,7 @@ class BASE_EXPORT Value {
   // Transfers ownership of the underlying list to the caller. Subsequent
   // calls to `GetList()` will return an empty list.
   // Note: This requires that `type()` is Type::LIST.
-  ListStorage TakeList();
+  ListStorage TakeList() &&;
 
   // Appends `value` to the end of the list.
   // Note: These CHECK that `type()` is Type::LIST.
@@ -509,7 +509,7 @@ class BASE_EXPORT Value {
   // Transfers ownership of the underlying dict to the caller. Subsequent
   // calls to DictItems() will return an empty dict.
   // Note: This requires that `type()` is Type::DICTIONARY.
-  DictStorage TakeDict();
+  DictStorage TakeDict() &&;
 
   // Returns the size of the dictionary, if the dictionary is empty, and clears
   // the dictionary. Note: These CHECK that `type()` is Type::DICTIONARY.

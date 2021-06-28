@@ -1942,9 +1942,9 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
   // https://crbug.com/726022.
   Profile* restrict_to_browser_context =
       (include_incognito && !profile_->IsOffTheRecord()) ? nullptr : profile_;
-  auto event =
-      std::make_unique<Event>(histogram_value, event_name, args->TakeList(),
-                              restrict_to_browser_context);
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(*args).TakeList(),
+                                       restrict_to_browser_context);
   event->will_dispatch_callback = std::move(will_dispatch_callback);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
 }

@@ -38,9 +38,10 @@ void DispatchOnEmbedRequestedEventImpl(
     content::BrowserContext* context) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   args->Append(std::move(app_embedding_request_data));
-  auto event = std::make_unique<Event>(
-      events::APP_RUNTIME_ON_EMBED_REQUESTED,
-      app_runtime::OnEmbedRequested::kEventName, args->TakeList(), context);
+  auto event =
+      std::make_unique<Event>(events::APP_RUNTIME_ON_EMBED_REQUESTED,
+                              app_runtime::OnEmbedRequested::kEventName,
+                              std::move(*args).TakeList(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
 
@@ -72,7 +73,7 @@ void DispatchOnLaunchedEventImpl(
   args->Append(std::move(launch_data));
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
-                                       args->TakeList(), context);
+                                       std::move(*args).TakeList(), context);
   EventRouter::Get(context)
       ->DispatchEventWithLazyListener(extension_id, std::move(event));
   ExtensionPrefs::Get(context)

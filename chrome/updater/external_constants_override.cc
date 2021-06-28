@@ -145,8 +145,8 @@ ExternalConstantsOverrider::FromDefaultJSONFile(
     return nullptr;
   }
 
-  return std::make_unique<ExternalConstantsOverrider>(parsed_value->TakeDict(),
-                                                      std::move(next_provider));
+  return std::make_unique<ExternalConstantsOverrider>(
+      std::move(*parsed_value).TakeDict(), std::move(next_provider));
 }
 
 // Declared in external_constants.h. This implementation of the function is

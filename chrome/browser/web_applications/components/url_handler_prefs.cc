@@ -379,7 +379,8 @@ void RemoveEntries(base::Value& pref_value,
 
   std::vector<std::string> origins_to_remove;
   for (auto origin_value : pref_value.DictItems()) {
-    base::Value::ListStorage handlers = origin_value.second.TakeList();
+    base::Value::ListStorage handlers =
+        std::move(origin_value.second).TakeList();
     handlers.erase(
         std::remove_if(handlers.begin(), handlers.end(),
                        [&app_id, &profile_path](const base::Value& handler) {
@@ -411,7 +412,7 @@ void UpdateSavedChoice(base::Value& include_paths,
   //    "path": "/abc",
   //    "timestamp": "-9223372036854775808"
   // } ]
-  auto include_paths_list = include_paths.TakeList();
+  auto include_paths_list = std::move(include_paths).TakeList();
   for (base::Value& include_path_dict : include_paths_list) {
     if (!include_path_dict.is_dict())
       continue;
@@ -440,7 +441,7 @@ void SaveChoiceImpl(const AppId* app_id,
   base::Value* const handlers_mutable = pref_value.FindListKey(origin_str);
   if (handlers_mutable) {
     DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
-    base::Value::ListStorage handlers = handlers_mutable->TakeList();
+    base::Value::ListStorage handlers = std::move(*handlers_mutable).TakeList();
     for (auto& handler : handlers) {
       if (!handler.is_dict())
         continue;
@@ -638,7 +639,8 @@ void AddWebApp(PrefService* local_state,
         pref_value->FindListKey(origin.Serialize());
     // One or more apps are already associated with this origin.
     if (handlers_mutable) {
-      base::Value::ListStorage handlers = handlers_mutable->TakeList();
+      base::Value::ListStorage handlers =
+          std::move(*handlers_mutable).TakeList();
       auto it =
           std::find_if(handlers.begin(), handlers.end(),
                        [&app_id, &profile_path](const base::Value& handler) {
@@ -678,7 +680,8 @@ void UpdateWebApp(PrefService* local_state,
   std::vector<std::string> origins_to_remove;
   for (auto origin_value : pref_value->DictItems()) {
     const std::string& origin_str = origin_value.first;
-    base::Value::ListStorage curent_handlers = origin_value.second.TakeList();
+    base::Value::ListStorage curent_handlers =
+        std::move(origin_value.second).TakeList();
 
     // Remove any existing handler values that were written previously for the
     // same app_id and profile but are no longer found in 'new_url_handlers'.
