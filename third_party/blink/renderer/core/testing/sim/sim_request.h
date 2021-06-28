@@ -56,8 +56,10 @@ class SimRequestBase {
   void Complete(const String& data = String());
   void Complete(const Vector<char>& data);
 
+  const KURL& GetURL() const { return url_; }
+
  protected:
-  SimRequestBase(String url,
+  SimRequestBase(KURL url,
                  String mime_type,
                  bool start_immediately,
                  Params params = Params());
@@ -79,11 +81,11 @@ class SimRequestBase {
   void DidFail(const WebURLError&);
   void UsedForNavigation(StaticDataNavigationBodyLoader*);
 
-  KURL url_;
+  const KURL url_;
   String redirect_url_;
   String mime_type_;
   String referrer_;
-  bool start_immediately_;
+  const bool start_immediately_;
   bool started_;
   WebURLResponse response_;
   absl::optional<WebURLError> error_;
@@ -100,6 +102,7 @@ class SimRequestBase {
 // TODO(dgozman): rename this to SimNavigationRequest or something.
 class SimRequest final : public SimRequestBase {
  public:
+  SimRequest(KURL url, String mime_type, Params params = Params());
   SimRequest(String url, String mime_type, Params params = Params());
   ~SimRequest();
 };
@@ -108,6 +111,7 @@ class SimRequest final : public SimRequestBase {
 // delayed load of subresources.
 class SimSubresourceRequest final : public SimRequestBase {
  public:
+  SimSubresourceRequest(KURL url, String mime_type, Params params = Params());
   SimSubresourceRequest(String url, String mime_type, Params params = Params());
 
   ~SimSubresourceRequest();
