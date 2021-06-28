@@ -220,6 +220,27 @@ bool SupportsMapBufferRange(GLContext* context) {
          context->HasExtension("GL_EXT_map_buffer_range");
 }
 
+class ScopedPixelStore {
+ public:
+  ScopedPixelStore(GLenum name, GLint value) : name_(name), value_(value) {
+    glGetIntegerv(name_, &old_value_);
+    if (value_ != old_value_)
+      glPixelStorei(name_, value_);
+  }
+  ~ScopedPixelStore() {
+    if (value_ != old_value_)
+      glPixelStorei(name_, old_value_);
+  }
+
+  ScopedPixelStore(ScopedPixelStore&) = delete;
+  ScopedPixelStore& operator=(ScopedPixelStore&) = delete;
+
+ private:
+  const GLenum name_;
+  const GLint value_;
+  GLint old_value_;
+};
+
 }  // namespace
 
 GLImageMemory::GLImageMemory(const gfx::Size& size)
@@ -349,8 +370,12 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
                            &data_type, &data_row_length);
   }
 
-  if (data_row_length != size_.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, data_row_length);
+  ScopedPixelStore scoped_unpack_row_length(
+      GL_UNPACK_ROW_LENGTH,
+      data_row_length == size_.width() ? 0 : data_row_length);
+  ScopedPixelStore scoped_unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore scoped_unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
+  ScopedPixelStore scoped_unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
 
   const void* src;
   size_t size;
@@ -406,9 +431,6 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
                  0, data_format, data_type, src);
   }
 
-  if (data_row_length != size_.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-
   return true;
 }
 
@@ -437,15 +459,16 @@ bool GLImageMemory::CopyTexSubImage(unsigned target,
                            &data_type, &data_row_length);
   }
 
-  if (data_row_length != rect.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, data_row_length);
+  ScopedPixelStore scoped_unpack_row_length(
+      GL_UNPACK_ROW_LENGTH,
+      data_row_length == rect.width() ? 0 : data_row_length);
+  ScopedPixelStore scoped_unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore scoped_unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
+  ScopedPixelStore scoped_unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
 
   glTexSubImage2D(target, 0, offset.x(), offset.y(), rect.width(),
                   rect.height(), data_format, data_type,
                   gles2_data ? gles2_data->data() : data);
-
-  if (data_row_length != rect.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
   return true;
 }
