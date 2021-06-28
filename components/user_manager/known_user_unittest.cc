@@ -11,9 +11,11 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,7 +44,7 @@ class KnownUserTest : public testing::Test {
     scoped_user_manager_ =
         std::make_unique<ScopedUserManager>(std::move(fake_user_manager));
 
-    KnownUser::RegisterPrefs(local_state_.registry());
+    UserManagerBase::RegisterPrefs(local_state_.registry());
   }
   ~KnownUserTest() override = default;
 
@@ -676,6 +678,15 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
   known_user.SetPref(kDefaultAccountId, kDeprecatedPrefName,
                      util::TimeDeltaToValue(base::TimeDelta()));
 
+  // Imitate that user is forced to online signin.
+  const char kUserForceOnlineSignin[] = "UserForceOnlineSignin";
+  {
+    DictionaryPrefUpdate force_online_update(local_state(),
+                                             kUserForceOnlineSignin);
+    force_online_update->SetKey(kDefaultAccountId.GetUserEmail(),
+                                base::Value(true));
+  }
+
   const base::TimeDelta kLegitValue = base::TimeDelta::FromDays(14);
   known_user.SetPref(kDefaultAccountId2, kDeprecatedPrefName,
                      util::TimeDeltaToValue(kLegitValue));
@@ -693,6 +704,12 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
 
   EXPECT_TRUE(known_user.GetPref(kDefaultAccountId2, kNewPrefName, &out_value));
   EXPECT_EQ(kLegitValue, util::ValueToTimeDelta(*out_value));
+
+  // Verify that user is not forced to online signin anymore.
+  const base::DictionaryValue* prefs_force_online =
+      local_state()->GetDictionary(kUserForceOnlineSignin);
+  EXPECT_FALSE(prefs_force_online->FindBoolKey(kDefaultAccountId.GetUserEmail())
+                   .value());
 }
 
 //

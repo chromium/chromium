@@ -780,6 +780,23 @@ void KnownUser::CleanObsoletePrefs() {
       user_entry.SetKey(kOfflineSigninLimit,
                         util::TimeDeltaToValue(*new_value));
     }
+
+    if (new_value.has_value() && new_value->is_zero()) {
+      // The old logic wrongfully treated 0 as a legit value and forced the user
+      // to sign-in online in the case that the value is set to 0. This would be
+      // cached in the "UserForceOnlineSignin" pref. Reset it once during the
+      // one-time migration to the new logic, if the value was 0.
+      // TODO(https://crbug.com/1224318) Remove this around M95.
+      const std::string* email = user_entry.FindStringKey(kCanonicalEmail);
+      if (email) {
+        // This is the same kUserForceOnlineSignin from user_manager_base.cc and
+        // it's duplicated here as a temporary workaround.
+        const char kUserForceOnlineSignin[] = "UserForceOnlineSignin";
+        DictionaryPrefUpdate force_online_update(local_state_,
+                                                 kUserForceOnlineSignin);
+        force_online_update->SetKey(*email, base::Value(false));
+      }
+    }
   }
 }
 
