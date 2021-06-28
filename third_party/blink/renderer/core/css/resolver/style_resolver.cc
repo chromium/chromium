@@ -802,8 +802,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 static bool AllowsInheritance(const StyleRequest& style_request,
                               const ComputedStyle* parent_style) {
   // The spec disallows inheritance for ::backdrop.
-  return parent_style &&
-         style_request.PseudoIdForMatching() != kPseudoIdBackdrop;
+  return parent_style && style_request.pseudo_id != kPseudoIdBackdrop;
 }
 
 void StyleResolver::InitStyleAndApplyInheritance(
@@ -843,7 +842,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
       state.Style()->SetIsEnsuredOutsideFlatTree();
     }
   }
-  state.Style()->SetStyleType(style_request.StyleType());
+  state.Style()->SetStyleType(style_request.pseudo_id);
   state.Style()->SetPseudoArgument(style_request.pseudo_argument);
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
@@ -897,7 +896,7 @@ void StyleResolver::ApplyBaseStyle(
     const StyleRequest& style_request,
     StyleResolverState& state,
     StyleCascade& cascade) {
-  DCHECK(style_request.PseudoIdForMatching() != kPseudoIdFirstLineInherited);
+  DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
   bool base_is_usable =
       state.CanCacheBaseStyle() && CanReuseBaseComputedStyle(state);
@@ -929,7 +928,7 @@ void StyleResolver::ApplyBaseStyle(
     if (style_request.IsPseudoStyleRequest()) {
       collector.SetPseudoElementStyleRequest(style_request);
       GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
-          style_request.PseudoIdForMatching());
+          style_request.pseudo_id);
     }
 
     // TODO(obrufau): support styling nested pseudo-elements
@@ -982,7 +981,7 @@ void StyleResolver::ApplyBaseStyle(
   if (base_is_usable) {
     DCHECK(animation_base_computed_style);
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
-    state.Style()->SetStyleType(style_request.StyleType());
+    state.Style()->SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
       state.SetParentStyle(InitialStyleForElement());
       state.SetLayoutParentStyle(state.ParentStyle());

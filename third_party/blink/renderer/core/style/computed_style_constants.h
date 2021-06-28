@@ -77,7 +77,6 @@ enum PseudoId : uint8_t {
   kPseudoIdScrollbarCorner,
   kPseudoIdResizer,
   kPseudoIdInputListButton,
-  kPseudoIdSelectionInactive,
   // Special values follow:
   kAfterLastInternalPseudoId,
   kFirstPublicPseudoId = kPseudoIdFirstLine,

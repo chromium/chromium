@@ -169,7 +169,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.scope;
-  context.pseudo_id = pseudo_style_request_.PseudoIdForMatching();
+  context.pseudo_id = pseudo_style_request_.pseudo_id;
   context.vtt_originating_element = match_request.vtt_originating_element;
 
   unsigned rejected = 0;
@@ -217,7 +217,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       continue;
     }
     if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
-        pseudo_style_request_.PseudoIdForMatching() != result.dynamic_pseudo) {
+        pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
       rejected++;
       continue;
     }

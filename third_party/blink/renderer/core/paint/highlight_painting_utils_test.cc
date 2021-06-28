@@ -22,8 +22,8 @@ namespace blink {
 class HighlightPaintingUtilsTest : public SimTest {};
 
 TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
-  // Test that we are caching active and inactive selection styles separately so
-  // that we don't use incorrect styles when the active state changes.
+  // Test that we are only caching active selection styles as so that we don't
+  // incorrectly use a cached ComputedStyle when the active state changes.
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
@@ -32,7 +32,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   main_resource.Complete(R"HTML(
     <!doctype html>
     <style>
-      ::selection:window-inactive { color: red }
+      ::selection:window-inactive {color: red }
       ::selection { color: green }
     </style>
     <body>Text to select.</body>
@@ -53,11 +53,8 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   Window().getSelection()->setBaseAndExtent(body, 0, body, 1);
   Compositor().BeginFrame();
 
-  // We cache ::selection styles for :window-inactive as
-  // kPseudoIdSelectionInactive.
+  // We don't cache ::selection styles for :window-inactive.
   EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
-  EXPECT_TRUE(
-      body_style.GetCachedPseudoElementStyle(kPseudoIdSelectionInactive));
 
   EXPECT_FALSE(GetPage().IsActive());
   EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(

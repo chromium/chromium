@@ -205,10 +205,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kAfterLastInternalPseudoId:
     case kPseudoIdHighlight:
       // TODO(http://crbug.com/1195196)
-    case kPseudoIdSelectionInactive:
-      // This is just a constant used for the internal computed style cache
-      // for ::selection style in inactive windows which should never reach
-      // here.
     case kPseudoIdNone:
       CHECK(false);
       return "";
