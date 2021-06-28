@@ -275,7 +275,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   bool IsEmpty();
 
   LocalFrame* OverlayMainFrame();
-  void Reset(const IntSize& viewport_size);
+  void Reset(const IntSize& viewport_size,
+             const DoubleSize& visual_viewport_size);
   void OnResizeTimer(TimerBase*);
   void PaintOverlayPage();
 

@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
+#include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -1055,7 +1056,9 @@ void InspectorOverlayAgent::PaintOverlayPage() {
     return;
 
   LocalFrame* overlay_frame = OverlayMainFrame();
-  IntSize viewport_size = frame->GetPage()->GetVisualViewport().Size();
+  blink::VisualViewport& visual_viewport =
+      frame->GetPage()->GetVisualViewport();
+  IntSize viewport_size = visual_viewport.Size();
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // To make overlay render the same size text with any emulation scale,
     // compensate the emulation scale using page scale.
@@ -1070,7 +1073,9 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   overlay_frame->SetPageZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
 
-  Reset(viewport_size);
+  DoubleSize visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
+                                  visual_viewport.VisibleHeightCSSPx());
+  Reset(viewport_size, visual_viewport_size);
 
   float scale = WindowToViewportScale();
 
@@ -1097,6 +1102,15 @@ static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
       protocol::DictionaryValue::create();
   result->setInteger("width", size.Width());
   result->setInteger("height", size.Height());
+  return result;
+}
+
+static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
+    const DoubleSize& size) {
+  std::unique_ptr<protocol::DictionaryValue> result =
+      protocol::DictionaryValue::create();
+  result->setDouble("width", size.Width());
+  result->setDouble("height", size.Height());
   return result;
 }
 
@@ -1196,7 +1210,8 @@ LocalFrame* InspectorOverlayAgent::OverlayMainFrame() {
   return To<LocalFrame>(overlay_page_->MainFrame());
 }
 
-void InspectorOverlayAgent::Reset(const IntSize& viewport_size) {
+void InspectorOverlayAgent::Reset(const IntSize& viewport_size,
+                                  const DoubleSize& visual_viewport_size) {
   std::unique_ptr<protocol::DictionaryValue> reset_data =
       protocol::DictionaryValue::create();
   reset_data->setDouble("deviceScaleFactor",
@@ -1212,6 +1227,8 @@ void InspectorOverlayAgent::Reset(const IntSize& viewport_size) {
           IntRect(IntPoint(), viewport_size), GetFrame()->View());
   reset_data->setObject("viewportSize",
                         BuildObjectForSize(viewport_in_screen.Size()));
+  reset_data->setObject("visualViewportSize",
+                        BuildObjectForSize(visual_viewport_size));
 
   // The zoom factor in the overlay frame already has been multiplied by the
   // window to viewport scale (aka device scale factor), so cancel it.
