@@ -615,9 +615,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_2021-06-21",
                     "params": {
-                        "autodismiss_duration_ms": "20000"
+                        "autodismiss_duration_ms": "10000"
                     },
                     "enable_features": [
                         "MessagesForAndroidInfrastructure",
