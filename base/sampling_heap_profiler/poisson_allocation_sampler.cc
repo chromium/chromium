@@ -97,24 +97,24 @@ const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
 // The guard protects against reentering on platforms other the macOS and
 // Android.
-thread_local bool g_internal_reentry_guard;
+thread_local bool g_tls_internal_reentry_guard;
 
 // Accumulated bytes towards sample thread local key.
-thread_local intptr_t g_accumulated_bytes_tls;
+thread_local intptr_t g_tls_accumulated_bytes;
 
 // Used as a workaround to avoid bias from muted samples. See
 // ScopedMuteThreadSamples for more details.
-thread_local intptr_t g_accumulated_bytes_tls_snapshot;
+thread_local intptr_t g_tls_accumulated_bytes_snapshot;
 const intptr_t kAccumulatedBytesOffset = 1 << 29;
 
 // A boolean used to distinguish first allocation on a thread:
 //   false - first allocation on the thread;
 //   true  - otherwise.
-// Since g_accumulated_bytes_tls is initialized with zero the very first
+// Since g_tls_accumulated_bytes is initialized with zero the very first
 // allocation on a thread would always trigger the sample, thus skewing the
 // profile towards such allocations. To mitigate that we use the flag to
 // ensure the first allocation is properly accounted.
-thread_local bool g_sampling_interval_initialized_tls;
+thread_local bool g_tls_sampling_interval_initialized;
 
 // Controls if sample intervals should not be randomized. Used for testing.
 bool g_deterministic;
@@ -317,32 +317,32 @@ void PartitionFreeHook(void* address) {
 }  // namespace
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
-  DCHECK(!g_internal_reentry_guard);
-  g_internal_reentry_guard = true;
+  DCHECK(!g_tls_internal_reentry_guard);
+  g_tls_internal_reentry_guard = true;
 
   // We mute thread samples immediately after taking a sample, which is when we
-  // reset g_accumulated_bytes_tls. This breaks the random sampling requirement
+  // reset g_tls_accumulated_bytes. This breaks the random sampling requirement
   // of the poisson process, and causes us to systematically overcount all other
   // allocations. That's because muted allocations rarely trigger a sample
   // [which would cause them to be ignored] since they occur right after
-  // g_accumulated_bytes_tls is reset.
+  // g_tls_accumulated_bytes is reset.
   //
-  // To counteract this, we drop g_accumulated_bytes_tls by a large, fixed
+  // To counteract this, we drop g_tls_accumulated_bytes by a large, fixed
   // amount to lower the probability that a sample is taken to close to 0. Then
   // we reset it after we're done muting thread samples.
-  g_accumulated_bytes_tls_snapshot = g_accumulated_bytes_tls;
-  g_accumulated_bytes_tls -= kAccumulatedBytesOffset;
+  g_tls_accumulated_bytes_snapshot = g_tls_accumulated_bytes;
+  g_tls_accumulated_bytes -= kAccumulatedBytesOffset;
 }
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::~ScopedMuteThreadSamples() {
-  DCHECK(g_internal_reentry_guard);
-  g_internal_reentry_guard = false;
-  g_accumulated_bytes_tls = g_accumulated_bytes_tls_snapshot;
+  DCHECK(g_tls_internal_reentry_guard);
+  g_tls_internal_reentry_guard = false;
+  g_tls_accumulated_bytes = g_tls_accumulated_bytes_snapshot;
 }
 
 // static
 bool PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted() {
-  return g_internal_reentry_guard;
+  return g_tls_internal_reentry_guard;
 }
 
 PoissonAllocationSampler* PoissonAllocationSampler::instance_;
@@ -439,8 +439,8 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
                                            size_t size,
                                            AllocatorType type,
                                            const char* context) {
-  g_accumulated_bytes_tls += size;
-  intptr_t accumulated_bytes = g_accumulated_bytes_tls;
+  g_tls_accumulated_bytes += size;
+  intptr_t accumulated_bytes = g_tls_accumulated_bytes;
   if (LIKELY(accumulated_bytes < 0))
     return;
 
@@ -448,8 +448,8 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
     // Sampling is in fact disabled. Reset the state of the sampler.
     // We do this check off the fast-path, because it's quite a rare state when
     // allocation hooks are installed but the sampler is not running.
-    g_sampling_interval_initialized_tls = false;
-    g_accumulated_bytes_tls = 0;
+    g_tls_sampling_interval_initialized = false;
+    g_tls_accumulated_bytes = 0;
     return;
   }
 
@@ -466,16 +466,16 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     return;
 
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
-  if (UNLIKELY(!g_sampling_interval_initialized_tls)) {
-    g_sampling_interval_initialized_tls = true;
+  if (UNLIKELY(!g_tls_sampling_interval_initialized)) {
+    g_tls_sampling_interval_initialized = true;
     // This is the very first allocation on the thread. It always makes it
-    // passing the condition at |RecordAlloc|, because g_accumulated_bytes_tls
+    // passing the condition at |RecordAlloc|, because g_tls_accumulated_bytes
     // is initialized with zero due to TLS semantics.
     // Generate proper sampling interval instance and make sure the allocation
     // has indeed crossed the threshold before counting it as a sample.
     accumulated_bytes -= GetNextSampleInterval(mean_interval);
     if (accumulated_bytes < 0) {
-      g_accumulated_bytes_tls = accumulated_bytes;
+      g_tls_accumulated_bytes = accumulated_bytes;
       return;
     }
   }
@@ -488,7 +488,7 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     ++samples;
   } while (accumulated_bytes >= 0);
 
-  g_accumulated_bytes_tls = accumulated_bytes;
+  g_tls_accumulated_bytes = accumulated_bytes;
 
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
     return;
