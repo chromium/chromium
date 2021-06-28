@@ -43,6 +43,8 @@ const char kDaemonScript[] =
 // file to use.
 const char kHostConfigSwitchName[] = "host-config";
 
+bool start_host_after_setup = true;
+
 base::FilePath GetConfigPath() {
   base::CommandLine* current_process = base::CommandLine::ForCurrentProcess();
   if (current_process->HasSwitch(kHostConfigSwitchName)) {
@@ -189,19 +191,23 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
     return;
   }
 
-  // Finally start the host.
-  std::vector<std::string> args = {"--enable-and-start"};
+  if (start_host_after_setup) {
+    // Finally start the host.
+    std::vector<std::string> args = {"--enable-and-start"};
 
-  // TODO(rkjnsn): At this point, the host is configured and just requires an
-  // administrator to enable and start it. If that fails here, e.g., due to no
-  // policy kit agent running, it might be nice to tell the user what they need
-  // to do so they can perform the last step manually (or have an administrator
-  // do it, if the user isn't one).
-  DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
-  if (RunHostScript(args))
-    result = DaemonController::RESULT_OK;
+    // TODO(rkjnsn): At this point, the host is configured and just requires an
+    // administrator to enable and start it. If that fails here, e.g., due to no
+    // policy kit agent running, it might be nice to tell the user what they
+    // need to do so they can perform the last step manually (or have an
+    // administrator do it, if the user isn't one).
+    if (!RunHostScript(args)) {
+      LOG(ERROR) << "Failed to start host.";
+      std::move(done).Run(DaemonController::RESULT_FAILED);
+      return;
+    }
+  }
 
-  std::move(done).Run(result);
+  std::move(done).Run(DaemonController::RESULT_OK);
 }
 
 void DaemonControllerDelegateLinux::UpdateConfig(
@@ -246,6 +252,11 @@ DaemonControllerDelegateLinux::GetUsageStatsConsent() {
   consent.allowed = false;
   consent.set_by_policy = false;
   return consent;
+}
+
+void DaemonControllerDelegateLinux::set_start_host_after_setup(
+    bool start_host) {
+  start_host_after_setup = start_host;
 }
 
 scoped_refptr<DaemonController> DaemonController::Create() {

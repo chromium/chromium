@@ -32,6 +32,11 @@
 #include <unistd.h>
 #endif  // defined(OS_POSIX)
 
+#if defined(OS_LINUX)
+#include "remoting/host/setup/daemon_controller_delegate_linux.h"
+#include "remoting/host/setup/start_host_as_root.h"
+#endif  // defined(OS_LINUX)
+
 #if defined(OS_WIN)
 #include "base/process/process_info.h"
 #endif  // defined(OS_WIN)
@@ -119,6 +124,13 @@ void OnDone(HostStarter::Result result) {
 }  // namespace
 
 int StartHostMain(int argc, char** argv) {
+#if defined(OS_LINUX)
+  // Minimize the amount of code that runs as root on Posix systems.
+  if (getuid() == 0) {
+    return remoting::StartHostAsRoot(argc, argv);
+  }
+#endif  // defined(OS_LINUX)
+
   // google_apis::GetOAuth2ClientID/Secret need a static CommandLine.
   base::CommandLine::Init(argc, argv);
   const base::CommandLine* command_line =
@@ -149,15 +161,17 @@ int StartHostMain(int argc, char** argv) {
   // for the account which generated |code|.
   std::string host_owner = command_line->GetSwitchValueASCII("host-owner");
 
-#if defined(OS_POSIX)
-  // Check if current user is root. If it is root, then throw an error message.
-  // This is because start_host should be run in user mode.
-  if (geteuid() == 0) {
-    fprintf(stderr, "Refusing to run %s as root.", argv[0]);
-    return 1;
+#if defined(OS_LINUX)
+  if (command_line->HasSwitch("no-start")) {
+    // On Linux, registering the host with systemd and starting it is the only
+    // reason start_host requires root. The --no-start options skips that final
+    // step, allowing it to be run non-interactively if the parent process has
+    // root and can do complete the setup itself. Since this functionality is
+    // Linux-specific, it isn't plumbed through the platform-independent daemon
+    // controller code, and must be configured on the Linux delegate explicitly.
+    DaemonControllerDelegateLinux::set_start_host_after_setup(false);
   }
-#endif  // defined(OS_POSIX)
-
+#endif  // defined(OS_LINUX)
 #if defined(OS_WIN)
   // The tool must be run elevated on Windows so the host has access to the
   // directories used to store the configuration JSON files.
