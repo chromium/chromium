@@ -211,6 +211,24 @@ helpApp.ClientApiDelegate.prototype.updateLauncherSearchIndex
     = function(data) {};
 
 /**
+ * Request for the discover page notification to be shown to the user. The
+ * notification will only be shown if the relevant heuristics are true, i.e.
+ * user is a child, is using a supported language etc.
+ * @return {!Promise<undefined>}
+ */
+helpApp.ClientApiDelegate.prototype.maybeShowDiscoverNotification =
+    function() {};
+
+/**
+ * Request for the release notes notification to be shown to the user. The
+ * notification will only be shown if a notification for the help app has not
+ * yet been shown in the current milestone.
+ * @return {!Promise<undefined>}
+ */
+helpApp.ClientApiDelegate.prototype.maybeShowReleaseNotesNotification =
+    function() {};
+
+/**
  * Launch data that can be read by the app when it first loads.
  * @type {{
  *     delegate: !helpApp.ClientApiDelegate,

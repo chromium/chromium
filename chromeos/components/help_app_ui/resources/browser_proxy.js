@@ -271,6 +271,11 @@ guestMessagePipe.registerHandler(
       help_app.handler.maybeShowDiscoverNotification();
     });
 
+guestMessagePipe.registerHandler(
+    Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION, () => {
+      help_app.handler.maybeShowReleaseNotesNotification();
+    });
+
 /**
  * Compare two positions by their start index. Use for sorting.
  *

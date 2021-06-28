@@ -36,9 +36,14 @@ class HelpAppUIDelegate {
   // Gets locally stored users preferences and state.
   virtual PrefService* GetLocalState() = 0;
 
-  // Asks the help app notification to show the discover notification if the
-  // required heuristics are present.
+  // Asks the help app notification controller to show the discover notification
+  // if the required heuristics are present.
   virtual void MaybeShowDiscoverNotification() = 0;
+
+  // Asks the help app notification controller to show the release notes
+  // notification if the release notes notification has not yet been shown in
+  // the current milestone.
+  virtual void MaybeShowReleaseNotesNotification() = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_HELP_APP_UI_DELEGATE_H_

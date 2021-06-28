@@ -110,9 +110,9 @@ void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
   if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ash::ReleaseNotesNotification>(profile_);
-    // Let the ReleaseNotesNotification decide if it should show itself.
-    release_notes_notification_->MaybeShowReleaseNotes();
   }
+  // Let the ReleaseNotesNotification decide if it should show itself.
+  release_notes_notification_->MaybeShowReleaseNotes();
 }
 
 }  // namespace chromeos

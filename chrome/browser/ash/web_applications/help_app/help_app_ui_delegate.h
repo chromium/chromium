@@ -29,6 +29,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   void ShowParentalControls() override;
   PrefService* GetLocalState() override;
   void MaybeShowDiscoverNotification() override;
+  void MaybeShowReleaseNotesNotification() override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.

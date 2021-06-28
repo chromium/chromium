@@ -29,4 +29,9 @@ interface PageHandler {
   // Requests that the help app discover notification is shown if the required
   // heuristics are present.
   MaybeShowDiscoverNotification();
+
+  // Request for the help app release notes notification to be shown if the
+  // release notes notification has not yet been shown in the current
+  // milestone.
+  MaybeShowReleaseNotesNotification();
 };

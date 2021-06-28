@@ -265,6 +265,27 @@ TEST_F(HelpAppNotificationControllerTest,
   EXPECT_EQ(true, HasDiscoverTabNotification());
 }
 
+// TODO(b/186585182): Only show at most one notification per milestone.
+TEST_F(HelpAppNotificationControllerTest,
+       CanShowBothNotificationsPerMilestone) {
+  std::unique_ptr<Profile> profile = CreateChildProfile();
+  profile->GetPrefs()->SetInteger(
+      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile.get());
+
+  controller->MaybeShowDiscoverNotification();
+
+  EXPECT_EQ(1, notification_count_);
+  EXPECT_EQ(true, HasDiscoverTabNotification());
+
+  controller->MaybeShowReleaseNotesNotification();
+
+  EXPECT_EQ(2, notification_count_);
+  EXPECT_EQ(true, HasReleaseNotesNotification());
+}
+
 // Tests for suggestion chips.
 TEST_F(HelpAppNotificationControllerTest,
        UpdatesReleaseNotesChipPrefWhenReleaseNotesNotificationShown) {

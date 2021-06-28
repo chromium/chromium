@@ -169,3 +169,9 @@ void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {
   ash::UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
       profile);
 }
+
+void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  ash::UserSessionManager::GetInstance()
+      ->MaybeShowHelpAppReleaseNotesNotification(profile);
+}

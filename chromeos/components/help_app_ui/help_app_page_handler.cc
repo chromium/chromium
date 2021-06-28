@@ -51,3 +51,7 @@ void HelpAppPageHandler::IsLauncherSearchEnabled(
 void HelpAppPageHandler::MaybeShowDiscoverNotification() {
   help_app_ui_->delegate()->MaybeShowDiscoverNotification();
 }
+
+void HelpAppPageHandler::MaybeShowReleaseNotesNotification() {
+  help_app_ui_->delegate()->MaybeShowReleaseNotesNotification();
+}

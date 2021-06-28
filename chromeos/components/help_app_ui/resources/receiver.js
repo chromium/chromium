@@ -58,6 +58,10 @@ const DELEGATE = {
   async maybeShowDiscoverNotification() {
     await parentMessagePipe.sendMessage(
         Message.MAYBE_SHOW_DISCOVER_NOTIFICATION);
+  },
+  async maybeShowReleaseNotesNotification() {
+    await parentMessagePipe.sendMessage(
+        Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION);
   }
 };
 
