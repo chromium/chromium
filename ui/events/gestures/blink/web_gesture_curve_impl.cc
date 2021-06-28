@@ -49,7 +49,8 @@ std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
 #endif
     auto scroller = std::make_unique<MobileScroller>(config);
     scroller->Fling(0, 0, initial_velocity.x(), initial_velocity.y(), INT_MIN,
-                    INT_MAX, INT_MIN, INT_MAX, base::TimeTicks());
+                    static_cast<float>(INT_MAX), INT_MIN,
+                    static_cast<float>(INT_MAX), base::TimeTicks());
     return std::move(scroller);
   }
 

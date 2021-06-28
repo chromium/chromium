@@ -1313,7 +1313,7 @@ TEST(XFormTest, IntegerTranslation) {
   transform.Translate3d(0, 0, 8.9f);
   EXPECT_FALSE(transform.IsIdentityOrIntegerTranslation());
 
-  float max_int = std::numeric_limits<int>::max();
+  float max_int = static_cast<float>(std::numeric_limits<int>::max());
   transform.MakeIdentity();
   transform.Translate3d(0, 0, max_int + 1000.5f);
   EXPECT_FALSE(transform.IsIdentityOrIntegerTranslation());
