@@ -1,14 +1,14 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env vpython
 
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # [VPYTHON:BEGIN]
-# python_version: "3.8"
+# python_version: "2.7"
 # wheel: <
 #   name: "infra/python/wheels/protobuf-py2_py3"
-#   version: "version:3.15.8"
+#   version: "version:3.13.0"
 # >
 #
 # wheel: <
