@@ -42,7 +42,9 @@ class SystemNotificationManager {
    *  Returns an instance of an 'ash' Notification.
    */
   std::unique_ptr<message_center::Notification> CreateNotification(
-      std::string notification_id);
+      std::string notification_id,
+      const std::u16string& title,
+      const std::u16string& message);
 
   /**
    * Returns the message center display service that manages notifications.
