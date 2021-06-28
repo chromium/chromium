@@ -173,16 +173,21 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // Returns texture_service_id for ProduceGLTexture and GLTexturePassthrough.
   GLuint ProduceGLTextureInternal();
 
-  using FillBufferCallback = base::OnceCallback<void(void* buffer)>;
+  using WriteBufferCallback = base::OnceCallback<void(void* buffer)>;
   // TODO(penghuang): Remove it when GrContext::updateBackendTexture() supports
   // compressed texture and callback.
   bool WritePixelsWithCallback(size_t data_size,
                                size_t stride,
-                               FillBufferCallback callback);
+                               WriteBufferCallback callback);
+  using ReadBufferCallback = base::OnceCallback<void(const void* buffer)>;
+  bool ReadPixelsWithCallback(size_t data_size,
+                              size_t stride,
+                              ReadBufferCallback callback);
   bool WritePixelsWithData(base::span<const uint8_t> pixel_data, size_t stride);
   bool WritePixels();
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromShmToGLTexture();
+  void CopyPixelsFromVkImageToGLTexture();
 
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> image_;

@@ -259,6 +259,26 @@ void VulkanCommandBuffer::CopyBufferToImage(VkBuffer buffer,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
+void VulkanCommandBuffer::CopyImageToBuffer(VkBuffer buffer,
+                                            VkImage image,
+                                            uint32_t buffer_width,
+                                            uint32_t buffer_height,
+                                            uint32_t width,
+                                            uint32_t height) {
+  VkBufferImageCopy region = {};
+  region.bufferOffset = 0;
+  region.bufferRowLength = buffer_width;
+  region.bufferImageHeight = buffer_height;
+  region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  region.imageSubresource.mipLevel = 0;
+  region.imageSubresource.baseArrayLayer = 0;
+  region.imageSubresource.layerCount = 1;
+  region.imageOffset = {0, 0, 0};
+  region.imageExtent = {width, height, 1};
+  vkCmdCopyImageToBuffer(command_buffer_, image,
+                         VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1,
+                         &region);
+}
 void VulkanCommandBuffer::PostExecution() {
   if (record_type_ == RECORD_TYPE_SINGLE_USE) {
     // Clear upon next use.

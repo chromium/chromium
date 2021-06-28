@@ -439,6 +439,7 @@ ReadbackTestConfig const kTestConfigs[] = {
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     ReadbackTestConfig{viz::RendererType::kSkiaVk, TestReadBackType::kBitmap},
+    ReadbackTestConfig{viz::RendererType::kSkiaVk, TestReadBackType::kTexture},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
     ReadbackTestConfig{viz::RendererType::kSkiaDawn, TestReadBackType::kBitmap},

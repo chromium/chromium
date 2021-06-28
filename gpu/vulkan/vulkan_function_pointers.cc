@@ -450,6 +450,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     return false;
   }
 
+  vkCmdCopyImageToBuffer = reinterpret_cast<PFN_vkCmdCopyImageToBuffer>(
+      vkGetDeviceProcAddr(vk_device, "vkCmdCopyImageToBuffer"));
+  if (!vkCmdCopyImageToBuffer) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCmdCopyImageToBuffer";
+    return false;
+  }
+
   vkCmdEndRenderPass = reinterpret_cast<PFN_vkCmdEndRenderPass>(
       vkGetDeviceProcAddr(vk_device, "vkCmdEndRenderPass"));
   if (!vkCmdEndRenderPass) {

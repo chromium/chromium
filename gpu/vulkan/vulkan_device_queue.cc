@@ -214,6 +214,7 @@ bool VulkanDeviceQueue::Initialize(
     gpu_type = 0;
   crash_keys::vulkan_device_type.Set(kDeviceTypeNames[gpu_type]);
   crash_keys::vulkan_device_name.Set(vk_physical_device_properties_.deviceName);
+  LOG(ERROR) << "Vulkan: " << vk_physical_device_properties_.deviceName;
 
   // Disable all physical device features by default.
   enabled_device_features_2_ = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};

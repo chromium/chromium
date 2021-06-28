@@ -806,7 +806,7 @@ void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
     if (latest_content_ & kInSharedMemory) {
       CopyPixelsFromShmToGLTexture();
     } else if (latest_content_ & kInVkImage) {
-      NOTIMPLEMENTED_LOG_ONCE();
+      CopyPixelsFromVkImageToGLTexture();
     }
   } else if (content_flags == kInSharedMemory) {
     // TODO(penghuang): read pixels back from VkImage to shared memory GMB, if
@@ -818,7 +818,7 @@ void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
 bool ExternalVkImageBacking::WritePixelsWithCallback(
     size_t data_size,
     size_t stride,
-    FillBufferCallback callback) {
+    WriteBufferCallback callback) {
   DCHECK(stride == 0 || size().height() * stride <= data_size);
 
   VkBufferCreateInfo buffer_create_info = {
@@ -917,6 +917,83 @@ bool ExternalVkImageBacking::WritePixelsWithCallback(
   return true;
 }
 
+bool ExternalVkImageBacking::ReadPixelsWithCallback(
+    size_t data_size,
+    size_t stride,
+    ReadBufferCallback callback) {
+  DCHECK(stride == 0 || size().height() * stride <= data_size);
+
+  VkBufferCreateInfo buffer_create_info = {
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = data_size,
+      .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+
+  VmaAllocator allocator =
+      context_state()->vk_context_provider()->GetDeviceQueue()->vma_allocator();
+  VkBuffer stage_buffer = VK_NULL_HANDLE;
+  VmaAllocation stage_allocation = VK_NULL_HANDLE;
+  VkResult result = vma::CreateBuffer(allocator, &buffer_create_info,
+                                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                      0, &stage_buffer, &stage_allocation);
+  if (result != VK_SUCCESS) {
+    DLOG(ERROR) << "vkCreateBuffer() failed." << result;
+    return false;
+  }
+
+  // ReadPixelsWithCallback() is only called for separate texture.
+  DCHECK(!need_synchronization());
+
+  std::vector<ExternalSemaphore> external_semaphores;
+  if (!BeginAccessInternal(true /* readonly */, &external_semaphores)) {
+    DLOG(ERROR) << "BeginAccess() failed.";
+    vma::DestroyBuffer(allocator, stage_buffer, stage_allocation);
+    return false;
+  }
+  DCHECK(external_semaphores.empty());
+
+  auto command_buffer = command_pool_->CreatePrimaryCommandBuffer();
+  CHECK(command_buffer);
+  {
+    ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
+    GrVkImageInfo image_info;
+    bool success = backend_texture_.getVkImageInfo(&image_info);
+    DCHECK(success);
+    if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+      command_buffer->TransitionImageLayout(
+          image_info.fImage, image_info.fImageLayout,
+          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+      backend_texture_.setVkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    }
+    uint32_t buffer_width =
+        stride ? stride * 8 / BitsPerPixel(format()) : size().width();
+    command_buffer->CopyImageToBuffer(stage_buffer, image_info.fImage,
+                                      buffer_width, size().height(),
+                                      size().width(), size().height());
+  }
+
+  command_buffer->Submit(0, nullptr, 0, nullptr);
+  command_buffer->Wait(UINT64_MAX);
+  command_buffer->Destroy();
+  EndAccessInternal(true /* readonly */, ExternalSemaphore());
+
+  void* buffer = nullptr;
+  result = vma::MapMemory(allocator, stage_allocation, &buffer);
+  if (result != VK_SUCCESS) {
+    DLOG(ERROR) << "vma::MapMemory() failed. " << result;
+    vma::DestroyBuffer(allocator, stage_buffer, stage_allocation);
+    return false;
+  }
+
+  std::move(callback).Run(buffer);
+  vma::UnmapMemory(allocator, stage_allocation);
+  vma::DestroyBuffer(allocator, stage_buffer, stage_allocation);
+
+  return true;
+}
+
 bool ExternalVkImageBacking::WritePixelsWithData(
     base::span<const uint8_t> pixel_data,
     size_t stride) {
@@ -1003,14 +1080,12 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
 
   gl::GLApi* api = gl::g_current_gl_context;
   GLuint framebuffer;
-  GLint old_framebuffer;
-  api->glGetIntegervFn(GL_READ_FRAMEBUFFER_BINDING, &old_framebuffer);
   api->glGenFramebuffersEXTFn(1, &framebuffer);
-  api->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER, framebuffer);
+  gl::ScopedFramebufferBinder scoped_framebuffer_binder(framebuffer);
   api->glFramebufferTexture2DEXTFn(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                    GL_TEXTURE_2D, texture_service_id, 0);
-  GLenum status = api->glCheckFramebufferStatusEXTFn(GL_READ_FRAMEBUFFER);
-  DCHECK_EQ(status, static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE))
+  DCHECK_EQ(api->glCheckFramebufferStatusEXTFn(GL_READ_FRAMEBUFFER),
+            static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE))
       << "CheckFramebufferStatusEXT() failed.";
 
   base::CheckedNumeric<size_t> checked_size = bytes_per_pixel;
@@ -1021,6 +1096,7 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   ScopedPixelStore pack_row_length(api, GL_PACK_ROW_LENGTH, 0);
   ScopedPixelStore pack_skip_pixels(api, GL_PACK_SKIP_PIXELS, 0);
   ScopedPixelStore pack_skip_rows(api, GL_PACK_SKIP_ROWS, 0);
+  // Use 1 byte alignment for Vulkan image buffer copy.
   ScopedPixelStore pack_alignment(api, GL_PACK_ALIGNMENT, 1);
 
   WritePixelsWithCallback(
@@ -1033,8 +1109,60 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
             DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
           },
           api, size(), gl_format, gl_type));
-  api->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER, old_framebuffer);
   api->glDeleteFramebuffersEXTFn(1, &framebuffer);
+}
+
+void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
+  DCHECK(use_separate_gl_texture());
+  DCHECK_NE(!!texture_, !!texture_passthrough_);
+  const GLuint texture_service_id =
+      texture_ ? texture_->service_id() : texture_passthrough_->service_id();
+
+  DCHECK_GE(format(), 0);
+  DCHECK_LE(format(), viz::RESOURCE_FORMAT_MAX);
+  auto gl_format = kFormatTable[format()].gl_format;
+  auto gl_type = kFormatTable[format()].gl_type;
+  auto bytes_per_pixel = kFormatTable[format()].bytes_per_pixel;
+
+  if (gl_format == GL_ZERO) {
+    NOTREACHED() << "Not supported resource format=" << format();
+    return;
+  }
+
+  // Make sure GrContext is not using GL. So we don't need reset GrContext
+  DCHECK(!context_state_->GrContextIsGL());
+
+  // Make sure a gl context is current, since textures are shared between all gl
+  // contexts, we don't care which gl context is current.
+  if (!gl::GLContext::GetCurrent() &&
+      !context_state_->MakeCurrent(nullptr, true /* needs_gl */))
+    return;
+
+  gl::GLApi* api = gl::g_current_gl_context;
+  base::CheckedNumeric<size_t> checked_size = bytes_per_pixel;
+  checked_size *= size().width();
+  checked_size *= size().height();
+  DCHECK(checked_size.IsValid());
+
+  gl::ScopedTextureBinder scoped_texture_binder(GL_TEXTURE_2D,
+                                                texture_service_id);
+
+  ScopedPixelStore unpack_row_length(api, GL_UNPACK_ROW_LENGTH, 0);
+  ScopedPixelStore unpack_skip_pixels(api, GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore unpack_skip_rows(api, GL_UNPACK_SKIP_ROWS, 0);
+  // Use 1 byte alignment for Vulkan image buffer copy.
+  ScopedPixelStore unpack_alignment(api, GL_UNPACK_ALIGNMENT, 1);
+
+  ReadPixelsWithCallback(
+      checked_size.ValueOrDie(), 0,
+      base::BindOnce(
+          [](gl::GLApi* api, const gfx::Size& size, GLenum format, GLenum type,
+             const void* buffer) {
+            api->glTexSubImage2DFn(GL_TEXTURE_2D, 0, 0, 0, size.width(),
+                                   size.height(), format, type, buffer);
+            DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+          },
+          api, size(), gl_format, gl_type));
 }
 
 void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
@@ -1064,9 +1192,14 @@ void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
     return;
 
   gl::GLApi* api = gl::g_current_gl_context;
-  GLint old_texture;
-  api->glGetIntegervFn(GL_TEXTURE_BINDING_2D, &old_texture);
-  api->glBindTextureFn(GL_TEXTURE_2D, texture_service_id);
+  gl::ScopedTextureBinder scoped_texture_binder(GL_TEXTURE_2D,
+                                                texture_service_id);
+
+  ScopedPixelStore unpack_row_length(api, GL_UNPACK_ROW_LENGTH, 0);
+  ScopedPixelStore unpack_skip_pixels(api, GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore unpack_skip_rows(api, GL_UNPACK_SKIP_ROWS, 0);
+  // Chrome uses 4 bytes alignment for shared memory GMB.
+  ScopedPixelStore unpack_alignment(api, GL_UNPACK_ALIGNMENT, 4);
 
   base::CheckedNumeric<size_t> checked_size = bytes_per_pixel;
   checked_size *= size().width();
@@ -1078,7 +1211,6 @@ void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
                          size().height(), gl_format, gl_type,
                          pixel_data.data());
   DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-  api->glBindTextureFn(GL_TEXTURE_2D, old_texture);
 }
 
 bool ExternalVkImageBacking::BeginAccessInternal(

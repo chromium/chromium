@@ -178,6 +178,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkCmdBeginRenderPass> vkCmdBeginRenderPass;
   VulkanFunction<PFN_vkCmdCopyBuffer> vkCmdCopyBuffer;
   VulkanFunction<PFN_vkCmdCopyBufferToImage> vkCmdCopyBufferToImage;
+  VulkanFunction<PFN_vkCmdCopyImageToBuffer> vkCmdCopyImageToBuffer;
   VulkanFunction<PFN_vkCmdEndRenderPass> vkCmdEndRenderPass;
   VulkanFunction<PFN_vkCmdExecuteCommands> vkCmdExecuteCommands;
   VulkanFunction<PFN_vkCmdNextSubpass> vkCmdNextSubpass;
@@ -622,6 +623,16 @@ ALWAYS_INLINE void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer,
                                           const VkBufferImageCopy* pRegions) {
   return gpu::GetVulkanFunctionPointers()->vkCmdCopyBufferToImage(
       commandBuffer, srcBuffer, dstImage, dstImageLayout, regionCount,
+      pRegions);
+}
+ALWAYS_INLINE void vkCmdCopyImageToBuffer(VkCommandBuffer commandBuffer,
+                                          VkImage srcImage,
+                                          VkImageLayout srcImageLayout,
+                                          VkBuffer dstBuffer,
+                                          uint32_t regionCount,
+                                          const VkBufferImageCopy* pRegions) {
+  return gpu::GetVulkanFunctionPointers()->vkCmdCopyImageToBuffer(
+      commandBuffer, srcImage, srcImageLayout, dstBuffer, regionCount,
       pRegions);
 }
 ALWAYS_INLINE void vkCmdEndRenderPass(VkCommandBuffer commandBuffer) {

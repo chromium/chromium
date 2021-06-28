@@ -119,6 +119,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkCmdBeginRenderPass',
       'vkCmdCopyBuffer',
       'vkCmdCopyBufferToImage',
+      'vkCmdCopyImageToBuffer',
       'vkCmdEndRenderPass',
       'vkCmdExecuteCommands',
       'vkCmdNextSubpass',
