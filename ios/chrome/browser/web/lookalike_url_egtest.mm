@@ -314,7 +314,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
 
 // Tests that performing session restoration to a lookalike URL warning page
 // preserves navigation history.
-- (void)testRestoreToWarningPagePreservesHistory {
+// TODO(crbug.com/1222773): Re-enable this test after fixing flakiness.
+- (void)DISABLED_testRestoreToWarningPagePreservesHistory {
   // Build up navigation history that consists of a safe URL, a warning page,
   // and the suggested safe URL.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echoall")];
