@@ -13,6 +13,7 @@ import sys
 import unittest
 
 from auditor import *
+from typing import Tuple
 
 # Path to this script's dir.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -39,37 +40,42 @@ class AuditorTest(unittest.TestCase):
 
     self.auditor_ui = AuditorUI(build_path, path_filters, False)
 
+    global traffic_annotation
+    traffic_annotation = self.auditor_ui.traffic_annotation
+
     self.auditor = Auditor()
 
     self.sample_annotations = {}
     for annotation in all_annotations:
       self.sample_annotations[annotation.unique_id] = annotation
 
-  def deserialize(self, file_name: str) -> AnnotationInstance:
+  def deserialize(self,
+                  file_name: str) -> Tuple[Annotation, List[AuditorError]]:
     file_path = os.path.join(CPP_TESTS_DIR, "extractor_outputs", file_name)
     with open(file_path) as f:
       lines = [l.rstrip() for l in f.readlines()]
 
-    annotation = AnnotationInstance()
+    annotation = Annotation()
     extracted_annotation = extractor.Annotation(file_path=lines[0],
                                                 line_number=int(lines[1]),
                                                 type_name=lines[2],
                                                 unique_id=lines[3],
                                                 extra_id=lines[4],
                                                 text="\n".join(lines[5:]))
-    annotation.deserialize(extracted_annotation)
-    return annotation
+    errors = annotation.deserialize(extracted_annotation)
+    return annotation, errors
 
   def create_annotation_sample(self,
-                               type=AnnotationInstance.Type.COMPLETE,
+                               type=Annotation.Type.COMPLETE,
                                unique_id=0,
-                               second_id=0) -> AnnotationInstance:
+                               second_id=0) -> Annotation:
     if not unique_id:
-      return self.deserialize("good_complete_annotation.txt")
-    instance = AnnotationInstance()
+      instance, errors = self.deserialize("good_complete_annotation.txt")
+      assert not errors
+      return instance
+    instance = Annotation()
     instance.type = type
     instance.proto.unique_id = "S{}".format(unique_id)
-    instance.unique_id_hash_code = HashCode(unique_id)
     if second_id:
       instance.second_id = UniqueId("S{}".format(second_id))
       instance.second_id_hash_code = HashCode(second_id)
@@ -175,41 +181,42 @@ class AuditorTest(unittest.TestCase):
 
   def test_annotation_deserialization(self) -> None:
     test_cases = [
-        ("good_complete_annotation.txt", None,
-         AnnotationInstance.Type.COMPLETE),
+        ("good_complete_annotation.txt", None, Annotation.Type.COMPLETE),
         ("good_branched_completing_annotation.txt", None,
-         AnnotationInstance.Type.BRANCHED_COMPLETING),
-        ("good_completing_annotation.txt", None,
-         AnnotationInstance.Type.COMPLETING),
-        ("good_partial_annotation.txt", None, AnnotationInstance.Type.PARTIAL),
-        # TODO(nicolaso): Implement TEST_ANNOTATION and MISSING_TAG_USED.
-        # ("good_test_annotation.txt", AuditorError.Type.TEST_ANNOTATION, None),
-        # ("missing_annotation.txt", AuditorError.Type.MISSING_TAG_USED, None),
-        ("fatal_annotation1.txt", "fatal", None),
-        ("fatal_annotation2.txt", "fatal", None),
-        ("fatal_annotation3.txt", "fatal", None),
+         Annotation.Type.BRANCHED_COMPLETING),
+        ("good_completing_annotation.txt", None, Annotation.Type.COMPLETING),
+        ("good_partial_annotation.txt", None, Annotation.Type.PARTIAL),
+        ("good_test_annotation.txt", AuditorError.Type.TEST_ANNOTATION, None),
+        ("missing_annotation.txt", AuditorError.Type.MISSING_TAG_USED, None),
+        ("good_no_annotation.txt", AuditorError.Type.NO_ANNOTATION, None),
         ("bad_syntax_annotation1.txt", AuditorError.Type.SYNTAX, None),
         ("bad_syntax_annotation2.txt", AuditorError.Type.SYNTAX, None),
         ("bad_syntax_annotation3.txt", AuditorError.Type.SYNTAX, None),
         ("bad_syntax_annotation4.txt", AuditorError.Type.SYNTAX, None),
+        # "fatal" means a Python exception gets raised.
+        ("fatal_annotation1.txt", "fatal", None),
+        ("fatal_annotation2.txt", "fatal", None),
+        ("fatal_annotation3.txt", "fatal", None),
     ]
 
     for test_case in test_cases:
+      logger.info("Testing: {}".format(test_case))
+
       (file_name, error_type, annotation_type) = test_case
 
       if error_type == "fatal":
-        # Should raise a fatal error (i.e., not an AuditorError).
-        with self.assertRaises(Exception) as ecm:
-          annotation = self.deserialize(file_name)
-        self.assertNotIsInstance(ecm.exception, AuditorError)
+        # Should raise a Python exception.
+        with self.assertRaises(Exception):
+          annotation, errors = self.deserialize(file_name)
       elif error_type:
         # Should raise an AuditorError of the specified type.
-        with self.assertRaises(AuditorError) as cm:
-          annotation = self.deserialize(file_name)
-        self.assertEqual(error_type, cm.exception.type)
+        annotation, errors = self.deserialize(file_name)
+        self.assertEqual(1, len(errors))
+        self.assertEqual(error_type, errors[0].type)
       else:
         # Should not raise an error.
-        annotation = self.deserialize(file_name)
+        annotation, errors = self.deserialize(file_name)
+        self.assertEqual([], errors)
         self.assertEqual(annotation_type, annotation.type, file_name)
 
       # Check contents for one complete sample.
@@ -227,20 +234,20 @@ class AuditorTest(unittest.TestCase):
 
   def test_get_reserved_ids_coverage(self):
     """Tests if RESERVED_IDS has all known ids."""
-    self.assertEqual(["test", "test_partial", "missing"], RESERVED_IDS)
+    self.assertEqual(["test", "test_partial", "missing", "undefined"],
+                     RESERVED_IDS)
 
   @unittest.skip("not yet implemented")
   def test_reserved_ids_usage_detection(self):
     """Tests if use of reserved ids are detected."""
     for reserved_id in RESERVED_IDS:
       errors = self.run_id_checker(
-          self.create_annotation_sample(AnnotationInstance.Type.COMPLETE,
-                                        reserved_id))
+          self.create_annotation_sample(Annotation.Type.COMPLETE, reserved_id))
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
 
       errors = self.run_id_checker(
-          self.create_annotation_sample(AnnotationInstance.Type.PARTIAL, 1,
+          self.create_annotation_sample(Annotation.Type.PARTIAL, 1,
                                         reserved_id))
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
@@ -250,14 +257,14 @@ class AuditorTest(unittest.TestCase):
     """Tests if use of deprecated ids are detected."""
     for deprecated_id in TEST_DEPRECATED_IDS:
       errors = self.run_id_checker(
-          self.create_annotation_sample(AnnotationInstance.Type.COMPLETE,
+          self.create_annotation_sample(Annotation.Type.COMPLETE,
                                         deprecated_id))
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.DEPRECATED_ID_HASH_CODE,
                        errors[0].type)
 
       errors = self.run_id_checker(
-          self.create_annotation_sample(AnnotationInstance.Type.PARTIAL, 1,
+          self.create_annotation_sample(Annotation.Type.PARTIAL, 1,
                                         deprecated_id))
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.DEPRECATED_ID_HASH_CODE,
@@ -286,7 +293,7 @@ class AuditorTest(unittest.TestCase):
   @unittest.skip("not yet implemented")
   def test_similar_unique_and_second_ids_detection(self):
     """Tests if having the same unique id and second id is detected."""
-    for t in AnnotationInstance.Type:
+    for t in Annotation.Type:
       errors = self.run_id_checker(self.create_annotation_sample(t, 1, 1))
       if annotation.needs_two_ids():
         self.assertEqual(1, len(errors), t)
@@ -296,10 +303,10 @@ class AuditorTest(unittest.TestCase):
   @unittest.skip("not yet implemented")
   def test_duplicate_ids_detection(self):
     """Tests unique id and second id collision cases."""
-    T = AnnotationInstance.Type
-    for type1, type2 in itertools.product([list(T)] * 2):
+    T = Annotation.Type
+    for type1, type2 in itertools.product(*[list(T)] * 2):
       for id1, id2, id3, id4 in \
-          itertools.product([range(1, 5) for i in range(4)]):
+          itertools.product(*[range(1, 5) for i in range(4)]):
         logger.info("Testing ({}, {}, {}, {}, {}, {})", type1, type2, id1, id2,
                     id3, id4)
         annotation1 = self.create_annotation_sample(type1, id1, id2)
@@ -363,18 +370,16 @@ class AuditorTest(unittest.TestCase):
     annotation = self.create_annotation_sample()
     for test_case in test_cases:
       # Set type to complete to require just unique ID.
-      annotation.type = AnnotationInstance.Type.COMPLETE
+      annotation.type = Annotation.Type.COMPLETE
       annotation.proto.unique_id = test_case[0]
-      annotation.unique_id_hash_code = 1
       errors = self.run_id_checker(annotation)
       self.assertEqual(test_case[1], bool(errors), test_case[0])
 
       # Set type to partial to require both ids.
-      annotation.type = AnnotationInstance.Type.PARTIAL
+      annotation.type = Annotation.Type.PARTIAL
       annotation.proto.unique_id = "Something_Good"
       annotation.second_id = test_case[0]
-      annotation.unique_id_hash_code = 1
-      annotation.second_id_hash_code = 2
+      annotation.second_id_hash_code = compute_hash_value(test_case[0])
       self.run_id_checker(annotation)
       self.assertEqual(test_case[1], bool(errors), test_case[0])
 
@@ -384,10 +389,8 @@ class AuditorTest(unittest.TestCase):
     false_sample_count = 0
     for test_case in test_cases:
       annotation = self.create_annotation_sample()
-      annotation.type = AnnotationInstance.Type.COMPLETE
-      annotation.unique_id_hash_code = 1
+      annotation.type = Annotation.Type.COMPLETE
       annotation.proto.unique_id = test_case[0]
-      annotation.unique_id_hash_code += 1
       annotations.append(annotation)
       if not test_case[1]:
         false_sample_count += 1
@@ -395,7 +398,6 @@ class AuditorTest(unittest.TestCase):
     errors = self.run_id_checker(annotations)
     self.assertEqual(false_sample_count, errors)
 
-  @unittest.skip("not yet implemented")
   def test_check_complete_annotations(self):
     """Tests if Auditor.check_annotations_contents() works as expected for
     COMPLETE annotations. It also inherently checks
@@ -404,17 +406,18 @@ class AuditorTest(unittest.TestCase):
     annotations = []
     expected_errors_count = 0
 
-    CookiesAllowed = NetworkAnnotation.TrafficPolicy.CookiesAllowed
+    Destination = traffic_annotation.TrafficSemantics.Destination
+    CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
 
     test_no = 0
     while True:
       annotation = self.create_annotation_sample()
-      annotation.proto.unique_id = "foobar_policy_fetcher"
+      annotation.proto.unique_id = "foobar_policy_fetcher{}".format(test_no)
       test_description = ""
       expect_error = True
       if test_no == 0:
         test_description = "All fields OK."
-        expected_error = False
+        expect_error = False
       elif test_no == 1:
         test_description = "Missing semantics::sender"
         annotation.proto.semantics.sender = ""
@@ -429,7 +432,7 @@ class AuditorTest(unittest.TestCase):
         annotation.proto.semantics.data = ""
       elif test_no == 5:
         test_description = "Missing semantics::destination"
-        annotation.proto.semantics.destination = ""
+        annotation.proto.semantics.destination = Destination.UNSPECIFIED
       elif test_no == 6:
         test_description = "Missing policy::cookies_allowed"
         annotation.proto.policy.cookies_allowed = CookiesAllowed.UNSPECIFIED
@@ -495,15 +498,21 @@ class AuditorTest(unittest.TestCase):
       self.auditor.extracted_annotations = [annotation]
       self.auditor.check_annotations_contents()
 
-      if expected_error:
-        self.assertEqual(1, len(self.auditor.errors))
+      if expect_error:
+        self.assertEqual(
+            1, len(self.auditor.errors),
+            "test_no={}, errors={}".format(test_no, self.auditor.errors))
       else:
-        self.assertEqual([], self.auditor.errors)
+        self.assertEqual([], self.auditor.errors,
+                         "test_no={}, errors={}".format(test_no,
+                                                        self.auditor.errors))
 
       annotations.append(annotation)
 
       if expect_error:
         expected_errors_count += 1
+
+      test_no += 1
 
     # Check all.
     self.auditor.errors = []
@@ -511,11 +520,10 @@ class AuditorTest(unittest.TestCase):
     self.auditor.check_annotations_contents()
     self.assertEqual(expected_errors_count, len(self.auditor.errors))
 
-  @unittest.skip("not yet implemented")
   def test_is_completable_with(self):
-    """Tests is AnnotationInstance.is_completable_with() works as expected."""
-    T = AnnotationInstance.Type
-    for type1, type2 in itertools.product([list(T)] * 2):
+    """Tests is Annotation.is_completable_with() works as expected."""
+    T = Annotation.Type
+    for type1, type2 in itertools.product(*[list(T)] * 2):
       for ids in range(256):
         annotation1 = self.create_annotation_sample(type1, ids % 4,
                                                     (ids >> 2) % 4)
@@ -524,14 +532,16 @@ class AuditorTest(unittest.TestCase):
         expectation = False
         if annotation1.type == T.PARTIAL and annotation1.second_id:
           expectation = expectation or \
-            (annotation2.type  in [T.COMPLETING, T.BRANCHED_COMPLETING] and
+            (annotation2.type  == T.COMPLETING and
              annotation1.second_id_hash_code == annotation2.unique_id_hash_code)
+          expectation = expectation or \
+            (annotation2.type  == T.BRANCHED_COMPLETING and
+             annotation1.second_id_hash_code == annotation2.second_id_hash_code)
         self.assertEqual(annotation1.is_completable_with(annotation2),
-                         expectation)
+                         expectation, "{} <=> {}".format(type1, type2))
 
-  @unittest.skip("not yet implemented")
   def test_create_complete_annotation(self):
-    """Tests is AnnotationInstance.create_complete_annotation() works as
+    """Tests is Annotation.create_complete_annotation() works as
     expected."""
     instance = self.create_annotation_sample()
     other = self.create_annotation_sample()
@@ -539,36 +549,66 @@ class AuditorTest(unittest.TestCase):
     instance.proto.semantics.Clear()
     instance.proto.policy.Clear()
 
-    instance.type = AnnotationInstance.Type.PARTIAL
-    other.type = AnnotationInstance.Type.COMPLETING
+    instance.type = Annotation.Type.PARTIAL
+    other.type = Annotation.Type.COMPLETING
 
     # Partial and Completing.
-    instance.second_id_hash_code = 1
     instance.second_id = "SomeID"
-    other.unique_id_hash_code = 1
-    combination = instance.create_complete_annotation(other)
+    instance.second_id_hash_code = compute_hash_value(instance.second_id)
+    other.proto.unique_id = "SomeID"
+    combination, errors = instance.create_complete_annotation(other)
+    self.assertEqual([], errors)
     self.assertEqual(combination.unique_id_hash_code,
                      instance.unique_id_hash_code)
 
     # Partial and Branched-completing.
-    other.type = AnnotationInstance.Type.BRANCHED_COMPLETING
-    instance.second_id_hash_code = 1
-    other.second_id_hash_code = 1
+    other.type = Annotation.Type.BRANCHED_COMPLETING
     other.second_id = "SomeID"
-    combination = instance.create_complete_annotation(other)
-    self.assertEqual(combinatino.unique_id_hash_code, other.unique_id_hash_code)
+    other.second_id_hash_code = compute_hash_value(other.second_id)
+    instance.second_id_hash_code = compute_hash_value(other.second_id)
+    combination, errors = instance.create_complete_annotation(other)
+    self.assertEqual([], errors)
+    self.assertEqual(combination.unique_id_hash_code, other.unique_id_hash_code)
 
-    other.CopyFrom(instance)
-    other.type = AnnotationInstance.Type.BRANCHED_COMPLETING
-    instance.second_id_hash_code = 1
-    other.second_id_hash_code = 1
+    # Inconsistent field.
+    Destination = traffic_annotation.TrafficSemantics.Destination
+    other.proto.MergeFrom(instance.proto)
+    other.type = Annotation.Type.BRANCHED_COMPLETING
     other.second_id = "SomeID"
-    instance.proto.semantics.destination = \
-        NetworkTrafficAnnotation.TrafficSemantics.Destination.WEBSITE
-    other.proto.semantics.destination = \
-        NetworkTrafficAnnotation.TrafficSemantics.Destination.LOCAL
-    with self.assertRaises(AuditorError):
-      instance.create_complete_annotation()
+    other.second_id_hash_code = compute_hash_value(other.second_id)
+    instance.second_id_hash_code = compute_hash_value(other.second_id)
+    instance.proto.semantics.destination = Destination.WEBSITE
+    other.proto.semantics.destination = Destination.LOCAL
+    annotation, errors = instance.create_complete_annotation(other)
+    self.assertEqual(1, len(errors))
+
+  def test_load_from_archive(self):
+    """Tests that Annotation.load_from_archive() works as expected."""
+    archived = ArchivedAnnotation(
+        type=Annotation.Type.PARTIAL.value[0],
+        unique_id="foobar",
+        unique_id_hash_code=compute_hash_value("foobar"),
+        second_id_hash_code=compute_hash_value("baz"),
+        content_hash_code=32,
+        os_list=["linux", "windows"],
+        added_in_milestone=62,
+        semantics_fields=[2, 3],
+        policy_fields=[-1, 3, 4],
+        file_path="foobar.cc")
+    annotation = Annotation.load_from_archive(archived)
+    self.assertTrue(annotation.is_loaded_from_archive)
+    self.assertEqual(annotation.type, Annotation.Type.PARTIAL)
+    self.assertEqual(annotation.proto.unique_id, archived.unique_id)
+    self.assertEqual(annotation.unique_id_hash_code,
+                     archived.unique_id_hash_code)
+    self.assertEqual(annotation.second_id_hash_code,
+                     archived.second_id_hash_code)
+    self.assertEqual(annotation.archive_content_hash_code, 32)
+    self.assertEqual(annotation.get_semantics_field_numbers(),
+                     archived.semantics_fields)
+    self.assertEqual(annotation.get_policy_field_numbers(),
+                     archived.policy_fields)
+    self.assertEqual(annotation.proto.source.file, archived.file_path)
 
   @unittest.skip("not yet implemented")
   def test_annotations_xml(self):

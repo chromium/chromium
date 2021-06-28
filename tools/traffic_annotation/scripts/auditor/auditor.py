@@ -13,7 +13,9 @@ import traceback
 from enum import Enum, auto
 from functools import reduce
 from google.protobuf import text_format
-from typing import NewType, TYPE_CHECKING, List, Dict
+from google.protobuf.descriptor import FieldDescriptor
+from google.protobuf.message import Message
+from typing import NewType, TYPE_CHECKING, Any, List, Dict, NamedTuple, Tuple, Union
 
 # Path to the directory where this script is.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -40,14 +42,16 @@ HashCode = NewType('HashCode', int)
 
 # Reserved annotation unique IDs that should only be used in untracked files
 # (e.g., test files or files that aren't compiled on this platform).
-RESERVED_IDS = ["test", "test_partial", "missing"]
+TEST_IDS = ["test", "test_partial"]
+MISSING_ID = "missing"
+NO_ANNOTATION_ID = "undefined"
+RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
 SUPPORTED_PLATFORMS = ["linux", "windows"]
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(filename)s:%(lineno)d:%(funcName)s:%(levelname)s: %(message)s")
+logging.basicConfig(level=logging.INFO,
+                    format="%(filename)s:%(lineno)d:%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -80,161 +84,509 @@ def iterative_hash(s: str) -> HashCode:
              s.encode("utf-8"), 0))
 
 
-class AuditorError(Exception):
+def compute_hash_value(text: str) -> HashCode:
+  """Same as iterative_hash, but returns -1 for empty strings."""
+  return iterative_hash(text) if text else HashCode(-1)
+
+
+def merge_string_field(src: Message, dst: Message, field: str):
+  """Merges the content of one string field into an annotation."""
+  if getattr(src, field):
+    if getattr(dst, field):
+      setattr(dst, field, "{}\n{}".format(getattr(src, field),
+                                          getattr(dst, field)))
+    else:
+      setattr(dst, field, getattr(src, field))
+
+
+def fill_proto_with_bogus(proto: Message, field_numbers: List[int]):
+  """Fill proto with bogus values for the fields identified by field_numbers.
+  Uses reflection to fill the proto with the right types."""
+  descriptor = proto.DESCRIPTOR
+  for field_number in field_numbers:
+    field_number = abs(field_number)
+
+    if field_number not in descriptor.fields_by_number:
+      raise ValueError("{} is not a valid {} field".format(
+          field_number, descriptor.name))
+
+    field = descriptor.fields_by_number[field_number]
+    repeated = field.label == FieldDescriptor.LABEL_REPEATED
+
+    if field.type == FieldDescriptor.TYPE_STRING and not repeated:
+      setattr(proto, field.name, "[Archived]")
+    elif field.type == FieldDescriptor.TYPE_ENUM and not repeated:
+      # Assume the 2nd value in the enum is reasonable, since the 1st is
+      # UNSPECIFIED.
+      setattr(proto, field.name, field.enum_type.values[1].number)
+    elif field.type == FieldDescriptor.TYPE_MESSAGE and repeated:
+      getattr(proto, field.name).add()
+    else:
+      raise NotImplementedError("Unimplemented proto field type {} ({})".format(
+          field.type, "repeated" if repeated else "non-repeated"))
+
+
+class AuditorError:
   class Type(Enum):
     # Annotation syntax is not right.
     SYNTAX = auto()
+    # Can't create a MutableNetworkTrafficAnnotationTag from anywhere (except
+    # in whitelisted files).
+    # TODO(nicolaso): Implement this error type.
+    MUTABLE_TAG = auto()
     # Annotation has some missing fields.
     INCOMPLETE_ANNOTATION = auto()
-    # Can't create a |MutableNetworkTrafficAnnotationTag| from anywhere (except
-    # whitelisted files).
-    MUTABLE_TAG = auto()
-    # A function is called with NO_ANNOTATION tag. Deprecated as is now
-    # undefined on supported platforms.
-    NO_ANNOTATION = auto()
-    # A function that requires annotation is is not annotated.
-    MISSING_ANNOTATION = auto()
-    # A function uses the "test" or "test_partial" annotation outside of a test
-    # file.
+    # Annotation has some inconsistent fields.
+    INCONSISTENT_ANNOTATION = auto()
+    # Two annotations that are supposed to merge cannot merge.
+    MERGE_FAILED = auto()
+    # A function is called with the "missing" tag.
+    MISSING_TAG_USED = auto()
+    # A function is called with the "test" or "test_partial" tag outside of a
+    # test file.
     TEST_ANNOTATION = auto()
+    # A function is called with NO_TRAFFIC_ANNOTATION_YET tag.
+    NO_ANNOTATION = auto()
 
-  def __init__(self, result_type, message="", file_path="", line=0) -> None:
+  def __init__(self,
+               result_type: "AuditorError.Type",
+               message: str = "",
+               file_path: str = "",
+               line: int = 0,
+               *extra_details: str):
     self.type = result_type
     self.message = message
     self.file_path = file_path
     self.line = line
     self._details = []
 
-    assert message or result_type in [AuditorError.Type.NO_ANNOTATION]
+    assert message or result_type in [
+        AuditorError.Type.MISSING_TAG_USED, AuditorError.Type.TEST_ANNOTATION,
+        AuditorError.Type.NO_ANNOTATION
+    ]
 
     if message:
       self._details.append(message)
+    self._details.extend(extra_details)
 
   def __str__(self) -> str:
     #TODO(https://crbug.com/1119417): Add all the possible errors and their
     # explanations here.
     if self.type == AuditorError.Type.SYNTAX:
       assert self._details
-      return "SYNTAX: Annotation at '{}:{}' has the following syntax" \
-        " error: {}".format(
-        self.file_path, self.line, str(self._details[0]).replace("\n", " "))
+      return ("SYNTAX: Annotation at '{}:{}' has the following syntax"
+              " error: {}".format(self.file_path, self.line,
+                                  str(self._details[0]).replace("\n", " ")))
+
+    if self.type == AuditorError.Type.MUTABLE_TAG:
+      return ("MUTABLE_TAG: Calling CreateMutableNetworkTrafficAnnotationTag() "
+              "is not safelisted at '{}:{}'.".format(self.file_path, self.line))
 
     if self.type == AuditorError.Type.INCOMPLETE_ANNOTATION:
       assert self._details
-      return "INCOMPLETE_ANNOTATION: Annotation at '{}:{}' has the" \
-        " following missing fields: {}".format(
-          self.file_path, self.line, self._details[0])
+      return ("INCOMPLETE_ANNOTATION: Annotation at '{}:{}' has the"
+              " following missing fields: {}".format(self.file_path, self.line,
+                                                     self._details[0]))
 
-    return self.type.name
+    if self.type == AuditorError.Type.INCONSISTENT_ANNOTATION:
+      assert self._details
+      return ("INCONSISTENT_ANNOTATION: Annotation at '{}:{}' has the "
+              "following inconsistencies: {}".format(self.file_path, self.line,
+                                                     self._details[0]))
+
+    if self.type == AuditorError.Type.MERGE_FAILED:
+      assert len(self._details) == 3
+      return ("MERGE_FAILED: Annotations '{}' and '{}' cannot be merged due to "
+              "the following error(s): {}".format(self._details[1],
+                                                  self._details[2],
+                                                  self._details[0]))
+
+    if self.type == AuditorError.Type.MISSING_TAG_USED:
+      return ("MISSING_TAG_USED: MISSING_TRAFFIC_ANNOTATION tag used in "
+              "'{}:{}'.".format(self.file_path, self.line))
+
+    if self.type == AuditorError.Type.TEST_ANNOTATION:
+      return ("TEST_ANNOTATION: Annotation for tests used in '{}:{}'.".format(
+          self.file_path, self.line))
+
+    if self.type == AuditorError.Type.NO_ANNOTATION:
+      # TODO(nicolaso): We should ignore this error on Android for now.
+      return "NO_ANNOTATION: Empty annotation in '{}:{}'.".format(
+          self.file_path, self.line)
+
+    raise NotImplementedError("Unimplemented AuditorError.Type: {}".format(
+        self.type.name))
+
+  def __repr__(self) -> str:
+    return "AuditorError(\"{}\")".format(str(self))
 
 
-class AnnotationInstance(object):
+class Annotation:
+  """An annotation in code, typically extracted from C++.
+
+  Attributes:
+    type: An Annotation.Type with the kind of annotation this is.
+    proto: A NetworkTrafficAnnotation protobuf message.
+    unique_id_hash_code: HashCode of the proto's unique_id.
+
+    second_id: A UniqueId with the other annotation's unique id. This can be the
+        completing id for partial annotations, or group id for branched
+        completing annotations.
+    second_id_hash_code: HashCode of the second_id.
+
+    is_loaded_from_archive: True if this annotations was loaded from
+        annotations.xml, rather than extracted from C++ code.
+    archive_content_hash_code: content_hash_code loaded from annotations.xml.
+
+    is_merged: True if this annotation was generated by merging 2 other
+       incomplete annotations.
+  """
+
   class Type(Enum):
-    COMPLETE = "Definition"
-    PARTIAL = "Partial"
-    COMPLETING = "Completing"
-    BRANCHED_COMPLETING = "BranchedCompleting"
+    COMPLETE = (0, "Definition")
+    PARTIAL = (1, "Partial")
+    COMPLETING = (2, "Completing")
+    BRANCHED_COMPLETING = (3, "BranchedCompleting")
+
+    def __str__(self):
+      return self.value[1]
+
+    @classmethod
+    def from_int(cls, n: int) -> "Annotation.Type":
+      for t in Annotation.Type:
+        if t.value[0] == n:
+          return t
+      raise ValueError("{} is not a valid Annotation.Type".format(n))
+
+    @classmethod
+    def from_string(cls, name: str) -> "Annotation.Type":
+      for t in Annotation.Type:
+        if t.value[1] == name:
+          return t
+      raise ValueError("'{}' is not a valid Annotation.Type".format(name))
 
   def __init__(self):
+    self.type = Annotation.Type.COMPLETING
     self.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
-    self.type = AnnotationInstance.Type.COMPLETING
-    self.unique_id_hash_code: HashCode = -1
+
     self.second_id: UniqueId = -1
     self.second_id_hash_code: HashCode = -1
 
-    self.archived_content_hash_code: HashCode = -1
     self.is_loaded_from_archive = False
+    self.archive_content_hash_code: HashCode = -1
+    self.archived_added_in_milestone = 0
+
+    self.is_merged = False
+
+  @property
+  def unique_id_hash_code(self) -> HashCode:
+    return compute_hash_value(self.proto.unique_id)
+
+  @classmethod
+  def load_from_archive(cls, archived: "ArchivedAnnotation") -> "Annotation":
+    """Loads an annotation based on the data from annotations.xml."""
+    annotation = Annotation()
+    annotation.is_loaded_from_archive = True
+    annotation.type = Annotation.Type.from_int(archived.type)
+    annotation.proto.unique_id = archived.unique_id
+    annotation.proto.source.file = archived.file_path
+    annotation.archive_content_hash_code = archived.content_hash_code
+
+    if annotation.needs_two_ids():
+      # We don't have the actual second id, so write a generated value to make
+      # it non-empty. This is only relevant in tests.
+      annotation.second_id = UniqueId("ARCHIVED_ID_{}".format(
+          annotation.second_id_hash_code))
+      annotation.second_id_hash_code = archived.second_id_hash_code
+
+    fill_proto_with_bogus(annotation.proto.semantics, archived.semantics_fields)
+
+    fill_proto_with_bogus(annotation.proto.policy, archived.policy_fields)
+
+    # cookies_allowed is a special field: negative values indicate NO, and
+    # positive values indicate YES.
+    CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
+    policy_fields = archived.policy_fields
+    policy_descriptor = annotation.proto.policy.DESCRIPTOR
+    cookies_allowed_id = (
+        policy_descriptor.fields_by_name["cookies_allowed"].number)
+    if +cookies_allowed_id in archived.policy_fields:
+      annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
+    if -cookies_allowed_id in archived.policy_fields:
+      annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
+
+    return annotation
+
+  def create_complete_annotation(self, completing_annotation: "Annotation"
+                                 ) -> Tuple["Annotation", List[AuditorError]]:
+    """Combines |self| partial annotation with a completing/branched_completing
+    annotation and returns the combined complete annotation."""
+    if not self.is_completable_with(completing_annotation):
+      raise ValueError("{} is not completable with {}".format(
+          self.proto.unique_id, completing_annotation.proto.unique_id))
+
+    # To keep the source information meta data, if completing annotation is of
+    # type COMPLETING, keep |self| as the main and the other as completing.
+    # But if completing annotation is of type BRANCHED_COMPLETING, reverse
+    # the order.
+    combination = Annotation()
+    if completing_annotation.type == Annotation.Type.COMPLETING:
+      combination = copy.copy(self)
+      combination.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
+      combination.proto.MergeFrom(self.proto)
+      other = completing_annotation
+    else:
+      combination = copy.copy(completing_annotation)
+      combination.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
+      combination.proto.MergeFrom(completing_annotation.proto)
+      other = self
+
+    combination.is_merged = True
+    combination.type = Annotation.Type.COMPLETE
+    combination.second_id = UniqueId("")
+    combination.second_id_hash_code = HashCode(-1)
+
+    # Update comment.
+    merge_string_field(combination.proto, other.proto, "comments")
+    combination.proto.comments += (
+        "This annotation is a merge of the following two annotations:\n"
+        "'{}' in '{}:{}' and '{}' in '{}:{}'".format(
+            self.proto.unique_id, self.proto.source.file,
+            self.proto.source.line, completing_annotation.proto.unique_id,
+            completing_annotation.proto.source.file,
+            completing_annotation.proto.source.line))
+
+    # Copy TrafficSemantics.
+    semantics_string_fields = [
+        "sender", "description", "trigger", "data", "destination_other"
+    ]
+    for f in semantics_string_fields:
+      merge_string_field(combination.proto.semantics, other.proto.semantics, f)
+
+    # Merge 'destination' field.
+    Destination = traffic_annotation.TrafficSemantics.Destination
+    if combination.proto.semantics.destination == Destination.UNSPECIFIED:
+      combination.proto.semantics.destination = (
+          other.proto.semantics.destination)
+    elif (other.proto.semantics.destination != Destination.UNSPECIFIED
+          and other.proto.semantics.destination !=
+          combination.proto.semantics.destination):
+      return combination, [
+          AuditorError(
+              AuditorError.Type.MERGE_FAILED,
+              "Annotations contain different semantics::destination values", "",
+              0, self.proto.unique_id, completing_annotation.proto.unique_id)
+      ]
+
+    # Copy TrafficPolicy.
+    policy_string_fields = [
+        "cookies_store", "setting", "policy_exception_justification"
+    ]
+    for f in policy_string_fields:
+      merge_string_field(combination.proto.policy, other.proto.policy, f)
+
+    combination.proto.policy.cookies_allowed = max(
+        combination.proto.policy.cookies_allowed,
+        other.proto.policy.cookies_allowed)
+
+    combination.proto.policy.chrome_policy.extend(
+        other.proto.policy.chrome_policy)
+
+    return combination, []
+
+  def needs_two_ids(self) -> bool:
+    """Tells if the annotation requires two ids. All annotations have a unique
+    id, but partial annotations also require a completing id, and branched
+    completing annotations require a group id."""
+    return (self.type in [
+        Annotation.Type.PARTIAL, Annotation.Type.BRANCHED_COMPLETING
+    ])
+
+  def is_completable_with(self, other) -> bool:
+    """Checks to see if this annotation can be completed with the |other|
+    annotation, based on their unique ids, types, and extra ids. |self| should
+    be of partial type and the |other| either COMPLETING or BRANCHED_COMPLETING
+    type."""
+    if self.type != Annotation.Type.PARTIAL or not self.second_id:
+      return False
+    if other.type == Annotation.Type.COMPLETING:
+      return self.second_id_hash_code == other.unique_id_hash_code
+    if other.type == Annotation.Type.BRANCHED_COMPLETING:
+      return self.second_id_hash_code == other.second_id_hash_code
+    return False
+
+  def get_semantics_field_numbers(self) -> List[int]:
+    """Returns the proto field numbers of TrafficSemantics fields that are
+    included in this annotation."""
+    return [
+        f.number for f in traffic_annotation.TrafficSemantics.DESCRIPTOR.fields
+        if getattr(self.proto.semantics, f.name)
+    ]
+
+  def get_policy_field_numbers(self) -> List[int]:
+    """Returns the proto field numbers of TrafficPolicy fields that are
+    included in this annotation."""
+    field_numbers = [
+        f.number for f in traffic_annotation.TrafficPolicy.DESCRIPTOR.fields
+        if getattr(self.proto.policy, f.name)
+    ]
+
+    # CookiesAllowed.NO is indicated with a negative value.
+    CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
+    policy_descriptor = self.proto.policy.DESCRIPTOR
+    cookies_allowed_id = (
+        policy_descriptor.fields_by_name["cookies_allowed"].number)
+    if self.proto.policy.cookies_allowed == CookiesAllowed.NO:
+      field_numbers.remove(+cookies_allowed_id)
+      field_numbers.insert(0, -cookies_allowed_id)
+
+    return field_numbers
 
   def get_content_hash_code(self) -> HashCode:
-    #TODO(https://crbug.com/1119417): Address ASCII issue, where it reports an
-    # incorrect content hash code when the proto's contents contain a non-ascii
-    # character.
+    """Computes a hashcode for the annotation content. Source field is not used
+    in this computation, as we don't need sensitivity to change in source
+    location (file path + line number)."""
     if self.is_loaded_from_archive:
-      return self.archived_content_hash_code
+      return self.archive_content_hash_code
 
     source_free_proto = copy.deepcopy(self.proto)
     source_free_proto.ClearField("source")
     source_free_proto = text_format.MessageToString(source_free_proto,
                                                     as_utf8=True)
-    return Auditor.compute_hash_value(source_free_proto)
+    return compute_hash_value(source_free_proto)
 
-  def deserialize(self, serialized_annotation: extractor.Annotation):
-    """Deserializes an instance from extractor.Annotation.
-
-    Args:
-      serialized_annotation: extractor.Annotation
-    """
-    assert len(serialized_annotation.text) > 6, \
-      "Not enough lines to deserialize annotation text."
-
+  def deserialize(self, serialized_annotation: extractor.Annotation
+                  ) -> List[AuditorError]:
+    """Deserializes an instance from extractor.Annotation."""
     file_path = os.path.relpath(serialized_annotation.file_path, SRC_DIR)
     line_number = serialized_annotation.line_number
-    self.type = AnnotationInstance.Type(serialized_annotation.type_name)
+    self.proto.source.file = file_path
+    self.proto.source.line = line_number
 
-    unique_id = serialized_annotation.unique_id
-    self.unique_id_hash_code = Auditor.compute_hash_value(unique_id)
+    self.type = Annotation.Type.from_string(serialized_annotation.type_name)
+    self.proto.unique_id = serialized_annotation.unique_id
     self.second_id = serialized_annotation.extra_id
-    self.second_id_hash_code = Auditor.compute_hash_value(self.second_id)
+    self.second_id_hash_code = compute_hash_value(self.second_id)
+
+    # Check for reserved IDs first, before trying to parse the Proto.
+    if self.proto.unique_id in TEST_IDS:
+      return [
+          AuditorError(AuditorError.Type.TEST_ANNOTATION, "", file_path,
+                       line_number)
+      ]
+
+    if self.proto.unique_id == MISSING_ID:
+      return [
+          AuditorError(AuditorError.Type.MISSING_TAG_USED, "", file_path,
+                       line_number)
+      ]
+
+    if self.proto.unique_id == NO_ANNOTATION_ID:
+      return [
+          AuditorError(AuditorError.Type.NO_ANNOTATION, "", file_path,
+                       line_number)
+      ]
 
     try:
       text_format.Parse(serialized_annotation.text, self.proto)
     except Exception as e:
-      raise AuditorError(AuditorError.Type.SYNTAX, e, file_path, line_number)
+      logger.error(str(e))
+      return [
+          AuditorError(AuditorError.Type.SYNTAX, str(e), file_path, line_number)
+      ]
 
-    self.proto.source.file = file_path
-    self.proto.source.line = line_number
-    self.proto.unique_id = unique_id
+    return []
 
-  def check_complete(self) -> None:
+  def check_complete(self) -> List[AuditorError]:
     """Checks if an annotation has all required fields."""
+    CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
+
     unspecifieds = []
     # Check semantic fields.
-    semantics = self.proto.semantics
-    semantics_fields = ["sender", "description", "trigger", "data"]
+    semantics_fields = [
+        "sender", "description", "trigger", "data", "destination"
+    ]
     for field in semantics_fields:
-      if not getattr(semantics, field):
+      if not getattr(self.proto.semantics, field):
         unspecifieds.append(field)
 
     # Check policy fields.
     policy = self.proto.policy
     # cookies_allowed must be specified.
-    cookies_allowed = getattr(policy, "cookies_allowed")
-    if cookies_allowed == \
-      traffic_annotation.TrafficPolicy.CookiesAllowed.UNSPECIFIED:
+    if policy.cookies_allowed == CookiesAllowed.UNSPECIFIED:
       unspecifieds.append("cookies_allowed")
 
-    # If cookies_store is not provided, ignore if 'cookies_allowed = NO' is
-    # in the list.
-    cookies_store = getattr(policy, "cookies_store")
-    if not cookies_store and cookies_allowed == \
-      traffic_annotation.TrafficPolicy.CookiesAllowed.YES:
+    # cookies_store is only needed if CookiesAllowed.YES.
+    if (not policy.cookies_store
+        and policy.cookies_allowed == CookiesAllowed.YES):
       unspecifieds.append("cookies_store")
 
     # If either of 'chrome_policy' or 'policy_exception_justification' are
     # available, ignore not having the other one.
-    chrome_policy = getattr(policy, "chrome_policy")
-    policy_exception = getattr(policy, "policy_exception_justification")
-    if not chrome_policy and not policy_exception:
+    if not policy.chrome_policy and not policy.policy_exception_justification:
       unspecifieds.append("chrome_policy")
       unspecifieds.append("policy_exception_justification")
 
     if unspecifieds:
       error_text = ", ".join(unspecifieds)
-      raise AuditorError(AuditorError.Type.INCOMPLETE_ANNOTATION, error_text,
-                         self.proto.source.file, self.proto.source.line)
+      return [
+          AuditorError(AuditorError.Type.INCOMPLETE_ANNOTATION, error_text,
+                       self.proto.source.file, self.proto.source.line)
+      ]
+    else:
+      return []
+
+  def check_consistent(self) -> List[AuditorError]:
+    """Checks if annotation fields are consistent."""
+    CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
+    policy = self.proto.policy
+
+    if policy.cookies_allowed == CookiesAllowed.NO and policy.cookies_store:
+      return [
+          AuditorError(
+              AuditorError.Type.INCONSISTENT_ANNOTATION,
+              "Cookies store is specified while cookies are not allowed.",
+              self.proto.source.file, self.proto.source.line)
+      ]
+
+    if policy.chrome_policy and policy.policy_exception_justification:
+      return [
+          AuditorError(
+              AuditorError.Type.INCONSISTENT_ANNOTATION,
+              "Both chrome policies and policy exception justification are "
+              "present.", self.proto.source.file, self.proto.source.line)
+      ]
+
+    return []
+
+
+class ArchivedAnnotation(NamedTuple):
+  """A record type for annotations.xml entries.
+
+  All values are exactly the same as those stored in annotations.xml, except for
+  some type conversions and default values."""
+
+  type: int = -1
+  unique_id: UniqueId = UniqueId("")
+  unique_id_hash_code: HashCode = HashCode(-1)
+  second_id_hash_code: HashCode = HashCode(-1)
+  content_hash_code: HashCode = HashCode(-1)
+
+  deprecation_date: str = ""
+  os_list: List[str] = []
+  added_in_milestone: int = 0
+
+  semantics_fields: List[int] = []
+  policy_fields: List[int] = []
+  file_path: str = ""
 
 
 class Auditor:
   #TODO(https://crbug.com/1119417): Filter when given a safelist path.
 
   def __init__(self):
-    self.extracted_annotations: List[AnnotationInstance] = []
+    self.extracted_annotations: List[Annotation] = []
     self.errors: List[AuditorError] = []
-
-  @staticmethod
-  def compute_hash_value(text: str) -> HashCode:
-    """Computes the hash value of given text."""
-    return iterative_hash(text) if text else HashCode(-1)
 
   @staticmethod
   def run_extractor(filter_files: List[str]) -> List[extractor.Annotation]:
@@ -262,28 +614,24 @@ class Auditor:
     return all_annotations
 
   def parse_extractor_output(self, all_annotations: List[extractor.Annotation]):
-    """
-    Args:
-      all_annations: List[extractor.Annotation]
-    """
     for serialized_annotation in all_annotations:
-      annotation = AnnotationInstance()
-      try:
-        #TODO(https://crbug.com/1119417): Add all the remaining checks.
-        annotation.deserialize(serialized_annotation)
+      annotation = Annotation()
+      #TODO(https://crbug.com/1119417): Add all the remaining checks.
+      errors = annotation.deserialize(serialized_annotation)
+      if not errors:
         self.extracted_annotations.append(annotation)
-      except AuditorError as e:
-        self.errors.append(e)
+      else:
+        self.errors.extend(errors)
 
   def check_annotations_contents(self) -> None:
     assert self.extracted_annotations
     for annotation in self.extracted_annotations:
-      if annotation.type == AnnotationInstance.Type.COMPLETE:
+      if annotation.type == Annotation.Type.COMPLETE:
         # Check for completeness.
-        try:
-          annotation.check_complete()
-        except AuditorError as e:
-          self.errors.append(e)
+        errors = annotation.check_complete()
+        if not errors:
+          errors = annotation.check_consistent()
+        self.errors.extend(errors)
 
         #TODO(https://crbug.com/1119417): Perform the other checks, e.g.
         # consistency.
@@ -300,10 +648,10 @@ class AuditorUI:
     #TODO(https://crbug.com/1119417): Should be passed via cmd line.
     self.test_only = True
 
-    self.import_compiled_proto()
+    self.traffic_annotation = self.import_compiled_proto()
     self.auditor = Auditor()
 
-  def import_compiled_proto(self) -> None:
+  def import_compiled_proto(self) -> Any:
     """Global import from function. |self.build_path| is needed to perform
     this import, hence why it's not a top-level import.
 
@@ -321,6 +669,7 @@ class AuditorUI:
       # Used for accessing enum constants.
       from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
         traffic_annotation
+      return traffic_annotation
     except ImportError as e:
       logger.critical(
         "Failed to import the compiled traffic annotation proto. Make sure "+ \
