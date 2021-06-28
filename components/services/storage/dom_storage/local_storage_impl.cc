@@ -402,10 +402,11 @@ void LocalStorageImpl::Flush(FlushCallback callback) {
     it.second->storage_area()->ScheduleImmediateCommit(commit_callback);
 }
 
-void LocalStorageImpl::FlushOriginForTesting(const url::Origin& origin) {
+void LocalStorageImpl::FlushStorageKeyForTesting(
+    const blink::StorageKey& storage_key) {
   if (connection_state_ != CONNECTION_FINISHED)
     return;
-  const auto& it = areas_.find(blink::StorageKey(origin));
+  const auto& it = areas_.find(storage_key);
   if (it == areas_.end())
     return;
   it->second->storage_area()->ScheduleImmediateCommit();

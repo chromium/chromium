@@ -34,7 +34,7 @@
 namespace storage {
 
 // The Local Storage implementation. An instance of this class exists for each
-// storage partition using Local Storage, managing storage for all origins
+// storage partition using Local Storage, managing storage for all StorageKeys
 // within the partition.
 class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                          public mojom::LocalStorageControl {
@@ -50,7 +50,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
   ~LocalStorageImpl() override;
 
-  void FlushOriginForTesting(const url::Origin& origin);
+  void FlushStorageKeyForTesting(const blink::StorageKey& storage_key);
 
   // Used by content settings to alter the behavior around
   // what data to keep and what data to discard at shutdown.

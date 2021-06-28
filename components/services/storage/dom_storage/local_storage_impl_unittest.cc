@@ -23,6 +23,7 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "url/gurl.h"
@@ -922,8 +923,8 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushOriginForTesting(
-        url::Origin::Create(GURL("http://foobar.com")));
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
   }
   area1.reset();
 
@@ -1025,8 +1026,8 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushOriginForTesting(
-        url::Origin::Create(GURL("http://foobar.com")));
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
   }
   area.reset();
 
@@ -1062,8 +1063,8 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     old_value = value;
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushOriginForTesting(
-        url::Origin::Create(GURL("http://foobar.com")));
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
   }
 
   // Should still be connected after all that.
