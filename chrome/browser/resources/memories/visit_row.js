@@ -21,6 +21,15 @@ import {getHostnameFromUrl} from './utils.js';
  * as well as an action menu.
  */
 
+/**
+ * Maps supported annotations to localized string identifiers.
+ * @type {Map<number,string>}
+ */
+const annotationToStringId = new Map([
+  [Annotation.kBookmarked, 'bookmarked'],
+  [Annotation.kTabGrouped, 'savedInTabGroup'],
+]);
+
 class VisitRowElement extends PolymerElement {
   static get is() {
     return 'visit-row';
@@ -55,6 +64,15 @@ class VisitRowElement extends PolymerElement {
       //========================================================================
       // Private properties
       //========================================================================
+
+      /**
+       * Annotations to show for the visit (e.g., whether page was bookmarked).
+       * @private {!Array<string>}
+       */
+      annotations_: {
+        type: Object,
+        computed: 'computeAnnotations_(visit)',
+      },
 
       /**
        * Whether the visit is to the search results page.
@@ -125,6 +143,14 @@ class VisitRowElement extends PolymerElement {
   //============================================================================
   // Helper methods
   //============================================================================
+
+  /** @private */
+  computeAnnotations_() {
+    return this.visit.annotations
+        .map(annotation => annotationToStringId.get(annotation))
+        .filter(id => !!id)
+        .map(id => loadTimeData.getString(id));
+  }
 
   /** @private */
   computeIsSearchResultsPage_() {

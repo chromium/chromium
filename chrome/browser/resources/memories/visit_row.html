@@ -17,6 +17,7 @@
     display: flex;
     min-width: 0;
     text-decoration: none;
+    user-select: none;
   }
 
   #end-justified {
@@ -35,16 +36,15 @@
   }
 
   page-favicon {
-    --favicon-size: 36px;
     border-radius: 8px;
     flex-shrink: 0;
-    height: var(--favicon-size);
+    height: var(--favicon-element-size);
     margin-inline-end: 16px;
-    width: var(--favicon-size);
+    width: var(--favicon-element-size);
   }
 
   :host([is-top-visit]) page-favicon {
-    box-shadow: 0 4px 46px rgba(28, 28, 31, 0.12);
+    box-shadow: 0 4px 46px var(--favicon-drop-shadow-color);
   }
 
   #page-info {
@@ -53,17 +53,36 @@
     min-width: 0;
   }
 
+  #title-and-annotations {
+    display: flex;
+  }
+
   #title,
-  #hostname {
-    line-height: 20px;
+  .annotation {
+    line-height: 28px;
   }
 
   :host([is-top-visit]) #title {
     font-size: 1rem;  /* 16px */
   }
 
+  .annotation {
+    background-color: var(--annotation-background-color);
+    border-radius: 4px;
+    color: var(--annotation-text-color);
+    flex-shrink: 0;
+    font-weight: 500;
+    margin-inline-start: 12px;
+    padding: 0 8px;
+  }
+
+  .annotation + .annotation {
+    margin-inline-start: 8px;
+  }
+
   #hostname {
     color: var(--google-blue-600);
+    line-height: 20px;
   }
 
   #timestamp {
@@ -75,12 +94,16 @@
   <a id="start-justified" href="[[visit.normalizedUrl.url]]">
     <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
     <div id="page-info">
-      <span id="title" class="truncate">[[visit.pageTitle]]</span>
+      <div id="title-and-annotations">
+        <span id="title" class="truncate">[[visit.pageTitle]]</span>
+        <template is="dom-repeat" items="[[annotations_]]">
+          <span class="annotation">[[item]]</span>
+        </template>
+      </div>
       <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
         [[getHostnameFromUrl_(visit.normalizedUrl)]]
       </span>
     </div>
-    <div id="page-annotations"></div>
   </a>
   <div id="end-justified">
     <div id="timestamp" hidden="[[!isTopVisit]]">[[visit.relativeDate]]</div>
@@ -93,7 +116,7 @@
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="$i18n{actionMenuDescription}">
-      <button id="removeButton" on-click="onRemoveButtonClick_">
+      <button class="dropdown-item" on-click="onRemoveButtonClick_">
         [[removeButtonTitle_]]
       </button>
     </cr-action-menu>

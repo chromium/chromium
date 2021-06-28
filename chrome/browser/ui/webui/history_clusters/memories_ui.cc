@@ -37,11 +37,13 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddLocalizedStrings(kStrings);
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
+  source->AddString("bookmarked", u"Bookmarked");
   source->AddString("clearLabel", u"Clear search");
+  source->AddString("headerTitle", u"Based on web activity related to \"$1\"");
   source->AddString("relatedSearchesLabel", u"Related:");
   source->AddString("removeAllFromHistory", u"Remove all from history");
+  source->AddString("savedInTabGroup", u"Saved in tab group");
   source->AddString("searchPrompt", u"Search clusters");
-  source->AddString("headerTitle", u"Based on web activity related to \"$1\"");
   source->AddString("toggleButtonLabelLess", u"Show less");
   source->AddString("toggleButtonLabelMore", u"Show more");
   source->AddString("visitsSectionHeader", u"From Chrome History");
