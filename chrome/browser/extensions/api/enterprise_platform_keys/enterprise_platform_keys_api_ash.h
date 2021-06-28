@@ -22,19 +22,6 @@ using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 
 namespace extensions {
 
-class EnterprisePlatformKeysRemoveCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysRemoveCertificateFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the certificate was removed.
-  void OnRemovedCertificate(chromeos::platform_keys::Status status);
-
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
-                             ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
-};
-
 class EnterprisePlatformKeysInternalGetTokensFunction
     : public ExtensionFunction {
  private:

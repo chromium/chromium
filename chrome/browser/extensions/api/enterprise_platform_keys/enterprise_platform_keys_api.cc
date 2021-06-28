@@ -273,4 +273,39 @@ void EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate(
   }
 }
 
+//------------------------------------------------------------------------------
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysRemoveCertificateFunction::Run() {
+  std::unique_ptr<api_epk::RemoveCertificate::Params> params(
+      api_epk::RemoveCertificate::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error = ValidateCrosapi(
+      KeystoreService::kRemoveCertificateMinVersion, browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(error));
+  }
+
+  crosapi::mojom::KeystoreType keystore;
+  error = ValidateInput(params->token_id, &keystore);
+  EXTENSION_FUNCTION_VALIDATE(error.empty());
+
+  auto c = base::BindOnce(
+      &EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate,
+      this);
+  GetKeystoreService(browser_context())
+      ->RemoveCertificate(keystore, params->certificate, std::move(c));
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate(
+    const std::string& error) {
+  if (error.empty()) {
+    Respond(NoArguments());
+  } else {
+    Respond(Error(error));
+  }
+}
+
 }  // namespace extensions

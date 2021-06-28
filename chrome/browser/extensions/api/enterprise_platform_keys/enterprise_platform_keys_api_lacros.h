@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_LACROS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_LACROS_H_
 
-#include <string>
-
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 
@@ -18,17 +16,6 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
 
  private:
   ResponseAction Run() override;
-};
-
-class EnterprisePlatformKeysRemoveCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysRemoveCertificateFunction() override = default;
-  ResponseAction Run() override;
-
-  void OnRemoveCertificate(const std::string& error);
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
-                             ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
 };
 
 class EnterprisePlatformKeysInternalGetTokensFunction

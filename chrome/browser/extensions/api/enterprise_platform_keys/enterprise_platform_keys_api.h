@@ -76,6 +76,17 @@ class EnterprisePlatformKeysImportCertificateFunction
                              ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
 };
 
+class EnterprisePlatformKeysRemoveCertificateFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysRemoveCertificateFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnRemoveCertificate(const std::string& error);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
+                             ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_

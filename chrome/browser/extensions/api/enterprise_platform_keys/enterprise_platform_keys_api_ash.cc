@@ -34,9 +34,6 @@ namespace api_epki = api::enterprise_platform_keys_internal;
 // extension. Keep this in sync with the custom binding in Javascript.
 const char kEnterprisePlatformErrorInternal[] = "Internal Error.";
 
-const char kEnterprisePlatformErrorInvalidX509Cert[] =
-    "Certificate is not a valid X.509 certificate.";
-
 std::vector<uint8_t> VectorFromString(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
@@ -46,53 +43,6 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 }
 
 }  // namespace
-
-//------------------------------------------------------------------------------
-
-EnterprisePlatformKeysRemoveCertificateFunction::
-    ~EnterprisePlatformKeysRemoveCertificateFunction() {}
-
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysRemoveCertificateFunction::Run() {
-  std::unique_ptr<api_epk::RemoveCertificate::Params> params(
-      api_epk::RemoveCertificate::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id =
-      platform_keys::ApiIdToPlatformKeysTokenId(params->token_id);
-  if (!platform_keys_token_id)
-    return RespondNow(Error(platform_keys::kErrorInvalidToken));
-
-  const std::vector<uint8_t>& cert_der = params->certificate;
-  // Allow UTF-8 inside PrintableStrings in client certificates. See
-  // crbug.com/770323 and crbug.com/788655.
-  net::X509Certificate::UnsafeCreateOptions options;
-  options.printable_string_is_utf8 = true;
-  scoped_refptr<net::X509Certificate> cert_x509 =
-      net::X509Certificate::CreateFromBytesUnsafeOptions(cert_der, options);
-  if (!cert_x509.get())
-    return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
-
-  chromeos::platform_keys::PlatformKeysService* platform_keys_service =
-      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  CHECK(platform_keys_service);
-
-  platform_keys_service->RemoveCertificate(
-      platform_keys_token_id.value(), cert_x509,
-      base::BindOnce(&EnterprisePlatformKeysRemoveCertificateFunction::
-                         OnRemovedCertificate,
-                     this));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysRemoveCertificateFunction::OnRemovedCertificate(
-    chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status == chromeos::platform_keys::Status::kSuccess)
-    Respond(NoArguments());
-  else
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
-}
 
 //------------------------------------------------------------------------------
 
