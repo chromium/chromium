@@ -68,6 +68,19 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
  private:
   friend class DesktopMediaPickerViewsTestApi;
 
+  struct DisplaySurfaceCategory {
+    DisplaySurfaceCategory(
+        DesktopMediaList::Type type,
+        std::unique_ptr<DesktopMediaListController> controller);
+
+    DisplaySurfaceCategory(DisplaySurfaceCategory&& other);
+
+    ~DisplaySurfaceCategory();
+
+    DesktopMediaList::Type type;
+    std::unique_ptr<DesktopMediaListController> controller;
+  };
+
   void OnSourceTypeSwitched(int index);
 
   int GetSelectedTabIndex() const;
@@ -86,8 +99,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   views::Checkbox* audio_share_checkbox_ = nullptr;
 
   views::TabbedPane* tabbed_pane_ = nullptr;
-  std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
-  std::vector<DesktopMediaList::Type> source_types_;
+  std::vector<DisplaySurfaceCategory> categories_;
 
   DialogSource dialog_source_;
 
