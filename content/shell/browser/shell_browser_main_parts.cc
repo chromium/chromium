@@ -214,6 +214,7 @@ void ShellBrowserMainParts::WillRunMainMessageLoop(
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
+  DCHECK_EQ(Shell::windows().size(), 0u);
   ShellDevToolsManagerDelegate::StopHttpHandler();
   browser_context_.reset();
   off_the_record_browser_context_.reset();

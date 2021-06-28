@@ -54,14 +54,15 @@ const int kDefaultTestWindowHeightDip = 600;
 std::vector<Shell*> Shell::windows_;
 base::OnceCallback<void(Shell*)> Shell::shell_created_callback_;
 
+// Owning pointer. We can not use unique_ptr as a global. That introduces a
+// static constructor/destructor.
+// Acquired in Shell::Init(), released in Shell::Shutdown().
 ShellPlatformDelegate* g_platform;
 
 class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
  public:
   DevToolsWebContentsObserver(Shell* shell, WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        shell_(shell) {
-  }
+      : WebContentsObserver(web_contents), shell_(shell) {}
 
   // WebContentsObserver
   void WebContentsDestroyed() override {
@@ -102,23 +103,8 @@ Shell::~Shell() {
     }
   }
 
-  // Always destroy WebContents before destroying ShellPlatformDelegate.
-  // WebContents destruction sequence may depend on the resources destroyed with
-  // ShellPlatformDelegate (e.g. the display::Screen singleton).
   web_contents_->SetDelegate(nullptr);
   web_contents_.reset();
-
-  if (windows_.empty()) {
-    delete g_platform;
-    g_platform = nullptr;
-
-    for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
-         it.Advance()) {
-      it.GetCurrentValue()->DisableKeepAliveRefCount();
-    }
-    if (*g_quit_main_message_loop)
-      std::move(*g_quit_main_message_loop).Run();
-  }
 }
 
 Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
@@ -155,27 +141,18 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   return shell;
 }
 
-void Shell::CloseAllWindows() {
-  DevToolsAgentHost::DetachAllClients();
-
-  std::vector<Shell*> open_windows(windows_);
-  for (Shell* open_window : open_windows)
-    open_window->Close();
-  DCHECK(windows_.empty());
-
-  // Pump the message loop to allow window teardown tasks to run.
-  base::RunLoop().RunUntilIdle();
-}
-
+// static
 void Shell::SetMainMessageLoopQuitClosure(base::OnceClosure quit_closure) {
   *g_quit_main_message_loop = std::move(quit_closure);
 }
 
+// static
 void Shell::QuitMainMessageLoopForTesting() {
   if (*g_quit_main_message_loop)
     std::move(*g_quit_main_message_loop).Run();
 }
 
+// static
 void Shell::SetShellCreatedCallback(
     base::OnceCallback<void(Shell*)> shell_created_callback) {
   DCHECK(!shell_created_callback_);
@@ -188,6 +165,7 @@ bool Shell::ShouldHideToolbar() {
       switches::kContentShellHideToolbar);
 }
 
+// static
 Shell* Shell::FromWebContents(WebContents* web_contents) {
   for (Shell* window : windows_) {
     if (window->web_contents() && window->web_contents() == web_contents) {
@@ -197,9 +175,34 @@ Shell* Shell::FromWebContents(WebContents* web_contents) {
   return nullptr;
 }
 
+// static
 void Shell::Initialize(std::unique_ptr<ShellPlatformDelegate> platform) {
+  DCHECK(!g_platform);
   g_platform = platform.release();
   g_platform->Initialize(GetShellDefaultSize());
+}
+
+// static
+void Shell::Shutdown() {
+  DCHECK(g_platform);
+
+  DevToolsAgentHost::DetachAllClients();
+
+  while (!Shell::windows().empty())
+    Shell::windows().back()->Close();
+
+  delete g_platform;
+  g_platform = nullptr;
+
+  for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
+       it.Advance()) {
+    it.GetCurrentValue()->DisableKeepAliveRefCount();
+  }
+  if (*g_quit_main_message_loop)
+    std::move(*g_quit_main_message_loop).Run();
+
+  // Pump the message loop to allow window teardown tasks to run.
+  base::RunLoop().RunUntilIdle();
 }
 
 gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
@@ -208,6 +211,7 @@ gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
   return GetShellDefaultSize();
 }
 
+// static
 Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
                               const GURL& url,
                               const scoped_refptr<SiteInstance>& site_instance,
@@ -250,8 +254,9 @@ void Shell::LoadURLForFrame(const GURL& url,
   web_contents_->GetController().LoadURLWithParams(params);
 }
 
-void Shell::LoadDataWithBaseURL(const GURL& url, const std::string& data,
-    const GURL& base_url) {
+void Shell::LoadDataWithBaseURL(const GURL& url,
+                                const std::string& data,
+                                const GURL& base_url) {
   bool load_as_string = false;
   LoadDataWithBaseURLInternal(url, data, base_url, load_as_string);
 }
@@ -446,7 +451,7 @@ WebContents* Shell::OpenURLFromTab(WebContents* source,
 }
 
 void Shell::LoadingStateChanged(WebContents* source,
-    bool to_different_document) {
+                                bool to_different_document) {
   UpdateNavigationControls(to_different_document);
   g_platform->SetIsLoading(this, source->IsLoading());
 }
@@ -684,7 +689,7 @@ gfx::Size Shell::GetShellDefaultSize() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kContentShellHostWindowSize)) {
     const std::string size_str = command_line->GetSwitchValueASCII(
-                  switches::kContentShellHostWindowSize);
+        switches::kContentShellHostWindowSize);
     int width, height;
     if (sscanf(size_str.c_str(), "%dx%d", &width, &height) == 2) {
       default_shell_size = gfx::Size(width, height);
@@ -695,8 +700,8 @@ gfx::Size Shell::GetShellDefaultSize() {
   }
 
   if (default_shell_size.IsEmpty()) {
-    default_shell_size = gfx::Size(
-      kDefaultTestWindowWidthDip, kDefaultTestWindowHeightDip);
+    default_shell_size =
+        gfx::Size(kDefaultTestWindowWidthDip, kDefaultTestWindowHeightDip);
   }
 
   return default_shell_size;

@@ -100,9 +100,9 @@ void RunTests(content::BrowserMainRunner* main_runner) {
       break;
   }
   if (!ran_at_least_once) {
-    // CloseAllWindows will cause the |main_runner| loop to quit.
+    // Shell::Shutdown() will cause the |main_runner| loop to quit.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&content::Shell::CloseAllWindows));
+        FROM_HERE, base::BindOnce(&content::Shell::Shutdown));
     main_runner->Run();
   }
 }
@@ -243,8 +243,7 @@ void WebTestBrowserMainRunner::RunBrowserMain(
   RunTests(main_runner.get());
   base::RunLoop().RunUntilIdle();
 
-  content::Shell::CloseAllWindows();
-
+  content::Shell::Shutdown();
   main_runner->Shutdown();
 }
 

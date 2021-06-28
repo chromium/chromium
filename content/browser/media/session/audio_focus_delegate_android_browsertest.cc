@@ -58,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(AudioFocusDelegateAndroidBrowserTest,
   EXPECT_TRUE(media_session->IsActive());
   EXPECT_TRUE(other_media_session->IsActive());
 
-  shell()->CloseAllWindows();
+  while (!Shell::windows().empty())
+    Shell::windows().back()->Close();
 
   // Give some time to the AudioFocusManager to send an audioFocusChange message
   // to the listeners. If the bug is still present, it will crash.
