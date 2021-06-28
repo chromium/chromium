@@ -8,7 +8,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {util} from '../../../common/js/util.js';
-import {ThumbnailLoader} from '../thumbnail_loader.m.js';
+import {ThumbnailLoader} from '../thumbnail_loader.js';
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';

@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {importer} from '../../common/js/importer_common.js';
-// clang-format on
+import {importer} from '../../common/js/importer_common.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
  * A class that controls the visibility of the import status in the main table
  * UI.
  */
-/* #export */ class ColumnVisibilityController {
+export class ColumnVisibilityController {
   /**
    * @param {!FileManagerUI} ui
    * @param {!DirectoryModel} directoryModel

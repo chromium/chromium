@@ -7,7 +7,7 @@
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {str, strf, util} from '../../common/js/util.js';
-// #import {constants} from './constants.m.js';
+// #import {constants} from './constants.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**

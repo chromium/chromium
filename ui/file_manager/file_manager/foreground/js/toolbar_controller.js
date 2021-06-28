@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
-// #import {A11yAnnounce} from './ui/a11y_announce.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {LocationLine} from './ui/location_line.js';
-// #import {ListContainer} from './ui/list_container.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-// #import {util, str, strf} from '../../common/js/util.js';
-// #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.m.js';
+import {FileSelectionHandler} from './file_selection.m.js';
+import {A11yAnnounce} from './ui/a11y_announce.js';
+import {FileListSelectionModel} from './ui/file_list_selection_model.js';
+import {ListContainer} from './ui/list_container.js';
+import {LocationLine} from './ui/location_line.js';
 
 /**
  * This class controls wires toolbar UI and selection model. When selection
  * status is changed, this class changes the view of toolbar. If cancel
  * selection button is pressed, this class clears the selection.
  */
-/* #export */ class ToolbarController {
+export class ToolbarController {
   /**
    * @param {!HTMLElement} toolbar Toolbar element which contains controls.
    * @param {!HTMLElement} navigationList Navigation list on the left pane. The
@@ -116,76 +116,76 @@
     this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.deleteCommand_ = assertInstanceof(
         queryRequiredElement(
             '#delete', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.moveToTrashCommand_ = assertInstanceof(
         queryRequiredElement(
             '#move-to-trash', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.restoreFromTrashCommand_ = assertInstanceof(
         queryRequiredElement(
             '#restore-from-trash', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.emptyTrashCommand_ = assertInstanceof(
         queryRequiredElement(
             '#empty-trash', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.refreshCommand_ = assertInstanceof(
         queryRequiredElement(
             '#refresh', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.newFolderCommand_ = assertInstanceof(
         queryRequiredElement(
             '#new-folder', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.invokeSharesheetCommand_ = assertInstanceof(
         queryRequiredElement(
             '#invoke-sharesheet', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
     this.togglePinnedCommand_ = assertInstanceof(
         queryRequiredElement(
             '#toggle-pinned', assert(this.toolbar_.ownerDocument.body)),
-        cr.ui.Command);
+        Command);
 
     /**
      * @private {!HTMLElement}

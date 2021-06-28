@@ -9,7 +9,7 @@
 // #import {ProgressCenter} from '../../externs/background/progress_center.js';
 // #import {Crostini} from '../../externs/background/crostini.js';
 // #import {NamingController} from './naming_controller.js';
-// #import {TaskHistory} from './task_history.m.js';
+// #import {TaskHistory} from './task_history.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
@@ -22,7 +22,7 @@
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 // #import {FileType} from '../../common/js/file_type.js';
-// #import {constants} from './constants.m.js';
+// #import {constants} from './constants.js';
 // #import {util, strf, str} from '../../common/js/util.js';
 // #import {AsyncUtil} from '../../common/js/async_util.js'
 // #import {metrics} from '../../common/js/metrics.js';

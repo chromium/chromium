@@ -86,6 +86,21 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/test_util.js",
 
     # Externs:
+    "file_manager/foreground/js/crostini_controller.js",
+    "file_manager/foreground/js/crossover_search_utils.js",
+    "file_manager/foreground/js/constants.js",
+    "file_manager/foreground/js/column_visibility_controller.js",
+    "file_manager/foreground/js/app_state_controller.js",
+    "file_manager/foreground/js/android_app_list_model.js",
+    "file_manager/foreground/js/mock_thumbnail_loader.js",
+    "file_manager/foreground/js/mock_navigation_list_model.js",
+    "file_manager/foreground/js/mock_folder_shortcut_data_model.js",
+    "file_manager/foreground/js/mock_directory_model.js",
+    "file_manager/foreground/js/fake_android_app_list_model.js",
+    "file_manager/foreground/js/webui_command_extender.js",
+    "file_manager/foreground/js/toolbar_controller.js",
+    "file_manager/foreground/js/thumbnail_loader.js",
+    "file_manager/foreground/js/task_history.js",
     "file_manager/foreground/js/task_controller.js",
     "file_manager/foreground/js/spinner_controller.js",
     "file_manager/foreground/js/sort_menu_controller.js",
@@ -339,12 +354,6 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/elements/repeat_button.js",
 
     # Files app Foreground:
-    "file_manager/foreground/js/android_app_list_model.m.js",
-    "file_manager/foreground/js/app_state_controller.m.js",
-    "file_manager/foreground/js/column_visibility_controller.m.js",
-    "file_manager/foreground/js/constants.m.js",
-    "file_manager/foreground/js/crossover_search_utils.m.js",
-    "file_manager/foreground/js/crostini_controller.m.js",
     "file_manager/foreground/js/dialog_action_controller.m.js",
     "file_manager/foreground/js/dialog_type.m.js",
     "file_manager/foreground/js/directory_contents.m.js",
@@ -359,10 +368,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/file_selection.m.js",
     "file_manager/foreground/js/file_tasks.m.js",
     "file_manager/foreground/js/navigation_uma.m.js",
-    "file_manager/foreground/js/task_history.m.js",
-    "file_manager/foreground/js/thumbnail_loader.m.js",
-    "file_manager/foreground/js/toolbar_controller.m.js",
-    "file_manager/foreground/js/webui_command_extender.m.js",
 
     # Files app Elements:
     "file_manager/foreground/elements/icons.js",
