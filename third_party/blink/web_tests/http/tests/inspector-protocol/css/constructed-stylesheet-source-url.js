@@ -12,11 +12,13 @@
     dp.DOM.enable();
     dp.CSS.enable();
 
-    var styleSheets = [];
-    for (var i = 0; i < 2; ++i)
+    const styleSheets = [];
+    for (let i = 0; i < 2; ++i)
       styleSheets.push(await dp.CSS.onceStyleSheetAdded());
 
-    for (var styleSheet of styleSheets) {
+    styleSheets.sort((a,b) => a.params.header.sourceURL.localeCompare(b.params.header.sourceURL));
+
+    for (const styleSheet of styleSheets) {
       testRunner.log(`isConstructed: ${styleSheet.params.header.isConstructed}`);
       const sourceURL = styleSheet.params.header.sourceURL;
       const trimmedSourceURL = sourceURL.substring(sourceURL.lastIndexOf("/") + 1);
