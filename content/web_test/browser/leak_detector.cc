@@ -79,7 +79,7 @@ void LeakDetector::OnLeakDetectionComplete(
   report.leaked = false;
   base::DictionaryValue detail;
 
-  if (previous_result_) {
+  if (previous_result_ && !result.is_null()) {
     if (previous_result_->number_of_live_audio_nodes <
         result->number_of_live_audio_nodes) {
       auto list = std::make_unique<base::ListValue>();
@@ -163,7 +163,9 @@ void LeakDetector::OnLeakDetectionComplete(
     report.leaked = true;
   }
 
-  previous_result_ = std::move(result);
+  if (!result.is_null()) {
+    previous_result_ = std::move(result);
+  }
   std::move(callback_).Run(report);
 }
 

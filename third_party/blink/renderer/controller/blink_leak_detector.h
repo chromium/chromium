@@ -28,6 +28,7 @@ class CONTROLLER_EXPORT BlinkLeakDetector : public mojom::blink::LeakDetector {
 
   void TimerFiredGC(TimerBase*);
   void ReportResult();
+  void ReportInvalidResult();
 
   TaskRunnerTimer<BlinkLeakDetector> delayed_gc_timer_;
   int number_of_gc_needed_ = 0;

@@ -76,18 +76,6 @@ namespace {
 constexpr base::TimeDelta kForcibleTerminationDelay =
     base::TimeDelta::FromSeconds(2);
 
-void TerminateThreadsInSet(HashSet<WorkerThread*> threads) {
-  for (WorkerThread* thread : threads)
-    thread->TerminateForTesting();
-
-  for (WorkerThread* thread : threads)
-    thread->WaitForShutdownForTesting();
-
-  // Destruct base::Thread and join the underlying system threads.
-  for (WorkerThread* thread : threads)
-    thread->ClearWorkerBackingThread();
-}
-
 }  // namespace
 
 Mutex& WorkerThread::ThreadSetMutex() {
@@ -303,15 +291,6 @@ void WorkerThread::TerminateForTesting() {
   // terminate the V8 script execution to ensure the task runs.
   Terminate();
   EnsureScriptExecutionTerminates(ExitCode::kSyncForciblyTerminated);
-}
-
-void WorkerThread::TerminateAllWorkersForTesting() {
-  DCHECK(IsMainThread());
-
-  // Keep this lock to prevent WorkerThread instances from being destroyed.
-  MutexLocker lock(ThreadSetMutex());
-  TerminateThreadsInSet(InitializingWorkerThreads());
-  TerminateThreadsInSet(WorkerThreads());
 }
 
 void WorkerThread::WillProcessTask(const base::PendingTask& pending_task,

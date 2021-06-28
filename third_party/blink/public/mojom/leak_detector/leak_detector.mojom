@@ -23,5 +23,7 @@ struct LeakDetectionResult {
 // performs a garbage collection in Blink's managed heaps
 // before reporting various Blink's objects counters.
 interface LeakDetector {
-  PerformLeakDetection() => (LeakDetectionResult result);
+  // The result may be empty because e.g. workers were still running and
+  // leak detection was not able to terminate them.
+  PerformLeakDetection() => (LeakDetectionResult? result);
 };
