@@ -8486,9 +8486,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20210625",
                     "enable_features": [
                         "UseNotificationCompatBuilder"
+                    ],
+                    "disable_features": [
+                        "AllowRemoteContextForNotifications"
                     ]
                 }
             ]
