@@ -4,7 +4,9 @@
 <iframe id="i" src="/common/blank.html"></iframe>
 <script>
 async_test(t => {
-  window.onload = t.step_func(() => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation (which would defeat the point of the test).
+  window.onload = () => t.step_timeout(() => {
     let start_history_length = history.length;
     let start_entry_top = appHistory.current;
     let start_entry_iframe_id = i.contentWindow.appHistory.current.id;
@@ -22,6 +24,6 @@ async_test(t => {
       assert_not_equals(start_entry_iframe_id, iframe_entry.id);
       assert_equals(start_entry_iframe_key, iframe_entry.key);
     });
-  });
+  }, 0);
 }, "navigate() with replace option");
 </script>

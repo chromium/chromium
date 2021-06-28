@@ -3,8 +3,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(t => {
-  // step_timeout because blink doesn't create history entries if onload has not
-  // yet completed.
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
   window.onload = () => t.step_timeout(() => {
     let navState = { statevar: "state" };
     appHistory.onnavigate = t.step_func_done(e => {
