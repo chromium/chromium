@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
 #include "chrome/grit/browser_resources.h"
@@ -116,9 +117,11 @@ void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
 }
 
 void ShareTargets::NotifyShareTargetUpdated() {
+  if (!targets_)
+    return;
   for (ShareTargetsObserver& observer : observers_) {
-    // TODO get locale and register for locale change events.
-    std::string locale = GLOBAL;
+    // This retrieves just the country code from the locale.
+    std::string locale = g_browser_process->GetApplicationLocale().substr(3, 2);
     auto it = targets_->map_target_locale_map().find(locale);
 
     if (it == targets_->map_target_locale_map().end()) {

@@ -12,6 +12,7 @@ source_set("core") {
   ]
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser:resources_grit",
     "//chrome/browser/share/core/resources:make_share_targets_protobuf",
     "//chrome/browser/share/proto:proto",
