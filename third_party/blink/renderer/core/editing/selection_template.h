@@ -29,7 +29,7 @@ class SelectionTemplate final {
  public:
   // |Builder| is a helper class for constructing |SelectionTemplate| object.
   class CORE_EXPORT Builder final {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
    public:
     explicit Builder(const SelectionTemplate&);

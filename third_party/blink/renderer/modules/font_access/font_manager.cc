@@ -61,7 +61,7 @@ ScriptPromise FontManager::query(ScriptState* script_state,
 
 void FontManager::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void FontManager::DidShowFontChooser(

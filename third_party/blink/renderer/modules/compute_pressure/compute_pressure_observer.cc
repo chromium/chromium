@@ -160,12 +160,12 @@ void ComputePressureObserver::stop(ScriptState* script_state) {
 }
 
 void ComputePressureObserver::Trace(blink::Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
   visitor->Trace(observer_callback_);
   visitor->Trace(normalized_options_);
   visitor->Trace(compute_pressure_host_);
   visitor->Trace(receiver_);
+  ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
 void ComputePressureObserver::OnUpdate(

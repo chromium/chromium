@@ -356,7 +356,7 @@ void VideoFrameCallbackRequesterImpl::cancelVideoFrameCallback(int id) {
 
 void VideoFrameCallbackRequesterImpl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_collection_);
-  Supplement<HTMLVideoElement>::Trace(visitor);
+  VideoFrameCallbackRequester::Trace(visitor);
 }
 
 }  // namespace blink
