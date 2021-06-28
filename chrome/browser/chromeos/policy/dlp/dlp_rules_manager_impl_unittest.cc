@@ -660,6 +660,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   EXPECT_EQ(1, chromeos::DlpClient::Get()
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
+  chromeos::DlpClient::Shutdown();
 }
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
@@ -691,6 +692,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
   EXPECT_EQ(0, chromeos::DlpClient::Get()
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
+  chromeos::DlpClient::Shutdown();
 }
 
 TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
