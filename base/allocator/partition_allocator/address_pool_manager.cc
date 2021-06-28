@@ -58,8 +58,6 @@ void DecommitPages(void* address, size_t size) {
 
 }  // namespace
 
-constexpr size_t AddressPoolManager::Pool::kMaxBits;
-
 pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
@@ -72,6 +70,24 @@ pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
   }
   NOTREACHED();
   return 0;
+}
+
+void AddressPoolManager::GetPoolUsedSuperPages(
+    pool_handle handle,
+    std::bitset<kMaxSuperPages>& used) {
+  Pool* pool = GetPool(handle);
+  if (!pool)
+    return;
+
+  pool->GetUsedSuperPages(used);
+}
+
+uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
+  Pool* pool = GetPool(handle);
+  if (!pool)
+    return 0;
+
+  return pool->GetBaseAddress();
 }
 
 void AddressPoolManager::ResetForTesting() {
@@ -119,7 +135,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
 #endif
 
   total_bits_ = length / kSuperPageSize;
-  PA_CHECK(total_bits_ <= kMaxBits);
+  PA_CHECK(total_bits_ <= kMaxSuperPages);
 
   base::AutoLock scoped_lock(lock_);
   alloc_bitset_.reset();
@@ -132,6 +148,19 @@ bool AddressPoolManager::Pool::IsInitialized() {
 
 void AddressPoolManager::Pool::Reset() {
   address_begin_ = 0;
+}
+
+void AddressPoolManager::Pool::GetUsedSuperPages(
+    std::bitset<kMaxSuperPages>& used) {
+  base::AutoLock scoped_lock(lock_);
+
+  PA_DCHECK(IsInitialized());
+  used = alloc_bitset_;
+}
+
+uintptr_t AddressPoolManager::Pool::GetBaseAddress() {
+  PA_DCHECK(IsInitialized());
+  return address_begin_;
 }
 
 uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {

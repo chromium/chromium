@@ -109,8 +109,8 @@ SystemPageBaseMask() {
   return ~SystemPageOffsetMask();
 }
 
-static constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
-static constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
+constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
+constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
 
 }  // namespace base
 

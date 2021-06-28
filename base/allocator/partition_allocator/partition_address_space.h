@@ -170,8 +170,8 @@ class BASE_EXPORT PartitionAddressSpace {
   // For example, with sizes [8GiB,4GiB,8GiB], it'd be impossible to align each
   // pool at its own size boundary while keeping them next to each other.
   // CalculateGigaCageProperties() has non-debug run-time checks to ensure that.
-  static constexpr size_t kNonBRPPoolSize = 8 * kGigaBytes;
-  static constexpr size_t kBRPPoolSize = 8 * kGigaBytes;
+  static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
+  static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kTotalSize = kNonBRPPoolSize + kBRPPoolSize;
   static constexpr std::array<size_t, 2> kPoolSizes = {kNonBRPPoolSize,
                                                        kBRPPoolSize};

@@ -128,10 +128,8 @@ class QuarantineCardTable final {
   }
 
  private:
-  static constexpr size_t kCardSize =
-      AddressPoolManager::kBRPPoolMaxSize / kSuperPageSize;
-  static constexpr size_t kBytes =
-      AddressPoolManager::kBRPPoolMaxSize / kCardSize;
+  static constexpr size_t kCardSize = kPoolMaxSize / kSuperPageSize;
+  static constexpr size_t kBytes = kPoolMaxSize / kCardSize;
 
   QuarantineCardTable() = default;
 
