@@ -245,8 +245,18 @@ void DownloadController::AcquireFileAccessPermission(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* web_contents = web_contents_getter.Run();
+  ui::ViewAndroid* view_android =
+      web_contents ? web_contents->GetNativeView() : nullptr;
+  ui::WindowAndroid* window_android =
+      view_android ? view_android->GetWindowAndroid() : nullptr;
+  ScopedJavaLocalRef<jobject> jwindow_android =
+      window_android ? window_android->GetJavaObject()
+                     : ScopedJavaLocalRef<jobject>();
+  JNIEnv* env = base::android::AttachCurrentThread();
 
-  if (HasFileAccessPermission()) {
+  bool has_file_access_permission =
+      Java_DownloadController_hasFileAccess(env, jwindow_android);
+  if (has_file_access_permission) {
     RecordStoragePermission(
         StoragePermissionType::STORAGE_PERMISSION_REQUESTED);
     RecordStoragePermission(
@@ -269,14 +279,7 @@ void DownloadController::AcquireFileAccessPermission(
   // Make copy on the heap so we can pass the pointer through JNI.
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new AcquirePermissionCallback(std::move(callback)));
-  JNIEnv* env = base::android::AttachCurrentThread();
 
-  ui::ViewAndroid* view =
-      web_contents ? web_contents->GetNativeView() : nullptr;
-  ui::WindowAndroid* window_android = view ? view->GetWindowAndroid() : nullptr;
-  ScopedJavaLocalRef<jobject> jwindow_android =
-      window_android ? window_android->GetJavaObject()
-                     : ScopedJavaLocalRef<jobject>();
   Java_DownloadController_requestFileAccess(env, callback_id, jwindow_android);
 }
 
@@ -351,13 +354,6 @@ void DownloadController::StartAndroidDownloadInternal(
 
   WebContents* web_contents = wc_getter.Run();
   CloseTabIfEmpty(web_contents, nullptr);
-}
-
-bool DownloadController::HasFileAccessPermission() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_DownloadController_hasFileAccess(env);
 }
 
 void DownloadController::OnDownloadStarted(DownloadItem* download_item) {

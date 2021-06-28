@@ -18,7 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.DownloadController;
+import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -90,7 +90,7 @@ class ScreenshotShareSheetSaveDelegate {
             return;
         }
 
-        DownloadController.requestFileAccessPermission(
+        FileAccessPermissionHelper.requestFileAccessPermission(
                 mPermissionDelegate, this::finishDownloadWithPermission);
     }
 

@@ -69,9 +69,6 @@ class DownloadController : public DownloadControllerBase {
   DownloadController();
   ~DownloadController() override;
 
-  // Helper method for implementing AcquireFileAccessPermission().
-  bool HasFileAccessPermission();
-
   // DownloadControllerBase implementation.
   void OnDownloadStarted(download::DownloadItem* download_item) override;
   void StartContextMenuDownload(const content::ContextMenuParams& params,

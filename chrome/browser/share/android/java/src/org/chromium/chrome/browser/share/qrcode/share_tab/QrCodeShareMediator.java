@@ -19,7 +19,7 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.DownloadController;
+import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.chrome.browser.share.qrcode.QRCodeGenerationRequest;
@@ -101,7 +101,7 @@ class QrCodeShareMediator {
         logDownload();
         Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
         if (qrcodeBitmap != null && !mIsDownloadInProgress) {
-            DownloadController.requestFileAccessPermission(
+            FileAccessPermissionHelper.requestFileAccessPermission(
                     mPermissionDelegate, this::finishDownloadWithPermission);
             return;
         }
