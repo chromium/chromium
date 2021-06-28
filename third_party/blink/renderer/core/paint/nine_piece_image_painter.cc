@@ -140,19 +140,20 @@ void PaintPieces(GraphicsContext& context,
     if (!h_tile || !v_tile)
       continue;
 
-    FloatSize tile_scale_factor(h_tile->scale_factor, v_tile->scale_factor);
-    FloatPoint tile_phase(draw_info.destination.X() - h_tile->phase,
-                          draw_info.destination.Y() - v_tile->phase);
-    FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
-
     // TODO(cavalcantii): see crbug.com/662507.
     absl::optional<ScopedInterpolationQuality> interpolation_quality_override;
     if (draw_info.tile_rule.horizontal == kRoundImageRule ||
         draw_info.tile_rule.vertical == kRoundImageRule)
       interpolation_quality_override.emplace(context, kInterpolationMedium);
 
-    context.DrawImageTiled(image, draw_info.destination, draw_info.source,
-                           tile_scale_factor, tile_phase, tile_spacing);
+    ImageTilingInfo tiling_info;
+    tiling_info.image_rect = draw_info.source;
+    tiling_info.scale = FloatSize(h_tile->scale_factor, v_tile->scale_factor);
+    tiling_info.phase = draw_info.destination.Location() -
+                        FloatSize(h_tile->phase, v_tile->phase);
+    tiling_info.spacing = FloatSize(h_tile->spacing, v_tile->spacing);
+
+    context.DrawImageTiled(image, draw_info.destination, tiling_info);
   }
 }
 

@@ -521,6 +521,8 @@ void DrawTiledBackground(GraphicsContext& context,
     return;
   }
 
+  // At this point we have decided to tile the image to fill the dest rect.
+
   // Use the intrinsic size of the image if it has one, otherwise force the
   // generated image to be the tile size.
   // image-resolution information is baked into the given parameters, but we
@@ -530,9 +532,11 @@ void DrawTiledBackground(GraphicsContext& context,
   const FloatSize intrinsic_tile_size =
       image->SizeWithConfigAsFloat(size_config);
 
-  // At this point we have decided to tile the image to fill the dest rect.
   // Note that this tile rect uses the image's pre-scaled size.
-  const FloatRect tile_rect(FloatPoint(), intrinsic_tile_size);
+  ImageTilingInfo tiling_info;
+  tiling_info.image_rect.SetSize(intrinsic_tile_size);
+  tiling_info.phase = FloatPoint(geometry.ComputeDestPhase());
+  tiling_info.spacing = FloatSize(geometry.SpaceSize());
 
   // Farther down the pipeline we will use the scaled tile size to determine
   // which dimensions to clamp or repeat in. We do not want to repeat when the
@@ -550,16 +554,15 @@ void DrawTiledBackground(GraphicsContext& context,
   const LayoutUnit ref_tile_height = tile_dest_diff.height.Abs() <= 0.5f
                                          ? geometry.SnappedDestRect().Height()
                                          : geometry.TileSize().height;
-  const FloatSize scale(ref_tile_width / intrinsic_tile_size.Width(),
-                        ref_tile_height / intrinsic_tile_size.Height());
+  tiling_info.scale = {ref_tile_width / tiling_info.image_rect.Width(),
+                       ref_tile_height / tiling_info.image_rect.Height()};
 
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
-  context.DrawImageTiled(
-      image, FloatRect(geometry.SnappedDestRect()), tile_rect, scale,
-      FloatPoint(geometry.ComputeDestPhase()), FloatSize(geometry.SpaceSize()),
-      has_filter_property, op, respect_orientation);
+  context.DrawImageTiled(image, FloatRect(geometry.SnappedDestRect()),
+                         tiling_info, has_filter_property, op,
+                         respect_orientation);
 }
 
 // Returning false meaning that we cannot paint background color with

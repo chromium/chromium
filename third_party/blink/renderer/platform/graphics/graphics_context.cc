@@ -898,10 +898,7 @@ SkFilterQuality GraphicsContext::ComputeFilterQuality(
 void GraphicsContext::DrawImageTiled(
     Image* image,
     const FloatRect& dest_rect,
-    const FloatRect& src_rect,
-    const FloatSize& scale_src_to_dest,
-    const FloatPoint& phase,
-    const FloatSize& repeat_spacing,
+    const ImageTilingInfo& tiling_info,
     bool has_filter_property,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation) {
@@ -913,12 +910,12 @@ void GraphicsContext::DrawImageTiled(
 
   // Do not classify the image if the element has any CSS filters.
   if (!has_filter_property) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags,
-                                               src_rect, dest_rect);
+    DarkModeFilterHelper::ApplyToImageIfNeeded(
+        this, image, &image_flags, tiling_info.image_rect, dest_rect);
   }
 
-  image->DrawPattern(*this, image_flags, src_rect, scale_src_to_dest, phase,
-                     dest_rect, repeat_spacing, respect_orientation);
+  image->DrawPattern(*this, image_flags, dest_rect, tiling_info,
+                     respect_orientation);
   paint_controller_.SetImagePainted();
 }
 

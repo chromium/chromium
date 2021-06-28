@@ -406,22 +406,19 @@ PaintImage SVGImage::PaintImageForCurrentFrame() {
 void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                                        GraphicsContext& context,
                                        const cc::PaintFlags& base_flags,
-                                       const FloatRect& src_rect,
-                                       const FloatSize& tile_scale,
-                                       const FloatPoint& phase,
                                        const FloatRect& dst_rect,
-                                       const FloatSize& repeat_spacing) {
+                                       const ImageTilingInfo& tiling_info) {
   // Tile adjusted for scaling/stretch.
-  FloatRect tile(src_rect);
-  tile.Scale(tile_scale.Width(), tile_scale.Height());
+  FloatRect tile(tiling_info.image_rect);
+  tile.Scale(tiling_info.scale.Width(), tiling_info.scale.Height());
 
   // Expand the tile to account for repeat spacing.
   FloatRect spaced_tile(tile);
-  spaced_tile.Expand(FloatSize(repeat_spacing));
+  spaced_tile.Expand(tiling_info.spacing);
 
   SkMatrix pattern_transform;
-  pattern_transform.setTranslate(phase.X() + spaced_tile.X(),
-                                 phase.Y() + spaced_tile.Y());
+  pattern_transform.setTranslate(tiling_info.phase.X() + spaced_tile.X(),
+                                 tiling_info.phase.Y() + spaced_tile.Y());
 
   PaintRecordBuilder builder(context);
   {
@@ -429,10 +426,10 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                              DisplayItem::Type::kSVGImage);
     // When generating an expanded tile, make sure we don't draw into the
     // spacing area.
-    if (tile != spaced_tile)
+    if (!tiling_info.spacing.IsZero())
       builder.Context().Clip(tile);
     DrawForContainer(draw_info, builder.Context().Canvas(), PaintFlags(), tile,
-                     src_rect);
+                     tiling_info.image_rect);
   }
 
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(

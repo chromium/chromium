@@ -19,9 +19,7 @@
 
 namespace blink {
 
-class FloatPoint;
 class FloatRect;
-class FloatSize;
 class Font;
 class GraphicsContext;
 class ImageObserver;
@@ -73,11 +71,8 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
 
   void DrawPattern(GraphicsContext&,
                    const cc::PaintFlags&,
-                   const FloatRect& src_rect,
-                   const FloatSize& scale,
-                   const FloatPoint& phase,
                    const FloatRect& dest_rect,
-                   const FloatSize& repeat_spacing,
+                   const ImageTilingInfo& tiling_info,
                    RespectImageOrientationEnum) override;
 
   // SetData does nothing, and the passed in buffer is ignored.

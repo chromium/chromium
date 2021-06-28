@@ -62,6 +62,8 @@ class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
 class DarkModeImageCache;
 
+struct ImageTilingInfo;
+
 class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   friend class GeneratedImage;
   friend class CrossfadeGeneratedImage;
@@ -311,11 +313,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual void DrawPattern(GraphicsContext&,
                            const cc::PaintFlags&,
-                           const FloatRect&,
-                           const FloatSize&,
-                           const FloatPoint& phase,
-                           const FloatRect&,
-                           const FloatSize& repeat_spacing,
+                           const FloatRect& dest_rect,
+                           const ImageTilingInfo& tiling_info,
                            RespectImageOrientationEnum);
 
   // Creates and initializes a PaintImageBuilder with the metadata flags for the

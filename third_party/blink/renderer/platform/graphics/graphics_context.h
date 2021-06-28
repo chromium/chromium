@@ -67,6 +67,23 @@ class PaintController;
 class Path;
 struct TextRunPaintInfo;
 
+// Tiling parameters for the DrawImageTiled() method.
+struct ImageTilingInfo {
+  // The part of the Image (the |image| argument to the method) to tile. It's in
+  // the space of the image.
+  FloatRect image_rect;
+
+  // Scale factor from image space to destination space. Will include
+  // image-resolution information.
+  FloatSize scale{1.0f, 1.0f};
+
+  // Origin of the full image in destination space.
+  FloatPoint phase;
+
+  // Additional spacing between tiles in destination space.
+  FloatSize spacing;
+};
+
 class PLATFORM_EXPORT GraphicsContext {
   USING_FAST_MALLOC(GraphicsContext);
 
@@ -251,10 +268,7 @@ class PLATFORM_EXPORT GraphicsContext {
                       RespectImageOrientationEnum = kRespectImageOrientation);
   void DrawImageTiled(Image* image,
                       const FloatRect& dest_rect,
-                      const FloatRect& src_rect,
-                      const FloatSize& scale_src_to_dest,
-                      const FloatPoint& phase,
-                      const FloatSize& repeat_spacing,
+                      const ImageTilingInfo& tiling_info,
                       bool has_filter_property = false,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation);

@@ -93,11 +93,8 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
  protected:
   void DrawPattern(GraphicsContext&,
                    const cc::PaintFlags&,
-                   const FloatRect&,
-                   const FloatSize&,
-                   const FloatPoint&,
-                   const FloatRect&,
-                   const FloatSize& repeat_spacing,
+                   const FloatRect& dest_rect,
+                   const ImageTilingInfo&,
                    RespectImageOrientationEnum) override;
 
  private:

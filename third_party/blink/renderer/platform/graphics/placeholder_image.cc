@@ -357,17 +357,14 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
 void PlaceholderImage::DrawPattern(
     GraphicsContext& context,
     const PaintFlags& base_flags,
-    const FloatRect& src_rect,
-    const FloatSize& scale,
-    const FloatPoint& phase,
     const FloatRect& dest_rect,
-    const FloatSize& repeat_spacing,
+    const ImageTilingInfo& tiling_info,
     RespectImageOrientationEnum respect_orientation) {
   DCHECK(context.Canvas());
   // Ignore the pattern specifications and just draw a single placeholder image
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
-  Draw(context.Canvas(), base_flags, dest_rect, src_rect,
+  Draw(context.Canvas(), base_flags, dest_rect, tiling_info.image_rect,
        context.ImageSamplingOptions(), respect_orientation,
        kClampImageToSourceRect, kUnspecifiedDecode);
 }

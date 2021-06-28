@@ -41,21 +41,20 @@ namespace blink {
 void GeneratedImage::DrawPattern(
     GraphicsContext& dest_context,
     const cc::PaintFlags& base_flags,
-    const FloatRect& src_rect,
-    const FloatSize& scale,
-    const FloatPoint& phase,
     const FloatRect& dest_rect,
-    const FloatSize& repeat_spacing,
+    const ImageTilingInfo& tiling_info,
     RespectImageOrientationEnum respect_orientation) {
-  FloatRect tile_rect = src_rect;
-  tile_rect.Expand(repeat_spacing);
+  FloatRect tile_rect(tiling_info.image_rect);
+  tile_rect.Expand(tiling_info.spacing);
 
-  SkMatrix pattern_matrix = SkMatrix::Translate(phase.X(), phase.Y());
-  pattern_matrix.preScale(scale.Width(), scale.Height());
+  SkMatrix pattern_matrix =
+      SkMatrix::Translate(tiling_info.phase.X(), tiling_info.phase.Y());
+  pattern_matrix.preScale(tiling_info.scale.Width(),
+                          tiling_info.scale.Height());
   pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
 
-  sk_sp<PaintShader> tile_shader =
-      CreateShader(tile_rect, &pattern_matrix, src_rect, respect_orientation);
+  sk_sp<PaintShader> tile_shader = CreateShader(
+      tile_rect, &pattern_matrix, tiling_info.image_rect, respect_orientation);
 
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));

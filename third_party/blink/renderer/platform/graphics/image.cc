@@ -220,11 +220,8 @@ SkTileMode ComputeTileMode(float left, float right, float min, float max) {
 
 void Image::DrawPattern(GraphicsContext& context,
                         const cc::PaintFlags& base_flags,
-                        const FloatRect& float_src_rect,
-                        const FloatSize& scale_src_to_dest,
-                        const FloatPoint& phase,
                         const FloatRect& dest_rect,
-                        const FloatSize& repeat_spacing,
+                        const ImageTilingInfo& tiling_info,
                         RespectImageOrientationEnum respect_orientation) {
   TRACE_EVENT0("skia", "Image::drawPattern");
 
@@ -235,11 +232,11 @@ void Image::DrawPattern(GraphicsContext& context,
   if (!image)
     return;  // nothing to draw
 
-  // The subset_rect is in source image space, unscaled but oriented.
-  // image-resolution information is baked into the scale_src_to_dest,
+  // |tiling_info.image_rect| is in source image space, unscaled but oriented.
+  // image-resolution information is baked into |tiling_info.scale|,
   // so we do not want to use it in computing the subset. That requires
   // explicitly applying orientation here.
-  IntRect subset_rect = EnclosingIntRect(float_src_rect);
+  IntRect subset_rect = EnclosingIntRect(tiling_info.image_rect);
   IntSize oriented_image_size(image.width(), image.height());
   if (respect_orientation && CurrentFrameOrientation().UsesWidthAsHeight())
     oriented_image_size = oriented_image_size.TransposedSize();
@@ -248,19 +245,19 @@ void Image::DrawPattern(GraphicsContext& context,
     return;  // nothing to draw
 
   // Apply image orientation, if necessary
-  FloatSize oriented_scale = scale_src_to_dest;
-  if (respect_orientation && !HasDefaultOrientation()) {
+  FloatSize oriented_scale = tiling_info.scale;
+  if (respect_orientation && !HasDefaultOrientation())
     image = ResizeAndOrientImage(image, CurrentFrameOrientation());
-  }
 
   SkMatrix local_matrix;
   // We also need to translate it such that the origin of the pattern is the
   // origin of the destination rect, which is what Blink expects. Skia uses
   // the coordinate system origin as the base for the pattern. If Blink wants
   // a shifted image, it will shift it from there using the localMatrix.
-  const float adjusted_x = phase.X() + subset_rect.X() * oriented_scale.Width();
+  const float adjusted_x =
+      tiling_info.phase.X() + subset_rect.X() * oriented_scale.Width();
   const float adjusted_y =
-      phase.Y() + subset_rect.Y() * oriented_scale.Height();
+      tiling_info.phase.Y() + subset_rect.Y() * oriented_scale.Height();
   local_matrix.setTranslate(SkFloatToScalar(adjusted_x),
                             SkFloatToScalar(adjusted_y));
 
@@ -270,9 +267,10 @@ void Image::DrawPattern(GraphicsContext& context,
   // Fetch this now as subsetting may swap the image.
   auto image_id = image.stable_id();
 
-  const FloatSize tile_size(
-      subset_rect.Width() * oriented_scale.Width() + repeat_spacing.Width(),
-      subset_rect.Height() * oriented_scale.Height() + repeat_spacing.Height());
+  const FloatSize tile_size(subset_rect.Width() * oriented_scale.Width() +
+                                tiling_info.spacing.Width(),
+                            subset_rect.Height() * oriented_scale.Height() +
+                                tiling_info.spacing.Height());
   const auto tmx = ComputeTileMode(dest_rect.X(), dest_rect.MaxX(), adjusted_x,
                                    adjusted_x + tile_size.Width());
   const auto tmy = ComputeTileMode(dest_rect.Y(), dest_rect.MaxY(), adjusted_y,
@@ -282,8 +280,8 @@ void Image::DrawPattern(GraphicsContext& context,
       context.ComputeSamplingOptions(this, dest_rect, FloatRect(subset_rect));
   sk_sp<PaintShader> tile_shader = CreatePatternShader(
       image, local_matrix, sampling_to_use, context.ShouldAntialias(),
-      FloatSize(repeat_spacing.Width() / oriented_scale.Width(),
-                repeat_spacing.Height() / oriented_scale.Height()),
+      FloatSize(tiling_info.spacing.Width() / oriented_scale.Width(),
+                tiling_info.spacing.Height() / oriented_scale.Height()),
       tmx, tmy, subset_rect);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),
