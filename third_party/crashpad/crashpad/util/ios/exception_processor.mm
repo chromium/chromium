@@ -300,10 +300,11 @@ id ObjcExceptionPreprocessor(id exception) {
         static IMP gesture_environment_min_imp =
             uigestureimp_lambda(&gesture_environment_max_imp);
 
-        IMP caller = reinterpret_cast<IMP>(caller_frame_info.start_ip);
         if (gesture_environment_min_imp && gesture_environment_max_imp &&
-            caller >= gesture_environment_min_imp &&
-            caller <= gesture_environment_max_imp) {
+            caller_frame_info.start_ip >=
+                reinterpret_cast<unw_word_t>(gesture_environment_min_imp) &&
+            caller_frame_info.start_ip <=
+                reinterpret_cast<unw_word_t>(gesture_environment_max_imp)) {
           TerminatingFromUncaughtNSException(exception,
                                              "_UIGestureEnvironmentUpdate");
         }
