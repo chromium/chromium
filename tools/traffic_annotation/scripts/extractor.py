@@ -49,6 +49,11 @@ TEST_ANNOTATION_REGEX = re.compile(
 # Regex that matches a placeholder annotation for a few whitelisted files.
 MISSING_ANNOTATION_REGEX = re.compile(r'\bMISSING_TRAFFIC_ANNOTATION\b')
 
+# Regex that matches placeholder annotations for unsupported platforms that
+# don't require Network Traffic Annotations compliance. (e.g. iOS)
+NO_ANNOTATION_REGEX = re.compile(r'\bNO_TRAFFIC_ANNOTATION_YET\b')
+
+
 class Annotation:
   """A network annotation definition in C++ code."""
 
@@ -201,6 +206,19 @@ def extract_annotations(file_path):
     annotation = Annotation(
         file_path, line_number, type_name='Definition', unique_id='missing',
         text='Function called without traffic annotation.')
+    defs.append(annotation)
+
+  # Check for NO_TRAFFIC_ANNOTATION_YET.
+  for re_match in NO_ANNOTATION_REGEX.finditer(contents):
+    if is_inside_comment(re_match.string, re_match.start()):
+      continue
+    line_number = get_line_number_at(contents, re_match.start())
+
+    annotation = Annotation(file_path,
+                            line_number,
+                            type_name='Definition',
+                            unique_id='undefined',
+                            text='Nothing here yet.')
     defs.append(annotation)
 
   return defs

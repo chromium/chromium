@@ -12,3 +12,5 @@ mutable_tag,chrome/browser/media/router/providers/openscreen/platform/udp_socket
 test_annotation,components/safe_search_api/stub_url_checker.cc
 test_annotation,net/quic/quic_chromium_client_session_peer.cc
 test_annotation,net/tools/quic/quic_http_proxy_backend_stream.cc
+# TODO(crbug.com/995852): Fix this Android-specific annotation.
+all,chrome/browser/endpoint_fetcher/endpoint_fetcher.cc

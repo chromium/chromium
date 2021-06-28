@@ -50,6 +50,9 @@ def remove_tracebacks(str):
 class ExtractorTest(unittest.TestCase):
   def testExtractor(self):
     for source_file in glob.glob('*.cc'):
+      if source_file.startswith('test_'):
+        continue
+
       print("Running test on %s..." % source_file)
       (stdout_file, stderr_file) = get_expected_files(source_file)
       with open(stdout_file) as f:

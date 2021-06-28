@@ -378,9 +378,6 @@ struct MutablePartialNetworkTrafficAnnotationTag {
 #define NO_TRAFFIC_ANNOTATION_YET \
   net::DefineNetworkTrafficAnnotation("undefined", "Nothing here yet.")
 
-#define NO_PARTIAL_TRAFFIC_ANNOTATION_YET                              \
-  net::DefinePartialNetworkTrafficAnnotation("undefined", "undefined", \
-                                             "Nothing here yet.")
 #endif
 
 #define MISSING_TRAFFIC_ANNOTATION     \
