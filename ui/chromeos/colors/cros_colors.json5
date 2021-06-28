@@ -22,6 +22,31 @@
     /*
      * Core colors.
      */
+    bg_color: {
+      light: "$white",
+      dark: "$google_grey_900",
+    },
+    bg_color_elevation_1: {
+      light: "$white",
+      dark: "#2a2a2d", /* google_grey_900 + white 4% */
+    },
+    bg_color_elevation_2: {
+      light: "$white",
+      dark: "#2e2e31", /* google_grey_900 + white 6% */
+    },
+    bg_color_elevation_3: {
+      light: "$white",
+      dark: "#333336", /* google_grey_900 + white 8% */
+    },
+    bg_color_elevation_4: {
+      light: "$white",
+      dark: "#37373a", /* google_grey_900 + white 10% */
+    },
+    bg_color_elevation_5: {
+      light: "$white",
+      dark: "#3c3c3e", /* google_grey_900 + white 12% */
+    },
+
     text_color_primary: {
       light: "$google_grey_900",
       dark: "$google_grey_200",
@@ -45,15 +70,15 @@
       dark: "$google_green_300",
     },
 
-    bg_color: {
-      light: "$white",
-      dark: "$google_grey_900",
-    },
-
     icon_color_primary: {
       light: "$google_grey_700",
       dark: "$google_grey_200",
       debug: "#ff00ff",
+    },
+    icon_color_secondary: {
+      light: "$google_grey_500",
+      dark: "$google_grey_500",
+      debug: "#00ffff",
     },
     icon_color_alert: {
       light: "$google_red_600",
@@ -73,15 +98,10 @@
       debug: "$google_red_600",
     },
 
-    icon_color_secondary: {
-      light: "$google_grey_500",
-      dark: "$google_grey_500",
-      debug: "#00ffff",
-    },
-
     highlight_color: {
       light: "$google_blue_50",
       dark: "rgba($google_blue_300_rgb, 0.3)",
+      debug: "rgba($google_red_300_rgb, 0.3)",
     },
 
     dark_ink_ripple_color: "rgba($black_rgb, 0.06)",
@@ -96,9 +116,10 @@
     /*
      * Component colors.
      */
-    toolbar_bg_color: "$white",
-    toolbar_search_bg_color: "$google_grey_100",
-    toolbar_search_result_color_active: "$highlight_color",
+    toolbar_search_bg_color: {
+      light: "$google_grey_100",
+      dark: "rgba($white_rgb, 0.1)",
+    },
 
     tab_bg_color_active: "$highlight_color",
     tab_bg_color_hover: "$ink_ripple_color",
@@ -128,7 +149,10 @@
     radio_button_color_unchecked: "$google_grey_700",
     radio_button_ripple_color_unchecked: "rgba($google_grey_600_rgb, .15)",
 
-    separator_color: "rgba($black_rgb, 0.12)",
+    separator_color: {
+      light: "rgba($black_rgb, 0.14)",
+      dark: "rgba($white_rgb, 0.14)",
+    },
 
     link_color: {
       light: "$google_blue_700",

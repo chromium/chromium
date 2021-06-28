@@ -57,17 +57,14 @@
         --cr-toolbar-search-field-border-radius: 20px;
         --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
         --cr-toolbar-search-field-input-icon-color:
-            var(--cr-form-field-label-color);
+            var(--cros-icon-color-primary);
         --cr-toolbar-search-field-input-text-color:
-            var(--cr-primary-text-color);
+            var(--cros-text-color-primary);
+        --cr-toolbar-search-field-prompt-color:
+            var(--cros-text-color-secondary);
         --cr-toolbar-icon-button-focus-outline-color:
-            var(--cr-focus-outline-color);
+            var(--cros-focus-ring-color);
         font-size: 13px;
-      }
-
-      :host([showing-search]) cr-toolbar-search-field {
-        background:
-            var(--cr-toolbar-search-field-background, rgba(0, 0, 0, 0.22));
       }
 
       :host([narrow]:not([showing-search])) cr-toolbar-search-field {
@@ -75,7 +72,7 @@
       }
 
       :host(:focus-within[showing-search]) cr-toolbar-search-field {
-        --cr-toolbar-search-field-background: var(--cr-card-background-color);
+        --cr-toolbar-search-field-background: var(--cros-bg-color-elevation-3);
         box-shadow: var(--cr-elevation-1);
         min-height: var(--cr-toolbar-focused-min-height);
       }
@@ -97,11 +94,11 @@
       }
 
       iron-dropdown {
-        margin-top: 74px;
+        margin-top: 72px;
       }
 
       iron-dropdown [slot='dropdown-content'] {
-        background-color: var(--cr-menu-background-color);
+        background-color: var(--cros-bg-color-elevation-3);
         border-radius: 0 0 20px 20px;
         box-shadow: var(--cr-elevation-3);
         display: table;
@@ -122,11 +119,11 @@
       /* The separator covers the top box shadow of the dropdown so that
        * var(--cr-elevation-3) can be used instead of custom values. */
       .separator {
-        background-color: var(--cr-menu-background-color);
+        background-color: var(--cros-bg-color-elevation-3);
         border-bottom: none;
         border-inline-end: none;
         border-inline-start: none;
-        border-top: 2px solid var(--cr-separator-color);
+        border-top: 1px solid var(--cros-separator-color);
         height: var(--separator-height);
         margin-inline-end: 0;
         margin-inline-start: 0;
