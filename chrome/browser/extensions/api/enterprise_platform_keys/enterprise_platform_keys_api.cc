@@ -239,4 +239,38 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
   Respond(ArgumentList(std::move(results)));
 }
 
+//------------------------------------------------------------------------------
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysImportCertificateFunction::Run() {
+  std::unique_ptr<api_epk::ImportCertificate::Params> params(
+      api_epk::ImportCertificate::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error = ValidateCrosapi(
+      KeystoreService::kAddCertificateMinVersion, browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(error));
+  }
+
+  crosapi::mojom::KeystoreType keystore;
+  error = ValidateInput(params->token_id, &keystore);
+  EXTENSION_FUNCTION_VALIDATE(error.empty());
+
+  auto c = base::BindOnce(
+      &EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate, this);
+  GetKeystoreService(browser_context())
+      ->AddCertificate(keystore, params->certificate, std::move(c));
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate(
+    const std::string& error) {
+  if (error.empty()) {
+    Respond(NoArguments());
+  } else {
+    Respond(Error(error));
+  }
+}
+
 }  // namespace extensions

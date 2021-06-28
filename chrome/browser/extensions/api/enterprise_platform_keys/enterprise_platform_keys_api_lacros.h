@@ -20,17 +20,6 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class EnterprisePlatformKeysImportCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysImportCertificateFunction() override = default;
-  ResponseAction Run() override;
-
-  void OnAddCertificate(const std::string& error);
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.importCertificate",
-                             ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
-};
-
 class EnterprisePlatformKeysRemoveCertificateFunction
     : public ExtensionFunction {
  private:

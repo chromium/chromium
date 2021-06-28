@@ -22,19 +22,6 @@ using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 
 namespace extensions {
 
-class EnterprisePlatformKeysImportCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysImportCertificateFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the certificate was imported.
-  void OnImportedCertificate(chromeos::platform_keys::Status status);
-
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.importCertificate",
-                             ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
-};
-
 class EnterprisePlatformKeysRemoveCertificateFunction
     : public ExtensionFunction {
  private:

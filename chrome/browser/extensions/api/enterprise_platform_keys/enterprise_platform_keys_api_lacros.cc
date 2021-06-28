@@ -98,41 +98,6 @@ ExtensionFunction::ResponseAction LacrosNotImplementedExtensionFunction::Run() {
 //------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
-EnterprisePlatformKeysImportCertificateFunction::Run() {
-  std::unique_ptr<api_epk::ImportCertificate::Params> params(
-      api_epk::ImportCertificate::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error = ValidateCrosapi(
-      KeystoreService::kAddCertificateMinVersion, browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
-  crosapi::mojom::KeystoreType keystore;
-  error = ValidateInput(params->token_id, &keystore);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
-
-  auto c = base::BindOnce(
-      &EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->AddCertificate(keystore, params->certificate, std::move(c));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate(
-    const std::string& error) {
-  if (error.empty()) {
-    Respond(NoArguments());
-  } else {
-    Respond(Error(error));
-  }
-}
-
-//------------------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction
 EnterprisePlatformKeysRemoveCertificateFunction::Run() {
   std::unique_ptr<api_epk::RemoveCertificate::Params> params(
       api_epk::RemoveCertificate::Params::Create(*args_));

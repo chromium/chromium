@@ -49,53 +49,6 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 
 //------------------------------------------------------------------------------
 
-EnterprisePlatformKeysImportCertificateFunction::
-    ~EnterprisePlatformKeysImportCertificateFunction() {}
-
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysImportCertificateFunction::Run() {
-  std::unique_ptr<api_epk::ImportCertificate::Params> params(
-      api_epk::ImportCertificate::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id =
-      platform_keys::ApiIdToPlatformKeysTokenId(params->token_id);
-  if (!platform_keys_token_id)
-    return RespondNow(Error(platform_keys::kErrorInvalidToken));
-
-  const std::vector<uint8_t>& cert_der = params->certificate;
-  // Allow UTF-8 inside PrintableStrings in client certificates. See
-  // crbug.com/770323 and crbug.com/788655.
-  net::X509Certificate::UnsafeCreateOptions options;
-  options.printable_string_is_utf8 = true;
-  scoped_refptr<net::X509Certificate> cert_x509 =
-      net::X509Certificate::CreateFromBytesUnsafeOptions(cert_der, options);
-  if (!cert_x509.get())
-    return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
-
-  chromeos::platform_keys::PlatformKeysService* platform_keys_service =
-      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  CHECK(platform_keys_service);
-
-  platform_keys_service->ImportCertificate(
-      platform_keys_token_id.value(), cert_x509,
-      base::BindOnce(&EnterprisePlatformKeysImportCertificateFunction::
-                         OnImportedCertificate,
-                     this));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysImportCertificateFunction::OnImportedCertificate(
-    chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status == chromeos::platform_keys::Status::kSuccess)
-    Respond(NoArguments());
-  else
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
-}
-
-//------------------------------------------------------------------------------
-
 EnterprisePlatformKeysRemoveCertificateFunction::
     ~EnterprisePlatformKeysRemoveCertificateFunction() {}
 
