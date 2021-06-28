@@ -137,6 +137,11 @@ void SegmentationPlatformServiceImpl::GetSelectedSegment(
   segment_selector_->GetSelectedSegment(std::move(callback));
 }
 
+void SegmentationPlatformServiceImpl::EnableMetrics(
+    bool signal_collection_allowed) {
+  signal_filter_processor_->EnableMetrics(signal_collection_allowed);
+}
+
 void SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized(
     bool success) {
   segment_info_database_initialized_ = success;

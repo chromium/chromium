@@ -57,6 +57,10 @@ class SegmentationPlatformService : public KeyedService,
   // Called to get the selected segment. If none, returns empty result.
   virtual void GetSelectedSegment(const std::string& segmentation_key,
                                   SegmentSelectionCallback callback) = 0;
+
+  // Called to enable or disable metrics collection. Must be explicitly called
+  // on startup.
+  virtual void EnableMetrics(bool signal_collection_allowed) = 0;
 };
 
 }  // namespace segmentation_platform

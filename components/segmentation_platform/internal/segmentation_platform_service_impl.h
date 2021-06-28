@@ -84,6 +84,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentationPlatformService overrides.
   void GetSelectedSegment(const std::string& segmentation_key,
                           SegmentSelectionCallback callback) override;
+  void EnableMetrics(bool signal_collection_allowed) override;
 
  private:
   void OnSegmentInfoDatabaseInitialized(bool success);
