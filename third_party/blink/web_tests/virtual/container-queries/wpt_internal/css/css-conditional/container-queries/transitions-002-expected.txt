@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Scrollbars do not cause a transition of background-color assert_equals: expected "rgb(0, 0, 255)" but got "rgb(0, 64, 128)"
+Harness: the test ran to completion.
+
