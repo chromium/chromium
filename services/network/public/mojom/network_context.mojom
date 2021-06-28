@@ -560,6 +560,9 @@ struct URLLoaderFactoryParams {
   // Whether |isolated_world_origin| from network::ResourceRequest should be
   // ignored.  Set |ignore_isolated_world_origin| to |false| to allow isolated
   // worlds to bypass CORS security checks via OriginAccessList.
+  //
+  // TODO(https://crbug.com/1098410): Remove the `ignore_isolated_world_origin`
+  // field once Chrome Platform Apps are gone.
   bool ignore_isolated_world_origin = true;
 
   // Indicate whether a request is not from web page ( probably from chrome

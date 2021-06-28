@@ -38,6 +38,9 @@ enum class FactoryUser {
 bool DoContentScriptsDependOnRelaxedCorbOrCors(const Extension& extension) {
   // Content scripts injected by Chrome Apps (e.g. into <webview> tag) need to
   // run with relaxed CORB.
+  //
+  // TODO(https://crbug.com/1152550): Remove this exception once Chrome Platform
+  // Apps are gone.
   if (extension.is_platform_app())
     return true;
 

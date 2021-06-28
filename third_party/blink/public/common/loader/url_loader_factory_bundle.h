@@ -88,7 +88,12 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_appcache_factory_;
   SchemeMap pending_scheme_specific_factories_;
+
+  // TODO(https://crbug.com/1098410): Remove the
+  // `pending_isolated_world_factories_` field once Chrome Platform Apps are
+  // gone.
   OriginMap pending_isolated_world_factories_;
+
   bool bypass_redirect_checks_ = false;
 };
 
@@ -167,6 +172,9 @@ class BLINK_COMMON_EXPORT URLLoaderFactoryBundle
   // Map from origin of isolated world to Remote<URLLoaderFactory> for handling
   // this isolated world's requests. See also
   // PendingURLLoaderFactoryBundle::OriginMap.
+  //
+  // TODO(https://crbug.com/1098410): Remove the `isolated_world_factories_`
+  // field once Chrome Platform Apps are gone.
   using OriginMap =
       std::map<url::Origin, mojo::Remote<network::mojom::URLLoaderFactory>>;
   OriginMap isolated_world_factories_;

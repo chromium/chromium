@@ -281,7 +281,7 @@ Protection techniques:
 ## HTTP request headers
 
 Compromised renderers shouldn’t be able to control security sensitive HTTP
-request headers like `Host` or `Sec-Fetch-Site`.
+request headers like `Host`, `Origin`, or `Sec-Fetch-Site`.
 
 Protection techniques:
 - Using `AreRequestHeadersSafe` to reject `Host` and other headers that
@@ -289,13 +289,6 @@ Protection techniques:
 - Preventing spoofing of `network::ResourceRequest::request_initiator`
   by comparing against `request_initiator_origin_lock` in
   `network::CorsURLLoaderFactory::IsValidRequest`.
-
-**Known gaps in protection**:
-- `Origin` header.  Tracked by
-  https://crbug.com/1098410 (removing
-  `network::ResourceRequest::isolated_world_origin` which is used
-  in some security decisions instead of `request_initiator` to support
-  an allowlist of extensions that need to bypass CORB/CORS).
 
 
 ## (WIP) SameSite cookies

@@ -118,7 +118,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // consult the doc comment for |request_initiator| in url_request.mojom.
   absl::optional<url::Origin> request_initiator;
 
+  // TODO(https://crbug.com/1098410): Remove the `isolated_world_origin` field
+  // once Chrome Platform Apps are gone.
   absl::optional<url::Origin> isolated_world_origin;
+
   GURL referrer;
   net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
   net::HttpRequestHeaders headers;
