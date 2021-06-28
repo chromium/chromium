@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -96,7 +97,9 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     user_data_dir_ = base::MakeAbsoluteFilePath(user_data_dir_);
     app_data_dir_ = base::MakeAbsoluteFilePath(app_data_dir_);
 
-    SetChromeAppsFolderForTesting(destination_dir_);
+    ShortcutOverrideForTesting shortcut_override;
+    shortcut_override.chrome_apps_folder = destination_dir_;
+    web_app::SetShortcutOverrideForTesting(shortcut_override);
 
     info_ = GetShortcutInfo();
     base::FilePath shim_base_name =
@@ -109,7 +112,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
-    SetChromeAppsFolderForTesting(base::FilePath());
+    web_app::SetShortcutOverrideForTesting(absl::nullopt);
     WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();
   }
