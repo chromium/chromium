@@ -9,6 +9,7 @@
  */
 import './site_list.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,9 +22,18 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  behaviors: [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
 
   properties: {
+    /**
+     * The string description shown below the header.
+     */
+    description: {
+      type: String,
+      value() {
+        return this.i18n('siteSettingsCustomizedBehaviorsDescription');
+      }
+    },
 
     /**
      * The string ID of the category that this element is displaying data for.
