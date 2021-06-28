@@ -31,6 +31,11 @@ void FakeFidoDiscovery::SimulateStarted(bool success) {
   NotifyDiscoveryStarted(success);
 }
 
+void FakeFidoDiscovery::WaitForCallToStartAndSimulateSuccess() {
+  WaitForCallToStart();
+  SimulateStarted(true /* success */);
+}
+
 void FakeFidoDiscovery::StartInternal() {
   wait_for_start_loop_.Quit();
 

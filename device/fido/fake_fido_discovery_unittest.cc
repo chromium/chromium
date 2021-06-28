@@ -65,8 +65,7 @@ TEST_F(FakeFidoDiscoveryTest, StartDiscovery) {
 
   EXPECT_CALL(observer, DiscoveryStarted(&discovery, true,
                                          std::vector<FidoAuthenticator*>()));
-  discovery.WaitForCallToStart();
-  discovery.SimulateStarted(true);
+  discovery.WaitForCallToStartAndSimulateSuccess();
   ASSERT_TRUE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
 }

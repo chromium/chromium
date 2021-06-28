@@ -3174,7 +3174,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
           [&usb_device_lost_done]() { usb_device_lost_done.Quit(); }));
 
   authenticator->GetAssertion(std::move(options), callback_receiver.callback());
-  fake_hid_discovery->WaitForCallToStart();
+  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
   fake_hid_discovery->AddDevice(std::move(mock_usb_device));
   usb_device_found_done.Run();
 

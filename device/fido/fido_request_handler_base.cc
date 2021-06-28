@@ -50,9 +50,9 @@ struct TransportAvailabilityCallbackReadiness {
   // signal that they have started.
   unsigned num_discoveries_pending = 0;
 
-  bool Ready() const {
-    return !ble_information_pending && !platform_credential_check_pending &&
-           num_discoveries_pending == 0;
+  bool CanMakeCallback() const {
+    return !callback_made && !ble_information_pending &&
+           !platform_credential_check_pending && num_discoveries_pending == 0;
   }
 };
 
@@ -168,14 +168,7 @@ FidoRequestHandlerBase::~FidoRequestHandlerBase() {
 
 void FidoRequestHandlerBase::StartAuthenticatorRequest(
     const std::string& authenticator_id) {
-  auto authenticator_it = active_authenticators_.find(authenticator_id);
-  if (authenticator_it == active_authenticators_.end()) {
-    return;
-  }
-  FidoAuthenticator* authenticator = authenticator_it->second;
-  authenticator->InitializeAuthenticator(
-      base::BindOnce(&FidoRequestHandlerBase::DispatchOrQueueAuthenticator,
-                     weak_factory_.GetWeakPtr(), authenticator_id));
+  InitializeAuthenticatorAndDispatchRequest(authenticator_id);
 }
 
 void FidoRequestHandlerBase::CancelActiveAuthenticators(
@@ -325,13 +318,18 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   }
 
   if (!embedder_controls_dispatch) {
-    // Post |StartAuthenticatorRequest| into its own task. This
+    // Post |InitializeAuthenticatorAndDispatchRequest| into its own task. This
     // avoids hairpinning, even if the authenticator immediately invokes the
     // request callback.
+    VLOG(2)
+        << "Request handler dispatching request to authenticator immediately.";
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&FidoRequestHandlerBase::StartAuthenticatorRequest,
-                       GetWeakPtr(), authenticator->GetId()));
+        base::BindOnce(
+            &FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest,
+            GetWeakPtr(), authenticator->GetId()));
+  } else {
+    VLOG(2) << "Embedder controls the dispatch.";
   }
 
 #if defined(OS_WIN)
@@ -375,40 +373,25 @@ bool FidoRequestHandlerBase::HasAuthenticator(
 }
 
 void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {
-  if (!transport_availability_callback_readiness_->Ready()) {
+  if (!observer_ ||
+      !transport_availability_callback_readiness_->CanMakeCallback()) {
     return;
   }
 
-  for (const auto& id : authenticator_ids_queued_for_dispatch_) {
-    auto it = active_authenticators_.find(id);
-    if (it == active_authenticators_.end()) {
-      return;
-    }
-
-    DispatchRequest(it->second);
-  }
-
-  authenticator_ids_queued_for_dispatch_.clear();
-
-  if (observer_ && !transport_availability_callback_readiness_->callback_made) {
-    transport_availability_callback_readiness_->callback_made = true;
-    observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
-    // This object may have been deleted in the callback.
-  }
+  transport_availability_callback_readiness_->callback_made = true;
+  observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
 }
 
-void FidoRequestHandlerBase::DispatchOrQueueAuthenticator(
-    std::string authenticator_id) {
-  auto it = active_authenticators_.find(authenticator_id);
-  if (it == active_authenticators_.end()) {
+void FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest(
+    const std::string& authenticator_id) {
+  auto authenticator_it = active_authenticators_.find(authenticator_id);
+  if (authenticator_it == active_authenticators_.end()) {
     return;
   }
-
-  if (transport_availability_callback_readiness_->Ready()) {
-    DispatchRequest(it->second);
-  } else {
-    authenticator_ids_queued_for_dispatch_.emplace(std::move(authenticator_id));
-  }
+  FidoAuthenticator* authenticator = authenticator_it->second;
+  authenticator->InitializeAuthenticator(
+      base::BindOnce(&FidoRequestHandlerBase::DispatchRequest,
+                     weak_factory_.GetWeakPtr(), authenticator));
 }
 
 void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
