@@ -54,9 +54,10 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
   // Removes all shadows.
   void RemoveAllShadows();
 
-  // Creates a shadow for a given |window| and |type| and returns it.
-  // |window_shadows_| owns the memory.
-  ResizeShadow* CreateShadow(aura::Window* window);
+  // Recreates a shadow for a given |window| and the type from the |window|'s
+  // property if there's no shadow registered or it has one but its type is
+  // different. |window_shadows_| owns the memory.
+  void RecreateShadowIfNeeded(aura::Window* window);
 
   // Returns the resize shadow for |window| or NULL if no shadow exists.
   ResizeShadow* GetShadowForWindow(aura::Window* window) const;

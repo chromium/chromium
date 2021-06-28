@@ -52,6 +52,7 @@ class ResizeShadow {
 
   int GetLastHitTestForTest() const { return last_hit_test_; }
   const ui::Layer* GetLayerForTest() const { return layer_.get(); }
+  ResizeShadowType GetResizeShadowTypeForTest() const { return type_; }
 
  private:
   friend class ResizeShadowController;

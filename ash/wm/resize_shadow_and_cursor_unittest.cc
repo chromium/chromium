@@ -442,4 +442,21 @@ TEST_F(ResizeShadowAndCursorTest, ShowHideShadow) {
   VerifyResizeShadow(false);
 }
 
+// Tests that shadow type gets updated according to the window's property.
+TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(), ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kUnlock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(),
+            ResizeShadowType::kUnlock);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+}
+
 }  // namespace ash

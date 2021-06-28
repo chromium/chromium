@@ -34,11 +34,9 @@ ResizeShadowController::~ResizeShadowController() {
 }
 
 void ResizeShadowController::ShowShadow(aura::Window* window, int hit_test) {
-  ResizeShadow* shadow = GetShadowForWindow(window);
-  if (!shadow)
-    shadow = CreateShadow(window);
+  RecreateShadowIfNeeded(window);
   if (ShouldShowShadowForWindow(window))
-    shadow->ShowForHitTest(hit_test);
+    GetShadowForWindow(window)->ShowForHitTest(hit_test);
 }
 
 void ResizeShadowController::TryShowAllShadows() {
@@ -114,14 +112,17 @@ ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(
   return GetShadowForWindow(window);
 }
 
-ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
+void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
   if (!windows_observation_.IsObservingSource(window))
     windows_observation_.AddObservation(window);
   ResizeShadow* shadow = GetShadowForWindow(window);
   const ash::ResizeShadowType type =
       window->GetProperty(ash::kResizeShadowTypeKey);
+
+  // If the |window| has a resize shadow with the requested type, no need to
+  // recreate it.
   if (shadow && shadow->type_ == type)
-    return shadow;
+    return;
 
   ResizeShadow::InitParams params;
   if (type == ResizeShadowType::kLock)
@@ -129,13 +130,11 @@ ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
 
   auto new_shadow = std::make_unique<ResizeShadow>(window, params, type);
 
-  ResizeShadow* raw_shadow = new_shadow.get();
   auto it = window_shadows_.find(window);
   if (it == window_shadows_.end())
     window_shadows_.insert(std::make_pair(window, std::move(new_shadow)));
   else
     it->second = std::move(new_shadow);
-  return raw_shadow;
 }
 
 ResizeShadow* ResizeShadowController::GetShadowForWindow(
