@@ -204,6 +204,10 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 
   void TearDown() override {
     policy_ = nullptr;
+    // Fix flakiness due to WorkingSetTrimmerPolicyChromeOS's weak ptr factory
+    // getting destroyed and causing a weak ptr to get invalidated on a
+    // different sequenced thread from where it was bound.
+    task_env().RunUntilIdle();
     GraphTestHarness::TearDown();
   }
 
