@@ -441,7 +441,8 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
 EventRouter::EventRouter(Profile* profile)
     : pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       profile_(profile),
-      notification_manager_(std::make_unique<SystemNotificationManager>()),
+      notification_manager_(
+          std::make_unique<SystemNotificationManager>(profile)),
       device_event_router_(
           std::make_unique<DeviceEventRouterImpl>(notification_manager_.get(),
                                                   profile)),
