@@ -73,55 +73,6 @@ ExtensionFunction::ResponseAction LacrosNotImplementedExtensionFunction::Run() {
 //------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
-EnterprisePlatformKeysInternalGetTokensFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_->empty());
-
-  std::string error = ValidateCrosapi(KeystoreService::kGetKeyStoresMinVersion,
-                                      browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
-  auto c = base::BindOnce(
-      &EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->GetKeyStores(std::move(c));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores(
-    ResultPtr result) {
-  using Result = crosapi::mojom::GetKeyStoresResult;
-  switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::KEY_STORES:
-      std::vector<std::string> key_stores;
-      using KeystoreType = crosapi::mojom::KeystoreType;
-      for (KeystoreType keystore_type : result->get_key_stores()) {
-        if (!crosapi::mojom::IsKnownEnumValue(keystore_type)) {
-          continue;
-        }
-
-        switch (keystore_type) {
-          case KeystoreType::kUser:
-            key_stores.push_back("user");
-            break;
-          case KeystoreType::kDevice:
-            key_stores.push_back("system");
-            break;
-        }
-      }
-      Respond(ArgumentList(api_epki::GetTokens::Results::Create(key_stores)));
-      return;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
       api_epk::ChallengeMachineKey::Params::Create(*args_));

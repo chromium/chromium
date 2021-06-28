@@ -18,18 +18,6 @@ class LacrosNotImplementedExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class EnterprisePlatformKeysInternalGetTokensFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
-  ResponseAction Run() override;
-
-  using ResultPtr = crosapi::mojom::GetKeyStoresResultPtr;
-  void OnGetKeyStores(ResultPtr result);
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
-                             ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
-};
-
 class EnterprisePlatformKeysChallengeMachineKeyFunction
     : public ExtensionFunction {
  private:

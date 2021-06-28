@@ -22,22 +22,6 @@ using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 
 namespace extensions {
 
-class EnterprisePlatformKeysInternalGetTokensFunction
-    : public ExtensionFunction {
- private:
-  ~EnterprisePlatformKeysInternalGetTokensFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the list of tokens was determined. If an error occurred,
-  // |token_ids| will be nullptr.
-  void OnGotTokens(
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>> token_ids,
-      chromeos::platform_keys::Status status);
-
-  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
-                             ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
-};
-
 class EnterprisePlatformKeysChallengeMachineKeyFunction
     : public ExtensionFunction {
  public:

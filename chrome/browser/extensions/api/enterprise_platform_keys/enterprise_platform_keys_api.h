@@ -87,6 +87,17 @@ class EnterprisePlatformKeysRemoveCertificateFunction
                              ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
 };
 
+class EnterprisePlatformKeysInternalGetTokensFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnGetKeyStores(crosapi::mojom::GetKeyStoresResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
+                             ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_

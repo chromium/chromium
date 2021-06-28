@@ -30,10 +30,6 @@ namespace {
 namespace api_epk = api::enterprise_platform_keys;
 namespace api_epki = api::enterprise_platform_keys_internal;
 
-// This error will occur if a token is removed and will be exposed to the
-// extension. Keep this in sync with the custom binding in Javascript.
-const char kEnterprisePlatformErrorInternal[] = "Internal Error.";
-
 std::vector<uint8_t> VectorFromString(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
@@ -43,49 +39,6 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 }
 
 }  // namespace
-
-//------------------------------------------------------------------------------
-
-EnterprisePlatformKeysInternalGetTokensFunction::
-    ~EnterprisePlatformKeysInternalGetTokensFunction() {}
-
-ExtensionFunction::ResponseAction
-EnterprisePlatformKeysInternalGetTokensFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_->empty());
-
-  chromeos::platform_keys::PlatformKeysService* platform_keys_service =
-      chromeos::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  CHECK(platform_keys_service);
-
-  platform_keys_service->GetTokens(base::BindOnce(
-      &EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens, this));
-  return RespondLater();
-}
-
-void EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens(
-    std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
-        platform_keys_token_ids,
-    chromeos::platform_keys::Status status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (status != chromeos::platform_keys::Status::kSuccess) {
-    Respond(Error(chromeos::platform_keys::StatusToString(status)));
-    return;
-  }
-
-  std::vector<std::string> token_ids;
-  for (auto token_id : *platform_keys_token_ids) {
-    std::string api_token_id =
-        platform_keys::PlatformKeysTokenIdToApiId(token_id);
-    if (api_token_id.empty()) {
-      Respond(Error(kEnterprisePlatformErrorInternal));
-      return;
-    }
-    token_ids.push_back(api_token_id);
-  }
-
-  Respond(ArgumentList(api_epki::GetTokens::Results::Create(token_ids)));
-}
 
 //------------------------------------------------------------------------------
 
