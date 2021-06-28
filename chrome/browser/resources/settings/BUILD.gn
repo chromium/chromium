@@ -450,6 +450,7 @@ js_library("settings") {
     "autofill_page:multi_store_password_ui_entry",
     "autofill_page:password_manager_proxy",
     "people_page:sync_browser_proxy",
+    "privacy_page:privacy_page",
     "privacy_page:privacy_page_browser_proxy",
     "safety_check_page:safety_check_browser_proxy",
     "search_engines_page:search_engines_browser_proxy",

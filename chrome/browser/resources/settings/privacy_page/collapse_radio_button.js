@@ -8,75 +8,94 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 
-import {CrRadioButtonBehavior} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-collapse-radio-button',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrRadioButtonBehaviorInterface}
+ */
+const SettingsCollapseRadioButtonElementBase =
+    mixinBehaviors([CrRadioButtonBehavior], PolymerElement);
 
-  behaviors: [
-    CrRadioButtonBehavior,
-  ],
+/** @polymer */
+export class SettingsCollapseRadioButtonElement extends
+    SettingsCollapseRadioButtonElementBase {
+  static get is() {
+    return 'settings-collapse-radio-button';
+  }
 
-  properties: {
-    expanded: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    noAutomaticCollapse: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      expanded: {
+        type: Boolean,
+        notify: true,
+        value: false,
+      },
 
-    noCollapse: Boolean,
+      noAutomaticCollapse: {
+        type: Boolean,
+        value: false,
+      },
 
-    label: String,
+      noCollapse: Boolean,
 
-    indicatorAriaLabel: String,
+      label: String,
 
-    icon: {
-      type: String,
-      value: null,
-    },
+      indicatorAriaLabel: String,
 
-    /*
-     * The Preference associated with the radio group.
-     * @type {!chrome.settingsPrivate.PrefObject|undefined}
+      icon: {
+        type: String,
+        value: null,
+      },
+
+      /*
+       * The Preference associated with the radio group.
+       * @type {!chrome.settingsPrivate.PrefObject|undefined}
+       */
+      pref: Object,
+
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      subLabel: {
+        type: String,
+        value: '',  // Allows the $hidden= binding to run without being set.
+      },
+
+      /*
+       * The aria-label attribute associated with the expand button. Used by
+       * screen readers when announcing the expand button.
+       */
+      expandAriaLabel: String,
+    };
+  }
+
+  static get observers() {
+    return [
+      'onCheckedChanged_(checked)',
+      'onPrefChanged_(pref.*)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * Tracks if this button was clicked but wasn't expanded.
+     * @private
      */
-    pref: Object,
-
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    subLabel: {
-      type: String,
-      value: '',  // Allows the $hidden= binding to run without being set.
-    },
-
-    /*
-     * The aria-label attribute associated with the expand button. Used by
-     * screen readers when announcing the expand button.
-     */
-    expandAriaLabel: String,
-  },
-
-  observers: [
-    'onCheckedChanged_(checked)',
-    'onPrefChanged_(pref.*)',
-  ],
-
-  /**
-   * Tracks if this button was clicked but wasn't expanded.
-   * @private
-   */
-  pendingUpdateCollapsed_: false,
+    this.pendingUpdateCollapsed_ = false;
+  }
 
   /**
    * Updates the collapsed status of this radio button to reflect
@@ -88,7 +107,7 @@ Polymer({
       this.pendingUpdateCollapsed_ = false;
       this.expanded = this.checked;
     }
-  },
+  }
 
   /** @private */
   onCheckedChanged_() {
@@ -96,7 +115,7 @@ Polymer({
     if (!this.noAutomaticCollapse) {
       this.updateCollapsed();
     }
-  },
+  }
 
   /** @private */
   onPrefChanged_() {
@@ -108,17 +127,18 @@ Polymer({
         this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
         !(!!this.pref.userSelectableValues &&
           this.pref.userSelectableValues.includes(this.name));
-  },
+  }
 
   /** @private */
   onExpandClicked_() {
-    this.fire('expand-clicked');
-  },
+    this.dispatchEvent(
+        new CustomEvent('expand-clicked', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onRadioFocus_() {
     this.getRipple().showAndHoldDown();
-  },
+  }
 
   /**
    * Clear the ripple associated with the radio button when the expand button
@@ -129,5 +149,8 @@ Polymer({
   onNonRadioFocus_(e) {
     this.getRipple().clear();
     e.stopPropagation();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCollapseRadioButtonElement.is, SettingsCollapseRadioButtonElement);

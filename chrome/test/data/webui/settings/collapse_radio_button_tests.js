@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://settings/lazy_load.js';
+import {SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
 
 import {assertFalse, assertTrue} from '../chai_assert.js';
 import {isChildVisible} from '../test_util.m.js';
@@ -24,7 +24,8 @@ suite('CrCollapseRadioButton', function() {
   });
 
   test('openOnSelection', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -34,7 +35,8 @@ suite('CrCollapseRadioButton', function() {
   });
 
   test('closeOnDeselect', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -45,7 +47,8 @@ suite('CrCollapseRadioButton', function() {
 
   // Button should remain closed when noAutomaticCollapse flag is set.
   test('closedWhenInitiallyClosedAndNoAutomaticCollapse', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -62,7 +65,8 @@ suite('CrCollapseRadioButton', function() {
 
   // Button should remain opened when noAutomaticCollapse flag is set.
   test('openedWhenInitiallyOpenedAndNoAutomaticCollapse', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -80,11 +84,12 @@ suite('CrCollapseRadioButton', function() {
   // When the button is not selected clicking the expand icon should still
   // open the iron collapse.
   test('openOnExpandHit', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
-    collapseRadioButton.$$('cr-expand-button').click();
+    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
     flush();
     assertTrue(collapse.opened);
   });
@@ -92,11 +97,12 @@ suite('CrCollapseRadioButton', function() {
   // When the button is selected clicking the expand icon should still close
   // the iron collapse.
   test('closeOnExpandHitWhenSelected', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
-    collapseRadioButton.$$('cr-expand-button').click();
+    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
     flush();
     assertFalse(collapse.opened);
   });
@@ -104,7 +110,8 @@ suite('CrCollapseRadioButton', function() {
   // When the noAutomaticCollapse flag if set, the expand arrow should expand
   // the radio button immediately.
   test('openOnExpandHitWhenNoAutomaticCollapse', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -113,7 +120,7 @@ suite('CrCollapseRadioButton', function() {
     flush();
     assertFalse(collapse.opened);
 
-    collapseRadioButton.$$('cr-expand-button').click();
+    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
     flush();
     assertTrue(collapse.opened);
   });
@@ -121,7 +128,8 @@ suite('CrCollapseRadioButton', function() {
   // When the noAutomaticCollapse flag if set, the expand arrow should collapse
   // the radio button immediately.
   test('closeOnExpandHitWhenSelectedWhenNoAutomaticCollapse', function() {
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -130,7 +138,7 @@ suite('CrCollapseRadioButton', function() {
     flush();
     assertTrue(collapse.opened);
 
-    collapseRadioButton.$$('cr-expand-button').click();
+    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
     flush();
     assertFalse(collapse.opened);
   });
@@ -148,11 +156,12 @@ suite('CrCollapseRadioButton', function() {
   test('openOnExpandHitWhenDisabled', function() {
     collapseRadioButton.checked = false;
     collapseRadioButton.disabled = true;
-    const collapse = collapseRadioButton.$$('iron-collapse');
+    const collapse =
+        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
 
     flush();
     assertFalse(collapse.opened);
-    collapseRadioButton.$$('cr-expand-button').click();
+    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
 
     flush();
     assertTrue(collapse.opened);

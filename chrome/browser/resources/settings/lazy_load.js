@@ -77,6 +77,7 @@ export {kMenuCloseDelay} from './languages_page/languages_subpage.js';
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>
+export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
 export {BioEnrollDialogPage} from './privacy_page/security_keys_bio_enroll_dialog.js';
@@ -84,7 +85,7 @@ export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysC
 export {CredentialManagementDialogPage} from './privacy_page/security_keys_credential_management_dialog.js';
 export {ResetDialogPage} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPINDialogPage} from './privacy_page/security_keys_set_pin_dialog.js';
-export {SafeBrowsingSetting} from './privacy_page/security_page.js';
+export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 // <if expr="chromeos">
 export {AndroidInfoBrowserProxyImpl} from './site_settings/android_info_browser_proxy.js';
 // </if>

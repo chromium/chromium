@@ -21,16 +21,16 @@ import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
@@ -44,176 +44,210 @@ import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_pa
  */
 let BlockAutoplayStatus;
 
-Polymer({
-  is: 'settings-privacy-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsPrivacyPageElementBase = mixinBehaviors(
+    [PrefsBehavior, RouteObserverBehavior, I18nBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
+  static get is() {
+    return 'settings-privacy-page';
+  }
 
-  behaviors: [
-    PrefsBehavior,
-    RouteObserverBehavior,
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
-
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
-      }
-    },
-
-    /** @private */
-    showClearBrowsingDataDialog_: Boolean,
-
-    /** @private */
-    enableSafeBrowsingSubresourceFilter_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
-      }
-    },
-
-    /** @private */
-    cookieSettingDescription_: String,
-
-    /** @private */
-    enableBlockAutoplayContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
-      }
-    },
-
-    /** @private {BlockAutoplayStatus} */
-    blockAutoplayStatus_: {
-      type: Object,
-      value() {
-        return /** @type {BlockAutoplayStatus} */ ({});
-      }
-    },
-
-    /** @private */
-    enableContentSettingsRedesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableContentSettingsRedesign');
-      }
-    },
-
-    /** @private */
-    enablePaymentHandlerContentSetting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
-      }
-    },
-
-    /** @private */
-    enableExperimentalWebPlatformFeatures_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures');
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    enableSecurityKeysSubpage_: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-      }
-    },
-
-    /** @private */
-    enableQuietNotificationPromptsSetting_: {
-      type: Boolean,
-      value: () =>
-          loadTimeData.getBoolean('enableQuietNotificationPromptsSetting'),
-    },
-
-    /** @private */
-    enableWebBluetoothNewPermissionsBackend_: {
-      type: Boolean,
-      value: () =>
-          loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
-    },
-
-    /** @private */
-    enablePrivacySandboxSettings_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('privacySandboxSettingsEnabled'),
-    },
-
-    /** @private */
-    enablePrivacyReview_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('privacyReviewEnabled'),
-    },
-
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-
-        if (routes.SECURITY) {
-          map.set(routes.SECURITY.path, '#securityLinkRow');
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
         }
-
-        if (routes.COOKIES) {
-          map.set(
-              `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
-              '#cookiesLinkRow');
-          map.set(
-              `${routes.COOKIES.path}_${routes.BASIC.path}`, '#cookiesLinkRow');
-        }
-
-        if (routes.SITE_SETTINGS) {
-          map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
-        }
-
-        return map;
       },
-    },
 
-    /**
-     * Expose NotificationSetting enum to HTML bindings.
-     * @private
-     */
-    notificationSettingEnum_: {
-      type: Object,
-      value: NotificationSetting,
-    },
+      /** @private */
+      showClearBrowsingDataDialog_: Boolean,
 
-    /** @private */
-    searchFilter_: String,
+      /** @private */
+      enableSafeBrowsingSubresourceFilter_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter');
+        }
+      },
 
-    /** @private */
-    siteDataFilter_: String,
-  },
+      /** @private */
+      cookieSettingDescription_: String,
 
-  /** @private {?PrivacyPageBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      enableBlockAutoplayContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableBlockAutoplayContentSetting');
+        }
+      },
 
-  /** @private {?MetricsBrowserProxy} */
-  metricsBrowserProxy_: null,
+      /** @private {BlockAutoplayStatus} */
+      blockAutoplayStatus_: {
+        type: Object,
+        value() {
+          return /** @type {BlockAutoplayStatus} */ ({});
+        }
+      },
+
+      /** @private */
+      enableContentSettingsRedesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableContentSettingsRedesign');
+        }
+      },
+
+      /** @private */
+      enablePaymentHandlerContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
+        }
+      },
+
+      /** @private */
+      enableExperimentalWebPlatformFeatures_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableExperimentalWebPlatformFeatures');
+        },
+      },
+
+      /** @private */
+      enableSecurityKeysSubpage_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableSecurityKeysSubpage');
+        }
+      },
+
+      /** @private */
+      enableQuietNotificationPromptsSetting_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableQuietNotificationPromptsSetting'),
+      },
+
+      /** @private */
+      enableWebBluetoothNewPermissionsBackend_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
+      },
+
+      /** @private */
+      enablePrivacySandboxSettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacySandboxSettingsEnabled'),
+      },
+
+      /** @private */
+      enablePrivacyReview_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacyReviewEnabled'),
+      },
+
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+
+          if (routes.SECURITY) {
+            map.set(routes.SECURITY.path, '#securityLinkRow');
+          }
+
+          if (routes.COOKIES) {
+            map.set(
+                `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
+                '#cookiesLinkRow');
+            map.set(
+                `${routes.COOKIES.path}_${routes.BASIC.path}`,
+                '#cookiesLinkRow');
+          }
+
+          if (routes.SITE_SETTINGS) {
+            map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
+          }
+
+          return map;
+        },
+      },
+
+      /**
+       * Expose NotificationSetting enum to HTML bindings.
+       * @private
+       */
+      notificationSettingEnum_: {
+        type: Object,
+        value: NotificationSetting,
+      },
+
+      /** @private */
+      searchFilter_: String,
+
+      /** @private */
+      siteDataFilter_: String,
+
+      /**
+       * Expose ContentSettingsTypes enum to HTML bindings.
+       * @private
+       */
+      contentSettingsTypesEnum_: {
+        type: Object,
+        value: ContentSettingsTypes,
+      },
+
+      /**
+       * Expose ChooserType enum to HTML bindings.
+       * @private
+       */
+      chooserTypeEnum_: {
+        type: Object,
+        value: ChooserType,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    /** @private {?PrivacyPageBrowserProxy} */
+    this.browserProxy_ = null;
+
+    /** @private {?MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
-    this.ContentSettingsTypes = ContentSettingsTypes;
-    this.ChooserType = ChooserType;
+    super.ready();
 
     this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
@@ -233,13 +267,13 @@ Polymer({
     this.addWebUIListener(
         'cookieSettingDescriptionChanged',
         description => this.cookieSettingDescription_ = description);
-  },
+  }
 
   /** @protected */
   currentRouteChanged() {
     this.showClearBrowsingDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
-  },
+  }
 
   /**
    * Called when the block autoplay status changes.
@@ -248,7 +282,7 @@ Polymer({
    */
   onBlockAutoplayStatusChanged_(autoplayStatus) {
     this.blockAutoplayStatus_ = autoplayStatus;
-  },
+  }
 
   /**
    * Updates the block autoplay pref when the toggle is changed.
@@ -258,7 +292,7 @@ Polymer({
   onBlockAutoplayToggleChange_(event) {
     const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
     this.browserProxy_.setBlockAutoplayEnabled(target.checked);
-  },
+  }
 
   /**
    * This is a workaround to connect the remove all button to the subpage.
@@ -266,25 +300,25 @@ Polymer({
    */
   onRemoveAllCookiesFromSite_() {
     const node = /** @type {?SiteDataDetailsSubpageElement} */ (
-        this.$$('site-data-details-subpage'));
+        this.shadowRoot.querySelector('site-data-details-subpage'));
     if (node) {
       node.removeAll();
     }
-  },
+  }
 
   /** @private */
   onClearBrowsingDataTap_() {
     this.tryShowHatsSurvey_();
 
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
-  },
+  }
 
   /** @private */
   onCookiesClick_() {
     this.tryShowHatsSurvey_();
 
     Router.getInstance().navigateTo(routes.COOKIES);
-  },
+  }
 
   /** @private */
   onDialogClosed_() {
@@ -292,16 +326,17 @@ Polymer({
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
       // screen readers read out the newly focused element.
-      focusWithoutInk(assert(this.$$('#clearBrowsingData')));
+      focusWithoutInk(
+          assert(this.shadowRoot.querySelector('#clearBrowsingData')));
     });
-  },
+  }
 
   /** @private */
   onPermissionsPageClick_() {
     this.tryShowHatsSurvey_();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
-  },
+  }
 
   /** @private */
   onSecurityPageClick_() {
@@ -309,7 +344,7 @@ Polymer({
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromParentSettings');
     Router.getInstance().navigateTo(routes.SECURITY);
-  },
+  }
 
   /** @private */
   onPrivacySandboxClick_() {
@@ -317,23 +352,23 @@ Polymer({
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot.getElementById('privacySandboxLink').click();
-  },
+  }
 
   /** @private */
   onPrivacyReviewClick_() {
     // TODO(crbug/1215630): Implement navigation and metrics.
-  },
+  }
 
   /** @private */
   getProtectedContentLabel_(value) {
     return value ? this.i18n('siteSettingsProtectedContentAllowed') :
                    this.i18n('siteSettingsProtectedContentBlocked');
-  },
+  }
 
   /** @private */
   tryShowHatsSurvey_() {
     HatsBrowserProxyImpl.getInstance().tryShowSurvey();
-  },
+  }
 
   /**
    * @return {string}
@@ -343,7 +378,7 @@ Polymer({
     return this.getPref('privacy_sandbox.apis_enabled').value ?
         this.i18n('privacySandboxTrialsEnabled') :
         this.i18n('privacySandboxTrialsDisabled');
-  },
+  }
 
   /**
    * @return {string}
@@ -351,5 +386,8 @@ Polymer({
    */
   computeClearBrowsingDataClass_() {
     return this.enablePrivacyReview_ ? 'hr' : '';
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsPrivacyPageElement.is, SettingsPrivacyPageElement);

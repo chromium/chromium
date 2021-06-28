@@ -7,47 +7,66 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior, PrefsBehaviorInterface} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
-Polymer({
-  is: 'privacy-sandbox-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PrefsBehaviorInterface}
+ */
+const PrivacySandboxAppElementBase =
+    mixinBehaviors([PrefsBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
+  static get is() {
+    return 'privacy-sandbox-app';
+  }
 
-  behaviors: [
-    PrefsBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private */
-    privacySandboxSettings2Enabled_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('privacySandboxSettings2Enabled'),
-    },
+  static get properties() {
+    return {
+      /** @private */
+      privacySandboxSettings2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privacySandboxSettings2Enabled'),
+      },
 
-    /** @private {!FlocIdentifier} */
-    flocId_: {
-      type: Object,
-    },
-  },
+      /** @private {!FlocIdentifier} */
+      flocId_: {
+        type: Object,
+      },
+    };
+  }
 
-  observers: ['onFlocChanged_(prefs.generated.floc_enabled.*)'],
+  static get observers() {
+    return ['onFlocChanged_(prefs.generated.floc_enabled.*)'];
+  }
 
-  /** @private {?MetricsBrowserProxy} */
-  metricsBrowserProxy_: null,
+  constructor() {
+    super();
 
-  /** @private {?PrivacySandboxBrowserProxy} */
-  privacySandboxBrowserProxy_: null,
+    /** @private {?MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = null;
+
+    /** @private {?PrivacySandboxBrowserProxy} */
+    this.privacySandboxBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
     chrome.metricsPrivate.recordSparseHashable(
         'WebUI.Settings.PathVisited', '/privacySandbox');
@@ -78,30 +97,30 @@ Polymer({
     });
 
     HatsBrowserProxyImpl.getInstance().tryShowPrivacySandboxSurvey();
-  },
+  }
 
   /** @private */
-  apiToggleButtonClass_: function() {
+  apiToggleButtonClass_() {
     return this.privacySandboxSettings2Enabled_ ? 'updated-toggle-button' : '';
-  },
+  }
 
   /** @private */
-  onFlocChanged_: function() {
+  onFlocChanged_() {
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-  },
+  }
 
   /** @private */
-  onLearnMoreButtonClick_: function() {
+  onLearnMoreButtonClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenExplainer');
     OpenWindowProxyImpl.getInstance().openURL(
         loadTimeData.getString('privacySandboxURL'));
-  },
+  }
 
   /** @private */
-  onResetFlocClick_: function() {
+  onResetFlocClick_() {
     this.privacySandboxBrowserProxy_.resetFlocId();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -113,7 +132,7 @@ Polymer({
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
     this.setPrefValue('privacy_sandbox.manually_controlled', true);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -124,5 +143,7 @@ Polymer({
     this.metricsBrowserProxy_.recordAction(
         flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
                       'Settings.PrivacySandbox.FlocDisabled');
-  },
-});
+  }
+}
+
+customElements.define(PrivacySandboxAppElement.is, PrivacySandboxAppElement);

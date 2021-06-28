@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/privacy_sandbox/app.js';
-
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 
@@ -61,7 +60,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
   });
 
   test('clickApiToggleTest', async function() {
-    const toggleButton = page.$$('#apiToggleButton');
+    const toggleButton = page.shadowRoot.querySelector('#apiToggleButton');
     for (const apisEnabledPrior of [true, false]) {
       page.prefs = {
         privacy_sandbox: {
@@ -84,7 +83,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
 
   test('learnMoreTest', async function() {
     // User clicks the "Learn more" button.
-    page.$$('#learnMoreButton').click();
+    page.shadowRoot.querySelector('#learnMoreButton').click();
     // Ensure UMA is logged.
     assertEquals(
         'Settings.PrivacySandbox.OpenExplainer',
@@ -96,7 +95,7 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
   });
 
   test('viewedPref', async function() {
-    page.$$('#prefs').initialize();
+    page.shadowRoot.querySelector('#prefs').initialize();
     await CrSettingsPrefs.initialized;
     assertTrue(!!page.getPref('privacy_sandbox.page_viewed').value);
   });
@@ -115,7 +114,8 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
   });
 
   test('toggleClass', function() {
-    assertEquals('', page.$$('#apiToggleButton').className);
+    assertEquals(
+        '', page.shadowRoot.querySelector('#apiToggleButton').className);
   });
 });
 
@@ -177,10 +177,14 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
     // to the document.
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
     assertEquals(
-        'test-trial-status', page.$$('#flocStatus').textContent.trim());
-    assertEquals('test-id', page.$$('#flocId').textContent.trim());
-    assertEquals('test-time', page.$$('#flocUpdatedOn').textContent.trim());
-    assertFalse(page.$$('#resetFlocIdButton').disabled);
+        'test-trial-status',
+        page.shadowRoot.querySelector('#flocStatus').textContent.trim());
+    assertEquals(
+        'test-id', page.shadowRoot.querySelector('#flocId').textContent.trim());
+    assertEquals(
+        'test-time',
+        page.shadowRoot.querySelector('#flocUpdatedOn').textContent.trim());
+    assertFalse(page.shadowRoot.querySelector('#resetFlocIdButton').disabled);
 
     // The page should listen for changes via a WebUI listener.
     webUIListenerCallback('floc-id-changed', {
@@ -192,14 +196,19 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
     await flushTasks();
     assertEquals(
-        'new-test-trial-status', page.$$('#flocStatus').textContent.trim());
-    assertEquals('new-test-id', page.$$('#flocId').textContent.trim());
-    assertEquals('new-test-time', page.$$('#flocUpdatedOn').textContent.trim());
-    assertTrue(page.$$('#resetFlocIdButton').disabled);
+        'new-test-trial-status',
+        page.shadowRoot.querySelector('#flocStatus').textContent.trim());
+    assertEquals(
+        'new-test-id',
+        page.shadowRoot.querySelector('#flocId').textContent.trim());
+    assertEquals(
+        'new-test-time',
+        page.shadowRoot.querySelector('#flocUpdatedOn').textContent.trim());
+    assertTrue(page.shadowRoot.querySelector('#resetFlocIdButton').disabled);
   });
 
   test('resetFlocId', function() {
-    page.$$('#resetFlocIdButton').click();
+    page.shadowRoot.querySelector('#resetFlocIdButton').click();
     return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
   });
 
@@ -224,17 +233,18 @@ suite('PrivacySandbox_PrivacySandboxSettings2Enabled', function() {
 
   test('toggleClass', function() {
     assertEquals(
-        'updated-toggle-button', page.$$('#apiToggleButton').className);
+        'updated-toggle-button',
+        page.shadowRoot.querySelector('#apiToggleButton').className);
   });
 
   test('userActions', async function() {
-    page.$$('#flocToggleButton').click();
+    page.shadowRoot.querySelector('#flocToggleButton').click();
     assertEquals(
         'Settings.PrivacySandbox.FlocDisabled',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 
-    page.$$('#flocToggleButton').click();
+    page.shadowRoot.querySelector('#flocToggleButton').click();
     assertEquals(
         'Settings.PrivacySandbox.FlocEnabled',
         await testMetricsBrowserProxy.whenCalled('recordAction'));

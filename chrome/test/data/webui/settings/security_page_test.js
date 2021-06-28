@@ -6,7 +6,7 @@
 import {isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks, isChildVisible} from '../test_util.m.js';
