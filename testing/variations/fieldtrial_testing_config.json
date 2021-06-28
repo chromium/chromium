@@ -6178,6 +6178,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PartitionAllocPCScanBrowserOnly"
+                    ],
+                    "disable_features": [
+                        "PartitionAllocPCScanImmediateFreeing"
                     ]
                 }
             ]
