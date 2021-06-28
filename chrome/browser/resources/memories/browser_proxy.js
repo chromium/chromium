@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
@@ -20,6 +19,17 @@ export class BrowserProxy {
     this.callbackRouter = new PageCallbackRouter();
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
+
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  /** @param {!BrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserProxy);
+/** @type {?BrowserProxy} */
+let instance = null;

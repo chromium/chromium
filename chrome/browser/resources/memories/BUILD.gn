@@ -36,10 +36,7 @@ js_library("app") {
 }
 
 js_library("browser_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
 }
 
 js_library("history_clusters") {
