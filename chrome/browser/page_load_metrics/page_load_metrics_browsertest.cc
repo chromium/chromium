@@ -3499,7 +3499,9 @@ class NavigationPageLoadMetricsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
+// Flaky. See https://crbug.com/1224268.
+IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest,
+                       DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
