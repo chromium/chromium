@@ -322,7 +322,9 @@ std::set<std::string> GetEventListenerExtensionIds(
 // Sub-part of the event router for handling device events.
 class DeviceEventRouterImpl : public DeviceEventRouter {
  public:
-  explicit DeviceEventRouterImpl(Profile* profile) : profile_(profile) {}
+  DeviceEventRouterImpl(SystemNotificationManager* notification_manager,
+                        Profile* profile)
+      : DeviceEventRouter(notification_manager), profile_(profile) {}
 
   // DeviceEventRouter overrides.
   void OnDeviceEvent(file_manager_private::DeviceEventType type,
@@ -339,6 +341,8 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
                    extensions::events::FILE_MANAGER_PRIVATE_ON_DEVICE_CHANGED,
                    file_manager_private::OnDeviceChanged::kEventName,
                    file_manager_private::OnDeviceChanged::Create(event));
+
+    system_notification_manager()->HandleDeviceEvent(event);
   }
 
   // DeviceEventRouter overrides.
@@ -437,13 +441,15 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
 EventRouter::EventRouter(Profile* profile)
     : pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       profile_(profile),
-      device_event_router_(std::make_unique<DeviceEventRouterImpl>(profile)),
+      notification_manager_(std::make_unique<SystemNotificationManager>()),
+      device_event_router_(
+          std::make_unique<DeviceEventRouterImpl>(notification_manager_.get(),
+                                                  profile)),
       drivefs_event_router_(
           std::make_unique<DriveFsEventRouterImpl>(profile, &file_watchers_)),
       dispatch_directory_change_event_impl_(
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
-                              base::Unretained(this))),
-      notification_manager_(std::make_unique<SystemNotificationManager>()) {
+                              base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ObserveEvents();
 }

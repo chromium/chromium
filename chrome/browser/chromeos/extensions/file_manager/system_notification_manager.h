@@ -12,6 +12,8 @@ namespace file_manager {
 
 namespace file_manager_private = extensions::api::file_manager_private;
 
+// Manages creation/deletion and update of system notifications on behalf
+// of the File Manager application.
 class SystemNotificationManager {
  public:
   SystemNotificationManager();
@@ -26,7 +28,7 @@ class SystemNotificationManager {
   /**
    * Processes a device event to generate a system notification if needed.
    */
-  void HandleDeviceEvent(file_manager_private::DeviceEvent event);
+  void HandleDeviceEvent(const file_manager_private::DeviceEvent& event);
 };
 
 }  // namespace file_manager

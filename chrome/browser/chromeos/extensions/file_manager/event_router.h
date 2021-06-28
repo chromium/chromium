@@ -256,13 +256,12 @@ class EventRouter
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   Profile* profile_;
 
+  std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
-
-  std::unique_ptr<SystemNotificationManager> notification_manager_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

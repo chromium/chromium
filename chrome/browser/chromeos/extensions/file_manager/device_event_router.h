@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -30,11 +31,12 @@ enum DeviceState {
 class DeviceEventRouter : public VolumeManagerObserver,
                           public chromeos::PowerManagerClient::Observer {
  public:
-  DeviceEventRouter();
+  explicit DeviceEventRouter(SystemNotificationManager* notification_manager);
 
   // |overriding_time_delta| overrides time delta of delayed tasks for testing
   // |so that the tasks are executed by RunLoop::RunUntilIdle.
-  explicit DeviceEventRouter(base::TimeDelta overriding_time_delta);
+  DeviceEventRouter(SystemNotificationManager* notificaton_manager,
+                    base::TimeDelta overriding_time_delta);
 
   ~DeviceEventRouter() override;
 
@@ -85,6 +87,10 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // Returns external storage is disabled or not.
   virtual bool IsExternalStorageDisabled() = 0;
 
+  SystemNotificationManager* system_notification_manager() {
+    return notification_manager_;
+  }
+
  private:
   void StartupDelayed();
   void SuspendDoneDelayed();
@@ -95,7 +101,9 @@ class DeviceEventRouter : public VolumeManagerObserver,
   // Sets device state to the device having |device_path|.
   void SetDeviceState(const std::string& device_path, DeviceState state);
 
-  // Whther to use zero time delta for testing or not.
+  SystemNotificationManager* notification_manager_;
+
+  // Whether to use zero time delta for testing or not.
   const base::TimeDelta resume_time_delta_;
   const base::TimeDelta startup_time_delta_;
 

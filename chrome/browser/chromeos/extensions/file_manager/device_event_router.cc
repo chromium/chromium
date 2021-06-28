@@ -16,14 +16,19 @@ namespace file_manager_private = extensions::api::file_manager_private;
 using content::BrowserThread;
 }  // namespace
 
-DeviceEventRouter::DeviceEventRouter()
-    : resume_time_delta_(base::TimeDelta::FromSeconds(10)),
+DeviceEventRouter::DeviceEventRouter(
+    SystemNotificationManager* notification_manager)
+    : notification_manager_(notification_manager),
+      resume_time_delta_(base::TimeDelta::FromSeconds(10)),
       startup_time_delta_(base::TimeDelta::FromSeconds(10)),
       is_starting_up_(false),
       is_resuming_(false) {}
 
-DeviceEventRouter::DeviceEventRouter(base::TimeDelta overriding_time_delta)
-    : resume_time_delta_(overriding_time_delta),
+DeviceEventRouter::DeviceEventRouter(
+    SystemNotificationManager* notification_manager,
+    base::TimeDelta overriding_time_delta)
+    : notification_manager_(notification_manager),
+      resume_time_delta_(overriding_time_delta),
       startup_time_delta_(overriding_time_delta),
       is_starting_up_(false),
       is_resuming_(false) {}

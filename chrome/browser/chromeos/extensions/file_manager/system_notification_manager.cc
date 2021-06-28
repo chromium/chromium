@@ -17,6 +17,6 @@ bool SystemNotificationManager::DoFilesSwaWindowsExist() {
 }
 
 void SystemNotificationManager::HandleDeviceEvent(
-    file_manager_private::DeviceEvent event) {}
+    const file_manager_private::DeviceEvent& event) {}
 
 }  // namespace file_manager
