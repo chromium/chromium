@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -363,6 +364,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((LanguageSettings) fragment).setRestartAction(() -> {
                 ApplicationLifetime.terminate(true);
             });
+        }
+        if (fragment instanceof ClearBrowsingDataFragmentBasic) {
+            ((ClearBrowsingDataFragmentBasic) fragment)
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 

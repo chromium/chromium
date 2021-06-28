@@ -4,11 +4,19 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.text.SpannableString;
+import android.view.View;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
+import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -36,6 +44,20 @@ import java.util.List;
  * explanatory text.
  */
 public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
+    /**
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
+     * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/1222076): Update when LaunchIntentDispatcher is (partially-)modularized.
+     */
+    public interface CustomTabIntentHelper {
+        /**
+         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
+         */
+        Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
+    private CustomTabIntentHelper mCustomTabHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +146,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         }
     }
 
+    public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
+    }
+
     private void deleteGoogleDataTextIfExists() {
         Preference googleDataTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
@@ -144,29 +170,36 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext().getResources(),
-                                (widget) -> {
-                                    new TabDelegate(false /* incognito */)
-                                            .launchUrl(
-                                                    UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD,
-                                                    TabLaunchType.FROM_CHROME_UI);
-                                })),
+                                createOpenCCTCallback(
+                                        UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD))),
                 new SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
-                            new TabDelegate(false /* incognito */)
-                                    .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD,
-                                            TabLaunchType.FROM_CHROME_UI);
-                        })));
+                        new NoUnderlineClickableSpan(getContext().getResources(),
+                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
     }
 
     private SpannableString buildGoogleMyActivityText() {
         return SpanApplier.applySpans(
                 getContext().getString(R.string.clear_search_history_link_other_forms),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
-                            new TabDelegate(false /* incognito */)
-                                    .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD,
-                                            TabLaunchType.FROM_CHROME_UI);
-                        })));
+                        new NoUnderlineClickableSpan(getContext().getResources(),
+                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
+    }
+
+    private Callback<View> createOpenCCTCallback(String url) {
+        return (widget) -> {
+            assert mCustomTabHelper
+                    != null
+                : "CCT helper must be set on ClearBrowsingFragmentBasic before opening a link.";
+            CustomTabsIntent customTabIntent =
+                    new CustomTabsIntent.Builder().setShowTitle(true).build();
+            customTabIntent.intent.setData(Uri.parse(url));
+            Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
+                    getContext(), customTabIntent.intent);
+            intent.setPackage(getContext().getPackageName());
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+            IntentUtils.addTrustedIntentExtras(intent);
+            IntentUtils.safeStartActivity(getContext(), intent);
+        };
     }
 
     private boolean isHistorySyncEnabled() {
