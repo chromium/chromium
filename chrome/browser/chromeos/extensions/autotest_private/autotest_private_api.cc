@@ -2277,10 +2277,6 @@ AutotestPrivateShowPluginVMInstallerFunction::Run() {
   DVLOG(1) << "AutotestPrivateShowPluginVMInstallerFunction";
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)
-      ->SetFreeDiskSpaceForTesting(
-          plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)
-              ->RequiredFreeDiskSpace());
   plugin_vm::ShowPluginVmInstallerView(profile);
 
   return RespondNow(NoArguments());
