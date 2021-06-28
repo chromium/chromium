@@ -21,8 +21,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -65,7 +65,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -359,12 +358,12 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @EnableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
-    @FlakyTest(message = "https://crbug.com/1223695")
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         mAccountManagerTestRule.addAccount("test@gmail.com");
         mIsCachePopulatedInAccountManagerFacade = true;
-        when(mFakeAccountManagerFacade.canOfferExtendedSyncPromos(any()))
-                .thenReturn(Optional.of(false));
+        doReturn(Optional.of(false))
+                .when(mFakeAccountManagerFacade)
+                .canOfferExtendedSyncPromos(any());
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))
