@@ -249,6 +249,11 @@ void BackgroundFetchDelegateImpl::DoUpdateUi(const std::string& job_id) {
   // registered with this instance.
   UpdateOfflineItem(job_id);
 
+  if (ui_state_map_.find(job_id) == ui_state_map_.end()) {
+    // This is a delayed update event. The Background Fetch has already
+    // completed.
+    return;
+  }
   UiState& ui_state = ui_state_map_[job_id];
   auto update_delta = std::move(ui_state.update_delta);
   NotifyItemUpdated(ui_state.offline_item, update_delta);
