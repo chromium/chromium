@@ -766,17 +766,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
-  if (!signin::ExtendedSyncPromosCapabilityEnabled()) {
+  ios::ChromeIdentityService* identityService =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  if (!signin::ExtendedSyncPromosCapabilityEnabled() ||
+      !identityService->HasIdentities()) {
     // Present the sign-in promo synchronously.
     [self presentSigninUpgradePromo];
     return;
   }
 
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   PrefService* prefService = self.mainInterface.browserState->GetPrefs();
-
-  DCHECK(identityService->HasIdentities());
   ChromeIdentity* defaultIdentity =
       identityService->GetAllIdentities(prefService)[0];
 
