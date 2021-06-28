@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
 
 #include <mach/vm_page_size.h>
 
@@ -48,7 +48,7 @@ PageAllocationGranularityShift() {
   return 16;  // 64kB
 #elif defined(_MIPS_ARCH_LOONGSON)
   return 14;  // 16kB
-#elif defined(OS_APPLE)
+#elif defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
   return vm_page_shift;
 #else
   return 12;  // 4kB
@@ -57,7 +57,7 @@ PageAllocationGranularityShift() {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PageAllocationGranularity() {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << PageAllocationGranularityShift()|
   // below, but was separated out for OS_APPLE to avoid << on a non-constexpr.
   return vm_page_size;
@@ -90,12 +90,12 @@ SystemPageShift() {
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageSize() {
-#if !defined(OS_APPLE)
-  return 1 << SystemPageShift();
-#else
-  // This is literally equivalent to |1 << SystemPageShift()| above, but was
-  // separated out for OS_APPLE to avoid << on a non-constexpr.
+#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
+  // This is literally equivalent to |1 << SystemPageShift()| below, but was
+  // separated out for 64-bit OS_APPLE to avoid << on a non-constexpr.
   return PageAllocationGranularity();
+#else
+  return 1 << SystemPageShift();
 #endif
 }
 

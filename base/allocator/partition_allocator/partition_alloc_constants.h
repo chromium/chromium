@@ -15,7 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
 #include <mach/vm_page_size.h>
 #endif
 
@@ -47,7 +47,7 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PartitionPageShift() {
   return 18;  // 256 KiB
 }
-#elif defined(OS_APPLE)
+#elif defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 PartitionPageShift() {
   return vm_page_shift + 2;

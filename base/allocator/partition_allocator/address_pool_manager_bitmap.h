@@ -18,13 +18,6 @@
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
 
-// *Shift() and *Size() functions used in this file aren't constexpr on
-// OS_APPLE, but need to be used in constexpr context here. We're fine since
-// this is 32-bit only logic and we don't build 32-bit for OS_APPLE.
-#if defined(OS_APPLE)
-#error "32-bit GigaCage isn't supported on Apple OSes"
-#endif
-
 namespace base {
 
 namespace internal {
