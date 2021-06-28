@@ -26,11 +26,10 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerPropert
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,20 +37,12 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Tests the class {@link AccountPickerMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class AccountPickerMediatorTest {
     private static final String FULL_NAME1 = "Test Account1";
+    private static final String FULL_NAME2 = "Test Account2";
     private static final String ACCOUNT_EMAIL1 = "test.account1@gmail.com";
     private static final String ACCOUNT_EMAIL2 = "test.account2@gmail.com";
-
-    private static class CustomProfileDataSource extends FakeProfileDataSource {
-        void removeProfileData(String accountEmail) {
-            mProfileDataMap.remove(accountEmail);
-            for (Observer observer : mObservers) {
-                observer.removeProfileData(accountEmail);
-            }
-        }
-    }
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -59,11 +50,9 @@ public class AccountPickerMediatorTest {
     @Rule
     public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
-    private final CustomProfileDataSource mFakeProfileDataSource = new CustomProfileDataSource();
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeProfileDataSource);
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Mock
     private AccountPickerCoordinator.Listener mListenerMock;
@@ -88,45 +77,29 @@ public class AccountPickerMediatorTest {
 
     @Test
     public void testModelPopulation() {
-        addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
-        addAccount(ACCOUNT_EMAIL2, "");
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
         mMediator = new AccountPickerMediator(
                 RuntimeEnvironment.application, mModelList, mListenerMock);
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, "");
+        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, FULL_NAME2);
         checkItemForAddAccountRow(2);
     }
 
     @Test
     public void testProfileDataUpdateWhenAccountPickerIsShownFromSettings() {
-        addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
-        addAccount(ACCOUNT_EMAIL2, "");
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
         mMediator = new AccountPickerMediator(
                 RuntimeEnvironment.application, mModelList, mListenerMock);
-        String fullName2 = "Full Name2";
-        mFakeProfileDataSource.addProfileData(
-                new ProfileDataSource.ProfileData(ACCOUNT_EMAIL2, null, fullName2, null));
+        String newFullName2 = "Full Name2";
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, newFullName2, "", null);
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, fullName2);
-        checkItemForAddAccountRow(2);
-    }
-
-    @Test
-    public void testProfileDataRemovedWhenAccountPickerIsShownFromSettings() {
-        addAccount(ACCOUNT_EMAIL1, FULL_NAME1);
-        final String fullName2 = "Full Name2";
-        addAccount(ACCOUNT_EMAIL2, fullName2);
-        mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock);
-        mFakeProfileDataSource.removeProfileData(ACCOUNT_EMAIL1);
-        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
-        Assert.assertEquals(3, mModelList.size());
-        checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, null);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, fullName2);
+        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, newFullName2);
         checkItemForAddAccountRow(2);
     }
 
@@ -149,11 +122,5 @@ public class AccountPickerMediatorTest {
         Assert.assertEquals(AccountPickerProperties.ItemType.ADD_ACCOUNT_ROW, item.type);
         item.model.get(AddAccountRowProperties.ON_CLICK_LISTENER).onClick(null);
         verify(mListenerMock).addAccount();
-    }
-
-    private void addAccount(String accountName, String fullName) {
-        ProfileDataSource.ProfileData profileData =
-                new ProfileDataSource.ProfileData(accountName, null, fullName, null);
-        mAccountManagerTestRule.addAccount(profileData);
     }
 }

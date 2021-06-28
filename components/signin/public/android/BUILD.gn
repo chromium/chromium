@@ -89,6 +89,7 @@ android_library("signin_java_test_support") {
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
+    "java/src/org/chromium/components/signin/test/util/FakeAccountInfoService.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
     "java/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",

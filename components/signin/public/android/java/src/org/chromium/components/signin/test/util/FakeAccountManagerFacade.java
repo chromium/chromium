@@ -125,7 +125,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public String getAccountGaiaId(String accountEmail) {
-        return "gaia-id-" + accountEmail.replace("@", "_at_");
+        return toGaiaId(accountEmail);
     }
 
     /**
@@ -160,6 +160,13 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void addProfileData(ProfileDataSource.ProfileData profileData) {
         assert mFakeProfileDataSource != null : "ProfileDataSource was disabled!";
         mFakeProfileDataSource.addProfileData(profileData);
+    }
+
+    /**
+     * Converts an email to a fake gaia Id.
+     */
+    public static String toGaiaId(String email) {
+        return "gaia-id-" + email.replace("@", "_at_");
     }
 
     @GuardedBy("mLock")

@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class AccountInfoServiceProvider {
     private static final AtomicReference<AccountInfoService> sInstance = new AtomicReference<>();
+    private static final AtomicReference<AccountInfoService> sTestingInstance =
+            new AtomicReference<>();
 
     /**
      * Initializes the singleton {@link AccountInfoService} instance.
@@ -27,6 +29,9 @@ public final class AccountInfoServiceProvider {
      * Gets the singleton {@link AccountInfoService} instance.
      */
     public static AccountInfoService get() {
+        if (sTestingInstance.get() != null) {
+            return sTestingInstance.get();
+        }
         if (sInstance.get() == null) {
             throw new RuntimeException("The AccountInfoService is not yet initialized!");
         }
@@ -34,7 +39,13 @@ public final class AccountInfoServiceProvider {
     }
 
     @VisibleForTesting
+    public static void setInstanceForTests(AccountInfoService accountInfoService) {
+        sTestingInstance.set(accountInfoService);
+    }
+
+    @VisibleForTesting
     public static void resetForTests() {
+        sTestingInstance.set(null);
         sInstance.set(null);
     }
 
