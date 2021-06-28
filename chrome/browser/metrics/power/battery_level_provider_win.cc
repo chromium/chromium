@@ -142,7 +142,8 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   // TaskRunner used to run blocking GetBatteryInterfaceList queries, sequenced
   // to avoid the performance cost of concurrent calls.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
+    base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})};
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
