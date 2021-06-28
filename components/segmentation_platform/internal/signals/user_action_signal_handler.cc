@@ -29,10 +29,14 @@ void UserActionSignalHandler::EnableMetrics(bool enable_metrics) {
     return;
 
   metrics_enabled_ = enable_metrics;
-  if (metrics_enabled_)
+
+  // As an added optimization, we unregister the callback when metrics is
+  // disabled.
+  if (metrics_enabled_) {
     base::AddActionCallback(action_callback_);
-  else
+  } else {
     base::RemoveActionCallback(action_callback_);
+  }
 }
 
 void UserActionSignalHandler::SetRelevantUserActions(

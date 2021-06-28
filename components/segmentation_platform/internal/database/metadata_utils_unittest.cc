@@ -115,6 +115,37 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
   EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info));
 }
 
+TEST_F(MetadataUtilsTest, GetTimeUnit) {
+  proto::SegmentationModelMetadata metadata;
+  metadata.set_time_unit(proto::TimeUnit::DAY);
+  EXPECT_EQ(base::TimeDelta::FromDays(1),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::HOUR);
+  EXPECT_EQ(base::TimeDelta::FromHours(1),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::MINUTE);
+  EXPECT_EQ(base::TimeDelta::FromMinutes(1),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::SECOND);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::WEEK);
+  EXPECT_EQ(base::TimeDelta::FromDays(7),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::MONTH);
+  EXPECT_EQ(base::TimeDelta::FromDays(30),
+            metadata_utils::GetTimeUnit(metadata));
+
+  metadata.set_time_unit(proto::TimeUnit::YEAR);
+  EXPECT_EQ(base::TimeDelta::FromDays(365),
+            metadata_utils::GetTimeUnit(metadata));
+}
+
 TEST_F(MetadataUtilsTest, GetNameHashForFeature) {
   proto::Feature feature;
   proto::UserActionFeature* user_action = feature.mutable_user_action();

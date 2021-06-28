@@ -62,6 +62,7 @@ void SignalDatabaseImpl::WriteSample(proto::SignalType signal_type,
                                      absl::optional<int32_t> value,
                                      base::Time timestamp,
                                      SuccessCallback callback) {
+  DCHECK(initialized_);
   SignalKey key(metadata_utils::SignalTypeToSignalKind(signal_type), name_hash,
                 timestamp, timestamp);
 
@@ -90,6 +91,7 @@ void SignalDatabaseImpl::GetSamples(proto::SignalType signal_type,
                                     base::Time start_time,
                                     base::Time end_time,
                                     SamplesCallback callback) {
+  DCHECK(initialized_);
   SignalKey dummy_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                       name_hash, base::Time(), base::Time());
   std::string key_prefix = dummy_key.GetPrefixInBinary();
@@ -141,6 +143,7 @@ void SignalDatabaseImpl::DeleteSamples(proto::SignalType signal_type,
                                        uint64_t name_hash,
                                        base::Time end_time,
                                        SuccessCallback callback) {
+  DCHECK(initialized_);
   SignalKey dummy_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                       name_hash, base::Time(), base::Time());
   std::string key_prefix = dummy_key.GetPrefixInBinary();
@@ -179,6 +182,7 @@ void SignalDatabaseImpl::CompactSamplesForDay(proto::SignalType signal_type,
                                               uint64_t name_hash,
                                               base::Time day_start_time,
                                               SuccessCallback callback) {
+  DCHECK(initialized_);
   // Compact the signals between 00:00:00AM to 23:59:59PM.
   day_start_time = day_start_time.UTCMidnight();
   base::Time day_end_time = day_start_time + base::TimeDelta::FromDays(1) -
@@ -230,6 +234,7 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
 void SignalDatabaseImpl::OnDatabaseInitialized(
     SuccessCallback callback,
     leveldb_proto::Enums::InitStatus status) {
+  initialized_ = status == leveldb_proto::Enums::InitStatus::kOK;
   std::move(callback).Run(status == leveldb_proto::Enums::InitStatus::kOK);
 }
 
