@@ -524,6 +524,10 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
+  // Reauth prompt should only be set when the user is syncing, since reauth
+  // turns on sync by default.
+  should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
+                                       signin::ConsentLevel::kSync);
   // Sign the user out.
   SignOut(signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
           /*force_clear_browsing_data=*/false, nil);

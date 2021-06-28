@@ -104,6 +104,10 @@ class AuthenticationServiceTest : public PlatformTest {
     EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(0);
   }
 
+  void SetExpectationsForSignInAndSync() {
+    EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(1);
+  }
+
   void FireApplicationWillEnterForeground() {
     authentication_service()->OnApplicationWillEnterForeground();
   }
@@ -186,6 +190,7 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
   EXPECT_TRUE(authentication_service()->IsAuthenticated());
 }
 
+// Tests that reauth prompt can be set and reset.
 TEST_F(AuthenticationServiceTest, TestSetPromptForSignIn) {
   // Verify that the default value of this flag is off.
   EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
@@ -196,10 +201,12 @@ TEST_F(AuthenticationServiceTest, TestSetPromptForSignIn) {
   EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
 }
 
+// Tests that reauth prompt is not set when the user signs out.
 TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   // Sign in.
-  SetExpectationsForSignIn();
+  SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
+  authentication_service()->GrantSyncConsent(identity(0));
 
   // Set the authentication service as "In Foreground", remove identity and run
   // the loop.
@@ -217,7 +224,32 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
 }
 
+// Tests that reauth prompt is set if the primary identity is remove from
+// an other app when the user was signed and syncing.
 TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
+  // Sign in.
+  SetExpectationsForSignInAndSync();
+  authentication_service()->SignIn(identity(0));
+  authentication_service()->GrantSyncConsent(identity(0));
+
+  // Set the authentication service as "In Background", remove identity and run
+  // the loop.
+  identity_service()->SimulateForgetIdentityFromOtherApp(identity(0));
+  base::RunLoop().RunUntilIdle();
+
+  // User is signed out (no corresponding identity), and reauth prompt is set.
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .email.empty());
+  EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
+  EXPECT_FALSE(authentication_service()->IsAuthenticated());
+  EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
+}
+
+// Tests that reauth prompt is not set if the primary identity is remove from
+// an other app when the user was only signed in (and not syncing).
+TEST_F(AuthenticationServiceTest,
+       TestHandleForgottenIdentityNoPromptSignInAndSync) {
   // Sign in.
   SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
@@ -227,14 +259,14 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   identity_service()->SimulateForgetIdentityFromOtherApp(identity(0));
   base::RunLoop().RunUntilIdle();
 
-  // User is signed out (no corresponding identity), but not prompted for sign
-  // in (as the action was user initiated).
+  // User is signed out (no corresponding identity), and reauth prompt is not
+  // set since the user was not syncing.
   EXPECT_TRUE(identity_manager()
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                   .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
-  EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
+  EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
 }
 
 TEST_F(AuthenticationServiceTest,
@@ -586,7 +618,7 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
 
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
-  EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(0);
+  SetExpectationsForSignIn();
   authentication_service()->SignIn(identity(0));
 
   EXPECT_NSEQ(identity(0),
