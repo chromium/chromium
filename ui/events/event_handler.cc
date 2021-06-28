@@ -22,7 +22,12 @@ EventHandler::~EventHandler() {
 }
 
 void EventHandler::OnEvent(Event* event) {
-  VLOG(5) << GetLogContext() << "::OnEvent(" << event->ToString() << ")";
+  // You may uncomment the following line if more detailed logging is necessary
+  // for diagnosing event processing. This code is a critical path and the added
+  // overhead from the logging can introduce other issues. Please do not commit
+  // with the following line commented without first discussing with OWNERs.
+  // See crbug/1210633 for details.
+  // VLOG(5) << GetLogContext() << "::OnEvent(" << event->ToString() << ")";
   if (event->IsKeyEvent())
     OnKeyEvent(event->AsKeyEvent());
   else if (event->IsMouseEvent())
