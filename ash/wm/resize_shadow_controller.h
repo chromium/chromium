@@ -27,6 +27,7 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
   ~ResizeShadowController() override;
 
   // Shows the appropriate shadow for a given |window| and |hit_test| location.
+  // If the |window| is invisible, the shadow will not shown.
   void ShowShadow(aura::Window* window, int hit_test = HTNOWHERE);
 
   // Shows all shadows.

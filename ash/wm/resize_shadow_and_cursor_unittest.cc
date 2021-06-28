@@ -421,25 +421,48 @@ TEST_F(ResizeShadowAndCursorTest, LockShadowBounds) {
             gfx::Rect(layer->GetTargetBounds().size()).ToString());
 }
 
-// Tests that shadow gets updated when the window's visibility changed.
-TEST_F(ResizeShadowAndCursorTest, ShowHideShadow) {
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
-  generator.MoveMouseTo(200, 50);
-  VerifyResizeShadow(true);
-  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+// Tests that shadow gets updated according to the window's visibility.
+TEST_F(ResizeShadowAndCursorTest, ShowHideLockShadow) {
   ASSERT_FALSE(GetShadow());
-
   window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
-  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+
+  // Test shown window.
   window()->Show();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
   VerifyResizeShadow(true);
-  window()->Hide();
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
   VerifyResizeShadow(false);
   Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
   VerifyResizeShadow(true);
   Shell::Get()->resize_shadow_controller()->HideAllShadows();
   VerifyResizeShadow(false);
+
+  // Test hidden window.
+  window()->Hide();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+  VerifyResizeShadow(false);
+}
+
+// Tests that shadow gets updated when the window's visibility changed.
+TEST_F(ResizeShadowAndCursorTest, WindowVisibilityChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  window()->Show();
+  VerifyResizeShadow(true);
+  window()->Hide();
+  VerifyResizeShadow(false);
+  window()->Show();
+  VerifyResizeShadow(true);
 }
 
 // Tests that shadow type gets updated according to the window's property.

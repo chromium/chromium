@@ -35,13 +35,13 @@ ResizeShadowController::~ResizeShadowController() {
 
 void ResizeShadowController::ShowShadow(aura::Window* window, int hit_test) {
   RecreateShadowIfNeeded(window);
-  if (ShouldShowShadowForWindow(window))
+  if (ShouldShowShadowForWindow(window) && window->IsVisible())
     GetShadowForWindow(window)->ShowForHitTest(hit_test);
 }
 
 void ResizeShadowController::TryShowAllShadows() {
   for (const auto& shadow : window_shadows_)
-    UpdateShadowVisibility(shadow.first, true);
+    UpdateShadowVisibility(shadow.first, shadow.first->IsVisible());
 }
 
 void ResizeShadowController::HideShadow(aura::Window* window) {
