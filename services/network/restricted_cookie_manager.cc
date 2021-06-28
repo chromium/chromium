@@ -330,10 +330,12 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
       on_cookies_accessed_result;
 
-  // TODO(https://crbug.com/977040): Remove once samesite tightening up is
-  // rolled out.
+  // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
+  // warning reasons once samesite tightening up is rolled out.
   for (const auto& cookie_and_access_result : excluded_cookies) {
-    if (cookie_and_access_result.access_result.status.ShouldWarn()) {
+    if (cookie_and_access_result.access_result.status.ShouldWarn() ||
+        cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
       on_cookies_accessed_result.push_back(
           mojom::CookieOrLineWithAccessResult::New(
               mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
@@ -369,15 +371,6 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     on_cookies_accessed_result.push_back(
         mojom::CookieOrLineWithAccessResult::New(
             mojom::CookieOrLine::NewCookie(cookie), access_result));
-  }
-
-  for (const net::CookieWithAccessResult& c : excluded_cookies) {
-    if (c.access_result.status.HasOnlyExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(c.cookie), c.access_result));
-    }
   }
 
   if (cookie_observer_) {

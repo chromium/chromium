@@ -685,23 +685,52 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
             net::MatchesCookieNameValue("cookie-name", "cookie-value")));
   }
   // Same Party. `party_context` contains fps site.
-  {
     service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
         net::SiteForCookies(),
         std::set<net::SchemefulSite>{
             net::SchemefulSite(GURL("https://member1.com"))}));
+    {
+      auto options = mojom::CookieManagerGetOptions::New();
+      options->name = "cookie-name";
+      options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-    auto options = mojom::CookieManagerGetOptions::New();
-    options->name = "cookie-name";
-    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+      EXPECT_THAT(sync_service_->GetAllForUrl(
+                      kDefaultUrlWithPath, net::SiteForCookies(),
+                      kDefaultOrigin, std::move(options)),
+                  ElementsAre(net::MatchesCookieNameValue("cookie-name",
+                                                          "cookie-value")));
+    }
+    {
+      // Should still be blocked when third-party cookie blocking is enabled.
+      cookie_settings_.set_block_third_party_cookies(true);
+      auto options = mojom::CookieManagerGetOptions::New();
+      options->name = "cookie-name";
+      options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-    EXPECT_THAT(
-        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
-                                    kDefaultOrigin, std::move(options)),
-        ElementsAre(
-            net::MatchesCookieNameValue("cookie-name", "cookie-value")));
-  }
+      EXPECT_THAT(sync_service_->GetAllForUrl(
+                      kDefaultUrlWithPath, net::SiteForCookies(),
+                      kDefaultOrigin, std::move(options)),
+                  IsEmpty());
+
+      // This checks that the cookie access is not double-reported due the
+      // warning reason and EXCLUDE_USER_PREFERENCES.
+      EXPECT_THAT(
+          recorded_activity(),
+          ElementsAre(
+              testing::_, testing::_,
+              MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+                  "",
+                  CookieOrLine("cookie-name=cookie-value",
+                               mojom::CookieOrLine::Tag::COOKIE),
+                  net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                      {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                      {net::CookieInclusionStatus::
+                           WARN_TREATED_AS_SAMEPARTY}))));
+
+      cookie_settings_.set_block_third_party_cookies(false);
+    }
 
   // Cross Party
   {
@@ -724,7 +753,7 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
     EXPECT_THAT(
         recorded_activity(),
         ElementsAre(
-            testing::_, testing::_,
+            testing::_, testing::_, testing::_,
             MatchesCookieOp(
                 testing::_ /* type */, testing::_ /* url */,
                 testing::_ /* site_for_cookies */,
