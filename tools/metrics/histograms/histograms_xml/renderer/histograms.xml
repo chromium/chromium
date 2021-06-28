@@ -197,7 +197,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
-    The time computing primary font consumed in the main thread before FCP.
+    The time spent acquiring the primary font consumed in the main tread before
+    FCP. On Windows, this includes IPC roundtrip to browser process and
+    DirectWriteFontProxy and DirectWrite calls.
   </summary>
 </histogram>
 
@@ -207,8 +209,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
-    The time computing primary font consumed in the main thread in the style
-    recalc before FCP.
+    The time spent acquiring the primary font consumed in style recalc, in the
+    main tread before FCP. On Windows, this includes IPC roundtrip to browser
+    process and DirectWriteFontProxy and DirectWrite calls.
   </summary>
 </histogram>
 
