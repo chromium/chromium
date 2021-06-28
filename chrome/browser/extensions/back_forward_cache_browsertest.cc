@@ -32,7 +32,8 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"all_extensions_allowed",
             all_extensions_allowed ? "true" : "false"},
-           {"blocked_extensions", blocked_extensions}}}},
+           {"blocked_extensions", blocked_extensions},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
