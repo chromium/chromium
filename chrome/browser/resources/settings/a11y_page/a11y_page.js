@@ -22,8 +22,8 @@ import '../settings_page/settings_subpage.js';
 import './live_caption_section.js';
 // </if>
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -33,103 +33,117 @@ import {Router} from '../router.js';
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 // </if>
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsA11YPageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-Polymer({
-  is: 'settings-a11y-page',
+/** @polymer */
+class SettingsA11YPageElement extends SettingsA11YPageElementBase {
+  static get is() {
+    return 'settings-a11y-page';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [WebUIListenerBehavior],
-
-  properties: {
-    /**
-     * The current active route.
-     */
-    currentRoute: {
-      type: Object,
-      notify: true,
-    },
-
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
-
-    // <if expr="not chromeos">
-    /** @private */
-    enableLiveCaption_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('enableLiveCaption');
+  static get properties() {
+    return {
+      /**
+       * The current active route.
+       */
+      currentRoute: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /**
-     * Whether to show the focus highlight setting.
-     * Depends on feature flag for focus highlight.
-     * @private {boolean}
-     */
-    showFocusHighlightOption_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('showFocusHighlightOption');
-      }
-    },
-    // </if>
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * Whether to show accessibility labels settings.
-     */
-    showAccessibilityLabelsSetting_: {
-      type: Boolean,
-      value: false,
-    },
+      // <if expr="not chromeos">
+      /** @private */
+      enableLiveCaption_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('enableLiveCaption');
+        },
+      },
 
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-        if (routes.CAPTIONS) {
-          map.set(routes.CAPTIONS.path, '#captions');
+      /**
+       * Whether to show the focus highlight setting.
+       * Depends on feature flag for focus highlight.
+       * @private {boolean}
+       */
+      showFocusHighlightOption_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('showFocusHighlightOption');
         }
-        return map;
       },
-    },
+      // </if>
 
-    /**
-     * Whether the caption settings link opens externally.
-     * @private {boolean}
-     */
-    captionSettingsOpensExternally_: {
-      type: Boolean,
-      value() {
-        let opensExternally = false;
-        // <if expr="is_macosx">
-        opensExternally = true;
-        // </if>
-
-        // <if expr="is_win">
-        opensExternally = loadTimeData.getBoolean('isWindows10OrNewer');
-        // </if>
-
-        return opensExternally;
+      /**
+       * Whether to show accessibility labels settings.
+       */
+      showAccessibilityLabelsSetting_: {
+        type: Boolean,
+        value: false,
       },
-    },
-  },
+
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          if (routes.CAPTIONS) {
+            map.set(routes.CAPTIONS.path, '#captions');
+          }
+          return map;
+        },
+      },
+
+      /**
+       * Whether the caption settings link opens externally.
+       * @private {boolean}
+       */
+      captionSettingsOpensExternally_: {
+        type: Boolean,
+        value() {
+          let opensExternally = false;
+          // <if expr="is_macosx">
+          opensExternally = true;
+          // </if>
+
+          // <if expr="is_win">
+          opensExternally = loadTimeData.getBoolean('isWindows10OrNewer');
+          // </if>
+
+          return opensExternally;
+        },
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'screen-reader-state-changed',
         this.onScreenReaderStateChanged_.bind(this));
 
     // Enables javascript and gets the screen reader state.
     chrome.send('a11yPageReady');
-  },
+  }
 
   /**
    * @private
@@ -139,7 +153,7 @@ Polymer({
     // TODO(katie): Remove showExperimentalA11yLabels flag before launch.
     this.showAccessibilityLabelsSetting_ = hasScreenReader &&
         loadTimeData.getBoolean('showExperimentalA11yLabels');
-  },
+  }
 
   /**
    * @private
@@ -153,7 +167,7 @@ Polymer({
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.DisableWithSettings');
     }
-  },
+  }
 
   /**
    * @private
@@ -164,7 +178,7 @@ Polymer({
     if (a11yImageLabelsOn) {
       chrome.send('confirmA11yImageLabels');
     }
-  },
+  }
 
   // <if expr="not chromeos">
   /**
@@ -174,21 +188,21 @@ Polymer({
   onFocusHighlightChange_(event) {
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.FocusHighlight.ToggleEnabled', event.target.checked);
-  },
+  }
   // </if>
 
   // <if expr="chromeos">
   /** @private */
   onManageSystemAccessibilityFeaturesTap_() {
     window.location.href = 'chrome://os-settings/manageAccessibility';
-  },
+  }
   // </if>
 
   /** private */
   onMoreFeaturesLinkClick_() {
     window.open(
         'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
-  },
+  }
 
   /** @private */
   onCaptionsClick_() {
@@ -197,5 +211,7 @@ Polymer({
     } else {
       Router.getInstance().navigateTo(routes.CAPTIONS);
     }
-  },
-});
+  }
+}
+
+customElements.define(SettingsA11YPageElement.is, SettingsA11YPageElement);
