@@ -377,9 +377,9 @@ void AmbientPhotoController::OnPhotoRawDataDownloaded(
     base::RepeatingClosure on_done,
     std::string&& data) {
   if (is_related_image)
-    cache_entry_.mutable_primary_photo()->set_image(std::move(data));
-  else
     cache_entry_.mutable_related_photo()->set_image(std::move(data));
+  else
+    cache_entry_.mutable_primary_photo()->set_image(std::move(data));
 
   std::move(on_done).Run();
 }
