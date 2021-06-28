@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -46,8 +47,14 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1224355
+#define MAYBE_RecordFeatures DISABLED_RecordFeatures
+#else
+#define MAYBE_RecordFeatures RecordFeatures
+#endif
 IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
-                       RecordFeatures) {
+                       MAYBE_RecordFeatures) {
   std::vector<WebFeature> features_0(
       {WebFeature::kFetch, WebFeature::kFetchBodyStream});
   std::vector<WebFeature> features_1({WebFeature::kWindowFind});
