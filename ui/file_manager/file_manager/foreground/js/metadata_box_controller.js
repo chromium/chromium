@@ -11,8 +11,8 @@ import {FilesQuickView} from '../elements/files_quick_view.js';
 
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {PathComponent} from './path_component.m.js';
-import {QuickViewModel} from './quick_view_model.m.js';
+import {PathComponent} from './path_component.js';
+import {QuickViewModel} from './quick_view_model.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 
 /**
