@@ -22,7 +22,7 @@ const char kFakeFileName[] = "hello.txt";
 const char kFakeFileText[] =
     "This is a testing file. Lorem ipsum dolor sit amet est.";
 const size_t kFakeFileSize = sizeof(kFakeFileText) - 1u;
-const char kFakeFileModificationTime[] = "Fri Apr 25 01:47:53 UTC 2014";
+const char kFakeFileModificationTime[] = "Fri, 25 Apr 2014 01:47:53";
 const char kFakeFileMimeType[] = "text/plain";
 
 constexpr base::FilePath::CharType kBadFakeEntryPath1[] =
@@ -54,7 +54,8 @@ FakeProvidedFileSystem::FakeProvidedFileSystem(
            "", "");
 
   base::Time modification_time;
-  DCHECK(base::Time::FromString(kFakeFileModificationTime, &modification_time));
+  DCHECK(
+      base::Time::FromUTCString(kFakeFileModificationTime, &modification_time));
   AddEntry(base::FilePath(kFakeFilePath), false, kFakeFileName, kFakeFileSize,
            modification_time, kFakeFileMimeType, kFakeFileText);
 
