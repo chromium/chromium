@@ -105,7 +105,7 @@ The template name can be used as the human-friendly name of the action generated
 
 ### Test Creation & Specification
 
-[Tests]((https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=2008870403)) are created specifying actions.
+[Tests](https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=2008870403) are created specifying actions.
 
 #### Mindset
 The mindset for test creation and organization is to really exhaustively check every possible string of user actions. The framework will automatically combine tests that are the same except for state check actions. They are currently organized by:
@@ -158,7 +158,7 @@ The script is not smart enough to automatically add/remove/move tests to keep co
 
 This process doesn't modify the browsertest files so any test disabling done by sheriffs can remain. The script runner is thus expected to make the requested changes manually. In the rare case that a test is moving between files (if we are enabling a test on a new platform, for example), then the script runner should be careful to copy any sheriff changes to the browsertest as well.
 
-#### 2) Generate per-platform processed required coverage `tsv` files in `chrome/test/webapps/coverage` 
+#### 2) Generate per-platform processed required coverage `tsv` files in `chrome/test/webapps/coverage`
 These are the processed required coverage tests with markers per action to allow a conditional formatter (like the one [here](https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=884228058)) to highlight what was and was not covered by the testing framework.
   * These files also contain a coverage % at the top of the file. Full coverage is the percent of the actions of the processed required coverage test that were executed and fully covered by the framework. Partial coverage also includes actions that are partially covered by the framework.
   * This includes loss of coverage from any disabled tests. Cool!
