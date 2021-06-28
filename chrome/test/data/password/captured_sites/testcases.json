@@ -128,7 +128,7 @@
     { "scenario_dir":"sign_up_pass", "site_name":"battle_net" },
     { "scenario_dir":"sign_up_pass", "site_name":"booking", "disabled":true, "bug_number":1220228 },
     { "scenario_dir":"sign_up_pass", "site_name":"clever" },
-    { "scenario_dir":"sign_up_pass", "site_name":"discord_app" },
+    { "scenario_dir":"sign_up_pass", "site_name":"discord_app", "disabled":true, "bug_number":1223945 },
     { "scenario_dir":"sign_up_pass", "site_name":"ea" },
     { "scenario_dir":"sign_up_pass", "site_name":"ebay" },
     { "scenario_dir":"sign_up_pass", "site_name":"edmodo", "disabled":true, "bug_number":1220229 },

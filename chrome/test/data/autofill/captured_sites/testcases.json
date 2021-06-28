@@ -210,7 +210,7 @@
     { "site_name": "wiley" },
     { "site_name": "williams_sonoma" },
     { "site_name": "worldmarket", "disabled":true, "bug_number":1173040 },
-    { "site_name": "zappos" },
+    { "site_name": "zappos", "disabled":true, "bug_number":1223946 },
     { "site_name": "zenni_optical" },
     { "site_name": "zulily" }
   ]
