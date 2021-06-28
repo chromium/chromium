@@ -161,6 +161,16 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
 
+  reasons |= BackfaceInvisibility3DAncestorReason(*layer);
+
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    if (element->ShouldCompositeForDocumentTransition())
+      reasons |= CompositingReason::kDocumentTransitionSharedElement;
+  }
+
+  if (object.CanHaveAdditionalCompositingReasons())
+    reasons |= object.AdditionalCompositingReasons();
+
   if (auto* scrollable_area = layer->GetScrollableArea()) {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       bool force_prefer_compositing_to_lcd_text =
@@ -179,16 +189,6 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     if (scrollable_area->NeedsCompositedScrolling())
       reasons |= CompositingReason::kOverflowScrolling;
   }
-
-  reasons |= BackfaceInvisibility3DAncestorReason(*layer);
-
-  if (auto* element = DynamicTo<Element>(object.GetNode())) {
-    if (element->ShouldCompositeForDocumentTransition())
-      reasons |= CompositingReason::kDocumentTransitionSharedElement;
-  }
-
-  if (object.CanHaveAdditionalCompositingReasons())
-    reasons |= object.AdditionalCompositingReasons();
 
   return reasons;
 }

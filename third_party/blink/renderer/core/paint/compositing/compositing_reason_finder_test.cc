@@ -257,27 +257,31 @@ TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <!DOCTYPE html>
     <iframe id=iframe></iframe>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   HTMLFrameOwnerElement* iframe =
       To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
   ASSERT_TRUE(iframe);
+  iframe->contentDocument()->OverrideIsInitialEmptyDocument();
+  To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
   ASSERT_FALSE(iframe->ContentFrame()->IsCrossOriginToMainFrame());
+  UpdateAllLifecyclePhasesForTest();
   LayoutView* iframe_layout_view =
       To<LocalFrame>(iframe->ContentFrame())->ContentLayoutObject();
   ASSERT_TRUE(iframe_layout_view);
   PaintLayer* iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
-  EXPECT_EQ(kNotComposited, iframe_layer->DirectCompositingReasons());
+  EXPECT_EQ(CompositingReason::kNone, iframe_layer->DirectCompositingReasons());
+  EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <iframe id=iframe sandbox></iframe>
   )HTML");
   iframe = To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
-  To<LocalFrame>(iframe->ContentFrame())
-      ->GetDocument()
-      ->OverrideIsInitialEmptyDocument();
+  iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
   UpdateAllLifecyclePhasesForTest();
   iframe_layout_view =
@@ -287,6 +291,19 @@ TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   ASSERT_TRUE(iframe->ContentFrame()->IsCrossOriginToMainFrame());
   EXPECT_EQ(CompositingReason::kIFrame,
             iframe_layer->DirectCompositingReasons());
+  EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
+  EXPECT_EQ(CompositingReason::kIFrame,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
+
+  // Make the iframe contents scrollable.
+  iframe->contentDocument()->body()->setAttribute(html_names::kStyleAttr,
+                                                  "height: 2000px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
+  EXPECT_EQ(CompositingReason::kIFrame | CompositingReason::kOverflowScrolling,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
 }
 
 TEST_F(CompositingReasonFinderTest,
