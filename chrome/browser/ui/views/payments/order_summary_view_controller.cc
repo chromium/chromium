@@ -16,6 +16,7 @@
 #include "components/payments/core/currency_formatter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -30,6 +31,30 @@ namespace payments {
 
 namespace {
 
+class LineItemRow : public views::View {
+ public:
+  METADATA_HEADER(LineItemRow);
+
+  // views::View:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    // The vertical spacing for these rows is slightly different than the
+    // spacing spacing for clickable rows, so don't use
+    // kPaymentRequestRowVerticalInsets.
+    constexpr int kRowVerticalInset = 4;
+    const gfx::Insets row_insets(
+        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
+        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
+    SetBorder(payments::CreatePaymentRequestRowBorder(
+        GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_SeparatorColor),
+        row_insets));
+  }
+};
+
+BEGIN_METADATA(LineItemRow, views::View)
+END_METADATA
+
 // Creates a view for a line item to be displayed in the Order Summary Sheet.
 // |label| is the text in the left-aligned label and |amount| is the text of the
 // right-aliged label in the row. The |amount| and |label| texts are emphasized
@@ -42,19 +67,7 @@ std::unique_ptr<views::View> CreateLineItemView(const std::u16string& label,
                                                 bool emphasize,
                                                 DialogViewID currency_label_id,
                                                 DialogViewID amount_label_id) {
-  std::unique_ptr<views::View> row = std::make_unique<views::View>();
-
-  // The vertical spacing for these rows is slightly different than the spacing
-  // spacing for clickable rows, so don't use kPaymentRequestRowVerticalInsets.
-  constexpr int kRowVerticalInset = 4;
-  const gfx::Insets row_insets(
-      kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
-      kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
-  row->SetBorder(payments::CreatePaymentRequestRowBorder(
-      row->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SeparatorColor),
-      row_insets));
-
+  std::unique_ptr<views::View> row = std::make_unique<LineItemRow>();
   views::GridLayout* layout =
       row->SetLayoutManager(std::make_unique<views::GridLayout>());
 

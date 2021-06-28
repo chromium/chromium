@@ -32,6 +32,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -40,6 +42,32 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+
+namespace {
+
+class ErrorLabelView : public views::Label {
+ public:
+  METADATA_HEADER(ErrorLabelView);
+
+  ErrorLabelView() {
+    SetID(static_cast<int>(payments::DialogViewID::CVC_ERROR_LABEL));
+    SetMultiLine(true);
+    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    SetVisible(false);
+  }
+
+  // views::View:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_AlertSeverityHigh));
+  }
+};
+
+BEGIN_METADATA(ErrorLabelView, views::Label)
+END_METADATA
+
+}  // namespace
 
 namespace payments {
 
@@ -249,22 +277,13 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   layout->StartRow(views::GridLayout::kFixedSize, 2);
   auto error_icon = std::make_unique<views::ImageView>();
   error_icon->SetID(static_cast<int>(DialogViewID::CVC_ERROR_ICON));
-  error_icon->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kWarningIcon, 16,
-                            error_icon->GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  error_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+      16));
   error_icon->SetVisible(false);
   layout->AddView(std::move(error_icon));
 
-  auto error_label = std::make_unique<views::Label>();
-  error_label->SetID(static_cast<int>(DialogViewID::CVC_ERROR_LABEL));
-  error_label->SetMultiLine(true);
-  error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  error_label->SetEnabledColor(error_label->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
-  error_label->SetVisible(false);
-
-  layout->AddView(std::move(error_label));
+  layout->AddView(std::make_unique<ErrorLabelView>());
 }
 
 std::u16string CvcUnmaskViewController::GetPrimaryButtonLabel() {
