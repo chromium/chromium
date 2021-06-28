@@ -2944,7 +2944,7 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "Adreno.*",
+      "gl_renderer": ".*Adreno.*",
       "disabled_extensions": [
         "GL_EXT_shader_framebuffer_fetch"
       ]
