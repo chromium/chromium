@@ -135,6 +135,18 @@ message UserConsentTypes {
     // The status of the Assistant activity control consent. This specifies
     // whether the consent was given or not given.
     optional ConsentStatus status = 2;
+
+    // Enum denoting different Assistant activity control setting type.
+    enum SettingType {
+      // All Settings.
+      ALL = 1;
+      WEB_AND_APP_ACTIVITY = 2;
+      DEVICE_APPS = 3;
+    }
+
+    // The activity control setting which the consent was given or not given to.
+    // If not set, it means the consent is for all settings.
+    optional SettingType setting_type = 3;
   }
 
   // The User Consent for downloading and using passwords stored in the user's

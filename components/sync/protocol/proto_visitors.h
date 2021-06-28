@@ -1062,6 +1062,7 @@ VISIT_PROTO_FIELDS(
     const sync_pb::UserConsentTypes::AssistantActivityControlConsent& proto) {
   VISIT(ui_audit_key);
   VISIT_ENUM(status);
+  VISIT_ENUM(setting_type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UserConsentTypes::SyncConsent& proto) {
