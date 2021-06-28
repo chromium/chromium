@@ -71,6 +71,7 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kRepairComplete;
 
     case ProtoRmadState::STATE_NOT_SET:
+    default:
       return MojomRmaState::kUnknown;
   }
   NOTREACHED();
@@ -226,6 +227,7 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
       return true;
 
     case MojomComponentType::kComponentUnknown:
+    default:
       NOTREACHED();
       return false;
   }
@@ -269,6 +271,7 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
       return true;
 
     case MojomComponentRepairState::kRepairUnknown:
+    default:
       NOTREACHED();
       return false;
   }
