@@ -8,7 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/safe_browsing/core/web_ui/constants.h"
+#include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 

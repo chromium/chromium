@@ -73,7 +73,7 @@ with a manifest tag:
 
 WebView supports Safe Browsing checks (for testing purposes) on hard-coded WebUI
 URLs defined in
-[`//components/safe_browsing/core/web_ui/constants.cc`](/components/safe_browsing/core/web_ui/constants.cc)
+[`//components/safe_browsing/core/common/web_ui_constants.cc`](/components/safe_browsing/core/common/web_ui_constants.cc)
 (ex. `chrome://safe-browsing/match?type=malware`).
 
 These URLs don't show meaningful content, but will trigger an interstitial when

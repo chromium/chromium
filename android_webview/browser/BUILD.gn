@@ -248,7 +248,6 @@ source_set("browser") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:safebrowsing_proto",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/web_ui:constants",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/services/heap_profiling/public/cpp",
