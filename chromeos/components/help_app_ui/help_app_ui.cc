@@ -65,11 +65,6 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
 
-  content::WebUIDataSource* untrusted_source =
-      CreateHelpAppUntrustedDataSource(delegate_.get());
-
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
-
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 

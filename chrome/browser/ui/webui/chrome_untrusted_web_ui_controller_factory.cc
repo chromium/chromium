@@ -21,6 +21,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
@@ -60,6 +61,7 @@ WebUIConfigList CreateConfigs() {
   register_config(std::make_unique<MediaAppGuestUIConfig>());
   register_config(
       std::make_unique<chromeos::UntrustedPersonalizationAppUIConfig>());
+  register_config(std::make_unique<HelpAppUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());

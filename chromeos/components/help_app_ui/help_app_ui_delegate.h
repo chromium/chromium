@@ -11,10 +11,6 @@
 
 class PrefService;
 
-namespace content {
-class WebUIDataSource;
-}
-
 // A delegate which exposes browser functionality from //chrome to the help app
 // ui page handler.
 class HelpAppUIDelegate {
@@ -25,10 +21,6 @@ class HelpAppUIDelegate {
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
   virtual absl::optional<std::string> OpenFeedbackDialog() = 0;
-
-  // Takes a WebUIDataSource, and adds device flags (e.g. board name) and
-  // feature flags (e.g. Google Assistant).
-  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
 
   // Opens OS Settings at the parental controls section.
   virtual void ShowParentalControls() = 0;
