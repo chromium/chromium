@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
 #include "components/reporting/proto/interface.pb.h"
 #include "components/reporting/proto/record.pb.h"
@@ -208,14 +207,12 @@ MissiveClient::~MissiveClient() {
 // static
 void MissiveClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
-  static base::NoDestructor<MissiveClientImpl> missive_client;
-  missive_client->Init(bus);
+  (new MissiveClientImpl())->Init(bus);
 }
 
 // static
 void MissiveClient::InitializeFake() {
-  static base::NoDestructor<FakeMissiveClient> missive_client;
-  missive_client->Init();
+  (new FakeMissiveClient())->Init();
 }
 
 // static

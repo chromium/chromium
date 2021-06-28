@@ -180,6 +180,7 @@ void ShutdownDBus() {
   PermissionBrokerClient::Shutdown();
   PciguardClient::Shutdown();
   OsInstallClient::Shutdown();
+  MissiveClient::Shutdown();
   MediaAnalyticsClient::Shutdown();
   MachineLearningClient::Shutdown();
   KerberosClient::Shutdown();

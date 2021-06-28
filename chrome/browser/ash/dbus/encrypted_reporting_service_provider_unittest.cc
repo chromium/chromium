@@ -171,7 +171,11 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     sequencing_information->set_priority(reporting::Priority::SLOW_BATCH);
   }
 
-  void TearDown() override { test_helper_.TearDown(); }
+  void TearDown() override {
+    // Destruct test helper before the client shut down.
+    test_helper_.TearDown();
+    MissiveClient::Shutdown();
+  }
 
   void SetupForRequestUploadEncryptedRecord() {
     test_helper_.SetUp(kChromeReportingServiceName,
