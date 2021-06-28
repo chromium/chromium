@@ -1356,17 +1356,8 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
   last_frame_request_time_ = tick_clock_->NowTicks();
 
-  gfx::Rect gfx_rect(rect);
-  if (video_frame && video_frame->HasTextures()) {
-    if (!raster_context_provider_)
-      return;  // Unable to get/create a shared main thread context.
-    if (!raster_context_provider_->GrContext() &&
-        !raster_context_provider_->ContextCapabilities().supports_oop_raster) {
-      return;  // The context has been lost.
-    }
-  }
   video_renderer_.Paint(
-      video_frame, canvas, gfx::RectF(gfx_rect), flags,
+      video_frame, canvas, gfx::RectF(rect), flags,
       pipeline_metadata_.video_decoder_config.video_transformation(),
       raster_context_provider_.get());
 }

@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
@@ -780,6 +781,20 @@ void PaintCanvasVideoRenderer::Paint(
   DCHECK(thread_checker_.CalledOnValidThread());
   if (flags.getAlpha() == 0) {
     return;
+  }
+
+  if (video_frame && video_frame->HasTextures()) {
+    if (!raster_context_provider) {
+      DLOG(ERROR)
+          << "Can't render textured frames w/o viz::RasterContextProvider";
+      return;  // Unable to get/create a shared main thread context.
+    }
+    if (!raster_context_provider->GrContext() &&
+        !raster_context_provider->ContextCapabilities().supports_oop_raster) {
+      DLOG(ERROR)
+          << "Can't render textured frames w/o valid GrContext or OOP raster.";
+      return;  // The context has been lost.
+    }
   }
 
   SkRect dest;
