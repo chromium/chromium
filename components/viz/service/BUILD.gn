@@ -567,6 +567,7 @@ viz_source_set("unit_tests") {
     "hit_test/hit_test_aggregator_unittest.cc",
     "main/viz_main_impl_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
+    "surfaces/surface_saved_frame_unittest.cc",
     "surfaces/surface_unittest.cc",
     "transitions/surface_animation_manager_unittest.cc",
     "transitions/transferable_resource_tracker_unittest.cc",

@@ -124,10 +124,11 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   // Given a render pass, this makes a copy of it while filtering animated
   // render pass draw quads.
-  std::unique_ptr<CompositorRenderPass> CopyPassWithoutSharedElementQuads(
-      const CompositorRenderPass& source_pass,
-      base::flat_map<CompositorRenderPassId, RenderPassDrawData>&
-          shared_draw_data);
+  static bool FilterSharedElementQuads(
+      base::flat_map<CompositorRenderPassId, RenderPassDrawData>*
+          shared_draw_data,
+      const CompositorRenderPassDrawQuad& pass_quad,
+      CompositorRenderPass& copy_pass);
 
   // Tick both the root and shared animations.
   void TickAnimations(base::TimeTicks new_time);

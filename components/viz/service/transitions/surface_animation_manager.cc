@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -24,10 +25,6 @@
 
 namespace viz {
 namespace {
-
-CompositorRenderPassId NextRenderPassId(const CompositorRenderPassId& id) {
-  return CompositorRenderPassId(id.GetUnsafeValue() + 1);
-}
 
 constexpr base::TimeDelta kDefaultAnimationDuration =
     base::TimeDelta::FromMilliseconds(250);
@@ -396,6 +393,8 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
   // `animation_draw_quads` with draw quads for those render passes. All other
   // passes would have been copied and added into the interpolated frame.
   CompositorRenderPassId max_id = CompositorRenderPassId(0);
+  TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
+      &FilterSharedElementQuads, base::Unretained(&shared_draw_data));
   for (auto& render_pass : source_passes) {
     // First, clear the copy requests.
     // TODO(vmpstr): Can we preserve these in some situations?
@@ -408,8 +407,8 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
 
     // Now do the pass copy, filtering shared element quads into
     // `shared_draw_data` instead of the render pass.
-    auto pass_copy =
-        CopyPassWithoutSharedElementQuads(*render_pass, shared_draw_data);
+    auto pass_copy = TransitionUtils::CopyPassWithRenderPassFiltering(
+        *render_pass, filter_callback);
 
     // If this is a shared pass, store it in `shared_draw_data`. Otherwise,
     // put it directly into the interpolated frame since we don't need to do
@@ -426,7 +425,7 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
   }
 
   // Update the animation pass id to avoid conflicts.
-  max_id = animation_pass->id = NextRenderPassId(max_id);
+  max_id = animation_pass->id = TransitionUtils::NextRenderPassId(max_id);
 
   const std::vector<CompositorRenderPassId>& shared_render_pass_ids =
       animate_directive_->shared_render_pass_ids();
@@ -498,7 +497,7 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     // Now that we know we have a render pass destination, create a copy of the
     // shared render pass, and update it with all the right values.
     auto pass_copy = draw_data.render_pass->DeepCopy();
-    max_id = pass_copy->id = NextRenderPassId(max_id);
+    max_id = pass_copy->id = TransitionUtils::NextRenderPassId(max_id);
     pass_copy->transform_to_root_target = transform;
 
     // Create an quad for the pass into our animation pass.
@@ -514,61 +513,20 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     interpolated_frame->render_pass_list.emplace_back(std::move(pass_copy));
   }
 }
-
-std::unique_ptr<CompositorRenderPass>
-SurfaceAnimationManager::CopyPassWithoutSharedElementQuads(
-    const CompositorRenderPass& source_pass,
-    base::flat_map<CompositorRenderPassId, RenderPassDrawData>&
-        shared_draw_data) {
-  // This code is similar to CompositorRenderPass::DeepCopy, but does special
-  // logic when copying compositor render pass draw quads which draw shared
-  // elements.
-  auto copy_pass = CompositorRenderPass::Create(
-      source_pass.shared_quad_state_list.size(), source_pass.quad_list.size());
-
-  copy_pass->SetAll(
-      source_pass.id, source_pass.output_rect, source_pass.damage_rect,
-      source_pass.transform_to_root_target, source_pass.filters,
-      source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
-      source_pass.subtree_capture_id, source_pass.has_transparent_background,
-      source_pass.cache_render_pass,
-      source_pass.has_damage_from_contributing_content,
-      source_pass.generate_mipmap);
-
-  if (source_pass.shared_quad_state_list.empty())
-    return copy_pass;
-
-  SharedQuadStateList::ConstIterator sqs_iter =
-      source_pass.shared_quad_state_list.begin();
-  SharedQuadState* copy_shared_quad_state =
-      copy_pass->CreateAndAppendSharedQuadState();
-  *copy_shared_quad_state = **sqs_iter;
-
-  for (auto* quad : source_pass.quad_list) {
-    while (quad->shared_quad_state != *sqs_iter) {
-      ++sqs_iter;
-      DCHECK(sqs_iter != source_pass.shared_quad_state_list.end());
-      copy_shared_quad_state = copy_pass->CreateAndAppendSharedQuadState();
-      *copy_shared_quad_state = **sqs_iter;
-    }
-    DCHECK(quad->shared_quad_state == *sqs_iter);
-
-    if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-      const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
-      auto shared_it = shared_draw_data.find(pass_quad->render_pass_id);
-      // If the quad is shared, then add it to the `shared_draw_data`.
-      // Otherwise, add it to the copy pass directly.
-      if (shared_it != shared_draw_data.end()) {
-        shared_it->second.draw_quad = *pass_quad;
-      } else {
-        copy_pass->CopyFromAndAppendRenderPassDrawQuad(
-            pass_quad, pass_quad->render_pass_id);
-      }
-    } else {
-      copy_pass->CopyFromAndAppendDrawQuad(quad);
-    }
+// static
+bool SurfaceAnimationManager::FilterSharedElementQuads(
+    base::flat_map<CompositorRenderPassId, RenderPassDrawData>*
+        shared_draw_data,
+    const CompositorRenderPassDrawQuad& pass_quad,
+    CompositorRenderPass& copy_pass) {
+  auto shared_it = shared_draw_data->find(pass_quad.render_pass_id);
+  // If the quad is shared, then add it to the `shared_draw_data`.
+  // Otherwise, it will be added to the copy pass directly.
+  if (shared_it != shared_draw_data->end()) {
+    shared_it->second.draw_quad = pass_quad;
+    return true;
   }
-  return copy_pass;
+  return false;
 }
 
 void SurfaceAnimationManager::RefResources(

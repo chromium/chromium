@@ -170,6 +170,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   void ResetInterpolatedFrame();
   void SetInterpolatedFrame(CompositorFrame frame);
   const CompositorFrame& GetActiveOrInterpolatedFrame() const;
+  bool HasInterpolatedFrame() const;
   // Returns true if the active or interpolated frame has damage due to a
   // surface animation. This means that the damage should be respected even if
   // the active frame index has not changed.

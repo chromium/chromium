@@ -45,4 +45,55 @@ float TransitionUtils::ComputeAccumulatedOpacity(
   return opacity;
 }
 
+// static
+std::unique_ptr<CompositorRenderPass>
+TransitionUtils::CopyPassWithRenderPassFiltering(
+    const CompositorRenderPass& source_pass,
+    FilterCallback filter_callback) {
+  // This code is similar to CompositorRenderPass::DeepCopy, but does special
+  // logic when copying compositor render pass draw quads.
+  auto copy_pass = CompositorRenderPass::Create(
+      source_pass.shared_quad_state_list.size(), source_pass.quad_list.size());
+
+  copy_pass->SetAll(
+      source_pass.id, source_pass.output_rect, source_pass.damage_rect,
+      source_pass.transform_to_root_target, source_pass.filters,
+      source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
+      source_pass.subtree_capture_id, source_pass.has_transparent_background,
+      source_pass.cache_render_pass,
+      source_pass.has_damage_from_contributing_content,
+      source_pass.generate_mipmap);
+
+  if (source_pass.shared_quad_state_list.empty())
+    return copy_pass;
+
+  SharedQuadStateList::ConstIterator sqs_iter =
+      source_pass.shared_quad_state_list.begin();
+  SharedQuadState* copy_shared_quad_state =
+      copy_pass->CreateAndAppendSharedQuadState();
+  *copy_shared_quad_state = **sqs_iter;
+
+  for (auto* quad : source_pass.quad_list) {
+    while (quad->shared_quad_state != *sqs_iter) {
+      ++sqs_iter;
+      DCHECK(sqs_iter != source_pass.shared_quad_state_list.end());
+      copy_shared_quad_state = copy_pass->CreateAndAppendSharedQuadState();
+      *copy_shared_quad_state = **sqs_iter;
+    }
+    DCHECK(quad->shared_quad_state == *sqs_iter);
+
+    if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
+      const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
+      if (!filter_callback.Run(*pass_quad, *copy_pass.get())) {
+        copy_pass->CopyFromAndAppendRenderPassDrawQuad(
+            pass_quad, pass_quad->render_pass_id);
+      }
+    } else {
+      copy_pass->CopyFromAndAppendDrawQuad(quad);
+    }
+  }
+
+  return copy_pass;
+}
+
 }  // namespace viz
