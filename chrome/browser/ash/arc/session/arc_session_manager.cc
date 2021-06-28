@@ -431,9 +431,7 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
   if (result.gms_sign_in_error() ==
           mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT ||
       result.gms_sign_in_error() ==
-          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE ||
-      result.gms_sign_in_error() ==
-          mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT) {
+          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE) {
     return true;
   }
 
@@ -451,9 +449,7 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
       result.cloud_provision_flow_error() ==
           mojom::CloudProvisionFlowError::ERROR_NETWORK_UNAVAILABLE ||
       result.cloud_provision_flow_error() ==
-          mojom::CloudProvisionFlowError::ERROR_SERVER ||
-      result.cloud_provision_flow_error() ==
-          mojom::CloudProvisionFlowError::ERROR_TIMEOUT) {
+          mojom::CloudProvisionFlowError::ERROR_SERVER) {
     return true;
   }
 
