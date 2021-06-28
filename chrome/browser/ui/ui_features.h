@@ -169,6 +169,10 @@ int GetLocationPermissionsExperimentBubblePromptLimit();
 int GetLocationPermissionsExperimentLabelPromptLimit();
 #endif
 
+#if defined(OS_WIN)
+extern const base::Feature kWin10TabSearchCaptionButton;
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

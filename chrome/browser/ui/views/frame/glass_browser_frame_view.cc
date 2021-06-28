@@ -232,6 +232,10 @@ void GlassBrowserFrameView::WindowControlsOverlayEnabledChanged() {
   InvalidateLayout();
 }
 
+TabSearchBubbleHost* GlassBrowserFrameView::GetTabSearchBubbleHost() {
+  return caption_button_container_->GetTabSearchBubbleHost();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GlassBrowserFrameView, views::NonClientFrameView implementation:
 

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -266,6 +267,10 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                  views::LayoutAlignment::kCenter);
   tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(features::kWin10TabSearchCaptionButton))
+    return;
+#endif
   const Browser* browser = tab_strip_->controller()->GetBrowser();
   if (browser && browser->is_type_normal()) {
     auto tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);

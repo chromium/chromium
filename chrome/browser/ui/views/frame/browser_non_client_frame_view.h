@@ -17,6 +17,7 @@
 
 class BrowserFrame;
 class BrowserView;
+class TabSearchBubbleHost;
 class WebAppFrameToolbarView;
 
 // Type used for functions whose return values depend on the active state of
@@ -146,6 +147,10 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   WebAppFrameToolbarView* web_app_frame_toolbar_for_testing() {
     return web_app_frame_toolbar_;
   }
+
+  // Gets the TabSearchBubbleHost if present in the NonClientFrameView. Can
+  // return null.
+  virtual TabSearchBubbleHost* GetTabSearchBubbleHost();
 
  protected:
   // Called when |frame_|'s "paint as active" state has changed.

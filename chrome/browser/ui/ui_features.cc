@@ -251,4 +251,13 @@ int GetLocationPermissionsExperimentLabelPromptLimit() {
 }
 #endif
 
+#if defined(OS_WIN)
+
+// Moves the Tab Search button into the browser frame's caption button area on
+// Windows 10 (crbug.com/1223847).
+const base::Feature kWin10TabSearchCaptionButton{
+    "Win10TabSearchCaptionButton", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#endif
+
 }  // namespace features

@@ -255,6 +255,10 @@ void BrowserNonClientFrameView::ResetWindowControls() {
     web_app_frame_toolbar_->UpdateStatusIconsVisibility();
 }
 
+TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
+  return nullptr;
+}
+
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
   // The toolbar top separator color (used as the stroke around the tabs and
   // the new tab button) needs to be recalculated.
