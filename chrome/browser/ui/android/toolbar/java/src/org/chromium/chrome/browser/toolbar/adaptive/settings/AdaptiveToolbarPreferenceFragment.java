@@ -37,7 +37,7 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
 
         mToolbarShortcutSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_TOOLBAR_SHORTCUT_SWITCH);
-        mToolbarShortcutSwitch.setChecked(AdaptiveToolbarPrefs.isCustomizationEnabled());
+        mToolbarShortcutSwitch.setChecked(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
         mToolbarShortcutSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             onSettingsToggleStateChanged((boolean) newValue);
             return true;
@@ -49,7 +49,7 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
             AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
             return true;
         });
-        mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationEnabled());
+        mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
     }
 
     /**
