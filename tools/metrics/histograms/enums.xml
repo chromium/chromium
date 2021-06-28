@@ -4468,6 +4468,18 @@ others/histograms.xml -->
   <int value="9" label="STATUS_DBUS_ERROR"/>
 </enum>
 
+<enum name="AuctionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted"/>
+  <int value="2" label="Bad mojo message"/>
+  <int value="3" label="No interest groups"/>
+  <int value="4" label="Seller worklet load failed"/>
+  <int value="5" label="Seller worklet crashed"/>
+  <int value="6" label="No bids"/>
+  <int value="7" label="All bids rejected"/>
+  <int value="8" label="Winning bidder worklet crashed"/>
+</enum>
+
 <enum name="AudioCaptureDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>

@@ -396,6 +396,94 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.AbortTime" units="ms"
+    expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a FLEDGE auction that was aborted. This
+    only happens on frame destruction. Recorded when the frame is destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.AuctionWithWinnerTime" units="ms"
+    expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a FLEDGE auction that had a winning bid.
+    Recorded on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.CompletedWithoutWinnerTime"
+    units="ms" expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a FLEDGE auction that completed
+    successfully without a winner either due to no bidders making a bid, or the
+    seller script rejecting all bidders. Not recoded when there are no bidders,
+    or when an auction fails due to the seller worklet failing to load. Recorded
+    on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.NumInterestGroups" units="groups"
+    expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The number of a user's interest groups taking part in a FLEDGE auction. This
+    is the number of interest groups matching the auction configuration, not the
+    number whose scripts are successfully loaded or that make bids. Recorded
+    after all matching interest groups have been retrieved from storage at the
+    start of an auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.NumOwnersWithInterestGroups"
+    units="owners" expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The number of owner origins with interest groups taking part in a FLEDGE
+    auction. This is not the number of owners listed by the auction's
+    configuration, but rather only the subset of them that have interest groups
+    the user currently belongs to. Recorded after all interest groups
+    participating in an auction have been retrieved from storage at the start of
+    an auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.Result" enum="AuctionResult"
+    expires_after="2022-03-31">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The final result type of running a FLEDGE auction. Recorded on auction
+    completion/cancellation.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.Media.Duration" units="ms" expires_after="2021-12-05">
   <owner>johnidel@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>

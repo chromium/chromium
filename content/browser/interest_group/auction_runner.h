@@ -70,6 +70,44 @@ class CONTENT_EXPORT AuctionRunner {
     virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
   };
 
+  // Result of an auction. Used for histograms. Only recorded for valid
+  // auctions. These are used in histograms, so values of existing entries must
+  // not change when adding/removing values, and obsolete values must not be
+  // reused.
+  enum class AuctionResult {
+    // The auction succeeded, with a winning bidder.
+    kSuccess = 0,
+
+    // The auction was aborted, due to either navigating away from the frame
+    // that started the auction or browser shutdown.
+    kAborted = 1,
+
+    // Bad message received over Mojo. This is potentially a security error.
+    kBadMojoMessage = 2,
+
+    // The user was in no interest groups that could participate in the auction.
+    kNoInterestGroups = 3,
+
+    // The seller worklet failed to load.
+    kSellerWorkletLoadFailed = 4,
+
+    // The seller worklet crashed.
+    kSellerWorkletCrashed = 5,
+
+    // All bidders failed to bid. This happens when all bidders choose not to
+    // bid, fail to load, or crash before making a bid.
+    kNoBids = 6,
+
+    // The seller worklet rejected all bids (of which there was at least one).
+    kAllBidsRejected = 7,
+
+    // The winning bidder worklet crashed. The bidder must have successfully
+    // bid, and the seller must have accepted the bid for this to be logged.
+    kWinningBidderWorkletCrashed = 8,
+
+    kMaxValue = kWinningBidderWorkletCrashed
+  };
+
   explicit AuctionRunner(const AuctionRunner&) = delete;
   AuctionRunner& operator=(const AuctionRunner&) = delete;
 
@@ -78,9 +116,14 @@ class CONTENT_EXPORT AuctionRunner {
   // be able to safely delete `this` when the callback is invoked. May only be
   // invoked if the auction has not yet completed.
   //
+  // `result` is used for logging purposes only.
+  //
+  // If `error` is non-null, it will be appended to `errors_`.
+  //
   // Public so that the owner can fail the auction on teardown, to invoke any
   // pending Mojo callbacks.
-  void FailAuction();
+  void FailAuction(AuctionResult result,
+                   absl::optional<std::string> error = absl::nullopt);
 
   // Runs an entire FLEDGE auction.
   //
@@ -243,10 +286,7 @@ class CONTENT_EXPORT AuctionRunner {
   void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
-  // Appends `error` to `errors_` before calling FailAuction().
-  void FailAuctionWithError(std::string error);
-
-  // These complete the auction, invoking `callback_` and preventing any future
+  // Completes the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
   // owner must be able to safely delete `this` when the callback is invoked.
   void ReportSuccess();
@@ -254,6 +294,9 @@ class CONTENT_EXPORT AuctionRunner {
   // Closes all open pipes, to avoid receiving any Mojo callbacks after
   // completion.
   void ClosePipes();
+
+  // Logs the result of the auction to UMA.
+  void RecordResult(AuctionResult result) const;
 
   Delegate* const delegate_;
   InterestGroupManager* const interest_group_manager_;
@@ -277,6 +320,9 @@ class CONTENT_EXPORT AuctionRunner {
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_ = base::Time::Now();
+
+  // The number of owners with InterestGroups participating in an auction.
+  int num_owners_with_interest_groups_ = 0;
 
   // The bidder with the highest scoring bid so far. No other scored bidder
   // worklet can win the auction, so the other worklets are all unloaded right

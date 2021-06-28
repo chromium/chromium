@@ -137,7 +137,7 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
     // not be destroyed before the Mojo pipe is, and the parent
     // DocumentServiceBase class owns the pipe, so it may still be open at this
     // point.
-    (*auctions_.begin())->FailAuction();
+    (*auctions_.begin())->FailAuction(AuctionRunner::AuctionResult::kAborted);
   }
 }
 

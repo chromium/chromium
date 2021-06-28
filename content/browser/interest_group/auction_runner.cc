@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -112,8 +113,14 @@ AuctionRunner::AuctionRunner(
 
 AuctionRunner::~AuctionRunner() = default;
 
-void AuctionRunner::FailAuction() {
+void AuctionRunner::FailAuction(AuctionResult result,
+                                absl::optional<std::string> error) {
   DCHECK(callback_);
+
+  if (error)
+    errors_.emplace_back(std::move(error).value());
+  RecordResult(result);
+
   ClosePipes();
 
   std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt,
@@ -137,19 +144,29 @@ void AuctionRunner::OnInterestGroupRead(
   DCHECK_GT(num_pending_buyers_, 0u);
   --num_pending_buyers_;
 
-  for (auto bidder = std::make_move_iterator(interest_groups.begin());
-       bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
-    bid_states_.emplace_back(BidState());
-    bid_states_.back().bidder = std::move(*bidder);
+  if (!interest_groups.empty()) {
+    for (auto bidder = std::make_move_iterator(interest_groups.begin());
+         bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
+      bid_states_.emplace_back(BidState());
+      bid_states_.back().bidder = std::move(*bidder);
+    }
+    ++num_owners_with_interest_groups_;
   }
 
   // Wait for more buyers to be loaded, if there are still some pending.
   if (num_pending_buyers_ > 0)
     return;
 
+  // Record histograms about the interest groups participating in the auction.
+  UMA_HISTOGRAM_COUNTS_1000("Ads.InterestGroup.Auction.NumInterestGroups",
+                            bid_states_.size());
+  UMA_HISTOGRAM_COUNTS_100(
+      "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
+      num_owners_with_interest_groups_);
+
   // If no interest groups were found, end the auction without a winner.
   if (bid_states_.empty()) {
-    FailAuction();
+    FailAuction(AuctionResult::kNoInterestGroups);
     return;
   }
 
@@ -192,7 +209,8 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
                      weak_ptr_factory_.GetWeakPtr()));
   // Fail auction if the seller worklet pipe is disconnected.
   seller_worklet_.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuctionWithError, weak_ptr_factory_.GetWeakPtr(),
+      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
+      AuctionResult::kSellerWorkletCrashed,
       base::StrCat({auction_config_->decision_logic_url.spec(), " crashed."})));
 
   // Request processes for all bidder worklets.
@@ -324,22 +342,23 @@ void AuctionRunner::OnSellerWorkletLoaded(
     const std::vector<std::string>& errors) {
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
-  if (load_result) {
-    seller_loaded_ = true;
-    // Start scoring any bids that were waiting on the seller worklet to load.
-    for (BidState& state : bid_states_) {
-      // Bids can be complete at this point (if no bid was offered, or on
-      // error), but they can't be scoring a bid.
-      DCHECK_NE(state.state, BidState::State::kSellerScoringBid);
-
-      if (state.state == BidState::State::kWaitingOnSellerWorkletLoad)
-        ScoreBid(&state);
-    }
-  } else {
+  if (!load_result) {
     // Failed to load the seller/auction script --- nothing useful can be
     // done, so abort, possibly cancelling other fetches, so we don't waste
     // time.
-    FailAuction();
+    FailAuction(AuctionResult::kSellerWorkletLoadFailed);
+    return;
+  }
+
+  seller_loaded_ = true;
+  // Start scoring any bids that were waiting on the seller worklet to load.
+  for (BidState& state : bid_states_) {
+    // Bids can be complete at this point (if no bid was offered, or on
+    // error), but they can't be scoring a bid.
+    DCHECK_NE(state.state, BidState::State::kSellerScoringBid);
+
+    if (state.state == BidState::State::kWaitingOnSellerWorkletLoad)
+      ScoreBid(&state);
   }
 }
 
@@ -422,19 +441,23 @@ void AuctionRunner::MaybeCompleteAuction() {
   //
   // TODO(mmenke): Maybe this should be recorded at bid time, and the interest
   // group thrown away if it's not the top bid?
+  bool some_bidder_bid = false;
   for (BidState& bid_state : bid_states_) {
     if (bid_state.bid_result) {
+      some_bidder_bid = true;
       interest_group_manager_->RecordInterestGroupBid(
           bid_state.bidder->group->owner, bid_state.bidder->group->name);
     }
   }
 
-  if (top_bidder_) {
-    // Will eventually send a report to the seller and clean up `this`.
-    ReportSellerResult();
-  } else {
-    FailAuction();
+  if (!top_bidder_) {
+    FailAuction(some_bidder_bid ? AuctionResult::kAllBidsRejected
+                                : AuctionResult::kNoBids);
+    return;
   }
+
+  // Will eventually send a report to the seller and clean up `this`.
+  ReportSellerResult();
 }
 
 void AuctionRunner::ReportSellerResult() {
@@ -463,7 +486,7 @@ void AuctionRunner::OnReportSellerResultComplete(
   absl::optional<GURL> opt_bidder_report_url;
   if (seller_report_url && !IsUrlValid(*seller_report_url)) {
     mojo::ReportBadMessage("Invalid seller report URL");
-    FailAuction();
+    FailAuction(AuctionResult::kBadMojoMessage);
     return;
   }
 
@@ -486,14 +509,10 @@ void AuctionRunner::ReportBidWin(
   }
 
   // Fail the auction if the winning bidder process has crashed.
-  //
-  // TODO(mmenke): Be smarter about process crashes in general. Even without
-  // the report URL, can display the ad and report to the seller (though will
-  // need to think more about that case).
   if (!top_bidder_->bidder_worklet.is_connected()) {
-    FailAuctionWithError(
-        base::StrCat({top_bidder_->bidder->group->bidding_url->spec(),
-                      " crashed while idle."}));
+    FailAuction(AuctionResult::kWinningBidderWorkletCrashed,
+                base::StrCat({top_bidder_->bidder->group->bidding_url->spec(),
+                              " crashed while idle."}));
     return;
   }
 
@@ -503,7 +522,8 @@ void AuctionRunner::ReportBidWin(
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   top_bidder_->bidder_worklet.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuctionWithError, weak_ptr_factory_.GetWeakPtr(),
+      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
+      AuctionResult::kWinningBidderWorkletCrashed,
       base::StrCat({top_bidder_->bidder->group->bidding_url->spec(),
                     " crashed while trying to run reportWin()."})));
 }
@@ -513,7 +533,7 @@ void AuctionRunner::OnReportBidWinComplete(
     const std::vector<std::string>& errors) {
   if (bidder_report_url && !IsUrlValid(*bidder_report_url)) {
     mojo::ReportBadMessage("Invalid bidder report URL");
-    FailAuction();
+    FailAuction(AuctionResult::kBadMojoMessage);
     return;
   }
 
@@ -522,15 +542,12 @@ void AuctionRunner::OnReportBidWinComplete(
   ReportSuccess();
 }
 
-void AuctionRunner::FailAuctionWithError(std::string error) {
-  errors_.emplace_back(std::move(error));
-  FailAuction();
-}
-
 void AuctionRunner::ReportSuccess() {
   DCHECK(callback_);
   DCHECK(top_bidder_->bid_result);
   ClosePipes();
+
+  RecordResult(AuctionResult::kSuccess);
 
   std::string ad_metadata;
   if (top_bidder_->bid_ad->metadata) {
@@ -564,6 +581,31 @@ void AuctionRunner::ClosePipes() {
   }
   seller_worklet_.reset();
   seller_worklet_process_handle_.reset();
+}
+
+void AuctionRunner::RecordResult(AuctionResult result) const {
+  UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result", result);
+
+  // Only record time of full auctions and aborts.
+  switch (result) {
+    case AuctionResult::kAborted:
+      UMA_HISTOGRAM_MEDIUM_TIMES("Ads.InterestGroup.Auction.AbortTime",
+                                 base::Time::Now() - auction_start_time_);
+      break;
+    case AuctionResult::kNoBids:
+    case AuctionResult::kAllBidsRejected:
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
+          base::Time::Now() - auction_start_time_);
+      break;
+    case AuctionResult::kSuccess:
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
+          base::Time::Now() - auction_start_time_);
+      break;
+    default:
+      break;
+  }
 }
 
 }  // namespace content
