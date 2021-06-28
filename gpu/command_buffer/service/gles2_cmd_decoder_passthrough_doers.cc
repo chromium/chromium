@@ -4728,7 +4728,16 @@ error::Error GLES2DecoderPassthroughImpl::DoDescheduleUntilFinishedCHROMIUM() {
   if (!gl::GLFence::IsSupported()) {
     return error::kNoError;
   }
-  deschedule_until_finished_fences_.push_back(gl::GLFence::Create());
+
+  auto fence = gl::GLFence::Create();
+  if (!fence) {
+    InsertError(GL_INVALID_OPERATION, "gl::GLFence::Create() failed.");
+    MarkContextLost(error::kUnknown);
+    group_->LoseContexts(error::kUnknown);
+    return error::kLostContext;
+  }
+
+  deschedule_until_finished_fences_.push_back(std::move(fence));
 
   if (deschedule_until_finished_fences_.size() == 1) {
     return error::kNoError;
