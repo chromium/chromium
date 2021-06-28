@@ -203,6 +203,62 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Returns nullptr if there are no children.
   BrowserAccessibility* InternalDeepestLastChild() const;
 
+  // Range implementation for all children traversal see AllChildren().
+  class AllChildrenRange final {
+   public:
+    explicit AllChildrenRange(const BrowserAccessibility* parent)
+        : parent_(parent),
+          child_tree_root_(parent->PlatformGetRootOfChildTree()) {}
+    AllChildrenRange(const AllChildrenRange&) = default;
+
+    class Iterator final
+        : public std::iterator<std::input_iterator_tag, BrowserAccessibility*> {
+     public:
+      Iterator(const BrowserAccessibility* parent,
+               const BrowserAccessibility* child_tree_root,
+               unsigned int index = 0U)
+          : parent_(parent), child_tree_root_(child_tree_root), index_(index) {}
+      Iterator(const Iterator&) = default;
+      ~Iterator() = default;
+
+      Iterator& operator++() {
+        ++index_;
+        return *this;
+      }
+      Iterator operator++(int) {
+        Iterator tmp(*this);
+        operator++();
+        return tmp;
+      }
+      bool operator==(const Iterator& rhs) const {
+        return parent_ == rhs.parent_ && index_ == rhs.index_;
+      }
+      bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
+      const BrowserAccessibility* operator*();
+
+     private:
+      const BrowserAccessibility* const parent_;
+      const BrowserAccessibility* const child_tree_root_;
+      unsigned int index_;
+    };
+
+    Iterator begin() { return {parent_, child_tree_root_}; }
+    Iterator end() {
+      unsigned int count =
+          child_tree_root_ ? 1U : parent_->node()->children().size();
+      return {parent_, child_tree_root_, count};
+    }
+
+   private:
+    const BrowserAccessibility* const parent_;
+    const BrowserAccessibility* const child_tree_root_;
+  };
+
+  // Returns a range for all children including ignored children, which can be
+  // used in range-based for loops, for example,
+  // for (const auto& child : AllChildren()) {}.
+  AllChildrenRange AllChildren() const { return AllChildrenRange(this); }
+
   // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
   gfx::Rect GetClippedScreenBoundsRect(
       ui::AXOffscreenResult* offscreen_result = nullptr) const override;

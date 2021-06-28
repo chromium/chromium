@@ -422,6 +422,17 @@ BrowserAccessibility::InternalChildrenEnd() const {
   return InternalChildIterator(this, nullptr);
 }
 
+const BrowserAccessibility*
+BrowserAccessibility::AllChildrenRange::Iterator::operator*() {
+  if (child_tree_root_)
+    return index_ == 0 ? child_tree_root_ : nullptr;
+
+  ui::AXNode* child = parent_->node()->children().at(index_);
+  if (!child)
+    return nullptr;
+  return parent_->manager_->GetFromAXNode(child);
+}
+
 int32_t BrowserAccessibility::GetId() const {
   return node()->id();
 }

@@ -295,8 +295,7 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     return;
 
   base::Value children(base::Value::Type::LIST);
-  for (size_t i = 0; i < ChildCount(node); ++i) {
-    BrowserAccessibility* child_node = GetChild(node, i);
+  for (const auto* child_node : node.AllChildren()) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
     RecursiveBuildTree(*child_node, &child_dict);
     children.Append(std::move(child_dict));
@@ -316,29 +315,6 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     children.Append(std::move(child_dict));
   }
   dict->SetKey(kChildrenDictAttr, std::move(children));
-}
-
-uint32_t AccessibilityTreeFormatterBlink::ChildCount(
-    const BrowserAccessibility& node) const {
-  if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
-    return node.PlatformChildCount();
-  // We don't want to use InternalGetChild as we want to include
-  // ignored nodes in the tree for tests.
-  return node.node()->children().size();
-}
-
-BrowserAccessibility* AccessibilityTreeFormatterBlink::GetChild(
-    const BrowserAccessibility& node,
-    uint32_t i) const {
-  if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
-    return node.PlatformGetChild(i);
-  // We don't want to use InternalGetChild as we want to include
-  // ignored nodes in the tree for tests.
-  if (i < 0 && i >= node.node()->children().size())
-    return nullptr;
-  ui::AXNode* child_node = node.node()->children()[i];
-  DCHECK(child_node);
-  return node.manager()->GetFromAXNode(child_node);
 }
 
 void AccessibilityTreeFormatterBlink::AddProperties(
