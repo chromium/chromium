@@ -23,6 +23,15 @@
 ];
 
 /**
+ * Contexts the assignment pane can be located in.
+ * @enum {string}
+ */
+/* #export */ const AssignmentContext = {
+  DIALOG: 'dialog',
+  SETUP_GUIDE: 'setupGuide'
+};
+
+/**
  * Available commands.
  * @enum {string}
  */

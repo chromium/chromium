@@ -35,6 +35,13 @@
   REMOVE_ASSIGNMENT: 'remove-assignment',
 };
 
+/** @enum {string} */
+const AssignmentResponse = {
+  EXIT: 'switchAccessActionAssignmentExitResponse',
+  CONTINUE: 'switchAccessActionAssignmentContinueResponse',
+  TRY_AGAIN: 'switchAccessActionAssignmentTryAgainResponse',
+};
+
 /**
  * Mapping of a stringified key code to a list of Switch Access device types
  * for that key code.
@@ -95,6 +102,12 @@ Polymer({
     },
 
     /**
+     * Specify the context this pane is located in.
+     * @type {AssignmentContext}
+     */
+    context: String,
+
+    /**
      * Enable the html template to use AssignmentState.
      * @private {AssignmentState}
      */
@@ -144,6 +157,12 @@ Polymer({
       computed: 'computeErrorText_(assignmentState_)',
     },
 
+    /**
+     * The label indicating there are no switches.
+     * @private
+     */
+    noSwitchesLabel_: String,
+
     /** @private {!SwitchAccessCommand} */
     alreadyAssignedAction_: String,
 
@@ -186,6 +205,12 @@ Polymer({
         this.onAssignmentsChanged_.bind(this));
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneActive();
+
+    if (this.context === AssignmentContext.SETUP_GUIDE) {
+      this.noSwitchesLabel_ = this.i18n('noSwitchesAssignedSetupGuide');
+    } else {
+      this.noSwitchesLabel_ = this.i18n('noSwitchesAssigned');
+    }
   },
 
   /** @override */
@@ -410,13 +435,12 @@ Polymer({
     const icon = this.computeIcon_(assignment);
     switch (icon) {
       case AssignmentIcon.ASSIGNED:
-        return this.i18n('switchAccessActionAssignmentDialogAssignedIconLabel');
+        return this.i18n('switchAccessActionAssignmentAssignedIconLabel');
       case AssignmentIcon.ADD_ASSIGNMENT:
-        return this.i18n(
-            'switchAccessActionAssignmentDialogAddAssignmentIconLabel');
+        return this.i18n('switchAccessActionAssignmentAddAssignmentIconLabel');
       case AssignmentIcon.REMOVE_ASSIGNMENT:
         return this.i18n(
-            'switchAccessActionAssignmentDialogRemoveAssignmentIconLabel');
+            'switchAccessActionAssignmentRemoveAssignmentIconLabel');
     }
     throw new Error('Invalid assignment icon.');
   },
@@ -428,28 +452,40 @@ Polymer({
    * @private
    */
   computePromptText_(assignmentState, assignments) {
+    let response;
     switch (assignmentState) {
       case AssignmentState.WAIT_FOR_KEY:
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         if (!assignments.length) {
+          if (this.context === AssignmentContext.SETUP_GUIDE) {
+            return this.i18n(
+                'switchAccessActionAssignmentWaitForKeyPromptNoSwitchesSetupGuide',
+                this.getLabelForAction_(this.action));
+          }
           return this.i18n(
-              'switchAccessActionAssignmentDialogWaitForKeyPromptNoSwitches',
+              'switchAccessActionAssignmentWaitForKeyPromptNoSwitches',
               this.getLabelForAction_(this.action));
         }
         return this.i18n(
-            'switchAccessActionAssignmentDialogWaitForKeyPromptAtLeastOneSwitch');
+            'switchAccessActionAssignmentWaitForKeyPromptAtLeastOneSwitch');
       case AssignmentState.WAIT_FOR_CONFIRMATION:
       case AssignmentState.WARN_NOT_CONFIRMED:
+        response = this.context === AssignmentContext.SETUP_GUIDE ?
+            AssignmentResponse.CONTINUE :
+            AssignmentResponse.EXIT;
         return this.i18n(
-            'switchAccessActionAssignmentDialogWaitForConfirmationPrompt',
-            this.currentKey_);
+            'switchAccessActionAssignmentWaitForConfirmationPrompt',
+            this.currentKey_, this.i18n(response));
       case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
       case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
+        response = this.context === AssignmentContext.SETUP_GUIDE ?
+            AssignmentResponse.TRY_AGAIN :
+            AssignmentResponse.EXIT;
         return this.i18n(
-            'switchAccessActionAssignmentDialogWaitForConfirmationRemovalPrompt',
-            this.currentKey_);
+            'switchAccessActionAssignmentWaitForConfirmationRemovalPrompt',
+            this.currentKey_, this.i18n(response));
     }
     throw new Error('Invalid assignment state.');
   },
@@ -460,22 +496,32 @@ Polymer({
    * @private
    */
   computeErrorText_(assignmentState) {
+    let response = this.context === AssignmentContext.SETUP_GUIDE ?
+        AssignmentResponse.TRY_AGAIN :
+        AssignmentResponse.EXIT;
     switch (assignmentState) {
       case AssignmentState.WARN_NOT_CONFIRMED:
       case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
         return this.i18n(
-            'switchAccessActionAssignmentDialogWarnNotConfirmedPrompt');
+            'switchAccessActionAssignmentWarnNotConfirmedPrompt',
+            this.i18n(response));
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
         return this.i18n(
-            'switchAccessActionAssignmentDialogWarnAlreadyAssignedActionPrompt',
+            'switchAccessActionAssignmentWarnAlreadyAssignedActionPrompt',
             this.currentKey_,
-            this.getLabelForAction_(this.alreadyAssignedAction_));
+            this.getLabelForAction_(this.alreadyAssignedAction_),
+            this.i18n(response));
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
         return this.i18n(
-            'switchAccessActionAssignmentDialogWarnUnrecognizedKeyPrompt');
+            'switchAccessActionAssignmentWarnUnrecognizedKeyPrompt',
+            this.i18n(response));
       case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
+        if (this.context === AssignmentContext.SETUP_GUIDE) {
+          response = AssignmentResponse.CONTINUE;
+        }
         return this.i18n(
-            'switchAccessActionAssignmentDialogWarnCannotRemoveLastSelectSwitch');
+            'switchAccessActionAssignmentWarnCannotRemoveLastSelectSwitch',
+            this.i18n(response));
       case AssignmentState.WAIT_FOR_KEY:
       case AssignmentState.WAIT_FOR_CONFIRMATION:
       case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:

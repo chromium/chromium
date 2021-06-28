@@ -266,6 +266,7 @@ Polymer({
     const assignmentPane =
         document.createElement('settings-switch-access-action-assignment-pane');
     assignmentPane.action = action;
+    assignmentPane.context = AssignmentContext.SETUP_GUIDE;
     this.assignmentContentsElement.appendChild(assignmentPane);
   },
 

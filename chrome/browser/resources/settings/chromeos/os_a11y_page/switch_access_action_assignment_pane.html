@@ -74,7 +74,7 @@
     <div id="prompt" aria-live="polite">[[promptText_]]</div>
     <div id="switchAssignments">
       <template is="dom-if" if="[[!assignments_.length]]">
-        $i18n{noSwitchesAssigned}
+        [[noSwitchesLabel_]]
       </template>
       <template is="dom-if" if="[[assignments_.length]]">
         <template is="dom-repeat" items="[[assignments_]]" as="assignment">
@@ -92,7 +92,7 @@
       <template is="dom-if" if="[[errorText_]]">
         <div id="error" aria-live="polite">
           <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
-              aria-label="$i18n{switchAccessActionAssignmentDialogErrorIconLabel}">
+              aria-label="$i18n{switchAccessActionAssignmentErrorIconLabel}">
           </iron-icon>
           [[errorText_]]
         </div>
