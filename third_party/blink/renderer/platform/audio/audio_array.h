@@ -31,7 +31,6 @@
 
 #include <string.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -85,7 +84,7 @@ class AudioArray {
         total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
     CHECK(allocation_);
 
-    aligned_data_ = AlignedAddress(allocation_.get(), kAlignment);
+    aligned_data_ = AlignedAddress(allocation_, kAlignment);
     size_ = static_cast<uint32_t>(n);
   }
 
@@ -137,8 +136,8 @@ class AudioArray {
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));
   }
 
-  CheckedPtr<T> allocation_;
-  CheckedPtr<T> aligned_data_;
+  T* allocation_;
+  T* aligned_data_;
   uint32_t size_;
 };
 

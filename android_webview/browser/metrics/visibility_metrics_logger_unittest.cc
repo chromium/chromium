@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -49,7 +48,7 @@ class TestClient : public VisibilityMetricsLogger::Client {
   }
 
  private:
-  CheckedPtr<VisibilityMetricsLogger> logger_;
+  VisibilityMetricsLogger* logger_;
   VisibilityMetricsLogger::VisibilityInfo visibility_info_;
 };
 

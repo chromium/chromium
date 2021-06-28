@@ -28,7 +28,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_database.h"
 
 struct sqlite3_stmt;
@@ -78,7 +77,7 @@ class SQLiteStatement {
  private:
   SQLiteDatabase& database_;
   String query_;
-  CheckedPtr<sqlite3_stmt> statement_;
+  sqlite3_stmt* statement_;
 #if DCHECK_IS_ON()
   bool is_prepared_ = false;
 #endif

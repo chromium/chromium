@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -192,7 +191,7 @@ class MockLargeIconServiceWithFake : public LargeIconService {
   MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
 
  private:
-  const CheckedPtr<MockFaviconServiceWithFake> mock_favicon_service_with_fake_;
+  MockFaviconServiceWithFake* const mock_favicon_service_with_fake_;
 
   DISALLOW_COPY_AND_ASSIGN(MockLargeIconServiceWithFake);
 };

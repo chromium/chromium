@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "v8/include/v8.h"
 
@@ -55,15 +54,15 @@ class StorageArea {
                                          v8::Local<v8::Object> wrapper);
 
  private:
-  CheckedPtr<APIRequestHandler> request_handler_;
+  APIRequestHandler* request_handler_;
 
-  CheckedPtr<APIEventHandler> event_handler_;
+  APIEventHandler* event_handler_;
 
-  CheckedPtr<const APITypeReferenceMap> type_refs_;
+  const APITypeReferenceMap* type_refs_;
 
   std::string name_;
 
-  const CheckedPtr<const BindingAccessChecker> access_checker_;
+  const BindingAccessChecker* const access_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(StorageArea);
 };

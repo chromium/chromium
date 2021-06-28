@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
@@ -110,7 +109,7 @@ class VR_UI_EXPORT UiScene {
   std::vector<PerFrameCallback> per_frame_callback_;
 
   std::vector<std::unique_ptr<Sequence>> scheduled_tasks_;
-  CheckedPtr<SkiaSurfaceProvider> provider_ = nullptr;
+  SkiaSurfaceProvider* provider_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UiScene);
 };

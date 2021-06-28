@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
@@ -51,7 +50,7 @@ class TabSearchBubbleHost : public views::WidgetObserver {
   void ButtonPressed(const ui::Event& event);
 
   // The anchor button for the tab search bubble.
-  const CheckedPtr<views::Button> button_;
+  views::Button* const button_;
 
   WebUIBubbleManagerT<TabSearchUI> webui_bubble_manager_;
 
@@ -60,7 +59,7 @@ class TabSearchBubbleHost : public views::WidgetObserver {
   // Timestamp for when the current bubble was created.
   absl::optional<base::TimeTicks> bubble_created_time_;
 
-  CheckedPtr<views::MenuButtonController> menu_button_controller_ = nullptr;
+  views::MenuButtonController* menu_button_controller_ = nullptr;
 
   // A lock to keep its `button_` pressed while |bubble_| is showing or in the
   // process of being shown.

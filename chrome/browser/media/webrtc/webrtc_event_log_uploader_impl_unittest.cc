@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 
 #include <memory>
@@ -197,8 +196,7 @@ class WebRtcEventLogUploaderImplTest : public ::testing::Test {
 
   base::ScopedTempDir profiles_dir_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  CheckedPtr<TestingProfile>
-      testing_profile_;  // |testing_profile_manager_| owns.
+  TestingProfile* testing_profile_;  // |testing_profile_manager_| owns.
   BrowserContextId browser_context_id_;
 
   base::FilePath log_file_;

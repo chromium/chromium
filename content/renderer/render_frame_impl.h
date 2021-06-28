@@ -21,7 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -240,8 +239,8 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams(CreateParams&&);
     CreateParams& operator=(CreateParams&&);
 
-    CheckedPtr<AgentSchedulingGroup> agent_scheduling_group;
-    CheckedPtr<RenderViewImpl> render_view;
+    AgentSchedulingGroup* agent_scheduling_group;
+    RenderViewImpl* render_view;
     int32_t routing_id;
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -782,7 +781,7 @@ class CONTENT_EXPORT RenderFrameImpl
 
    private:
     base::WeakPtr<RenderFrameImpl> weak_frame_;
-    CheckedPtr<T> scoped_variable_;
+    T* scoped_variable_;
     T original_value_;
   };
 
@@ -1136,7 +1135,7 @@ class CONTENT_EXPORT RenderFrameImpl
    private:
     blink::WebLocalFrame* GetWebFrame() const;
 
-    CheckedPtr<RenderFrameImpl> render_frame_;
+    RenderFrameImpl* render_frame_;
   };
   UniqueNameFrameAdapter unique_name_frame_adapter_;
   blink::UniqueNameHelper unique_name_helper_;

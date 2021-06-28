@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -110,7 +109,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     // loop.
     scoped_refptr<base::SingleThreadTaskRunner> internal_task_runner_;
 
-    CheckedPtr<WorkerThread> thread_;
+    WorkerThread* thread_;
 
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
@@ -118,7 +117,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     std::unique_ptr<scheduler::NonMainThreadSchedulerImpl>
         non_main_thread_scheduler_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-    CheckedPtr<base::RunLoop> run_loop_;
+    base::RunLoop* run_loop_;
     bool supports_gc_;
     std::unique_ptr<GCSupport> gc_support_;
   };

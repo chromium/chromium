@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -154,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   void IncrementDelayedBytes(uint32_t size);
   void DecrementDelayedBytes(uint32_t size);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   mojo::Remote<mojom::P2PSocketClient> client_;
   mojo::Receiver<mojom::P2PSocket> receiver_;
 

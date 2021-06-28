@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
@@ -74,7 +73,7 @@ class AppCacheServiceImpl::AsyncHelper : public AppCacheStorage::Delegate {
     DCHECK(!callback_);
   }
 
-  CheckedPtr<AppCacheServiceImpl> service_;
+  AppCacheServiceImpl* service_;
   net::CompletionOnceCallback callback_;
 };
 

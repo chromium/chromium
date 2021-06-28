@@ -35,7 +35,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -162,7 +161,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     void ConsumeAudio(AudioBus* bus, size_t number_of_frames) override;
 
     // m_consumer is not owned by this class.
-    CheckedPtr<WebAudioDestinationConsumer> consumer_;
+    WebAudioDestinationConsumer* consumer_;
     // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
     // member variable is to not have to reallocate it for each call.
     Vector<const float*> bus_vector_;

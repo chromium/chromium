@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_SCHEDULER_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_SCHEDULER_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -45,7 +44,7 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   void ShutdownAllQueues() override;
 
  private:
-  CheckedPtr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
+  MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
 
   const scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;

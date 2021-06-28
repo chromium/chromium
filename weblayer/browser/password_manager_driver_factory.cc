@@ -4,7 +4,6 @@
 
 #include "weblayer/browser/password_manager_driver_factory.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -86,7 +85,7 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
 
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_{this};
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 };
 
 PasswordManagerDriverFactory::PasswordManagerDriverFactory(

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 
 #include <memory>
@@ -58,7 +57,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
   bool is_sync_signin_tab_ = false;

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/display/display_export.h"
 
@@ -83,7 +82,7 @@ class DISPLAY_EXPORT ScopedOptionalDisplayObserver {
   ~ScopedOptionalDisplayObserver();
 
  private:
-  CheckedPtr<DisplayObserver> observer_ = nullptr;
+  DisplayObserver* observer_ = nullptr;
 };
 
 class DISPLAY_EXPORT ScopedDisplayObserver

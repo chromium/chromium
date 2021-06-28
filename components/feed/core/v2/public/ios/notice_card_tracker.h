@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_IOS_NOTICE_CARD_TRACKER_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_IOS_NOTICE_CARD_TRACKER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 // TODO(crbug.com/1213474): Remove this include:
@@ -41,7 +40,7 @@ class NoticeCardTracker {
   void MaybeUpdateNoticeCardViewsCount(int index);
   void MaybeUpdateNoticeCardClicksCount(int index);
 
-  CheckedPtr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
 
   // The number of views of the notice card.
   mutable base::Lock views_count_lock_;

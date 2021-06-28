@@ -8,7 +8,6 @@
 #include <list>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -212,14 +211,14 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void UpdateTooltip(const std::u16string& tooltip_text);
 
    private:
-    CheckedPtr<WebViewPlugin> plugin_;
-    CheckedPtr<blink::WebNavigationControl> frame_ = nullptr;
+    WebViewPlugin* plugin_;
+    blink::WebNavigationControl* frame_ = nullptr;
 
     std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
         agent_group_scheduler_;
 
     // Owned by us, deleted via |close()|.
-    CheckedPtr<blink::WebView> web_view_;
+    blink::WebView* web_view_;
 
     mojo::AssociatedReceiver<blink::mojom::WidgetHost>
         blink_widget_host_receiver_{this};

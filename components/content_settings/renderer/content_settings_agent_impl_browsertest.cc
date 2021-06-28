@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -81,7 +80,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   }
 
  private:
-  CheckedPtr<Log> log_;
+  Log* log_;
 };
 
 class MockContentSettingsAgentDelegate

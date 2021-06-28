@@ -32,9 +32,9 @@ TabGroupViews::TabGroupViews(TabStrip* tab_strip,
 }
 
 TabGroupViews::~TabGroupViews() {
-  tab_strip_->RemoveChildViewT(header_.get());
-  tab_strip_->RemoveChildViewT(underline_.get());
-  tab_strip_->RemoveChildViewT(highlight_.get());
+  tab_strip_->RemoveChildViewT(header_);
+  tab_strip_->RemoveChildViewT(underline_);
+  tab_strip_->RemoveChildViewT(highlight_);
 }
 
 void TabGroupViews::UpdateBounds() {

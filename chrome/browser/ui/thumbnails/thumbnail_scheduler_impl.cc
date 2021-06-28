@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/memory/checked_ptr.h"
 
 // static
 constexpr int ThumbnailSchedulerImpl::kMaxTotalCaptures;
@@ -19,7 +18,7 @@ struct ThumbnailSchedulerImpl::TabSchedulingData {
 };
 
 struct ThumbnailSchedulerImpl::TabNode : public base::LinkNode<TabNode> {
-  CheckedPtr<TabCapturer> capturer = nullptr;
+  TabCapturer* capturer = nullptr;
   TabSchedulingData data;
   bool is_capturing = false;
 };

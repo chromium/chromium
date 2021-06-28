@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -91,7 +90,7 @@ class FakeUsbMidiDevice : public UsbMidiDevice {
   std::string manufacturer_;
   std::string product_name_;
   std::string device_version_;
-  CheckedPtr<Logger> logger_;
+  Logger* logger_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeUsbMidiDevice);
 };
@@ -148,7 +147,7 @@ class FakeMidiManagerClient : public MidiManagerClient {
   std::vector<mojom::PortInfo> output_ports_;
 
  private:
-  CheckedPtr<Logger> logger_;
+  Logger* logger_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerClient);
 };
@@ -270,7 +269,7 @@ class MidiManagerUsbTest : public ::testing::Test {
 
   MidiManagerUsb* manager() { return factory_->manager(); }
 
-  CheckedPtr<MidiManagerFactoryForTesting> factory_;
+  MidiManagerFactoryForTesting* factory_;
   std::unique_ptr<FakeMidiManagerClient> client_;
   Logger logger_;
 

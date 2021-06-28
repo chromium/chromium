@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;
@@ -49,10 +48,10 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // The root MenuItemView for the context menu, or null if no menu is being
   // shown. This is used for testing.
-  CheckedPtr<views::MenuItemView> menu_ = nullptr;
+  views::MenuItemView* menu_ = nullptr;
 
   // This controller contains the data for the extension's context menu.
-  const CheckedPtr<ToolbarActionViewController> controller_;
+  ToolbarActionViewController* const controller_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuController);
 };

@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -268,7 +267,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   void MaybeGarbageCollectAllocationGroups();
 
   // Can be nullptr.
-  const CheckedPtr<SurfaceManagerDelegate> delegate_;
+  SurfaceManagerDelegate* const delegate_;
 
   absl::optional<uint32_t> activation_deadline_in_frames_;
 
@@ -292,7 +291,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   const base::flat_set<SurfaceId> empty_surface_id_set_;
 
   // Used for setting deadlines for surface synchronization.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Keeps track of surface references for a surface. The graph of references is
   // stored in parent to child direction. i.e the map stores all direct children

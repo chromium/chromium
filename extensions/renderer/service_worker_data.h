@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/renderer/v8_schema_registry.h"
 
@@ -42,7 +41,7 @@ class ServiceWorkerData {
  private:
   const int64_t service_worker_version_id_;
   const ActivationSequence activation_sequence_;
-  const CheckedPtr<ScriptContext> context_ = nullptr;
+  ScriptContext* const context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;

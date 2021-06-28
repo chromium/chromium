@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 namespace content {
@@ -45,7 +44,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(SmsInfoBar);
 };

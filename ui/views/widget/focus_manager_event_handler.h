@@ -6,7 +6,6 @@
 #define UI_VIEWS_WIDGET_FOCUS_MANAGER_EVENT_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 
@@ -30,10 +29,10 @@ class FocusManagerEventHandler : public ui::EventHandler {
   base::StringPiece GetLogContext() const override;
 
  private:
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
 
   // |window_| is the event target that is associated with this class.
-  CheckedPtr<aura::Window> window_;
+  aura::Window* window_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusManagerEventHandler);
 };

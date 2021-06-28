@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
@@ -128,7 +127,7 @@ class ScriptExecutor {
   }
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   ScriptsExecutedNotification observer_;
 

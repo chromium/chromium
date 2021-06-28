@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -30,7 +29,7 @@ class FullNameField : public NameField {
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
 
  private:
-  CheckedPtr<AutofillField> field_;
+  AutofillField* field_;
 
   DISALLOW_COPY_AND_ASSIGN(FullNameField);
 };

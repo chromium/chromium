@@ -18,7 +18,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -314,7 +313,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   std::unique_ptr<SandboxOriginDatabaseInterface> origin_database_;
   scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
   base::FilePath file_system_directory_;
-  CheckedPtr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
   bool is_incognito_;
 
   // Used to delete database after a certain period of inactivity.
@@ -326,7 +325,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   std::set<std::string> known_type_strings_;
 
   // Not owned.
-  CheckedPtr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
+  SandboxFileSystemBackendDelegate* sandbox_delegate_;
 
   std::unique_ptr<ObfuscatedFileUtilDelegate> delegate_;
 

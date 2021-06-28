@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
@@ -134,7 +133,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     url_loader_.reset();
   }
 
-  CheckedPtr<absl::optional<network::ResourceRequest>>
+  absl::optional<network::ResourceRequest>*
       most_recent_resource_request_;  // NOT OWNED.
   network::ResourceScheduler resource_scheduler_;
   std::unique_ptr<net::URLRequestContext> context_;

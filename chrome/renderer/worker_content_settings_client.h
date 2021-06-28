@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -51,7 +50,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   url::Origin top_frame_origin_;
   bool allow_running_insecure_content_;
   const int32_t render_frame_id_;
-  CheckedPtr<const RendererContentSettingRules> content_setting_rules_;
+  const RendererContentSettingRules* content_setting_rules_;
 
   // Because instances of this class are created on the parent's thread (i.e,
   // on the renderer main thread or on the thread of the parent worker), it is

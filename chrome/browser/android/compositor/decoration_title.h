@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"
@@ -83,7 +82,7 @@ class DecorationTitle {
   bool is_loading_;
   std::unique_ptr<gfx::Transform> transform_;
 
-  CheckedPtr<ui::ResourceManager> resource_manager_;
+  ui::ResourceManager* resource_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(DecorationTitle);
 };

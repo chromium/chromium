@@ -31,7 +31,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
@@ -63,7 +62,7 @@ class DatabaseTask {
   virtual void TaskCancelled() {}
 
   CrossThreadPersistent<Database> database_;
-  CheckedPtr<base::WaitableEvent> complete_event_;
+  base::WaitableEvent* complete_event_;
 
 #if DCHECK_IS_ON()
   virtual const char* DebugTaskName() const = 0;

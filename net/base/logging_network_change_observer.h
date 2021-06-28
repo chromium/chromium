@@ -5,7 +5,6 @@
 #ifndef NET_BASE_LOGGING_NETWORK_CHANGE_OBSERVER_H_
 #define NET_BASE_LOGGING_NETWORK_CHANGE_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
@@ -50,7 +49,7 @@ class NET_EXPORT LoggingNetworkChangeObserver
   void OnNetworkMadeDefault(
       NetworkChangeNotifier::NetworkHandle network) override;
 
-  CheckedPtr<NetLog> net_log_;
+  NetLog* net_log_;
 };
 
 }  // namespace net

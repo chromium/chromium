@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -105,7 +104,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
   }
 
   void Start() override {
-    std::move(start_callback_).Run(audio_parameters_, capture_callback_.get());
+    std::move(start_callback_).Run(audio_parameters_, capture_callback_);
   }
 
   void Stop() override { std::move(stop_callback_).Run(); }
@@ -121,7 +120,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
  private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
-  CheckedPtr<CaptureCallback> capture_callback_;
+  CaptureCallback* capture_callback_;
   media::AudioParameters audio_parameters_;
 
   DISALLOW_COPY_AND_ASSIGN(MockCapturerSource);

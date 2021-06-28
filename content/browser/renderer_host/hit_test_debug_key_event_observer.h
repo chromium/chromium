@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_HIT_TEST_DEBUG_KEY_EVENT_OBSERVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_HIT_TEST_DEBUG_KEY_EVENT_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/render_widget_host.h"
 
 namespace viz {
@@ -32,8 +31,8 @@ class HitTestDebugKeyEventObserver
                        const blink::WebInputEvent&) override;
 
  private:
-  CheckedPtr<RenderWidgetHostImpl> host_;
-  CheckedPtr<viz::HitTestQuery> hit_test_query_;
+  RenderWidgetHostImpl* host_;
+  viz::HitTestQuery* hit_test_query_;
 };
 
 }  // namespace content

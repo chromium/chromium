@@ -16,7 +16,6 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequenced_task_runner.h"
@@ -492,7 +491,7 @@ class PasswordStore : protected PasswordStoreSync,
   // This member is called to perform the actual interaction with the storage.
   // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
   // backend is passed into the store instead of it being the store(_impl).
-  CheckedPtr<PasswordStoreBackend> backend_ = nullptr;
+  PasswordStoreBackend* backend_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,
@@ -692,7 +691,7 @@ class PasswordStore : protected PasswordStoreSync,
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
-  CheckedPtr<PrefService> prefs_ = nullptr;
+  PrefService* prefs_ = nullptr;
 
   // Object responsible for detection of password reuse, i.e. that the
   // user input on some site contains the password saved on another site.

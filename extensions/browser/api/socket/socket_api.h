@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -118,7 +117,7 @@ class SocketResourceManager : public SocketResourceManagerInterface {
   }
 
  private:
-  CheckedPtr<ApiResourceManager<T>> manager_;
+  ApiResourceManager<T>* manager_;
 };
 
 // Base class for socket API functions, with some helper functions.

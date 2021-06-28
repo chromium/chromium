@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -211,7 +210,7 @@ class TriggerManagerWebContentsHelper
                                   TriggerManager* trigger_manager);
 
   // Trigger Manager will be notified of any relevant WebContents events.
-  CheckedPtr<TriggerManager> trigger_manager_;
+  TriggerManager* trigger_manager_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

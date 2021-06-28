@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
@@ -300,7 +299,7 @@ class TestRunner {
     // Collection of flags to be synced with the browser process.
     TrackedDictionary states_;
 
-    CheckedPtr<TestRunner> controller_;
+    TestRunner* controller_;
   };
 
   // If the main test window's main frame is hosted in this renderer process,

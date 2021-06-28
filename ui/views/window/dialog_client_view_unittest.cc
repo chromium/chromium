@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -165,13 +164,13 @@ class DialogClientViewTest : public test::WidgetTest {
     gfx::Size GetMaximumSize() const override { return parent_->max_size_; }
 
    private:
-    const CheckedPtr<DialogClientViewTest> parent_;
+    DialogClientViewTest* const parent_;
   };
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  CheckedPtr<Widget> widget_ = nullptr;
-  CheckedPtr<DialogDelegateView> delegate_ = nullptr;
+  Widget* widget_ = nullptr;
+  DialogDelegateView* delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;

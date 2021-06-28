@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -152,7 +151,7 @@ class FakeWebMediaPlayerDelegate
 
  private:
   int delegate_id_ = 1234;
-  CheckedPtr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
   bool is_hidden_ = false;
   bool is_gone_ = true;
   bool is_idle_ = false;
@@ -231,7 +230,7 @@ class MockMediaStreamVideoRenderer : public WebMediaStreamVideoRenderer {
   gfx::Size standard_size_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const CheckedPtr<ReusableMessageLoopEvent> message_loop_controller_;
+  ReusableMessageLoopEvent* const message_loop_controller_;
   const WebMediaStreamVideoRenderer::RepaintCB repaint_cb_;
 
   base::circular_deque<TestFrame> frames_;
@@ -408,7 +407,7 @@ class MockWebVideoFrameSubmitter : public WebVideoFrameSubmitter {
   }
 
  private:
-  CheckedPtr<cc::VideoFrameProvider> provider_;
+  cc::VideoFrameProvider* provider_;
 };
 
 // The class is used to generate a MockVideoProvider in
@@ -454,7 +453,7 @@ class MockRenderFactory : public MediaStreamRendererFactory {
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<WebMediaStreamVideoRenderer> provider_;
-  const CheckedPtr<ReusableMessageLoopEvent> message_loop_controller_;
+  ReusableMessageLoopEvent* const message_loop_controller_;
   bool support_video_renderer_ = true;
   scoped_refptr<WebMediaStreamAudioRenderer> audio_renderer_;
 };

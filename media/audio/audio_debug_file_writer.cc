@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/sys_byteorder.h"
 #include "media/base/audio_bus.h"
@@ -81,7 +80,7 @@ class CharBufferWriter {
   }
 
  private:
-  CheckedPtr<char> buf_;
+  char* buf_;
   const int max_size_;
   int size_;
 

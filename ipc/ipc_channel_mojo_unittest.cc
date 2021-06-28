@@ -18,7 +18,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -123,7 +122,7 @@ class TestListenerBase : public IPC::Listener {
   }
 
  private:
-  CheckedPtr<IPC::Sender> sender_ = nullptr;
+  IPC::Sender* sender_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 
@@ -752,7 +751,7 @@ class ListenerSendingAssociatedMessages : public IPC::Listener {
  private:
   void OnQuitAck() { std::move(quit_closure_).Run(); }
 
-  CheckedPtr<IPC::Channel> channel_ = nullptr;
+  IPC::Channel* channel_ = nullptr;
   mojo::AssociatedRemote<IPC::mojom::SimpleTestDriver> driver_;
   base::OnceClosure quit_closure_;
 };
@@ -1177,7 +1176,7 @@ class SyncReplyReader : public IPC::MessageReplyDeserializer {
     return true;
   }
 
-  CheckedPtr<int32_t> storage_;
+  int32_t* storage_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncReplyReader);
 };
@@ -1405,7 +1404,7 @@ class ExpectValueSequenceListener : public IPC::Listener {
   }
 
  private:
-  CheckedPtr<base::queue<int32_t>> expected_values_;
+  base::queue<int32_t>* expected_values_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ExpectValueSequenceListener);

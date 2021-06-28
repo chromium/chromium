@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -165,7 +164,7 @@ class LevelDBDirectTransaction {
 
   bool IsFinished() const { return write_batch_ == nullptr; }
 
-  const CheckedPtr<TransactionalLevelDBDatabase> db_;
+  TransactionalLevelDBDatabase* const db_;
   std::unique_ptr<LevelDBWriteBatch> write_batch_;
 
   DISALLOW_COPY_AND_ASSIGN(LevelDBDirectTransaction);

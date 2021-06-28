@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
@@ -184,7 +183,7 @@ class MultiplexRouter::InterfaceEndpoint
 
   void OnSyncEventSignaled() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    scoped_refptr<MultiplexRouter> router_protector(router_.get());
+    scoped_refptr<MultiplexRouter> router_protector(router_);
 
     MayAutoLock locker(&router_->lock_);
     scoped_refptr<InterfaceEndpoint> self_protector(this);
@@ -220,7 +219,7 @@ class MultiplexRouter::InterfaceEndpoint
   // ---------------------------------------------------------------------------
   // The following members are safe to access from any sequence.
 
-  const CheckedPtr<MultiplexRouter> router_;
+  MultiplexRouter* const router_;
   const InterfaceId id_;
 
   // ---------------------------------------------------------------------------
@@ -240,7 +239,7 @@ class MultiplexRouter::InterfaceEndpoint
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Not owned. It is null if no client is attached to this endpoint.
-  CheckedPtr<InterfaceEndpointClient> client_;
+  InterfaceEndpointClient* client_;
 
   // Indicates whether the sync watcher should be signaled for this endpoint.
   bool sync_message_event_signaled_ = false;
@@ -299,7 +298,7 @@ class MultiplexRouter::MessageWrapper {
   }
 
  private:
-  CheckedPtr<MultiplexRouter> router_ = nullptr;
+  MultiplexRouter* router_ = nullptr;
   Message value_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageWrapper);

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace extensions {
 class ScriptContext;
@@ -62,8 +61,8 @@ class SendMessageTester {
                                 PortStatus expected_port_status,
                                 Method method);
 
-  CheckedPtr<TestIPCMessageSender> ipc_sender_;
-  CheckedPtr<ScriptContext> script_context_;
+  TestIPCMessageSender* ipc_sender_;
+  ScriptContext* script_context_;
   int next_port_id_;
   std::string api_namespace_;
 

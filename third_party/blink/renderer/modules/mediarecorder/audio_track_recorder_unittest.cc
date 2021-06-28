@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/audio/simple_sources.h"
@@ -241,7 +240,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   media::SineWaveAudioSource second_source_;
 
   // Decoder for verifying data was properly encoded.
-  CheckedPtr<OpusDecoder> opus_decoder_;
+  OpusDecoder* opus_decoder_;
   std::unique_ptr<float[]> opus_buffer_;
 
   // Save the data we generate from the first source so that we might compare it

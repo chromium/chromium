@@ -16,7 +16,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -41,7 +40,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
     GLintptr offset;
     GLsizeiptr size;
     GLenum access;
-    CheckedPtr<void> pointer;        // Pointer returned by driver.
+    void* pointer;  // Pointer returned by driver.
     scoped_refptr<gpu::Buffer> shm;  // Client side mem buffer.
     unsigned int shm_offset;  // Client side mem buffer offset.
 
@@ -195,7 +194,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
   void ClearCache();
 
   // The manager that owns this Buffer.
-  CheckedPtr<BufferManager> manager_;
+  BufferManager* manager_;
 
   // A copy of the data in the buffer. This data is only kept if the conditions
   // checked in UseShadowBuffer() are true.
@@ -444,7 +443,7 @@ class GPU_GLES2_EXPORT BufferManager
                             va_list varargs);
 
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  CheckedPtr<MemoryTracker> memory_tracker_;
+  MemoryTracker* memory_tracker_;
   scoped_refptr<FeatureInfo> feature_info_;
 
   // Info for each buffer in the system.

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -59,7 +58,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   WebVector<WebString> cors_exempt_header_list_;
-  CheckedPtr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the

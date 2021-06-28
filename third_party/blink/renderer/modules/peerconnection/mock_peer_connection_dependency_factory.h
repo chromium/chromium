@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -127,7 +126,7 @@ class MockWebRtcVideoTrack
   bool enabled_;
   TrackState state_;
   ObserverSet observers_;
-  CheckedPtr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
+  rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_;
 };
 
 class MockMediaStream : public webrtc::MediaStreamInterface {

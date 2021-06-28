@@ -11,7 +11,6 @@
 #include <queue>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -65,7 +64,7 @@ class CONTENT_EXPORT PepperWebSocketHost
                         const std::string& message);
 
   // Non-owning pointer.
-  CheckedPtr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
 
   // IPC reply parameters.
   ppapi::host::ReplyMessageContext connect_reply_;

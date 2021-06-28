@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/hang_watcher.h"
@@ -61,7 +60,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   bool is_browser_main_loop_started_ = false;
 
   // The hang watcher is leaked to make sure it survives all watched threads.
-  CheckedPtr<base::HangWatcher> hang_watcher_;
+  base::HangWatcher* hang_watcher_;
 
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
@@ -78,7 +77,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   bool completed_basic_startup_ = false;
 
   // The delegate will outlive this object.
-  CheckedPtr<ContentMainDelegate> delegate_ = nullptr;
+  ContentMainDelegate* delegate_ = nullptr;
 
   std::unique_ptr<base::AtExitManager> exit_manager_;
 
@@ -88,9 +87,9 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   base::mac::ScopedNSAutoreleasePool* autorelease_pool_ = nullptr;
 #endif
 
-  CheckedPtr<base::OnceClosure> ui_task_ = nullptr;
+  base::OnceClosure* ui_task_ = nullptr;
 
-  CheckedPtr<CreatedMainPartsClosure> created_main_parts_closure_ = nullptr;
+  CreatedMainPartsClosure* created_main_parts_closure_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ContentMainRunnerImpl);
 };

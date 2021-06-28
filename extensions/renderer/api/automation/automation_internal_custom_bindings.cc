@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/i18n/string_search.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -201,7 +200,7 @@ class TreeIDWrapper : public base::RefCountedThreadSafe<TreeIDWrapper> {
 
   friend class base::RefCountedThreadSafe<TreeIDWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   TreeIDFunction function_;
 };
 
@@ -251,7 +250,7 @@ class NodeIDWrapper : public base::RefCountedThreadSafe<NodeIDWrapper> {
 
   friend class base::RefCountedThreadSafe<NodeIDWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDFunction function_;
 };
 
@@ -308,7 +307,7 @@ class NodeIDPlusAttributeWrapper
 
   friend class base::RefCountedThreadSafe<NodeIDPlusAttributeWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusAttributeFunction function_;
 };
 
@@ -369,7 +368,7 @@ class NodeIDPlusRangeWrapper
 
   friend class base::RefCountedThreadSafe<NodeIDPlusRangeWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusRangeFunction function_;
 };
 
@@ -422,7 +421,7 @@ class NodeIDPlusStringBoolWrapper
 
   friend class base::RefCountedThreadSafe<NodeIDPlusStringBoolWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusStringBoolFunction function_;
 };
 
@@ -478,7 +477,7 @@ class NodeIDPlusDimensionsWrapper
 
   friend class base::RefCountedThreadSafe<NodeIDPlusDimensionsWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusDimensionsFunction function_;
 };
 
@@ -535,7 +534,7 @@ class NodeIDPlusEventWrapper
 
   friend class base::RefCountedThreadSafe<NodeIDPlusEventWrapper>;
 
-  CheckedPtr<AutomationInternalCustomBindings> automation_bindings_;
+  AutomationInternalCustomBindings* automation_bindings_;
   NodeIDPlusEventFunction function_;
 };
 
@@ -586,7 +585,7 @@ class AutomationMessageFilter : public IPC::MessageFilter {
     }
   }
 
-  CheckedPtr<AutomationInternalCustomBindings> owner_;
+  AutomationInternalCustomBindings* owner_;
   bool removed_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
@@ -215,7 +214,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     static void RecordPageLifecycleStateTransition(
         PageLifecycleStateTransition);
 
-    CheckedPtr<PageSchedulerImpl> page_scheduler_impl_;
+    PageSchedulerImpl* page_scheduler_impl_;
     PageLifecycleState current_state_;
   };
 

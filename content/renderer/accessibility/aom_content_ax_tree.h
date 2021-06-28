@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_computed_ax_tree.h"
 
 #include "base/macros.h"
@@ -54,7 +53,7 @@ class AomContentAxTree : public blink::WebComputedAXTree {
                                   blink::WebAOMBoolAttribute,
                                   bool* out_param);
   ui::AXTree tree_;
-  CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
   DISALLOW_COPY_AND_ASSIGN(AomContentAxTree);
 };
 

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -100,7 +99,7 @@ class ChangePolicyObserver : public PolicyService::Observer {
   bool observer_invoked() const { return observer_invoked_; }
 
  private:
-  CheckedPtr<MockConfigurationPolicyProvider> provider_;
+  MockConfigurationPolicyProvider* provider_;
   bool observer_invoked_;
 };
 

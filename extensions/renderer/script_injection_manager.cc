@@ -245,7 +245,7 @@ void ScriptInjectionManager::RFOHelper::InvalidateAndResetFrame(
 ScriptInjectionManager::ScriptInjectionManager(
     UserScriptSetManager* user_script_set_manager)
     : user_script_set_manager_(user_script_set_manager) {
-  user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
+  user_script_set_manager_observation_.Observe(user_script_set_manager_);
 }
 
 ScriptInjectionManager::~ScriptInjectionManager() {

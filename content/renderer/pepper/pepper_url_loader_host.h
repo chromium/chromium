@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
@@ -101,7 +100,7 @@ class PepperURLLoaderHost : public ppapi::host::ResourceHost,
   void UpdateProgress();
 
   // Non-owning pointer.
-  CheckedPtr<RendererPpapiHostImpl> renderer_ppapi_host_;
+  RendererPpapiHostImpl* renderer_ppapi_host_;
 
   // If true, then the plugin instance is a full-frame plugin and we're just
   // wrapping the main document's loader (i.e. loader_ is null).

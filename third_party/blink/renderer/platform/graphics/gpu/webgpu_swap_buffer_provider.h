@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SWAP_BUFFER_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SWAP_BUFFER_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -78,7 +77,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // is held alive by both the provider and the TransferableResource. If the
     // swap chain gets destroyed, the TransferableResource release CB
     // keeps the in-flight swap buffer alive.
-    CheckedPtr<WebGPUSwapBufferProvider> swap_buffers = nullptr;
+    WebGPUSwapBufferProvider* swap_buffers = nullptr;
 
     // A token signaled when the previous user of the image is finished using
     // it. It could be WebGPU, the compositor or the shared image creation.
@@ -95,7 +94,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
                        bool lost_resource);
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  CheckedPtr<Client> client_;
+  Client* client_;
   WGPUDevice device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;

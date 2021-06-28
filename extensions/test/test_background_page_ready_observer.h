@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_TEST_TEST_BACKGROUND_PAGE_READY_OBSERVER_H_
 #define EXTENSIONS_TEST_TEST_BACKGROUND_PAGE_READY_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_id.h"
 
@@ -38,7 +37,7 @@ class ExtensionBackgroundPageReadyObserver final {
       const content::NotificationSource& source,
       const content::NotificationDetails& details) const;
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   const extensions::ExtensionId extension_id_;
   content::WindowedNotificationObserver notification_observer_;
 };

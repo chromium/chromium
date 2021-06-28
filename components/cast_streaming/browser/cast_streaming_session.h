@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/cast/message_port/message_port.h"
@@ -153,7 +152,7 @@ class CastStreamingSession {
     base::OneShotTimer data_timeout_timer_;
 
     bool is_initialized_ = false;
-    const CheckedPtr<CastStreamingSession::Client> client_;
+    CastStreamingSession::Client* const client_;
     std::unique_ptr<StreamConsumer> audio_consumer_;
     std::unique_ptr<StreamConsumer> video_consumer_;
   };

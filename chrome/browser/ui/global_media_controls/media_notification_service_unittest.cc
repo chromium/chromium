@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -91,7 +90,7 @@ class MockOverlayMediaNotification : public OverlayMediaNotification {
                void(OverlayMediaNotificationsManager* manager));
 
  private:
-  CheckedPtr<OverlayMediaNotificationsManager> manager_ = nullptr;
+  OverlayMediaNotificationsManager* manager_ = nullptr;
 };
 
 class MockWebContentsPresentationManager

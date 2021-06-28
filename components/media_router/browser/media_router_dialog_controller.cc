@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -65,7 +64,7 @@ class MediaRouterDialogController::InitiatorWebContentsObserver
     dialog_controller_->CloseMediaRouterDialog();
   }
 
-  const CheckedPtr<MediaRouterDialogController> dialog_controller_;
+  MediaRouterDialogController* const dialog_controller_;
 };
 
 MediaRouterDialogController::MediaRouterDialogController(

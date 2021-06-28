@@ -194,7 +194,7 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
         form,
         base::BindOnce(ConvertToForms)
             .Then(base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
-                                 base::Unretained(backend_.get()),
+                                 base::Unretained(backend_),
                                  request_handler->AffiliatedLoginsClosure())));
   } else {
     request_handler->AffiliatedLoginsClosure().Run({});

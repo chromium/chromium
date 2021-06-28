@@ -5,7 +5,6 @@
 #include "components/performance_manager/service_worker_context_adapter.h"
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/render_process_host.h"
@@ -38,7 +37,7 @@ class ServiceWorkerContextAdapter::RunningServiceWorker
 
   // The adapter that owns |this|. Notified when RenderProcessExited() is
   // called.
-  const CheckedPtr<ServiceWorkerContextAdapter> adapter_;
+  ServiceWorkerContextAdapter* const adapter_;
 
   base::ScopedObservation<content::RenderProcessHost,
                           content::RenderProcessHostObserver>

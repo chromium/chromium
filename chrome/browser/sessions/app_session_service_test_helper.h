@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_APP_SESSION_SERVICE_TEST_HELPER_H_
 #define CHROME_BROWSER_SESSIONS_APP_SESSION_SERVICE_TEST_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sessions/session_service_base_test_helper.h"
 
 class Profile;
@@ -25,7 +24,7 @@ class AppSessionServiceTestHelper : public SessionServiceBaseTestHelper {
   AppSessionService* service() { return app_session_service_; }
 
  private:
-  CheckedPtr<AppSessionService> app_session_service_;
+  AppSessionService* app_session_service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_APP_SESSION_SERVICE_TEST_HELPER_H_

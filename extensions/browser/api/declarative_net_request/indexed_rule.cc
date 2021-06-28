@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -125,7 +124,7 @@ class UrlFilterParser {
   const std::string url_filter_;
   const size_t url_filter_len_;
   size_t index_;
-  CheckedPtr<IndexedRule> indexed_rule_;  // Must outlive this instance.
+  IndexedRule* indexed_rule_;  // Must outlive this instance.
 
   DISALLOW_COPY_AND_ASSIGN(UrlFilterParser);
 };

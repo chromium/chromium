@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/time_source.h"
@@ -51,7 +50,7 @@ class VideoRendererAlgorithmWrapper {
   enum RendererAlgorithm { Default, LowLatency };
 
   const media::TimeSource::WallClockTimeCB wall_clock_time_cb_;
-  CheckedPtr<media::MediaLog> media_log_;
+  media::MediaLog* media_log_;
   RendererAlgorithm renderer_algorithm_;
   std::unique_ptr<media::VideoRendererAlgorithm>
       default_rendering_frame_buffer_;

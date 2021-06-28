@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +35,7 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         /*remote=*/false);
     media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_.get()));
+        base::WrapUnique(pushable_video_source_));
   }
 
   ~MediaStreamVideoTrackUnderlyingSinkTest() override {
@@ -73,7 +72,7 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> media_stream_source_;
-  CheckedPtr<PushableMediaStreamVideoSource> pushable_video_source_;
+  PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
 // TODO(1153092): Test flakes, likely due to completing before background

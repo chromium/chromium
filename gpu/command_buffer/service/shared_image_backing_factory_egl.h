@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -108,7 +107,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
   int32_t max_texture_size_ = 0;
   GpuDriverBugWorkarounds workarounds_;
 
-  CheckedPtr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
+  SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
 };
 
 }  // namespace gpu

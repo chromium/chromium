@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ppapi/host/host_factory.h"
 
 namespace content {
@@ -28,7 +27,7 @@ class ChromeRendererPepperHostFactory : public ppapi::host::HostFactory {
 
  private:
   // Not owned by this object.
-  CheckedPtr<content::RendererPpapiHost> host_;
+  content::RendererPpapiHost* host_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeRendererPepperHostFactory);
 };

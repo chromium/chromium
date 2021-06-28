@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom-blink.h"
@@ -65,7 +64,7 @@ class AssociatedReceiverOwner
                              AssociatedReceiverOwner,
                              Mode>
       associated_receiver_;
-  CheckedPtr<HeapMojoAssociatedReceiverGCBaseTest<Mode>> test_;
+  HeapMojoAssociatedReceiverGCBaseTest<Mode>* test_;
 };
 
 template <HeapMojoWrapperMode Mode>

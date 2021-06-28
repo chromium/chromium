@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
@@ -57,7 +56,7 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
 
  private:
   SkImageInfo info_;
-  CheckedPtr<void> pixels_;
+  void* pixels_;
   size_t row_bytes_;
 };
 

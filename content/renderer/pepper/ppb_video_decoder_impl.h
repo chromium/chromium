@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/dev/pp_video_dev.h"
@@ -78,7 +77,7 @@ class PPB_VideoDecoder_Impl : public ppapi::PPB_VideoDecoder_Shared,
 
   // The interface to use when making calls on the plugin. For the most part,
   // methods should not use this directly but should call GetPPP() instead.
-  CheckedPtr<const PPP_VideoDecoder_Dev> ppp_videodecoder_;
+  const PPP_VideoDecoder_Dev* ppp_videodecoder_;
 
   DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Impl);
 };

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -40,7 +39,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
 
   std::unique_ptr<messages::MessageWrapper> message_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace send_tab_to_self

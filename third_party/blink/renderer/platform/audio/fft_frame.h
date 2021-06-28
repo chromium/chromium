@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -192,7 +191,7 @@ class PLATFORM_EXPORT FFTFrame {
     PFFFT_Setup* GetSetup() const { return setup_; }
 
    private:
-    CheckedPtr<PFFFT_Setup> setup_;
+    PFFFT_Setup* setup_;
   };
 
   // Returns the HashMap that holds all of the possible FFTSetup objects.  This

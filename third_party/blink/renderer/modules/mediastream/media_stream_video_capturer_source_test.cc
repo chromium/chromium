@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "media/base/bind_to_current_loop.h"
@@ -99,8 +98,8 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  const CheckedPtr<base::TimeTicks> capture_time_;
-  const CheckedPtr<media::VideoFrameMetadata> metadata_;
+  base::TimeTicks* const capture_time_;
+  media::VideoFrameMetadata* const metadata_;
   base::OnceClosure got_frame_cb_;
 };
 
@@ -122,8 +121,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         false /* remote */);
-    stream_source_->SetPlatformSource(
-        base::WrapUnique(video_capturer_source_.get()));
+    stream_source_->SetPlatformSource(base::WrapUnique(video_capturer_source_));
     stream_source_id_ = stream_source_->Id();
 
     MediaStreamVideoCapturerSource::DeviceCapturerFactoryCallback callback =
@@ -189,9 +187,9 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
 
   Persistent<MediaStreamSource> stream_source_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
-  CheckedPtr<MediaStreamVideoCapturerSource>
-      video_capturer_source_;                     // owned by |stream_source_|.
-  CheckedPtr<MockVideoCapturerSource> delegate_;  // owned by |source_|.
+  MediaStreamVideoCapturerSource*
+      video_capturer_source_;               // owned by |stream_source_|.
+  MockVideoCapturerSource* delegate_;       // owned by |source_|.
   String stream_source_id_;
   bool source_stopped_;
   bool stop_capture_flag_ = false;

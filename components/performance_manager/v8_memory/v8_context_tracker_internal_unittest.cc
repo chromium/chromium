@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
@@ -43,8 +42,8 @@ class V8ContextTrackerInternalTest : public GraphTestHarness {
     return tracker_->data_store();
   }
 
-  CheckedPtr<execution_context::ExecutionContextRegistry> registry_ = nullptr;
-  CheckedPtr<V8ContextTracker> tracker_ = nullptr;
+  execution_context::ExecutionContextRegistry* registry_ = nullptr;
+  V8ContextTracker* tracker_ = nullptr;
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 };
 
@@ -385,9 +384,9 @@ class V8ContextTrackerInternalTearDownOrderTest
     EXPECT_EQ(2u, data_store()->GetV8ContextDataCount());
   }
 
-  CheckedPtr<ProcessData> process_data_ = nullptr;
-  CheckedPtr<ProcessData> other_process_data_ = nullptr;
-  CheckedPtr<ExecutionContextData> ec_data_ = nullptr;
+  ProcessData* process_data_ = nullptr;
+  ProcessData* other_process_data_ = nullptr;
+  ExecutionContextData* ec_data_ = nullptr;
 };
 
 }  // namespace

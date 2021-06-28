@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
-
 namespace {
 
 // Report a single hard-coded supported format to clients.
@@ -45,7 +43,7 @@ class RawPointerVideoCaptureDevice : public media::VideoCaptureDevice {
   }
 
  private:
-  CheckedPtr<media::VideoCaptureDevice> device_;
+  media::VideoCaptureDevice* device_;
 };
 
 }  // anonymous namespace

@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_scheduler.h"
@@ -36,7 +35,7 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
   void OnPendingSurfacesChanged() override {}
 
  private:
-  const CheckedPtr<RootFrameSink> root_frame_sink_;
+  RootFrameSink* const root_frame_sink_;
 
   // This count how many times specific sink damaged display. It's incremented
   // in OnDisplayDamaged and decremented in DidSwapBuffers.

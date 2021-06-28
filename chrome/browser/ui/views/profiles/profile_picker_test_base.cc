@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -30,7 +29,7 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
   void Wait() {
     if (view_->GetVisible() == expect_toolbar_visible_)
       return;
-    observation_.Observe(view_.get());
+    observation_.Observe(view_);
     run_loop_.Run();
   }
 
@@ -45,7 +44,7 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
   }
 
   base::RunLoop run_loop_;
-  const CheckedPtr<views::View> view_;
+  views::View* const view_;
   bool expect_toolbar_visible_;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };

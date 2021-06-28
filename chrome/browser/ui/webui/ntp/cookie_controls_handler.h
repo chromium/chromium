@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_COOKIE_CONTROLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_COOKIE_CONTROLS_HANDLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
@@ -40,7 +39,7 @@ class CookieControlsHandler : public content::WebUIMessageHandler,
   // changed.
   void SendCookieControlsUIChanges();
 
-  CheckedPtr<CookieControlsService> service_;
+  CookieControlsService* service_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieControlsHandler);
 };

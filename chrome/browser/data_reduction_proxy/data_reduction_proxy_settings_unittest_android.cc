@@ -15,7 +15,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base64.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
@@ -60,7 +59,7 @@ class TestDataReductionProxySettingsAndroid
   DataReductionProxySettings* Settings() override { return settings_; }
 
   // The wrapped settings object.
-  CheckedPtr<DataReductionProxySettings> settings_;
+  DataReductionProxySettings* settings_;
 };
 
 template <class C>
@@ -112,7 +111,7 @@ class DataReductionProxyMockSettingsAndroidTest
   }
 
   std::unique_ptr<DataReductionProxySettingsAndroid> settings_android_;
-  CheckedPtr<JNIEnv> env_;
+  JNIEnv* env_;
 };
 
 TEST_F(DataReductionProxyMockSettingsAndroidTest,

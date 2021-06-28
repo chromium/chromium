@@ -12,7 +12,7 @@
 
 namespace policy {
 
-ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(nullptr) {}
+ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(NULL) {}
 
 ProxyPolicyProvider::~ProxyPolicyProvider() {
   DCHECK(!delegate_);
@@ -36,7 +36,7 @@ void ProxyPolicyProvider::Shutdown() {
   // Just drop the delegate without propagating updates here.
   if (delegate_) {
     delegate_->RemoveObserver(this);
-    delegate_ = nullptr;
+    delegate_ = NULL;
   }
   ConfigurationPolicyProvider::Shutdown();
 }

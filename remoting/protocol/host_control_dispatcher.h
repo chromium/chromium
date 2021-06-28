@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -68,8 +67,8 @@ class HostControlDispatcher : public ChannelDispatcherBase,
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> buffer) override;
 
-  CheckedPtr<ClipboardStub> clipboard_stub_ = nullptr;
-  CheckedPtr<HostStub> host_stub_ = nullptr;
+  ClipboardStub* clipboard_stub_ = nullptr;
+  HostStub* host_stub_ = nullptr;
   // 64 KiB is the default message size expected to be supported in absence of
   // a higher value negotiated via SDP.
   std::size_t max_message_size_ = 64 * 1024;

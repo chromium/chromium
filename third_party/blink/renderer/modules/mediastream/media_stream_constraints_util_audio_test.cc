@@ -12,7 +12,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -477,13 +476,10 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
   blink::MockConstraintFactory constraint_factory_;
   AudioDeviceCaptureCapabilities capabilities_;
-  CheckedPtr<const AudioDeviceCaptureCapability> default_device_ = nullptr;
-  CheckedPtr<const AudioDeviceCaptureCapability> system_echo_canceller_device_ =
-      nullptr;
-  CheckedPtr<const AudioDeviceCaptureCapability> four_channels_device_ =
-      nullptr;
-  CheckedPtr<const AudioDeviceCaptureCapability> variable_latency_device_ =
-      nullptr;
+  const AudioDeviceCaptureCapability* default_device_ = nullptr;
+  const AudioDeviceCaptureCapability* system_echo_canceller_device_ = nullptr;
+  const AudioDeviceCaptureCapability* four_channels_device_ = nullptr;
+  const AudioDeviceCaptureCapability* variable_latency_device_ = nullptr;
   std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_;
   const std::vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
 

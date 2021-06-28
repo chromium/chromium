@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_sctp_transport.h"
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -48,7 +47,7 @@ class MockSctpTransport : public webrtc::SctpTransportInterface {
  private:
   webrtc::SctpTransportInformation info_ =
       webrtc::SctpTransportInformation(webrtc::SctpTransportState::kNew);
-  CheckedPtr<webrtc::SctpTransportObserverInterface> observer_ = nullptr;
+  webrtc::SctpTransportObserverInterface* observer_ = nullptr;
 };
 
 class RTCSctpTransportTest : public RTCIceTransportTest {};

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
@@ -45,7 +44,7 @@ class DeferredInitializationRunner : public PolicyService::Observer {
   void OnFirstPoliciesLoaded(PolicyDomain domain) override;
 
  private:
-  CheckedPtr<PolicyService> policy_service_ = nullptr;
+  PolicyService* policy_service_ = nullptr;
   // If set, a callback to be invoked by |OnPolicyServiceInitialized|.
   base::OnceClosure callback_;
 };

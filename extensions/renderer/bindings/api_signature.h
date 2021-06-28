@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
@@ -138,7 +137,7 @@ class APISignature {
       binding::APIPromiseSupport::kUnsupported;
 
   // The associated access checker; required to outlive this object.
-  CheckedPtr<const BindingAccessChecker> access_checker_;
+  const BindingAccessChecker* access_checker_;
 
   bool has_callback_ = false;
 

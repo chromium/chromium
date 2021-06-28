@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_ENCODERS_IMAGE_ENCODER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -34,7 +33,7 @@ class VectorWStream : public SkWStream {
 
  private:
   // Does not have ownership.
-  CheckedPtr<Vector<unsigned char>> dst_;
+  Vector<unsigned char>* dst_;
 };
 
 class PLATFORM_EXPORT ImageEncoder {

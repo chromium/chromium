@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SCRIPT_RUN_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SCRIPT_RUN_ITERATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -72,7 +71,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
 
   UScriptCode common_preferred_;
 
-  CheckedPtr<const ScriptData> script_data_;
+  const ScriptData* script_data_;
 };
 
 // ScriptData is a wrapper which returns a set of scripts for a particular

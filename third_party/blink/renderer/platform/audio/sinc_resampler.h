@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -89,12 +88,12 @@ class PLATFORM_EXPORT SincResampler {
   // Source is copied into this buffer for each processing pass.
   AudioFloatArray input_buffer_;
 
-  CheckedPtr<const float> source_;
+  const float* source_;
   unsigned source_frames_available_;
 
   // m_sourceProvider is used to provide the audio input stream to the
   // resampler.
-  CheckedPtr<AudioSourceProvider> source_provider_;
+  AudioSourceProvider* source_provider_;
 
   // The buffer is primed once at the very beginning of processing.
   bool is_buffer_primed_;

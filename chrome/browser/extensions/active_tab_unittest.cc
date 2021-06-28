@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -493,7 +492,7 @@ class ActiveTabDelegateTest : public ActiveTabTest {
     ActiveTabPermissionGranter::SetPlatformDelegate(nullptr);
   }
 
-  CheckedPtr<ActiveTabPermissionGranterTestDelegate> test_delegate_;
+  ActiveTabPermissionGranterTestDelegate* test_delegate_;
 };
 
 // Test that the custom platform delegate works as expected.

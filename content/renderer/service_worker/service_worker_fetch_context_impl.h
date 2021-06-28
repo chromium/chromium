@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_FETCH_CONTEXT_IMPL_H_
 #define CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_FETCH_CONTEXT_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -138,9 +137,9 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
       pending_subresource_loader_updater_;
 
   // This is owned by ThreadedMessagingProxyBase on the main thread.
-  CheckedPtr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 
-  CheckedPtr<blink::AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
+  blink::AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
 
   std::vector<std::string> cors_exempt_header_list_;
   bool is_offline_mode_ = false;

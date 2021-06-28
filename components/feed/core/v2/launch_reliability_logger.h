@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 #define COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -25,7 +24,7 @@ class LaunchReliabilityLogger {
   void LogCacheReadEnd(feedwire::DiscoverCardReadCacheResult result);
 
  private:
-  CheckedPtr<base::ObserverList<FeedStreamSurface>> surfaces_;
+  base::ObserverList<FeedStreamSurface>* surfaces_;
 };
 
 }  // namespace feed

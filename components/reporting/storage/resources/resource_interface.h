@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -67,7 +66,7 @@ class ScopedReservation {
   bool reserved() const;
 
  private:
-  const CheckedPtr<ResourceInterface> resource_interface_;
+  ResourceInterface* const resource_interface_;
   absl::optional<uint64_t> size_;
 };
 

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/component_updater/component_installer.h"
 
 namespace base {
@@ -58,7 +57,7 @@ class FlocComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  CheckedPtr<federated_learning::FlocSortingLshClustersService>
+  federated_learning::FlocSortingLshClustersService*
       floc_sorting_lsh_clusters_service_;
 };
 

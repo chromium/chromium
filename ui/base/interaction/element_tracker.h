@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list_types.h"
@@ -227,7 +226,7 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   void OnElementHidden(TrackedElement* element);
 
   ElementTracker::Subscription subscription_;
-  CheckedPtr<TrackedElement> element_ = nullptr;
+  TrackedElement* element_ = nullptr;
 };
 
 }  // namespace ui

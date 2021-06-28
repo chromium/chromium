@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/widget_test.h"
@@ -57,7 +56,7 @@ class EventMonitorTest : public WidgetTest {
   }
 
  protected:
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
 

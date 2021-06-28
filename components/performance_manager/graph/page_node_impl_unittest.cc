@@ -5,7 +5,6 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -258,7 +257,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   }
 
  private:
-  CheckedPtr<const PageNode> notified_page_node_ = nullptr;
+  const PageNode* notified_page_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

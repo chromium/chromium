@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 class PrefRegistrySimple;
@@ -55,7 +54,7 @@ class CleanExitBeacon {
   static void EnsureCleanShutdown(PrefService* local_state);
 
  private:
-  const CheckedPtr<PrefService> local_state_;
+  PrefService* const local_state_;
   const bool did_previous_session_exit_cleanly_;
 
   // This is the value of the last live timestamp from local state at the
