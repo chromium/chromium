@@ -20,7 +20,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/page_type.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace web_app {
@@ -33,6 +39,10 @@ WebAppProviderBase& WebAppControllerBrowserTestBase::provider() {
   auto* provider = WebAppProviderBase::GetProviderBase(profile());
   DCHECK(provider);
   return *provider;
+}
+
+Profile* WebAppControllerBrowserTestBase::profile() {
+  return browser()->profile();
 }
 
 AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
@@ -74,6 +84,35 @@ Browser* WebAppControllerBrowserTestBase::LaunchBrowserForWebAppInTab(
   return web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 
+content::WebContents* WebAppControllerBrowserTestBase::OpenWindow(
+    content::WebContents* contents,
+    const GURL& url) {
+  content::WebContentsAddedObserver tab_added_observer;
+  EXPECT_TRUE(
+      content::ExecuteScript(contents, "window.open('" + url.spec() + "');"));
+  content::WebContents* new_contents = tab_added_observer.GetWebContents();
+  EXPECT_TRUE(new_contents);
+  WaitForLoadStop(new_contents);
+
+  EXPECT_EQ(url, new_contents->GetLastCommittedURL());
+  EXPECT_EQ(
+      content::PAGE_TYPE_NORMAL,
+      new_contents->GetController().GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance(),
+            new_contents->GetMainFrame()->GetSiteInstance());
+
+  return new_contents;
+}
+
+void WebAppControllerBrowserTestBase::NavigateInRenderer(
+    content::WebContents* contents,
+    const GURL& url) {
+  EXPECT_TRUE(content::ExecuteScript(
+      contents, "window.location = '" + url.spec() + "';"));
+  content::WaitForLoadStop(contents);
+  EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+}
+
 // static
 bool WebAppControllerBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
     Browser* browser,
@@ -107,13 +146,6 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
 
-void WebAppControllerBrowserTest::SetUp() {
-  https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-  webapps::TestAppBannerManagerDesktop::SetUp();
-
-  extensions::ExtensionBrowserTest::SetUp();
-}
-
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(
     const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
@@ -141,26 +173,33 @@ const char* WebAppControllerBrowserTest::GetInstallableAppName() {
   return "Manifest test app";
 }
 
+void WebAppControllerBrowserTest::SetUp() {
+  https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  webapps::TestAppBannerManagerDesktop::SetUp();
+
+  InProcessBrowserTest::SetUp();
+}
+
 void WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture() {
-  extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
+  InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   cert_verifier_.SetUpInProcessBrowserTestFixture();
 }
 
 void WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture() {
-  extensions::ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
+  InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
 void WebAppControllerBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+  InProcessBrowserTest::SetUpCommandLine(command_line);
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);
 }
 
 void WebAppControllerBrowserTest::SetUpOnMainThread() {
-  extensions::ExtensionBrowserTest::SetUpOnMainThread();
+  InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(https_server()->Start());
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -1354,7 +1355,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   ui_test_utils::WaitForBrowserToClose();
 
   content::WebContents* const web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile())
+      apps::AppServiceProxyFactory::GetForProfile(
+          ProfileManager::GetActiveUserProfile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParams(std::move(params));
   EXPECT_EQ(web_contents, nullptr);

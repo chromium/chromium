@@ -128,8 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   // Open a new window from the PWA. It will open in the browser so it should
   // have no group id.
   {
-    content::WebContents* new_contents;
-    OpenWindow(web_contents, app_url, true, true, &new_contents);
+    content::WebContents* new_contents = OpenWindow(web_contents, app_url);
     EXPECT_EQ(base::UnguessableToken::Null(),
               GetAudioFocusGroupId(new_contents));
   }

@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -20,10 +24,24 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/common/extension.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::string LoadExtension(Profile* profile, const base::FilePath& path) {
+  extensions::ChromeTestExtensionLoader loader(profile);
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(path);
+  EXPECT_TRUE(extension);
+  return extension->id();
+}
+
+}  // namespace
 
 namespace web_app {
 
@@ -130,14 +148,18 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   // page, and the creation of a shortcut app created from the popup page URL
   // (allowing the extension's popup page to be loaded in a window).
 
+  base::FilePath test_data_dir_;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
+
   // Install the extension that has the popup page.
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("ui").AppendASCII("browser_action_popup")));
+  std::string extension_id =
+      LoadExtension(profile(), test_data_dir_.AppendASCII("extensions")
+                                   .AppendASCII("ui")
+                                   .AppendASCII("browser_action_popup"));
   base::RunLoop().RunUntilIdle();  // Ensure the extension is fully loaded.
 
   // Install the shortcut app that links to the extension's popup page.
-  const GURL popup_url("chrome-extension://" + last_loaded_extension_id() +
-                       "/popup.html");
+  const GURL popup_url("chrome-extension://" + extension_id + "/popup.html");
 
   NavigateToURLAndWait(browser(), popup_url);
   const AppId app_id = InstallShortcutAppForCurrentUrl();

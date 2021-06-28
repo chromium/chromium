@@ -29,8 +29,6 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/content_mock_cert_verifier.h"
-#include "net/cert/mock_cert_verifier.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -46,9 +44,9 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
 
   ~ImmersiveModeControllerChromeosWebAppBrowserTest() override = default;
 
-  // InProcessBrowserTest override:
+  // WebAppControllerBrowserTest override:
   void SetUpOnMainThread() override {
-    cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
@@ -82,21 +80,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
         .SetupForTest();
 
     browser_->window()->Show();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-    cert_verifier_.SetUpInProcessBrowserTestFixture();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    cert_verifier_.TearDownInProcessBrowserTestFixture();
-    extensions::ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-    cert_verifier_.SetUpCommandLine(command_line);
   }
 
   // Returns the bounds of |view| in widget coordinates.
@@ -150,9 +133,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 
   net::EmbeddedTestServer https_server_;
-  // Similar to net::MockCertVerifier, but also updates the CertVerifier
-  // used by the NetworkService.
-  content::ContentMockCertVerifier cert_verifier_;
 
   DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosWebAppBrowserTest);
 };

@@ -7,13 +7,15 @@
 
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace base {
 class CommandLine;
@@ -28,8 +30,7 @@ namespace web_app {
 class WebAppProviderBase;
 
 // Base class for tests of user interface support for web applications.
-class WebAppControllerBrowserTestBase
-    : public extensions::ExtensionBrowserTest {
+class WebAppControllerBrowserTestBase : public InProcessBrowserTest {
  public:
   WebAppControllerBrowserTestBase();
   WebAppControllerBrowserTestBase(const WebAppControllerBrowserTestBase&) =
@@ -39,6 +40,8 @@ class WebAppControllerBrowserTestBase
   ~WebAppControllerBrowserTestBase() override = 0;
 
   WebAppProviderBase& provider();
+
+  Profile* profile();
 
   AppId InstallPWA(const GURL& app_url);
 
@@ -56,6 +59,15 @@ class WebAppControllerBrowserTestBase
   // Launches the app as a tab and returns the browser.
   Browser* LaunchBrowserForWebAppInTab(const AppId&);
 
+  // Simulates a page calling window.open on an URL and waits for the
+  // navigation.
+  content::WebContents* OpenWindow(content::WebContents* contents,
+                                   const GURL& url);
+
+  // Simulates a page navigating itself to an URL and waits for the
+  // navigation.
+  void NavigateInRenderer(content::WebContents* contents, const GURL& url);
+
   // Returns whether the installable check passed.
   static bool NavigateAndAwaitInstallabilityCheck(Browser* browser,
                                                   const GURL& url);
@@ -70,9 +82,6 @@ class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
   WebAppControllerBrowserTest();
   ~WebAppControllerBrowserTest() override = 0;
 
-  // ExtensionBrowserTest:
-  void SetUp() override;
-
  protected:
   content::WebContents* OpenApplication(const AppId&);
 
@@ -81,7 +90,8 @@ class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
   GURL GetInstallableAppURL();
   static const char* GetInstallableAppName();
 
-  // ExtensionBrowserTest:
+  // InProcessBrowserTest:
+  void SetUp() override;
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
