@@ -58,8 +58,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     // in slower machines, slower builds such as asan/tsan builds, etc.), since
     // the test does not strictly control both threads and deadlines. Therefore,
     // it is not possible to check for strict equality here.
-    EXPECT_LE(expect_.min_dropped_main, dropped_main_);
-    EXPECT_LE(expect_.min_dropped_compositor, dropped_compositor_);
+    EXPECT_LE(expect_.min_partial, partial_);
+    EXPECT_LE(expect_.min_dropped, dropped_);
     EXPECT_LE(expect_.min_dropped_smoothness, dropped_smoothness_);
   }
 
@@ -113,8 +113,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     DCHECK(dropped_frame_counter);
 
     total_frames_ = dropped_frame_counter->total_frames();
-    dropped_main_ = dropped_frame_counter->total_main_dropped();
-    dropped_compositor_ = dropped_frame_counter->total_compositor_dropped();
+    partial_ = dropped_frame_counter->total_partial();
+    dropped_ = dropped_frame_counter->total_dropped();
     dropped_smoothness_ = dropped_frame_counter->total_smoothness_dropped();
     EndTest();
   }
@@ -169,8 +169,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   // remains unchanged after that. So it is safe to read these fields from
   // either threads.
   struct TestExpectation {
-    uint32_t min_dropped_main = 0;
-    uint32_t min_dropped_compositor = 0;
+    uint32_t min_partial = 0;
+    uint32_t min_dropped = 0;
     uint32_t min_dropped_smoothness = 0;
   } expect_;
 
@@ -194,8 +194,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   // of frames have been processed. These fields are subsequently compared
   // against the expectation after the test ends.
   uint32_t total_frames_ = 0;
-  uint32_t dropped_main_ = 0;
-  uint32_t dropped_compositor_ = 0;
+  uint32_t partial_ = 0;
+  uint32_t dropped_ = 0;
   uint32_t dropped_smoothness_ = 0;
 
   bool skip_main_thread_next_frame_ = false;
@@ -209,8 +209,8 @@ class DroppedFrameCounterNoDropTest : public DroppedFrameCounterTestBase {
     config_.animation_frames = 28;
     config_.should_register_main_thread_animation = false;
 
-    expect_.min_dropped_main = 0;
-    expect_.min_dropped_compositor = 0;
+    expect_.min_partial = 0;
+    expect_.min_dropped = 0;
     expect_.min_dropped_smoothness = 0;
   }
 };
@@ -227,7 +227,7 @@ class DroppedFrameCounterMainDropsNoSmoothness
     config_.should_drop_main_every = 5;
     config_.should_register_main_thread_animation = false;
 
-    expect_.min_dropped_main = 5;
+    expect_.min_partial = 5;
     expect_.min_dropped_smoothness = 0;
   }
 };
@@ -245,7 +245,7 @@ class DroppedFrameCounterMainDropsSmoothnessTest
     config_.should_drop_main_every = 5;
     config_.should_register_main_thread_animation = true;
 
-    expect_.min_dropped_main = 5;
+    expect_.min_partial = 5;
     expect_.min_dropped_smoothness = 5;
   }
 };

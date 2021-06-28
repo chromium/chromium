@@ -51,8 +51,8 @@ class CC_EXPORT DroppedFrameCounter {
 
   size_t frame_history_size() const { return ring_buffer_.BufferSize(); }
   size_t total_frames() const { return total_frames_; }
-  size_t total_compositor_dropped() const { return total_dropped_; }
-  size_t total_main_dropped() const { return total_partial_; }
+  size_t total_dropped() const { return total_dropped_; }
+  size_t total_partial() const { return total_partial_; }
   size_t total_smoothness_dropped() const { return total_smoothness_dropped_; }
 
   uint32_t GetAverageThroughput() const;
