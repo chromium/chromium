@@ -100,7 +100,7 @@ class QrCodeShareMediator {
     protected void downloadQrCode(View view) {
         logDownload();
         Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
-        if (qrcodeBitmap != null && !mIsDownloadInProgress) {
+        if (qrcodeBitmap != null && !mIsDownloadInProgress && mPermissionDelegate != null) {
             FileAccessPermissionHelper.requestFileAccessPermission(
                     mPermissionDelegate, this::finishDownloadWithPermission);
             return;
@@ -128,6 +128,7 @@ class QrCodeShareMediator {
 
     /** Returns whether the user can be prompted for storage permissions. */
     private Boolean canPromptForPermission() {
+        if (mPermissionDelegate == null) return false;
         return mPermissionDelegate.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
