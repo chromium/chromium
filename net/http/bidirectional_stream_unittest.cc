@@ -516,7 +516,13 @@ TEST_F(BidirectionalStreamTest, SimplePostRequest) {
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
-TEST_F(BidirectionalStreamTest, LoadTimingTwoRequests) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1224092
+#define MAYBE_LoadTimingTwoRequests DISABLED_LoadTimingTwoRequests
+#else
+#define MAYBE_LoadTimingTwoRequests LoadTimingTwoRequests
+#endif
+TEST_F(BidirectionalStreamTest, MAYBE_LoadTimingTwoRequests) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, /*stream_id=*/1, LOW));
   spdy::SpdySerializedFrame req2(
