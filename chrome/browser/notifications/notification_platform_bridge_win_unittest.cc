@@ -265,8 +265,10 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
   ASSERT_TRUE(suppress);
   toast2.Reset();
 
-  bridge.SetDisplayedNotificationsForTesting(nullptr);
-
   // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
   task_environment_.RunUntilIdle();
+
+  // Do this after we've finished running tasks to avoid touching
+  // synchronize_displayed_notifications_timer_. See crbug.com/1220122.
+  bridge.SetDisplayedNotificationsForTesting(nullptr);
 }

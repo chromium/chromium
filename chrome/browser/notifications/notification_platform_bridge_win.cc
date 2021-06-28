@@ -833,6 +833,11 @@ class NotificationPlatformBridgeWinImpl
   }
 
   void MaybeStartNotificationSynchronizationTimer() {
+    // Avoid touching synchronize_displayed_notifications_timer_ in testing,
+    // to avoid sequence checker issues at shutdown.
+    if (NotificationPlatformBridgeWinImpl::notifications_for_testing_)
+      return;
+
     if (synchronize_displayed_notifications_timer_.IsRunning())
       return;
 
@@ -1037,6 +1042,8 @@ void NotificationPlatformBridgeWin::SetDisplayedNotificationsForTesting(
     std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>*
         notifications) {
   NotificationPlatformBridgeWinImpl::notifications_for_testing_ = notifications;
+  if (!notifications)
+    impl_->displayed_notifications_.clear();
 }
 
 void NotificationPlatformBridgeWin::SetExpectedDisplayedNotificationsForTesting(
