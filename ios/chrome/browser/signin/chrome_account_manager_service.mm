@@ -78,6 +78,16 @@ struct FunctorCollectIdentities : Functor<FunctorCollectIdentities> {
   }
 };
 
+// Helper class used to implement GetDefaultIdentity().
+struct FunctorGetFirstIdentity : Functor<FunctorGetFirstIdentity> {
+  ChromeIdentity* default_identity = nil;
+
+  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
+    default_identity = identity;
+    return ios::kIdentityIteratorInterruptIteration;
+  }
+};
+
 }  // anonymous namespace.
 
 ChromeAccountManagerService::ChromeAccountManagerService(
@@ -127,6 +137,14 @@ NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
       ->GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return [helper.identities copy];
+}
+
+ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
+  FunctorGetFirstIdentity helper;
+  ios::GetChromeBrowserProvider()
+      ->GetChromeIdentityService()
+      ->IterateOverIdentities(helper.Callback());
+  return helper.default_identity;
 }
 
 void ChromeAccountManagerService::Shutdown() {}

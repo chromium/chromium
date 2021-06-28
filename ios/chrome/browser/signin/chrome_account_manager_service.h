@@ -39,6 +39,9 @@ class ChromeAccountManagerService : public KeyedService {
   // accounts.
   NSArray<ChromeIdentity*>* GetAllIdentities();
 
+  // Returns the first ChromeIdentity object.
+  ChromeIdentity* GetDefaultIdentity();
+
   // KeyedService implementation.
   void Shutdown() override;
 };
