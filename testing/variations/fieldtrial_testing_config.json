@@ -2427,7 +2427,7 @@
                 {
                     "name": "CrosMemoryAblationStudy",
                     "params": {
-                        "ablation-size-mb": "14"
+                        "ablation-size-mb": "10"
                     },
                     "enable_features": [
                         "CrosMemoryAblationStudy"
