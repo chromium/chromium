@@ -150,7 +150,7 @@ constexpr OpenXrSystemInputProfiles kSamsungOdysseyInputProfiles[] = {
     {nullptr,
      {"samsung-odyssey", "windows-mixed-reality",
       "generic-trigger-squeeze-touchpad-thumbstick"},
-     4}};
+     3}};
 
 constexpr OpenXrSystemInputProfiles kHPReverbG2InputProfiles[] = {
     {nullptr,
