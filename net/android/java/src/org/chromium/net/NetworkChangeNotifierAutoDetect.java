@@ -241,7 +241,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             NetworkInfo networkInfo;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 network = getDefaultNetwork();
-                networkInfo = ApiHelperForM.getNetworkInfo(mConnectivityManager, network);
+                networkInfo = getNetworkInfo(network);
             } else {
                 networkInfo = mConnectivityManager.getActiveNetworkInfo();
             }
@@ -276,8 +276,13 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     true, networkInfo.getType(), networkInfo.getSubtype(), null, false, "");
         }
 
-        // Fetches NetworkInfo and records UMA for NullPointerExceptions.
-        public NetworkInfo getNetworkInfo(Network network) {
+        /**
+         * Fetches NetworkInfo for |network|. Does not account for underlying VPNs; see
+         * getNetworkInfo(Network) for a method that does.
+         * Only callable on Lollipop and newer releases.
+         */
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        NetworkInfo getRawNetworkInfo(Network network) {
             try {
                 return mConnectivityManager.getNetworkInfo(network);
             } catch (NullPointerException firstException) {
@@ -291,6 +296,22 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         /**
+         * Fetches NetworkInfo for |network|.
+         * Only callable on Lollipop and newer releases.
+         */
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        NetworkInfo getNetworkInfo(Network network) {
+            NetworkInfo networkInfo = getRawNetworkInfo(network);
+            if (networkInfo != null && networkInfo.getType() == TYPE_VPN) {
+                // When a VPN is in place the underlying network type can be queried via
+                // getActiveNetworkInfo() thanks to
+                // https://android.googlesource.com/platform/frameworks/base/+/d6a7980d
+                networkInfo = mConnectivityManager.getActiveNetworkInfo();
+            }
+            return networkInfo;
+        }
+
+        /**
          * Returns connection type for |network|.
          * Only callable on Lollipop and newer releases.
          */
@@ -298,12 +319,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @ConnectionType
         int getConnectionType(Network network) {
             NetworkInfo networkInfo = getNetworkInfo(network);
-            if (networkInfo != null && networkInfo.getType() == TYPE_VPN) {
-                // When a VPN is in place the underlying network type can be queried via
-                // getActiveNeworkInfo() thanks to
-                // https://android.googlesource.com/platform/frameworks/base/+/d6a7980d
-                networkInfo = mConnectivityManager.getActiveNetworkInfo();
-            }
             if (networkInfo != null && networkInfo.isConnected()) {
                 return convertToConnectionType(networkInfo.getType(), networkInfo.getSubtype());
             }
@@ -434,7 +449,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             }
             final Network[] networks = getAllNetworksFiltered(this, null);
             for (Network network : networks) {
-                final NetworkInfo networkInfo = getNetworkInfo(network);
+                final NetworkInfo networkInfo = getRawNetworkInfo(network);
                 if (networkInfo != null
                         && (networkInfo.getType() == defaultNetworkInfo.getType()
                                    // getActiveNetworkInfo() will not return TYPE_VPN types due to
@@ -630,7 +645,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 // but getting the correct subtype is much much less important than getting the
                 // correct type.  Incorrect type could make Chrome behave like it's offline,
                 // incorrect subtype will just make cellular bandwidth estimates incorrect.
-                NetworkInfo networkInfo = mConnectivityManagerDelegate.getNetworkInfo(network);
+                NetworkInfo networkInfo = mConnectivityManagerDelegate.getRawNetworkInfo(network);
                 if (networkInfo != null) {
                     subtype = networkInfo.getSubtype();
                 }
@@ -639,7 +654,10 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
                 type = ConnectivityManager.TYPE_BLUETOOTH;
             } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-                type = ConnectivityManager.TYPE_VPN;
+                // Use ConnectivityManagerDelegate.getNetworkInfo(network) to find underlying
+                // network which has a more useful transport type. crbug.com/1208022
+                NetworkInfo networkInfo = mConnectivityManagerDelegate.getNetworkInfo(network);
+                type = networkInfo != null ? networkInfo.getType() : ConnectivityManager.TYPE_VPN;
             }
             return new NetworkState(true, type, subtype, String.valueOf(networkToNetId(network)),
                     ApiHelperForP.isPrivateDnsActive(mLinkProperties),
