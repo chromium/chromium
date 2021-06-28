@@ -55,7 +55,6 @@ bool ShouldShowForCurrentChannel() {
 namespace ash {
 
 void ReleaseNotesStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kReleaseNotesLastShownMilestone, -1);
   registry->RegisterIntegerPref(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 }
@@ -76,10 +75,10 @@ bool ReleaseNotesStorage::ShouldNotify() {
   if (!IsEligibleProfile(profile_))
     return false;
 
-  int last_milestone =
-      profile_->GetPrefs()->GetInteger(prefs::kReleaseNotesLastShownMilestone);
+  int last_milestone = profile_->GetPrefs()->GetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone);
   if (profile_->GetPrefs()
-          ->FindPreference(prefs::kReleaseNotesLastShownMilestone)
+          ->FindPreference(prefs::kHelpAppNotificationLastShownMilestone)
           ->IsDefaultValue()) {
     // We don't know if the user has seen any notification before as we have
     // never set which milestone was last seen. So use the version of chrome
@@ -92,8 +91,8 @@ bool ReleaseNotesStorage::ShouldNotify() {
 }
 
 void ReleaseNotesStorage::MarkNotificationShown() {
-  profile_->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                   GetMilestone());
+  profile_->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, GetMilestone());
   // When the notification is shown we should also show the suggestion chip a
   // number of times.
   profile_->GetPrefs()->SetInteger(

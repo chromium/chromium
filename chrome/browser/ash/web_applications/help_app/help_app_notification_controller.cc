@@ -58,9 +58,9 @@ bool ShouldShowDiscoverTabNotification(Profile* profile) {
   }
 
   int last_shown_milestone = profile->GetPrefs()->GetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone);
+      prefs::kHelpAppNotificationLastShownMilestone);
   if (profile->GetPrefs()
-          ->FindPreference(prefs::kDiscoverTabNotificationLastShownMilestone)
+          ->FindPreference(prefs::kHelpAppNotificationLastShownMilestone)
           ->IsDefaultValue()) {
     // We don't know if the user has seen any notification before as we have
     // never set which milestone was last seen. So use the version of chrome
@@ -72,16 +72,97 @@ bool ShouldShowDiscoverTabNotification(Profile* profile) {
   return last_shown_milestone < 92;
 }
 
+// Checks if a notification was already shown in the current milestone.
+bool IsNotificationShownForCurrentMilestone(Profile* profile) {
+  int last_shown_milestone = profile->GetPrefs()->GetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone);
+  if (profile->GetPrefs()
+          ->FindPreference(prefs::kHelpAppNotificationLastShownMilestone)
+          ->IsDefaultValue()) {
+    // We don't know if the user has seen any notification before as we have
+    // never set which milestone was last seen. So use the version of chrome
+    // where the profile was created instead.
+    base::Version profile_version(
+        ChromeVersionService::GetVersion(profile->GetPrefs()));
+    last_shown_milestone = profile_version.components()[0];
+  }
+  return last_shown_milestone == CurrentMilestone();
+}
+
 }  // namespace
 
 namespace chromeos {
 
+namespace help_app {
+namespace prefs {
+
+// Deprecated 06/2021.
+// Obsolete pref that used to store the last milestone on which release notes
+// notification was shown.
+const char kObsoleteReleaseNotesLastShownMilestone[] =
+    "last_release_notes_shown_milestone";
+
+// Deprecated 06/2021.
+// Obsolete pref that used to store the last milestone on which the Discover Tab
+// notification was shown.
+const char kObsoleteDiscoverTabNotificationLastShownMilestone[] =
+    "discover_tab_notification_last_shown_milestone";
+
+}  // namespace prefs
+}  // namespace help_app
+
 void HelpAppNotificationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kDiscoverTabNotificationLastShownMilestone, -10);
+  registry->RegisterIntegerPref(prefs::kHelpAppNotificationLastShownMilestone,
+                                -10);
   registry->RegisterIntegerPref(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
+}
+
+void HelpAppNotificationController::RegisterObsoletePrefsForMigration(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, -10);
+  registry->RegisterIntegerPref(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, -10);
+}
+
+void HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+    PrefService* pref_service) {
+  // If kHelpAppNotificationLastShownMilestone already has a value, migration
+  // already happened, or we wrote to the new pref directly.
+  if (pref_service->GetUserPrefValue(
+          prefs::kHelpAppNotificationLastShownMilestone) != nullptr) {
+    return;
+  }
+
+  // Choose the latest milestone when either a Release Notes or Discover tab
+  // notification was shown.
+  using help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone;
+  using help_app::prefs::kObsoleteReleaseNotesLastShownMilestone;
+
+  // If no user value is defined, these values default to -10.
+  int release_notes_last_shown_milestone =
+      pref_service->GetInteger(kObsoleteReleaseNotesLastShownMilestone);
+  int discover_tab_notification_last_shown_milestone = pref_service->GetInteger(
+      kObsoleteDiscoverTabNotificationLastShownMilestone);
+  int latest_milestone =
+      std::max(release_notes_last_shown_milestone,
+               discover_tab_notification_last_shown_milestone);
+
+  // Only set the new pref's value if any of the previous values were defined.
+  if (latest_milestone > 0) {
+    pref_service->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                             latest_milestone);
+  }
+}
+
+void HelpAppNotificationController::ClearObsoleteNotificationPrefs(
+    PrefService* pref_service) {
+  pref_service->ClearPref(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone);
+  pref_service->ClearPref(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone);
 }
 
 HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
@@ -90,6 +171,8 @@ HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
 HelpAppNotificationController::~HelpAppNotificationController() = default;
 
 void HelpAppNotificationController::MaybeShowDiscoverNotification() {
+  if (IsNotificationShownForCurrentMilestone(profile_))
+    return;
   if (ShouldShowDiscoverTabNotification(profile_) &&
       !discover_tab_notification_) {
     discover_tab_notification_ =
@@ -98,7 +181,7 @@ void HelpAppNotificationController::MaybeShowDiscoverNotification() {
 
     // Update milestone when notification is shown.
     profile_->GetPrefs()->SetInteger(
-        prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
+        prefs::kHelpAppNotificationLastShownMilestone, CurrentMilestone());
     // When this notification has been shown, start showing the Discover tab
     // suggestion chip in the launcher.
     profile_->GetPrefs()->SetInteger(
@@ -107,6 +190,8 @@ void HelpAppNotificationController::MaybeShowDiscoverNotification() {
 }
 
 void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
+  if (IsNotificationShownForCurrentMilestone(profile_))
+    return;
   if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ash::ReleaseNotesNotification>(profile_);

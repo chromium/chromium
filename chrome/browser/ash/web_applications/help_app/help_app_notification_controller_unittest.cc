@@ -25,7 +25,10 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/pref_service_factory.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
 
@@ -66,6 +69,18 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
     return profile;
   }
 
+  // Creates a PrefService and registers Autofill prefs.
+  std::unique_ptr<PrefService> CreatePrefServiceAndRegisterPrefs() {
+    scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
+        new user_prefs::PrefRegistrySyncable());
+    HelpAppNotificationController::RegisterProfilePrefs(registry.get());
+    HelpAppNotificationController::RegisterObsoletePrefsForMigration(
+        registry.get());
+    PrefServiceFactory factory;
+    factory.set_user_prefs(base::MakeRefCounted<TestingPrefStore>());
+    return factory.Create(registry);
+  }
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     help_app_notification_controller_ =
@@ -84,6 +99,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
          chromeos::features::kReleaseNotesNotification,
          chromeos::features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
+    pref_service_ = CreatePrefServiceAndRegisterPrefs();
   }
 
   void TearDown() override {
@@ -119,6 +135,8 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         .value();
   }
 
+  PrefService* pref_service() { return pref_service_.get(); }
+
   FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   int notification_count_ = 0;
@@ -126,7 +144,113 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
       help_app_notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<PrefService> pref_service_;
 };
+
+// Tests for pref migration.
+TEST_F(HelpAppNotificationControllerTest,
+       PrefMigrationCopiesLatestMilestoneWhenNotificationLastShown) {
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     prefs::kHelpAppNotificationLastShownMilestone));
+
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, 80);
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, 90);
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(90, pref_service()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       PrefMigrationWhenOnlyReleaseNotesPrefWasSet) {
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     prefs::kHelpAppNotificationLastShownMilestone));
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     help_app::prefs::kObsoleteReleaseNotesLastShownMilestone));
+  ASSERT_EQ(
+      -10,
+      pref_service()->GetInteger(
+          help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone));
+
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, 80);
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(80, pref_service()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       PrefMigrationWhenOnlyDiscoverTabPrefWasSet) {
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     prefs::kHelpAppNotificationLastShownMilestone));
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     help_app::prefs::kObsoleteReleaseNotesLastShownMilestone));
+  ASSERT_EQ(
+      -10,
+      pref_service()->GetInteger(
+          help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone));
+
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, 90);
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(90, pref_service()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
+}
+
+TEST_F(HelpAppNotificationControllerTest,
+       PrefMigrationWhenNoObsoletePrefWasSet) {
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     prefs::kHelpAppNotificationLastShownMilestone));
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     help_app::prefs::kObsoleteReleaseNotesLastShownMilestone));
+  ASSERT_EQ(
+      -10,
+      pref_service()->GetInteger(
+          help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone));
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(-10, pref_service()->GetInteger(
+                     prefs::kHelpAppNotificationLastShownMilestone));
+  ASSERT_EQ(pref_service()->GetUserPrefValue(
+                prefs::kHelpAppNotificationLastShownMilestone),
+            nullptr);
+}
+
+TEST_F(HelpAppNotificationControllerTest, PrefMigrationHappensOnlyOnce) {
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, 20);
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, 30);
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(30, pref_service()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
+
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteReleaseNotesLastShownMilestone, 80);
+  pref_service()->SetInteger(
+      help_app::prefs::kObsoleteDiscoverTabNotificationLastShownMilestone, 90);
+
+  HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      pref_service());
+
+  ASSERT_EQ(30, pref_service()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
+}
 
 // Tests for regular profiles.
 TEST_F(HelpAppNotificationControllerTest,
@@ -149,7 +273,8 @@ TEST_F(HelpAppNotificationControllerTest,
 TEST_F(HelpAppNotificationControllerTest,
        ShowsReleaseNotesNotificationIfShownInOlderMilestone) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  20);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -157,15 +282,16 @@ TEST_F(HelpAppNotificationControllerTest,
 
   EXPECT_EQ(1, notification_count_);
   EXPECT_EQ(true, HasReleaseNotesNotification());
-  EXPECT_EQ(CurrentMilestone(), profile->GetPrefs()->GetInteger(
-                                    prefs::kReleaseNotesLastShownMilestone));
+  EXPECT_EQ(CurrentMilestone(),
+            profile->GetPrefs()->GetInteger(
+                prefs::kHelpAppNotificationLastShownMilestone));
 }
 
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowReleaseNotificationIfAlreadyShownInCurrentMilestone) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, CurrentMilestone());
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  CurrentMilestone());
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -180,8 +306,8 @@ TEST_F(HelpAppNotificationControllerTest,
   std::unique_ptr<Profile> profile = CreateRegularProfile();
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  20);
 
   controller->MaybeShowDiscoverNotification();
 
@@ -210,8 +336,8 @@ TEST_F(HelpAppNotificationControllerTest,
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfAlreadyShownIfM92) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 92);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  92);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -224,8 +350,8 @@ TEST_F(HelpAppNotificationControllerTest,
 TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfAlreadyShownInM93) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 93);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  93);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -240,8 +366,8 @@ TEST_F(HelpAppNotificationControllerTest,
        DoesNotShowDiscoverNotificationIfSystemLanguageNotEnglish) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
   g_browser_process->SetApplicationLocale("fr");
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  20);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -254,8 +380,8 @@ TEST_F(HelpAppNotificationControllerTest,
 TEST_F(HelpAppNotificationControllerTest,
        ShowsDiscoverNotificationIfShownInPreviousMilestone) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 91);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  91);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -263,15 +389,16 @@ TEST_F(HelpAppNotificationControllerTest,
 
   EXPECT_EQ(1, notification_count_);
   EXPECT_EQ(true, HasDiscoverTabNotification());
+  EXPECT_EQ(CurrentMilestone(),
+            profile->GetPrefs()->GetInteger(
+                prefs::kHelpAppNotificationLastShownMilestone));
 }
 
-// TODO(b/186585182): Only show at most one notification per milestone.
 TEST_F(HelpAppNotificationControllerTest,
-       CanShowBothNotificationsPerMilestone) {
+       DoesNotShowMoreThanOneNotificationPerMilestone) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  91);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -282,15 +409,16 @@ TEST_F(HelpAppNotificationControllerTest,
 
   controller->MaybeShowReleaseNotesNotification();
 
-  EXPECT_EQ(2, notification_count_);
-  EXPECT_EQ(true, HasReleaseNotesNotification());
+  EXPECT_EQ(1, notification_count_);
+  EXPECT_EQ(false, HasReleaseNotesNotification());
 }
 
 // Tests for suggestion chips.
 TEST_F(HelpAppNotificationControllerTest,
        UpdatesReleaseNotesChipPrefWhenReleaseNotesNotificationShown) {
   std::unique_ptr<Profile> profile = CreateRegularProfile();
-  profile->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  20);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
@@ -306,8 +434,8 @@ TEST_F(HelpAppNotificationControllerTest,
 TEST_F(HelpAppNotificationControllerTest,
        UpdatesDiscoverTabChipPrefWhenDiscoverTabNotificationShown) {
   std::unique_ptr<Profile> profile = CreateChildProfile();
-  profile->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  20);
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 

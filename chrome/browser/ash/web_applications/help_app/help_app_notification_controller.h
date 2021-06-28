@@ -11,12 +11,22 @@
 
 class Profile;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 class ReleaseNotesNotification;
 }  // namespace ash
 
 namespace chromeos {
+
+namespace help_app {
+namespace prefs {
+
+extern const char kObsoleteReleaseNotesLastShownMilestone[];
+extern const char kObsoleteDiscoverTabNotificationLastShownMilestone[];
+
+}  // namespace prefs
+}  // namespace help_app
 
 class HelpAppDiscoverTabNotification;
 
@@ -25,6 +35,9 @@ class HelpAppNotificationController {
  public:
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterObsoletePrefsForMigration(PrefRegistrySimple* registry);
+  static void MigrateObsoleteNotificationPrefs(PrefService* pref_service);
+  static void ClearObsoleteNotificationPrefs(PrefService* pref_service);
 
   explicit HelpAppNotificationController(Profile* profile);
   HelpAppNotificationController(const HelpAppNotificationController&) = delete;
@@ -33,12 +46,13 @@ class HelpAppNotificationController {
   ~HelpAppNotificationController();
 
   // Determines if the Release Notes notification should be shown to the user
-  // and shows it if so.
+  // and shows it if so. This will not do anything if a Help app notification
+  // has already been shown in the current milestone.
   void MaybeShowReleaseNotesNotification();
 
   // Determines if the discover notification should be shown to the user and
-  // shows it if so. Will produce an additional notification on top of
-  // |MaybeShowReleaseNotesNotification|.
+  // shows it if so. This will not do anything if a Help app notification has
+  // already been shown in the current milestone.
   void MaybeShowDiscoverNotification();
 
  private:

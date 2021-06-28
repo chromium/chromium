@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       std::make_unique<ash::ReleaseNotesStorage>(profile());
 
   // Force the release notes notification to show up.
-  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
   release_notes_notification->MaybeShowReleaseNotes();
   // Assert that the notification really is there.
   auto notifications = display_service->GetDisplayedNotificationsForType(
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                    supervised_users::kChildAccountSUID);
   profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabNotificationLastShownMilestone, 20);
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kDiscoverTabSuggestionChipTimesLeftToShow),
             0);
@@ -349,7 +350,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
-  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             0);

@@ -102,8 +102,8 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        20);
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
 }
@@ -115,8 +115,8 @@ TEST_F(ReleaseNotesStorageTest,
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        CurrentMilestone());
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, CurrentMilestone());
 
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
@@ -127,14 +127,14 @@ TEST_F(ReleaseNotesStorageTest, ReleaseNotesShouldOnlyBeNotifiedOnce) {
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        20);
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
   ASSERT_EQ(true, release_notes_storage->ShouldNotify());
 
   release_notes_storage->MarkNotificationShown();
 
   EXPECT_NE(20, profile.get()->GetPrefs()->GetInteger(
-                    prefs::kReleaseNotesLastShownMilestone));
+                    prefs::kHelpAppNotificationLastShownMilestone));
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
 
@@ -143,8 +143,8 @@ TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesForManagedProfile) {
       SetupStandardEnvironmentAndProfile("test@company.com", true);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        20);
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
@@ -154,8 +154,8 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotesForGoogler) {
       SetupStandardEnvironmentAndProfile("test@google.com", true);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        20);
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
 }
@@ -167,8 +167,8 @@ TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIfFeatureDisabled) {
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
-  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        20);
+  profile.get()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
 
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }

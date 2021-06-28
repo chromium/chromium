@@ -80,8 +80,9 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
 TEST_F(ReleaseNotesNotificationTest, DoNotShowReleaseNotesNotification) {
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile());
-  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                    version_info::GetVersion().components()[0]);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone,
+      version_info::GetVersion().components()[0]);
   release_notes_notification_->MaybeShowReleaseNotes();
   EXPECT_EQ(false, HasReleaseNotesNotification());
   EXPECT_EQ(0, notification_count_);
@@ -90,7 +91,8 @@ TEST_F(ReleaseNotesNotificationTest, DoNotShowReleaseNotesNotification) {
 TEST_F(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile());
-  profile()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone, 20);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
   release_notes_notification_->MaybeShowReleaseNotes();
   EXPECT_EQ(true, HasReleaseNotesNotification());
   EXPECT_EQ(ui::SubstituteChromeOSDeviceType(

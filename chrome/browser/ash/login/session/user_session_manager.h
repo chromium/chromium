@@ -348,10 +348,13 @@ class UserSessionManager
   // Shows U2F notification if necessary.
   void MaybeShowU2FNotification();
 
-  // Shows Help App release notes notification if necessary.
+  // Shows Help App release notes notification, if a notification for the help
+  // app has not yet been shown in the current milestone.
   void MaybeShowHelpAppReleaseNotesNotification(Profile* profile);
 
-  // Shows Help App discover notification if necessary.
+  // Shows Help App discover notification if the profile meets the criteria and
+  // if a notification for the help app has not yet been shown in the current
+  // milestone.
   void MaybeShowHelpAppDiscoverNotification(Profile* profile);
 
  protected:

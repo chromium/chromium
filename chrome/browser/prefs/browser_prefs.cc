@@ -649,6 +649,9 @@ void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
+  chromeos::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
+      registry);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
@@ -1514,6 +1517,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 06/2021
   profile_prefs->ClearPref(kQuickAnswersConsented);
+
+  // Added 06/2021.
+  chromeos::HelpAppNotificationController::MigrateObsoleteNotificationPrefs(
+      profile_prefs);
+  chromeos::HelpAppNotificationController::ClearObsoleteNotificationPrefs(
+      profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 06/2021

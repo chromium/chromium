@@ -934,18 +934,14 @@ const char kLastChildScreenTimeSaved[] = "last_child_screen_time_saved";
 // Last time that the kChildScreenTime pref was reset.
 const char kLastChildScreenTimeReset[] = "last_child_screen_time_reset";
 
-// Last patch on which release notes were shown.
-const char kReleaseNotesLastShownMilestone[] =
-    "last_release_notes_shown_milestone";
+// Last milestone on which a Help App notification was shown.
+const char kHelpAppNotificationLastShownMilestone[] =
+    "help_app_notification_last_shown_milestone";
 
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 const char kReleaseNotesSuggestionChipTimesLeftToShow[] =
     "times_left_to_show_release_notes_suggestion_chip";
-
-// Last milestone on which the Discover Tab notification was shown.
-const char kDiscoverTabNotificationLastShownMilestone[] =
-    "discover_tab_notification_last_shown_milestone";
 
 // Amount of times the discover tab suggestion chip should be shown before it
 // disappears.
