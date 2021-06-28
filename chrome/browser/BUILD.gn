@@ -4104,6 +4104,8 @@ static_library("browser") {
       "task_manager/providers/task_provider.cc",
       "task_manager/providers/task_provider.h",
       "task_manager/providers/task_provider_observer.h",
+      "task_manager/providers/web_contents/back_forward_cache_task.cc",
+      "task_manager/providers/web_contents/back_forward_cache_task.h",
       "task_manager/providers/web_contents/background_contents_tag.cc",
       "task_manager/providers/web_contents/background_contents_tag.h",
       "task_manager/providers/web_contents/background_contents_task.cc",

@@ -12,10 +12,12 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -36,6 +38,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -88,6 +91,12 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
     EnableFeatureAndSetParams(features::kBackForwardCache,
                               "TimeToLiveInBackForwardCacheInSeconds", "3600");
+    // Navigating quickly between cached pages can fail flakily with:
+    // CanStorePageNow: <URL> : No: blocklisted features: outstanding network
+    // request (others)
+    EnableFeatureAndSetParams(features::kBackForwardCache,
+                              "ignore_outstanding_network_request_for_testing",
+                              "true");
     EnableFeatureAndSetParams(features::kBackForwardCache, "enable_same_site",
                               "true");
     // Allow BackForwardCache for all devices regardless of their memory.
@@ -499,6 +508,175 @@ IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
 std::vector<std::string> MetricsChromeBackForwardCacheBrowserTestValues() {
   return {"SameSite", "CrossSiteRendererInitiated",
           "CrossSiteBrowserInitiated"};
+}
+
+namespace {
+
+// TODO(johannkoenig): Deduplicate this with
+// chrome/browser/portal/portal_browsertest.cc.
+std::vector<std::u16string> GetRendererTaskTitles(
+    task_manager::TaskManagerTester* tester) {
+  std::vector<std::u16string> renderer_titles;
+  renderer_titles.reserve(tester->GetRowCount());
+  for (int row = 0; row < tester->GetRowCount(); row++) {
+    if (tester->GetTabId(row) != SessionID::InvalidValue())
+      renderer_titles.push_back(tester->GetRowTitle(row));
+  }
+  return renderer_titles;
+}
+
+}  // namespace
+
+// Ensure that BackForwardCache RenderFrameHosts are shown in the Task Manager.
+IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
+                       ShowMainFrameInTaskManager) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  const std::u16string expected_url_a_active_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of Awesomeness");
+  const std::u16string expected_url_a_cached_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX, u"http://a.com/");
+
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  const std::u16string expected_url_b_active_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of More Awesomeness");
+  const std::u16string expected_url_b_cached_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX, u"http://b.com/");
+
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
+
+  // 1) Navigate to |url_a|.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to |url_b|.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_b));
+  content::RenderFrameHostWrapper rfh_b(current_frame_host());
+
+  // 3) Verify |url_a| is in the BackForwardCache.
+  ASSERT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4) Ensure both tabs show up in Task Manager.
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_b_active_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_cached_title);
+  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+              ::testing::ElementsAre(expected_url_b_active_title,
+                                     expected_url_a_cached_title));
+
+  // 5) Navigate back to |url_a|.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // 6) Verify |url_b| is in the BackForwardCache.
+  ASSERT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 7) Ensure both tabs show up in Task Manager.
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_active_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_b_cached_title);
+  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+              ::testing::ElementsAre(expected_url_a_active_title,
+                                     expected_url_b_cached_title));
+}
+
+// Ensure that BackForwardCache cross-site subframes are shown in the Task
+// Manager.
+IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
+                       ShowCrossSiteOOPIFInTaskManager) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load a page on a.com with cross-site iframes on b.com and c.com.
+  GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
+  const std::u16string expected_url_a_cached_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX, u"http://a.com/");
+  const std::u16string expected_url_a_cached_subframe_b_title =
+      l10n_util::GetStringFUTF16(
+          IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX,
+          u"http://b.com/");
+  const std::u16string expected_url_a_cached_subframe_c_title =
+      l10n_util::GetStringFUTF16(
+          IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX,
+          u"http://c.com/");
+
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  const std::u16string expected_url_b_active_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of More Awesomeness");
+
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
+
+  // 1) Navigate to |url_a|.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to |url_b|.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
+
+  // 3) Verify |url_a| is in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4) Ensure the subframe tasks for |url_a| show up in Task Manager.
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_b_active_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_cached_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_cached_subframe_b_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_cached_subframe_c_title);
+  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+              ::testing::ElementsAre(expected_url_b_active_title,
+                                     expected_url_a_cached_title,
+                                     expected_url_a_cached_subframe_b_title,
+                                     expected_url_a_cached_subframe_c_title));
+}
+
+// Ensure that BackForwardCache same-site subframes are not shown in the Task
+// Manager.
+IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
+                       DoNotShowSameSiteSubframeInTaskManager) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Load a page on a.com with an a.com iframe.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+  const std::u16string expected_url_a_cached_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX, u"http://a.com/");
+
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  const std::u16string expected_url_b_active_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of More Awesomeness");
+
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
+
+  // 1) Navigate to |url_a|.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to |url_b|.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
+
+  // 3) Verify |url_a| is in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4) Ensure that only one task for |url_a| shows up in Task Manager.
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_b_active_title);
+  task_manager::browsertest_util::WaitForTaskManagerRows(
+      1, expected_url_a_cached_title);
+  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+              ::testing::ElementsAre(expected_url_b_active_title,
+                                     expected_url_a_cached_title));
 }
 
 INSTANTIATE_TEST_SUITE_P(
