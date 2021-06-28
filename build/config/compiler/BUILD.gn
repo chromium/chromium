@@ -749,11 +749,17 @@ config("compiler") {
   }
 
   if (is_clang && !is_nacl && show_includes) {
-    assert(!is_win, "show_includes is not supported on Windows")
-    cflags += [
-      "-H",
-      "-fshow-skipped-includes",
-    ]
+    if (is_win) {
+      cflags += [
+        "/clang:-H",
+        "/clang:-fshow-skipped-includes",
+      ]
+    } else {
+      cflags += [
+        "-H",
+        "-fshow-skipped-includes",
+      ]
+    }
   }
 
   # This flag enforces that member pointer base types are complete. It helps
