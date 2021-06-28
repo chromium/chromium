@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BACKGROUND_COLOR_PAINT_IMAGE_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BACKGROUND_COLOR_PAINT_IMAGE_GENERATOR_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
