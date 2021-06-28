@@ -4,12 +4,14 @@
 
 #include <cstddef>
 #include <sstream>
+#include "base/callback_helpers.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "net/http/http_status_code.h"
@@ -58,6 +60,44 @@ TEST_F(FeedApiReliabilityLoggingTest,
       "LogFeedLaunchOtherStart\n"
       "LogLaunchFinished "
       "result=INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ClearAllInProgress) {
+  TestForYouSurface surface(stream_.get());
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      // First load attempt from attaching surface.
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogLaunchFinished result=CLEAR_ALL_IN_PROGRESS\n"
+      // Second load attempt triggered by clear all.
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DataInStoreForAnotherUser) {
+  stream_->SetMetadata(feedstore::MakeMetadata("some user id"));
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      // First load attempt from attaching surface.
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogLaunchFinished result=DATA_IN_STORE_IS_FOR_ANOTHER_USER\n"
+      // Second load attempt triggered by clear all.
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 

@@ -11,4 +11,5 @@ option optimize_for = LITE_RUNTIME;
 message DiagnosticInfo {
   optional int32 actions_remaining = 1;
   optional int64 last_successful_refresh_time_usec = 2;
+  optional int64 first_app_launch_ms_since_epoch = 3;
 }

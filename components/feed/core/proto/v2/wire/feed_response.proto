@@ -8,6 +8,7 @@ package feedwire;
 
 import "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.proto";
 import "components/feed/core/proto/v2/wire/data_operation.proto";
+import "components/feed/core/proto/v2/wire/eventid.proto";
 import "components/feed/core/proto/v2/wire/server_experiment_data.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -18,7 +19,7 @@ message FeedResponse {
 }
 message FeedResponseMetadata {
   optional int64 response_time_ms = 1;
-  optional bytes event_id = 2;
+  optional EventIdMessage event_id = 2;
   optional bool pinned_content_fulfilled = 4;
   optional ServerExperimentData server_experiment_data = 5;
   optional ChromeFeedResponseMetadata chrome_feed_response_metadata = 326233599;

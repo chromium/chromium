@@ -700,7 +700,7 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   // true.
   Stream& stream = GetStream(stream_type);
   if (stream.model || (!model_loading && stream.model_loading_in_progress)) {
-    // TODO(iwells): add a DiscoverLaunchFinished value for this case
+    // TODO(iwells): log the end of the launch flow if stream.model exists
     return {LoadStreamStatus::kModelAlreadyLoaded, absl::nullopt};
   }
 
@@ -725,8 +725,8 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   // will be initialized.
   if (metadata_populated_ &&
       delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
-    // TODO(iwells): add a DiscoverLaunchFinished value for this case
-    return {LoadStreamStatus::kDataInStoreIsForAnotherUser, absl::nullopt};
+    return {LoadStreamStatus::kDataInStoreIsForAnotherUser,
+            feedwire::DiscoverLaunchResult::DATA_IN_STORE_IS_FOR_ANOTHER_USER};
   }
 
   return {LoadStreamStatus::kNoStatus, absl::nullopt};

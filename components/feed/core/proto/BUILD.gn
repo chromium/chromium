@@ -29,6 +29,7 @@ proto_library("proto_v2") {
     "v2/wire/diagnostic_info.proto",
     "v2/wire/display_info.proto",
     "v2/wire/duration.proto",
+    "v2/wire/eventid.proto",
     "v2/wire/expiration_info.proto",
     "v2/wire/feature.proto",
     "v2/wire/feed_action.proto",

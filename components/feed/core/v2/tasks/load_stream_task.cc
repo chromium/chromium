@@ -75,9 +75,8 @@ LoadStreamTask::~LoadStreamTask() = default;
 
 void LoadStreamTask::Run() {
   if (stream_.ClearAllInProgress()) {
-    // TODO(iwells): add a DiscoverLaunchResult for this case?
-    Done({LoadStreamStatus::kAbortWithPendingClearAll, absl::nullopt});
-    return;
+    return Done({LoadStreamStatus::kAbortWithPendingClearAll,
+                 feedwire::DiscoverLaunchResult::CLEAR_ALL_IN_PROGRESS});
   }
   latencies_->StepComplete(LoadLatencyTimes::kTaskExecution);
   // Phase 1: Try to load from persistent storage.
