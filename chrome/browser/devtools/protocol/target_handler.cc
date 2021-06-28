@@ -75,7 +75,7 @@ protocol::Response TargetHandler::CreateTarget(
     protocol::Maybe<bool> new_window,
     protocol::Maybe<bool> background,
     std::string* out_target_id) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = nullptr;
   if (browser_context_id.isJust()) {
     std::string profile_id = browser_context_id.fromJust();
     profile =
@@ -84,7 +84,11 @@ protocol::Response TargetHandler::CreateTarget(
       return protocol::Response::ServerError(
           "Failed to find browser context with id " + profile_id);
     }
+  } else {
+    profile = ProfileManager::GetLastUsedProfile();
+    DCHECK(profile);
   }
+
   bool create_new_window = new_window.fromMaybe(false);
   bool create_in_background = background.fromMaybe(false);
   Browser* target_browser = nullptr;
