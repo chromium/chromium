@@ -32,6 +32,7 @@ class VideoFrame;
 namespace blink {
 
 class CanvasImageSource;
+class DOMRectReadOnly;
 class ExceptionState;
 class ExecutionContext;
 class PlaneInit;
@@ -73,8 +74,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
-  VideoFrameRect* codedRect() const;
-  VideoFrameRect* visibleRect() const;
+  DOMRectReadOnly* codedRect();
+  DOMRectReadOnly* visibleRect();
 
   // DEPRECATED.
   VideoFrameRect* codedRegion(ExecutionContext*) const;
@@ -136,8 +137,14 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
+  // Underlying frame
   scoped_refptr<VideoFrameHandle> handle_;
+
+  // Caches
   HeapVector<Member<Plane>> planes_;
+  Member<DOMRectReadOnly> coded_rect_;
+  Member<DOMRectReadOnly> visible_rect_;
+  Member<DOMRectReadOnly> empty_rect_;
 };
 
 }  // namespace blink

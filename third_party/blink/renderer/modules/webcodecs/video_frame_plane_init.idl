@@ -13,7 +13,7 @@ dictionary VideoFramePlaneInit {
   required [EnforceRange] unsigned long codedWidth;
   required [EnforceRange] unsigned long codedHeight;
 
-  VideoFrameRect visibleRect;
+  DOMRectInit visibleRect;
 
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;

@@ -30,6 +30,8 @@ blink_modules_sources("webcodecs") {
     "decoder_selector.h",
     "decoder_template.cc",
     "decoder_template.h",
+    "dom_rect_util.cc",
+    "dom_rect_util.h",
     "encoded_audio_chunk.cc",
     "encoded_audio_chunk.h",
     "encoded_video_chunk.cc",

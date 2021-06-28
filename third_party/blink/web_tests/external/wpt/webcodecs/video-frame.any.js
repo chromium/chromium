@@ -145,7 +145,7 @@ test(t => {
                            timestamp: 1234,
                            codedWidth: 4,
                            codedHeight: 2,
-                           visibleRect: {left: 100, top: 100, width: 1,
+                           visibleRect: {x: 100, y: 100, width: 1,
                                          height: 1}
                          })},
       'invalid visible left/right');
@@ -153,21 +153,21 @@ test(t => {
       'ConstraintError',
       () => {constructFrame(
           {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRect: {left: 0, top: 0, width: 0, height: 2}})},
+           visibleRect: {x: 0, y: 0, width: 0, height: 2}})},
       'invalid visible width');
   assert_throws_dom(
       'ConstraintError',
       () => {constructFrame(
           {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRect: {left: 0, top: 0, width: 2, height: 0}})},
+           visibleRect: {x: 0, y: 0, width: 2, height: 0}})},
       'invalid visible height');
   assert_throws_js(
       TypeError,
       () => constructFrame({timestamp: 1234,
                             codedWidth: 4,
                             codedHeight: 2,
-                            visibleRect: {left: 0,
-                                          top: 0,
+                            visibleRect: {x: 0,
+                                          y: 0,
                                           width: -100,
                                           height: -100}}),
       'invalid negative visible size');

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
+#include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -21,65 +22,36 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
                                          ExceptionState& exception_state)
     : num_planes(
           static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format))) {
-  uint32_t coded_width = static_cast<uint32_t>(coded_size.width());
-  uint32_t coded_height = static_cast<uint32_t>(coded_size.height());
-
   // Parse |rect|
   gfx::Rect rect = visible_rect;
   if (options->hasRect()) {
-    uint32_t left = options->rect()->left();
-    uint32_t top = options->rect()->top();
-    uint32_t width = options->rect()->width();
-    uint32_t height = options->rect()->height();
+    rect = ToGfxRect(options->rect(), "rect", exception_state);
+    if (exception_state.HadException())
+      return;
 
-    // Implicitly checks that left <= kMaxDimension.
-    if (left >= coded_width) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid rect.left %u with codedWidth %u.", left,
-                         coded_width));
+    if (rect.right() > coded_size.width()) {
+      exception_state.ThrowTypeError(
+          String::Format("rect.right %i exceeds codedWidth %i.", rect.right(),
+                         coded_size.width()));
       return;
     }
 
-    // If left and width are <= kMaxDimension then their sum will not overflow.
-    if (width > coded_width || left + width > coded_width) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid rect.width %u with rect.left %u and "
-                         "codedWidth %u.",
-                         width, left, coded_width));
+    if (rect.bottom() > coded_size.height()) {
+      exception_state.ThrowTypeError(
+          String::Format("rect.bottom %u exceeds codedHeight %u.",
+                         rect.bottom(), coded_size.height()));
       return;
     }
-
-    // Implicitly checks that top <= kMaxDimension.
-    if (top >= coded_height) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid rect.top %u with codedHeight %u.", top,
-                         coded_height));
-      return;
-    }
-
-    // If top and height are <= kMaxDimension then their sum will not overflow.
-    if (height > coded_height || top + height > coded_height) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid rect.height %u with rect.top %u and "
-                         "codedHeight %u.",
-                         height, top, coded_height));
-      return;
-    }
-
-    rect = gfx::Rect(left, top, width, height);
   }
 
   // Rect must be non-empty.
-  if (rect.IsEmpty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kConstraintError,
-        String::Format("Invalid rect with width %d and height %d. Rect must "
-                       "have positive area.",
-                       rect.width(), rect.height()));
+  if (rect.width() == 0) {
+    exception_state.ThrowTypeError("rect.width must be nonzero.");
+    return;
+  }
+
+  if (rect.height() == 0) {
+    exception_state.ThrowTypeError("rect.height must be nonzero.");
     return;
   }
 
@@ -98,7 +70,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     if (rect.x() % sample_size.width() != 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
-          String::Format("rect.left %d is not sample-aligned in plane %u.",
+          String::Format("rect.x %d is not sample-aligned in plane %u.",
                          rect.x(), i));
       return;
     } else if (rect.width() % sample_size.width() != 0) {
@@ -110,7 +82,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     } else if (rect.y() % sample_size.height() != 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
-          String::Format("rect.top %d is not sample-aligned in plane %u.",
+          String::Format("rect.y %d is not sample-aligned in plane %u.",
                          rect.y(), i));
       return;
     } else if (rect.height() % sample_size.height() != 0) {

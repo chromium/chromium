@@ -25,12 +25,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
+#include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/parsed_copy_to_options.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -457,10 +459,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   uint32_t visible_width = coded_width;
   uint32_t visible_height = coded_height;
   if (init->hasVisibleRect()) {
-    visible_left = init->visibleRect()->left();
-    visible_top = init->visibleRect()->top();
-    visible_width = init->visibleRect()->width();
-    visible_height = init->visibleRect()->height();
+    gfx::Rect rect =
+        ToGfxRect(init->visibleRect(), "visibleRect", exception_state);
+    if (exception_state.HadException())
+      return nullptr;
+    visible_left = rect.x();
+    visible_top = rect.y();
+    visible_width = rect.width();
+    visible_height = rect.height();
   } else if (init->hasVisibleRegion()) {
     WebCodecsLogger::From(*execution_context).LogVisibleRegionDeprecation();
     visible_left = init->visibleRegion()->left();
@@ -508,7 +514,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       visible_top + visible_height > coded_height) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kConstraintError,
-        String::Format("Invalid visible rect {left: %u, top: %u, width: %u, "
+        String::Format("Invalid visibleRect {x: %u, y: %u, width: %u, "
                        "height: %u} for coded size (%u, %u).",
                        visible_left, visible_top, visible_width, visible_height,
                        coded_width, coded_height));
@@ -729,10 +735,6 @@ uint32_t VideoFrame::codedHeight() const {
 VideoFrameRect* VideoFrame::codedRegion(
     ExecutionContext* execution_context) const {
   WebCodecsLogger::From(*execution_context).LogCodedRegionDeprecation();
-  return codedRect();
-}
-
-VideoFrameRect* VideoFrame::codedRect() const {
   auto local_frame = handle_->frame();
   auto* rect = MakeGarbageCollected<VideoFrameRect>();
   rect->setLeft(0);
@@ -747,13 +749,24 @@ VideoFrameRect* VideoFrame::codedRect() const {
   return rect;
 }
 
+DOMRectReadOnly* VideoFrame::codedRect() {
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    if (!empty_rect_)
+      empty_rect_ = MakeGarbageCollected<DOMRectReadOnly>(0, 0, 0, 0);
+    return empty_rect_;
+  }
+  if (!coded_rect_) {
+    coded_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
+        0, 0, local_frame->coded_size().width(),
+        local_frame->coded_size().height());
+  }
+  return coded_rect_;
+}
+
 VideoFrameRect* VideoFrame::visibleRegion(
     ExecutionContext* execution_context) const {
   WebCodecsLogger::From(*execution_context).LogVisibleRegionDeprecation();
-  return visibleRect();
-}
-
-VideoFrameRect* VideoFrame::visibleRect() const {
   auto local_frame = handle_->frame();
   auto* rect = MakeGarbageCollected<VideoFrameRect>();
   if (local_frame) {
@@ -768,6 +781,22 @@ VideoFrameRect* VideoFrame::visibleRect() const {
     rect->setHeight(0);
   }
   return rect;
+}
+
+DOMRectReadOnly* VideoFrame::visibleRect() {
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    if (!empty_rect_)
+      empty_rect_ = MakeGarbageCollected<DOMRectReadOnly>(0, 0, 0, 0);
+    return empty_rect_;
+  }
+  if (!visible_rect_) {
+    visible_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
+        local_frame->visible_rect().x(), local_frame->visible_rect().y(),
+        local_frame->visible_rect().width(),
+        local_frame->visible_rect().height());
+  }
+  return visible_rect_;
 }
 
 uint32_t VideoFrame::cropLeft(ExecutionContext* execution_context) const {
@@ -1095,6 +1124,9 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
 
 void VideoFrame::Trace(Visitor* visitor) const {
   visitor->Trace(planes_);
+  visitor->Trace(coded_rect_);
+  visitor->Trace(visible_rect_);
+  visitor->Trace(empty_rect_);
   ScriptWrappable::Trace(visitor);
 }
 
