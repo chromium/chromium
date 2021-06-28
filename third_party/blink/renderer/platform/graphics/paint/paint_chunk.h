@@ -45,6 +45,7 @@ struct PLATFORM_EXPORT PaintChunk {
         id(id),
         properties(props),
         text_known_to_be_on_opaque_background(true),
+        has_text(false),
         is_cacheable(id.client.IsCacheable()),
         client_is_just_created(id.client.IsJustCreated()),
         is_moved_from_cached_subsequence(false) {}
@@ -65,6 +66,7 @@ struct PLATFORM_EXPORT PaintChunk {
         raster_effect_outset(other.raster_effect_outset),
         text_known_to_be_on_opaque_background(
             other.text_known_to_be_on_opaque_background),
+        has_text(other.has_text),
         is_cacheable(other.is_cacheable),
         client_is_just_created(false),
         is_moved_from_cached_subsequence(true) {
@@ -162,8 +164,11 @@ struct PLATFORM_EXPORT PaintChunk {
   // all clients of items in this chunk.
   RasterEffectOutset raster_effect_outset = RasterEffectOutset::kNone;
 
-  // True if all text is known to be on top of an opaque background.
+  // True if all text is known to be on top of opaque backgrounds or there is
+  // not text. Though in theory the value doesn't matter when there is no text,
+  // being true can simplify code.
   bool text_known_to_be_on_opaque_background : 1;
+  bool has_text : 1;
 
   // End of derived data.
   // The following fields are put here to avoid memory gap.

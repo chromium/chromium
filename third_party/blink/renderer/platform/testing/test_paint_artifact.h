@@ -118,6 +118,8 @@ class TestPaintArtifact {
 
   TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
   TestPaintArtifact& RectKnownToBeOpaque(const IntRect&);
+  TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
+  TestPaintArtifact& HasText();
   TestPaintArtifact& Uncacheable();
 
   // Build the paint artifact. After that, if this object has automatically

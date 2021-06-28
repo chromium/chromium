@@ -112,10 +112,15 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
     if (chunk.text_known_to_be_on_opaque_background) {
       if (const auto* paint_record = drawing.GetPaintRecord().get()) {
         if (paint_record->has_draw_text_ops()) {
+          chunk.has_text = true;
           chunk.text_known_to_be_on_opaque_background =
               chunk.rect_known_to_be_opaque.Contains(item.VisualRect());
         }
       }
+    } else {
+      // text_known_to_be_on_opaque_background should be initially true before
+      // we see any text.
+      DCHECK(chunk.has_text);
     }
   }
 

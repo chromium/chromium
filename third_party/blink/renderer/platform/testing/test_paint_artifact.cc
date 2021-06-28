@@ -110,7 +110,24 @@ TestPaintArtifact& TestPaintArtifact::SetRasterEffectOutset(
 }
 
 TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const IntRect& r) {
-  paint_artifact_->PaintChunks().back().rect_known_to_be_opaque = r;
+  auto& chunk = paint_artifact_->PaintChunks().back();
+  chunk.rect_known_to_be_opaque = r;
+  DCHECK(chunk.bounds.Contains(r));
+  return *this;
+}
+
+TestPaintArtifact& TestPaintArtifact::TextKnownToBeOnOpaqueBackground() {
+  auto& chunk = paint_artifact_->PaintChunks().back();
+  DCHECK(chunk.has_text);
+  paint_artifact_->PaintChunks().back().text_known_to_be_on_opaque_background =
+      true;
+  return *this;
+}
+
+TestPaintArtifact& TestPaintArtifact::HasText() {
+  auto& chunk = paint_artifact_->PaintChunks().back();
+  chunk.has_text = true;
+  chunk.text_known_to_be_on_opaque_background = false;
   return *this;
 }
 

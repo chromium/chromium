@@ -3074,6 +3074,9 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
         paint_artifact_compositor_->RootLayer(), &GetFrame());
   }
 
+  paint_artifact_compositor_->SetPrefersLCDText(
+      page->GetSettings().GetPreferCompositingToLCDTextEnabled());
+
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingCommit);
 

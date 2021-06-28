@@ -65,6 +65,13 @@ void PaintArtifactCompositor::WillBeRemovedFromFrame() {
   root_layer_->RemoveAllChildren();
 }
 
+void PaintArtifactCompositor::SetPrefersLCDText(bool prefers) {
+  if (prefers_lcd_text_ == prefers)
+    return;
+  SetNeedsUpdate();
+  prefers_lcd_text_ = prefers;
+}
+
 std::unique_ptr<JSONArray> PaintArtifactCompositor::GetPendingLayersAsJSON()
     const {
   std::unique_ptr<JSONArray> result = std::make_unique<JSONArray>();
@@ -343,6 +350,7 @@ bool NeedsFullUpdateAfterPaintingChunk(
               repainted.rect_known_to_be_opaque);
     DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
               repainted.text_known_to_be_on_opaque_background);
+    DCHECK_EQ(previous.has_text, repainted.has_text);
     // Not checking ForeignLayer() here because the old ForeignDisplayItem
     // was set to 0 when we moved the cached subsequence. This is also the
     // reason why we check is_moved_from_cached_subsequence before checking
@@ -373,6 +381,10 @@ bool NeedsFullUpdateAfterPaintingChunk(
       repainted.text_known_to_be_on_opaque_background) {
     return true;
   }
+  // |has_text| affects compositing decisions (see:
+  // |PendingLayer::MergeInternal|).
+  if (previous.has_text != repainted.has_text)
+    return true;
 
   return false;
 }
@@ -480,7 +492,7 @@ bool PaintArtifactCompositor::DecompositeEffect(
         return false;
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.MayDrawContent() &&
-          !previous_sibling.CanMerge(layer, *upcast_state))
+          !previous_sibling.CanMerge(layer, *upcast_state, prefers_lcd_text_))
         return false;
     }
   }
@@ -611,7 +623,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     for (wtf_size_t candidate_index = pending_layers_.size() - 1;
          candidate_index-- > first_layer_in_current_group;) {
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
-      if (candidate_layer.Merge(new_layer)) {
+      if (candidate_layer.Merge(new_layer, prefers_lcd_text_)) {
         pending_layers_.pop_back();
         break;
       }
@@ -848,21 +860,10 @@ void PaintArtifactCompositor::Update(
     entry.in_use = false;
 
   cc::LayerSelection layer_selection;
-  for (auto& pending_layer : pending_layers_) {
+  for (const auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.GetPropertyTreeState();
     const auto& transform = property_state.Transform();
     const auto& clip = property_state.Clip();
-
-    if (&clip.LocalTransformSpace() == &transform) {
-      // Limit layer bounds to hide the areas that will be never visible
-      // because of the clip.
-      pending_layer.IntersectBounds(clip.PixelSnappedClipRect().Rect());
-    } else if (const auto* scroll = transform.ScrollNode()) {
-      // Limit layer bounds to the scroll range to hide the areas that will
-      // never be scrolled into the visible area.
-      pending_layer.IntersectBounds(FloatRect(
-          IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize())));
-    }
 
     scoped_refptr<cc::Layer> layer = CompositedLayerForPendingLayer(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,

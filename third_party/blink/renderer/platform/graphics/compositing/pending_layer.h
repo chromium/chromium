@@ -73,10 +73,6 @@ class PLATFORM_EXPORT PendingLayer {
     compositing_type_ = new_type;
   }
 
-  void IntersectBounds(const FloatRect& clip_rect) {
-    bounds_.Intersect(clip_rect);
-  }
-
   void SetPaintArtifact(scoped_refptr<const PaintArtifact> paint_artifact) {
     chunks_.SetPaintArtifact(paint_artifact);
   }
@@ -85,8 +81,9 @@ class PLATFORM_EXPORT PendingLayer {
   // after chunks of |this|, with appropriate space conversion applied to
   // both layers from their original property tree states to |merged_state|.
   // Returns whether the merge is successful.
-  bool Merge(const PendingLayer& guest) {
-    return MergeInternal(guest, guest.property_tree_state_, /*dry_run*/ false);
+  bool Merge(const PendingLayer& guest, bool prefers_lcd_text = false) {
+    return MergeInternal(guest, guest.property_tree_state_, prefers_lcd_text,
+                         /*dry_run*/ false);
   }
 
   // Returns true if |guest| can be merged into |this|.
@@ -94,9 +91,10 @@ class PLATFORM_EXPORT PendingLayer {
   // if it has |guest_state| in the future (which may be different from its
   // current state).
   bool CanMerge(const PendingLayer& guest,
-                const PropertyTreeState& guest_state) const {
-    return const_cast<PendingLayer*>(this)->MergeInternal(guest, guest_state,
-                                                          /*dry_run*/ true);
+                const PropertyTreeState& guest_state,
+                bool prefers_lcd_text = false) const {
+    return const_cast<PendingLayer*>(this)->MergeInternal(
+        guest, guest_state, prefers_lcd_text, /*dry_run*/ true);
   }
 
   // Mutate this layer's property tree state to a more general (shallower)
@@ -132,11 +130,13 @@ class PLATFORM_EXPORT PendingLayer {
   FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,
+                     bool prefers_lcd_text,
                      bool dry_run);
 
   // The rects are in the space of property_tree_state.
   FloatRect bounds_;
   FloatRect rect_known_to_be_opaque_;
+  bool has_text_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   bool effectively_invisible_ = false;
   PaintChunkSubset chunks_;

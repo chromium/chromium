@@ -24,6 +24,20 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
   return result;
 }
 
+void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
+  // Clip the bounds to remove the parts that will be never visible.
+  if (&state.Clip().LocalTransformSpace() == &state.Transform()) {
+    // Limit the layer bounds to hide the areas that will be never visible
+    // because of the clip.
+    rect.Intersect(state.Clip().PixelSnappedClipRect().Rect());
+  } else if (const auto* scroll = state.Transform().ScrollNode()) {
+    // Limit the bounds to the scroll range to hide the areas that will never be
+    // scrolled into the visible area.
+    rect.Intersect(FloatRect(
+        IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize())));
+  }
+}
+
 }  // anonymous namespace
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
@@ -32,6 +46,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            bool effectively_invisible)
     : bounds_(first_chunk->bounds),
       rect_known_to_be_opaque_(first_chunk->rect_known_to_be_opaque),
+      has_text_(first_chunk->has_text),
       text_known_to_be_on_opaque_background_(
           first_chunk->text_known_to_be_on_opaque_background),
       effectively_invisible_(effectively_invisible),
@@ -40,6 +55,11 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
           first_chunk->properties.GetPropertyTreeState().Unalias()),
       compositing_type_(compositing_type) {
   DCHECK(!RequiresOwnLayer() || first_chunk->size() <= 1u);
+  // Though text_known_to_be_on_opaque_background is only meaningful when
+  // has_text is true, we expect text_known_to_be_on_opaque_background to be
+  // true when !has_text to simplify code.
+  DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
+  ClipToVisibilityLimit(property_tree_state_, bounds_);
 }
 
 PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
@@ -135,6 +155,7 @@ static constexpr float kMergeSparsityTolerance = 6;
 
 bool PendingLayer::MergeInternal(const PendingLayer& guest,
                                  const PropertyTreeState& guest_state,
+                                 bool prefers_lcd_text,
                                  bool dry_run) {
   if (&Chunks().GetPaintArtifact() != &guest.Chunks().GetPaintArtifact())
     return false;
@@ -153,9 +174,11 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   FloatClipRect new_home_bounds(Bounds());
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
+  ClipToVisibilityLimit(*merged_state, new_home_bounds.Rect());
   FloatClipRect new_guest_bounds(guest.Bounds());
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
+  ClipToVisibilityLimit(*merged_state, new_guest_bounds.Rect());
 
   FloatRect merged_bounds =
       UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
@@ -164,16 +187,36 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (merged_bounds.Size().Area() > kMergeSparsityTolerance * sum_area)
     return false;
 
+  FloatRect merged_rect_known_to_be_opaque =
+      MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
+                         guest.MapRectKnownToBeOpaque(*merged_state));
+  bool merged_text_known_to_be_on_opaque_background =
+      text_known_to_be_on_opaque_background_;
+  if (text_known_to_be_on_opaque_background_ !=
+      guest.text_known_to_be_on_opaque_background_) {
+    if (!text_known_to_be_on_opaque_background_) {
+      if (merged_rect_known_to_be_opaque.Contains(new_home_bounds.Rect()))
+        merged_text_known_to_be_on_opaque_background = true;
+    } else if (!guest.text_known_to_be_on_opaque_background_) {
+      if (!merged_rect_known_to_be_opaque.Contains(new_guest_bounds.Rect()))
+        merged_text_known_to_be_on_opaque_background = false;
+    }
+  }
+  if (prefers_lcd_text && !merged_text_known_to_be_on_opaque_background) {
+    if (has_text_ && text_known_to_be_on_opaque_background_)
+      return false;
+    if (guest.has_text_ && guest.text_known_to_be_on_opaque_background_)
+      return false;
+  }
+
   if (!dry_run) {
     chunks_.Merge(guest.Chunks());
     bounds_ = merged_bounds;
-    rect_known_to_be_opaque_ =
-        MaximumCoveredRect(MapRectKnownToBeOpaque(*merged_state),
-                           guest.MapRectKnownToBeOpaque(*merged_state));
     property_tree_state_ = *merged_state;
-    text_known_to_be_on_opaque_background_ &=
-        (guest.TextKnownToBeOnOpaqueBackground() ||
-         RectKnownToBeOpaque().Contains(new_guest_bounds.Rect()));
+    rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
+    text_known_to_be_on_opaque_background_ =
+        merged_text_known_to_be_on_opaque_background;
+    has_text_ |= guest.has_text_;
     change_of_decomposited_transforms_ =
         std::max(ChangeOfDecompositedTransforms(),
                  guest.ChangeOfDecompositedTransforms());

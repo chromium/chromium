@@ -210,6 +210,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool NeedsUpdate() const { return needs_update_; }
   void ClearNeedsUpdateForTesting() { needs_update_ = false; }
 
+  void SetPrefersLCDText(bool);
+
   // There is no mechanism for doing a paint lifecycle phase without running
   // PaintArtifactCompositor::Update so this is exposed so tests can check the
   // last update type.
@@ -348,6 +350,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool needs_update_ = true;
   PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   bool layer_debug_info_enabled_ = false;
+  bool prefers_lcd_text_ = false;
 
   scoped_refptr<cc::Layer> root_layer_;
   Vector<std::unique_ptr<ContentLayerClientImpl>> content_layer_clients_;
