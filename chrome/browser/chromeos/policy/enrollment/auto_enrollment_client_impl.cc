@@ -113,6 +113,26 @@ std::string ConvertInitialEnrollmentMode(
   }
 }
 
+// Converts a license packaging sku enum value from the DM protocol for initial
+// enrollment into the corresponding prefs string constant.
+std::string ConvertLicenseType(
+    em::DeviceInitialEnrollmentStateResponse::LicensePackagingSKU license_sku) {
+  switch (license_sku) {
+    case em::DeviceInitialEnrollmentStateResponse::NOT_EXIST:
+      return std::string();
+    case em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE:
+      return kDeviceStateLicenseTypeEnterprise;
+    case em::DeviceInitialEnrollmentStateResponse::CHROME_EDUCATION:
+      return kDeviceStateLicenseTypeEducation;
+    case em::DeviceInitialEnrollmentStateResponse::CHROME_TERMINAL:
+      return kDeviceStateLicenseTypeTerminal;
+  }
+
+  // Return is required to avoid compiler warning.
+  NOTREACHED() << "Bad license_sku=" << license_sku << ".";
+  return std::string();
+}
+
 }  // namespace
 
 psm_rlwe::RlwePlaintextId ConstructDeviceRlweId(
@@ -159,6 +179,7 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
     absl::optional<std::string> management_domain;
     absl::optional<std::string> disabled_message;
     absl::optional<bool> is_license_packaged_with_device;
+    absl::optional<std::string> license_type;
   };
 
   // Returns the request job type. This must match the request filled in
@@ -705,6 +726,11 @@ class StateDownloadMessageProcessorInitialEnrollment
           state_response.is_license_packaged_with_device();
     }
 
+    if (state_response.has_license_packaging_sku()) {
+      parsed_response.license_type =
+          ConvertLicenseType(state_response.license_packaging_sku());
+    }
+
     if (state_response.has_disabled_state()) {
       parsed_response.disabled_message =
           state_response.disabled_state().message();
@@ -784,6 +810,7 @@ class StateDownloadMessageProcessorFRE
 
       // Package license is not available during the re-enrollment
       parsed_response.is_license_packaged_with_device.reset();
+      parsed_response.license_type.reset();
 
       // Logging as "WARNING" to make sure it's preserved in the logs.
       LOG(WARNING) << "Received restore_mode=" << restore_mode << " ("
@@ -1288,6 +1315,11 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
         parsed_response.is_license_packaged_with_device.has_value(),
         std::make_unique<base::Value>(
             parsed_response.is_license_packaged_with_device.value_or(false)));
+
+    UpdateDict(dict.Get(), kDeviceStateLicenseType,
+               parsed_response.license_type.has_value(),
+               std::make_unique<base::Value>(
+                   parsed_response.license_type.value_or(std::string())));
   }
   local_state_->CommitPendingWrite();
   device_state_available_ = true;

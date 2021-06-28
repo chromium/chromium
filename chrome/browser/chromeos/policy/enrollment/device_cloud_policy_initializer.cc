@@ -210,6 +210,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   std::string device_state_mode;
   std::string device_state_management_domain;
   absl::optional<bool> is_license_packaged_with_device;
+  std::string license_type;
 
   if (device_state) {
     device_state->GetString(kDeviceStateMode, &device_state_mode);
@@ -217,6 +218,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
                             &device_state_management_domain);
     is_license_packaged_with_device =
         device_state->FindBoolPath(kDeviceStatePackagedLicense);
+    device_state->GetString(kDeviceStateLicenseType, &license_type);
   }
 
   if (is_license_packaged_with_device) {
@@ -224,6 +226,16 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
         is_license_packaged_with_device.value();
   } else {
     config.is_license_packaged_with_device = false;
+  }
+
+  if (license_type == kDeviceStateLicenseTypeEnterprise) {
+    config.license_type = EnrollmentConfig::LicenseType::kEnterprise;
+  } else if (license_type == kDeviceStateLicenseTypeEducation) {
+    config.license_type = EnrollmentConfig::LicenseType::kEducation;
+  } else if (license_type == kDeviceStateLicenseTypeTerminal) {
+    config.license_type = EnrollmentConfig::LicenseType::kTerminal;
+  } else {
+    config.license_type = EnrollmentConfig::LicenseType::kNone;
   }
 
   const bool pref_enrollment_auto_start_present =

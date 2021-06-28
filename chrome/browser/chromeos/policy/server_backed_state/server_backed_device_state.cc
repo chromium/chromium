@@ -19,6 +19,7 @@ const char kDeviceStateManagementDomain[] = "management_domain";
 const char kDeviceStateMode[] = "device_mode";
 const char kDeviceStateDisabledMessage[] = "disabled_message";
 const char kDeviceStatePackagedLicense[] = "packaged_license";
+const char kDeviceStateLicenseType[] = "license_type";
 
 // Modes for a device after initial state determination.
 const char kDeviceStateInitialModeEnrollmentEnforced[] = "enrollment-enforced";
@@ -31,6 +32,10 @@ const char kDeviceStateRestoreModeReEnrollmentEnforced[] =
     "re-enrollment-enforced";
 const char kDeviceStateRestoreModeReEnrollmentZeroTouch[] =
     "re-enrollment-zero-touch";
+// License types of a device after initial state determination.
+const char kDeviceStateLicenseTypeEnterprise[] = "enterprise";
+const char kDeviceStateLicenseTypeEducation[] = "education";
+const char kDeviceStateLicenseTypeTerminal[] = "terminal";
 // Modes for a device after either initial or secondary state determination.
 const char kDeviceStateModeDisabled[] = "disabled";
 

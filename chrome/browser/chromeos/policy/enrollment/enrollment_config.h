@@ -80,6 +80,9 @@ struct EnrollmentConfig {
     AUTH_MECHANISM_BEST_AVAILABLE,
   };
 
+  // An enumeration of different enrollment licenses.
+  enum class LicenseType { kNone, kEnterprise, kEducation, kTerminal };
+
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);
   ~EnrollmentConfig();
@@ -161,6 +164,9 @@ struct EnrollmentConfig {
 
   // Is a license packaged with device or not.
   bool is_license_packaged_with_device = false;
+
+  // Which type of license device has.
+  LicenseType license_type = LicenseType::kNone;
 
   // The authentication mechanism to use.
   // TODO(drcrash): Change to best available once ZTE is everywhere.

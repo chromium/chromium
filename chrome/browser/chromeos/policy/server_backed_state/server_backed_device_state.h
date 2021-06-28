@@ -12,6 +12,7 @@ extern const char kDeviceStateManagementDomain[];
 extern const char kDeviceStateMode[];
 extern const char kDeviceStateDisabledMessage[];
 extern const char kDeviceStatePackagedLicense[];
+extern const char kDeviceStateLicenseType[];
 
 // String constants used to persist the initial state action in the
 // kDeviceStateMode dictionary entry.
@@ -22,6 +23,11 @@ extern const char kDeviceStateInitialModeEnrollmentZeroTouch[];
 extern const char kDeviceStateRestoreModeReEnrollmentRequested[];
 extern const char kDeviceStateRestoreModeReEnrollmentEnforced[];
 extern const char kDeviceStateRestoreModeReEnrollmentZeroTouch[];
+// String constants used to persist the license type in the
+// kDeviceStateLicenseType dictionary entry.
+extern const char kDeviceStateLicenseTypeEnterprise[];
+extern const char kDeviceStateLicenseTypeEducation[];
+extern const char kDeviceStateLicenseTypeTerminal[];
 // String constants used to persist either the initial state action
 // or the restorative action in the kDeviceStateMode dictionary entry.
 extern const char kDeviceStateModeDisabled[];
