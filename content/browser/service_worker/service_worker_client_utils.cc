@@ -156,9 +156,7 @@ blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
 }
 
 // This is only called for main frame navigations in OpenWindow().
-void DidOpenURL(WindowType type,
-                OpenURLCallback callback,
-                WebContents* web_contents) {
+void DidOpenURL(OpenURLCallback callback, WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!web_contents) {
@@ -464,10 +462,9 @@ void OpenWindow(const GURL& url,
 
   GetContentClient()->browser()->OpenURL(
       site_instance, params,
-      base::BindOnce(
-          &DidOpenURL, type,
-          base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
-                         std::move(callback))));
+      base::BindOnce(&DidOpenURL, base::BindOnce(&DidNavigate, context,
+                                                 script_url.GetOrigin(), key,
+                                                 std::move(callback))));
 }
 
 void NavigateClient(const GURL& url,
