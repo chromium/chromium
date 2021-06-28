@@ -102,7 +102,8 @@ class FormStructure {
       base::StringPiece payload,
       const std::vector<FormStructure*>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger*);
+      AutofillMetrics::FormInteractionsUkmLogger*,
+      LogManager* log_manager);
 
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
@@ -413,7 +414,7 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger*
           form_interactions_ukm_logger) {
     ProcessQueryResponse(response, forms, queried_form_signatures,
-                         form_interactions_ukm_logger);
+                         form_interactions_ukm_logger, nullptr);
   }
 
  private:
@@ -439,7 +440,8 @@ class FormStructure {
       const AutofillQueryResponse& response,
       const std::vector<FormStructure*>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
+      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
 
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
@@ -447,7 +449,7 @@ class FormStructure {
   // A function to fine tune the credit cards related predictions. For example:
   // lone credit card fields in an otherwise non-credit-card related form is
   // unlikely to be correct, the function will override that prediction.
-  void RationalizeCreditCardFieldPredictions();
+  void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
 
   // The rationalization is based on the visible fields, but should be applied
   // to the hidden select fields. This is because hidden 'select' fields are
@@ -503,7 +505,7 @@ class FormStructure {
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
-  void RationalizeFieldTypePredictions();
+  void RationalizeFieldTypePredictions(LogManager* log_manager);
 
   void EncodeFormForQuery(
       autofill::AutofillPageQueryRequest::Form* query_form,

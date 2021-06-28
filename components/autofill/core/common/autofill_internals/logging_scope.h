@@ -19,6 +19,8 @@ class LogBuffer;
   T(Context)                                                           \
   /* Discovery and parsing of forms. */                                \
   T(Parsing)                                                           \
+  /* Rationalization-induced changes to parsing. */                    \
+  T(Rationalization)                                                   \
   /* Reasons to stop parsing a form. */                                \
   T(AbortParsing)                                                      \
   /* Filling of forms. */                                              \

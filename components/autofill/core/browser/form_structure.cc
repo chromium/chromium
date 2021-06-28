@@ -685,7 +685,7 @@ void FormStructure::DetermineHeuristicTypes(
           features::kAutofillParsingPatternsLanguageDetection)) {
     RationalizeRepeatedFields(form_interactions_ukm_logger);
   }
-  RationalizeFieldTypePredictions();
+  RationalizeFieldTypePredictions(log_manager);
 
   AutofillMetrics::LogDetermineHeuristicTypesTiming(
       AutofillTickClock::NowTicks() - determine_heuristic_types_start_time);
@@ -793,7 +793,8 @@ void FormStructure::ParseApiQueryResponse(
     base::StringPiece payload,
     const std::vector<FormStructure*>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(
       AutofillMetrics::QUERY_RESPONSE_RECEIVED);
 
@@ -812,7 +813,7 @@ void FormStructure::ParseApiQueryResponse(
           << response;
 
   ProcessQueryResponse(response, forms, queried_form_signatures,
-                       form_interactions_ukm_logger);
+                       form_interactions_ukm_logger, log_manager);
 }
 
 // static
@@ -820,8 +821,13 @@ void FormStructure::ProcessQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<FormStructure*>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
+  if (log_manager) {
+    log_manager->Log() << LoggingScope::kParsing
+                       << LogMessage::kProcessingServerData;
+  }
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
@@ -893,7 +899,7 @@ void FormStructure::ProcessQueryResponse(
 
     form->UpdateAutofillCount();
     form->RationalizeRepeatedFields(form_interactions_ukm_logger);
-    form->RationalizeFieldTypePredictions();
+    form->RationalizeFieldTypePredictions(log_manager);
     // TODO(crbug.com/1154080): By calling this with false, autocomplete section
     // attributes will be ignored.
     form->IdentifySections(false);
@@ -1476,7 +1482,8 @@ FormData FormStructure::ToFormData() const {
   return data;
 }
 
-void FormStructure::RationalizeCreditCardFieldPredictions() {
+void FormStructure::RationalizeCreditCardFieldPredictions(
+    LogManager* log_manager) {
   bool cc_first_name_found = false;
   bool cc_last_name_found = false;
   bool cc_num_found = false;
@@ -1555,6 +1562,15 @@ void FormStructure::RationalizeCreditCardFieldPredictions() {
   bool keep_cc_fields =
       cc_num_found || num_cc_fields_found >= 3 || num_other_fields_found == 0;
 
+  if (!keep_cc_fields && num_cc_fields_found && log_manager) {
+    log_manager->Log() << LoggingScope::kRationalization
+                       << LogMessage::kRationalization
+                       << "Credit card rationalization: Did not find credit "
+                          "card number, did not find >= 3 credit card fields ("
+                       << num_cc_fields_found << "), and had non-cc fields ("
+                       << num_other_fields_found << ").";
+  }
+
   // Do an update pass over the fields to rewrite the types if credit card
   // fields are not to be retained. Some special handling is given to expiry
   // dates if the full date is not found or multiple expiry date fields are
@@ -1594,24 +1610,55 @@ void FormStructure::RationalizeCreditCardFieldPredictions() {
         //       that also has one or more quantity fields. Suppress the expiry
         //       month field(s) not immediately preceding an expiry year field.
         if (!keep_cc_fields || !cc_date_found) {
+          if (!cc_date_found && log_manager) {
+            log_manager->Log() << LoggingScope::kRationalization
+                               << LogMessage::kRationalization
+                               << "Credit card rationalization: Found CC "
+                                  "expiration month but not a full date.";
+          }
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
         } else if (num_months_found > 1) {
           auto it2 = it + 1;
           if (it2 == fields_.end()) {
+            field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+            if (log_manager) {
+              log_manager->Log()
+                  << LoggingScope::kRationalization
+                  << LogMessage::kRationalization
+                  << "Credit card rationalization: Found multiple expiration "
+                     "months and the last field was an expiration month";
+            }
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           } else {
             ServerFieldType next_field_type = (*it2)->Type().GetStorableType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+              if (log_manager) {
+                log_manager->Log()
+                    << LoggingScope::kRationalization
+                    << LogMessage::kRationalization
+                    << "Credit card rationalization: Found multiple expiration "
+                       "months and the field following one is not an "
+                       "expiration year but "
+                    << FieldTypeToStringPiece(next_field_type) << ".";
+              }
             }
           }
         }
         break;
       case CREDIT_CARD_EXP_2_DIGIT_YEAR:
       case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-        if (!keep_cc_fields || !cc_date_found)
+        if (!keep_cc_fields || !cc_date_found) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+          if (!cc_date_found && log_manager) {
+            log_manager->Log()
+                << LoggingScope::kRationalization
+                << LogMessage::kRationalization
+                << "Credit card rationalization: Found expiration year but no "
+                   "full expriration date.";
+          }
+        }
         break;
       default:
         break;
@@ -1905,8 +1952,8 @@ void FormStructure::RationalizeRepeatedFields(
       form_interactions_ukm_logger);
 }
 
-void FormStructure::RationalizeFieldTypePredictions() {
-  RationalizeCreditCardFieldPredictions();
+void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
+  RationalizeCreditCardFieldPredictions(log_manager);
   for (const auto& field : fields_) {
     field->SetTypeTo(field->Type());
   }

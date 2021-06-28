@@ -321,7 +321,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     autofill::FormStructure::ParseApiQueryResponse(
         response_string, forms, autofill::test::GetEncodedSignatures(forms),
-        nullptr);
+        /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
     GetGenerationHelper()->PrefetchSpec(origin.GetOrigin());
 

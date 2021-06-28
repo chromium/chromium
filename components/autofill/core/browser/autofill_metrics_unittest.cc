@@ -1935,7 +1935,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
-      browser_autofill_manager_->form_interactions_ukm_logger());
+      browser_autofill_manager_->form_interactions_ukm_logger(), nullptr);
 
   ASSERT_EQ(test_ukm_recorder_
                 ->GetEntriesByName(
@@ -2054,7 +2054,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
-      browser_autofill_manager_->form_interactions_ukm_logger());
+      browser_autofill_manager_->form_interactions_ukm_logger(), nullptr);
 
   ASSERT_EQ(test_ukm_recorder_
                 ->GetEntriesByName(
@@ -10132,8 +10132,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms_,
+                                       test::GetEncodedSignatures(forms_),
+                                       nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));
@@ -10155,8 +10156,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
                            forms_[1]->field(1)->GetFieldSignature(), 0);
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms_,
+                                       test::GetEncodedSignatures(forms_),
+                                       nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 1), Bucket(true, 1)));
@@ -10177,8 +10179,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms_,
+                                       test::GetEncodedSignatures(forms_),
+                                       nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(false, 2)));
@@ -10201,8 +10204,9 @@ TEST_F(AutofillMetricsParseQueryResponseTest, PartialNoServerData) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms_, test::GetEncodedSignatures(forms_), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms_,
+                                       test::GetEncodedSignatures(forms_),
+                                       nullptr, nullptr);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerResponseHasDataForForm"),
       ElementsAre(Bucket(true, 2)));

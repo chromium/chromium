@@ -51,7 +51,9 @@ class LogBuffer;
   T(CreditCardUploadDisabled, "Credit card upload is disabled. Reason: ")      \
   T(CardUploadDecisionUploadOffered, "Credit card upload was offered.")        \
   T(CardUploadDecisionUploadNotOffered, "Credit card upload was not offered.") \
-  T(SuggestionSuppressed, "Autofill suggestion(s) suppressed.")
+  T(SuggestionSuppressed, "Autofill suggestion(s) suppressed.")                \
+  T(Rationalization, "Rationalization: ")                                      \
+  T(ProcessingServerData, "Processing server data.")
 
 // Log messages for chrome://autofill-internals.
 

@@ -5147,8 +5147,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
     FormStructure form(form_data);
     form.DetermineHeuristicTypes(nullptr, nullptr);
     std::vector<FormStructure*> forms{&form};
-    FormStructure::ParseApiQueryResponse(
-        response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+    FormStructure::ParseApiQueryResponse(response_string, forms,
+                                         test::GetEncodedSignatures(forms),
+                                         nullptr, nullptr);
     ASSERT_EQ(form.field_count(), 2U);
 
     // Validate the type predictions.
@@ -5178,8 +5179,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
     FormStructure form(form_data);
     form.DetermineHeuristicTypes(nullptr, nullptr);
     std::vector<FormStructure*> forms{&form};
-    FormStructure::ParseApiQueryResponse(
-        response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+    FormStructure::ParseApiQueryResponse(response_string, forms,
+                                         test::GetEncodedSignatures(forms),
+                                         nullptr, nullptr);
     ASSERT_EQ(form.field_count(), 2U);
 
     // Validate the type predictions.
@@ -5256,8 +5258,9 @@ TEST_F(FormStructureTestImpl,
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -5277,8 +5280,9 @@ TEST_F(FormStructureTestImpl,
       features::kAutofillEnableSupportForMoreStructureInNames);
 
   std::vector<FormStructure*> forms2{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms2, test::GetEncodedSignatures(forms2), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms2,
+                                       test::GetEncodedSignatures(forms2),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -5348,8 +5352,9 @@ TEST_F(FormStructureTestImpl,
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
@@ -5369,8 +5374,9 @@ TEST_F(FormStructureTestImpl,
       features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   std::vector<FormStructure*> forms2{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms2, test::GetEncodedSignatures(forms2), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms2,
+                                       test::GetEncodedSignatures(forms2),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
@@ -5428,8 +5434,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -5455,7 +5462,7 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   std::vector<FormStructure*> empty_forms{&empty_form};
   FormStructure::ParseApiQueryResponse(response_string, empty_forms,
                                        test::GetEncodedSignatures(empty_forms),
-                                       nullptr);
+                                       nullptr, nullptr);
   ASSERT_EQ(empty_form.field_count(), 0U);
 }
 
@@ -5499,8 +5506,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -5592,7 +5600,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
 
   FormStructure::ParseApiQueryResponse(std::move(encoded_response_string),
                                        forms, test::GetEncodedSignatures(forms),
-                                       nullptr);
+                                       nullptr, nullptr);
 
   // Verify that the form fields are properly filled with data retrieved from
   // the query.
@@ -5640,7 +5648,7 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = "invalid string that cannot be parsed";
   FormStructure::ParseApiQueryResponse(std::move(response_string), forms,
                                        test::GetEncodedSignatures(forms),
-                                       nullptr);
+                                       nullptr, nullptr);
 
   // Verify that the form fields remain intact because ParseApiQueryResponse
   // could not parse the server's response because it was badly serialized.
@@ -5685,8 +5693,9 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWhenPayloadNotBase64) {
   std::string response_string;
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
 
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   // Verify that the form fields remain intact because ParseApiQueryResponse
   // could not parse the server's response that was badly encoded.
@@ -5725,8 +5734,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
                            ACCOUNT_CREATION_PASSWORD);
 
   std::string response_string = SerializeAndEncode(response);
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
@@ -5779,8 +5789,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeLoneField) {
   std::string response_string = SerializeAndEncode(response);
 
   // Test that the expiry month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->Type().GetStorableType());
@@ -5825,8 +5836,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeCCName) {
   std::string response_string = SerializeAndEncode(response);
 
   // Test that the name fields are rationalized.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(3U, forms[0]->field_count());
   EXPECT_EQ(NAME_FIRST, forms[0]->field(0)->Type().GetStorableType());
@@ -5884,8 +5896,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeMultiMonth_1) {
   std::string response_string = SerializeAndEncode(response);
 
   // Test that the extra month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
   EXPECT_EQ(CREDIT_CARD_NAME_FULL,
@@ -5941,8 +5954,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RationalizeMultiMonth_2) {
   std::string response_string = SerializeAndEncode(response);
 
   // Test that the extra month field is rationalized away.
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
   EXPECT_EQ(CREDIT_CARD_NAME_FULL,
@@ -6004,8 +6018,9 @@ TEST_P(ParameterizedFormStructureTest,
   FormStructure form_structure(form);
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   if (section_with_renderer_ids) {
     EXPECT_FALSE(form_structure.phone_rationalized_
@@ -6069,8 +6084,9 @@ TEST_F(FormStructureTestImpl, RationalizeRepeatedFields_OneAddress) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(3U, forms[0]->field_count());
@@ -6126,8 +6142,9 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_TwoAddresses) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -6190,8 +6207,9 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_ThreeAddresses) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
@@ -6263,8 +6281,9 @@ TEST_F(FormStructureTestImpl, RationalizeRepreatedFields_FourAddresses) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6346,8 +6365,9 @@ TEST_F(FormStructureTestImpl,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   // Billing
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6504,8 +6524,9 @@ TEST_F(
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(15U, forms[0]->field_count());
@@ -6596,8 +6617,9 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   // Billing
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -6697,8 +6719,9 @@ TEST_F(
 
   std::string response_string = SerializeAndEncode(response);
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(9U, forms[0]->field_count());
@@ -6805,8 +6828,9 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(10U, forms[0]->field_count());
@@ -6950,8 +6974,9 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(14U, forms[0]->field_count());
@@ -7106,8 +7131,9 @@ TEST_F(FormStructureTestImpl,
   std::string response_string = SerializeAndEncode(response);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(14U, forms[0]->field_count());
@@ -7188,8 +7214,9 @@ TEST_F(FormStructureTestImpl,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(5U, forms[0]->field_count());
@@ -7269,8 +7296,9 @@ TEST_F(FormStructureTestImpl,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(6U, forms[0]->field_count());
@@ -7338,8 +7366,9 @@ TEST_F(ParameterizedFormStructureTest,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7401,8 +7430,9 @@ TEST_F(ParameterizedFormStructureTest, NoServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7469,8 +7499,9 @@ TEST_F(ParameterizedFormStructureTest, WithServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7562,8 +7593,9 @@ TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7630,8 +7662,9 @@ TEST_P(RationalizationFieldTypeRelationshipsTest,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -7688,8 +7721,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RankEqualSignatures) {
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
@@ -7738,8 +7772,9 @@ TEST_F(FormStructureTestImpl,
 
   // Parse the response and update the field type predictions.
   std::vector<FormStructure*> forms{&form};
-  FormStructure::ParseApiQueryResponse(
-      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
