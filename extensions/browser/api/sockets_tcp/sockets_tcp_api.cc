@@ -347,7 +347,7 @@ ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
 
   scoped_refptr<net::IOBuffer> io_buffer =
       base::MakeRefCounted<net::IOBuffer>(params->data.size());
-  std::copy(params->data.begin(), params->data.end(), io_buffer->data());
+  base::ranges::copy(params->data, io_buffer->data());
 
   ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
