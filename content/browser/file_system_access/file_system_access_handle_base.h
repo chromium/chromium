@@ -75,6 +75,13 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback);
 
+  // Implementation for the Remove and RemoveEntry methods in the
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
+  void DoRemove(const storage::FileSystemURL& url,
+                bool recurse,
+                base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                    callback);
+
   // Invokes |callback|, possibly after first requesting write permission. If
   // permission isn't granted, |permission_denied| is invoked instead. The
   // callbacks can be invoked synchronously.

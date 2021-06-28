@@ -29,6 +29,10 @@ interface FileSystemAccessFileHandle {
   CreateFileWriter(bool keep_existing_data, bool auto_close) => (
       FileSystemAccessError result, pending_remote<FileSystemAccessFileWriter>? writer);
 
+  // Deletes the file represented by this handle.
+  // Returns an error if the file does not exist.
+  Remove() => (FileSystemAccessError result);
+
   // Returns true if |other| represents the same file on disk as this handle.
   IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>
       (FileSystemAccessError result, bool is_same);

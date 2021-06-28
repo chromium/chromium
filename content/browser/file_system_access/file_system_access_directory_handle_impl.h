@@ -50,6 +50,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void GetEntries(mojo::PendingRemote<
                   blink::mojom::FileSystemAccessDirectoryEntriesListener>
                       pending_listener) override;
+  void Remove(bool recurse, RemoveCallback callback) override;
   void RemoveEntry(const std::string& basename,
                    bool recurse,
                    RemoveEntryCallback callback) override;
@@ -89,10 +90,6 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       base::File::Error result,
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
       bool has_more_entries);
-
-  void RemoveEntryImpl(const storage::FileSystemURL& url,
-                       bool recurse,
-                       RemoveEntryCallback callback);
 
   void ResolveImpl(ResolveCallback callback,
                    FileSystemAccessTransferTokenImpl* possible_child);

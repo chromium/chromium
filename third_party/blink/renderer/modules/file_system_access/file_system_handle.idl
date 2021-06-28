@@ -27,6 +27,11 @@ enum FileSystemHandleKind {
     [CallWith=ScriptState] Promise<PermissionState> requestPermission(
         optional FileSystemHandlePermissionDescriptor descriptor = {});
 
+    [
+        CallWith=ScriptState,
+        RuntimeEnabled=FileSystemAccessAPIExperimental
+    ] Promise<void> remove(optional FileSystemRemoveOptions options = {});
+
     [CallWith=ScriptState, Measure]
     Promise<boolean> isSameEntry(FileSystemHandle other);
 };

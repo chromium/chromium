@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -87,6 +88,19 @@ void FileSystemAccessFileHandleImpl::CreateFileWriter(
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         CreateFileWriterCallback callback) {
         std::move(callback).Run(std::move(result), mojo::NullRemote());
+      }),
+      std::move(callback));
+}
+
+void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunWithWritePermission(
+      base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
+                     weak_factory_.GetWeakPtr(), url(), /*recurse=*/false),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        RemoveCallback callback) {
+        std::move(callback).Run(std::move(result));
       }),
       std::move(callback));
 }

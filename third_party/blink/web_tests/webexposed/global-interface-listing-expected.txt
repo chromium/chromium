@@ -2660,6 +2660,7 @@ interface FileSystemHandle
     method constructor
     method isSameEntry
     method queryPermission
+    method remove
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag

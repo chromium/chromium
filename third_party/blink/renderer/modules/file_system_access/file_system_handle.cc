@@ -91,6 +91,22 @@ ScriptPromise FileSystemHandle::requestPermission(
   return result;
 }
 
+ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
+                                       const FileSystemRemoveOptions* options) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  RemoveImpl(
+      options,
+      WTF::Bind(
+          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+            file_system_access_error::ResolveOrReject(resolver, *result);
+          },
+          WrapPersistent(resolver)));
+
+  return result;
+}
+
 ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
                                             FileSystemHandle* other) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);

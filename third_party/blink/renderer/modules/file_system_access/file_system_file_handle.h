@@ -46,6 +46,10 @@ class FileSystemFileHandle final : public FileSystemHandle {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
+  void RemoveImpl(
+      const FileSystemRemoveOptions* options,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>)
+      override;
   void IsSameEntryImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>)

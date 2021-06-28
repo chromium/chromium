@@ -62,6 +62,10 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
+  void RemoveImpl(
+      const FileSystemRemoveOptions* options,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>)
+      override;
   // IsSameEntry for directories is implemented in terms of resolve, as resolve
   // also can be used to figure out if two directories are the same entry.
   void IsSameEntryImpl(

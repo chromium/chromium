@@ -20,6 +20,7 @@
 namespace blink {
 class ExecutionContext;
 class FileSystemHandlePermissionDescriptor;
+class FileSystemRemoveOptions;
 
 class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,6 +41,8 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise requestPermission(ScriptState*,
                                   const FileSystemHandlePermissionDescriptor*);
 
+  ScriptPromise remove(ScriptState*, const FileSystemRemoveOptions* options);
+
   ScriptPromise isSameEntry(ScriptState*, FileSystemHandle* other);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
@@ -57,6 +60,9 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) = 0;
+  virtual void RemoveImpl(
+      const FileSystemRemoveOptions* options,
+      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>) = 0;
   virtual void IsSameEntryImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,

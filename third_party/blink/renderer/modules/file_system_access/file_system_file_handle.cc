@@ -132,6 +132,19 @@ void FileSystemFileHandle::RequestPermissionImpl(
   mojo_ptr_->RequestPermission(writable, std::move(callback));
 }
 
+void FileSystemFileHandle::RemoveImpl(
+    const FileSystemRemoveOptions* options,
+    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
+  if (!mojo_ptr_.is_bound()) {
+    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
+        mojom::blink::FileSystemAccessStatus::kInvalidState,
+        base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"));
+    return;
+  }
+
+  mojo_ptr_->Remove(std::move(callback));
+}
+
 void FileSystemFileHandle::IsSameEntryImpl(
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr, bool)>

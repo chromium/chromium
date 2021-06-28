@@ -174,6 +174,20 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
       url());
 }
 
+void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
+                                                 RemoveCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunWithWritePermission(
+      base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
+                     weak_factory_.GetWeakPtr(), url(), recurse),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        RemoveEntryCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
+}
+
 void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
     const std::string& basename,
     bool recurse,
@@ -189,7 +203,7 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
   }
 
   RunWithWritePermission(
-      base::BindOnce(&FileSystemAccessDirectoryHandleImpl::RemoveEntryImpl,
+      base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), child_url, recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
@@ -197,6 +211,7 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
       }),
       std::move(callback));
 }
+
 void FileSystemAccessDirectoryHandleImpl::Resolve(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         possible_child,
@@ -381,25 +396,6 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
   }
   (*listener)->DidReadDirectory(file_system_access_error::Ok(),
                                 std::move(entries), has_more_entries);
-}
-
-void FileSystemAccessDirectoryHandleImpl::RemoveEntryImpl(
-    const storage::FileSystemURL& url,
-    bool recurse,
-    RemoveEntryCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
-            blink::mojom::PermissionStatus::GRANTED);
-
-  DoFileSystemOperation(
-      FROM_HERE, &FileSystemOperationRunner::Remove,
-      base::BindOnce(
-          [](RemoveEntryCallback callback, base::File::Error result) {
-            std::move(callback).Run(
-                file_system_access_error::FromFileError(result));
-          },
-          std::move(callback)),
-      url, recurse);
 }
 
 namespace {

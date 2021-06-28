@@ -177,4 +177,25 @@ void FileSystemAccessHandleBase::DidRequestPermission(
   NOTREACHED();
 }
 
+void FileSystemAccessHandleBase::DoRemove(
+    const storage::FileSystemURL& url,
+    bool recurse,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(GetWritePermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::Remove,
+      base::BindOnce(
+          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                 callback,
+             base::File::Error result) {
+            std::move(callback).Run(
+                file_system_access_error::FromFileError(result));
+          },
+          std::move(callback)),
+      url, recurse);
+}
+
 }  // namespace content
