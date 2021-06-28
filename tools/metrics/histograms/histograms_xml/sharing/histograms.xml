@@ -572,6 +572,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
+    expires_after="M96">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    The number of available devices when making a request on desktop which is
+    triggered by calling the WebOTP API. This is logged once per API call.
+    Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
     expires_after="M96">
   <owner>yigu@chromium.org</owner>

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -112,6 +113,9 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
     const std::vector<url::Origin>& origin_list,
     OnRemoteCallback callback) {
   SharingService::SharingDeviceList devices = GetDevices();
+  base::UmaHistogramExactLinear("Sharing.SmsFetcherAvailableDeviceCount",
+                                devices.size(),
+                                /*value_max=*/20);
 
   if (devices.empty()) {
     // No devices available to call.
