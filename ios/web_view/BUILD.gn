@@ -170,6 +170,8 @@ source_set("web_view_sources") {
     "internal/passwords/web_view_password_manager_log_router_factory.mm",
     "internal/passwords/web_view_password_requirements_service_factory.h",
     "internal/passwords/web_view_password_requirements_service_factory.mm",
+    "internal/passwords/web_view_password_reuse_manager_factory.h",
+    "internal/passwords/web_view_password_reuse_manager_factory.mm",
     "internal/passwords/web_view_password_store_factory.h",
     "internal/passwords/web_view_password_store_factory.mm",
     "internal/signin/cwv_identity.mm",

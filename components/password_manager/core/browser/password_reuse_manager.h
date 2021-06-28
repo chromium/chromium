@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -23,10 +24,9 @@ using metrics_util::GaiaPasswordHashChange;
 
 // Per-store class responsible for detection of password reuse, i.e. that the
 // user input on some site contains the password saved on another site.
-class PasswordReuseManager {
+class PasswordReuseManager : public KeyedService {
  public:
   PasswordReuseManager() = default;
-  virtual ~PasswordReuseManager() = default;
 
   PasswordReuseManager(const PasswordReuseManager&) = delete;
   PasswordReuseManager& operator=(const PasswordReuseManager&) = delete;

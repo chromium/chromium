@@ -21,6 +21,8 @@ source_set("passwords") {
     "ios_chrome_password_manager_client.mm",
     "ios_chrome_password_manager_driver.h",
     "ios_chrome_password_manager_driver.mm",
+    "ios_chrome_password_reuse_manager_factory.cc",
+    "ios_chrome_password_reuse_manager_factory.h",
     "ios_password_requirements_service_factory.cc",
     "ios_password_requirements_service_factory.h",
     "notify_auto_signin_view_controller.h",
