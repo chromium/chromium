@@ -61,7 +61,7 @@ class ASH_EXPORT MultiWindowResizeController
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;
-  void OnOverviewModeEnded() override;
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
  private:
   friend class MultiWindowResizeControllerTest;

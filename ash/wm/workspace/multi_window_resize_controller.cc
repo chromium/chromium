@@ -302,7 +302,10 @@ void MultiWindowResizeController::OnOverviewModeStarting() {
   ResetResizer();
 }
 
-void MultiWindowResizeController::OnOverviewModeEnded() {
+void MultiWindowResizeController::OnOverviewModeEndingAnimationComplete(
+    bool canceled) {
+  if (canceled)
+    return;
   // Show resize-lock shadow UI after exiting overview.
   Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
 }
