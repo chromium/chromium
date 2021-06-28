@@ -62,8 +62,8 @@ TEST_F(FloatClipRectTest, Intersect) {
 
 TEST_F(FloatClipRectTest, IntersectWithInfinite) {
   FloatClipRect infinite;
-  FloatRect large(0, 0, std::numeric_limits<int>::max(),
-                  std::numeric_limits<int>::max());
+  FloatRect large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
+                  static_cast<float>(std::numeric_limits<int>::max()));
   FloatClipRect unclipped(large);
 
   unclipped.Intersect(infinite);
@@ -73,8 +73,8 @@ TEST_F(FloatClipRectTest, IntersectWithInfinite) {
 
 TEST_F(FloatClipRectTest, InclusiveIntersectWithInfinite) {
   FloatClipRect infinite;
-  FloatRect large(0, 0, std::numeric_limits<int>::max(),
-                  std::numeric_limits<int>::max());
+  FloatRect large(0, 0, static_cast<float>(std::numeric_limits<int>::max()),
+                  static_cast<float>(std::numeric_limits<int>::max()));
   FloatClipRect unclipped(large);
 
   ASSERT_TRUE(unclipped.InclusiveIntersect(infinite));

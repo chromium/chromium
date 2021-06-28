@@ -260,7 +260,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // h1/v1 and minimal overlap 500 is Y = 1500k + 1500.
     // So target_size - Y >= 250 >> kSizeError if the assembly does not have
     // more than the max number of glyphs.
-    target_size = 1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750;
+    target_size =
+        static_cast<float>(1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750);
     horizontal_shaper.Shape(&math, target_size);
     vertical_shaper.Shape(&math, target_size);
   }

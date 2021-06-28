@@ -34,7 +34,8 @@ TEST(FloatQuadTest, BoundingBoxSaturateInf) {
   EXPECT_EQ(rect.X(), std::numeric_limits<int>::min());
   EXPECT_EQ(rect.Y(), 3.0f);
   EXPECT_EQ(rect.Width(), 17.0f - std::numeric_limits<int>::min());
-  EXPECT_EQ(rect.Height(), std::numeric_limits<int>::max() - 3.0f);
+  EXPECT_EQ(rect.Height(),
+            static_cast<float>(std::numeric_limits<int>::max()) - 3.0f);
 }
 
 TEST(FloatQuadTest, RectIntersectionIsInclusive) {

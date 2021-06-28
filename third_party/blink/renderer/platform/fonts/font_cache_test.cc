@@ -125,7 +125,8 @@ TEST(FontCache, getLargerThanMaxUnsignedFont) {
 
   FontDescription font_description;
   font_description.SetGenericFamily(FontDescription::kStandardFamily);
-  font_description.SetComputedSize(std::numeric_limits<unsigned>::max() + 1.f);
+  font_description.SetComputedSize(
+      static_cast<float>(std::numeric_limits<unsigned>::max()) + 1.f);
   FontFaceCreationParams creation_params;
   scoped_refptr<blink::SimpleFontData> font_data =
       font_cache->GetFontData(font_description, AtomicString());
