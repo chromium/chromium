@@ -235,9 +235,9 @@ class FeedStream : public FeedApi,
   void UnloadModels();
 
   // Triggers a stream load. The load will be aborted if |ShouldAttemptLoad()|
-  // is not true. Returns nullopt if loading is to proceed, or a
+  // is not true. Returns CARDS_UNSPECIFIED if loading is to proceed, or another
   // DiscoverLaunchResult if loading will not be attempted.
-  absl::optional<feedwire::DiscoverLaunchResult> TriggerStreamLoad(
+  feedwire::DiscoverLaunchResult TriggerStreamLoad(
       const StreamType& stream_type);
 
   // Only to be called by ClearAllTask. This clears other stream data stored in

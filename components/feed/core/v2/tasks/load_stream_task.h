@@ -84,8 +84,9 @@ class LoadStreamTask : public offline_pages::Task {
     // Experiments information from the server.
     Experiments experiments;
 
-    // Reliability logging feed launch result: nullopt if loading is successful.
-    absl::optional<feedwire::DiscoverLaunchResult> launch_result;
+    // Reliability logging feed launch result: CARDS_UNSPECIFIED if loading is
+    // successful.
+    feedwire::DiscoverLaunchResult launch_result;
   };
 
   LoadStreamTask(const Options& options,

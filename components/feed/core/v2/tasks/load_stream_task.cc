@@ -96,7 +96,8 @@ void LoadStreamTask::Run() {
   if (options_.abort_if_unread_content &&
       stream_.HasUnreadContent(options_.stream_type)) {
     // TODO(iwells): add a DiscoverLaunchResult for this case
-    Done({LoadStreamStatus::kAlreadyHaveUnreadContent, absl::nullopt});
+    Done({LoadStreamStatus::kAlreadyHaveUnreadContent,
+          feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
     return;
   }
 
@@ -128,7 +129,8 @@ void LoadStreamTask::LoadFromStoreComplete(
   if (!options_.refresh_even_when_not_stale &&
       result.status == LoadStreamStatus::kLoadedFromStore) {
     update_request_ = std::move(result.update_request);
-    return Done({LoadStreamStatus::kLoadedFromStore, absl::nullopt});
+    return Done({LoadStreamStatus::kLoadedFromStore,
+                 feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
   }
 
   const bool store_is_stale =
@@ -283,7 +285,8 @@ void LoadStreamTask::ProcessNetworkResponse(
   }
 
   request_schedule_ = std::move(response_data.request_schedule);
-  Done({LoadStreamStatus::kLoadedFromNetwork, absl::nullopt});
+  Done({LoadStreamStatus::kLoadedFromNetwork,
+        feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
 }
 
 void LoadStreamTask::Done(LaunchResult launch_result) {
@@ -293,7 +296,8 @@ void LoadStreamTask::Done(LaunchResult launch_result) {
     update_request_ = std::move(stale_store_state_);
     launch_result.load_stream_status =
         LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
-    launch_result.launch_result = absl::nullopt;
+    launch_result.launch_result =
+        feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
   }
   Result result;
   result.stream_type = options_.stream_type;

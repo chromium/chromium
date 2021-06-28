@@ -124,12 +124,13 @@ class ContentIdSet {
 
 struct LaunchResult {
   LoadStreamStatus load_stream_status;
-  absl::optional<feedwire::DiscoverLaunchResult> launch_result;
+  feedwire::DiscoverLaunchResult launch_result;
 
   LaunchResult(LoadStreamStatus load_stream_status,
-               absl::optional<feedwire::DiscoverLaunchResult> launch_result);
+               feedwire::DiscoverLaunchResult launch_result);
   LaunchResult(const LaunchResult& other);
   ~LaunchResult();
+  LaunchResult& operator=(const LaunchResult& other);
 };
 
 }  // namespace feed

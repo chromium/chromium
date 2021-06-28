@@ -219,14 +219,15 @@ void SurfaceUpdater::OnUiUpdate(const StreamModel::UiUpdate& update) {
 
 void SurfaceUpdater::SurfaceAdded(
     FeedStreamSurface* surface,
-    absl::optional<feedwire::DiscoverLaunchResult> loading_not_allowed_reason) {
+    feedwire::DiscoverLaunchResult loading_not_allowed_reason) {
   ReliabilityLoggingBridge& logger = surface->GetReliabilityLoggingBridge();
   logger.SendPendingLaunchEvents(surface->GetStreamType(),
                                  surface->GetSurfaceId());
   logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
-  if (loading_not_allowed_reason.has_value()) {
+  if (loading_not_allowed_reason !=
+      feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED) {
     logger.LogLaunchFinished(base::TimeTicks::Now(),
-                             loading_not_allowed_reason.value());
+                             loading_not_allowed_reason);
   }
 
   SendUpdateToSurface(surface, GetUpdateForNewSurface(GetState(), model_));
@@ -253,14 +254,13 @@ void SurfaceUpdater::LoadStreamStarted() {
 void SurfaceUpdater::LoadStreamComplete(
     bool success,
     LoadStreamStatus load_stream_status,
-    absl::optional<feedwire::DiscoverLaunchResult> launch_result) {
+    feedwire::DiscoverLaunchResult launch_result) {
   loading_initial_ = false;
   load_stream_status_ = load_stream_status;
   load_stream_failed_ = !success;
 
-  if (launch_result.has_value()) {
-    launch_reliability_logger_.LogLaunchFinished(launch_result.value());
-  }
+  if (launch_result != feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED)
+    launch_reliability_logger_.LogLaunchFinished(launch_result);
 
   SendStreamUpdateIfNeeded();
 }

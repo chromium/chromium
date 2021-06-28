@@ -16,7 +16,6 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/stream_model.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feedui {
 class StreamUpdate;
@@ -47,15 +46,13 @@ class SurfaceUpdater : public StreamModel::Observer {
 
   // Signals from |FeedStream|.
   void SurfaceAdded(FeedStreamSurface* surface,
-                    absl::optional<feedwire::DiscoverLaunchResult>
-                        loading_not_allowed_reason);
+                    feedwire::DiscoverLaunchResult loading_not_allowed_reason);
   void SurfaceRemoved(FeedStreamSurface* surface);
   // Called to indicate the initial model load is in progress.
   void LoadStreamStarted();
-  void LoadStreamComplete(
-      bool success,
-      LoadStreamStatus load_stream_status,
-      absl::optional<feedwire::DiscoverLaunchResult> launch_result);
+  void LoadStreamComplete(bool success,
+                          LoadStreamStatus load_stream_status,
+                          feedwire::DiscoverLaunchResult launch_result);
   // Called to indicate whether or not we are currently trying to load more
   // content at the bottom of the stream.
   void SetLoadingMore(bool is_loading);
