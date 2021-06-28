@@ -260,8 +260,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       Vector<NodeToLayout>* fragmented_descendants);
   void AddOOFToFragmentainer(const NodeToLayout& descendant,
                              const NGConstraintSpace* fragmentainer_space,
-                             LayoutUnit additional_inline_offset,
-                             bool add_to_last_fragment,
                              LogicalOffset fragmentainer_offset,
                              wtf_size_t index,
                              NGSimplifiedOOFLayoutAlgorithm* algorithm,
@@ -280,6 +278,10 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       LayoutUnit block_estimate,
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
+
+  static void ReplaceFragment(scoped_refptr<const NGLayoutResult> new_result,
+                              const NGPhysicalBoxFragment& old_fragment,
+                              wtf_size_t index);
 
   // This saves the static-position for an OOF-positioned object into its
   // paint-layer.

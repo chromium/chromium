@@ -3695,10 +3695,16 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   return new_result;
 }
 
-const NGPhysicalBoxFragment* LayoutBox::GetPhysicalFragment(
-    wtf_size_t index) const {
+scoped_refptr<const NGLayoutResult> LayoutBox::GetLayoutResult(
+    wtf_size_t i) const {
   NOT_DESTROYED();
-  return &To<NGPhysicalBoxFragment>(layout_results_[index]->PhysicalFragment());
+  return layout_results_[i];
+}
+
+const NGPhysicalBoxFragment* LayoutBox::GetPhysicalFragment(
+    wtf_size_t i) const {
+  NOT_DESTROYED();
+  return &To<NGPhysicalBoxFragment>(layout_results_[i]->PhysicalFragment());
 }
 
 const NGPhysicalBoxFragment&

@@ -25,6 +25,9 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     NGLayoutInputNode child,
     absl::optional<NGBreakAppeal> appeal,
     bool is_forced_break) {
+  // If there's a pre-set break token, we shouldn't be here.
+  DCHECK(!break_token_);
+
   if (appeal) {
     break_appeal_ = *appeal;
     // If we're violating any orphans / widows or
@@ -255,6 +258,9 @@ void NGBoxFragmentBuilder::AddChild(
 void NGBoxFragmentBuilder::AddBreakToken(
     scoped_refptr<const NGBreakToken> token,
     bool is_in_parallel_flow) {
+  // If there's a pre-set break token, we shouldn't be here.
+  DCHECK(!break_token_);
+
   DCHECK(token.get());
   child_break_tokens_.push_back(std::move(token));
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
@@ -378,7 +384,7 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
   }
 #endif
 
-  if (UNLIKELY(node_ && has_block_fragmentation_)) {
+  if (UNLIKELY(has_block_fragmentation_ && !break_token_ && node_)) {
     if (last_inline_break_token_)
       child_break_tokens_.push_back(std::move(last_inline_break_token_));
     if (DidBreakSelf() || HasChildBreakInside())

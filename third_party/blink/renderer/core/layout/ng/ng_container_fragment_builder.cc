@@ -95,8 +95,9 @@ void NGContainerFragmentBuilder::PropagateChildData(
 
   // Collect any (block) break tokens, but skip break tokens for fragmentainers,
   // as they should only escape a fragmentation context at the discretion of the
-  // fragmentation context.
-  if (has_block_fragmentation_ && !child.IsFragmentainerBox()) {
+  // fragmentation context. Also skip this if there's a pre-set break token.
+  if (has_block_fragmentation_ && !child.IsFragmentainerBox() &&
+      !break_token_) {
     const NGBreakToken* child_break_token = child.BreakToken();
     switch (child.Type()) {
       case NGPhysicalFragment::kFragmentBox:

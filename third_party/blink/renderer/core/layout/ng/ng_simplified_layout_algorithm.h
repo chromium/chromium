@@ -40,9 +40,23 @@ class CORE_EXPORT NGSimplifiedLayoutAlgorithm
                                NGBlockBreakToken> {
  public:
   NGSimplifiedLayoutAlgorithm(const NGLayoutAlgorithmParams&,
-                              const NGLayoutResult&);
+                              const NGLayoutResult&,
+                              bool keep_old_size = false);
 
+  // Perform a simple copy of all children of the old fragment.
+  void CloneOldChildren();
+
+  void AppendNewChildFragment(const NGPhysicalFragment&, LogicalOffset);
+
+  // Just create a new layout result based on the current builder state. To be
+  // used after CloneOldChildren() / AppendNewChildFragment().
+  scoped_refptr<const NGLayoutResult> CreateResultAfterManualChildLayout();
+
+  // Attempt to perform simplified layout on all children and return a new
+  // result. If nullptr is returned, it means that simplified layout isn't
+  // possible.
   scoped_refptr<const NGLayoutResult> Layout() override;
+
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override {
     NOTREACHED();

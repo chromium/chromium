@@ -1382,6 +1382,8 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
+  // Note that it's not obvious that the block-size of the last inner
+  // fragmentainer (after the spanners) is correct; see crbug.com/1224337
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1394,11 +1396,11 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
           offset:258,10 size:232x10
             offset:0,0 size:55x10
             offset:0,0 size:5x10
-            offset:248,0 size:5x10
-            offset:496,0 size:5x10
           offset:10,20 size:480x0
           offset:10,20 size:480x0
           offset:10,20 size:480x0
+          offset:10,20 size:232x40
+            offset:0,0 size:5x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1435,6 +1437,8 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
+  // Note that it's not obvious that the block-size of the last inner
+  // fragmentainers (after the spanners) are correct; see crbug.com/1224337
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1445,12 +1449,16 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
             offset:0,0 size:55x40
           offset:258,0 size:242x40
             offset:0,0 size:55x40
-            offset:516,0 size:5x40
-            offset:774,0 size:5x40
-            offset:1032,0 size:5x40
           offset:0,40 size:500x0
           offset:0,40 size:500x0
           offset:0,40 size:500x0
+          offset:0,40 size:242x40
+          offset:258,40 size:242x40
+            offset:0,0 size:5x40
+          offset:516,40 size:242x40
+            offset:0,0 size:5x40
+          offset:774,40 size:242x40
+            offset:0,0 size:5x40
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

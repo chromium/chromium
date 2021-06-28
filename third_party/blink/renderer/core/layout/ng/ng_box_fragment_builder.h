@@ -253,6 +253,18 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     sequence_number_ = sequence_number;
   }
 
+  // During regular layout a break token is created at the end of layout, if
+  // required. When re-using a previous fragment and its children, though, we
+  // may want to just re-use the break token as well.
+  void PresetNextBreakToken(scoped_refptr<const NGBreakToken> break_token) {
+    // We should either do block fragmentation as part of normal layout, or
+    // pre-set a break token.
+    DCHECK(!did_break_self_);
+    DCHECK(child_break_tokens_.IsEmpty());
+
+    break_token_ = std::move(break_token);
+  }
+
   // Return true if we broke inside this node on our own initiative (typically
   // not because of a child break, but rather due to the size of this node).
   bool DidBreakSelf() const { return did_break_self_; }
