@@ -1250,12 +1250,12 @@
   {
     "name": "eche-swa",
     "owners": [ "dhnishi" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "eche-swa-resizing",
     "owners": [ "dhnishi" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "edit-bookmarks-ios",
