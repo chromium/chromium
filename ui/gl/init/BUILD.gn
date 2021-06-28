@@ -26,6 +26,7 @@ component("init") {
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gl:buildflags",
   ]
@@ -76,7 +77,6 @@ component("init") {
       "gl_factory_ozone.cc",
       "gl_initializer_ozone.cc",
     ]
-    deps += [ "//ui/base:features" ]
   }
 
   if (use_x11) {

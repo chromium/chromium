@@ -333,9 +333,9 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
   if ((implementation == legacyImpl) ||
       (useSoftwareGLForTests &&
-       (legacyImpl == gl::GetSoftwareGLForTestsImplementation())) ||
+       (legacyImpl == gl::init::GetSoftwareGLForTestsImplementation())) ||
       (useSoftwareGLForHeadless &&
-       (legacyImpl == gl::GetSoftwareGLForHeadlessImplementation()))) {
+       (legacyImpl == gl::init::GetSoftwareGLForHeadlessImplementation()))) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -353,9 +353,11 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     return true;
   } else if ((implementation == swangleImpl) ||
              (useSoftwareGLForTests &&
-              (swangleImpl == gl::GetSoftwareGLForTestsImplementation())) ||
+              (swangleImpl ==
+               gl::init::GetSoftwareGLForTestsImplementation())) ||
              (useSoftwareGLForHeadless &&
-              (swangleImpl == gl::GetSoftwareGLForHeadlessImplementation()))) {
+              (swangleImpl ==
+               gl::init::GetSoftwareGLForHeadlessImplementation()))) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;

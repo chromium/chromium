@@ -181,19 +181,6 @@ GLImplementationParts GetSoftwareGLImplementation() {
   return GLImplementationParts(ANGLEImplementation::kSwiftShader);
 }
 
-GLImplementationParts GetSoftwareGLForTestsImplementation() {
-#if defined(OS_WIN) || \
-    (defined(OS_LINUX) && !defined(OS_FUCHSIA) && !defined(USE_OZONE))
-  return GetSoftwareGLImplementation();
-#else
-  return GetLegacySoftwareGLImplementation();
-#endif
-}
-
-GLImplementationParts GetSoftwareGLForHeadlessImplementation() {
-  return GetLegacySoftwareGLImplementation();
-}
-
 bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
   return (implementation == GetLegacySoftwareGLImplementation()) ||
          (implementation == GetSoftwareGLImplementation());

@@ -67,23 +67,7 @@ void InitializeOneOffHelper(bool init_extensions) {
 
   GLImplementationParts impl = GLImplementationParts(allowed_impls[0]);
   if (use_software_gl) {
-    impl = gl::GetLegacySoftwareGLImplementation();
-
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-#if defined(USE_OZONE)
-    if (!features::IsUsingOzonePlatform())
-#endif
-    {
-      // If ANGLE is available use it with SwiftShader Vulkan instead of using
-      // SwiftShader GL
-      for (auto i : allowed_impls) {
-        if (i == kGLImplementationEGLANGLE) {
-          impl = gl::GetSoftwareGLImplementation();
-          break;
-        }
-      }
-    }
-#endif
+    impl = gl::init::GetSoftwareGLForTestsImplementation();
   }
 
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))

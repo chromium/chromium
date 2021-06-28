@@ -13,11 +13,17 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_initializer.h"
+
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace gl {
 namespace init {
@@ -131,6 +137,23 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 }
 
 }  // namespace
+
+GLImplementationParts GetSoftwareGLForTestsImplementation() {
+#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_FUCHSIA))
+#if defined(USE_OZONE)
+  if (!features::IsUsingOzonePlatform() ||
+      ui::OzonePlatform::GetPlatformNameForTest() == "x11")
+#endif
+  {
+    return GetSoftwareGLImplementation();
+  }
+#endif
+  return GetLegacySoftwareGLImplementation();
+}
+
+GLImplementationParts GetSoftwareGLForHeadlessImplementation() {
+  return GetLegacySoftwareGLImplementation();
+}
 
 bool InitializeGLOneOff() {
   TRACE_EVENT0("gpu,startup", "gl::init::InitializeOneOff");
