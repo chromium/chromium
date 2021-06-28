@@ -1702,7 +1702,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   }
 
   for (auto& resolved_pass : resolved_frame.GetResolvedPasses()) {
-    auto* render_pass = resolved_pass.render_pass;
+    auto* render_pass = resolved_pass.render_pass.get();
     if (!render_pass->copy_requests.empty()) {
       copy_request_passes_.insert(resolved_pass.remapped_id);
     }

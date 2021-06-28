@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/linux_ui/window_button_order_observer.h"
@@ -31,7 +32,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
       const std::vector<views::FrameButton>& trailing_buttons) override;
 
  private:
-  BrowserFrameViewLayoutLinux* const layout_;
+  const CheckedPtr<BrowserFrameViewLayoutLinux> layout_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_

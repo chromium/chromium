@@ -27,6 +27,7 @@
 
 #include <memory>
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,7 +144,7 @@ class DeferredImageDecoderTest : public testing::Test,
 
   // Don't own this but saves the pointer to query states.
   PaintImage::Id paint_image_id_;
-  MockImageDecoder* actual_decoder_;
+  CheckedPtr<MockImageDecoder> actual_decoder_;
   std::unique_ptr<DeferredImageDecoder> lazy_decoder_;
   SkBitmap bitmap_;
   std::unique_ptr<cc::PaintCanvas> canvas_;

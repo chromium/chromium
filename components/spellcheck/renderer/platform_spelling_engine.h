@@ -6,6 +6,7 @@
 #define COMPONENTS_SPELLCHECK_RENDERER_PLATFORM_SPELLING_ENGINE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +29,7 @@ class PlatformSpellingEngine : public SpellingEngine {
   spellcheck::mojom::SpellCheckHost& GetOrBindSpellCheckHost();
 
   // Not owned. |embedder_provider_| outlives PlatformSpellingEngine.
-  service_manager::LocalInterfaceProvider* embedder_provider_;
+  CheckedPtr<service_manager::LocalInterfaceProvider> embedder_provider_;
 
   mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;
 };

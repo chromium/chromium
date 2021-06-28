@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 class Profile;
@@ -38,7 +39,7 @@ class NotificationPlatformBridgeMessageCenter
   void DisplayServiceShutDown(Profile* profile) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_

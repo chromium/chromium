@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
@@ -106,8 +107,9 @@ class SBNavigationObserverTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
-  SafeBrowsingNavigationObserver* navigation_observer_;
+  CheckedPtr<SafeBrowsingNavigationObserverManager>
+      navigation_observer_manager_;
+  CheckedPtr<SafeBrowsingNavigationObserver> navigation_observer_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SBNavigationObserverTest);

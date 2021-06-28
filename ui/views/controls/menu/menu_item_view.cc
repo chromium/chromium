@@ -539,7 +539,7 @@ void MenuItemView::SetIcon(const ui::ImageModel& icon) {
 
 void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   if (icon_view_) {
-    RemoveChildViewT(icon_view_);
+    RemoveChildViewT(icon_view_.get());
     icon_view_ = nullptr;
   }
 

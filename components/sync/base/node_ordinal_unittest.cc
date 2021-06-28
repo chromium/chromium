@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -108,7 +109,7 @@ class IndexedLessThan {
   }
 
  private:
-  const T* values_;
+  CheckedPtr<const T> values_;
   LessThan less_than_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "content/public/browser/download_item_utils.h"
 
+#include "base/memory/checked_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,7 +34,7 @@ class DownloadItemData : public base::SupportsUserData::Data,
    void WebContentsDestroyed() override;
 
   static const char kKey[];
-  BrowserContext* browser_context_;
+  CheckedPtr<BrowserContext> browser_context_;
 };
 
 // static

@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_PROXY_POLICY_PROVIDER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/policy_export.h"
 
@@ -61,7 +62,7 @@ class POLICY_EXPORT ProxyPolicyProvider
   }
 
  private:
-  ConfigurationPolicyProvider* delegate_;
+  CheckedPtr<ConfigurationPolicyProvider> delegate_;
   bool block_policy_updates_for_testing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyPolicyProvider);

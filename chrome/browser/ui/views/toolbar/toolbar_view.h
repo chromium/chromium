@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_observer.h"
@@ -264,28 +265,29 @@ class ToolbarView : public views::AccessiblePaneView,
   // Controls. Most of these can be null, e.g. in popup windows. Only
   // |location_bar_| is guaranteed to exist. These pointers are owned by the
   // view hierarchy.
-  ToolbarButton* left_side_panel_button_ = nullptr;
-  ToolbarButton* back_ = nullptr;
-  ToolbarButton* forward_ = nullptr;
-  ReloadButton* reload_ = nullptr;
-  HomeButton* home_ = nullptr;
-  CustomTabBarView* custom_tab_bar_ = nullptr;
-  LocationBarView* location_bar_ = nullptr;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
-  ChromeLabsButton* chrome_labs_button_ = nullptr;
-  media_router::CastToolbarButton* cast_ = nullptr;
-  ToolbarButton* read_later_button_ = nullptr;
-  ToolbarAccountIconContainerView* toolbar_account_icon_container_ = nullptr;
-  AvatarToolbarButton* avatar_ = nullptr;
-  MediaToolbarButtonView* media_button_ = nullptr;
-  send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button_ =
+  CheckedPtr<ToolbarButton> left_side_panel_button_ = nullptr;
+  CheckedPtr<ToolbarButton> back_ = nullptr;
+  CheckedPtr<ToolbarButton> forward_ = nullptr;
+  CheckedPtr<ReloadButton> reload_ = nullptr;
+  CheckedPtr<HomeButton> home_ = nullptr;
+  CheckedPtr<CustomTabBarView> custom_tab_bar_ = nullptr;
+  CheckedPtr<LocationBarView> location_bar_ = nullptr;
+  CheckedPtr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  CheckedPtr<ChromeLabsButton> chrome_labs_button_ = nullptr;
+  CheckedPtr<media_router::CastToolbarButton> cast_ = nullptr;
+  CheckedPtr<ToolbarButton> read_later_button_ = nullptr;
+  CheckedPtr<ToolbarAccountIconContainerView> toolbar_account_icon_container_ =
       nullptr;
-  BrowserAppMenuButton* app_menu_button_ = nullptr;
+  CheckedPtr<AvatarToolbarButton> avatar_ = nullptr;
+  CheckedPtr<MediaToolbarButtonView> media_button_ = nullptr;
+  CheckedPtr<send_tab_to_self::SendTabToSelfToolbarIconView>
+      send_tab_to_self_button_ = nullptr;
+  CheckedPtr<BrowserAppMenuButton> app_menu_button_ = nullptr;
 
-  Browser* const browser_;
-  BrowserView* const browser_view_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<BrowserView> browser_view_;
 
-  views::FlexLayout* layout_manager_ = nullptr;
+  CheckedPtr<views::FlexLayout> layout_manager_ = nullptr;
 
   AppMenuIconController app_menu_icon_controller_;
 

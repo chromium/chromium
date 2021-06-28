@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
@@ -128,7 +129,7 @@ class SystemWebAppDelegate {
   SystemAppType type_;
   std::string internal_name_;
   GURL install_url_;
-  const Profile* profile_;
+  CheckedPtr<const Profile> profile_;
   OriginTrialsMap origin_trials_map_;
 };
 

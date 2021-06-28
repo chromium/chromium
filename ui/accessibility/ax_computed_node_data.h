@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -60,7 +61,7 @@ class AX_EXPORT AXComputedNodeData final {
   std::u16string ComputeInnerTextUTF16() const;
 
   // The node that is associated with this instance. Weak, owns us.
-  const AXNode* const owner_;
+  const CheckedPtr<const AXNode> owner_;
 
   // Stores the on-screen text that is found inside the associated node and all
   // its descendants.

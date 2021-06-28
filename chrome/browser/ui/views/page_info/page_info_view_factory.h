@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/models/image_model.h"
@@ -105,9 +106,9 @@ class PageInfoViewFactory {
   std::unique_ptr<views::View> CreateSubpageHeader(std::u16string title)
       WARN_UNUSED_RESULT;
 
-  PageInfo* presenter_;
-  ChromePageInfoUiDelegate* ui_delegate_;
-  PageInfoNavigationHandler* navigation_handler_;
+  CheckedPtr<PageInfo> presenter_;
+  CheckedPtr<ChromePageInfoUiDelegate> ui_delegate_;
+  CheckedPtr<PageInfoNavigationHandler> navigation_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

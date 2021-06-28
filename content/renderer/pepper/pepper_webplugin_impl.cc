@@ -10,6 +10,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -61,7 +62,7 @@ blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
 
 struct PepperWebPluginImpl::InitData {
   scoped_refptr<PluginModule> module;
-  RenderFrameImpl* render_frame;
+  CheckedPtr<RenderFrameImpl> render_frame;
   std::vector<std::string> arg_names;
   std::vector<std::string> arg_values;
   GURL url;

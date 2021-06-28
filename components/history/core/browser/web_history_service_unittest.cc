@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -149,7 +150,7 @@ class TestRequest : public WebHistoryService::Request {
   }
 
  private:
-  TestingWebHistoryService* web_history_service_;
+  CheckedPtr<TestingWebHistoryService> web_history_service_;
   GURL url_;
   WebHistoryService::CompletionCallback callback_;
   int response_code_;

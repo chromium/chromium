@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -159,7 +160,7 @@ class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
-  PerFrameTranslateAgent* translate_agent_;
+  CheckedPtr<PerFrameTranslateAgent> translate_agent_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgentBrowserTest);

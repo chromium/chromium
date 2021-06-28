@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
@@ -96,9 +97,9 @@ class LocalCardMigrationDialogControllerImpl
   void NotifyMigrationNoLongerAvailable();
   void NotifyMigrationStarted();
 
-  LocalCardMigrationDialog* local_card_migration_dialog_ = nullptr;
+  CheckedPtr<LocalCardMigrationDialog> local_card_migration_dialog_ = nullptr;
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   LocalCardMigrationDialogState view_state_;
 

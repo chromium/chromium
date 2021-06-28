@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_COOPERATIVE_SCHEDULING_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_COOPERATIVE_SCHEDULING_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
   int allowed_stack_scope_depth_ = 0;
   bool running_nested_loop_ = false;
   base::TimeTicks wait_until_;
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
   bool feature_enabled_ = true;
 };
 

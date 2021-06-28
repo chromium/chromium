@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/renderer_factory.h"
@@ -70,11 +71,11 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
       const gfx::ColorSpace& target_color_space,
       GpuVideoAcceleratorFactories* gpu_factories);
 
-  MediaLog* media_log_;
+  CheckedPtr<MediaLog> media_log_;
 
   // Factory to create extra audio and video decoders.
   // Could be nullptr if not extra decoders are available.
-  DecoderFactory* decoder_factory_;
+  CheckedPtr<DecoderFactory> decoder_factory_;
 
   // Creates factories for supporting video accelerators. May be null.
   GetGpuFactoriesCB get_gpu_factories_cb_;

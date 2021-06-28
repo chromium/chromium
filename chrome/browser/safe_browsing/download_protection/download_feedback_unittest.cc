@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -74,7 +75,7 @@ class FakeUploaderFactory : public TwoPhaseUploaderFactory {
       TwoPhaseUploader::FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
-  FakeUploader* uploader_;
+  CheckedPtr<FakeUploader> uploader_;
 };
 
 std::unique_ptr<TwoPhaseUploader> FakeUploaderFactory::CreateTwoPhaseUploader(
@@ -89,7 +90,7 @@ std::unique_ptr<TwoPhaseUploader> FakeUploaderFactory::CreateTwoPhaseUploader(
 
   uploader_ = new FakeUploader(file_task_runner, base_url, metadata, file_path,
                                std::move(finish_callback));
-  return base::WrapUnique(uploader_);
+  return base::WrapUnique(uploader_.get());
 }
 
 }  // namespace

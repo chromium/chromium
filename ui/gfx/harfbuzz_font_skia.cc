@@ -14,6 +14,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -254,7 +255,7 @@ class TypefaceData {
   TypefaceData() = delete;
 
   GlyphCache glyphs_;
-  hb_face_t* face_ = nullptr;
+  CheckedPtr<hb_face_t> face_ = nullptr;
 
   // The skia typeface must outlive |face_| since it's being used by harfbuzz.
   sk_sp<SkTypeface> sk_typeface_;

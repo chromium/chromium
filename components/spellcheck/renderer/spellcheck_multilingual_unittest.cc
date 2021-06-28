@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -118,7 +119,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
 
   // Owned by |provider_|.
-  SpellCheck* spellcheck_;
+  CheckedPtr<SpellCheck> spellcheck_;
   std::unique_ptr<TestingSpellCheckProvider> provider_;
 };
 

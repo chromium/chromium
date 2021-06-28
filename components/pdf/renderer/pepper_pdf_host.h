@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -140,7 +141,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   blink::WebLocalFrame* GetWebLocalFrame();
 
   std::unique_ptr<PdfAccessibilityTree> pdf_accessibility_tree_;
-  content::RendererPpapiHost* const host_;
+  const CheckedPtr<content::RendererPpapiHost> host_;
   mojo::AssociatedRemote<mojom::PdfService> remote_pdf_service_;
   mojo::Receiver<mojom::PdfListener> receiver_{this};
 

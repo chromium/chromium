@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -196,7 +197,7 @@ class VIEWS_EXPORT InkDropHost {
 
    private:
     base::ScopedObservation<View, ViewObserver> observation_{this};
-    InkDropHost* const ink_drop_host_;
+    const CheckedPtr<InkDropHost> ink_drop_host_;
   };
 
   class InkDropHostEventHandlerDelegate : public InkDropEventHandler::Delegate {
@@ -211,7 +212,7 @@ class VIEWS_EXPORT InkDropHost {
 
    private:
     // The host.
-    InkDropHost* const ink_drop_host_;
+    const CheckedPtr<InkDropHost> ink_drop_host_;
   };
 
   const InkDropEventHandler* GetEventHandler() const;

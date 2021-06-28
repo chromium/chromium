@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "courgette/disassembler.h"
 #include "courgette/image_utils.h"
 #include "courgette/instruction_utils.h"
@@ -218,7 +219,7 @@ class DisassemblerElf32 : public Disassembler {
 
   CheckBool CheckSection(RVA rva) WARN_UNUSED_RESULT;
 
-  const Elf32_Ehdr* header_;
+  CheckedPtr<const Elf32_Ehdr> header_;
 
   Elf32_Half section_header_table_size_;
 
@@ -228,7 +229,7 @@ class DisassemblerElf32 : public Disassembler {
   // An ordering of |section_header_table_|, sorted by file offset.
   std::vector<Elf32_Half> section_header_file_offset_order_;
 
-  const Elf32_Phdr* program_header_table_;
+  CheckedPtr<const Elf32_Phdr> program_header_table_;
   Elf32_Half program_header_table_size_;
 
   // Pointer to string table containing section names.

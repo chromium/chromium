@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // An object to block creation of pop-unders.
@@ -22,7 +23,7 @@ class PopunderPreventer : public content::WebContentsObserver {
   // Overridden from WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  content::WebContents* popup_;
+  CheckedPtr<content::WebContents> popup_;
 
   DISALLOW_COPY_AND_ASSIGN(PopunderPreventer);
 };

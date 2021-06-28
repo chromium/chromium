@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_test_utils.h"
@@ -698,7 +699,7 @@ TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
   ConfigurableConversionTestBrowserClient allowed_browser_client;
 
   const struct {
-    TestContentBrowserClient* browser_client;
+    CheckedPtr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
       {&allowed_browser_client, true},
@@ -727,7 +728,7 @@ TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
   ConfigurableConversionTestBrowserClient allowed_browser_client;
 
   const struct {
-    TestContentBrowserClient* browser_client;
+    CheckedPtr<TestContentBrowserClient> browser_client;
     bool want_allowed;
   } kTestCases[] = {
       {&allowed_browser_client, true},

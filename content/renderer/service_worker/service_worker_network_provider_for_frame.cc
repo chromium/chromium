@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_features.h"
@@ -59,7 +60,7 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
   }
 
  private:
-  ServiceWorkerNetworkProviderForFrame* owner_;
+  CheckedPtr<ServiceWorkerNetworkProviderForFrame> owner_;
 };
 
 // static

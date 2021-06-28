@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -157,7 +158,7 @@ class CastMediaNotificationItemTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   testing::NiceMock<MockMediaNotificationController> notification_controller_;
-  MockSessionController* session_controller_ = nullptr;
+  CheckedPtr<MockSessionController> session_controller_ = nullptr;
   // This needs to be a NiceMock, because the uninteresting mock function calls
   // slow down the tests enough to make
   // CastMediaNotificationItemTest.MediaPositionUpdate flaky.

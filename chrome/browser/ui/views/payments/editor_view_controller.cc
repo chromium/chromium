@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -72,7 +73,7 @@ class ErrorLabelView : public views::View {
   }
 
  private:
-  views::Label* const error_label_;
+  const CheckedPtr<views::Label> error_label_;
 };
 
 BEGIN_METADATA(ErrorLabelView, views::View)

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "net/quic/quic_transport_client.h"
 
 #include <memory>
@@ -159,7 +160,7 @@ class QuicTransportEndToEndTest : public TestWithTaskEnvironment {
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<QuicTransportClient> client_;
-  TestConnectionHelper* helper_;  // Owned by |context_|.
+  CheckedPtr<TestConnectionHelper> helper_;  // Owned by |context_|.
   ::testing::NiceMock<MockVisitor> visitor_;
   std::unique_ptr<QuicTransportSimpleServer> server_;
   std::unique_ptr<base::RunLoop> run_loop_;

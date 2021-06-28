@@ -53,7 +53,7 @@ String HitTestData::ToString() const {
   if (scroll_translation) {
     if (printed_top_level_field)
       sb.Append(", ");
-    sb.AppendFormat("scroll_translation: %p", scroll_translation);
+    sb.AppendFormat("scroll_translation: %p", scroll_translation.get());
   }
 
   sb.Append("}");

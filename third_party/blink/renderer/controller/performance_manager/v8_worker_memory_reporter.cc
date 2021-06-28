@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -75,7 +76,7 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
       std::unique_ptr<V8WorkerMemoryReporter::WorkerMemoryUsage> memory_usage);
   void NotifyMeasurementFailure();
   base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter_;
-  WorkerThread* worker_thread_;
+  CheckedPtr<WorkerThread> worker_thread_;
   bool did_notify_ = false;
 };
 

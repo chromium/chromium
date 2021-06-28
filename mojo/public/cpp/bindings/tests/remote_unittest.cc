@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -508,7 +509,7 @@ class StrongMathCalculatorImpl : public math::Calculator {
 
  private:
   double total_ = 0.0;
-  bool* destroyed_;
+  CheckedPtr<bool> destroyed_;
 };
 
 TEST(StrongConnectorTest, Math) {
@@ -581,7 +582,7 @@ class WeakMathCalculatorImpl : public math::Calculator {
 
  private:
   double total_ = 0.0;
-  bool* destroyed_;
+  CheckedPtr<bool> destroyed_;
   base::OnceClosure closure_;
 
   Receiver<math::Calculator> receiver_;
@@ -635,7 +636,7 @@ class CImpl : public C {
   }
 
   Receiver<C> receiver_{this};
-  bool* d_called_;
+  CheckedPtr<bool> d_called_;
   base::OnceClosure closure_;
 };
 

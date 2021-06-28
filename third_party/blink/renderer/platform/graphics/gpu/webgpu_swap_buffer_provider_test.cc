@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,7 +85,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
   ~WebGPUSwapBufferProviderForTests() override { *alive_ = false; }
 
  private:
-  bool* alive_;
+  CheckedPtr<bool> alive_;
 };
 
 }  // anonymous namespace
@@ -113,8 +114,8 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  MockWebGPUInterface* webgpu_;
-  viz::TestSharedImageInterface* sii_;
+  CheckedPtr<MockWebGPUInterface> webgpu_;
+  CheckedPtr<viz::TestSharedImageInterface> sii_;
   FakeProviderClient client_;
   scoped_refptr<WebGPUSwapBufferProviderForTests> provider_;
   bool provider_alive_ = true;

@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/IndexedDB.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -91,7 +92,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
 
  private:
   Member<InspectedFrames> inspected_frames_;
-  v8_inspector::V8InspectorSession* v8_session_;
+  CheckedPtr<v8_inspector::V8InspectorSession> v8_session_;
   InspectorAgentState::Boolean enabled_;
 };
 

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,7 +72,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
                              bool allow_retry) override {}
 
  private:
-  CardUnmaskPromptController* controller_;
+  CheckedPtr<CardUnmaskPromptController> controller_;
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {

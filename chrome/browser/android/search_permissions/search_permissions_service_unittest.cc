@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -166,7 +167,7 @@ class SearchPermissionsServiceTest : public testing::Test {
 
   // This is owned by the SearchPermissionsService which is owned by the
   // profile.
-  TestSearchEngineDelegate* test_delegate_;
+  CheckedPtr<TestSearchEngineDelegate> test_delegate_;
 };
 
 TEST_F(SearchPermissionsServiceTest, Initialization) {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TASK_QUEUE_THROTTLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TASK_QUEUE_THROTTLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
@@ -168,8 +169,8 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
    private:
-    base::sequence_manager::TaskQueue* const queue_;
-    TaskQueueThrottler* const throttler_;
+    const CheckedPtr<base::sequence_manager::TaskQueue> queue_;
+    const CheckedPtr<TaskQueueThrottler> throttler_;
     size_t throttling_ref_count_ = 0;
     HashSet<BudgetPool*> budget_pools_;
 

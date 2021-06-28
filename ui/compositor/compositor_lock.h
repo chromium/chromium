@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/compositor/compositor_export.h"
@@ -106,7 +107,7 @@ class COMPOSITOR_EXPORT CompositorLock {
   // Causes the CompositorLock to end due to a timeout.
   void TimeoutLock();
 
-  CompositorLockClient* const client_;
+  const CheckedPtr<CompositorLockClient> client_;
   std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
       scoped_defer_main_frame_update_;
   base::WeakPtr<CompositorLockManager> manager_;
