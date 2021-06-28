@@ -30,6 +30,7 @@ luci.gitiles_poller(
     name = "webrtc-gitiles-trigger",
     bucket = "webrtc",
     repo = "https://webrtc.googlesource.com/src/",
+    refs = ["refs/heads/main"],
 )
 
 defaults.bucket.set("webrtc.fyi")
