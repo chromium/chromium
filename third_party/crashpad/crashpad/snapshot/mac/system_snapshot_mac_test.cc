@@ -19,6 +19,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "snapshot/mac/process_reader_mac.h"
 #include "test/errors.h"
@@ -96,7 +97,7 @@ TEST_F(SystemSnapshotMacTest, MAYBE_CPUVendor) {
     FAIL() << "cpu_vendor " << cpu_vendor;
   }
 #elif defined(ARCH_CPU_ARM64)
-  EXPECT_EQ(cpu_vendor, "Apple processor");
+  EXPECT_THAT(cpu_vendor, testing::StartsWith("Apple "));
 #else
 #error port to your architecture
 #endif

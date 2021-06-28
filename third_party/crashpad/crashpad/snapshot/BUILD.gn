@@ -433,6 +433,7 @@ source_set("snapshot_test") {
     "../compat",
     "../minidump:format",
     "../test",
+    "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
     "../third_party/mini_chromium:base",
     "../util",

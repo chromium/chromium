@@ -155,7 +155,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   test("crashpad_snapshot_test") {
     deps = [
       "snapshot:snapshot_test",
-      "test:googletest_main",
+      "test:googlemock_main",
     ]
   }
 

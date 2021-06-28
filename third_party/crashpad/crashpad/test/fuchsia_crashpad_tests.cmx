@@ -8,7 +8,7 @@
         }
     },
     "include": [
-        "sdk/lib/diagnostics/syslog/client.shard.cmx"
+        "//sdk/lib/diagnostics/syslog/client.shard.cmx"
     ],
     "program": {
         "binary": "bin/crashpad_tests"
