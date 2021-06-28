@@ -15,6 +15,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 using ui::OSExchangeData;
@@ -171,6 +172,16 @@ class VIEWS_EXPORT MenuDelegate {
   //
   // |menu| is the menu the drop occurred on.
   virtual ui::mojom::DragOperation OnPerformDrop(
+      MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event);
+
+  // Invoked to get a callback to perform the drop operation later. This is ONLY
+  // invoked if CanDrop() returned true for the parent menu item, and
+  // GetDropOperation() returned an operation other than DragOperation::kNone.
+  //
+  // |menu| is the menu the drop occurred on.
+  virtual views::View::DropCallback GetDropCallback(
       MenuItemView* menu,
       DropPosition position,
       const ui::DropTargetEvent& event);
