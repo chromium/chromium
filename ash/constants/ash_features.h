@@ -61,6 +61,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcPreImeKeyEventSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kArcResizeLock;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistAutoCorrect;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistEmojiEnhanced;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistMultiWord;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistPersonalInfo;
 COMPONENT_EXPORT(ASH_CONSTANTS)

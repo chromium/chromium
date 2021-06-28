@@ -2680,6 +2680,9 @@ extern const char kHideArcMediaNotificationsDescription[];
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 
+extern const char kImeAssistEmojiEnhancedName[];
+extern const char kImeAssistEmojiEnhancedDescription[];
+
 extern const char kImeAssistMultiWordName[];
 extern const char kImeAssistMultiWordDescription[];
 

@@ -4660,6 +4660,10 @@ const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";
 
+const char kImeAssistEmojiEnhancedName[] = "Enable enhanced assistive emojis";
+const char kImeAssistEmojiEnhancedDescription[] =
+    "Enable enhanced assistive emoji suggestion features for native IME";
+
 const char kImeAssistMultiWordName[] =
     "Enable assistive multi word suggestions";
 const char kImeAssistMultiWordDescription[] =
