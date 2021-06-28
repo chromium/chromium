@@ -59,8 +59,8 @@ TEST_F(NoteServiceTest, PublishNoteSuccess_Empty) {
 
   NoteData data("", "", GURL(), "");
   note_service_->PublishNote(
-      data, base::BindLambdaForTesting(
-                [](SaveNoteResponse response) { /* No-op */ }));
+      data,
+      base::BindLambdaForTesting([](std::string response) { /* No-op */ }));
 }
 
 }  // namespace content_creation

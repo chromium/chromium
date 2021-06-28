@@ -15,7 +15,7 @@
 
 namespace content_creation {
 
-using PublishNoteCallback = base::OnceCallback<void(SaveNoteResponse)>;
+using PublishNoteCallback = base::OnceCallback<void(std::string)>;
 
 class NotesRepository;
 
@@ -34,6 +34,9 @@ class NoteService : public KeyedService, public base::SupportsUserData {
   // Gets the set of templates to be used for generating stylized notes. Will
   // invoke |callback| with the results.
   void GetTemplates(GetTemplatesCallback callback);
+
+  // Whether the Publish functionality is available.
+  bool IsPublishAvailable();
 
   // Saves and publishes the |note| to the server. Will invoke |callback| with
   // results and URL to access the published note.

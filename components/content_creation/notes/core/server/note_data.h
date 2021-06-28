@@ -17,6 +17,7 @@ struct NoteData {
            std::string quote,
            GURL webpage_url,
            std::string highlight_directive);
+  NoteData(std::string quote, std::string full_url);
   NoteData(NoteData const& note_data);
   ~NoteData();
 

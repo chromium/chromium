@@ -22,9 +22,12 @@ void NoteService::GetTemplates(GetTemplatesCallback callback) {
   template_store_->GetTemplates(std::move(callback));
 }
 
-void NoteService::PublishNote(
-    const NoteData& note_data,
-    base::OnceCallback<void(SaveNoteResponse)> callback) {
+bool NoteService::IsPublishAvailable() {
+  return notes_repository_->IsPublishAvailable();
+}
+
+void NoteService::PublishNote(const NoteData& note_data,
+                              PublishNoteCallback callback) {
   notes_repository_->PublishNote(note_data, std::move(callback));
 }
 

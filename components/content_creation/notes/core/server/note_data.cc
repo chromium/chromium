@@ -17,6 +17,9 @@ NoteData::NoteData(std::string comment,
       webpage_url(std::move(webpage_url)),
       highlight_directive(std::move(highlight_directive)) {}
 
+NoteData::NoteData(std::string quote, std::string full_url)
+    : quote(std::move(quote)), webpage_url(GURL(full_url)) {}
+
 NoteData::NoteData(NoteData const& note_data) = default;
 
 NoteData::~NoteData() {}

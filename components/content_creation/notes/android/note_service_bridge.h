@@ -32,6 +32,15 @@ class NoteServiceBridge : public base::SupportsUserData::Data {
                     const JavaParamRef<jobject>& jcaller,
                     const JavaParamRef<jobject>& jcallback);
 
+  jboolean IsPublishAvailable(JNIEnv* env,
+                              const JavaParamRef<jobject>& jcaller);
+
+  void PublishNote(JNIEnv* env,
+                   const JavaParamRef<jobject>& jcaller,
+                   jstring selectedText,
+                   jstring shareUrl,
+                   const JavaParamRef<jobject>& jcallback);
+
  private:
   ScopedJavaGlobalRef<jobject> java_obj_;
 

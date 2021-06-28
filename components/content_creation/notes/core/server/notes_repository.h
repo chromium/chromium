@@ -22,7 +22,7 @@ class IdentityManager;
 
 namespace content_creation {
 
-using PublishNoteCallback = base::OnceCallback<void(SaveNoteResponse)>;
+using PublishNoteCallback = base::OnceCallback<void(std::string)>;
 
 class NotesServerSaver;
 
