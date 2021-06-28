@@ -154,6 +154,10 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 }
 
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
+  if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0) {
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kAssistEmojiEnhanced);
+  }
   if (strcmp(feature_name, "AssistiveMultiWord") == 0) {
     return chromeos::features::IsAssistiveMultiWordEnabled();
   }
