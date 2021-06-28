@@ -951,8 +951,14 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
     static constexpr const char* kRequiredFunctionalityExtensions[] = {
       "GL_ANGLE_framebuffer_blit",
+#if defined(OS_FUCHSIA)
+      "GL_ANGLE_memory_object_fuchsia",
+#endif
       "GL_ANGLE_memory_size",
       "GL_ANGLE_native_id",
+#if defined(OS_FUCHSIA)
+      "GL_ANGLE_semaphore_fuchsia",
+#endif
       "GL_ANGLE_texture_storage_external",
       "GL_ANGLE_texture_usage",
       "GL_CHROMIUM_bind_uniform_location",
