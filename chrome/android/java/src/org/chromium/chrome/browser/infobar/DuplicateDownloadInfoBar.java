@@ -100,7 +100,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
                     protected void onPostExecute(String filePath) {
                         if (filePath != null) {
                             DownloadUtils.openFile(filePath, mimeType, null, mOTRProfileID, null,
-                                    null, DownloadOpenSource.INFO_BAR);
+                                    null, DownloadOpenSource.INFO_BAR, context);
                         } else {
                             DownloadManagerService.openDownloadsPage(
                                     ContextUtils.getApplicationContext(), mOTRProfileID,

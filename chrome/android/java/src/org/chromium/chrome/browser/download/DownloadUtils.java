@@ -346,8 +346,8 @@ public class DownloadUtils {
      * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param source The location from which the download was opened.
      */
-    public static void openItem(
-            ContentId contentId, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+    public static void openItem(ContentId contentId, OTRProfileID otrProfileID,
+            @DownloadOpenSource int source, Context context) {
         if (LegacyHelpers.isLegacyAndroidDownload(contentId)) {
             ContextUtils.getApplicationContext().startActivity(
                     new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
@@ -358,7 +358,7 @@ public class DownloadUtils {
             OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
         } else {
             DownloadManagerService.getDownloadManagerService().openDownload(
-                    contentId, otrProfileID, source);
+                    contentId, otrProfileID, source, context);
         }
     }
 
@@ -375,9 +375,8 @@ public class DownloadUtils {
      */
     public static boolean openFile(String filePath, String mimeType, String downloadGuid,
             OTRProfileID otrProfileID, String originalUrl, String referrer,
-            @DownloadOpenSource int source) {
+            @DownloadOpenSource int source, Context context) {
         DownloadMetrics.recordDownloadOpen(source, mimeType);
-        Context context = ContextUtils.getApplicationContext();
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
 
         // Check if Chrome should open the file itself.
@@ -394,7 +393,7 @@ public class DownloadUtils {
 
             Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri /*displayUri*/,
                     contentUri /*contentUri*/, normalizedMimeType,
-                    true /* allowExternalAppHandlers */);
+                    true /* allowExternalAppHandlers */, context);
             IntentHandler.startActivityForTrustedIntent(intent);
             service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
@@ -443,8 +442,8 @@ public class DownloadUtils {
     private static void openDownload(String filePath, String mimeType, String downloadGuid,
             OTRProfileID otrProfileID, String originalUrl, String referer,
             @DownloadOpenSource int source) {
-        boolean canOpen = DownloadUtils.openFile(
-                filePath, mimeType, downloadGuid, otrProfileID, originalUrl, referer, source);
+        boolean canOpen = DownloadUtils.openFile(filePath, mimeType, downloadGuid, otrProfileID,
+                originalUrl, referer, source, ContextUtils.getApplicationContext());
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
         }
