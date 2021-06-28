@@ -194,6 +194,7 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
 template <typename UnboundScript>
 static void ProduceCacheInternal(
     v8::Isolate* isolate,
+    blink::mojom::CodeCacheHost* code_cache_host,
     UnboundScript unbound_script,
     SingleCachedMetadataHandler* cache_handler,
     size_t source_text_length,
@@ -209,7 +210,7 @@ static void ProduceCacheInternal(
 
   switch (produce_cache_options) {
     case V8CodeCache::ProduceCacheOptions::kSetTimeStamp:
-      V8CodeCache::SetCacheTimeStamp(cache_handler);
+      V8CodeCache::SetCacheTimeStamp(code_cache_host, cache_handler);
       break;
     case V8CodeCache::ProduceCacheOptions::kProduceCodeCache: {
       // TODO(crbug.com/938269): Investigate why this can be empty here.
@@ -235,9 +236,10 @@ static void ProduceCacheInternal(
           code_cache_size_histogram.Count(cache_size_ratio);
         }
         cache_handler->ClearCachedMetadata(
-            CachedMetadataHandler::kClearLocally);
+            code_cache_host, CachedMetadataHandler::kClearLocally);
         cache_handler->SetCachedMetadata(
-            V8CodeCache::TagForCodeCache(cache_handler), data, length);
+            code_cache_host, V8CodeCache::TagForCodeCache(cache_handler), data,
+            length);
       }
 
       TRACE_EVENT_END1(
@@ -261,10 +263,11 @@ static void ProduceCacheInternal(
 }
 
 void V8CodeCache::ProduceCache(v8::Isolate* isolate,
+                               blink::mojom::CodeCacheHost* code_cache_host,
                                v8::Local<v8::Script> script,
                                const ScriptSourceCode& source,
                                ProduceCacheOptions produce_cache_options) {
-  ProduceCacheInternal(isolate, script->GetUnboundScript(),
+  ProduceCacheInternal(isolate, code_cache_host, script->GetUnboundScript(),
                        source.CacheHandler(), source.Source().length(),
                        source.Url(), source.StartPosition(), source.Streamer(),
                        "v8.compile", produce_cache_options,
@@ -272,16 +275,17 @@ void V8CodeCache::ProduceCache(v8::Isolate* isolate,
 }
 
 void V8CodeCache::ProduceCache(v8::Isolate* isolate,
+                               blink::mojom::CodeCacheHost* code_cache_host,
                                ModuleRecordProduceCacheData* produce_cache_data,
                                size_t source_text_length,
                                const KURL& source_url,
                                const TextPosition& source_start_position) {
-  ProduceCacheInternal(isolate, produce_cache_data->UnboundScript(isolate),
-                       produce_cache_data->CacheHandler(), source_text_length,
-                       source_url, source_start_position, false,
-                       "v8.compileModule",
-                       produce_cache_data->GetProduceCacheOptions(),
-                       ScriptStreamer::NotStreamingReason::kModuleScript);
+  ProduceCacheInternal(
+      isolate, code_cache_host, produce_cache_data->UnboundScript(isolate),
+      produce_cache_data->CacheHandler(), source_text_length, source_url,
+      source_start_position, false, "v8.compileModule",
+      produce_cache_data->GetProduceCacheOptions(),
+      ScriptStreamer::NotStreamingReason::kModuleScript);
 }
 
 uint32_t V8CodeCache::TagForCodeCache(
@@ -296,12 +300,14 @@ uint32_t V8CodeCache::TagForTimeStamp(
 
 // Store a timestamp to the cache as hint.
 void V8CodeCache::SetCacheTimeStamp(
+    blink::mojom::CodeCacheHost* code_cache_host,
     SingleCachedMetadataHandler* cache_handler) {
   uint64_t now_ms = base::TimeTicks::Now().since_origin().InMilliseconds();
-  cache_handler->ClearCachedMetadata(CachedMetadataHandler::kClearLocally);
-  cache_handler->SetCachedMetadata(TagForTimeStamp(cache_handler),
-                                   reinterpret_cast<uint8_t*>(&now_ms),
-                                   sizeof(now_ms));
+  cache_handler->ClearCachedMetadata(code_cache_host,
+                                     CachedMetadataHandler::kClearLocally);
+  cache_handler->SetCachedMetadata(
+      code_cache_host, TagForTimeStamp(cache_handler),
+      reinterpret_cast<uint8_t*>(&now_ms), sizeof(now_ms));
 }
 
 // static

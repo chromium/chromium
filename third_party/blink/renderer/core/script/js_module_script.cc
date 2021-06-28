@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
@@ -177,8 +178,11 @@ void JSModuleScript::ProduceCache() {
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  V8CodeCache::ProduceCache(isolate, produce_cache_data_, source_text_length_,
-                            SourceURL(), StartPosition());
+  ExecutionContext* execution_context =
+      ExecutionContext::From(isolate->GetCurrentContext());
+  V8CodeCache::ProduceCache(
+      isolate, ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      produce_cache_data_, source_text_length_, SourceURL(), StartPosition());
 
   produce_cache_data_ = nullptr;
 }

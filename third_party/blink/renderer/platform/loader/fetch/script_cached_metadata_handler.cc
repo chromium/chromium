@@ -28,9 +28,11 @@ void ScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
   CachedMetadataHandler::Trace(visitor);
 }
 
-void ScriptCachedMetadataHandler::SetCachedMetadata(uint32_t data_type_id,
-                                                    const uint8_t* data,
-                                                    size_t size) {
+void ScriptCachedMetadataHandler::SetCachedMetadata(
+    blink::mojom::CodeCacheHost* code_cache_host,
+    uint32_t data_type_id,
+    const uint8_t* data,
+    size_t size) {
   DCHECK(!cached_metadata_);
   // Having been discarded once, the further attempts to overwrite the
   // CachedMetadata are ignored. This behavior is necessary to avoid clearing
@@ -41,10 +43,11 @@ void ScriptCachedMetadataHandler::SetCachedMetadata(uint32_t data_type_id,
     return;
   cached_metadata_ = CachedMetadata::Create(data_type_id, data, size);
   if (!disable_send_to_platform_for_testing_)
-    CommitToPersistentStorage();
+    CommitToPersistentStorage(code_cache_host);
 }
 
 void ScriptCachedMetadataHandler::ClearCachedMetadata(
+    blink::mojom::CodeCacheHost* code_cache_host,
     ClearCacheType cache_type) {
   cached_metadata_ = nullptr;
   switch (cache_type) {
@@ -54,7 +57,7 @@ void ScriptCachedMetadataHandler::ClearCachedMetadata(
       cached_metadata_discarded_ = true;
       break;
     case kClearPersistentStorage:
-      CommitToPersistentStorage();
+      CommitToPersistentStorage(code_cache_host);
       break;
   }
 }
@@ -107,13 +110,15 @@ size_t ScriptCachedMetadataHandler::GetCodeCacheSize() const {
   return (cached_metadata_) ? cached_metadata_->SerializedData().size() : 0;
 }
 
-void ScriptCachedMetadataHandler::CommitToPersistentStorage() {
+void ScriptCachedMetadataHandler::CommitToPersistentStorage(
+    blink::mojom::CodeCacheHost* code_cache_host) {
   if (cached_metadata_) {
     base::span<const uint8_t> serialized_data =
         cached_metadata_->SerializedData();
-    sender_->Send(serialized_data.data(), serialized_data.size());
+    sender_->Send(code_cache_host, serialized_data.data(),
+                  serialized_data.size());
   } else {
-    sender_->Send(nullptr, 0);
+    sender_->Send(code_cache_host, nullptr, 0);
   }
 }
 

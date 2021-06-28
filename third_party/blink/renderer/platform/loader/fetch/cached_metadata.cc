@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 namespace blink {
 

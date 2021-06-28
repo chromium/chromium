@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -34,8 +34,12 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler final
                               std::unique_ptr<CachedMetadataSender>);
   ~ScriptCachedMetadataHandler() override = default;
   void Trace(Visitor*) const override;
-  void SetCachedMetadata(uint32_t, const uint8_t*, size_t) override;
-  void ClearCachedMetadata(ClearCacheType) override;
+  void SetCachedMetadata(blink::mojom::CodeCacheHost*,
+                         uint32_t,
+                         const uint8_t*,
+                         size_t) override;
+  void ClearCachedMetadata(blink::mojom::CodeCacheHost*,
+                           ClearCacheType) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(uint32_t) const override;
 
   // This returns the encoding at the time of ResponseReceived(). Therefore this
@@ -58,7 +62,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler final
  private:
   friend class ModuleScriptTest;
 
-  void CommitToPersistentStorage();
+  void CommitToPersistentStorage(blink::mojom::CodeCacheHost*);
 
   scoped_refptr<CachedMetadata> cached_metadata_;
   bool cached_metadata_discarded_ = false;

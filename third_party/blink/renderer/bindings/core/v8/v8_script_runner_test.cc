@@ -13,11 +13,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -54,8 +55,9 @@ class V8ScriptRunnerTest : public testing::Test {
   unsigned TagForTimeStamp(SingleCachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForTimeStamp(cache_handler);
   }
-  void SetCacheTimeStamp(SingleCachedMetadataHandler* cache_handler) {
-    V8CodeCache::SetCacheTimeStamp(cache_handler);
+  void SetCacheTimeStamp(mojom::CodeCacheHost* code_cache_host,
+                         SingleCachedMetadataHandler* cache_handler) {
+    V8CodeCache::SetCacheTimeStamp(code_cache_host, cache_handler);
   }
 
   bool CompileScript(v8::Isolate* isolate,
@@ -73,8 +75,11 @@ class V8ScriptRunnerTest : public testing::Test {
     if (compiled_script.IsEmpty()) {
       return false;
     }
-    V8CodeCache::ProduceCache(isolate, compiled_script.ToLocalChecked(),
-                              source_code, produce_cache_options);
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    V8CodeCache::ProduceCache(
+        isolate,
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        compiled_script.ToLocalChecked(), source_code, produce_cache_options);
     return true;
   }
 
@@ -90,8 +95,11 @@ class V8ScriptRunnerTest : public testing::Test {
     if (compiled_script.IsEmpty()) {
       return false;
     }
-    V8CodeCache::ProduceCache(isolate, compiled_script.ToLocalChecked(),
-                              source_code, produce_cache_options);
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    V8CodeCache::ProduceCache(
+        isolate,
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        compiled_script.ToLocalChecked(), source_code, produce_cache_options);
     return true;
   }
 
@@ -174,7 +182,11 @@ TEST_F(V8ScriptRunnerTest, codeOption) {
       nullptr, CreateResource(UTF8Encoding()),
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
-  SetCacheTimeStamp(cache_handler);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(scope.GetScriptState());
+  SetCacheTimeStamp(
+      ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      cache_handler);
 
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
                             source_code, mojom::blink::V8CacheOptions::kCode));
@@ -196,7 +208,11 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithoutDiscarding) {
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   // Set timestamp to simulate a warm run.
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
-  SetCacheTimeStamp(cache_handler);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(scope.GetScriptState());
+  SetCacheTimeStamp(
+      ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      cache_handler);
 
   // Warm run - should produce code cache.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
@@ -231,7 +247,11 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithDiscarding) {
       ScriptStreamer::NotStreamingReason::kScriptTooSmall);
   // Set timestamp to simulate a warm run.
   SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
-  SetCacheTimeStamp(cache_handler);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(scope.GetScriptState());
+  SetCacheTimeStamp(
+      ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      cache_handler);
 
   // Warm run - should produce code cache.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),

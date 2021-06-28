@@ -1311,13 +1311,6 @@ GetBroadcastChannelProviderReceiverHandler() {
   return *instance;
 }
 
-RenderProcessHostImpl::CodeCacheHostReceiverHandler&
-GetCodeCacheHostReceiverHandler() {
-  static base::NoDestructor<RenderProcessHostImpl::CodeCacheHostReceiverHandler>
-      instance;
-  return *instance;
-}
-
 // Keep track of plugin process IDs that require exceptions for particular
 // initiator origins.
 struct PluginExceptionsForNetworkService {
@@ -1837,11 +1830,6 @@ void RenderProcessHostImpl::
     SetBroadcastChannelProviderReceiverHandlerForTesting(
         BroadcastChannelProviderReceiverHandler handler) {
   GetBroadcastChannelProviderReceiverHandler() = handler;
-}
-
-void RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
-    CodeCacheHostReceiverHandler handler) {
-  GetCodeCacheHostReceiverHandler() = handler;
 }
 
 void RenderProcessHostImpl::SetForGuestsOnlyForTesting() {
@@ -2692,16 +2680,8 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   auto code_cache_host = std::make_unique<CodeCacheHostImpl>(
       GetID(), this, storage_partition_impl_->GetGeneratedCodeCacheContext());
-  CodeCacheHostImpl* impl = code_cache_host.get();
-  auto receiver_id = code_cache_host_receivers_.Add(std::move(code_cache_host),
-                                                    std::move(receiver));
-
-  // If there is a callback registered, then invoke it with the newly
-  // created CodeCacheHostImpl.
-  if (!GetCodeCacheHostReceiverHandler().is_null()) {
-    GetCodeCacheHostReceiverHandler().Run(this, impl, receiver_id,
-                                          code_cache_host_receivers_);
-  }
+  code_cache_host_receivers_.Add(std::move(code_cache_host),
+                                 std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindMediaInterfaceProxy(
