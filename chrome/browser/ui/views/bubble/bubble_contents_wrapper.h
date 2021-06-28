@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
@@ -34,6 +35,9 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
    public:
     virtual void CloseUI() = 0;
     virtual void ShowUI() = 0;
+    virtual void ShowCustomContextMenu(
+        gfx::Point point,
+        std::unique_ptr<ui::MenuModel> menu_model) {}
     virtual void ResizeDueToAutoResize(content::WebContents* source,
                                        const gfx::Size& new_size) {}
     virtual bool HandleKeyboardEvent(
@@ -67,6 +71,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   // MojoBubbleWebUIController::Embedder:
   void CloseUI() override;
   void ShowUI() override;
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override;
 
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;

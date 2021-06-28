@@ -7,6 +7,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
@@ -117,6 +118,13 @@ void BubbleContentsWrapper::ShowUI() {
 void BubbleContentsWrapper::CloseUI() {
   if (host_)
     host_->CloseUI();
+}
+
+void BubbleContentsWrapper::ShowContextMenu(
+    gfx::Point point,
+    std::unique_ptr<ui::MenuModel> menu_model) {
+  if (host_)
+    host_->ShowCustomContextMenu(point, std::move(menu_model));
 }
 
 base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {

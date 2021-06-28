@@ -34,6 +34,13 @@ export class ReadLaterApiProxy {
   /** @param {!url.mojom.Url} url */
   removeEntry(url) {}
 
+  /**
+   * @param {!url.mojom.Url} url
+   * @param {number} locationX
+   * @param {number} locationY
+   */
+  showContextMenuForURL(url, locationX, locationY) {}
+
   showUI() {}
 
   closeUI() {}
@@ -80,6 +87,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   removeEntry(url) {
     this.handler.removeEntry(url);
+  }
+
+  /** @override */
+  showContextMenuForURL(url, locationX, locationY) {
+    this.handler.showContextMenuForURL(url, locationX, locationY);
   }
 
   /** @override */

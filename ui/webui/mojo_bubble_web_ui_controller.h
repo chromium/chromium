@@ -8,11 +8,17 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace gfx {
+class Point;
+}
+
 namespace content {
 class WebUI;
 }  // namespace content
 
 namespace ui {
+
+class MenuModel;
 
 class MojoBubbleWebUIController : public MojoWebUIController {
  public:
@@ -20,6 +26,8 @@ class MojoBubbleWebUIController : public MojoWebUIController {
    public:
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
+    virtual void ShowContextMenu(gfx::Point point,
+                                 std::unique_ptr<ui::MenuModel> menu_model) = 0;
   };
 
   // By default MojoBubbleWebUIController do not have normal WebUI bindings.

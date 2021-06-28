@@ -27,6 +27,11 @@ class MockHost : public BubbleContentsWrapper::Host {
   // BubbleContentsWrapper::Host:
   void ShowUI() override { ++show_ui_called_; }
   void CloseUI() override { ++close_ui_called_; }
+  void ShowCustomContextMenu(
+      gfx::Point point,
+      std::unique_ptr<ui::MenuModel> menu_model) override {
+    ++show_custom_context_menu_called_;
+  }
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
     ++resize_due_to_auto_resize_called_;
@@ -38,6 +43,9 @@ class MockHost : public BubbleContentsWrapper::Host {
 
   int show_ui_called() const { return show_ui_called_; }
   int close_ui_called() const { return close_ui_called_; }
+  int show_custom_context_menu_called() const {
+    return show_custom_context_menu_called_;
+  }
   int resize_due_to_auto_resize_called() const {
     return resize_due_to_auto_resize_called_;
   }
@@ -45,6 +53,7 @@ class MockHost : public BubbleContentsWrapper::Host {
  private:
   int show_ui_called_ = 0;
   int close_ui_called_ = 0;
+  int show_custom_context_menu_called_ = 0;
   int resize_due_to_auto_resize_called_ = 0;
 
   base::WeakPtrFactory<MockHost> weak_ptr_factory_{this};
@@ -112,6 +121,19 @@ TEST_F(BubbleContentsWrapperTest, CallsHostForShowUIAndCloseUIWhenPresent) {
   contents_wrapper()->CloseUI();
   EXPECT_EQ(1, host.show_ui_called());
   EXPECT_EQ(1, host.close_ui_called());
+}
+
+TEST_F(BubbleContentsWrapperTest, CallsShowContextMenu) {
+  MockHost host;
+  EXPECT_EQ(0, host.show_custom_context_menu_called());
+
+  contents_wrapper()->SetHost(host.GetWeakPtr());
+  contents_wrapper()->ShowContextMenu(gfx::Point(0, 0), nullptr);
+  EXPECT_EQ(1, host.show_custom_context_menu_called());
+
+  contents_wrapper()->SetHost(nullptr);
+  contents_wrapper()->ShowContextMenu(gfx::Point(0, 0), nullptr);
+  EXPECT_EQ(1, host.show_custom_context_menu_called());
 }
 
 TEST_F(BubbleContentsWrapperTest, NotifiesHostWhenResized) {

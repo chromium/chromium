@@ -58,12 +58,21 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
   ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
+    this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
   /** @private */
   onClick_() {
     this.apiProxy_.openURL(this.data.url, true);
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onContextMenu_(e) {
+    this.apiProxy_.showContextMenuForURL(this.data.url, e.clientX, e.clientY);
   }
 
   /**

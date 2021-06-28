@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
@@ -46,10 +47,25 @@ class ReadLaterSidePanelWebView : public views::WebView,
   // BubbleContentsWrapper::Host:
   void ShowUI() override { SetVisible(true); }
   void CloseUI() override { close_cb_.Run(); }
+  void ShowCustomContextMenu(
+      gfx::Point point,
+      std::unique_ptr<ui::MenuModel> menu_model) override {
+    ConvertPointToScreen(this, &point);
+    context_menu_model_ = std::move(menu_model);
+    context_menu_runner_ = std::make_unique<views::MenuRunner>(
+        context_menu_model_.get(),
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+    context_menu_runner_->RunMenuAt(
+        GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+        views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
+        contents_wrapper_->web_contents()->GetContentNativeView());
+  }
 
  private:
   base::RepeatingClosure close_cb_;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<ui::MenuModel> context_menu_model_;
   base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
