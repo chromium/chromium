@@ -49,6 +49,9 @@ class StaticTriggerConditions {
   base::OnceCallback<void(void)> callback_;
   bool has_results_ = false;
   bool has_stored_login_credentials_ = false;
+  // Note: this is cached to ensure that the flag value is consistent until the
+  // next call to |Update|. See b/192220992.
+  bool is_first_time_user_ = false;
   StarterPlatformDelegate* delegate_ = nullptr;
   TriggerContext* trigger_context_ = nullptr;
   GURL deeplink_url_;
