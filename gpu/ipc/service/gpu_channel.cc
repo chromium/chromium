@@ -258,6 +258,9 @@ void GpuChannelMessageFilter::Start(
 
 void GpuChannelMessageFilter::Stop() {
   base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_)
+    return;
+
   image_decode_accelerator_stub_->Shutdown();
   gpu_channel_ = nullptr;
   io_task_runner_->PostTask(
