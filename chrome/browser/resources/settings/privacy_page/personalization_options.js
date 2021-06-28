@@ -15,6 +15,7 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+
 // </if>
 
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
@@ -22,6 +23,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 

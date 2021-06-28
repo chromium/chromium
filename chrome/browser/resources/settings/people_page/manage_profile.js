@@ -16,104 +16,121 @@ import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 import '../settings_shared_css.js';
 
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 import {SyncStatus} from './sync_browser_proxy.js';
 
-Polymer({
-  is: 'settings-manage-profile',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsManageProfileElementBase = mixinBehaviors(
+    [WebUIListenerBehavior, RouteObserverBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsManageProfileElement extends SettingsManageProfileElementBase {
+  static get is() {
+    return 'settings-manage-profile';
+  }
 
-  behaviors: [WebUIListenerBehavior, RouteObserverBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The newly selected avatar. Populated only if the user manually changes
-     * the avatar selection. The observer ensures that the changes are
-     * propagated to the C++.
-     * @private
-     */
-    profileAvatar_: {
-      type: Object,
-      observer: 'profileAvatarChanged_',
-    },
-
-    /**
-     * The current profile name.
-     */
-    profileName: String,
-
-    /**
-     * True if the current profile has a shortcut.
-     */
-    hasProfileShortcut_: Boolean,
-
-    /**
-     * The available icons for selection.
-     * @type {!Array<!AvatarIcon>}
-     */
-    availableIcons: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * The newly selected avatar. Populated only if the user manually changes
+       * the avatar selection. The observer ensures that the changes are
+       * propagated to the C++.
+       * @private
+       */
+      profileAvatar_: {
+        type: Object,
+        observer: 'profileAvatarChanged_',
       },
-    },
 
-    /**
-     * The current sync status.
-     * @type {?SyncStatus}
-     */
-    syncStatus: Object,
+      /**
+       * The current profile name.
+       */
+      profileName: String,
 
-    /**
-     * True if the profile shortcuts feature is enabled.
-     */
-    isProfileShortcutSettingVisible_: Boolean,
+      /**
+       * True if the current profile has a shortcut.
+       */
+      hasProfileShortcut_: Boolean,
 
-    /**
-     * TODO(dpapad): Move this back to the HTML file when the Polymer2 version
-     * of the code is deleted. Because of "\" being a special character in a JS
-     * string, can't satisfy both Polymer2 and Polymer3 at the same time from
-     * the HTML file.
-     * @private
-     */
-    pattern_: {
-      type: String,
-      value: '.*\\S.*',
-    },
-  },
+      /**
+       * The available icons for selection.
+       * @type {!Array<!AvatarIcon>}
+       */
+      availableIcons: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  /** @private {?ManageProfileBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * The current sync status.
+       * @type {?SyncStatus}
+       */
+      syncStatus: Object,
+
+      /**
+       * True if the profile shortcuts feature is enabled.
+       */
+      isProfileShortcutSettingVisible_: Boolean,
+
+      /**
+       * TODO(dpapad): Move this back to the HTML file when the Polymer2 version
+       * of the code is deleted. Because of "\" being a special character in a
+       * JS string, can't satisfy both Polymer2 and Polymer3 at the same time
+       * from the HTML file.
+       * @private
+       */
+      pattern_: {
+        type: String,
+        value: '.*\\S.*',
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!ManageProfileBrowserProxy} */
     this.browserProxy_ = ManageProfileBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     const setIcons = icons => {
       this.availableIcons = icons;
     };
 
     this.addWebUIListener('available-icons-changed', setIcons);
     this.browserProxy_.getAvailableIcons().then(setIcons);
-  },
+  }
 
   /** @protected */
   currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {
         const profileNameInput =
-            /** @type {CrInputElement} */ (this.$$('#name'));
+            /** @type {CrInputElement} */ (
+                this.shadowRoot.querySelector('#name'));
         if (profileNameInput) {
           profileNameInput.value = this.profileName;
         }
@@ -132,7 +149,7 @@ Polymer({
         });
       }
     }
-  },
+  }
 
   /**
    * Handler for when the profile name field is changed, then blurred.
@@ -145,7 +162,7 @@ Polymer({
     }
 
     this.browserProxy_.setProfileName(event.target.value);
-  },
+  }
 
   /**
    * Handler for profile name keydowns.
@@ -157,7 +174,7 @@ Polymer({
       event.target.value = this.profileName;
       event.target.blur();
     }
-  },
+  }
 
   /**
    * Handler for when the profile avatar is changed by the user.
@@ -170,7 +187,7 @@ Polymer({
       this.browserProxy_.setProfileIconToDefaultAvatar(
           this.profileAvatar_.index);
     }
-  },
+  }
 
   /**
    * @param {?SyncStatus} syncStatus
@@ -179,7 +196,7 @@ Polymer({
    */
   isProfileNameDisabled_(syncStatus) {
     return !!syncStatus.supervisedUser && !syncStatus.childUser;
-  },
+  }
 
   /**
    * Handler for when the profile shortcut toggle is changed.
@@ -193,4 +210,7 @@ Polymer({
       this.browserProxy_.removeProfileShortcut();
     }
   }
-});
+}
+
+customElements.define(
+    SettingsManageProfileElement.is, SettingsManageProfileElement);

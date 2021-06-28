@@ -35,8 +35,10 @@ suite('SyncControlsTest', async function() {
     flush();
 
     await waitBeforeNextRender();
-    syncEverything = syncControls.$$('cr-radio-button[name="sync-everything"]');
-    customizeSync = syncControls.$$('cr-radio-button[name="customize-sync"]');
+    syncEverything = syncControls.shadowRoot.querySelector(
+        'cr-radio-button[name="sync-everything"]');
+    customizeSync = syncControls.shadowRoot.querySelector(
+        'cr-radio-button[name="customize-sync"]');
     assertTrue(!!syncEverything);
     assertTrue(!!customizeSync);
   });
@@ -68,7 +70,9 @@ suite('SyncControlsTest', async function() {
   test('SettingIndividualDatatypes', async function() {
     assertTrue(syncEverything.checked);
     assertFalse(customizeSync.checked);
-    assertEquals(syncControls.$$('#syncAllDataTypesControl'), null);
+    assertEquals(
+        syncControls.shadowRoot.querySelector('#syncAllDataTypesControl'),
+        null);
 
     // Assert that all the individual datatype controls are disabled.
     const datatypeControls = syncControls.shadowRoot.querySelectorAll(

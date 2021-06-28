@@ -135,16 +135,21 @@ cr.define('settings_people_page', function() {
       Polymer.dom.flush();
 
       // Get page elements.
-      const profileIconEl = assert(peoplePage.$$('#profile-icon'));
-      const profileRowEl = assert(peoplePage.$$('#profile-row'));
-      const profileNameEl = assert(peoplePage.$$('#profile-name'));
+      const profileIconEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-icon'));
+      const profileRowEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-row'));
+      const profileNameEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-name'));
 
       assertEquals(
           browserProxy.fakeProfileInfo.name, profileNameEl.textContent.trim());
       const bg = profileIconEl.style.backgroundImage;
       assertTrue(bg.includes(browserProxy.fakeProfileInfo.iconUrl));
       assertEquals(
-          'fakeUsername', peoplePage.$$('#profile-label').textContent.trim());
+          'fakeUsername',
+          peoplePage.shadowRoot.querySelector('#profile-label')
+              .textContent.trim());
 
       const iconDataUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEA' +
           'LAAAAAABAAEAAAICTAEAOw==';
@@ -161,7 +166,9 @@ cr.define('settings_people_page', function() {
       assertFalse(profileRowEl.hasAttribute('actionable'));
 
       // Sub-page trigger is hidden.
-      assertTrue(peoplePage.$$('#account-manager-subpage-trigger').hidden);
+      assertTrue(peoplePage.shadowRoot
+                     .querySelector('#account-manager-subpage-trigger')
+                     .hidden);
     });
 
     test('parental controls page is shown when enabled', () => {
@@ -175,7 +182,8 @@ cr.define('settings_people_page', function() {
       Polymer.dom.flush();
 
       // Setup button is shown and enabled.
-      assert(peoplePage.$$('settings-parental-controls-page'));
+      assert(peoplePage.shadowRoot.querySelector(
+          'settings-parental-controls-page'));
     });
 
     test('Deep link to parental controls page', async () => {
@@ -195,7 +203,8 @@ cr.define('settings_people_page', function() {
           settings.routes.OS_PEOPLE, params);
 
       const deepLinkElement =
-          peoplePage.$$('settings-parental-controls-page').$$('#setupButton');
+          peoplePage.shadowRoot.querySelector('settings-parental-controls-page')
+              .shadowRoot.querySelector('#setupButton');
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -222,9 +231,9 @@ cr.define('settings_people_page', function() {
 
       await test_util.waitAfterNextRender(peoplePage);
       assertEquals(
-          peoplePage.$$('settings-users-page')
-              .$$('#allowGuestBrowsing')
-              .$$('cr-toggle'),
+          peoplePage.shadowRoot.querySelector('settings-users-page')
+              .shadowRoot.querySelector('#allowGuestBrowsing')
+              .shadowRoot.querySelector('cr-toggle'),
           getDeepActiveElement(),
           'Allow guest browsing should be focused for settingId=305.');
     });
@@ -244,7 +253,8 @@ cr.define('settings_people_page', function() {
       await test_util.waitAfterNextRender(peoplePage);
 
       // Make the sync page configurable.
-      const syncPage = peoplePage.$$('settings-sync-page');
+      const syncPage =
+          peoplePage.shadowRoot.querySelector('settings-sync-page');
       assert(syncPage);
       syncPage.syncPrefs = {
         customPassphraseAllowed: true,
@@ -252,8 +262,12 @@ cr.define('settings_people_page', function() {
       };
       cr.webUIListenerCallback(
           'page-status-changed', settings.PageStatus.CONFIGURE);
-      assertFalse(syncPage.$$('#' + settings.PageStatus.CONFIGURE).hidden);
-      assertTrue(syncPage.$$('#' + settings.PageStatus.SPINNER).hidden);
+      assertFalse(
+          syncPage.shadowRoot.querySelector('#' + settings.PageStatus.CONFIGURE)
+              .hidden);
+      assertTrue(
+          syncPage.shadowRoot.querySelector('#' + settings.PageStatus.SPINNER)
+              .hidden);
 
       // Try the deep link.
       const params = new URLSearchParams;
@@ -262,10 +276,11 @@ cr.define('settings_people_page', function() {
 
       // Flush to make sure the dropdown expands.
       Polymer.dom.flush();
-      const deepLinkElement = syncPage.$$('settings-sync-encryption-options')
-                                  .$$('#encryptionRadioGroup')
-                                  .buttons_[0]
-                                  .$$('#button');
+      const deepLinkElement =
+          syncPage.shadowRoot.querySelector('settings-sync-encryption-options')
+              .shadowRoot.querySelector('#encryptionRadioGroup')
+              .buttons_[0]
+              .shadowRoot.querySelector('#button');
       assert(deepLinkElement);
 
       await test_util.waitAfterNextRender(deepLinkElement);
@@ -291,9 +306,12 @@ cr.define('settings_people_page', function() {
       Polymer.dom.flush();
 
       // Get page elements.
-      const profileIconEl = assert(peoplePage.$$('#profile-icon'));
-      const profileRowEl = assert(peoplePage.$$('#profile-row'));
-      const profileNameEl = assert(peoplePage.$$('#profile-name'));
+      const profileIconEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-icon'));
+      const profileRowEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-row'));
+      const profileNameEl =
+          assert(peoplePage.shadowRoot.querySelector('#profile-name'));
 
       chai.assert.include(
           profileIconEl.style.backgroundImage,
@@ -310,11 +328,13 @@ cr.define('settings_people_page', function() {
       if (peoplePage.isAccountManagementFlowsV2Enabled_) {
         assertEquals(
             '3 Google Accounts',
-            peoplePage.$$('#profile-label').textContent.trim());
+            peoplePage.shadowRoot.querySelector('#profile-label')
+                .textContent.trim());
       } else {
         assertEquals(
             'primary@gmail.com, +2 more accounts',
-            peoplePage.$$('#profile-label').textContent.trim());
+            peoplePage.shadowRoot.querySelector('#profile-label')
+                .textContent.trim());
       }
 
       // Profile row items are actionable.
@@ -322,7 +342,8 @@ cr.define('settings_people_page', function() {
       assertTrue(profileRowEl.hasAttribute('actionable'));
 
       // Sub-page trigger is shown.
-      const subpageTrigger = peoplePage.$$('#account-manager-subpage-trigger');
+      const subpageTrigger = peoplePage.shadowRoot.querySelector(
+          '#account-manager-subpage-trigger');
       assertFalse(subpageTrigger.hidden);
 
       // Sub-page trigger navigates to Google account manager.
@@ -352,7 +373,8 @@ cr.define('settings_people_page', function() {
       settings.Router.getInstance().navigateTo(settings.routes.LOCK_SCREEN);
       Polymer.dom.flush();
 
-      const subpageTrigger = peoplePage.$$('#lock-screen-subpage-trigger');
+      const subpageTrigger =
+          peoplePage.shadowRoot.querySelector('#lock-screen-subpage-trigger');
       // Sub-page trigger navigates to the lock screen page.
       subpageTrigger.click();
       Polymer.dom.flush();
@@ -360,12 +382,14 @@ cr.define('settings_people_page', function() {
       assertEquals(
           settings.Router.getInstance().getCurrentRoute(),
           settings.routes.LOCK_SCREEN);
-      const lockScreenPage = assert(peoplePage.$$('#lock-screen'));
+      const lockScreenPage =
+          assert(peoplePage.shadowRoot.querySelector('#lock-screen'));
 
       // Password dialog should not open because the authToken_ is set.
       assertFalse(peoplePage.showPasswordPromptDialog_);
 
-      const editFingerprintsTrigger = lockScreenPage.$$('#editFingerprints');
+      const editFingerprintsTrigger =
+          lockScreenPage.shadowRoot.querySelector('#editFingerprints');
       editFingerprintsTrigger.click();
       Polymer.dom.flush();
 
@@ -375,7 +399,8 @@ cr.define('settings_people_page', function() {
       assertFalse(peoplePage.showPasswordPromptDialog_);
 
       const fingerprintTrigger =
-          peoplePage.$$('#fingerprint-list').$$('#addFingerprint');
+          peoplePage.shadowRoot.querySelector('#fingerprint-list')
+              .shadowRoot.querySelector('#addFingerprint');
       fingerprintTrigger.click();
 
       // Invalidate the auth token by firing an event.

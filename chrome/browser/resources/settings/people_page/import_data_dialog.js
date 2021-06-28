@@ -16,66 +16,91 @@ import '../controls/settings_toggle_button.js';
 import '../icons.js';
 import '../settings_vars_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 
 import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './import_data_browser_proxy.js';
 
-Polymer({
-  is: 'settings-import-data-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsImportDataDialogElementBase = mixinBehaviors(
+    [I18nBehavior, WebUIListenerBehavior, PrefsBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsImportDataDialogElement extends
+    SettingsImportDataDialogElementBase {
+  static get is() {
+    return 'settings-import-data-dialog';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior, PrefsBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {!Array<!BrowserProfile>} */
-    browserProfiles_: Array,
+  static get properties() {
+    return {
+      /** @private {!Array<!BrowserProfile>} */
+      browserProfiles_: Array,
 
-    /** @private {!BrowserProfile} */
-    selected_: {
-      type: Object,
-      observer: 'updateImportDataTypesSelected_',
-    },
+      /** @private {!BrowserProfile} */
+      selected_: {
+        type: Object,
+        observer: 'updateImportDataTypesSelected_',
+      },
 
-    /**
-     * Whether none of the import data categories is selected.
-     * @private
-     */
-    noImportDataTypeSelected_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether none of the import data categories is selected.
+       * @private
+       */
+      noImportDataTypeSelected_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    importStatus_: {
-      type: String,
-      value: ImportDataStatus.INITIAL,
-    },
+      /** @private */
+      importStatus_: {
+        type: String,
+        value: ImportDataStatus.INITIAL,
+      },
 
-    /**
-     * Mirroring the enum so that it can be used from HTML bindings.
-     * @private
-     */
-    importStatusEnum_: {
-      type: Object,
-      value: ImportDataStatus,
-    },
-  },
+      /**
+       * Mirroring the enum so that it can be used from HTML bindings.
+       * @private
+       */
+      importStatusEnum_: {
+        type: Object,
+        value: ImportDataStatus,
+      },
 
-  listeners: {
-    'settings-boolean-control-change': 'updateImportDataTypesSelected_',
-  },
+    };
+  }
 
-  /** @private {?ImportDataBrowserProxy} */
-  browserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {?ImportDataBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'settings-boolean-control-change', this.updateImportDataTypesSelected_);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = ImportDataBrowserProxyImpl.getInstance();
     this.browserProxy_.initializeImportDialog().then(data => {
       this.browserProfiles_ = data;
@@ -92,7 +117,7 @@ Polymer({
         this.closeDialog_();
       }
     });
-  },
+  }
 
   /**
    * @param {string} name
@@ -102,14 +127,14 @@ Polymer({
    */
   getProfileDisplayName_(name, profileName) {
     return profileName ? `${name} - ${profileName}` : name;
-  },
+  }
 
   /** @private */
   updateImportDataTypesSelected_() {
     const checkboxes = this.shadowRoot.querySelectorAll(
         'settings-checkbox[checked]:not([hidden])');
     this.noImportDataTypeSelected_ = checkboxes.length === 0;
-  },
+  }
 
   /**
    * @param {!ImportDataStatus} status
@@ -118,14 +143,14 @@ Polymer({
    */
   hasImportStatus_(status) {
     return this.importStatus_ === status;
-  },
+  }
 
   /** @private */
   isImportFromFileSelected_() {
     // The last entry in |browserProfiles_| always refers to dummy profile for
     // importing from a bookmarks file.
     return this.selected_.index === this.browserProfiles_.length - 1;
-  },
+  }
 
   /**
    * @return {string}
@@ -134,12 +159,12 @@ Polymer({
   getActionButtonText_() {
     return this.i18n(
         this.isImportFromFileSelected_() ? 'importChooseFile' : 'importCommit');
-  },
+  }
 
   /** @private */
   onBrowserProfileSelectionChange_() {
     this.selected_ = this.browserProfiles_[this.$.browserSelect.selectedIndex];
-  },
+  }
 
   /** @private */
   onActionButtonTap_() {
@@ -155,12 +180,12 @@ Polymer({
       this.browserProxy_.importData(this.$.browserSelect.selectedIndex, types);
     }
     checkboxes.forEach(checkbox => checkbox.sendPrefChange());
-  },
+  }
 
   /** @private */
   closeDialog_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @return {boolean} Whether the import button should be disabled.
@@ -169,5 +194,8 @@ Polymer({
   shouldDisableImport_() {
     return this.hasImportStatus_(ImportDataStatus.IN_PROGRESS) ||
         this.noImportDataTypeSelected_;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsImportDataDialogElement.is, SettingsImportDataDialogElement);

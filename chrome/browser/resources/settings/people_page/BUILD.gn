@@ -87,7 +87,6 @@ js_library("people_page") {
     "//ui/webui/resources/cr_elements/chromeos/cr_picture:png.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -155,6 +154,7 @@ js_library("sync_page") {
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

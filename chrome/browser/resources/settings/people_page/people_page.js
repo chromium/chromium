@@ -28,16 +28,15 @@ import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {getImage} from 'chrome://resources/js/icon.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
@@ -45,144 +44,164 @@ import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js
 import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
-Polymer({
-  is: 'settings-people-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsPeoplePageElementBase = mixinBehaviors(
+    [RouteObserverBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    RouteObserverBehavior,
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
+  static get is() {
+    return 'settings-people-page';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * This flag is used to conditionally show a set of new sign-in UIs to the
-     * profiles that have been migrated to be consistent with the web sign-ins.
-     * TODO(tangltom): In the future when all profiles are completely migrated,
-     * this should be removed, and UIs hidden behind it should become default.
-     * @private
-     */
-    signinAllowed_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('signinAllowed');
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    // <if expr="not chromeos">
-    /**
-     * Stored accounts to the system, supplied by SyncBrowserProxy.
-     * @type {?Array<!StoredAccount>}
-     */
-    storedAccounts: Object,
-    // </if>
-
-    /**
-     * The current sync status, supplied by SyncBrowserProxy.
-     * @type {?SyncStatus}
-     */
-    syncStatus: Object,
-
-    /**
-     * Dictionary defining page visibility.
-     * @type {!PageVisibility}
-     */
-    pageVisibility: Object,
-
-    /**
-     * Authentication token provided by settings-lock-screen.
-     * @private
-     */
-    authToken_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * The currently selected profile icon URL. May be a data URL.
-     * @private
-     */
-    profileIconUrl_: String,
-
-    /**
-     * Whether the profile row is clickable. The behavior depends on the
-     * platform.
-     * @private
-     */
-    isProfileActionable_: {
-      type: Boolean,
-      value() {
-        if (!isChromeOS) {
-          // Opens profile manager.
-          return true;
-        }
-        // Post-SplitSettings links out to account manager if it is available.
-        return loadTimeData.getBoolean('isAccountManagerEnabled');
+      /**
+       * This flag is used to conditionally show a set of new sign-in UIs to the
+       * profiles that have been migrated to be consistent with the web
+       * sign-ins.
+       * TODO(tangltom): In the future when all profiles are completely
+       * migrated, this should be removed, and UIs hidden behind it should
+       * become default.
+       * @private
+       */
+      signinAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('signinAllowed');
+        },
       },
-      readOnly: true,
-    },
 
-    /**
-     * The current profile name.
-     * @private
-     */
-    profileName_: String,
+      // <if expr="not chromeos">
+      /**
+       * Stored accounts to the system, supplied by SyncBrowserProxy.
+       * @type {?Array<!StoredAccount>}
+       */
+      storedAccounts: Object,
+      // </if>
 
-    // <if expr="not chromeos">
-    /** @private {boolean} */
-    shouldShowGoogleAccount_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeShouldShowGoogleAccount_(storedAccounts, syncStatus,' +
-          'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
-    },
+      /**
+       * The current sync status, supplied by SyncBrowserProxy.
+       * @type {?SyncStatus}
+       */
+      syncStatus: Object,
 
-    /** @private */
-    showImportDataDialog_: {
-      type: Boolean,
-      value: false,
-    },
-    // </if>
+      /**
+       * Dictionary defining page visibility.
+       * @type {!PageVisibility}
+       */
+      pageVisibility: Object,
 
-    /** @private */
-    showSignoutDialog_: Boolean,
-
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-        if (routes.SYNC) {
-          map.set(routes.SYNC.path, '#sync-setup');
-        }
-        // <if expr="not chromeos">
-        if (routes.MANAGE_PROFILE) {
-          map.set(
-              routes.MANAGE_PROFILE.path,
-              this.signinAllowed_ ? '#edit-profile' :
-                                    '#profile-row .subpage-arrow');
-        }
-        // </if>
-        return map;
+      /**
+       * Authentication token provided by settings-lock-screen.
+       * @private
+       */
+      authToken_: {
+        type: String,
+        value: '',
       },
-    },
-  },
 
-  /** @private {?SyncBrowserProxy} */
-  syncBrowserProxy_: null,
+      /**
+       * The currently selected profile icon URL. May be a data URL.
+       * @private
+       */
+      profileIconUrl_: String,
+
+      /**
+       * Whether the profile row is clickable. The behavior depends on the
+       * platform.
+       * @private
+       */
+      isProfileActionable_: {
+        type: Boolean,
+        value() {
+          if (!isChromeOS) {
+            // Opens profile manager.
+            return true;
+          }
+          // Post-SplitSettings links out to account manager if it is available.
+          return loadTimeData.getBoolean('isAccountManagerEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * The current profile name.
+       * @private
+       */
+      profileName_: String,
+
+      // <if expr="not chromeos">
+      /** @private {boolean} */
+      shouldShowGoogleAccount_: {
+        type: Boolean,
+        value: false,
+        computed:
+            'computeShouldShowGoogleAccount_(storedAccounts, syncStatus,' +
+            'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
+      },
+
+      /** @private */
+      showImportDataDialog_: {
+        type: Boolean,
+        value: false,
+      },
+      // </if>
+
+      /** @private */
+      showSignoutDialog_: Boolean,
+
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          if (routes.SYNC) {
+            map.set(routes.SYNC.path, '#sync-setup');
+          }
+          // <if expr="not chromeos">
+          if (routes.MANAGE_PROFILE) {
+            map.set(
+                routes.MANAGE_PROFILE.path,
+                this.signinAllowed_ ? '#edit-profile' :
+                                      '#profile-row .subpage-arrow');
+          }
+          // </if>
+          return map;
+        },
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?SyncBrowserProxy} */
+    this.syncBrowserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     let useProfileNameAndIcon = true;
     // <if expr="chromeos">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
@@ -220,7 +239,7 @@ Polymer({
       /** @type {!CrToastElement} */ (this.$.toast).show();
     });
     // </if>
-  },
+  }
 
   /** @protected */
   currentRouteChanged() {
@@ -237,16 +256,17 @@ Polymer({
         this.showSignoutDialog_ = true;
       }
     }
-  },
+  }
 
   /**
    * @return {!Element}
    * @private
    */
   getEditPersonAssocControl_() {
-    return this.signinAllowed_ ? assert(this.$$('#edit-profile')) :
-                                 assert(this.$$('#profile-row'));
-  },
+    return this.signinAllowed_ ?
+        assert(this.shadowRoot.querySelector('#edit-profile')) :
+        assert(this.shadowRoot.querySelector('#profile-row'));
+  }
 
   /**
    * @return {string}
@@ -258,7 +278,7 @@ Polymer({
       return this.syncStatus.statusText;
     }
     return '';
-  },
+  }
 
   /**
    * Handler for when the profile's icon and name is updated.
@@ -279,7 +299,7 @@ Polymer({
     // </if>
 
     this.profileIconUrl_ = info.iconUrl;
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -287,7 +307,7 @@ Polymer({
    * @suppress {checkTypes} The types only exists in Chrome OS builds, but
    * Closure doesn't understand the <if> above.
    */
-  updateAccounts_: async function() {
+  async updateAccounts_() {
     const /** @type {!Array<{Account}>} */ accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
     // The user might not have any GAIA accounts (e.g. guest mode or Active
@@ -298,7 +318,7 @@ Polymer({
     }
     this.profileName_ = accounts[0].fullName;
     this.profileIconUrl_ = accounts[0].pic;
-  },
+  }
   // </if>
 
   /**
@@ -319,7 +339,7 @@ Polymer({
       // SyncAccountControl records the impressions user actions.
       chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');
     }
-  },
+  }
 
   // <if expr="not chromeos">
   /**
@@ -333,7 +353,7 @@ Polymer({
 
     return (this.storedAccounts.length > 0 || !!this.syncStatus.signedIn) &&
         !this.syncStatus.hasError;
-  },
+  }
   // </if>
 
   /** @private */
@@ -348,7 +368,7 @@ Polymer({
     // <if expr="not chromeos">
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     // </if>
-  },
+  }
 
   /** @private */
   onDisconnectDialogClosed_(e) {
@@ -357,25 +377,25 @@ Polymer({
     if (Router.getInstance().getCurrentRoute() === routes.SIGN_OUT) {
       Router.getInstance().navigateToPreviousRoute();
     }
-  },
+  }
 
   /** @private */
   onSyncTap_() {
     // Users can go to sync subpage regardless of sync status.
     Router.getInstance().navigateTo(routes.SYNC);
-  },
+  }
 
   // <if expr="not chromeos">
   /** @private */
   onImportDataTap_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
-  },
+  }
 
   /** @private */
   onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
     focusWithoutInk(assert(this.$.importDataDialogTrigger));
-  },
+  }
   // </if>
 
   /**
@@ -386,7 +406,7 @@ Polymer({
     OpenWindowProxyImpl.getInstance().openURL(
         loadTimeData.getString('googleAccountUrl'));
     chrome.metricsPrivate.recordUserAction('ManageGoogleAccount_Clicked');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -402,7 +422,7 @@ Polymer({
     }
     // </if>
     return !!this.syncStatus.syncSystemEnabled && this.signinAllowed_;
-  },
+  }
 
   /**
    * @param {string} iconUrl
@@ -411,5 +431,7 @@ Polymer({
    */
   getIconImageSet_(iconUrl) {
     return getImage(iconUrl);
-  },
-});
+  }
+}
+
+customElements.define(SettingsPeoplePageElement.is, SettingsPeoplePageElement);

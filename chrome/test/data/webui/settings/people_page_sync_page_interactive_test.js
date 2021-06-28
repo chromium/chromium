@@ -31,14 +31,17 @@ suite('sync-page-test', function() {
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
     flush();
     // Passphrase input is not available when no passphrase is required.
-    assertFalse(!!syncPage.$$('#existingPassphraseInput'));
+    assertFalse(
+        !!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
 
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: true});
     flush();
     // Passphrase input is available and focused when a passphrase is required.
-    assertTrue(!!syncPage.$$('#existingPassphraseInput'));
+    assertTrue(!!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
     assertEquals(
-        syncPage.$$('#existingPassphraseInput').inputElement,
-        syncPage.$$('#existingPassphraseInput').shadowRoot.activeElement);
+        syncPage.shadowRoot.querySelector('#existingPassphraseInput')
+            .inputElement,
+        syncPage.shadowRoot.querySelector('#existingPassphraseInput')
+            .shadowRoot.activeElement);
   });
 });

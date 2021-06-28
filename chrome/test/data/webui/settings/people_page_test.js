@@ -14,7 +14,7 @@ import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings
 import {TestProfileInfoBrowserProxy} from 'chrome://test/settings/test_profile_info_browser_proxy.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {waitBeforeNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /** @implements {settings.PeopleBrowserProxy} */
@@ -72,8 +72,10 @@ suite('ProfileInfoTests', function() {
   test('GetProfileInfo', function() {
     assertEquals(
         profileInfoBrowserProxy.fakeProfileInfo.name,
-        peoplePage.$$('#profile-name').textContent.trim());
-    const bg = peoplePage.$$('#profile-icon').style.backgroundImage;
+        peoplePage.shadowRoot.querySelector('#profile-name')
+            .textContent.trim());
+    const bg = peoplePage.shadowRoot.querySelector('#profile-icon')
+                   .style.backgroundImage;
     assertTrue(bg.includes(profileInfoBrowserProxy.fakeProfileInfo.iconUrl));
 
     const iconDataUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEA' +
@@ -83,8 +85,11 @@ suite('ProfileInfoTests', function() {
 
     flush();
     assertEquals(
-        'pushedName', peoplePage.$$('#profile-name').textContent.trim());
-    const newBg = peoplePage.$$('#profile-icon').style.backgroundImage;
+        'pushedName',
+        peoplePage.shadowRoot.querySelector('#profile-name')
+            .textContent.trim());
+    const newBg = peoplePage.shadowRoot.querySelector('#profile-icon')
+                      .style.backgroundImage;
     assertTrue(newBg.includes(iconDataUrl));
   });
 });
@@ -115,15 +120,16 @@ if (!isChromeOS) {
       flush();
 
       // The correct /manageProfile link row is shown.
-      assertFalse(!!peoplePage.$$('#edit-profile'));
-      assertTrue(!!peoplePage.$$('#profile-row'));
+      assertFalse(!!peoplePage.shadowRoot.querySelector('#edit-profile'));
+      assertTrue(!!peoplePage.shadowRoot.querySelector('#profile-row'));
 
       // Control element doesn't exist when policy forbids sync.
       simulateSyncStatus({
         signedIn: false,
         syncSystemEnabled: true,
       });
-      assertFalse(!!peoplePage.$$('settings-sync-account-control'));
+      assertFalse(!!peoplePage.shadowRoot.querySelector(
+          'settings-sync-account-control'));
     });
   });
 
@@ -160,8 +166,8 @@ if (!isChromeOS) {
       flush();
 
       // The correct /manageProfile link row is shown.
-      assertTrue(!!peoplePage.$$('#edit-profile'));
-      assertFalse(!!peoplePage.$$('#profile-row'));
+      assertTrue(!!peoplePage.shadowRoot.querySelector('#edit-profile'));
+      assertFalse(!!peoplePage.shadowRoot.querySelector('#profile-row'));
 
       simulateSyncStatus({
         signedIn: false,
@@ -169,7 +175,8 @@ if (!isChromeOS) {
       });
 
       // The control element should exist when policy allows.
-      const accountControl = peoplePage.$$('settings-sync-account-control');
+      const accountControl =
+          peoplePage.shadowRoot.querySelector('settings-sync-account-control');
       assertTrue(window.getComputedStyle(accountControl)['display'] !== 'none');
 
       // Control element doesn't exist when policy forbids sync.
@@ -178,7 +185,8 @@ if (!isChromeOS) {
       });
       assertEquals('none', window.getComputedStyle(accountControl)['display']);
 
-      const manageGoogleAccount = peoplePage.$$('#manage-google-account');
+      const manageGoogleAccount =
+          peoplePage.shadowRoot.querySelector('#manage-google-account');
 
       // Do not show Google Account when stored accounts or sync status
       // could not be retrieved.
@@ -247,18 +255,20 @@ if (!isChromeOS) {
       // Navigate to chrome://settings/signOut
       Router.getInstance().navigateTo(routes.SIGN_OUT);
 
-      await new Promise(function(resolve) {
-        peoplePage.async(resolve);
-      });
-      const signoutDialog = peoplePage.$$('settings-signout-dialog');
-      assertTrue(signoutDialog.$$('#dialog').open);
-      assertFalse(signoutDialog.$$('#deleteProfile').hidden);
+      await flushTasks();
+      const signoutDialog =
+          peoplePage.shadowRoot.querySelector('settings-signout-dialog');
+      assertTrue(signoutDialog.shadowRoot.querySelector('#dialog').open);
+      assertFalse(
+          signoutDialog.shadowRoot.querySelector('#deleteProfile').hidden);
 
-      const deleteProfileCheckbox = signoutDialog.$$('#deleteProfile');
+      const deleteProfileCheckbox =
+          signoutDialog.shadowRoot.querySelector('#deleteProfile');
       assertTrue(!!deleteProfileCheckbox);
       assertLT(0, deleteProfileCheckbox.clientHeight);
 
-      const disconnectConfirm = signoutDialog.$$('#disconnectConfirm');
+      const disconnectConfirm =
+          signoutDialog.shadowRoot.querySelector('#disconnectConfirm');
       assertTrue(!!disconnectConfirm);
       assertFalse(disconnectConfirm.hidden);
 
@@ -280,22 +290,24 @@ if (!isChromeOS) {
         syncSystemEnabled: true,
       });
 
-      assertFalse(!!peoplePage.$$('#dialog'));
-      accountControl = peoplePage.$$('settings-sync-account-control');
+      assertFalse(!!peoplePage.shadowRoot.querySelector('#dialog'));
+      accountControl =
+          peoplePage.shadowRoot.querySelector('settings-sync-account-control');
       await waitBeforeNextRender(accountControl);
-      const turnOffButton = accountControl.$$('#turn-off');
+      const turnOffButton =
+          accountControl.shadowRoot.querySelector('#turn-off');
       turnOffButton.click();
       flush();
 
-      await new Promise(function(resolve) {
-        peoplePage.async(resolve);
-      });
-      const signoutDialog = peoplePage.$$('settings-signout-dialog');
-      assertTrue(signoutDialog.$$('#dialog').open);
-      assertFalse(!!signoutDialog.$$('#deleteProfile'));
+      await flushTasks();
+      const signoutDialog =
+          peoplePage.shadowRoot.querySelector('settings-signout-dialog');
+      assertTrue(signoutDialog.shadowRoot.querySelector('#dialog').open);
+      assertFalse(!!signoutDialog.shadowRoot.querySelector('#deleteProfile'));
 
       const disconnectManagedProfileConfirm =
-          signoutDialog.$$('#disconnectManagedProfileConfirm');
+          signoutDialog.shadowRoot.querySelector(
+              '#disconnectManagedProfileConfirm');
       assertTrue(!!disconnectManagedProfileConfirm);
       assertFalse(disconnectManagedProfileConfirm.hidden);
 
@@ -315,15 +327,14 @@ if (!isChromeOS) {
       // Navigate to chrome://settings/signOut
       Router.getInstance().navigateTo(routes.SIGN_OUT);
 
-      await new Promise(function(resolve) {
-        peoplePage.async(resolve);
-      });
-      flush();
-      const signoutDialog = peoplePage.$$('settings-signout-dialog');
-      assertTrue(signoutDialog.$$('#dialog').open);
+      await flushTasks();
+      const signoutDialog =
+          peoplePage.shadowRoot.querySelector('settings-signout-dialog');
+      assertTrue(signoutDialog.shadowRoot.querySelector('#dialog').open);
 
       // Assert the warning message is as expected.
-      const warningMessage = signoutDialog.$$('.delete-profile-warning');
+      const warningMessage =
+          signoutDialog.shadowRoot.querySelector('.delete-profile-warning');
 
       webUIListenerCallback('profile-stats-count-ready', 0);
       assertEquals(
@@ -344,7 +355,7 @@ if (!isChromeOS) {
           warningMessage.textContent.trim());
 
       // Close the disconnect dialog.
-      signoutDialog.$$('#disconnectConfirm').click();
+      signoutDialog.shadowRoot.querySelector('#disconnectConfirm').click();
       await new Promise(function(resolve) {
         listenOnce(window, 'popstate', resolve);
       });
@@ -354,10 +365,10 @@ if (!isChromeOS) {
       // Navigate to chrome://settings/signOut
       Router.getInstance().navigateTo(routes.SIGN_OUT);
 
-      await new Promise(function(resolve) {
-        peoplePage.async(resolve);
-      });
-      assertTrue(peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
+      await flushTasks();
+      assertTrue(peoplePage.shadowRoot.querySelector('settings-signout-dialog')
+                     .shadowRoot.querySelector('#dialog')
+                     .open);
       await profileInfoBrowserProxy.whenCalled('getProfileStatsCount');
       // 'getProfileStatsCount' can be the first message sent to the
       // handler if the user navigates directly to
@@ -365,7 +376,9 @@ if (!isChromeOS) {
       new ProfileInfoBrowserProxyImpl().getProfileStatsCount();
 
       // Close the disconnect dialog.
-      peoplePage.$$('settings-signout-dialog').$$('#disconnectConfirm').click();
+      peoplePage.shadowRoot.querySelector('settings-signout-dialog')
+          .shadowRoot.querySelector('#disconnectConfirm')
+          .click();
       await new Promise(function(resolve) {
         listenOnce(window, 'popstate', resolve);
       });
@@ -374,10 +387,10 @@ if (!isChromeOS) {
     test('Signout dialog suppressed when not signed in', async function() {
       await syncBrowserProxy.whenCalled('getSyncStatus');
       Router.getInstance().navigateTo(routes.SIGN_OUT);
-      await new Promise(function(resolve) {
-        peoplePage.async(resolve);
-      });
-      assertTrue(peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
+      await flushTasks();
+      assertTrue(peoplePage.shadowRoot.querySelector('settings-signout-dialog')
+                     .shadowRoot.querySelector('#dialog')
+                     .open);
 
       simulateSyncStatus({
         signedIn: false,
@@ -418,8 +431,8 @@ suite('SyncSettings', function() {
   });
 
   test('ShowCorrectSyncRow', function() {
-    assertTrue(!!peoplePage.$$('#sync-setup'));
-    assertFalse(!!peoplePage.$$('#sync-status'));
+    assertTrue(!!peoplePage.shadowRoot.querySelector('#sync-setup'));
+    assertFalse(!!peoplePage.shadowRoot.querySelector('#sync-status'));
 
     // Make sures the subpage opens even when logged out or has errors.
     simulateSyncStatus({
@@ -427,7 +440,7 @@ suite('SyncSettings', function() {
       statusAction: StatusAction.REAUTHENTICATE,
     });
 
-    peoplePage.$$('#sync-setup').click();
+    peoplePage.shadowRoot.querySelector('#sync-setup').click();
     flush();
 
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SYNC);

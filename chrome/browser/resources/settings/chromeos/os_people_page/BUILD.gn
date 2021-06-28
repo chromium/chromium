@@ -313,7 +313,7 @@ polymer_modulizer("os_people_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/people_page/sync_page.html|SettingsSyncPageElement" ]
 }
 
 polymer_modulizer("os_sync_controls") {
