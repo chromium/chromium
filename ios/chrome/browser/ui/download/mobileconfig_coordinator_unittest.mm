@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/download/download_test_util.h"
@@ -80,6 +81,7 @@ class MobileConfigCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   MobileConfigCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the coordinator installs itself as a MobileConfigTabHelper
@@ -117,6 +119,12 @@ TEST_F(MobileConfigCoordinatorTest, ValidMobileConfigFile) {
     return [base_view_controller_.presentedViewController class] ==
            [UIAlertController class];
   }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadMobileConfigFileUI,
+      static_cast<base::HistogramBase::Sample>(
+          DownloadMobileConfigFileUI::KWarningAlertIsPresented),
+      1);
 }
 
 // Tests attempting to download an invalid .mobileconfig file
@@ -127,6 +135,12 @@ TEST_F(MobileConfigCoordinatorTest, InvalidMobileConfigFile) {
     return [base_view_controller_.presentedViewController class] ==
            [UIAlertController class];
   }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadMobileConfigFileUI,
+      static_cast<base::HistogramBase::Sample>(
+          DownloadMobileConfigFileUI::KWarningAlertIsPresented),
+      0);
 }
 
 }  // namespace

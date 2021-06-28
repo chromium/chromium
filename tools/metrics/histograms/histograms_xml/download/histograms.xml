@@ -400,6 +400,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.IOSDownloadMobileConfigFileUI"
+    enum="DownloadMobileConfigFileUI" expires_after="2022-06-20">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Result when the warning alert is presented before downloading a
+    .mobileconfig file on iOS. Values indicate if the user has continued the
+    download workflow after the presentation of the warning alert.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadPassKitResult"
     enum="DownloadPassKitResult" expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>

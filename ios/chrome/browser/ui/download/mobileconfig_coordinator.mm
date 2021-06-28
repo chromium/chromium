@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
@@ -24,6 +26,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+const char kUmaDownloadMobileConfigFileUI[] =
+    "Download.IOSDownloadMobileConfigFileUI";
 
 @interface MobileConfigCoordinator () <CRWWebStateObserver,
                                        MobileConfigTabHelperDelegate,
@@ -98,6 +103,10 @@
 
 // Presents SFSafariViewController in order to download .mobileconfig file.
 - (void)presentSFSafariViewController:(NSURL*)fileURL {
+  base::UmaHistogramEnumeration(
+      kUmaDownloadMobileConfigFileUI,
+      DownloadMobileConfigFileUI::kSFSafariViewIsPresented);
+
   self.safariViewController =
       [[SFSafariViewController alloc] initWithURL:fileURL];
   self.safariViewController.delegate = self;
@@ -139,6 +148,10 @@
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      kUmaDownloadMobileConfigFileUI,
+      DownloadMobileConfigFileUI::KWarningAlertIsPresented);
+
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -149,9 +162,14 @@
                              l10n_util::GetNSString(
                                  IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE)];
 
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
-                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
+                  base::UmaHistogramEnumeration(
+                      kUmaDownloadMobileConfigFileUI,
+                      DownloadMobileConfigFileUI::KWarningAlertIsDismissed);
+                }
+                 style:UIAlertActionStyleCancel];
 
   __weak MobileConfigCoordinator* weakSelf = self;
   [self.alertCoordinator
