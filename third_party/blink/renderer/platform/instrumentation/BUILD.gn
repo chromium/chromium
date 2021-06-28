@@ -55,6 +55,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//base/allocator:buildflags",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -10,6 +10,7 @@
 
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
 #include "base/memory/nonscannable_memory.h"

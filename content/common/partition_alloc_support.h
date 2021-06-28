@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
