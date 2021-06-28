@@ -275,14 +275,10 @@ const CGFloat kAnimationDuration = 0.15;
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.accessibilityIdentifier = kToolbarAccessoryContainerViewID;
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |incognitoStyle| can be removed, as well as
-    // the incognito specific assets.
-    backgroundView.overrideUserInterfaceStyle =
-        self.isIncognito ? UIUserInterfaceStyleDark
-                         : UIUserInterfaceStyleUnspecified;
-  }
+
+  backgroundView.overrideUserInterfaceStyle =
+      self.isIncognito ? UIUserInterfaceStyleDark
+                       : UIUserInterfaceStyleUnspecified;
   backgroundView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   [backgroundView addSubview:self.presentedViewController.view];

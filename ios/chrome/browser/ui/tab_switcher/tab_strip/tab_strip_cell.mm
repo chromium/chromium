@@ -102,9 +102,7 @@ const CGFloat kFontSize = 14.0;
 - (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* incognito = self.useIncognitoFallback ? @"incognito_" : @"";
-  NSString* imageName =
-      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
+  NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
 
   // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
   // Radar filled: b/137942721.
@@ -136,24 +134,6 @@ const CGFloat kFontSize = 14.0;
   // Style the title tint color.
   self.titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
                                        : [UIColor colorNamed:kGrey600Color];
-  // These dark-theme specific colorsets should only be used for iOS 12
-  // dark theme, as they will be removed along with iOS 12.
-  // TODO (crbug.com/981889): The following lines will be removed
-  // along with iOS 12
-  if (self.useIncognitoFallback) {
-    // Style the favicon tint color.
-    self.faviconView.tintColor =
-        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
-                 : [UIColor colorNamed:kGrey500Color];
-    // Style the close button tint color.
-    self.closeButton.tintColor =
-        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
-                 : [UIColor colorNamed:kGrey500Color];
-    // Style the title tint color.
-    self.titleLabel.textColor = selected
-                                    ? [UIColor colorNamed:kTextPrimaryDarkColor]
-                                    : [UIColor colorNamed:kGrey600Color];
-  }
 }
 
 @end

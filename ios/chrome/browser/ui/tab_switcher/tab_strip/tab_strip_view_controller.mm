@@ -119,8 +119,6 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
                                 forIndexPath:indexPath]);
 
   [self configureCell:cell withItem:item];
-  cell.useIncognitoFallback =
-      self.isOffTheRecord && !base::ios::IsRunningOnIOS13OrLater();
   cell.selected = (self.selectedItemID == cell.itemIdentifier) ? YES : NO;
   return cell;
 }

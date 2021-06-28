@@ -35,12 +35,7 @@
 
     AddSameCenterConstraints(plusSignView, self.contentView);
 
-    if (@available(iOS 13, *)) {
-      // TODO(crbug.com/981889): When iOS 12 is dropped, only the next line is
-      // needed for styling. Every other check can be sremoved, as well as the
-      // incognito specific assets.
-      self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-    }
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
   return self;
 }

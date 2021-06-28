@@ -1075,8 +1075,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // The styler must be set before the view controller is loaded.
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   styler.tableViewBackgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  // To make using the compile guards easier, use a separate method.
-  [self setupRemoteTabsViewControllerForDarkModeWithStyler:styler];
+  styler.cellHighlightColor = [UIColor colorNamed:kTableViewRowHighlightColor];
+  self.remoteTabsViewController.overrideUserInterfaceStyle =
+      UIUserInterfaceStyleDark;
   self.remoteTabsViewController.styler = styler;
 
   UIView* contentView = self.scrollContentView;
@@ -1099,34 +1100,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.view.widthAnchor],
   ];
   [NSLayoutConstraint activateConstraints:constraints];
-}
-
-// The iOS 13 compile guards are much easier to use in a separate function that
-// can be returned from.
-- (void)setupRemoteTabsViewControllerForDarkModeWithStyler:
-    (ChromeTableViewStyler*)styler {
-  // For iOS 13, setting the overrideUserInterfaceStyle to dark forces the use
-  // of dark mode colors for all the colors in this view. However, this
-  // override is not available on pre-iOS 13 devices, so the dark mode colors
-  // must be provided manually.
-  if (@available(iOS 13, *)) {
-    styler.cellHighlightColor =
-        [UIColor colorNamed:kTableViewRowHighlightColor];
-    self.remoteTabsViewController.overrideUserInterfaceStyle =
-        UIUserInterfaceStyleDark;
-    return;
-  }
-  styler.cellHighlightColor =
-      [UIColor colorNamed:kTableViewRowHighlightDarkColor];
-  styler.cellTitleColor = UIColorFromRGB(kGridDarkThemeCellTitleColor);
-  styler.headerFooterTitleColor = UIColorFromRGB(kGridDarkThemeCellTitleColor);
-  styler.cellDetailColor = UIColorFromRGB(kGridDarkThemeCellDetailColor,
-                                          kGridDarkThemeCellDetailAlpha);
-  styler.headerFooterDetailColor = UIColorFromRGB(
-      kGridDarkThemeCellDetailColor, kGridDarkThemeCellDetailAlpha);
-  styler.tintColor = UIColorFromRGB(kGridDarkThemeCellTintColor);
-  styler.solidButtonTextColor =
-      UIColorFromRGB(kGridDarkThemeCellSolidButtonTextColor);
 }
 
 // Adds a DisabledTabViewController as a contained view controller, and sets

@@ -29,20 +29,6 @@ imageset("tabstrip_foreground_tab") {
   ]
 }
 
-imageset("tabstrip_incognito_background_tab") {
-  sources = [
-    "tabstrip_incognito_background_tab.imageset/Contents.json",
-    "tabstrip_incognito_background_tab.imageset/tabstrip_incognito_background_tab@2x~ipad.png",
-  ]
-}
-
-imageset("tabstrip_incognito_foreground_tab") {
-  sources = [
-    "tabstrip_incognito_foreground_tab.imageset/Contents.json",
-    "tabstrip_incognito_foreground_tab.imageset/tabstrip_incognito_foreground_tab@2x~ipad.png",
-  ]
-}
-
 imageset("tabstrip_new_tab") {
   sources = [
     "tabstrip_new_tab.imageset/Contents.json",

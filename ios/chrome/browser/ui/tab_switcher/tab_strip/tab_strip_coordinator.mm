@@ -40,14 +40,12 @@
     return;
 
   self.tabStripViewController = [[TabStripViewController alloc] init];
-  if (@available(iOS 13, *)) {
-    self.tabStripViewController.overrideUserInterfaceStyle =
-        self.browser->GetBrowserState()->IsOffTheRecord()
-            ? UIUserInterfaceStyleDark
-            : UIUserInterfaceStyleUnspecified;
-    self.tabStripViewController.isOffTheRecord =
-        self.browser->GetBrowserState()->IsOffTheRecord();
-  }
+  self.tabStripViewController.overrideUserInterfaceStyle =
+      self.browser->GetBrowserState()->IsOffTheRecord()
+          ? UIUserInterfaceStyleDark
+          : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isOffTheRecord =
+      self.browser->GetBrowserState()->IsOffTheRecord();
 
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];

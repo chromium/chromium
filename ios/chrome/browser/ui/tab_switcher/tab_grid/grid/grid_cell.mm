@@ -108,6 +108,12 @@ void PositionView(UIView* view, CGPoint point) {
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
 
+    self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
+
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = CGSizeMake(0, 0);
     self.layer.shadowRadius = 4.0f;
@@ -197,45 +203,14 @@ void PositionView(UIView* view, CGPoint point) {
     return;
 
   self.iconView.backgroundColor = UIColor.clearColor;
-  switch (theme) {
-    // This is necessary for iOS 13 because on iOS 13, this will return
-    // the dynamic color (which will then be colored with the user
-    // interface style).
-    // On iOS 12, this will always return the dynamic color in the light
-    // variant.
-    case GridThemeLight:
-      self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
-      break;
-    // These dark-theme specific colorsets should only be used for iOS 12
-    // dark theme, as they will be removed along with iOS 12.
-    // TODO (crbug.com/981889): The following lines will be removed
-    // along with iOS 12
-    case GridThemeDark:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kBackgroundDarkColor];
-      self.snapshotView.backgroundColor =
-          [UIColor colorNamed:kBackgroundDarkColor];
-      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundDarkColor];
-      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonDarkColor];
-      break;
-  }
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |GridThemeDark| can be removed, as well as
-    // the dark theme specific assets.
-    self.overrideUserInterfaceStyle = (theme == GridThemeDark)
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-  }
+  self.overrideUserInterfaceStyle = (theme == GridThemeDark)
+                                        ? UIUserInterfaceStyleDark
+                                        : UIUserInterfaceStyleUnspecified;
 
-  // When iOS 12 is dropped, only the next switch statement is needed for
-  // styling.
+  // The light and dark themes have different colored borders based on the
+  // theme, regardless of dark mode, so |overrideUserInterfaceStyle| is not
+  // enough here.
   switch (theme) {
     case GridThemeLight:
       self.border.layer.borderColor =
@@ -246,6 +221,7 @@ void PositionView(UIView* view, CGPoint point) {
           [UIColor colorNamed:@"grid_theme_dark_selection_tint_color"].CGColor;
       break;
   }
+
   _theme = theme;
 }
 

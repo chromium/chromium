@@ -40,16 +40,13 @@
 }
 
 - (void)viewDidLoad {
-  if (@available(iOS 13, *)) {
-    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  }
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 
   self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
                                                   URLLoader:_URLLoader];
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
                                           UIViewAutoresizingFlexibleWidth];
-  UIColor* backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.incognitoView.backgroundColor = backgroundColor;
+  self.incognitoView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   [self.view addSubview:self.incognitoView];
 }
 

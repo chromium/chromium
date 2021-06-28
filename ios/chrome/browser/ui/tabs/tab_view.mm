@@ -171,16 +171,10 @@ UIImage* DefaultFaviconImage() {
   }
   _incognitoStyle = incognitoStyle;
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |incognitoStyle| can be removed, as well as the
-    // incognito specific assets.
-    self.overrideUserInterfaceStyle = _incognitoStyle
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-    return;
-  }
-  [self updateStyleForSelected:self.selected];
+  self.overrideUserInterfaceStyle = _incognitoStyle
+                                        ? UIUserInterfaceStyleDark
+                                        : UIUserInterfaceStyleUnspecified;
+  return;
 }
 
 - (void)startProgressSpinner {
@@ -355,13 +349,10 @@ UIImage* DefaultFaviconImage() {
   // On iOS 13 there is no need to pick custom incognito assets because
   // |overrideUserInterfaceStyle| is set to dark mode when in incognito.
   using base::ios::IsRunningOnIOS13OrLater;
-  BOOL useIncognitoFallback = self.incognitoStyle && !IsRunningOnIOS13OrLater();
 
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* incognito = useIncognitoFallback ? @"incognito_" : @"";
-  NSString* imageName =
-      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
+  NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
   CGFloat leftInset = kTabBackgroundLeftCapInset;
   // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
   // Radar filled: b/137942721.
@@ -385,33 +376,15 @@ UIImage* DefaultFaviconImage() {
   }
 
   // Style the close button tint color.
-  NSString* closeButtonColorName;
-  if (selected) {
-    closeButtonColorName =
-        useIncognitoFallback ? kCloseButtonDarkColor : kGrey600Color;
-  } else {
-    closeButtonColorName = kGrey500Color;
-  }
+  NSString* closeButtonColorName = selected ? kGrey600Color : kGrey500Color;
   _closeButton.tintColor = [UIColor colorNamed:closeButtonColorName];
 
   // Style the favicon tint color.
-  NSString* faviconColorName;
-  if (selected) {
-    faviconColorName =
-        useIncognitoFallback ? kCloseButtonDarkColor : kGrey600Color;
-  } else {
-    faviconColorName = kGrey500Color;
-  }
+  NSString* faviconColorName = selected ? kGrey600Color : kGrey500Color;
   _faviconView.tintColor = [UIColor colorNamed:faviconColorName];
 
   // Style the title tint color.
-  NSString* titleColorName = nil;
-  if (selected) {
-    titleColorName =
-        useIncognitoFallback ? kTextPrimaryDarkColor : kTextPrimaryColor;
-  } else {
-    titleColorName = kGrey600Color;
-  }
+  NSString* titleColorName = selected ? kTextPrimaryColor : kGrey600Color;
   _titleLabel.textColor = [UIColor colorNamed:titleColorName];
 
   _titleLabel.font = [UIFont systemFontOfSize:kFontSize

@@ -207,9 +207,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // If the controller overrides overrideUserInterfaceStyle, respect that in the
   // SettingsNavigationController.
-  if (@available(iOS 13.0, *)) {
-    nc.overrideUserInterfaceStyle = controller.overrideUserInterfaceStyle;
-  }
+  nc.overrideUserInterfaceStyle = controller.overrideUserInterfaceStyle;
   return nc;
 }
 

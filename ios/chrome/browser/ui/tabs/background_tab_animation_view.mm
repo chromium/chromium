@@ -38,11 +38,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   if (self) {
     _incognito = incognito;
 
-    if (@available(iOS 13, *)) {
-      self.overrideUserInterfaceStyle = incognito
-                                            ? UIUserInterfaceStyleDark
-                                            : UIUserInterfaceStyleUnspecified;
-    }
+    self.overrideUserInterfaceStyle =
+        incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
   }
   return self;
 }

@@ -31,14 +31,8 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (@available(iOS 13, *)) {
-    // TODO(crbug.com/981889): When iOS 12 is dropped, only the next line is
-    // needed for styling. Every other check for |incognitoStyle| can be
-    // removed, as well as the incognito specific assets.
-    self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  }
-  UIColor* backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.view.backgroundColor = backgroundColor;
+  self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.view.accessibilityIdentifier = @"BrowserViewHiderView";
   self.view.layer.cornerRadius = kTopCornerRadius;
   self.view.hidden = YES;
