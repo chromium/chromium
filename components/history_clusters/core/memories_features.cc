@@ -50,4 +50,7 @@ const base::Feature kPersistContextAnnotationsInHistoryDb{
     "MemoriesPersistContextAnnotationsInHistoryDb",
     enabled_by_default_desktop_only};
 
+const base::Feature kUseOnDeviceClusteringBackend{
+    "MemoriesOnDeviceClusteringBackend", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace history_clusters

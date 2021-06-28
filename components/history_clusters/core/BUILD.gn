@@ -2,7 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/chrome_build.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+
+declare_args() {
+  # You can set the variable 'build_with_on_device_clustering_backend' to true
+  # to use the on-device clustering backend even in a developer build.  Setting
+  # this variable explicitly to true will cause your build to fail if the
+  # internal files are missing.
+  build_with_on_device_clustering_backend =
+      is_chrome_branded && !is_android && !is_ios
+}
+
+buildflag_header("history_clusters_buildflags") {
+  header = "history_clusters_buildflags.h"
+  flags = [ "BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND=$build_with_on_device_clustering_backend" ]
+}
 
 static_library("core") {
   sources = [
@@ -16,6 +32,7 @@ static_library("core") {
   ]
   deps = [
     ":clustering_backend",
+    ":history_clusters_buildflags",
     ":mojo_bindings",
     "//base",
     "//components/history/core/browser",
@@ -27,6 +44,9 @@ static_library("core") {
     "//ui/base",
     "//url",
   ]
+  if (build_with_on_device_clustering_backend) {
+    deps += [ "//components/history_clusters/internal" ]
+  }
 }
 
 source_set("clustering_backend") {

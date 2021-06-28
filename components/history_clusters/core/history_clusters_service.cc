@@ -15,10 +15,15 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
+
+#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
+#include "components/history_clusters/internal/on_device_clustering_backend.h"
+#endif
 
 namespace history_clusters {
 
@@ -177,6 +182,11 @@ HistoryClustersService::HistoryClustersService(
       url_loader_factory,
       base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
                           weak_ptr_factory_.GetWeakPtr()));
+#if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
+  if (base::FeatureList::IsEnabled(kUseOnDeviceClusteringBackend)) {
+    backend_ = std::make_unique<OnDeviceClusteringBackend>();
+  }
+#endif
   backend_weak_factory_ =
       std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(backend_.get());
 }

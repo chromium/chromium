@@ -62,6 +62,10 @@ extern const base::Feature kRemoteModelForDebugging;
 // enabled, users will have context annotations persisted into their History DB.
 extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 
+// Enables the on-device clustering backend. Only enabled for official Chrome
+// builds.
+extern const base::Feature kUseOnDeviceClusteringBackend;
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_FEATURES_H_
