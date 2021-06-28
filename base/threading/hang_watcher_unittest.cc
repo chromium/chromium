@@ -145,12 +145,15 @@ class HangWatcherTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  HangWatcher hang_watcher_;
-
   // Used exclusively for MOCK_TIME. No tasks will be run on the environment.
   // Single threaded to avoid ThreadPool WorkerThreads registering.
   test::SingleThreadTaskEnvironment task_environment_{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // This must be declared last (after task_environment_, for example) so that
+  // the watcher thread is joined before objects like the mock timer are
+  // destroyed, causing racy crashes.
+  HangWatcher hang_watcher_;
 };
 
 class HangWatcherBlockingThreadTest : public HangWatcherTest {
