@@ -49,6 +49,9 @@ template("lipo_binary") {
   assert(defined(invoker.arch_binary_target),
          "arch_binary_target must be defined for $target_name")
 
+  assert(!is_fat_secondary_toolchain,
+         "lipo_binary can only be used in the primary toolchain of a fat build")
+
   _target_name = target_name
   _output_name = target_name
   if (defined(invoker.output_name)) {

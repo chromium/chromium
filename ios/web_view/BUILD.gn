@@ -545,7 +545,7 @@ group("web_view_resources") {
   ]
 }
 
-if (additional_toolchains == [] || current_toolchain == default_toolchain) {
+if (!is_fat_secondary_toolchain) {
   _package_dir = "$root_out_dir/ios_web_view"
 
   action("ios_web_view_generate_license") {

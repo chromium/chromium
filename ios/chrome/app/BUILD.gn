@@ -92,50 +92,53 @@ source_set("tests_fake_hook") {
   deps = [ ":tests_hook" ]
 }
 
-tweak_info_plist("info_plist") {
-  info_plists = [
-    "resources/Info.plist",
-    "resources/ChromeAddition+Info.plist",
-  ]
-  if (target_environment == "catalyst") {
-    info_plists += [ "resources/Environment+Catalyst.plist" ]
-  } else {
-    info_plists += [ "resources/Environment+Default.plist" ]
-  }
-  if (ios_chrome_info_plist_additions != []) {
-    info_plists += ios_chrome_info_plist_additions
-  }
-  if (ios_encryption_export_compliance_code != "") {
-    info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
-  }
-  if (ios_chrome_info_plist_addition_targets != []) {
-    if (!defined(deps)) {
-      deps = []
+if (!is_fat_secondary_toolchain) {
+  tweak_info_plist("info_plist") {
+    info_plists = [
+      "resources/Info.plist",
+      "resources/ChromeAddition+Info.plist",
+    ]
+    if (target_environment == "catalyst") {
+      info_plists += [ "resources/Environment+Catalyst.plist" ]
+    } else {
+      info_plists += [ "resources/Environment+Default.plist" ]
     }
-    deps += ios_chrome_info_plist_addition_targets
-  }
-  args = [
-    "--breakpad=$breakpad_enabled_as_int",
-    "--branding=$chromium_short_name",
-    "--add-gtm-metadata=1",
-  ]
+    if (ios_chrome_info_plist_additions != []) {
+      info_plists += ios_chrome_info_plist_additions
+    }
+    if (ios_encryption_export_compliance_code != "") {
+      info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
+    }
+    if (ios_chrome_info_plist_addition_targets != []) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += ios_chrome_info_plist_addition_targets
+    }
+    args = [
+      "--breakpad=$breakpad_enabled_as_int",
+      "--branding=$chromium_short_name",
+      "--add-gtm-metadata=1",
+    ]
 
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args += [ "--lock-to-version=$ios_lock_to_version" ]
+    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
+    if (ios_lock_to_version != "") {
+      args += [ "--lock-to-version=$ios_lock_to_version" ]
+    }
   }
-}
 
-compile_entitlements("entitlements") {
-  entitlements_templates = [ "resources/Chrome.entitlements" ]
-  if (ios_chrome_entitlements_additions != []) {
-    entitlements_templates += ios_chrome_entitlements_additions
+  compile_entitlements("entitlements") {
+    entitlements_templates = [ "resources/Chrome.entitlements" ]
+    if (ios_chrome_entitlements_additions != []) {
+      entitlements_templates += ios_chrome_entitlements_additions
+    }
+    if (target_environment == "catalyst") {
+      entitlements_templates +=
+          [ "resources/Environment+Catalyst.entitlements" ]
+    }
+    substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+    output_name = "$target_gen_dir/$chromium_short_name.entitlements"
   }
-  if (target_environment == "catalyst") {
-    entitlements_templates += [ "resources/Environment+Catalyst.entitlements" ]
-  }
-  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-  output_name = "$target_gen_dir/$chromium_short_name.entitlements"
 }
 
 source_set("content_suggestions_scheduler_app_state_agent") {

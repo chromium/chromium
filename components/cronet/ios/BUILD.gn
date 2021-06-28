@@ -5,6 +5,7 @@
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/c++/c++.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/util/lastchange.gni")
 import("//components/cronet/native/include/headers.gni")
@@ -209,66 +210,67 @@ action("cronet_static_complete") {
   public_configs = [ ":cronet_static_config" ]
 }
 
-# A fat static library which exports cronet public symbols and hides all dependendencies.
-lipo_binary("libcronet") {
-  arch_binary_target = ":cronet_static_complete"
-  arch_binary_output = "cronet_static_complete.a"
-  output_name = "libcronet.a"
-  enable_stripping = false
-  enable_dsyms = false
-}
-
-template("ios_static_framework") {
-  _target_name = target_name
-  _output_name = target_name
-  if (defined(invoker.output_name)) {
-    _output_name = invoker.output_name
-  }
-  _framework_name = target_name
-  if (defined(invoker.framework_name)) {
-    _framework_name = invoker.framework_name
+# A fat static library which exports cronet public symbols and hides all
+# dependendencies.
+if (!is_fat_secondary_toolchain) {
+  lipo_binary("libcronet") {
+    arch_binary_target = ":cronet_static_complete"
+    arch_binary_output = "cronet_static_complete.a"
+    output_name = "libcronet.a"
+    enable_stripping = false
+    enable_dsyms = false
   }
 
-  _framework_headers_target = _target_name + "_framework_headers"
-  bundle_data(_framework_headers_target) {
-    visibility = [ ":$_target_name" ]
-    sources = invoker.public_headers
-    outputs = [ "{{bundle_contents_dir}}/Headers/{{source_file_part}}" ]
+  template("ios_static_framework") {
+    _target_name = target_name
+    _output_name = target_name
+    if (defined(invoker.output_name)) {
+      _output_name = invoker.output_name
+    }
+    _framework_name = target_name
+    if (defined(invoker.framework_name)) {
+      _framework_name = invoker.framework_name
+    }
+
+    _framework_headers_target = _target_name + "_framework_headers"
+    bundle_data(_framework_headers_target) {
+      visibility = [ ":$_target_name" ]
+      sources = invoker.public_headers
+      outputs = [ "{{bundle_contents_dir}}/Headers/{{source_file_part}}" ]
+    }
+
+    _framework_binary_target = _target_name + "_framework_binary"
+    _static_library_target = invoker.static_library_target
+
+    bundle_data(_framework_binary_target) {
+      visibility = [ ":$_target_name" ]
+      sources = get_target_outputs(_static_library_target)
+      outputs = [ "{{bundle_executable_dir}}/$_framework_name" ]
+      public_deps = [ _static_library_target ]
+    }
+
+    create_bundle(_target_name) {
+      product_type = "com.apple.product-type.framework"
+      bundle_root_dir = "$root_out_dir/Static/${_output_name}"
+      bundle_contents_dir = bundle_root_dir
+      bundle_executable_dir = bundle_contents_dir
+      bundle_resources_dir = bundle_contents_dir
+      deps = [
+        ":$_framework_binary_target",
+        ":$_framework_headers_target",
+      ]
+      public_configs = invoker.public_configs
+    }
   }
 
-  _framework_binary_target = _target_name + "_framework_binary"
-  _static_library_target = invoker.static_library_target
-
-  bundle_data(_framework_binary_target) {
-    visibility = [ ":$_target_name" ]
-    sources = get_target_outputs(_static_library_target)
-    outputs = [ "{{bundle_executable_dir}}/$_framework_name" ]
-    public_deps = [ _static_library_target ]
+  ios_static_framework("cronet_static_framework") {
+    output_name = "Cronet.framework"
+    framework_name = "Cronet"
+    public_headers = _cronet_public_headers
+    static_library_target = ":libcronet"
+    public_configs = [ ":cronet_static_config" ]
   }
 
-  create_bundle(_target_name) {
-    product_type = "com.apple.product-type.framework"
-    bundle_root_dir = "$root_out_dir/Static/${_output_name}"
-    bundle_contents_dir = bundle_root_dir
-    bundle_executable_dir = bundle_contents_dir
-    bundle_resources_dir = bundle_contents_dir
-    deps = [
-      ":$_framework_binary_target",
-      ":$_framework_headers_target",
-    ]
-    public_configs = invoker.public_configs
-  }
-}
-
-ios_static_framework("cronet_static_framework") {
-  output_name = "Cronet.framework"
-  framework_name = "Cronet"
-  public_headers = _cronet_public_headers
-  static_library_target = ":libcronet"
-  public_configs = [ ":cronet_static_config" ]
-}
-
-if (additional_toolchains == [] || current_toolchain == default_toolchain) {
   _package_dir = "$root_out_dir/cronet"
 
   action("generate_license") {
@@ -342,5 +344,9 @@ if (additional_toolchains == [] || current_toolchain == default_toolchain) {
       ":cronet_package_copy",
       ":generate_license",
     ]
+  }
+} else {
+  group("cronet_package_ios") {
+    public_deps = [ ":cronet_package_ios($primary_fat_toolchain_name)" ]
   }
 }
