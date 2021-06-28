@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/autofill_regexes.h"
 
+// Keep these tests in sync with
+// components/autofill/core/browser/pattern_provider/default_regex_patterns_unittest.cc
+// These tests wil be superceded once the pattern provider launches.
+
 #include <stddef.h>
 
 #include <string>
@@ -224,5 +228,65 @@ INSTANTIATE_TEST_SUITE_P(
                     InputTestCase{u"Expiration Date MM-YY"},
                     InputTestCase{u"expiration date yy"},
                     InputTestCase{u"Exp Date     (MM / YY)"}));
+
+class ZipCodePositive : public testing::TestWithParam<InputTestCase> {};
+
+TEST_P(ZipCodePositive, ZipCodeRegexes) {
+  auto test_case = GetParam();
+  SCOPED_TRACE(test_case.input);
+  const std::u16string pattern = kZipCodeRe;
+  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+}
+
+INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
+                         ZipCodePositive,
+                         testing::Values(InputTestCase{u"Zip code"},
+                                         InputTestCase{u"postal code"},
+                                         InputTestCase{u"postleitzahl"}));
+
+class ZipCodeNegative : public testing::TestWithParam<InputTestCase> {};
+
+TEST_P(ZipCodeNegative, ZipCodeRegexes) {
+  auto test_case = GetParam();
+  SCOPED_TRACE(test_case.input);
+  const std::u16string pattern = kZipCodeRe;
+  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillRegexes,
+    ZipCodeNegative,
+    testing::Values(InputTestCase{u""},
+                    InputTestCase{
+                        u"Supported file formats: .docx, .rar, .zip."}));
+
+class Zip4Positive : public testing::TestWithParam<InputTestCase> {};
+
+TEST_P(Zip4Positive, Zip4Regexes) {
+  auto test_case = GetParam();
+  SCOPED_TRACE(test_case.input);
+  const std::u16string pattern = kZip4Re;
+  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+}
+
+INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
+                         Zip4Positive,
+                         testing::Values(InputTestCase{u"Zip code"}));
+
+class Zip4Negative : public testing::TestWithParam<InputTestCase> {};
+
+TEST_P(Zip4Negative, Zip4Regexes) {
+  auto test_case = GetParam();
+  SCOPED_TRACE(test_case.input);
+  const std::u16string pattern = kZip4Re;
+  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillRegexes,
+    Zip4Negative,
+    testing::Values(InputTestCase{u""},
+                    InputTestCase{
+                        u"Supported file formats: .docx, .rar, .zip."}));
 
 }  // namespace autofill

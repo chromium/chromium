@@ -314,6 +314,7 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/input/175_id_address_alfacart.com.html",
   "//components/test/data/autofill/heuristics/input/176_id_payment_shopee.co.id.html",
   "//components/test/data/autofill/heuristics/input/177_reichelt.html",
+  "//components/test/data/autofill/heuristics/input/178_zip_file_extension.html",
   "//components/test/data/autofill/heuristics/output/000_i18n_de.out",
   "//components/test/data/autofill/heuristics/output/001_i18n_de2.out",
   "//components/test/data/autofill/heuristics/output/002_i18n_en.out",
@@ -491,6 +492,7 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/output/175_id_address_alfacart.com.out",
   "//components/test/data/autofill/heuristics/output/176_id_payment_shopee.co.id.out",
   "//components/test/data/autofill/heuristics/output/177_reichelt.out",
+  "//components/test/data/autofill/heuristics/output/178_zip_file_extension.out",
 ]
 
 # Generate a file containing the list of test input files. This list will

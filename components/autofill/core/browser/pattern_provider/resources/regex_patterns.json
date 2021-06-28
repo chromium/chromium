@@ -857,7 +857,8 @@
         "pattern_identifier": "en_zip_code_preserving",
         "positive_pattern": "zip|postal|post.*code|pcode|pin.?code",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "\\.zip",
+        "negative_patterns_explainer": ".zip refers to a file extension",
         "match_field_attributes": 3,
         "match_field_input_types": 69
       }
@@ -1009,7 +1010,8 @@
         "pattern_identifier": "en_zip_4_preserving",
         "positive_pattern": "zip|^-$|post2",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "\\.zip",
+        "negative_patterns_explainer": ".zip refers to a file extension",
         "match_field_attributes": 3,
         "match_field_input_types": 69
       }

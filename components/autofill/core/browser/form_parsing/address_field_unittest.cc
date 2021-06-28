@@ -148,6 +148,12 @@ TEST_F(AddressFieldTest, ParseZip) {
   ClassifyAndVerify();
 }
 
+TEST_F(AddressFieldTest, ParseZipFileExtension) {
+  AddTextFormFieldData("filename", "Supported formats: .zip, .rar",
+                       UNKNOWN_TYPE);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
+}
+
 TEST_F(AddressFieldTest, ParseStateAndZipOneLabel) {
   AddTextFormFieldData("state", "State/Province, Zip/Postal Code",
                        ADDRESS_HOME_STATE);

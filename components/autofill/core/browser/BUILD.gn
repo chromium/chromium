@@ -723,6 +723,7 @@ source_set("unit_tests") {
     "logging/log_buffer_submitter_unittest.cc",
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
+    "pattern_provider/default_regex_patterns_unittest.cc",
     "pattern_provider/pattern_configuration_parser_unittest.cc",
     "pattern_provider/pattern_provider_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
