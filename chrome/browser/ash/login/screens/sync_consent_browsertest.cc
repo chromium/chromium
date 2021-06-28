@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -48,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 namespace {
@@ -118,8 +120,11 @@ class ConsentRecordedWaiter
 };
 
 std::string GetLocalizedConsentString(const int id) {
+  std::vector<std::u16string> str_substitute;
+  str_substitute.push_back(ui::GetChromeOSDeviceName());
   std::string sanitized_string =
-      base::UTF16ToUTF8(l10n_util::GetStringUTF16(id));
+      base::UTF16ToUTF8(base::ReplaceStringPlaceholders(
+          l10n_util::GetStringUTF16(id), str_substitute, nullptr));
   base::ReplaceSubstringsAfterOffset(&sanitized_string, 0, "\u00A0" /* NBSP */,
                                      "&nbsp;");
   return sanitized_string;
@@ -150,17 +155,26 @@ class SyncConsentTest : public OobeBaseTest {
           IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2,
       };
     } else {
-      expected_consent_ids_ = {
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_NAME,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_NAME,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
-      };
       if (features::IsMinorModeRestrictionEnabled()) {
-        expected_consent_ids_.push_back(IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2);
+        expected_consent_ids_ = {
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
+        };
+      } else {
+        expected_consent_ids_ = {
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER,
+            IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
+        };
       }
     }
 
@@ -768,11 +782,11 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Accept) {
             consent_recorded_waiter.consent_given_);
   EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
               UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
-  EXPECT_EQ("Accept and continue",
+  EXPECT_EQ("Turn on sync",
             consent_recorded_waiter.consent_confirmation_string_);
   EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
               UnorderedElementsAreArray(expected_consent_ids_));
-  EXPECT_EQ(IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
+  EXPECT_EQ(IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
             consent_recorded_waiter.consent_confirmation_id_);
 
   WaitForScreenExit();

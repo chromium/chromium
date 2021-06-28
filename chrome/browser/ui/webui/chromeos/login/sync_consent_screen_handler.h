@@ -88,6 +88,10 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   void RememberLocalizedValue(const std::string& name,
                               const int resource_id,
                               ::login::LocalizedValuesBuilder* builder);
+  void RememberLocalizedValueWithDeviceName(
+      const std::string& name,
+      const int resource_id,
+      ::login::LocalizedValuesBuilder* builder);
 
   // Resource IDs of the displayed strings.
   std::unordered_set<int> known_string_ids_;

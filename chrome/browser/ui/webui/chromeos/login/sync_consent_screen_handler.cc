@@ -31,6 +31,8 @@ void GetConsentIDs(const std::unordered_set<int>& known_ids,
                    std::vector<int>* consent_description_ids,
                    int* consent_confirmation_id) {
   std::unordered_map<std::string, int> known_strings;
+  std::vector<std::u16string> str_substitute;
+  str_substitute.push_back(ui::GetChromeOSDeviceName());
   for (const int& id : known_ids) {
     // When the strings are passed to the HTML, the Unicode NBSP symbol
     // (\u00A0) will be automatically replaced with "&nbsp;". This change must
@@ -38,11 +40,11 @@ void GetConsentIDs(const std::unordered_set<int>& known_ids,
     // characters, so we must use base::ReplaceSubstrings* rather than
     // base::ReplaceChars.
     // TODO(alemate): Find a more elegant solution.
-    std::u16string raw_string = l10n_util::GetStringUTF16(id);
+    std::u16string raw_string = base::ReplaceStringPlaceholders(
+        l10n_util::GetStringUTF16(id), str_substitute, nullptr);
     std::string sanitized_string = base::UTF16ToUTF8(raw_string);
     base::ReplaceSubstringsAfterOffset(&sanitized_string, 0,
                                        "\u00A0" /* NBSP */, "&nbsp;");
-
     known_strings[sanitized_string] = id;
   }
 
@@ -85,14 +87,55 @@ void SyncConsentScreenHandler::RememberLocalizedValue(
   builder->Add(name, resource_id);
 }
 
+void SyncConsentScreenHandler::RememberLocalizedValueWithDeviceName(
+    const std::string& name,
+    const int resource_id,
+    ::login::LocalizedValuesBuilder* builder) {
+  CHECK(known_string_ids_.count(resource_id) == 0);
+  known_string_ids_.insert(resource_id);
+  builder->AddF(name, resource_id, ui::GetChromeOSDeviceName());
+}
+
 void SyncConsentScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   known_string_ids_.clear();
 
-  RememberLocalizedValue("syncConsentScreenTitle",
+  RememberLocalizedValueWithDeviceName(
+      "syncConsentScreenTitle", IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+      builder);
+  RememberLocalizedValue("syncConsentScreenSubtitle",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2, builder);
+  RememberLocalizedValueWithDeviceName(
+      "syncConsentScreenOsSyncTitle",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2, builder);
+  RememberLocalizedValue(
+      "syncConsentScreenChromeBrowserSyncTitle",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2, builder);
+  RememberLocalizedValue(
+      "syncConsentScreenChromeBrowserSyncDescription",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION, builder);
+  RememberLocalizedValue(
+      "syncConsentReviewSyncOptionsText",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER, builder);
+
+  RememberLocalizedValue("syncConsentAcceptAndContinue",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
+                         builder);
+  RememberLocalizedValue("syncConsentTurnOnSync",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC, builder);
+
+  // SplitSettingsSync strings.
+  RememberLocalizedValue("syncConsentScreenSplitSettingsTitle",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE, builder);
-  RememberLocalizedValue("syncConsentScreenChromeSyncName",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_NAME,
+  RememberLocalizedValue("syncConsentScreenSplitSettingsSubtitle",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE, builder);
+  RememberLocalizedValue("syncConsentScreenOsSyncName",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME, builder);
+  RememberLocalizedValue("syncConsentScreenOsSyncDescription",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION,
+                         builder);
+  RememberLocalizedValue("syncConsentScreenChromeBrowserSyncName",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME,
                          builder);
   RememberLocalizedValue("syncConsentScreenChromeSyncDescription",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION,
@@ -108,25 +151,6 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
       "syncConsentScreenPersonalizeGoogleServicesDescription",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
       builder);
-  RememberLocalizedValue(
-      "syncConsentReviewSyncOptionsText",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER, builder);
-
-  RememberLocalizedValue("syncConsentAcceptAndContinue",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
-                         builder);
-
-  // SplitSettingsSync strings.
-  RememberLocalizedValue("syncConsentScreenSubtitle",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE, builder);
-  RememberLocalizedValue("syncConsentScreenOsSyncName",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME, builder);
-  RememberLocalizedValue("syncConsentScreenOsSyncDescription",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION,
-                         builder);
-  RememberLocalizedValue("syncConsentScreenChromeBrowserSyncName",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME,
-                         builder);
   RememberLocalizedValue("syncConsentScreenAccept",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2, builder);
   RememberLocalizedValue("syncConsentScreenDecline",
@@ -142,7 +166,6 @@ void SyncConsentScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
-  data.SetString("deviceType", ui::GetChromeOSDeviceName());
   data.SetBoolean("splitSettingsSyncEnabled",
                   chromeos::features::IsSplitSettingsSyncEnabled());
   // TODO(https://crbug.com/1222010): read actual minor mode signal from account

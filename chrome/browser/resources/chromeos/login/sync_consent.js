@@ -52,12 +52,12 @@ Polymer({
     },
 
     /**
-     * The device type (e.g. "Chromebook" or "Chromebox").
-     * TODO(jamescook): Delete this after M85 once we're sure UX doesn't want
-     * the device type in the dialog.
-     * @private
+     * The text key for the opt-in button (it could vary based on whether
+     * the user is in minor mode).
      */
-    deviceType_: String,
+    optInButtonTextKey_: {
+      type: String,
+    }
   },
 
   EXTERNAL_API: ['setThrobberVisible'],
@@ -73,9 +73,11 @@ Polymer({
    */
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
-    this.setDeviceType(data['deviceType']);
     this.splitSettingsSyncEnabled_ = data['splitSettingsSyncEnabled'];
     this.isMinorMode_ = data['isMinorMode'];
+    this.optInButtonTextKey_ = this.isMinorMode_ ?
+        'syncConsentTurnOnSync' :
+        'syncConsentAcceptAndContinue';
     this.setUIStep(this.defaultUIStep());
   },
 
@@ -98,13 +100,6 @@ Polymer({
    */
   setIsChildAccount(is_child_account) {
     this.isChildAccount_ = is_child_account;
-  },
-
-  /**
-   * @param deviceType {string} The device type (e.g. "Chromebook").
-   */
-  setDeviceType(deviceType) {
-    this.deviceType_ = deviceType;
   },
 
   /** @override */
