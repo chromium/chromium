@@ -246,9 +246,6 @@ const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
     "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kThrottleVisibleNotFocusedTimers{
-    "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Deprioritizes JS timer tasks during a particular phase of page loading.
 PLATFORM_EXPORT extern const base::Feature
     kDeprioritizeDOMTimersDuringPageLoading;

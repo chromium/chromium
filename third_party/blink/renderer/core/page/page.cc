@@ -1051,10 +1051,6 @@ bool Page::LocalMainFrameNetworkIsAlmostIdle() const {
   return frame->GetIdlenessDetector()->NetworkIsAlmostIdle();
 }
 
-bool Page::IsFocused() const {
-  return GetFocusController().IsFocused();
-}
-
 void Page::AddAutoplayFlags(int32_t value) {
   autoplay_flags_ |= value;
 }

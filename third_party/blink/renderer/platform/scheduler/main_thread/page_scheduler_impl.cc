@@ -187,7 +187,6 @@ PageSchedulerImpl::PageSchedulerImpl(
       are_wake_ups_intensively_throttled_(false),
       keep_active_(main_thread_scheduler_->SchedulerKeepActive()),
       had_recent_title_or_favicon_update_(false),
-      focused_(delegate ? delegate->IsFocused() : true),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
       freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
@@ -364,13 +363,6 @@ void PageSchedulerImpl::SetPageBackForwardCached(
                             GetWeakPtr()),
         GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
   }
-}
-
-void PageSchedulerImpl::OnFocusChanged(bool focused) {
-  DCHECK_NE(focused_, focused);
-
-  focused_ = focused;
-  NotifyFrames();
 }
 
 void PageSchedulerImpl::SetUpIPCTaskDetection() {
@@ -605,10 +597,6 @@ void PageSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
           DeprioritizeDOMTimersPhase::kFirstContentfulPaint) {
     NotifyFrames();
   }
-}
-
-bool PageSchedulerImpl::IsPageFocused() const {
-  return focused_;
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
