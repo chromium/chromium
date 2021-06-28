@@ -87,6 +87,7 @@ LogBuffer::LogBuffer() {
 }
 
 LogBuffer::LogBuffer(LogBuffer&& other) noexcept = default;
+LogBuffer& LogBuffer::operator=(LogBuffer&& other) = default;
 LogBuffer::~LogBuffer() = default;
 
 base::Value LogBuffer::RetrieveResult() {

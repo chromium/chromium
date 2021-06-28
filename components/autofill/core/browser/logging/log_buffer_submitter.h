@@ -21,8 +21,13 @@ class LogRouter;
 class LogBufferSubmitter {
  public:
   LogBufferSubmitter(LogRouter* destination, bool active);
-  LogBufferSubmitter(LogBufferSubmitter&& that) noexcept;
   ~LogBufferSubmitter();
+
+  LogBufferSubmitter(LogBufferSubmitter&& that) noexcept;
+  LogBufferSubmitter& operator=(LogBufferSubmitter&& that);
+
+  LogBufferSubmitter(LogBufferSubmitter& that) = delete;
+  LogBufferSubmitter& operator=(LogBufferSubmitter& that) = delete;
 
   LogBuffer& buffer() { return buffer_; }
   operator LogBuffer&() { return buffer_; }
@@ -30,7 +35,9 @@ class LogBufferSubmitter {
  private:
   LogRouter* destination_;
   LogBuffer buffer_;
-  DISALLOW_COPY_AND_ASSIGN(LogBufferSubmitter);
+  // If set to false, the destructor does not perform any logging. This is used
+  // for move assignment so that the original copy does not trigger logging.
+  bool destruct_with_logging_ = true;
 };
 
 }  // namespace autofill

@@ -538,6 +538,14 @@ const auto& GetTypeRelationshipMap() {
   return rules;
 }
 
+LogBufferSubmitter LogRationalization(LogManager* log_manager) {
+  if (!log_manager)
+    return LogManager::DevNull();
+  LogBufferSubmitter submitter = log_manager->Log();
+  submitter << LoggingScope::kRationalization << LogMessage::kRationalization;
+  return submitter;
+}
+
 }  // namespace
 
 class FormStructure::SectionedFieldsIndexes {
@@ -683,7 +691,7 @@ void FormStructure::DetermineHeuristicTypes(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillParsingPatternsLanguageDetection)) {
-    RationalizeRepeatedFields(form_interactions_ukm_logger);
+    RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
   }
   RationalizeFieldTypePredictions(log_manager);
 
@@ -898,7 +906,7 @@ void FormStructure::ProcessQueryResponse(
         !query_response_has_no_server_data);
 
     form->UpdateAutofillCount();
-    form->RationalizeRepeatedFields(form_interactions_ukm_logger);
+    form->RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
     form->RationalizeFieldTypePredictions(log_manager);
     // TODO(crbug.com/1154080): By calling this with false, autocomplete section
     // attributes will be ignored.
@@ -1563,12 +1571,11 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
       cc_num_found || num_cc_fields_found >= 3 || num_other_fields_found == 0;
 
   if (!keep_cc_fields && num_cc_fields_found && log_manager) {
-    log_manager->Log() << LoggingScope::kRationalization
-                       << LogMessage::kRationalization
-                       << "Credit card rationalization: Did not find credit "
-                          "card number, did not find >= 3 credit card fields ("
-                       << num_cc_fields_found << "), and had non-cc fields ("
-                       << num_other_fields_found << ").";
+    LogRationalization(log_manager)
+        << "Credit card rationalization: Did not find credit card number, did "
+           "not find >= 3 credit card fields ("
+        << num_cc_fields_found << "), and had non-cc fields ("
+        << num_other_fields_found << ").";
   }
 
   // Do an update pass over the fields to rewrite the types if credit card
@@ -1611,39 +1618,30 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
         //       month field(s) not immediately preceding an expiry year field.
         if (!keep_cc_fields || !cc_date_found) {
           if (!cc_date_found && log_manager) {
-            log_manager->Log() << LoggingScope::kRationalization
-                               << LogMessage::kRationalization
-                               << "Credit card rationalization: Found CC "
-                                  "expiration month but not a full date.";
+            LogRationalization(log_manager)
+                << "Credit card rationalization: Found CC expiration month but "
+                   "not a full date.";
           }
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
         } else if (num_months_found > 1) {
           auto it2 = it + 1;
           if (it2 == fields_.end()) {
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-            if (log_manager) {
-              log_manager->Log()
-                  << LoggingScope::kRationalization
-                  << LogMessage::kRationalization
-                  << "Credit card rationalization: Found multiple expiration "
-                     "months and the last field was an expiration month";
-            }
+            LogRationalization(log_manager)
+                << "Credit card rationalization: Found multiple expiration "
+                   "months and the last field was an expiration month";
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           } else {
             ServerFieldType next_field_type = (*it2)->Type().GetStorableType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-              if (log_manager) {
-                log_manager->Log()
-                    << LoggingScope::kRationalization
-                    << LogMessage::kRationalization
-                    << "Credit card rationalization: Found multiple expiration "
-                       "months and the field following one is not an "
-                       "expiration year but "
-                    << FieldTypeToStringPiece(next_field_type) << ".";
-              }
             }
+            LogRationalization(log_manager)
+                << "Credit card rationalization: Found multiple expiration "
+                   "months and the field following one is not an "
+                   "expiration year but "
+                << FieldTypeToStringPiece(next_field_type) << ".";
           }
         }
         break;
@@ -1652,9 +1650,7 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
         if (!keep_cc_fields || !cc_date_found) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           if (!cc_date_found && log_manager) {
-            log_manager->Log()
-                << LoggingScope::kRationalization
-                << LogMessage::kRationalization
+            LogRationalization(log_manager)
                 << "Credit card rationalization: Found expiration year but no "
                    "full expriration date.";
           }
@@ -1695,7 +1691,8 @@ void FormStructure::ApplyRationalizationsToFieldAndLog(
 
 void FormStructure::RationalizeAddressLineFields(
     SectionedFieldsIndexes* sections_of_address_indexes,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   // The rationalization happens within sections.
   for (sections_of_address_indexes->Reset();
        !sections_of_address_indexes->IsFinished();
@@ -1711,18 +1708,24 @@ void FormStructure::RationalizeAddressLineFields(
 
     int nb_address_rationalized = 0;
     for (auto field_index : *current_section) {
+      LogBufferSubmitter log_submitter = LogRationalization(log_manager);
+      log_submitter
+          << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to ";
       switch (nb_address_rationalized) {
         case 0:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE1,
                                              form_interactions_ukm_logger);
+          log_submitter << "ADDRESS_HOME_LINE1";
           break;
         case 1:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE2,
                                              form_interactions_ukm_logger);
+          log_submitter << "ADDRESS_HOME_LINE2";
           break;
         case 2:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE3,
                                              form_interactions_ukm_logger);
+          log_submitter << "ADDRESS_HOME_LINE3";
           break;
         default:
           NOTREACHED();
@@ -1826,7 +1829,8 @@ bool FormStructure::FieldShouldBeRationalizedToCountry(size_t upper_index) {
 void FormStructure::RationalizeAddressStateCountry(
     SectionedFieldsIndexes* sections_of_state_indexes,
     SectionedFieldsIndexes* sections_of_country_indexes,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   // Walk on the sections of state and country indexes simultaneously. If they
   // both point to the same section, it means that that section includes both
   // the country and the state type. This means that no that rationalization is
@@ -1896,6 +1900,8 @@ void FormStructure::RationalizeAddressStateCountry(
       ApplyRationalizationsToFields(
           upper_index, lower_index, fields_[upper_index]->heuristic_type(),
           fields_[lower_index]->heuristic_type(), form_interactions_ukm_logger);
+      LogRationalization(log_manager)
+          << "RationalizeAddressStateCountry: Heuristics are applicable";
       continue;
     }
 
@@ -1903,16 +1909,21 @@ void FormStructure::RationalizeAddressStateCountry(
       ApplyRationalizationsToFields(upper_index, lower_index,
                                     ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE,
                                     form_interactions_ukm_logger);
+      LogRationalization(log_manager) << "RationalizeAddressStateCountry: "
+                                         "FieldShouldBeRationalizedToCountry";
     } else {
       ApplyRationalizationsToFields(upper_index, lower_index,
                                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
                                     form_interactions_ukm_logger);
+      LogRationalization(log_manager) << "RationalizeAddressStateCountry: "
+                                         "!FieldShouldBeRationalizedToCountry";
     }
   }
 }
 
 void FormStructure::RationalizeRepeatedFields(
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   // The type of every field whose index is in
   // sectioned_field_indexes_by_type[|type|] is predicted by server as |type|.
   // Example: sectioned_field_indexes_by_type[FULL_NAME] is a sectioned fields
@@ -1943,13 +1954,13 @@ void FormStructure::RationalizeRepeatedFields(
 
   RationalizeAddressLineFields(
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_STREET_ADDRESS]),
-      form_interactions_ukm_logger);
+      form_interactions_ukm_logger, log_manager);
   // Since the billing types are mapped to the non-billing ones, no need to
   // take care of ADDRESS_BILLING_STATE and .. .
   RationalizeAddressStateCountry(
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_STATE]),
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_COUNTRY]),
-      form_interactions_ukm_logger);
+      form_interactions_ukm_logger, log_manager);
 }
 
 void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
@@ -1957,7 +1968,7 @@ void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
   for (const auto& field : fields_) {
     field->SetTypeTo(field->Type());
   }
-  RationalizeTypeRelationships();
+  RationalizeTypeRelationships(log_manager);
 }
 
 void FormStructure::EncodeFormForQuery(
@@ -2483,7 +2494,7 @@ void FormStructure::set_randomized_encoder(
   randomized_encoder_ = std::move(encoder);
 }
 
-void FormStructure::RationalizeTypeRelationships() {
+void FormStructure::RationalizeTypeRelationships(LogManager* log_manager) {
   // Create a local set of all the types for faster lookup.
   ServerFieldTypeSet types;
   for (const auto& field : fields_) {
@@ -2502,6 +2513,10 @@ void FormStructure::RationalizeTypeRelationships() {
         // No required type was found, the current field failed the relationship
         // requirements for its type. Disabling Autofill for this field.
         field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+        LogRationalization(log_manager)
+            << "RationalizeTypeRelationships: Fields of type "
+            << FieldTypeToStringPiece(field_type)
+            << " can only exist if other fields of specific types exist.";
       }
     }
   }

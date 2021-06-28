@@ -13,10 +13,20 @@ LogBufferSubmitter::LogBufferSubmitter(LogRouter* destination, bool active)
   buffer_.set_active(destination != nullptr && active);
 }
 
-LogBufferSubmitter::LogBufferSubmitter(LogBufferSubmitter&& that) noexcept =
-    default;
+LogBufferSubmitter::LogBufferSubmitter(LogBufferSubmitter&& that) noexcept {
+  operator=(std::move(that));
+}
+
+LogBufferSubmitter& LogBufferSubmitter::operator=(LogBufferSubmitter&& that) {
+  destination_ = that.destination_;
+  buffer_ = std::move(that.buffer_);
+  that.destruct_with_logging_ = false;
+  return *this;
+}
 
 LogBufferSubmitter::~LogBufferSubmitter() {
+  if (!destruct_with_logging_)
+    return;
   base::Value message = buffer_.RetrieveResult();
   if (!destination_ || message.is_none())
     return;

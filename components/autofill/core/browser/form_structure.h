@@ -488,20 +488,23 @@ class FormStructure {
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
       SectionedFieldsIndexes* sections_of_address_indexes,
-      AutofillMetrics::FormInteractionsUkmLogger*);
+      AutofillMetrics::FormInteractionsUkmLogger*,
+      LogManager* log_manager);
 
   // Rationalize state and country interdependently.
   void RationalizeAddressStateCountry(
       SectionedFieldsIndexes* sections_of_state_indexes,
       SectionedFieldsIndexes* sections_of_country_indexes,
-      AutofillMetrics::FormInteractionsUkmLogger*);
+      AutofillMetrics::FormInteractionsUkmLogger*,
+      LogManager* log_manager);
 
   // Tunes the fields with identical predictions.
-  void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*);
+  void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*,
+                                 LogManager* log_manager);
 
   // Filters out fields that don't meet the relationship ruleset for their type
   // defined in |type_relationships_rules_|.
-  void RationalizeTypeRelationships();
+  void RationalizeTypeRelationships(LogManager* log_manager);
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.

@@ -106,4 +106,9 @@ std::unique_ptr<LogManager> LogManager::Create(
                                           std::move(notification_callback));
 }
 
+// static
+LogBufferSubmitter LogManager::DevNull() {
+  return LogBufferSubmitter(nullptr, false);
+}
+
 }  // namespace autofill

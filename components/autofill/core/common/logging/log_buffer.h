@@ -81,8 +81,13 @@ struct Tr {};
 class LogBuffer {
  public:
   LogBuffer();
-  LogBuffer(LogBuffer&& other) noexcept;
   ~LogBuffer();
+
+  LogBuffer(LogBuffer&& other) noexcept;
+  LogBuffer& operator=(LogBuffer&& other);
+
+  LogBuffer(const LogBuffer& other) = delete;
+  LogBuffer& operator=(const LogBuffer& other) = delete;
 
   // Returns the contents of the buffer and empties it.
   base::Value RetrieveResult();
@@ -112,8 +117,6 @@ class LogBuffer {
   std::vector<base::Value> buffer_;
 
   bool active_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(LogBuffer);
 };
 
 // Enable streaming numbers of all types.
