@@ -389,6 +389,10 @@ const char kBiometricReauthForPasswordFillingDescription[] =
     "Enables biometric"
     "re-authentication before password filling";
 
+const char kBorealisDiskManagementName[] = "Borealis Disk management";
+const char kBorealisDiskManagementDescription[] =
+    "Enable experimental disk management settings.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =

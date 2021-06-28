@@ -2568,6 +2568,11 @@ const FeatureEntry::FeatureVariation kPaintPreviewStartupVariations[] = {
      base::size(kPaintPreviewStartupWithAccessibility), nullptr}};
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kBorealisDiskManagementInternalName[] =
+    "borealis-disk-management";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7336,6 +7341,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(net::features::kSamePartyCookiesConsideredFirstParty)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kBorealisDiskManagementInternalName,
+     flag_descriptions::kBorealisDiskManagementName,
+     flag_descriptions::kBorealisDiskManagementDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisDiskManagement)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -7427,6 +7439,11 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kArcUseHighMemoryDalvikProfileInternalName,
               entry.internal_name)) {
     return !arc::IsArcVmEnabled();
+  }
+
+  // Only show Borealis flags on enabled devices.
+  if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -229,6 +229,9 @@ extern const char kBentoBarDescription[];
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 
+extern const char kBorealisDiskManagementName[];
+extern const char kBorealisDiskManagementDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 

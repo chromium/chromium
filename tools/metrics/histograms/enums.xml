@@ -46038,6 +46038,7 @@ from previous Chrome versions.
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
   <int value="-1433087548" label="enable-app-install-alerts"/>
   <int value="-1432246303" label="FilesZipPack:enabled"/>
+  <int value="-1431851314" label="BorealisDiskManagement:disabled"/>
   <int value="-1431722713" label="TabFreeze:disabled"/>
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
@@ -46281,6 +46282,7 @@ from previous Chrome versions.
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
   <int value="-1243694853" label="DeferAllScript:disabled"/>
   <int value="-1243206311" label="OmniboxPedalsDefaultIconColored:disabled"/>
+  <int value="-1242867644" label="BorealisDiskManagement:enabled"/>
   <int value="-1241868814" label="WebAuthenticationPhoneSupport:disabled"/>
   <int value="-1241747717" label="enable-android-password-link"/>
   <int value="-1241002324" label="FocusMode:enabled"/>

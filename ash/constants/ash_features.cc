@@ -195,6 +195,10 @@ const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable experimental disk management changes for Borealis.
+const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable display of button on Arc provisioning failure dialog for network
 // tests.
 const base::Feature kButtonARCNetworkDiagnostics{
