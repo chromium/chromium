@@ -6632,9 +6632,9 @@ static_library("browser") {
 
   if (safe_browsing_mode != 0) {
     deps += [
-      "//components/safe_browsing/core:download_file_types_proto",
       "//components/safe_browsing/core:file_type_policies",
       "//components/safe_browsing/core/browser/download:download_stats",
+      "//components/safe_browsing/core/proto:download_file_types_proto",
     ]
   }
 }
@@ -6979,7 +6979,7 @@ static_library("test_support") {
     "//components/reporting/util:task_runner_context",
     "//components/reputation/core",
     "//components/reputation/core:proto",
-    "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core/proto:csd_proto",
     "//components/search_engines:test_support",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/services/unzip/content",

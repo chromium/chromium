@@ -27,7 +27,7 @@ if (safe_browsing_mode == 1) {
     if (is_mac) {
       deps += [ ":disk_image_type_sniffer_mac" ]
     }
-    public_deps = [ "//components/safe_browsing/core:csd_proto" ]
+    public_deps = [ "//components/safe_browsing/core/proto:csd_proto" ]
   }
 
   source_set("download_type_util") {
@@ -40,7 +40,7 @@ if (safe_browsing_mode == 1) {
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:file_type_policies",
     ]
-    public_deps = [ "//components/safe_browsing/core:csd_proto" ]
+    public_deps = [ "//components/safe_browsing/core/proto:csd_proto" ]
   }
 
   source_set("rar_analyzer") {
@@ -73,7 +73,7 @@ if (safe_browsing_mode == 1) {
       "UNRAR_NO_EXCEPTIONS",
     ]
 
-    public_deps = [ "//components/safe_browsing/core:csd_proto" ]
+    public_deps = [ "//components/safe_browsing/core/proto:csd_proto" ]
   }
 
   if (is_mac) {
@@ -107,7 +107,7 @@ if (safe_browsing_mode == 1) {
 
     public_deps = [
       "//base",
-      "//components/safe_browsing/core:csd_proto",
+      "//components/safe_browsing/core/proto:csd_proto",
       "//crypto",
     ]
   }
@@ -157,7 +157,7 @@ source_set("safe_browsing") {
       ":proto",
       "//base:i18n",
       "//chrome/common:mojo_bindings",
-      "//components/safe_browsing/core:csd_proto",
+      "//components/safe_browsing/core/proto:csd_proto",
       "//crypto",
       "//ipc",
       "//third_party/zlib/google:zip",

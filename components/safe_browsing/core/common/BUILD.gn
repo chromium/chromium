@@ -84,8 +84,8 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/proto:csd_proto",
     "//crypto:crypto",
     "//ipc",
     "//net",
@@ -99,7 +99,7 @@ source_set("common") {
       "visual_utils.h",
     ]
     deps += [
-      "//components/safe_browsing/core:client_model_proto",
+      "//components/safe_browsing/core/proto:client_model_proto",
       "//third_party/opencv:emd",
       "//ui/gfx:color_utils",
     ]

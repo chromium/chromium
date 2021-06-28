@@ -17,8 +17,6 @@ source_set("password_protection") {
     "//base",
     "//components/history/core/browser",
     "//components/password_manager/core/browser",
-    "//components/safe_browsing/core:client_model_proto",
-    "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",
@@ -28,6 +26,8 @@ source_set("password_protection") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/proto:client_model_proto",
+    "//components/safe_browsing/core/proto:csd_proto",
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",
@@ -47,7 +47,7 @@ source_set("password_protection_metrics_util") {
 
   deps = [
     "//base",
-    "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core/proto:csd_proto",
     "//net",
   ]
 }
