@@ -15,7 +15,6 @@
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "chrome/browser/payments/android/jni_headers/PaymentAppServiceBridge_jni.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
@@ -26,6 +25,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -290,10 +290,8 @@ bool PaymentAppServiceBridge::MayCrawlForInstallablePaymentApps() {
 
 bool PaymentAppServiceBridge::IsOffTheRecord() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh)
-    return false;
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
-  return profile && profile->IsOffTheRecord();
+  return rfh && rfh->GetBrowserContext() &&
+         rfh->GetBrowserContext()->IsOffTheRecord();
 }
 
 const std::vector<autofill::AutofillProfile*>&
