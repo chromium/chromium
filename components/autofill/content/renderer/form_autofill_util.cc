@@ -1406,7 +1406,6 @@ void MatchLabelsAndFields(
 // Populates the |form|'s
 //  * FormData::fields
 //  * FormData::child_frames
-//  * FormData::child_frame_predecessors
 // using the DOM elements in |control_elements| and |iframe_elements|.
 //
 // Optionally, |optional_field| is set to the FormFieldData that corresponds to
@@ -1430,12 +1429,12 @@ bool FormOrFieldsetsToFormData(
   DCHECK(form);
   DCHECK(form->fields.empty());
   DCHECK(form->child_frames.empty());
-  DCHECK(form->child_frame_predecessors.empty());
   DCHECK(!optional_field || form_control_element);
   DCHECK(!form_element || fieldsets.empty());
 
   // Extracts fields from |control_elements| into `form->fields` and sets
-  // `form->child_frame_predecessors`.
+  // `form->child_frames[i].predecessor` to the field index of the last field
+  // that precedes the |i|th child frame.
   //
   // If `control_elements[i]` is autofillable, `fields_extracted[i]` is set to
   // true and the corresponding FormFieldData is appended to `form->fields`.
@@ -1443,12 +1442,14 @@ bool FormOrFieldsetsToFormData(
   // After each iteration, `iframe_elements[next_iframe]` is the first iframe
   // that comes after `control_elements[i]`.
   //
-  // After the loop, `form->fields` and `form->child_frame_predecessors` is
-  // completely populated (see FormFieldData's documentation for details on the
-  // semantics of FormFieldData::child_frame_predecessors).
+  // After the loop,
+  // - `form->fields` is completely populated;
+  // - `form->child_frames` has the correct size and
+  //   `form->child_frames[i].predecessor` is set to the correct value, but
+  //   `form->child_frames[i].token` is not initialized yet.
   form->fields.reserve(control_elements.size());
   if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    form->child_frame_predecessors.resize(iframe_elements.size(), -1);
+    form->child_frames.resize(iframe_elements.size());
   }
   std::vector<bool> fields_extracted(control_elements.size(), false);
 
@@ -1468,11 +1469,15 @@ bool FormOrFieldsetsToFormData(
     fields_extracted[i] = true;
 
     if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+      // Providing |common_ancestor| speeds up IsDomPredecessor(). If the
+      // |control_element| is part of a form, it is guaranteed that the
+      // |form_element| is a common ancestor, otherwise we fall back to the
+      // Document as a non-ideal but always correct alternative.
       const blink::WebNode& common_ancestor =
           form_element ? static_cast<const blink::WebNode&>(*form_element)
                        : static_cast<const blink::WebNode&>(
                              control_elements[i].GetDocument());
-      // Find the last frame that precedes |control_element|.
+      // Finds the last frame that precedes |control_element|.
       while (next_iframe < iframe_elements.size() &&
              !IsDomPredecessor(control_element, iframe_elements[next_iframe],
                                common_ancestor)) {
@@ -1481,10 +1486,10 @@ bool FormOrFieldsetsToFormData(
       // The |next_frame|th frame precedes `control_element` and thus the last
       // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
       // precede that FormFieldData. If they do not,
-      // `form->child_frame_predecessors[i]` will be updated in a later
+      // `form->child_frames[i].predecessor` will be updated in a later
       // iteration.
       for (size_t k = next_iframe; k < iframe_elements.size(); ++k)
-        form->child_frame_predecessors[k] = form->fields.size() - 1;
+        form->child_frames[k].predecessor = form->fields.size() - 1;
     }
 
     if (form->fields.size() > kMaxParseableFields) {
@@ -1541,29 +1546,26 @@ bool FormOrFieldsetsToFormData(
   // being processed. See http://crbug.com/849870
   if (optional_field && !found_field) {
     form->fields.clear();
-    form->child_frame_predecessors.clear();
     form->child_frames.clear();
     return false;
   }
 
   // Extracts the frame tokens of |iframe_elements|.
   if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    form->child_frames.reserve(iframe_elements.size());
-    for (const WebElement& iframe_element : iframe_elements) {
+    DCHECK_EQ(form->child_frames.size(), iframe_elements.size());
+    for (size_t i = 0; i < iframe_elements.size(); ++i) {
+      const WebElement& iframe_element = iframe_elements[i];
       WebFrame* frame = WebFrame::FromFrameOwnerElement(iframe_element);
       if (frame && frame->IsWebLocalFrame()) {
-        form->child_frames.push_back(LocalFrameToken(
-            frame->ToWebLocalFrame()->GetLocalFrameToken().value()));
+        form->child_frames[i].token = LocalFrameToken(
+            frame->ToWebLocalFrame()->GetLocalFrameToken().value());
       } else if (frame && frame->IsWebRemoteFrame()) {
-        form->child_frames.push_back(RemoteFrameToken(
-            frame->ToWebRemoteFrame()->GetRemoteFrameToken().value()));
+        form->child_frames[i].token = RemoteFrameToken(
+            frame->ToWebRemoteFrame()->GetRemoteFrameToken().value());
       } else {
         NOTREACHED();
-        form->child_frame_predecessors.erase(
-            form->child_frame_predecessors.begin() + form->child_frames.size());
       }
     }
-    DCHECK_EQ(form->child_frames.size(), form->child_frame_predecessors.size());
   }
 
   const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
@@ -1571,7 +1573,6 @@ bool FormOrFieldsetsToFormData(
                        form->child_frames.size() < kMaxParseableFrames;
   if (!success) {
     form->fields.clear();
-    form->child_frame_predecessors.clear();
     form->child_frames.clear();
   }
   return success;

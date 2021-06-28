@@ -24,7 +24,9 @@ using blink::WebElement;
 using blink::WebInputElement;
 using blink::WebSelectElement;
 using blink::WebString;
+using testing::AllOf;
 using testing::ElementsAre;
+using testing::Field;
 
 namespace autofill {
 
@@ -90,13 +92,11 @@ TEST_F(FormCacheBrowserTest, ExtractForms) {
   ASSERT_TRUE(form1);
   EXPECT_EQ(3u, form1->fields.size());
   EXPECT_TRUE(form1->child_frames.empty());
-  EXPECT_TRUE(form1->child_frame_predecessors.empty());
 
   const FormData* unowned_form = GetFormByName(forms, "");
   ASSERT_TRUE(unowned_form);
   EXPECT_EQ(1u, unowned_form->fields.size());
   EXPECT_TRUE(unowned_form->child_frames.empty());
-  EXPECT_TRUE(unowned_form->child_frame_predecessors.empty());
 }
 
 class FormCacheIframeBrowserTest : public FormCacheBrowserTest {
@@ -131,14 +131,18 @@ TEST_F(FormCacheIframeBrowserTest, ExtractFrames) {
   const FormData* form1 = GetFormByName(forms, "form1");
   ASSERT_TRUE(form1);
   EXPECT_TRUE(form1->fields.empty());
-  EXPECT_THAT(form1->child_frames, ElementsAre(frame1_token));
-  EXPECT_THAT(form1->child_frame_predecessors, ElementsAre(-1));
+  EXPECT_THAT(
+      form1->child_frames,
+      ElementsAre(AllOf(Field(&FrameTokenWithPredecessor::token, frame1_token),
+                        Field(&FrameTokenWithPredecessor::predecessor, -1))));
 
   const FormData* unowned_form = GetFormByName(forms, "");
   ASSERT_TRUE(unowned_form);
   EXPECT_TRUE(unowned_form->fields.empty());
-  EXPECT_THAT(unowned_form->child_frames, ElementsAre(frame2_token));
-  EXPECT_THAT(unowned_form->child_frame_predecessors, ElementsAre(-1));
+  EXPECT_THAT(
+      unowned_form->child_frames,
+      ElementsAre(AllOf(Field(&FrameTokenWithPredecessor::token, frame2_token),
+                        Field(&FrameTokenWithPredecessor::predecessor, -1))));
 }
 
 TEST_F(FormCacheBrowserTest, ExtractFormsTwice) {

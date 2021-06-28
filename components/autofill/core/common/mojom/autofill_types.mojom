@@ -76,6 +76,12 @@ struct FrameToken {
   bool is_local;
 };
 
+// autofill::
+struct FrameTokenWithPredecessor {
+  FrameToken token;
+  int32 predecessor;
+};
+
 // autofill::FormRendererId
 struct FormRendererId {
   uint32 id;
@@ -179,8 +185,7 @@ struct FormData {
   url.mojom.Origin main_frame_origin;
   bool is_form_tag;
   FormRendererId unique_renderer_id;
-  array<FrameToken> child_frames;
-  array<int32> child_frame_predecessors;
+  array<FrameTokenWithPredecessor> child_frames;
   SubmissionIndicatorEvent submission_event;
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;

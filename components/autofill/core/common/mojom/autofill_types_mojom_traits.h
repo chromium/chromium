@@ -42,6 +42,22 @@ struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
 };
 
 template <>
+struct StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
+                    autofill::FrameTokenWithPredecessor> {
+  static autofill::FrameToken token(
+      const autofill::FrameTokenWithPredecessor& r) {
+    return r.token;
+  }
+
+  static int predecessor(const autofill::FrameTokenWithPredecessor& r) {
+    return r.predecessor;
+  }
+
+  static bool Read(autofill::mojom::FrameTokenWithPredecessorDataView data,
+                   autofill::FrameTokenWithPredecessor* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::FormRendererIdDataView,
                     autofill::FormRendererId> {
   static uint32_t id(autofill::FormRendererId r) { return r.value(); }
@@ -276,14 +292,9 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return r.unique_renderer_id;
   }
 
-  static const std::vector<autofill::FrameToken>& child_frames(
+  static const std::vector<autofill::FrameTokenWithPredecessor>& child_frames(
       const autofill::FormData& r) {
     return r.child_frames;
-  }
-
-  static const std::vector<int32_t>& child_frame_predecessors(
-      const autofill::FormData& r) {
-    return r.child_frame_predecessors;
   }
 
   static autofill::mojom::SubmissionIndicatorEvent submission_event(

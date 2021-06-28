@@ -69,6 +69,27 @@ void LogDeserializationError(int version) {
 
 }  // namespace
 
+FrameTokenWithPredecessor::FrameTokenWithPredecessor() = default;
+FrameTokenWithPredecessor::FrameTokenWithPredecessor(
+    const FrameTokenWithPredecessor&) = default;
+FrameTokenWithPredecessor::FrameTokenWithPredecessor(
+    FrameTokenWithPredecessor&&) = default;
+FrameTokenWithPredecessor& FrameTokenWithPredecessor::operator=(
+    const FrameTokenWithPredecessor&) = default;
+FrameTokenWithPredecessor& FrameTokenWithPredecessor::operator=(
+    FrameTokenWithPredecessor&&) = default;
+FrameTokenWithPredecessor::~FrameTokenWithPredecessor() = default;
+
+bool operator==(const FrameTokenWithPredecessor& a,
+                const FrameTokenWithPredecessor& b) {
+  return a.token == b.token && a.predecessor == b.predecessor;
+}
+
+bool operator!=(const FrameTokenWithPredecessor& a,
+                const FrameTokenWithPredecessor& b) {
+  return !(a == b);
+}
+
 FormData::FormData() = default;
 
 FormData::FormData(const FormData&) = default;
@@ -128,16 +149,28 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
   // as well.
   auto tie = [](const FormData& f) {
     return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag,
-                    f.child_frames, f.child_frame_predecessors);
+                    f.name_attribute, f.url, f.action, f.is_form_tag);
   };
   if (tie(a) < tie(b))
     return true;
   if (tie(b) < tie(a))
     return false;
-  return std::lexicographical_compare(a.fields.begin(), a.fields.end(),
-                                      b.fields.begin(), b.fields.end(),
-                                      FormFieldData::IdentityComparator());
+  // A less-than relation on FormData::child_frames.
+  auto less_child_frames =
+      [](const std::vector<FrameTokenWithPredecessor>& as,
+         const std::vector<FrameTokenWithPredecessor>& bs) {
+        return base::ranges::lexicographical_compare(
+            as, bs, [](const auto& a, const auto& b) {
+              return std::tie(a.token, a.predecessor) <
+                     std::tie(b.token, b.predecessor);
+            });
+      };
+  if (less_child_frames(a.child_frames, b.child_frames))
+    return true;
+  if (less_child_frames(b.child_frames, a.child_frames))
+    return false;
+  return base::ranges::lexicographical_compare(
+      a.fields, b.fields, FormFieldData::IdentityComparator());
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {

@@ -1128,9 +1128,8 @@ class FieldFramesTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that FormData::fields, FormData::child_frames, and
-// FormData::child_frame_predecessors are extracted fully and in the correct
-// relative order.
+// Tests that FormData::fields and FormData::child_frames are extracted fully
+// and in the correct relative order.
 TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   FieldFramesTestParam test_case = GetParam();
   SCOPED_TRACE(testing::Message() << "HTML: " << test_case.html);
@@ -1164,8 +1163,6 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   // Check that all fields and iframes were extracted.
   EXPECT_EQ(form_data.fields.size() + form_data.child_frames.size(),
             test_case.fields_and_frames.size());
-  EXPECT_EQ(form_data.child_frames.size(),
-            form_data.child_frame_predecessors.size());
 
   // Check that all fields were extracted. Do so by checking for each |field| in
   // `test_case.fields_and_frames` that the DOM element with ID `field.id`
@@ -1191,8 +1188,8 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   // Check that all frames were extracted into `form_data.child_frames`
   // analogously to the above loop for `form_data.fields`.
   //
-  // In addition, check that `form_data.child_frame_predecessors` encodes the
-  // correct ordering, i.e., that `form_data.child_frame_predecessors[i]` is the
+  // In addition, check that `form_data.child_frames[i].predecessor` encodes the
+  // correct ordering, i.e., that `form_data.child_frames[i].predecessor` is the
   // index of the last field in `form_data.fields` that precedes the `i`th frame
   // in `form_data.child_frames`.
   i = 0;
@@ -1210,9 +1207,9 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     ASSERT_TRUE(element.HasHTMLTagName("iframe"));
     auto is_empty = [](auto token) { return token.is_empty(); };
     FrameToken frame_token = GetFrameToken(element);
-    EXPECT_FALSE(absl::visit(is_empty, form_data.child_frames[i]));
-    EXPECT_EQ(form_data.child_frames[i], frame_token);
-    EXPECT_EQ(form_data.child_frame_predecessors[i], preceding_field_index);
+    EXPECT_FALSE(absl::visit(is_empty, form_data.child_frames[i].token));
+    EXPECT_EQ(form_data.child_frames[i].token, frame_token);
+    EXPECT_EQ(form_data.child_frames[i].predecessor, preceding_field_index);
     ++i;
   }
 }

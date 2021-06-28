@@ -28,6 +28,17 @@ bool StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken>::
 }
 
 // static
+bool StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
+                  autofill::FrameTokenWithPredecessor>::
+    Read(autofill::mojom::FrameTokenWithPredecessorDataView data,
+         autofill::FrameTokenWithPredecessor* out) {
+  if (!data.ReadToken(&out->token))
+    return false;
+  out->predecessor = data.predecessor();
+  return true;
+}
+
+// static
 bool StructTraits<autofill::mojom::FormRendererIdDataView,
                   autofill::FormRendererId>::
     Read(autofill::mojom::FormRendererIdDataView data,
@@ -175,9 +186,6 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     return false;
 
   if (!data.ReadChildFrames(&out->child_frames))
-    return false;
-
-  if (!data.ReadChildFramePredecessors(&out->child_frame_predecessors))
     return false;
 
   if (!data.ReadSubmissionEvent(&out->submission_event))
