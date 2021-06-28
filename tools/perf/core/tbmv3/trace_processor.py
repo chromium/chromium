@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import csv
 import json
 import logging
 import os
 import subprocess
+import tempfile
 import threading
 
 from collections import namedtuple
@@ -199,6 +201,86 @@ def _PluckField(json_dict, field_path):
       raise InvalidTraceProcessorOutput(
           "Field not marked as repeated but json value is list")
     return _PluckField(field_value, path_tail)
+
+
+def RunQuery(trace_processor_path, trace_file, sql_command):
+  """Run SQL query on trace using trace processor and return result.
+
+  Args:
+    trace_processor_path: path to the trace_processor executable.
+    trace_file: path to the trace file.
+    sql_command: string SQL command
+
+  Returns:
+    SQL query output table when executed on the proto trace as a
+    list of dictionaries. Each item in the list represents a row
+    in the output table. All values in the dictionary are
+    represented as strings. Null is represented as None.
+    Booleans are represented as '0' and '1'. Empty queries
+    or rows return [].
+
+    For example, for a SQL output table that looks like this:
+      | "string_col" | "long_col" | "double_col" | "bool_col" | "maybe_null_col"
+      | "StringVal1" |  123       | 12.34        | true       | "[NULL]"
+      | "StringVal2" |  124       | 34.56        | false      |  25
+      | "StringVal3" |  125       | 68.92        | false      | "[NULL]"
+
+    The list of dictionaries result will look like this:
+      [{
+        'string_col': 'StringVal1',
+        'long_col': '123',
+        'double_col': '12.34',
+        'bool_col': '1',
+        'maybe_null_col': None,
+      }, {
+        'string_col': 'StringVal2',
+        'long_col': '124',
+        'double_col': '34.56',
+        'bool_col': '0',
+        'maybe_null_col': '25',
+      }, {
+        'string_col': 'StringVal3',
+        'long_col': '125',
+        'double_col': '68.92',
+        'bool_col': '0',
+        'maybe_null_col': None,
+      }]
+  """
+  # Write query to temporary file because trace processor accepts
+  # SQL query in a file.
+  with tempfile.NamedTemporaryFile(mode="w+") as sql_file:
+    sql_file.write(sql_command)
+    sql_file.flush()
+    # Run Trace Processor
+    trace_processor_path = _EnsureTraceProcessor(trace_processor_path)
+    command_args = [
+        trace_processor_path,
+        '--query-file',
+        sql_file.name,
+        trace_file,
+    ]
+    tp_output = _RunTraceProcessor(*command_args)
+
+  # Trace Processor returns output string in csv format. Write
+  # string to temporary file because reader accepts csv files.
+  # Parse csv file into list of dictionaries because DictReader
+  # object inconveniently requires open csv file to access data.
+  with tempfile.NamedTemporaryFile(mode="w+") as output_file:
+    output_file.write(tp_output)
+    output_file.flush()
+    csv_output = []
+    with open(output_file.name) as csv_file:
+      csv_reader = csv.DictReader(csv_file)
+      for row in csv_reader:
+        # CSV file represents null values as the string '[NULL]'.
+        # Parse these null values to None type.
+        row_parsed = dict(row)
+        for key, val in row_parsed.items():
+          if val == '[NULL]':
+            row_parsed[key] = None
+        csv_output.append(row_parsed)
+
+  return csv_output
 
 
 def RunMetrics(trace_processor_path,
