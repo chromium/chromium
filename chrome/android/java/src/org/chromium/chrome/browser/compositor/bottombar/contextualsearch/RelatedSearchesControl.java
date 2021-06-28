@@ -49,9 +49,16 @@ public class RelatedSearchesControl {
     private static final int FIRST_RELATED_SEARCHES_CAROUSEL_INDEX =
             DO_DISPLAY_DEFAULT_SELECTION_QUERY ? 1 : 0;
 
+    /** The Android {@link Context} used to inflate the View. */
+    private final Context mContext;
+    /** The container View used to inflate the View. */
+    private final ViewGroup mViewContainer;
+    /** The resource loader that will handle the snapshot capturing. */
+    private final DynamicResourceLoader mResourceLoader;
+
+    /** Whether this control is enabled or not. Even if enabled it may not have a View created. */
     private final boolean mIsEnabled;
     private final OverlayPanel mOverlayPanel;
-    private final Context mContext;
 
     /** The pixel density. */
     private final float mDpToPx;
@@ -85,6 +92,9 @@ public class RelatedSearchesControl {
     /** The reference to the host for this part of the panel (callbacks to the Panel). */
     private RelatedSearchesSectionHost mPanelSectionHost;
 
+    /** Whether this control is for a view that appears in the Bar vs the panel's content area. */
+    boolean mIsInBarControl;
+
     /** The number of chips that have been selected so far. */
     private int mChipsSelected;
 
@@ -97,20 +107,27 @@ public class RelatedSearchesControl {
     /**
      * @param panel             The panel.
      * @param panelSectionHost  A reference to the host of this panel section for notifications.
+     * @param isInBarControl    Whether this control is for a control that appears in the Bar as
+     *                          opposed to appearing in the content area of the Panel.
      * @param context           The Android Context used to inflate the View.
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
     RelatedSearchesControl(OverlayPanel panel, RelatedSearchesSectionHost panelSectionHost,
-            Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        mIsEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
+            boolean isInBarControl, Context context, ViewGroup container,
+            DynamicResourceLoader resourceLoader) {
+        mIsInBarControl = isInBarControl;
+        mContext = context;
+        mViewContainer = container;
+        mResourceLoader = resourceLoader;
+        boolean isRelatedSearchesEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
+        mIsEnabled = isRelatedSearchesEnabled
+                && (mIsInBarControl ? ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
+                                    : true);
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mOverlayPanel = panel;
-        mContext = context;
-
-        mControlView = mIsEnabled
-                ? new RelatedSearchesControlView(panel, context, container, resourceLoader)
-                : null;
         mPanelSectionHost = panelSectionHost;
         // mChipsSelected is default-initialized to 0.
     }
@@ -178,12 +195,31 @@ public class RelatedSearchesControl {
      * @param relatedSearches An {@code List} of suggested queries or {@code null} when none.
      */
     void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches) {
+        if (mControlView == null) {
+            int layoutId = mIsInBarControl
+                    ? R.layout.contextual_search_related_searches_view
+                    : R.layout.contextual_search_related_searches_in_content_view;
+            int viewId = mIsInBarControl
+                    ? R.id.contextual_search_related_searches_view_id
+                    : R.id.contextual_search_related_searches_in_content_view_id;
+            mControlView = new RelatedSearchesControlView(
+                    mOverlayPanel, mContext, mViewContainer, mResourceLoader, layoutId, viewId);
+        }
         mRelatedSearchesSuggestions = relatedSearches;
         mChips = null;
-        show();
+        if (hasReleatedSearchesToShow()) {
+            show();
+        } else {
+            hide();
+        }
         calculateHeight();
         assert mChipsSelected == 0;
         mSelectedChip = NO_SELECTED_CHIP;
+    }
+
+    /** Un-selects any currently selected chip. */
+    void clearSelectedSuggestions() {
+        if (mControlView != null) mControlView.clearSelectedSuggestions();
     }
 
     @VisibleForTesting
@@ -216,8 +252,12 @@ public class RelatedSearchesControl {
         // The View snapshot should be fully visible here.
         updateAppearance(1.0f);
 
-        // The View should not be visible in this state.
-        hideView();
+        // Only the Bar is on screen, so show if this is an in-bar control and hide otherwise.
+        if (mIsInBarControl) {
+            showView();
+        } else {
+            hideView();
+        }
     }
 
     /**
@@ -369,7 +409,7 @@ public class RelatedSearchesControl {
     }
 
     /**
-     * Notifies that the user has clicked on a suggestions in this section of the panel.
+     * Notifies that the user has clicked on a suggestion in this section of the panel.
      * See https://crbug.com/1216593.
      * @param suggestionIndex The 0-based index into the list of suggestions provided by the panel
      *        and presented in the UI. E.g. if the user clicked the second chip this
@@ -377,6 +417,13 @@ public class RelatedSearchesControl {
      */
     private void onSuggestionClicked(int suggestionIndex) {
         mPanelSectionHost.onSuggestionClicked(suggestionIndex);
+
+        // TODO(donnd): add logging of clicks for the In-Bar control.
+        // Currently the server only produces selection-relevant data for regular TTS queries.
+        // When the server returns Related Searches for the selection we need to update this
+        // logging. See https://crbug.com/1222805.
+        if (mIsInBarControl) return;
+
         RelatedSearchesUma.logSelectedCarouselIndex(suggestionIndex);
         // TODO(donnd): check the computation once we're showing the default query. That will
         // not need to be logged using the call below since it's not an RS suggestion.
@@ -434,6 +481,12 @@ public class RelatedSearchesControl {
             for (Observer observer : mObservers) observer.onChipsChanged();
         }
 
+        /** Un-selects any currently selected chip. */
+        void clearSelectedSuggestions() {
+            if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;
+            for (Observer observer : mObservers) observer.onChipsChanged();
+        }
+
         @VisibleForTesting
         void selectChipForTest(int chipIndex) {
             handleChipTapped(chipIndex);
@@ -463,12 +516,12 @@ public class RelatedSearchesControl {
          * @param context           The Android Context used to inflate the View.
          * @param container         The container View used to inflate the View.
          * @param resourceLoader    The resource loader that will handle the snapshot capturing.
+         * @param layoutId          The XML Layout that declares the View.
+         * @param viewId            The id of the root View of the Layout.
          */
         RelatedSearchesControlView(OverlayPanel panel, Context context, ViewGroup container,
-                DynamicResourceLoader resourceLoader) {
-            super(panel, R.layout.contextual_search_related_searches_view,
-                    R.id.contextual_search_related_searches_layout, context, container,
-                    resourceLoader);
+                DynamicResourceLoader resourceLoader, int layoutId, int viewId) {
+            super(panel, layoutId, viewId, context, container, resourceLoader);
 
             // Setup Chips handling
             mChipsProvider = new RelatedSearchesChipsProvider();
@@ -496,10 +549,16 @@ public class RelatedSearchesControl {
             View coordinatorView = mChipsCoordinator.getView();
             if (coordinatorView == null) return;
 
+            // Put the chip coordinator view into our control view.
             ViewGroup parent = (ViewGroup) coordinatorView.getParent();
             if (parent != null) parent.removeView(coordinatorView);
             relatedSearchesViewGroup.addView(coordinatorView);
             invalidate(false);
+        }
+
+        /** Un-selects any currently selected chip. */
+        void clearSelectedSuggestions() {
+            mChipsProvider.clearSelectedSuggestions();
         }
 
         @Override

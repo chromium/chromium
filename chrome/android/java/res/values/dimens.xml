@@ -60,6 +60,11 @@
     <!-- Padding at the end of the Bar. -->
     <dimen name="contextual_search_end_padding">7dp</dimen>
     <dimen name="contextual_search_bubble_y_inset">-3dp</dimen>
+    <!-- Padding amount that should be removed between the Related Searches chips carousel
+         in the Bar and the content above it due to overlapping whitespace margins. This
+         effectively removes the whitespace from the top of the chips carousel because there's
+         already plenty of whitespace above provided by the existing Bar content.-->
+    <dimen name="related_searches_in_bar_redundant_padding">@dimen/chip_bg_vertical_inset</dimen>
 
     <!-- Overlay panel dimensions -->
     <dimen name="overlay_panel_bar_height">70dp</dimen>

@@ -48,8 +48,10 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
      * @param searchBarControl The Search Bar control.
      * @param barBannerControl An optional banner that shows above the Bar as a promo.
      * @param promoControl The privacy Opt-in promo that appears below the Bar.
-     * @param relatedSearchesControl A control that displays Related Searches suggestions for the
-     *        user to consider for one-click searching.
+     * @param relatedSearchesInBarControl A control that displays Related Searches suggestions
+     *        in the Bar to facilitate one-click searching.
+     * @param relatedSearchesInContentControl A control that displays Related Searches suggestions
+     *        in the panel content area to facilitate one-click searching.
      * @param helpControl A control for the help section of the panel that promotes modified
      *        user usage and appears below the Bar and above the content.
      * @param imageControl The object controlling the image displayed in the Bar.
@@ -58,7 +60,8 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
             ContextualSearchBarControl searchBarControl,
             ContextualSearchBarBannerControl barBannerControl,
             ContextualSearchPromoControl promoControl, ContextualSearchPanelHelp helpControl,
-            RelatedSearchesControl relatedSearchesControl,
+            RelatedSearchesControl relatedSearchesInBarControl,
+            RelatedSearchesControl relatedSearchesInContentControl,
             ContextualSearchImageControl imageControl) {
         // Don't try to update the layer if not initialized or showing.
         if (resourceManager == null || !panel.isShowing()) return;
@@ -93,9 +96,18 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         int panelHelpContainerBackgroundColor = helpControl.getContainerBackgroundColor();
 
         // Related Searches section
-        int relatedSearchesViewId = relatedSearchesControl.getViewId();
-        boolean relatedSearchesVisible = relatedSearchesControl.isVisible();
-        float relatedSearchesHeightPx = relatedSearchesControl.getHeightPx();
+        int relatedSearchesInContentViewId = relatedSearchesInContentControl.getViewId();
+        boolean relatedSearchesInContentVisible = relatedSearchesInContentControl.isVisible();
+        float relatedSearchesInContentHeightPx = relatedSearchesInContentControl.getHeightPx();
+        int relatedSearchesInBarViewId = relatedSearchesInBarControl.getViewId();
+        boolean relatedSearchesInBarVisible = relatedSearchesInBarControl.isVisible();
+        // We already have a margin below the text in the Bar, but the RelatedSearches section has
+        // its own top and bottom margin, so the below-text margin is redundant.
+        float relatedSearchesInBarRedundantPadding =
+                panel.getInBarRelatedSearchesRedundantPadding();
+        float relatedSearchesInBarHeight =
+                panel.getInBarRelatedSearchesAnimatedHeightDps() * mDpToPx
+                - relatedSearchesInBarRedundantPadding;
 
         // Banner etc.
         int searchBarBannerTextViewId = barBannerControl.getViewId();
@@ -173,8 +185,10 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 panelHelpViewId, panelHelpVisible, panelHelpHeightPx, panelHelpOpacity,
                 panelHelpContainerBackgroundColor,
                 // Related Searches
-                relatedSearchesViewId, relatedSearchesVisible, relatedSearchesHeightPx,
-                panel.getInBarRelatedSearchesAnimatedHeight() * mDpToPx,
+                relatedSearchesInContentViewId, relatedSearchesInContentVisible,
+                relatedSearchesInContentHeightPx, relatedSearchesInBarViewId,
+                relatedSearchesInBarVisible, relatedSearchesInBarHeight,
+                relatedSearchesInBarRedundantPadding,
                 // Banner etc.
                 searchBarBannerVisible, searchBarBannerHeightPx, searchBarBannerPaddingPx,
                 searchBarBannerRippleWidthPx, searchBarBannerRippleOpacity,
@@ -254,8 +268,10 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 int panelHelpResourceId, boolean panelHelpVisible, float panelHelpHeight,
                 float panelHelpOpacity, int panelHelpBackgroundColor,
                 // Related Searches
-                int relatedSearchesResourceId, boolean relatedSearchesVisible,
-                float relatedSearchesHeight, float inBarRelatedSearchesHeight,
+                int relatedSearchesInContentResourceId, boolean relatedSearchesInContentVisible,
+                float relatedSearchesInContentHeight, int relatedSearchesInBarResourceId,
+                boolean relatedSearchesInBarVisible, float relatedSearchesInBarHeight,
+                float relatedSearchesInBarRedundantPadding,
                 // Banner etc
                 boolean searchBarBannerVisible, float searchBarBannerHeight,
                 float searchBarBannerPaddingPx, float searchBarBannerRippleWidth,

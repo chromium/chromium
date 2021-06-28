@@ -117,7 +117,7 @@ public class ContextualSearchBarControl {
     private CompositorAnimator mInBarRelatedSearchesAnimation;
 
     /** The height of the Related Searches section of the Bar, as adjusted during animation. */
-    private float mInBarRelatedSearchesAnimatedHeight;
+    private float mInBarRelatedSearchesAnimatedHeightDps;
 
     /**
      * Constructs a new bottom bar control container by inflating views from XML.
@@ -564,20 +564,21 @@ public class ContextualSearchBarControl {
      * @param percentage The percentage (from 0 to 1) of the UI to expose.
      */
     private void updateInBarRelatedSearchesSize(float percentage) {
-        mInBarRelatedSearchesAnimatedHeight = getInBarRelatedSearchesMaximumHeight() * percentage;
-        mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeight);
+        mInBarRelatedSearchesAnimatedHeightDps =
+                getInBarRelatedSearchesMaximumHeight() * percentage;
+        mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
     }
 
     /** Returns the maximum height of the Related Searches UI that we show right in the Bar. */
     private float getInBarRelatedSearchesMaximumHeight() {
-        return mContextualSearchPanel.getRelatedSearchesMaximumHeight();
+        return mContextualSearchPanel.getRelatedSearchesMaximumHeightDps();
     }
 
     /**
      * Returns the current height of the portion of the Related Searches UI that is visible
      * due to animation.
      */
-    float getInBarRelatedSearchesAnimatedHeight() {
-        return mInBarRelatedSearchesAnimatedHeight;
+    float getInBarRelatedSearchesAnimatedHeightDps() {
+        return mInBarRelatedSearchesAnimatedHeightDps;
     }
 }

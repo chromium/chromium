@@ -140,6 +140,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      */
     private PropertyModel mScrimProperties;
 
+    /** Whether the current SERP (Search Result Page) is due to the In-Content Related Searches. */
+    private boolean mIsRelatedSearchesInContentSerp;
+
     // ============================================================================================
     // Constructor
     // ============================================================================================
@@ -201,7 +204,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
         mSceneLayer.update(resourceManager, this, getSearchBarControl(), getBarBannerControl(),
-                getPromoControl(), getPanelHelp(), getRelatedSearchesControl(), getImageControl());
+                getPromoControl(), getPanelHelp(), getRelatedSearchesInBarControl(),
+                getRelatedSearchesInContentControl(), getImageControl());
 
         return mSceneLayer;
     }
@@ -389,7 +393,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.destroyComponents();
         destroyPromoControl();
         destroyPanelHelp();
-        destroyRelatedSearchesControl();
+        destroyInBarRelatedSearchesControl();
+        destroyInContentRelatedSearchesControl();
         destroyBarBannerControl();
         destroySearchBarControl();
     }
@@ -444,7 +449,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     public float getContentY() {
         return getOffsetY() + getBarContainerHeight() + getPanelHelpHeight()
-                + getRelatedSearchesMaximumHeight() + getPromoHeightPx() * mPxToDp;
+                + getRelatedSearchesMaximumHeightDps() + getPromoHeightPx() * mPxToDp;
     }
 
     @Override
@@ -465,12 +470,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public float getBarHeight() {
-        return super.getBarHeight() + getInBarRelatedSearchesAnimatedHeight();
+        return super.getBarHeight() + getInBarRelatedSearchesAnimatedHeightDps();
     }
 
     @Override
     public void setClampedPanelHeight(float height) {
-        // TODO(donnd): better to just expose the super method to be public?
         super.setClampedPanelHeight(height);
     }
 
@@ -525,7 +529,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public void clearRelatedSearches() {
-        getRelatedSearchesControl().hide();
+        getRelatedSearchesInBarControl().hide();
+        getRelatedSearchesInContentControl().hide();
     }
 
     /**
@@ -548,15 +553,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @VisibleForTesting
     public boolean isBarBannerVisible() {
         return getBarBannerControl().isVisible();
-    }
-
-    /**
-     * @return The visible Related Search suggestions.
-     */
-    @VisibleForTesting
-    @Nullable
-    public List<String> getRelatedSearches() {
-        return getRelatedSearchesControl().getRelatedSearchesSuggestions();
     }
 
     /**
@@ -590,8 +586,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mShouldPromoteToTabAfterMaximizing = true;
         super.maximizePanel(reason);
         if (reason == StateChangeReason.SERP_NAVIGATION) {
+            RelatedSearchesControl activeRelatedSearches = mIsRelatedSearchesInContentSerp
+                    ? getRelatedSearchesInContentControl()
+                    : getRelatedSearchesInBarControl();
             ContextualSearchUma.logSerpResultClicked(
-                    getRelatedSearchesControl().isShowingRelatedSearchSerp());
+                    activeRelatedSearches.isShowingRelatedSearchSerp());
+            mIsRelatedSearchesInContentSerp = false;
         }
     }
 
@@ -614,10 +614,14 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.closePanel(reason, animate);
         mHasContentBeenTouched = false;
         if (reason == StateChangeReason.TAB_PROMOTION) {
-            ContextualSearchUma.logTabPromotion(
-                    getRelatedSearchesControl().isShowingRelatedSearchSerp());
+            RelatedSearchesControl activeRelatedSearches = mIsRelatedSearchesInContentSerp
+                    ? getRelatedSearchesInContentControl()
+                    : getRelatedSearchesInBarControl();
+            ContextualSearchUma.logTabPromotion(activeRelatedSearches.isShowingRelatedSearchSerp());
+            mIsRelatedSearchesInContentSerp = false;
         }
-        destroyRelatedSearchesControl();
+        destroyInBarRelatedSearchesControl();
+        destroyInContentRelatedSearchesControl();
     }
 
     @Override
@@ -698,13 +702,18 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param quickActionCategory The {@code QuickActionCategory} for the quick action.
      * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
      *        or {@code 0}.
-     * @param relatedSearches Suggested searches to be displayed in the Panel.
+     * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
+     * @param relatedSearchesInContent Related Searches suggestions to be displayed in the content
+     *        portion of the Panel.
      */
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> relatedSearches) {
-        getRelatedSearchesControl().setRelatedSearchesSuggestions(relatedSearches);
+            @Nullable List<String> relatedSearchesInBar,
+            @Nullable List<String> relatedSearchesInContent) {
+        getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(relatedSearchesInBar);
+        getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(
+                relatedSearchesInContent);
         mPanelMetrics.onSearchTermResolved();
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {
@@ -721,7 +730,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getImageControl().setThumbnailUrl(thumbnailUrl);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
-                && relatedSearches.size() > 0) {
+                && relatedSearchesInBar.size() > 0) {
             getSearchBarControl().animateInBarRelatedSearches();
         }
     }
@@ -787,7 +796,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getPromoControl().onUpdateFromCloseToPeek(percentage);
         getPanelHelp().onUpdateFromCloseToPeek(percentage);
-        getRelatedSearchesControl().onUpdateFromCloseToPeek(percentage);
+        getRelatedSearchesInBarControl().onUpdateFromCloseToPeek(percentage);
+        getRelatedSearchesInContentControl().onUpdateFromCloseToPeek(percentage);
         getBarBannerControl().onUpdateFromCloseToPeek(percentage);
         getSearchBarControl().onUpdateFromCloseToPeek(percentage);
     }
@@ -798,7 +808,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getPromoControl().onUpdateFromPeekToExpand(percentage);
         getPanelHelp().onUpdateFromPeekToExpand(percentage);
-        getRelatedSearchesControl().onUpdateFromPeekToExpand(percentage);
+        getRelatedSearchesInBarControl().onUpdateFromPeekToExpand(percentage);
+        getRelatedSearchesInContentControl().onUpdateFromPeekToExpand(percentage);
         getBarBannerControl().onUpdateFromPeekToExpand(percentage);
         getSearchBarControl().onUpdateFromPeekToExpand(percentage);
     }
@@ -809,7 +820,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getPromoControl().onUpdateFromExpandToMaximize(percentage);
         getPanelHelp().onUpdateFromExpandToMaximize(percentage);
-        getRelatedSearchesControl().onUpdateFromExpandToMaximize(percentage);
+        getRelatedSearchesInBarControl().onUpdateFromExpandToMaximize(percentage);
+        getRelatedSearchesInContentControl().onUpdateFromExpandToMaximize(percentage);
         getBarBannerControl().onUpdateFromExpandToMaximize(percentage);
     }
 
@@ -821,8 +833,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (getPanelHelp().isVisible()) {
             getPanelHelp().invalidate(true);
         }
-        if (getRelatedSearchesControl().isVisible()) {
-            getRelatedSearchesControl().invalidate(true);
+        if (getRelatedSearchesInBarControl().isVisible()) {
+            getRelatedSearchesInBarControl().invalidate(true);
+        }
+        if (getRelatedSearchesInContentControl().isVisible()) {
+            getRelatedSearchesInContentControl().invalidate(true);
         }
         if (getBarBannerControl().isVisible()) {
             getBarBannerControl().onResized(this);
@@ -1034,7 +1049,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                     // Needs to enumerate anything that can appear above it in the panel.
                     return Math.round(
                             (getOffsetY() + getBarContainerHeight()
-                                    + getRelatedSearchesMaximumHeight() + getPanelHelpHeight())
+                                    + getRelatedSearchesMaximumHeightDps() + getPanelHelpHeight())
                             / mPxToDp);
                 }
 
@@ -1106,7 +1121,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
                     return Math.round((getOffsetY() + getBarContainerHeight()
-                                              + getRelatedSearchesMaximumHeight())
+                                              + getRelatedSearchesMaximumHeightDps())
                             / mPxToDp);
                 }
 
@@ -1133,56 +1148,41 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     // ============================================================================================
-    // Related Searches Control Panel-Section
+    // The Related Searches Control that appears as a Panel-Section
     // ============================================================================================
 
-    private RelatedSearchesControl mRelatedSearchesControl;
-    private RelatedSearchesSectionHost mRelatedSearchesSectionHost;
+    private RelatedSearchesControl mRelatedSearchesInContentControl;
+    private RelatedSearchesSectionHost mRelatedSearchesInContentHost;
 
     /**
-     * Creates the RelatedSearchesControl, if needed.
+     * Creates the RelatedSearchesControl to be shown in the content area of the Panel, if needed.
      */
     @VisibleForTesting
-    public RelatedSearchesControl getRelatedSearchesControl() {
-        if (mRelatedSearchesControl == null) {
-            mRelatedSearchesControl = new RelatedSearchesControl(this,
-                    getRelatedSearchesSectionHost(), mContext, mContainerView, mResourceLoader);
+    public RelatedSearchesControl getRelatedSearchesInContentControl() {
+        if (mRelatedSearchesInContentControl == null) {
+            mRelatedSearchesInContentControl =
+                    new RelatedSearchesControl(this, getRelatedSearchesInContentHost(), false,
+                            mContext, mContainerView, mResourceLoader);
         }
-        return mRelatedSearchesControl;
+        return mRelatedSearchesInContentControl;
     }
 
     /**
-     * @return Total height of this section of the panel in DPs (once fully exposed by animation).
+     * Destroys the RelatedSearchesControl that appears in the content area of the Panel.
      */
-    float getRelatedSearchesMaximumHeight() {
-        return getRelatedSearchesControl().getHeightPx() * mPxToDp;
-    }
-
-    /**
-     * @return Height of the Related Searches UI as currently show right inside the Bar, in DPs.
-     */
-    public float getInBarRelatedSearchesAnimatedHeight() {
-        return haveSearchBarControl()
-                ? getSearchBarControl().getInBarRelatedSearchesAnimatedHeight()
-                : 0.f;
-    }
-
-    /**
-     * Destroys the RelatedSearchesControl.
-     */
-    private void destroyRelatedSearchesControl() {
-        if (mRelatedSearchesControl != null) {
-            mRelatedSearchesControl.destroy();
-            mRelatedSearchesControl = null;
+    private void destroyInContentRelatedSearchesControl() {
+        if (mRelatedSearchesInContentControl != null) {
+            mRelatedSearchesInContentControl.destroy();
+            mRelatedSearchesInContentControl = null;
         }
     }
 
     /**
      * @return An implementation of {@link RelatedSearchesSectionHost}.
      */
-    private RelatedSearchesSectionHost getRelatedSearchesSectionHost() {
-        if (mRelatedSearchesSectionHost == null) {
-            mRelatedSearchesSectionHost = new RelatedSearchesSectionHost() {
+    private RelatedSearchesSectionHost getRelatedSearchesInContentHost() {
+        if (mRelatedSearchesInContentHost == null) {
+            mRelatedSearchesInContentHost = new RelatedSearchesSectionHost() {
                 @Override
                 public float getYPositionPx() {
                     // Nothing can appear above it in the panel.
@@ -1196,11 +1196,103 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
                 @Override
                 public void onSuggestionClicked(int selectionIndex) {
-                    mManagementDelegate.onRelatedSearchesSuggestionClicked(selectionIndex);
+                    // Only one suggestion should be selected among all our RS controls.
+                    getRelatedSearchesInBarControl().clearSelectedSuggestions();
+                    mManagementDelegate.onRelatedSearchesSuggestionClicked(selectionIndex, false);
+                    mIsRelatedSearchesInContentSerp = true;
                 }
             };
         }
-        return mRelatedSearchesSectionHost;
+        return mRelatedSearchesInContentHost;
+    }
+
+    // ============================================================================================
+    // The Related Searches Control that appears in the Bar
+    // ============================================================================================
+
+    private RelatedSearchesControl mRelatedSearchesInBarControl;
+    private RelatedSearchesSectionHost mRelatedSearchesInBarHost;
+
+    /**
+     * Creates the RelatedSearchesControl to be shown in the Bar, if needed.
+     */
+    @VisibleForTesting
+    public RelatedSearchesControl getRelatedSearchesInBarControl() {
+        if (mRelatedSearchesInBarControl == null) {
+            mRelatedSearchesInBarControl = new RelatedSearchesControl(this,
+                    getRelatedSearchesInBarHost(), true, mContext, mContainerView, mResourceLoader);
+        }
+        return mRelatedSearchesInBarControl;
+    }
+
+    /**
+     * @return Height of the Related Searches UI as currently show right inside the Bar, in DPs.
+     */
+    public float getInBarRelatedSearchesAnimatedHeightDps() {
+        return haveSearchBarControl()
+                ? getSearchBarControl().getInBarRelatedSearchesAnimatedHeightDps()
+                : 0.f;
+    }
+
+    /**
+     * Returns the amount of padding that is redundant between the Related Searches carousel that is
+     * shown in the Bar with the content above it. The content above has its own padding that
+     * provides a space between it and the bottom of the Bar. So when the Bar grows to include the
+     * Related Searches (which has its own padding above and below) there is redundant padding.
+     * @return The amount of overlap of padding values that can be removed (in pixels).
+     */
+    public float getInBarRelatedSearchesRedundantPadding() {
+        return mContext.getResources().getDimension(
+                R.dimen.related_searches_in_bar_redundant_padding);
+    }
+
+    /**
+     * @return Total height of this section of the panel in DPs (once fully exposed by animation).
+     */
+    float getRelatedSearchesMaximumHeightDps() {
+        return getRelatedSearchesInBarControl().getHeightPx() * mPxToDp;
+    }
+
+    /**
+     * Destroys the RelatedSearchesControl.
+     */
+    private void destroyInBarRelatedSearchesControl() {
+        if (mRelatedSearchesInBarControl != null) {
+            mRelatedSearchesInBarControl.destroy();
+            mRelatedSearchesInBarControl = null;
+        }
+    }
+
+    /**
+     * @return An implementation of {@link RelatedSearchesSectionHost}.
+     */
+    private RelatedSearchesSectionHost getRelatedSearchesInBarHost() {
+        if (mRelatedSearchesInBarHost == null) {
+            mRelatedSearchesInBarHost = new RelatedSearchesSectionHost() {
+                @Override
+                public float getYPositionPx() {
+                    // Position the carousel at the bottom part of the bar as it animates to a
+                    // taller size.
+                    return Math.round((getOffsetY() + getBarContainerHeight()
+                                              - getInBarRelatedSearchesAnimatedHeightDps())
+                            / mPxToDp);
+                }
+
+                @Override
+                public void onPanelSectionSizeChange(boolean hasStarted) {
+                    // This section currently doesn't change size, so we can ignore this.
+                }
+
+                @Override
+                public void onSuggestionClicked(int selectionIndex) {
+                    // Only one suggestion should be selected among all our RS controls.
+                    getRelatedSearchesInContentControl().clearSelectedSuggestions();
+                    mManagementDelegate.onRelatedSearchesSuggestionClicked(selectionIndex, true);
+                    mIsRelatedSearchesInContentSerp = false;
+                }
+            };
+        }
+        return mRelatedSearchesInBarHost;
     }
 
     // ============================================================================================

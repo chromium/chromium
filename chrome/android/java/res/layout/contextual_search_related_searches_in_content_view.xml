@@ -3,13 +3,15 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- Displays Related Searches suggestions in the Bar of the Overlay Panel. -->
+<!-- Displays Related Searches suggestions in a section of the Contextual
+     Search bottom sheet. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/contextual_search_related_searches_view_id"
-    android:layout_width="wrap_content"
+    android:id="@+id/contextual_search_related_searches_in_content_view_id"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/overlay_panel_bar_background_color"
     android:visibility="invisible">
     <!-- ChipView elements and their container are dynamically added here. -->
 </FrameLayout>
+

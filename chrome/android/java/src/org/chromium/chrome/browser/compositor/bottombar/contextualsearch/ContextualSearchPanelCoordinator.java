@@ -158,7 +158,8 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
-            int quickActionCategory, int cardTagEnum, @Nullable List<String> relatedSearches) {}
+            int quickActionCategory, int cardTagEnum, @Nullable List<String> inBarRelatedSearches,
+            @Nullable List<String> inContentRelatedSearches) {}
 
     @Override
     public void setCaption(String caption) {}

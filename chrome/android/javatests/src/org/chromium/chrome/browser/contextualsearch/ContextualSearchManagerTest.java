@@ -211,6 +211,10 @@ public class ContextualSearchManagerTest {
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, false);
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_UI = ImmutableMap.of(
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
+    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_BAR =
+            ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
+                    ChromeFeatureList.RELATED_SEARCHES_UI, true,
+                    ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true);
     private static final ImmutableMap<String, Boolean> DISABLE_FORCE_CAPTION =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
@@ -382,8 +386,8 @@ public class ContextualSearchManagerTest {
     private static final String expectedOutcomeName(
             @ContextualSearchInteractionRecorder.Feature int feature) {
         switch (feature) {
-                // We don't log whether the quick action was clicked unless we actually have a
-                // quick action.
+            // We don't log whether the quick action was clicked unless we actually have a
+            // quick action.
             case ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_QUICK_ACTION_CLICKED:
                 return null;
             default:
@@ -720,8 +724,8 @@ public class ContextualSearchManagerTest {
      * Fakes a server response with the parameters given and startAdjust and endAdjust equal to 0.
      * {@See ContextualSearchManager#handleSearchTermResolutionResponse}.
      */
-    private void fakeResponse(boolean isNetworkUnavailable, int responseCode,
-            String searchTerm, String displayText, String alternateTerm, boolean doPreventPreload) {
+    private void fakeResponse(boolean isNetworkUnavailable, int responseCode, String searchTerm,
+            String displayText, String alternateTerm, boolean doPreventPreload) {
         fakeResponse(new ResolvedSearchTerm
                              .Builder(isNetworkUnavailable, responseCode, searchTerm, displayText,
                                      alternateTerm, doPreventPreload)
@@ -885,8 +889,8 @@ public class ContextualSearchManagerTest {
         boolean doesMatch = false;
         String loadedUrl = mFakeServer.getLoadedUrl();
         doesMatch = loadedUrl != null && loadedUrl.contains("q=" + searchTerm);
-        String message = loadedUrl == null ? "but there was no loaded URL!"
-                                           : "in URL: " + loadedUrl;
+        String message =
+                loadedUrl == null ? "but there was no loaded URL!" : "in URL: " + loadedUrl;
         Assert.assertTrue(
                 "Expected to find searchTerm '" + searchTerm + "', " + message, doesMatch);
     }
@@ -963,7 +967,7 @@ public class ContextualSearchManagerTest {
         Assert.assertTrue(message,
                 mFakeServer.getLoadedUrl() != null
                         && mFakeServer.getLoadedUrl().contains(
-                                   LOW_PRIORITY_INVALID_SEARCH_ENDPOINT));
+                                LOW_PRIORITY_INVALID_SEARCH_ENDPOINT));
         Assert.assertTrue("Low priority request does not have the required prefetch parameter!",
                 mFakeServer.getLoadedUrl() != null
                         && mFakeServer.getLoadedUrl().contains(CONTEXTUAL_SEARCH_PREFETCH_PARAM));
@@ -3351,7 +3355,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null, null));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
         ContextualSearchQuickActionControl quickActionControl = barControl.getQuickActionControl();
@@ -3416,7 +3420,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, "tel:555-555-5555",
-                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null));
+                                QuickActionCategory.PHONE, CardTag.CT_CONTACT, null, null));
 
         sActivityTestRule.getActivity().onUserInteraction();
         retryPanelBarInteractions(() -> {
@@ -3448,7 +3452,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("search", null, testUrl,
-                                QuickActionCategory.WEBSITE, CardTag.CT_URL, null));
+                                QuickActionCategory.WEBSITE, CardTag.CT_URL, null, null));
         retryPanelBarInteractions(() -> {
             // Tap on the portion of the bar that should trigger the quick action.
             clickPanelBar();
@@ -3465,7 +3469,7 @@ public class ContextualSearchManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
-                                QuickActionCategory.NONE, cardTag, null));
+                                QuickActionCategory.NONE, cardTag, null, null));
 
         tapPeekingBarToExpandAndAssert();
     }
@@ -3888,7 +3892,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_UI);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
@@ -3919,7 +3923,7 @@ public class ContextualSearchManagerTest {
         tapPeekingBarToExpandAndAssert();
 
         // Select a Related Searches suggestion.
-        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesControl();
+        RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInContentControl();
         final int chipToSelect = 2;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
@@ -3927,6 +3931,27 @@ public class ContextualSearchManagerTest {
         // Close the panel
         closePanel();
         assertUmaForPeekAndExpandWithRSearchesEnabled(chipToSelect);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testRelatedSearchesInBar() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
+        mFakeServer.reset();
+        FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
+        ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
+        Assert.assertTrue("Related Searches results should have been returned but were not!",
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
+        // Select a chip in the Bar, which should expand the panel.
+        final int chipToSelect = 1;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPanel.getRelatedSearchesInBarControl().selectChipForTest(chipToSelect));
+        waitForPanelToExpand();
+
+        // Close the panel
+        closePanel();
+        // TODO(donnd): Validate UMA metrics once we log in-bar selections.
     }
 
     // --------------------------------------------------------------------------------------------

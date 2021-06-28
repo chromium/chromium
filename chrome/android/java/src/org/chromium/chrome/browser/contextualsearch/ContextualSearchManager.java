@@ -784,7 +784,8 @@ public class ContextualSearchManager
         assert mSearchPanel != null;
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), mRelatedSearches.getQueries());
+                resolvedSearchTerm.cardTagEnum(), mRelatedSearches.getQueries(true),
+                mRelatedSearches.getQueries(false));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will
@@ -1360,12 +1361,12 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
-        // TODO(donnd): update metrics and the stamp for Related Searches (use params).
-        assert suggestionIndex < mRelatedSearches.getQueries().size();
+    public void onRelatedSearchesSuggestionClicked(int suggestionIndex, boolean isInBarSuggestion) {
+        assert suggestionIndex < mRelatedSearches.getQueries(isInBarSuggestion).size();
+        if (isInBarSuggestion) mSearchPanel.expandPanel(StateChangeReason.CLICK);
         // TODO(donnd): Does the index reflect the default query? See https://crbug.com/1216593.
-        String searchQuery = mRelatedSearches.getQueries().get(suggestionIndex);
-        Uri searchUri = mRelatedSearches.getSearchUri(suggestionIndex);
+        String searchQuery = mRelatedSearches.getQueries(isInBarSuggestion).get(suggestionIndex);
+        Uri searchUri = mRelatedSearches.getSearchUri(suggestionIndex, isInBarSuggestion);
         if (searchUri != null) {
             mSearchRequest = new ContextualSearchRequest(searchUri);
         } else {
@@ -1373,7 +1374,7 @@ public class ContextualSearchManager
         }
         mSearchPanel.setSearchTerm(searchQuery);
         mIsRelatedSearchesSerp = true;
-        // TODO(donnd): determine what to show in the Caption.
+        // TODO(donnd): determine what to show in the Caption, if anything.
         loadSearchUrl();
     }
 
