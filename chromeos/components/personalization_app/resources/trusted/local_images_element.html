@@ -1,4 +1,8 @@
-<style include="trusted-style common-style"></style>
+<style include="trusted-style common-style">
+  :host {
+    overflow: hidden;
+  }
+</style>
 <paper-spinner-lite active="[[imagesLoading_]]">
 </paper-spinner-lite>
 <!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
@@ -9,9 +13,8 @@
       <div class="photo-container">
         <template is="dom-if"
           if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-          <div on-click="onClickImage_" data-id$="[[getImageKey_(item)]]">
-            <img src="[[getImageData_(item, imageData_)]]">
-          </div>
+          <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
+            src="[[getImageData_(item, imageData_)]]">
         </template>
         <p class="image-name">[[item.name]]</p>
       </div>

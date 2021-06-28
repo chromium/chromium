@@ -1,6 +1,9 @@
-<style include="common-style">
+<style include="common-style untrusted-style">
+  :host {
+    margin: 12px 0;
+  }
 </style>
-<iron-list grid items="[[images_]]">
+<iron-list scroll-target="document" grid items="[[images_]]">
   <template>
     <div class="photo-container">
       <img data-id$="[[item.assetId]]" src="[[item.url.url]]"

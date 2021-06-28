@@ -2,23 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 const styles = document.createElement('dom-module');
 
-styles.innerHTML = `<template>
-    <style>
-      paper-spinner-lite {
-        display: none;
-        height: 28px;
-        margin: 150px auto;
+styles.innerHTML = `
+<template>
+  <style>
+    paper-spinner-lite {
+      display: none;
+      height: 28px;
+      margin: 150px auto;
+    }
+    paper-spinner-lite[active] {
+      display: block;
+    }
+    /* There is a corresponding media query for iframe grids because media
+     * queries inside iframes reference width of the frame, not the entire
+     * window. */
+    @media (min-width: 720px) {
+      .photo-container {
+        width: 25%;
       }
-      paper-spinner-lite[active] {
-        display: block;
-      }
-      iframe, iron-list {
-        height: 80vh;
-        width: 100%;
-      }
-    </style>
-  </template>`;
+    }
+    iframe {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</template>`;
 
 styles.register('trusted-style');

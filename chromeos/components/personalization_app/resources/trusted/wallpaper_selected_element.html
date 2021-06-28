@@ -1,15 +1,19 @@
 <style>
   #container {
+    box-sizing: border-box;
     display: flex;
     flex-flow: row nowrap;
-    height: 20vh;
+    height: 100%;
+    padding: 0 8px 20px 8px;
   }
-
+  img {
+    height: 100%;
+    width: 224px;
+  }
   #textContainer {
     display: flex;
     flex-flow: column nowrap;
   }
-
 </style>
 <div id="container">
   <template is="dom-if" if="[[showImage_]]">
