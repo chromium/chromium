@@ -8,6 +8,7 @@
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 
 namespace arc {
@@ -38,9 +39,18 @@ void OverlayDialog::CloseIfAny(aura::Window* base_window) {
     shell_surface_base->RemoveOverlay();
 }
 
+void OverlayDialog::AddedToWidget() {
+  if (has_dialog_view_)
+    return;
+
+  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
+  view_ax.OverrideIsIgnored(true);
+}
+
 OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
                              std::unique_ptr<views::View> dialog_view)
-    : scoped_callback_(std::move(on_destroying)) {
+    : has_dialog_view_(dialog_view),
+      scoped_callback_(std::move(on_destroying)) {
   if (dialog_view) {
     SetInteriorMargin(gfx::Insets(0, 32));
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);

@@ -41,11 +41,16 @@ class OverlayDialog : public views::FlexLayoutView {
   // Close overlay view on |base_window| if it has any.
   static void CloseIfAny(aura::Window* base_window);
 
+  // views::View:
+  void AddedToWidget() override;
+
  private:
   friend class OverlayDialogTest;
 
   OverlayDialog(base::OnceClosure on_destroying,
                 std::unique_ptr<views::View> dialog_view);
+
+  const bool has_dialog_view_;
 
   base::ScopedClosureRunner scoped_callback_;
 };

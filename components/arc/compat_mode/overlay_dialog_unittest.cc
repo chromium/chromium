@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace arc {
@@ -29,11 +30,16 @@ TEST_F(OverlayDialogTest, ShowAndClose) {
   dialog_views.push_back(std::make_unique<views::View>());
 
   for (auto& dialog_view : dialog_views) {
+    const bool has_dialog_view = !!dialog_view;
+
     auto widget = CreateTestWidget();
     bool called = false;
     widget->SetContentsView(CreateTestOverlayDialog(
         base::BindLambdaForTesting([&]() { called = true; }),
         std::move(dialog_view)));
+
+    const auto& view_ax = widget->GetRootView()->GetViewAccessibility();
+    EXPECT_EQ(!has_dialog_view, view_ax.IsIgnored());
 
     widget->Show();
     EXPECT_FALSE(called);
