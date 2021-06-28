@@ -1900,8 +1900,13 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   // Show legacy U2F notification if applicable.
   MaybeShowU2FNotification();
 
-  // Show the Help app Release Notes notification if applicable.
-  MaybeShowHelpAppReleaseNotesNotification(profile);
+  // If the profile does not meet the criteria for showing the Discover
+  // notification, show the Release Notes notification early instead of waiting
+  // for the background page to trigger it.
+  if (!GetHelpAppNotificationController(profile)
+           ->ShouldShowDiscoverNotification()) {
+    MaybeShowHelpAppReleaseNotesNotification(profile);
+  }
 
   g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()

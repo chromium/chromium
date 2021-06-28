@@ -50,6 +50,9 @@ class HelpAppNotificationController {
   // has already been shown in the current milestone.
   void MaybeShowReleaseNotesNotification();
 
+  // Returns whether the discover notification should be shown to the user.
+  bool ShouldShowDiscoverNotification();
+
   // Determines if the discover notification should be shown to the user and
   // shows it if so. This will not do anything if a Help app notification has
   // already been shown in the current milestone.
