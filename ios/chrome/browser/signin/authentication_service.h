@@ -54,14 +54,17 @@ class AuthenticationService : public KeyedService,
   // KeyedService
   void Shutdown() override;
 
-  // Reminds user to Sign in to Chrome when a new tab is opened.
+  // DEPRECATED, see SetReauthPromptForSignInAndSync().
   void SetPromptForSignIn();
 
-  // Clears the reminder to Sign in to Chrome when a new tab is opened.
-  void ResetPromptForSignIn();
+  // Reminds user to Sign in and sync to Chrome when a new tab is opened.
+  void SetReauthPromptForSignInAndSync();
 
-  // Returns whether user should be prompted to Sign in to Chrome.
-  bool ShouldPromptForSignIn() const;
+  // Clears the reminder to Sign in and sync to Chrome when a new tab is opened.
+  void ResetReauthPromptForSignInAndSync();
+
+  // Returns whether user should be prompted to Sign in and sync to Chrome.
+  bool ShouldReauthPromptForSignInAndSync() const;
 
   // Returns whether the current account list has been approved by the user.
   // This method should only be called when there is a primary account.

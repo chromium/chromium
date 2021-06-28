@@ -191,14 +191,14 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetAuthenticatedIdentity) {
 }
 
 // Tests that reauth prompt can be set and reset.
-TEST_F(AuthenticationServiceTest, TestSetPromptForSignIn) {
+TEST_F(AuthenticationServiceTest, TestSetReauthPromptForSignInAndSync) {
   // Verify that the default value of this flag is off.
-  EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
   // Verify that prompt-flag setter and getter functions are working correctly.
-  authentication_service()->SetPromptForSignIn();
-  EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
-  authentication_service()->ResetPromptForSignIn();
-  EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
+  authentication_service()->SetReauthPromptForSignInAndSync();
+  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  authentication_service()->ResetReauthPromptForSignInAndSync();
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 // Tests that reauth prompt is not set when the user signs out.
@@ -221,7 +221,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
                   .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
-  EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 // Tests that reauth prompt is set if the primary identity is remove from
@@ -243,7 +243,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
                   .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
-  EXPECT_TRUE(authentication_service()->ShouldPromptForSignIn());
+  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 // Tests that reauth prompt is not set if the primary identity is remove from
@@ -266,7 +266,7 @@ TEST_F(AuthenticationServiceTest,
                   .email.empty());
   EXPECT_FALSE(authentication_service()->GetAuthenticatedIdentity());
   EXPECT_FALSE(authentication_service()->IsAuthenticated());
-  EXPECT_FALSE(authentication_service()->ShouldPromptForSignIn());
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 TEST_F(AuthenticationServiceTest,

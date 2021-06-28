@@ -168,14 +168,18 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
 }
 
 void AuthenticationService::SetPromptForSignIn() {
+  SetReauthPromptForSignInAndSync();
+}
+
+void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }
 
-void AuthenticationService::ResetPromptForSignIn() {
+void AuthenticationService::ResetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, false);
 }
 
-bool AuthenticationService::ShouldPromptForSignIn() const {
+bool AuthenticationService::ShouldReauthPromptForSignInAndSync() const {
   return pref_service_->GetBoolean(prefs::kSigninShouldPromptForSigninAgain);
 }
 
@@ -252,7 +256,7 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
              ->GetChromeIdentityService()
              ->IsValidIdentity(identity));
 
-  ResetPromptForSignIn();
+  ResetReauthPromptForSignInAndSync();
 
   // Load all credentials from SSO library. This must load the credentials
   // for the primary account too.
@@ -532,7 +536,7 @@ void AuthenticationService::HandleForgottenIdentity(
   SignOut(signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
           /*force_clear_browsing_data=*/false, nil);
   if (should_prompt)
-    SetPromptForSignIn();
+    SetReauthPromptForSignInAndSync();
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities(

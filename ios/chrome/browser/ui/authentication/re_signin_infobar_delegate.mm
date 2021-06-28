@@ -70,11 +70,11 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   // Returns null if user does not need to be prompted to sign in again.
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  if (!authService->ShouldPromptForSignIn())
+  if (!authService->ShouldReauthPromptForSignInAndSync())
     return nullptr;
   // Returns null if user has already signed in via some other path.
   if (authService->IsAuthenticated()) {
-    authService->ResetPromptForSignIn();
+    authService->ResetReauthPromptForSignInAndSync();
     return nullptr;
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
@@ -131,12 +131,12 @@ bool ReSignInInfoBarDelegate::Accept() {
 
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetPromptForSignIn();
+      ->ResetReauthPromptForSignInAndSync();
   return true;
 }
 
 void ReSignInInfoBarDelegate::InfoBarDismissed() {
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetPromptForSignIn();
+      ->ResetReauthPromptForSignInAndSync();
 }
