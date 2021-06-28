@@ -2753,7 +2753,7 @@ Output.RULES = {
     },
     client: {speak: `$name`},
     comboBoxMenuButton: {
-      speak: `$name $if($collapsed, $value) $role @aria_has_popup
+      speak: `$name $value $role @aria_has_popup
           $if($setSize, @@list_with_items($setSize))
           $state $restriction $description`,
     },

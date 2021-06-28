@@ -729,7 +729,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
         mockFeedback.call(doCmd('nextObject'))
             .expectSpeech('Button', 'Press Search+Space to activate')
             .call(clickSelect)
-            .expectNextSpeechUtteranceIsNot('apple')
+            .expectSpeech('apple')
             .expectSpeech('Button')
             .expectSpeech('Expanded')
             .call(selectLastOption)
