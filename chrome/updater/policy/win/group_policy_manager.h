@@ -5,9 +5,10 @@
 #ifndef CHROME_UPDATER_POLICY_WIN_GROUP_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_WIN_GROUP_POLICY_MANAGER_H_
 
+#include <memory>
 #include <string>
 
-#include "base/values.h"
+#include "base/win/registry.h"
 #include "chrome/updater/policy/manager.h"
 
 namespace updater {
@@ -24,6 +25,9 @@ class GroupPolicyManager : public PolicyManagerInterface {
   std::string source() const override;
 
   bool IsManaged() const override;
+
+  // TODO(crbug.com/1221348): preload all policy values in memory to avoid
+  // calling EnterCriticalPolicySection.
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
@@ -49,11 +53,10 @@ class GroupPolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
 
  private:
-  void LoadAllPolicies();
-  bool GetIntPolicy(const std::string& key, int* value) const;
-  bool GetStringPolicy(const std::string& key, std::string* value) const;
+  bool ReadValue(const wchar_t* name, std::string* value) const;
+  bool ReadValueDW(const wchar_t* name, int* value) const;
 
-  base::Value policies_;
+  base::win::RegKey key_;
 };
 
 }  // namespace updater
