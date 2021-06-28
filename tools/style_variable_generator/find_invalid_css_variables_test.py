@@ -3,6 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+import os
+
+sys.path += [os.path.dirname(os.path.dirname(__file__))]
+
 from style_variable_generator.find_invalid_css_variables import FindInvalidCSSVariables
 import unittest
 
@@ -10,7 +15,7 @@ import unittest
 class FindInvalidCSSVariablesTest(unittest.TestCase):
     def testUnspecified(self):
         def GitResult(command):
-            return '''--test-not-specified
+            return b'''--test-not-specified
 --test-only-rgb-used-rgb
 --test-toolbar'''
 
@@ -28,8 +33,7 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
 }
         '''
 
-        result = FindInvalidCSSVariables(json_string,
-                                         'test',
+        result = FindInvalidCSSVariables({'test': json_string},
                                          git_runner=GitResult)
         unused = set()
         self.assertEqual(result['unused'], unused)
@@ -38,7 +42,7 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
 
     def testUnused(self):
         def GitResult(command):
-            return '''--test-toolbar'''
+            return b'''--test-toolbar'''
 
         json_string = '''
 {
@@ -54,8 +58,7 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
 }
         '''
 
-        result = FindInvalidCSSVariables(json_string,
-                                         'test',
+        result = FindInvalidCSSVariables({'test': json_string},
                                          git_runner=GitResult)
         unused = set(['--test-unused'])
         self.assertEqual(result['unused'], unused)
@@ -75,8 +78,7 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
         '''
         self.assertRaises(KeyError,
                           FindInvalidCSSVariables,
-                          json_string,
-                          'test',
+                          {'test': json_string},
                           git_runner=GitResult)
 
 

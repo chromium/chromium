@@ -63,11 +63,9 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetCSSVarNames(self):
         '''Returns generated CSS variable names (excluding the rgb versions)'''
-        names = set()
-        for name in self.model[VariableType.COLOR].keys():
-            names.add(self.ToCSSVarName(name))
+        return set(map(lambda n: self.ToCSSVarName(n),
+                       self.context_map.keys()))
 
-        return names
 
     def _GetCSSVarPrefix(self, model_name):
         prefix = self.context_map[model_name].get(CSSStyleGenerator.GetName(),

@@ -4,33 +4,40 @@
 
 import argparse
 import sys
+import os
+
+sys.path += [os.path.dirname(os.path.dirname(__file__))]
+
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.presubmit_support import RunGit
 
 
 # TODO(calamity): extend this checker to find unused C++ variables
-def FindInvalidCSSVariables(json_string, input_file, git_runner=RunGit):
+def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
     style_generator = CSSStyleGenerator()
-    style_generator.AddJSONToModel(json_string, in_file=input_file)
+    css_prefixes = set()
+    for f, json_string in file_to_json_strings.items():
+      style_generator.AddJSONToModel(json_string, in_file=f)
 
-    context = style_generator.in_file_to_context.get(input_file, {}).get('CSS')
-    if (not context or 'prefix' not in context):
-        raise KeyError('This tool only works on files with a CSS prefix.')
+      context = style_generator.in_file_to_context.get(f, {}).get('CSS')
+      if (not context or 'prefix' not in context):
+          raise KeyError('This tool only works on files with a CSS prefix.')
 
-    css_prefix = '--' + context['prefix'] + '-'
+      css_prefixes.add('--' + context['prefix'] + '-')
 
     valid_names = style_generator.GetCSSVarNames()
 
-    found_names_list = git_runner([
-        'grep', '-ho',
-        '\\%s[a-z-]*' % css_prefix, '--', '*.css', '*.html', '*.js'
-    ]).splitlines()
-    found_names = set()
-    for name in found_names_list:
-        rgb_suffix = '-rgb'
-        if name.endswith(rgb_suffix):
-            name = name[:-len(rgb_suffix)]
-        found_names.add(name)
+    for css_prefix in css_prefixes:
+      found_names_list = git_runner([
+          'grep', '-ho',
+          '\\%s[a-z0-9-]*' % css_prefix, '--', '*.css', '*.html', '*.js'
+      ]).decode('utf-8').splitlines()
+      found_names = set()
+      for name in found_names_list:
+          rgb_suffix = '-rgb'
+          if name.endswith(rgb_suffix):
+              name = name[:-len(rgb_suffix)]
+          found_names.add(name)
     return {
         'unspecified': found_names.difference(valid_names),
         'unused': valid_names.difference(found_names),
@@ -41,17 +48,19 @@ def FindInvalidCSSVariables(json_string, input_file, git_runner=RunGit):
 def main():
     parser = argparse.ArgumentParser(
         description='''Finds CSS variables in the codebase that are prefixed
-        with |input_file|'s CSS prefix but aren't specified in |input_file|.'''
+        with |input_files|' CSS prefix but aren't specified in |input_files|.'''
     )
-    # TODO(calamity): support multiple files if multiple json5 files have the
-    # same prefix.
-    parser.add_argument('target', help='source json5 color file')
+    parser.add_argument('targets', nargs='+', help='source json5 color files', )
     args = parser.parse_args()
 
-    input_file = args.target
+    input_files = args.targets
 
-    with open(input_file, 'r') as f:
-        result = FindInvalidCSSVariables(f.read(), input_file)
+    file_to_json_strings = {}
+    for input_file in input_files:
+        with open(input_file, 'r') as f:
+            file_to_json_strings[input_file] = f.read()
+
+    result = FindInvalidCSSVariables(file_to_json_strings)
 
     print('Has prefix %s but not in %s:' % (result['css_prefix'], input_file))
     for name in sorted(result['unspecified']):
