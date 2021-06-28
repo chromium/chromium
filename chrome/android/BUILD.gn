@@ -1018,6 +1018,7 @@ junit_binary("chrome_junit_tests") {
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
+    "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//components/variations/android:variations_java",

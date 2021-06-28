@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIn
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -76,6 +77,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveButtonActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
@@ -164,6 +166,8 @@ public class RootUiCoordinator
     private ScrimCoordinator mScrimCoordinator;
     private DirectActionInitializer mDirectActionInitializer;
     private List<ButtonDataProvider> mButtonDataProviders;
+    @Nullable
+    private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private IdentityDiscController mIdentityDiscController;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
@@ -332,6 +336,11 @@ public class RootUiCoordinator
             }
             mToolbarManager.destroy();
             mToolbarManager = null;
+        }
+
+        if (mAdaptiveToolbarButtonController != null) {
+            mAdaptiveToolbarButtonController.destroy();
+            mAdaptiveToolbarButtonController = null;
         }
 
         if (mAppMenuCoordinator != null) {
@@ -684,7 +693,6 @@ public class RootUiCoordinator
                             mActivityTabProvider, trackerSupplier,
                             mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
                             voiceSearchDelegate);
-
             OptionalNewTabButtonController newTabButtonController =
                     new OptionalNewTabButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
@@ -692,7 +700,9 @@ public class RootUiCoordinator
                             mActivity.getTabCreatorManagerSupplier(), mTabModelSelectorSupplier,
                             trackerSupplier);
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                    new AdaptiveToolbarButtonController(mActivity.getLifecycleDispatcher());
+                    new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
+                            mActivity.getLifecycleDispatcher(),
+                            new AdaptiveButtonActionMenuCoordinator());
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
@@ -702,7 +712,6 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController,
                             shareButtonController, voiceToolbarButtonController);
-
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,

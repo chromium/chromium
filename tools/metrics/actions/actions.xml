@@ -13426,6 +13426,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileAdaptiveMenuCustomize">
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <description>
+    Adaptive button action menu opening the adaptive button preferences.
+  </description>
+</action>
+
 <action name="MobileAddBookmarkViaIntent">
   <obsolete>Feature removed 11/2019</obsolete>
   <owner>newt@chromium.org</owner>

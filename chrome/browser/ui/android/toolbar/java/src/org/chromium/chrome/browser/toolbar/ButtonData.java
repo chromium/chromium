@@ -40,6 +40,8 @@ public interface ButtonData {
         // TODO(crbug.com/1185382): make mOnClickListener @NonNull
         @Nullable
         private final View.OnClickListener mOnClickListener;
+        @Nullable
+        private final View.OnLongClickListener mOnLongClickListener;
         @StringRes
         private final int mContentDescriptionResId;
         private final boolean mSupportsTinting;
@@ -49,15 +51,24 @@ public interface ButtonData {
         private final int mButtonVariant;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
-                int contentDescriptionResId, boolean supportsTinting,
-                @Nullable IPHCommandBuilder iphCommandBuilder,
+                @Nullable View.OnLongClickListener onLongClickListener, int contentDescriptionResId,
+                boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
                 @AdaptiveToolbarButtonVariant int buttonVariant) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
+            mOnLongClickListener = onLongClickListener;
             mContentDescriptionResId = contentDescriptionResId;
             mSupportsTinting = supportsTinting;
             mIPHCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
+        }
+
+        public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
+                int contentDescriptionResId, boolean supportsTinting,
+                @Nullable IPHCommandBuilder iphCommandBuilder,
+                @AdaptiveToolbarButtonVariant int buttonVariant) {
+            this(drawable, onClickListener, /*onLongClickListener=*/null, contentDescriptionResId,
+                    supportsTinting, iphCommandBuilder, buttonVariant);
         }
 
         public ButtonSpec(Drawable drawable, View.OnClickListener onClickListener,
@@ -77,6 +88,12 @@ public interface ButtonData {
         @NonNull
         public View.OnClickListener getOnClickListener() {
             return mOnClickListener;
+        }
+
+        /** Returns an optional {@link View.OnLongClickListener} used on the button. */
+        @NonNull
+        public View.OnLongClickListener getOnLongClickListener() {
+            return mOnLongClickListener;
         }
 
         /** Returns the resource if of the string describing the button. */
