@@ -1432,6 +1432,8 @@ RenderWidgetHostInputEventRouter::FindTouchscreenGestureEventTarget(
 
 bool RenderWidgetHostInputEventRouter::IsViewInMap(
     const RenderWidgetHostViewBase* view) const {
+  if (!view)
+    return false;
   DCHECK(!is_registered(view->GetFrameSinkId()) ||
          owner_map_.find(view->GetFrameSinkId())->second.get() == view);
   return is_registered(view->GetFrameSinkId());
@@ -1590,10 +1592,8 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   // If we set a target and it's not in the map, we won't get notified if the
   // target goes away, so drop the target and the resulting events.
-  if (touchscreen_gesture_target_ &&
-      !IsViewInMap(touchscreen_gesture_target_.get())) {
+  if (!IsViewInMap(touchscreen_gesture_target_.get()))
     SetTouchscreenGestureTarget(nullptr);
-  }
 
   if (!touchscreen_gesture_target_) {
     root_view->GestureEventAck(

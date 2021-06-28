@@ -164,6 +164,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   void StopFling();
 
   // Returns true if |view| is currently registered in the router's owners map.
+  // Returns false if |view| is null.
   bool IsViewInMap(const RenderWidgetHostViewBase* view) const;
   bool ViewMapIsEmpty() const;
 
