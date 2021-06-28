@@ -223,13 +223,11 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
 
   switch (resize_lock_type) {
     case ash::ArcResizeLockType::RESIZE_LIMITED:
+    case ash::ArcResizeLockType::RESIZABLE:
       compat_mode_button->SetEnabled(true);
       break;
     case ash::ArcResizeLockType::FULLY_LOCKED:
       compat_mode_button->SetEnabled(false);
-      break;
-    case ash::ArcResizeLockType::RESIZABLE:
-      NOTREACHED();
       break;
   }
 }
