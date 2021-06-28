@@ -102,16 +102,21 @@ class AuditorTest(unittest.TestCase):
             "_id"))
     self.assertEqual(124751853, iterative_hash("bébé"))
 
-  @unittest.skip("not yet implemented")
   def test_get_files_from_git(self):
     """Tests that FileFilter.get_files_from_git() returns correct files given
     a mock git_list.txt file. It also inherently checks
-    FileFilter.is_file_relevant()."""
+    FileFilter._is_supported_source_file()."""
     filter = FileFilter()
     filter.git_file_for_testing = os.path.join(CPP_TESTS_DIR, "git_list.txt")
-    filter.get_files_from_git(SRC_DIR)
+    filter.get_files_from_git()
 
     relevant_files = [
+        # TODO(crbug.com/1119417): Rename (ir)?relevant_file_content.cc to
+        # something else, and add samples of other file types.
+        "tools/traffic_annotation/auditor/tests/"
+        "irrelevant_file_content.cc",
+        "tools/traffic_annotation/auditor/tests/"
+        "irrelevant_file_content.mm",
         "tools/traffic_annotation/auditor/tests/"
         "relevant_file_name_and_content.cc",
         "tools/traffic_annotation/auditor/tests/"
@@ -119,31 +124,30 @@ class AuditorTest(unittest.TestCase):
     ]
     self.assertCountEqual(relevant_files, filter.git_files)
 
-  @unittest.skip("not yet implemented")
-  def test_relevant_files_received(self):
-    """Tests that FileFilter.get_relevant_files() gives the correct list of
+  def test_get_source_files(self):
+    """Tests that FileFilter.get_source_files() gives the correct list of
     files, given a mock git_list.txt file."""
     filter = FileFilter()
     filter.git_file_for_testing = os.path.join(CPP_TESTS_DIR, "git_list.txt")
-    filter.get_files_from_git(SRC_DIR)
+    filter.get_files_from_git()
 
     # Check if all files are returned with no ignore list and directory.
-    ignore_list = []
+    ignore_list = {}
     self.assertCountEqual(filter.git_files,
-                          filter.get_relevant_files(ignore_list, ""))
+                          filter.get_source_files(ignore_list, ""))
 
     # Check if a file is ignored when added to the ignore list.
-    ignore_list = filter.git_files[:1]
+    ignore_list = {ExceptionType.ALL: [re.compile(filter.git_files[0])]}
     self.assertCountEqual(
-        set(filter.git_files) - ignore_list,
-        filter.get_relevant_files(ignore_list, ""))
+        set(filter.git_files) - set(filter.git_files[:1]),
+        filter.get_source_files(ignore_list, ""))
 
-    # Check if files are filtered based on given directory.:w
-    ignore_list = []
+    # Check if files are filtered based on given directory.
+    ignore_list = {}
     self.assertCountEqual(
         filter.git_files,
-        filter.get_relevant_files(ignore_list, "tools/traffic_annotation"))
-    self.assertEqual([], filter.get_relevant_files(ignore_list, "content"))
+        filter.get_source_files(ignore_list, "tools/traffic_annotation"))
+    self.assertEqual([], filter.get_source_files(ignore_list, "content"))
 
   @unittest.skip("not yet implemented")
   def test_is_safelisted(self):
@@ -603,7 +607,8 @@ class AuditorTest(unittest.TestCase):
                      archived.unique_id_hash_code)
     self.assertEqual(annotation.second_id_hash_code,
                      archived.second_id_hash_code)
-    self.assertEqual(annotation.archive_content_hash_code, 32)
+    self.assertEqual(annotation.archived_content_hash_code, 32)
+    self.assertEqual(annotation.archived_added_in_milestone, 62)
     self.assertEqual(annotation.get_semantics_field_numbers(),
                      archived.semantics_fields)
     self.assertEqual(annotation.get_policy_field_numbers(),
