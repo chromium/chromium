@@ -437,7 +437,7 @@ public class ContinuousSearchContainerMediatorTest {
         HeightObserver heightObserver = (result, animate) -> {
             Assert.assertEquals("Height provided by mediator doesn't match java height.",
                     mCurrentExpectedHeight, result);
-            Assert.assertTrue("Height change should be animated", animate);
+            Assert.assertFalse("Height change shouldn't be animated", animate);
             heightObserverCallback.notifyCalled();
         };
         mMediator.addHeightObserver(heightObserver);

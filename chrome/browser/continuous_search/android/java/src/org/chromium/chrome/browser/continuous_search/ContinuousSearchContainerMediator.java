@@ -111,7 +111,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         if (mJavaLayoutHeight == 0) {
             mRequestLayout.run();
         } else {
-            updateVisibility(true, false);
+            updateVisibility(true, true);
         }
     }
 
@@ -128,14 +128,14 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
             return;
         }
 
-        updateVisibility(false, false);
+        updateVisibility(false, true);
     }
 
     void setJavaHeight(int javaHeight) {
         if (mJavaLayoutHeight > 0 || javaHeight <= 0) return;
 
         mJavaLayoutHeight = javaHeight;
-        updateVisibility(true, false);
+        updateVisibility(true, true);
     }
 
     private void updateVisibility(boolean isVisible, boolean forceNoAnimation) {
