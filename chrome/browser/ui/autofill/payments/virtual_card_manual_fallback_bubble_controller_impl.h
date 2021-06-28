@@ -66,6 +66,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
@@ -76,6 +77,9 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // Updates the system clipboard with the |text|.
   void UpdateClipboard(const std::u16string& text) const;
+
+  // Returns whether the webcontents related to the controller is active.
+  bool IsWebContentsActive();
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
 
@@ -94,6 +98,11 @@ class VirtualCardManualFallbackBubbleControllerImpl
 
   // Whether the omnibox icon for the bubble should be visible.
   bool should_icon_be_visible_ = false;
+
+  // Whether the bubble has been shown at least once. This needs to be reset
+  // when there is a page navigation and bubble is therefore no longer
+  // applicable.
+  bool bubble_has_been_shown_ = false;
 
   ObserverForTest* observer_for_test_ = nullptr;
 

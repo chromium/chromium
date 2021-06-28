@@ -17,6 +17,10 @@
 
 namespace autofill {
 
+// The delay between card being fetched and manual fallback bubble being shown.
+constexpr base::TimeDelta kManualFallbackBubbleDelay =
+    base::TimeDelta::FromSeconds(1);
+
 // static
 VirtualCardManualFallbackBubbleController*
 VirtualCardManualFallbackBubbleController::GetOrCreate(
@@ -58,7 +62,14 @@ void VirtualCardManualFallbackBubbleControllerImpl::ShowBubble(
   virtual_card_image_ = virtual_card_image;
   is_user_gesture_ = false;
   should_icon_be_visible_ = true;
-  Show();
+
+  // Delay the showing of the manual fallback bubble so that the form filling
+  // and the manual fallback bubble appearance do not happen at the same time.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&VirtualCardManualFallbackBubbleControllerImpl::Show,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kManualFallbackBubbleDelay);
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::ReshowBubble() {
@@ -206,8 +217,22 @@ void VirtualCardManualFallbackBubbleControllerImpl::DidFinishNavigation(
     return;
 
   should_icon_be_visible_ = false;
+  bubble_has_been_shown_ = false;
   UpdatePageActionIcon();
   HideBubble();
+}
+
+void VirtualCardManualFallbackBubbleControllerImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+  // If the bubble hasn't been shown yet due to changing the tab during
+  // kManualFallbackBubbleDelay, show the bubble after switching back
+  // to the tab.
+  if (visibility == content::Visibility::VISIBLE && !bubble_has_been_shown_ &&
+      should_icon_be_visible_) {
+    Show();
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubble();
+  }
 }
 
 PageActionIconType
@@ -216,17 +241,34 @@ VirtualCardManualFallbackBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
+  if (!IsWebContentsActive())
+    return;
+
+  // Cancel the posted task. This would be useful for cases where the user
+  // clicks the icon during the delay.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
                       ->ShowVirtualCardManualFallbackBubble(
                           web_contents(), this, is_user_gesture_));
   DCHECK(bubble_view());
+  bubble_has_been_shown_ = true;
 
   AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
 
   if (observer_for_test_)
     observer_for_test_->OnBubbleShown();
+}
+
+bool VirtualCardManualFallbackBubbleControllerImpl::IsWebContentsActive() {
+  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
+  if (!active_browser)
+    return false;
+
+  return active_browser->tab_strip_model()->GetActiveWebContents() ==
+         web_contents();
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::SetEventObserverForTesting(
