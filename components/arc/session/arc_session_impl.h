@@ -61,6 +61,11 @@ class ArcSessionImpl
   // state, the state change to STARTING_FULL_INSTANCE is suspended until
   // the state becomes RUNNING_MINI_INSTANCE.
   //
+  // Upon |StartMiniInstance()| call, it first waits for # of CPU cores
+  // currently available to be reported, and then then asks SessionManager to
+  // start mini container (or Concierge to start mini VM if ARCVM is in use)
+  // and moves to STARTING_MINI_INSTANCE state.
+  //
   // At any state, Stop() can be called. It may not immediately stop the
   // instance, but will eventually stop it. The actual stop will be notified
   // via ArcSession::Observer::OnSessionStopped().
