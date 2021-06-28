@@ -82,9 +82,13 @@ maintained by the package authors.
 #### Groovy Style Guide
 The groovy code in `//third_party/android_deps/buildSrc/src/main/groovy` loosely
 follows the [Groovy Style Guide][groovy_style_guide], and can be linted by each
-dev with [npm-groovy-lint][npm_groovy_lint] via the
-[VS Code extension][vs_code_groovy_lint]. The line length limit for groovy is
-**120** characters.
+dev with [npm-groovy-lint][npm_groovy_lint] via either:
+- Command Line
+`npm-groovy-lint -p third_party/android_deps/buildSrc/src/main/groovy/ --config ~/.groovylintrc.json`
+npm-groovy-lint can be installed via `npm install -g npm-groovy-lint`.
+- [VS Code extension][vs_code_groovy_lint].
+
+The line length limit for groovy is **120** characters.
 
 Here is a sample `.groovylintrc.json` file:
 
