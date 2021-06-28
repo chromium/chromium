@@ -243,8 +243,9 @@ assert(
     use_debug_fission == "default" || use_debug_fission || !use_debug_fission,
     "Invalid use_debug_fission.")
 if (use_debug_fission == "default") {
-  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
-                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
+  use_debug_fission = (is_android && is_official_build) ||
+                      (is_debug && !is_android && !is_fuchsia && !is_apple &&
+                       !is_win && (use_gold || use_lld) && cc_wrapper == "")
 }
 
 # If it wasn't manually set, set to an appropriate default.
