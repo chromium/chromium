@@ -102,7 +102,11 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>()) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
+  // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
+  // TODO(pbos): Remove this, perhaps by separating the contents view from the
+  // EyeDropper/WidgetDelegate.
+  set_owned_by_client();
   SetPreferredSize(GetSize());
 #if defined(OS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
