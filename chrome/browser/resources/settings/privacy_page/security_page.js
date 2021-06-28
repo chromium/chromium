@@ -71,6 +71,18 @@ export class SettingsSecurityPageElement extends
       },
 
       /**
+       * Whether the HTTPS-Only Mode setting should be displayed.
+       * @private
+       */
+      showHttpsOnlyModeSetting_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showHttpsOnlyModeSetting');
+        },
+      },
+
+      /**
        * Whether the secure DNS setting should be displayed.
        * @private
        */

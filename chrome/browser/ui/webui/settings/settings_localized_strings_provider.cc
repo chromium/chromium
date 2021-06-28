@@ -1336,6 +1336,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM},
       {"advancedProtectionProgramDesc",
        IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM_DESC},
+      {"httpsOnlyModeTitle", IDS_SETTINGS_HTTPS_ONLY_MODE},
+      {"httpsOnlyModeDescription", IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION},
       {"manageCertificates", IDS_SETTINGS_MANAGE_CERTIFICATES},
       {"manageCertificatesDescription",
        IDS_SETTINGS_MANAGE_CERTIFICATES_DESCRIPTION},
@@ -1448,6 +1450,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
+
+  html_source->AddBoolean(
+      "showHttpsOnlyModeSetting",
+      base::FeatureList::IsEnabled(features::kHttpsOnlyMode));
 
   // The link to the Advanced Protection Program landing page, with a referrer
   // from Chrome settings.

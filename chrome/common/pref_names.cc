@@ -57,6 +57,9 @@ const char kHomePageIsNewTabPage[] = "homepage_is_newtabpage";
 // This is the URL of the page to load when opening new tabs.
 const char kHomePage[] = "homepage";
 
+// A boolean specifying whether HTTPS-Only Mode is enabled.
+const char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
+
 // Stores information about the important sites dialog, including the time and
 // frequency it has been ignored.
 const char kImportantSitesDialogHistory[] = "important_sites_dialog";

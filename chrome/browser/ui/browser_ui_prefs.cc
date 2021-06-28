@@ -156,4 +156,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
                                 false);
 #endif
+
+  registry->RegisterBooleanPref(
+      prefs::kHttpsOnlyModeEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

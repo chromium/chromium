@@ -29,6 +29,7 @@ suite('CrSettingsSecurityPageTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
+      showHttpsOnlyModeSetting: true,
     });
   });
 
@@ -54,6 +55,7 @@ suite('CrSettingsSecurityPageTest', function() {
       },
       dns_over_https:
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
+      https_only_mode_enabled: {value: false},
     };
     document.body.appendChild(page);
     page.shadowRoot.querySelector('#safeBrowsingEnhanced').updateCollapsed();
@@ -598,6 +600,15 @@ suite('CrSettingsSecurityPageTest', function() {
     assertFalse(
         page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
   });
+
+  // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
+  test('httpsOnlyModeToggle', function() {
+    const httpsOnlyModeToggle =
+        page.shadowRoot.querySelector('#httpsOnlyModeToggle');
+    assertFalse(page.prefs.https_only_mode_enabled.value);
+    httpsOnlyModeToggle.click();
+    assertTrue(page.prefs.https_only_mode_enabled.value);
+  });
 });
 
 
@@ -608,6 +619,7 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
+      showHttpsOnlyModeSetting: false,
     });
   });
 
@@ -640,5 +652,9 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
 
   test('ManageSecurityKeysSubpageHidden', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
+  });
+
+  test('HttpsOnlyModeSettingHidden', function() {
+    assertFalse(isChildVisible(page, '#httpsOnlyModeToggle'));
   });
 });

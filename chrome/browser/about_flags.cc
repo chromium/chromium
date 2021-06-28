@@ -7348,6 +7348,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kBorealisDiskManagement)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,
+     flag_descriptions::kHttpsOnlyModeDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kHttpsOnlyMode)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

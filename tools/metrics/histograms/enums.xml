@@ -24949,6 +24949,7 @@ Called by update_document_policy_enum.py.-->
   <int value="867" label="DefaultJavaScriptJitSetting"/>
   <int value="868" label="JavaScriptJitAllowedForSites"/>
   <int value="869" label="JavaScriptJitBlockedForSites"/>
+  <int value="870" label="AllowHttpsOnlyMode"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -45453,6 +45454,7 @@ from previous Chrome versions.
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
+  <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
   <int value="-1909983714" label="ExperimentalTabController:disabled"/>
   <int value="-1909702940" label="WebXRARModule:disabled"/>
@@ -48934,6 +48936,7 @@ from previous Chrome versions.
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
+  <int value="1023319882" label="HttpsOnlyMode:disabled"/>
   <int value="1023668536" label="PrintServerUi:enabled"/>
   <int value="1024560563" label="EnableFuzzyAppSearch:enabled"/>
   <int value="1026169964" label="MicMuteNotifications:enabled"/>

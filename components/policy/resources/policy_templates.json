@@ -26338,6 +26338,50 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
           If this policy is not set for a site then the policy from <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME">DefaultJavaScriptJitSetting</ph> applies to the site, if set, otherwise JavaScript JIT is enabled for the site.''',
     },
+    {
+      'name': 'HttpsOnlyMode',
+      'owners': ['cthomp@chromium.org', 'trusty-transport@chromium.org'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [
+          'allowed',
+          'disallowed',
+          'force_enabled'
+        ],
+      },
+      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': 'disallowed',
+      'default': 'allowed',
+      'id': 870,
+      'items': [
+        {
+          'name': 'allowed',
+          'value': 'allowed',
+          'caption': 'Allow users to enable HTTPS-Only Mode',
+        },
+        {
+          'name': 'disallowed',
+          'value': 'disallowed',
+          'caption': 'Do not allow users to enable HTTPS-Only Mode',
+        },
+        {
+          'name': 'force_enabled',
+          'value': 'force_enabled',
+          'caption': 'Force enable HTTPS-Only Mode (not supported yet)',
+        },
+      ],
+      'caption': '''Allow HTTPS-Only Mode to be enabled''',
+      'tags': [],
+      'desc': '''This policy controls whether users can enable HTTPS-Only Mode in Settings. HTTPS-Only Mode upgrades all navigations to HTTPS.
+      If this setting is not set or set to allowed, users will be allowed to enable HTTPS-Only Mode.
+      If this setting is set to disallowed, users will not be allowed to enable HTTPS-Only Mode.
+      Force enabling HTTPS-Only Mode is not currently supported.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27272,6 +27316,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 869,
+  'highest_id_currently_used': 870,
   'highest_atomic_group_id_currently_used': 40
 }

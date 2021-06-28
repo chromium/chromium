@@ -342,6 +342,9 @@ extern const base::Feature kHappinessTrackingSystemOnboarding;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHideWebAppOriginText;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHttpsOnlyMode;
+
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kImmersiveFullscreen;

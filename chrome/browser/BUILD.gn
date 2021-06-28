@@ -1651,6 +1651,8 @@ static_library("browser") {
     "ssl/chrome_security_blocking_page_factory.h",
     "ssl/connection_help_tab_helper.cc",
     "ssl/connection_help_tab_helper.h",
+    "ssl/https_only_mode_policy_handler.cc",
+    "ssl/https_only_mode_policy_handler.h",
     "ssl/insecure_form/insecure_form_controller_client.cc",
     "ssl/insecure_form/insecure_form_controller_client.h",
     "ssl/known_interception_disclosure_infobar_delegate.cc",

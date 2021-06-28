@@ -513,6 +513,10 @@ const base::Feature kHappinessTrackingSystemOnboarding{
 const base::Feature kHideWebAppOriginText{"HideWebAppOriginText",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Sets whether the HTTPS-Only Mode setting is displayed in the settings UI.
+const base::Feature kHttpsOnlyMode{"HttpsOnlyMode",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_MAC)
 const base::Feature kImmersiveFullscreen{"ImmersiveFullscreen",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

@@ -7,6 +7,10 @@
         padding: 0 var(--cr-section-padding);
       }
 
+      #httpsOnlyModeToggle {
+        padding: 0 var(--cr-section-padding);
+      }
+
       .bullet-line {
         align-items: center;
         display: flex;
@@ -151,6 +155,14 @@
     <div class="cr-row first">
       <h2>$i18n{advancedPageTitle}</h2>
     </div>
+    <template is="dom-if" if="[[showHttpsOnlyModeSetting_]]">
+      <settings-toggle-button
+        id="httpsOnlyModeToggle"
+        pref="{{prefs.https_only_mode_enabled}}"
+        label="$i18n{httpsOnlyModeTitle}"
+        sub-label="$i18n{httpsOnlyModeDescription}">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>

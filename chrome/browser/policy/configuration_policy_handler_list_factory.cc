@@ -40,6 +40,7 @@
 #include "chrome/browser/sessions/restore_on_startup_policy_handler.h"
 #include "chrome/browser/spellchecker/spellcheck_language_blocklist_policy_handler.h"
 #include "chrome/browser/spellchecker/spellcheck_language_policy_handler.h"
+#include "chrome/browser/ssl/https_only_mode_policy_handler.h"
 #include "chrome/browser/ssl/secure_origin_policy_handler.h"
 #include "chrome/browser/themes/theme_color_policy_handler.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
@@ -1586,6 +1587,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(
       std::make_unique<ExplicitlyAllowedNetworkPortsPolicyHandler>());
+  handlers->AddHandler(std::make_unique<HttpsOnlyModePolicyHandler>());
 
 #if defined(OS_ANDROID)
   handlers->AddHandler(

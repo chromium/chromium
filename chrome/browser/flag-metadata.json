@@ -3269,6 +3269,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "https-only-mode-setting",
+    "owners": [ "cthomp", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr", "zmo" ],
     // A debugging flag intended for end-users where there may not be any other
