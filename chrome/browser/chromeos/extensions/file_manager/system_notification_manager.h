@@ -5,14 +5,28 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_SYSTEM_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_SYSTEM_NOTIFICATION_MANAGER_H_
 
+#include "base/macros.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
+
 namespace file_manager {
 
-// Manages creation/deletion and update of system notifications on behalf
-// of the File Manager application.
+namespace file_manager_private = extensions::api::file_manager_private;
+
 class SystemNotificationManager {
  public:
   SystemNotificationManager();
   ~SystemNotificationManager();
+
+  /**
+   * Returns whether or not ANY SWA windows are opened. Does this by checking
+   * the URL of all opened windows.
+   */
+  bool DoFilesSwaWindowsExist();
+
+  /**
+   * Processes a device event to generate a system notification if needed.
+   */
+  void HandleDeviceEvent(file_manager_private::DeviceEvent event);
 };
 
 }  // namespace file_manager
