@@ -63,24 +63,21 @@ public class AwComponentUpdateService extends JobService {
     // If not null then the service is running as a Job service.
     private JobParameters mJobParameters;
 
-    private boolean isServiceRunning() {
-        return mJobParameters != null || mServiceStartedId != 0;
-    }
+    private boolean mIsUpdating;
 
     // Called by JobScheduler.
     @Override
     public boolean onStartJob(JobParameters params) {
         assert mJobParameters == null;
         mJobParameters = params;
-        if (isServiceRunning()) {
-            return true;
-        }
-        return startNativeService();
+        return startUpdates();
     }
 
     // Called by JobScheduler.
     @Override
     public boolean onStopJob(JobParameters params) {
+        // TODO(https://crbug.com/1221092): Stop native updates when onStopJob, onDestroy are
+        // called.
         setUnexpectedExit(false);
         mJobParameters = null;
 
@@ -92,28 +89,37 @@ public class AwComponentUpdateService extends JobService {
     // For testing only. To manually start the service on Android builds <= M where force running
     // the job service doesn't work. The service isn't exported, so other apps won't be able to
     // force start the service.
-    // Note: This can be simpilified when we stop supporting Android M in WebView (no need to store
-    // the state of how the service is running) or when manually starting the service on M isn't
-    // needed.
+    // Note: This can be simpilified when we stop supporting Android M in WebView or when manually
+    // starting the service on M isn't needed.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (!isServiceRunning() && !startNativeService()) {
+        // Always keep the most recent startId as this is the one that should be used to stop
+        // the service.
+        mServiceStartedId = startId;
+        if (!startUpdates()) {
             stopSelf(startId);
-        } else {
-            // Always keep the most recent startId as this is the one that should be used to stop
-            // the service.
-            mServiceStartedId = startId;
+            mServiceStartedId = 0;
         }
         return START_STICKY;
     }
 
-    private boolean startNativeService() {
+    /**
+     * Start component updates by triggerring native AwComponentUpdateService.
+     *
+     * @return {@code true} if it successfully triggers component updates or if component are
+     *         already updating, {@code false} if it fails to trigger the updates.
+     */
+    private boolean startUpdates() {
+        if (mIsUpdating) {
+            return true;
+        }
         maybeRecordUnexpectedExit();
 
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
         if (WebViewApkApplication.ensureNativeLoaded()) {
             setUnexpectedExit(true);
+            mIsUpdating = true;
             final long startTime = SystemClock.uptimeMillis();
             // TODO(crbug.com/1171817) Once we can log UMA from native, remove the count parameter.
             AwComponentUpdateServiceJni.get().startComponentUpdateService((count) -> {
@@ -131,6 +137,7 @@ public class AwComponentUpdateService extends JobService {
 
     // Call the appropriate stop method according to how the service is launched.
     private void stopService() {
+        mIsUpdating = false;
         // Service is launched as a started service.
         if (mServiceStartedId > 0) {
             stopSelf(mServiceStartedId);
