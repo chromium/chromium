@@ -176,4 +176,18 @@ export function WallpaperSelectedTest() {
     assertEquals(
         wallpaperProvider.currentWallpaper, personalizationStore.data.selected);
   });
+
+  test('shows image url with data scheme', async () => {
+    personalizationStore.data.selected = {
+      url: {url: 'data:image/png;base64,abc='},
+      attribution: [],
+      assetId: BigInt(100),
+    };
+    personalizationStore.data.loading.selected = false;
+    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
+    assertEquals('data:image/png;base64,abc=', img.src);
+  });
 }

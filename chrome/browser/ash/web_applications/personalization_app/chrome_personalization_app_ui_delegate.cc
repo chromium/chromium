@@ -16,6 +16,7 @@
 #include "ash/public/cpp/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -35,10 +36,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace {
@@ -183,36 +186,42 @@ void ChromePersonalizationAppUiDelegate::GetLocalImageThumbnail(
 
 void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
     GetCurrentWallpaperCallback callback) {
+  auto* controller = ash::WallpaperController::Get();
   auto* client = WallpaperControllerClientImpl::Get();
+
   ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
+  const gfx::ImageSkia& current_wallpaper = controller->GetWallpaperImage();
+  const gfx::ImageSkia& current_wallpaper_resized =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          current_wallpaper, skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(kLocalImageThumbnailSizeDip, kLocalImageThumbnailSizeDip));
+  const GURL& gurl =
+      GURL(webui::GetBitmapDataUrl(*current_wallpaper_resized.bitmap()));
+  std::vector<std::string> attribution;
 
   switch (info.type) {
-    case ash::WallpaperType::ONLINE: {
-      GURL url(info.location);
-      DCHECK(url.is_valid());
-
+    case ash::WallpaperType::ONLINE:
       // TODO(b/186575680) fill in actual image attribution details and
       // asset_id.
-      std::move(callback).Run(
-          chromeos::personalization_app::mojom::WallpaperImage::New(
-              url, /*attribution=*/std::vector<std::string>(), /*asset_id=*/0));
-
-      return;
-    }
+      break;
     case ash::WallpaperType::CUSTOMIZED:
+      attribution.push_back(
+          base::FilePath(info.location).BaseName().RemoveExtension().value());
+      break;
     case ash::WallpaperType::DAILY:
     case ash::WallpaperType::DEFAULT:
     case ash::WallpaperType::DEVICE:
     case ash::WallpaperType::ONE_SHOT:
     case ash::WallpaperType::POLICY:
     case ash::WallpaperType::THIRDPARTY:
-      NOTIMPLEMENTED();
-      std::move(callback).Run(nullptr);
-      return;
+      break;
     case ash::WallpaperType::WALLPAPER_TYPE_COUNT:
       mojo::ReportBadMessage("Impossible WallpaperType received");
       return;
   }
+  std::move(callback).Run(
+      chromeos::personalization_app::mojom::CurrentWallpaper::New(gurl,
+                                                                  attribution));
 }
 
 void ChromePersonalizationAppUiDelegate::SelectWallpaper(

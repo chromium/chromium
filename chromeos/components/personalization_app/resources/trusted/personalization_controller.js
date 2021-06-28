@@ -124,8 +124,7 @@ export async function selectWallpaper(image, provider, store) {
   if (!success) {
     console.warn('Error setting wallpaper');
   }
-  const newImage = success ? image : oldImage;
-  store.dispatch(setSelectedImageAction(newImage));
+  getCurrentWallpaper(provider, store);
 }
 
 /**

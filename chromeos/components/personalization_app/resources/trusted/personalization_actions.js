@@ -115,7 +115,7 @@ export function setLocalImagesAction(images) {
  * Returns an action to set the current image as currently selected across the
  * app. Can be called with null to represent no image currently selected or that
  * an error occurred.
- * @param {?DisplayableImage} image
+ * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
  * @return {!Action}
  */
 export function setSelectedImageAction(image) {

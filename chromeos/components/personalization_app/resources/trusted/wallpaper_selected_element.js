@@ -25,6 +25,14 @@ function removeHighResolutionSuffix(url) {
   return url.replace(/=w\d+$/, '');
 }
 
+/**
+ * Returns whether the given URL starts with http:// or https://.
+ * @param {string} url URL to check.
+ */
+function hasHttpScheme(url) {
+  return url.startsWith('http://') || url.startsWith('https://');
+}
+
 /** @polymer */
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
@@ -81,15 +89,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * Return a chrome://image url to load the image safely. Returns empty string
-   * in case |image| is null or invalid.
-   * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * Return a chrome://image or data:// url to load the image safely. Returns
+   * empty string in case |image| is null or invalid.
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
    * @private
    */
   getImageSrc_(image) {
     if (image && image.url) {
-      return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
+      if (hasHttpScheme(image.url.url))
+        return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
+      return image.url.url;
     }
     return '';
   }
