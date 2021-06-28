@@ -138,27 +138,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   return web_contents;
 }
 
-absl::optional<GURL> GetUrlHandlingLaunchUrl(
-    WebAppProvider& provider,
-    const apps::AppLaunchParams& params) {
-  if (!params.url_handler_launch_url.has_value()) {
-    return absl::nullopt;
-  }
-
-  GURL url = params.url_handler_launch_url.value();
-  DCHECK(url.is_valid());
-
-  // If URL is not in scope, default to launch URL for now.
-  // TODO(crbug.com/1072058): Allow developers to handle out-of-scope URL
-  // launch.
-  const std::string app_scope =
-      provider.registrar().GetAppScope(params.app_id).spec();
-  DCHECK(!app_scope.empty());
-  return base::StartsWith(url.spec(), app_scope, base::CompareCase::SENSITIVE)
-             ? url
-             : provider.registrar().GetAppLaunchUrl(params.app_id);
-}
-
 // TODO(crbug.com/1019239): Passing a WebAppProvider seems to be a bit of an
 // anti-pattern. We should refactor this and other existing functions in this
 // file to receive an OsIntegrationManager instead.
@@ -271,13 +250,15 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       is_share_intent ? provider_->registrar().GetAppShareTarget(params.app_id)
                       : nullptr;
   bool set_file_launch_paths = false;
+  bool is_url_handler_launch = false;
   GURL launch_url;
   if (!params.override_url.is_empty()) {
     launch_url = params.override_url;
-  } else if (absl::optional<GURL> url_handler_launch_url =
-                 GetUrlHandlingLaunchUrl(*provider_, params)) {
+  } else if (params.url_handler_launch_url.has_value() &&
+             params.url_handler_launch_url->is_valid()) {
     // Handle url_handlers launch.
-    launch_url = url_handler_launch_url.value();
+    launch_url = params.url_handler_launch_url.value();
+    is_url_handler_launch = true;
   } else if (absl::optional<GURL> file_handler_url =
                  provider_->os_integration_manager().GetMatchingFileHandlerURL(
                      params.app_id, params.launch_files)) {
@@ -345,9 +326,21 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
         NavigateParamsForShareTarget(browser, *share_target, *params.intent);
     nav_params.disposition = disposition;
     web_contents = NavigateWebAppUsingParams(params.app_id, nav_params);
+  } else if (is_url_handler_launch) {
+    // Use of CURRENT_TAB here works even if browser was newly created and has
+    // no WebContents. Using NEW_FOREGROUND_TAB would cause the new WebContents
+    // to be parented to a new browser window instead of the new app window.
+    // TODO(crbug.com/1223558): Refactor OpenApplication to separate the concern
+    // of finding an existing window or creating a new window, and the concern
+    // of navigating to the launch url.
+    web_contents = NavigateWebApplicationWindow(
+        browser, params.app_id, launch_url, WindowOpenDisposition::CURRENT_TAB);
   } else if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    // This scope assumes that there is at least one tab in the tab strip model
+    // with existing WebContent.
     TabStripModel* const model = browser->tab_strip_model();
     content::WebContents* existing_tab = model->GetActiveWebContents();
+    DCHECK(existing_tab);
     const int tab_index = model->GetIndexOfWebContents(existing_tab);
 
     existing_tab->OpenURL(content::OpenURLParams(

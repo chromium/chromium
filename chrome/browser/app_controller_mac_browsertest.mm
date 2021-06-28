@@ -1143,7 +1143,9 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 1);
 
   // URL is not in app scope but matches url_handlers of installed app.
-  SendAppleEventToOpenUrlToAppController(GURL("https://example.com/abc/def"));
+  GURL target_url = GURL("https://example.com/abc/def");
+  ASSERT_TRUE(target_url.is_valid());
+  SendAppleEventToOpenUrlToAppController(target_url);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // Check for new app window.
@@ -1153,11 +1155,12 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
-  // Out-of-scope URL launch results in app launch with default launch URL.
+  // Out-of-scope URL launch should open new app window and navigate to the
+  // out-of-scope URL.
   TabStripModel* tab_strip = app_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
-  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+  EXPECT_EQ(target_url, web_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(
