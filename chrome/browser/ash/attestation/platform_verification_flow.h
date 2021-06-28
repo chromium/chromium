@@ -22,6 +22,7 @@
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
+#include "components/account_id/account_id.h"
 #include "url/gurl.h"
 
 class AccountId;
@@ -88,11 +89,6 @@ class PlatformVerificationFlow
    public:
     virtual ~Delegate() {}
 
-    // Gets the user associated with the given |web_contents|.  NULL may be
-    // returned.
-    virtual const user_manager::User* GetUser(
-        content::WebContents* web_contents) = 0;
-
     // Returns true iff the device is in a mode that supports platform
     // verification. For example, platform verification is not supported in dev
     // mode unless overridden by a flag.
@@ -138,6 +134,14 @@ class PlatformVerificationFlow
                             const std::string& challenge,
                             ChallengeCallback callback);
 
+  // Identical to ChallengePlatformKey above except the User has been extracted
+  // from the input |web_contents|. The former is needed since non-Ash callsites
+  // of this class cannot directly reference User*.
+  void ChallengePlatformKey(const user_manager::User* user,
+                            const std::string& service_id,
+                            const std::string& challenge,
+                            ChallengeCallback callback);
+
   void set_timeout_delay(const base::TimeDelta& timeout_delay) {
     timeout_delay_ = timeout_delay;
   }
@@ -152,14 +156,14 @@ class PlatformVerificationFlow
   // Holds the arguments of a ChallengePlatformKey call.  This is convenient for
   // use with base::Bind so we don't get too many arguments.
   struct ChallengeContext {
-    ChallengeContext(content::WebContents* web_contents,
+    ChallengeContext(const AccountId& account_id,
                      const std::string& service_id,
                      const std::string& challenge,
                      ChallengeCallback callback);
     ChallengeContext(ChallengeContext&& other);
     ~ChallengeContext();
 
-    content::WebContents* web_contents;
+    AccountId account_id;
     std::string service_id;
     std::string challenge;
     ChallengeCallback callback;
@@ -174,13 +178,11 @@ class PlatformVerificationFlow
       const ::attestation::GetEnrollmentPreparationsReply& reply);
 
   // Initiates the flow to get a platform key certificate.  The arguments to
-  // ChallengePlatformKey are in |context|.  |account_id| identifies the user
-  // for which to get a certificate.  If |force_new_key| is true then any
+  // ChallengePlatformKey are in |context|.  If |force_new_key| is true then any
   // existing key for the same user and service will be ignored and a new key
   // will be generated and certified.
   void GetCertificate(
       scoped_refptr<base::RefCountedData<ChallengeContext>> context,
-      const AccountId& account_id,
       bool force_new_key);
 
   // A callback called when an attestation certificate request operation

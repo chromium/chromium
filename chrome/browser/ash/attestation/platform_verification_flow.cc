@@ -75,12 +75,6 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
   DefaultDelegate() {}
   ~DefaultDelegate() override {}
 
-  const user_manager::User* GetUser(
-      content::WebContents* web_contents) override {
-    return ProfileHelper::Get()->GetUserByProfile(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  }
-
   bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
@@ -92,11 +86,11 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
 };
 
 PlatformVerificationFlow::ChallengeContext::ChallengeContext(
-    content::WebContents* web_contents,
+    const AccountId& account_id,
     const std::string& service_id,
     const std::string& challenge,
     ChallengeCallback callback)
-    : web_contents(web_contents),
+    : account_id(account_id),
       service_id(service_id),
       challenge(challenge),
       callback(std::move(callback)) {}
@@ -160,6 +154,16 @@ void PlatformVerificationFlow::ChallengePlatformKey(
     const std::string& service_id,
     const std::string& challenge,
     ChallengeCallback callback) {
+  const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  ChallengePlatformKey(user, service_id, challenge, std::move(callback));
+}
+
+void PlatformVerificationFlow::ChallengePlatformKey(
+    const user_manager::User* user,
+    const std::string& service_id,
+    const std::string& challenge,
+    ChallengeCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Note: The following checks are performed when use of the protected media
@@ -183,7 +187,13 @@ void PlatformVerificationFlow::ChallengePlatformKey(
     return;
   }
 
-  ChallengeContext context(web_contents, service_id, challenge,
+  if (!user) {
+    LOG(ERROR) << "Profile does not map to a valid user.";
+    ReportError(std::move(callback), INTERNAL_ERROR);
+    return;
+  }
+
+  ChallengeContext context(user->GetAccountId(), service_id, challenge,
                            std::move(callback));
 
   // Check if the device has been prepared to use attestation.
@@ -212,24 +222,14 @@ void PlatformVerificationFlow::OnAttestationPrepared(
     return;
   }
 
-  // Permission allowed. Now proceed to get certificate.
-  const user_manager::User* user = delegate_->GetUser(context.web_contents);
-  if (!user) {
-    ReportError(std::move(context).callback, INTERNAL_ERROR);
-    LOG(ERROR) << "Profile does not map to a valid user.";
-    return;
-  }
-
   auto shared_context =
       base::MakeRefCounted<base::RefCountedData<ChallengeContext>>(
           std::move(context));
-  GetCertificate(std::move(shared_context), user->GetAccountId(),
-                 false /* Don't force a new key */);
+  GetCertificate(std::move(shared_context), false /* Don't force a new key */);
 }
 
 void PlatformVerificationFlow::GetCertificate(
     scoped_refptr<base::RefCountedData<ChallengeContext>> context,
-    const AccountId& account_id,
     bool force_new_key) {
   auto timer = std::make_unique<base::OneShotTimer>();
   base::OnceClosure timeout_callback = base::BindOnce(
@@ -238,11 +238,11 @@ void PlatformVerificationFlow::GetCertificate(
 
   AttestationFlow::CertificateCallback certificate_callback =
       base::BindOnce(&PlatformVerificationFlow::OnCertificateReady, this,
-                     context, account_id, std::move(timer));
-  attestation_flow_->GetCertificate(PROFILE_CONTENT_PROTECTION_CERTIFICATE,
-                                    account_id, context->data.service_id,
-                                    force_new_key, std::string() /*key_name*/,
-                                    std::move(certificate_callback));
+                     context, context->data.account_id, std::move(timer));
+  attestation_flow_->GetCertificate(
+      PROFILE_CONTENT_PROTECTION_CERTIFICATE, context->data.account_id,
+      context->data.service_id, force_new_key, std::string() /*key_name*/,
+      std::move(certificate_callback));
 }
 
 void PlatformVerificationFlow::OnCertificateReady(
@@ -268,7 +268,7 @@ void PlatformVerificationFlow::OnCertificateReady(
   }
   ExpiryStatus expiry_status = CheckExpiry(certificate_chain);
   if (expiry_status == EXPIRY_STATUS_EXPIRED) {
-    GetCertificate(std::move(context), account_id, true /* Force a new key */);
+    GetCertificate(std::move(context), true /* Force a new key */);
     return;
   }
   bool is_expiring_soon = (expiry_status == EXPIRY_STATUS_EXPIRING_SOON);
@@ -321,7 +321,8 @@ void PlatformVerificationFlow::OnChallengeReady(
         base::BindOnce(&PlatformVerificationFlow::RenewCertificateCallback,
                        this, std::move(certificate_chain));
     attestation_flow_->GetCertificate(
-        PROFILE_CONTENT_PROTECTION_CERTIFICATE, account_id, context.service_id,
+        PROFILE_CONTENT_PROTECTION_CERTIFICATE, context.account_id,
+        context.service_id,
         true,           // force_new_key
         std::string(),  // key_name, empty means a default one will be
                         // generated.
