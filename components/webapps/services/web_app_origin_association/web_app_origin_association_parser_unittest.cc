@@ -64,7 +64,7 @@ TEST_F(WebAppOriginAssociationParserTest, EmptyStringNull) {
   ASSERT_TRUE(failed());
   EXPECT_TRUE(IsAssociationNull(association));
   EXPECT_EQ(1u, GetErrorCount());
-  EXPECT_EQ("Line: 1, column: 1, Unexpected token.", errors()[0]);
+  EXPECT_NE(std::string::npos, errors()[0].find("Line: 1, column: 1,"));
 }
 
 TEST_F(WebAppOriginAssociationParserTest, NoContentParses) {

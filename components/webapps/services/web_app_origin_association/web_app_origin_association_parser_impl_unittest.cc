@@ -117,7 +117,8 @@ TEST_F(WebAppOriginAssociationParserImplTest,
             ASSERT_TRUE(!association);
             ASSERT_FALSE(errors.empty());
             ASSERT_EQ(1u, errors.size());
-            EXPECT_EQ("Line: 1, column: 6, Syntax error.", errors[0]->message);
+            EXPECT_NE(std::string::npos,
+                      errors[0]->message.find("Line: 1, column: 6,"));
 
             histogram_tester_.ExpectBucketCount(
                 kParseResultHistogram,
