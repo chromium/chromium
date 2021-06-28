@@ -27,18 +27,17 @@ class FakeMissiveClient : public MissiveClient {
   void EnqueueRecord(
       const reporting::Priority priority,
       reporting::Record record,
-      base::OnceCallback<void(reporting::Status)> completion_callback) override;
+      base::OnceCallback<void(reporting::Status)> completion_callback);
 
-  void Flush(
-      const reporting::Priority priority,
-      base::OnceCallback<void(reporting::Status)> completion_callback) override;
+  void Flush(const reporting::Priority priority,
+             base::OnceCallback<void(reporting::Status)> completion_callback);
 
   void ReportSuccess(
       const reporting::SequencingInformation& sequencing_information,
-      bool force_confirm) override;
+      bool force_confirm);
 
   void UpdateEncryptionKey(
-      const reporting::SignedEncryptionInfo& encryption_info) override;
+      const reporting::SignedEncryptionInfo& encryption_info);
 
   base::WeakPtrFactory<FakeMissiveClient> weak_ptr_factory_{this};
 };

@@ -42,23 +42,6 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   virtual ~MissiveClient();
 
   scoped_refptr<reporting::MissiveStorageModule> missive_storage_module_;
-
- private:
-  virtual void EnqueueRecord(
-      const reporting::Priority priority,
-      reporting::Record record,
-      base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
-
-  virtual void Flush(
-      const reporting::Priority priority,
-      base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
-
-  virtual void ReportSuccess(
-      const reporting::SequencingInformation& sequencing_information,
-      bool force_confirm) = 0;
-
-  virtual void UpdateEncryptionKey(
-      const reporting::SignedEncryptionInfo& encryption_info) = 0;
 };
 
 }  // namespace chromeos
