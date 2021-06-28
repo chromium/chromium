@@ -6,15 +6,17 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 class NGPhysicalFragmentTest : public NGLayoutTest {
  public:
-  String DumpAll() const {
-    return NGPhysicalFragment::DumpFragmentTree(*GetDocument().GetLayoutView(),
-                                                NGPhysicalFragment::DumpAll);
+  String DumpAll(const NGPhysicalFragment* target = nullptr) const {
+    return NGPhysicalFragment::DumpFragmentTree(
+        *GetDocument().GetLayoutView(), NGPhysicalFragment::DumpAll, target);
   }
 };
 
@@ -25,7 +27,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeBasic) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
         Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='block'
@@ -42,9 +44,9 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
 )DUMP";
@@ -62,7 +64,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
         Box (block-flow)(self paint) offset:0,0 size:784x0 LayoutNGBlockFlow (relative positioned) DIV id='rel'
@@ -90,13 +92,13 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithTableWithAbspos) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x22 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x6 LayoutNGBlockFlow BODY
         Box (block-flow-root legacy-layout-root)(self paint) offset:0,0 size:6x6 LayoutTable (relative positioned) TABLE
-          (NG fragment root inside legacy subtree:)
+          (NG fragment root inside fragment-less or legacy subtree:)
             Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
-          (NG fragment root inside legacy subtree:)
+          (NG fragment root inside fragment-less or legacy subtree:)
             Box (block-flow-root block-flow) offset:unplaced size:2x2 LayoutNGTableCell TD
               Box (block-flow) offset:1,1 size:0x0 LayoutNGBlockFlow DIV id='inflow'
                 Box (block-flow) offset:0,0 size:0x0 LayoutNGBlockFlow DIV id='inflowchild'
@@ -116,7 +118,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposTable) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
 )DUMP";
@@ -138,10 +140,10 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposTableWithChild) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow) offset:unplaced size:0x0 LayoutNGTableCell (anonymous)
       Box (block-flow) offset:0,0 size:0x0 LayoutNGBlockFlow DIV id='child'
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
 )DUMP";
@@ -168,16 +170,49 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   String dump = DumpAll();
   String expectation =
       R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
-  (NG fragment root inside legacy subtree:)
+  (NG fragment root inside fragment-less or legacy subtree:)
     Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x16 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
         Box (block-flow-root legacy-layout-root) offset:0,0 size:784x0 LayoutGrid DIV id='outer-grid'
-          (NG fragment root inside legacy subtree:)
+          (NG fragment root inside fragment-less or legacy subtree:)
             Box (block-flow-root block-flow) offset:unplaced size:784x0 LayoutNGBlockFlow DIV id='inner-grid-item'
               Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='foo'
-          (NG fragment root inside legacy subtree:)
+          (NG fragment root inside fragment-less or legacy subtree:)
             Box (block-flow-root block-flow) offset:unplaced size:784x0 LayoutNGBlockFlow DIV id='block-container-item'
               Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='bar'
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
+  ScopedLayoutNGBlockFragmentationForTest ng_block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="multicol" style="columns:3;">
+      <div id="child" style="height:150px;"></div>
+    </div>
+  )HTML");
+
+  const LayoutObject* child_object = GetLayoutObjectByElementId("child");
+  ASSERT_TRUE(child_object);
+  ASSERT_TRUE(child_object->IsBox());
+  const LayoutBox& box = To<LayoutBox>(*child_object);
+  ASSERT_EQ(box.PhysicalFragmentCount(), 3u);
+  const NGPhysicalBoxFragment* second_child_fragment =
+      box.GetPhysicalFragment(1);
+
+  String dump = DumpAll(second_child_fragment);
+  String expectation =
+      R"DUMP(.:: LayoutNG Physical Fragment Tree at legacy root LayoutView #document ::.
+  (NG fragment root inside fragment-less or legacy subtree:)
+    Box (block-flow-root block-flow)(self paint) offset:unplaced size:800x66 LayoutNGBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x50 LayoutNGBlockFlow BODY
+        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutNGBlockFlow DIV id='multicol'
+          Box (column block-flow) offset:0,0 size:260.656x50
+            Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
+          Box (column block-flow) offset:261.656,0 size:260.656x50
+*           Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
+          Box (column block-flow) offset:523.313,0 size:260.656x50
+            Box (block-flow) offset:0,0 size:260.656x50 LayoutNGBlockFlow DIV id='child'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
