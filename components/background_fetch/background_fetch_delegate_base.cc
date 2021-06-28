@@ -155,7 +155,8 @@ void BackgroundFetchDelegateBase::CancelDownload(const std::string& job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JobDetails* job_details = GetJobDetails(job_id);
 
-  if (job_details->job_state == JobDetails::State::kDownloadsComplete ||
+  if (!job_details ||
+      job_details->job_state == JobDetails::State::kDownloadsComplete ||
       job_details->job_state == JobDetails::State::kJobComplete) {
     // The cancel event arrived after the fetch was complete; ignore it.
     return;
