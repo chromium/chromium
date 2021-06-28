@@ -3380,11 +3380,11 @@
       },
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
+          'gtest_tests': 'win7_32_bit_gtests',
         },
         'mixins': [
-          'win10',
-          'x86-64',
+          'win7',
+          'x86-32',
         ],
       },
       'win-pixel-tester-rel': {
