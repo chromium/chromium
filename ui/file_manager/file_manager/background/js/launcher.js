@@ -7,10 +7,10 @@ import {util} from '../../common/js/util.js';
 import {AppWindowWrapper} from './app_window_wrapper.js';
 
 /**
+ * Namespace
  * @type {!Object}
  */
-// eslint-disable-next-line no-var
-var launcher = {};
+const launcher = {};
 
 /**
  * Type of a Files app's instance launch.

@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-/**
  * List of dialog types.
  *
  * Keep this in sync with FileManagerDialog::GetDialogTypeAsString, except
@@ -66,5 +61,4 @@ DialogType.isFolderDialog = type => {
       type == DialogType.SELECT_UPLOAD_FOLDER;
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {DialogType};

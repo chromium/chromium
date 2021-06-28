@@ -6,13 +6,9 @@
  * @fileoverview Utility methods for accessing chrome.metricsPrivate API.
  *
  * To be included as a first script in main.html
- *
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// eslint-disable-next-line no-var
-var metrics;  // Needs to be defined in each window which uses metrics.
-const metricsBase = metrics || {};
+const metricsBase = {};
 
 /**
  * A map from interval name to interval start timestamp.
@@ -200,5 +196,4 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
   metricsBase.call_('recordValue', [metricDescr, index]);
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {metricsBase};

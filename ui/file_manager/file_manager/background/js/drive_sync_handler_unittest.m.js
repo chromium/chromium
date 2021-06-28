@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
@@ -11,7 +10,6 @@ import {ProgressItemState} from '../../common/js/progress_center_common.js';
 
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {MockProgressCenter} from './mock_progress_center.js';
-// clang-format on
 
 /**
  * @type {!MockProgressCenter}

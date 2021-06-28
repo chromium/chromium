@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
@@ -1560,5 +1555,4 @@ fileOperationUtil.Speedometer = class {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {fileOperationUtil};

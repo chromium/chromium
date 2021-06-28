@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-var
-var volumeManagerFactory = {};
+const volumeManagerFactory = {};
 
 /**
  * @return {!Promise<!VolumeManager>}

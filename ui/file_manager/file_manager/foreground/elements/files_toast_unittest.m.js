@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {FilesToast} from './files_toast.js';
-// clang-format on
 
 export function setUpPage() {
   document.body.innerHTML += '<files-toast></files-toast>';

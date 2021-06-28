@@ -10,8 +10,7 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
 import {xfm} from './xfm.js';
 
 // Namespace
-// eslint-disable-next-line no-var
-var importer = importer || {};
+const importer = {};
 
 /**
  * @enum {string}

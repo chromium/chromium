@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertArrayEquals, assertEquals, assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
@@ -17,8 +16,6 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-
-// clang-format on
 
 /**
  * Mock chrome APIs.

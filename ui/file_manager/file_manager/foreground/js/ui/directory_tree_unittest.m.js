@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertArrayEquals,assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
@@ -24,7 +23,6 @@ import {MockNavigationListModel} from '../mock_navigation_list_model.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationSection} from '../navigation_list_model.js';
 
 import {DirectoryTree, EntryListItem} from './directory_tree.js';
-// clang-format on
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

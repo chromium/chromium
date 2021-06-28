@@ -10,8 +10,7 @@
 
 import {metricsBase} from './metrics_base.js';
 
-// eslint-disable-next-line no-var
-var metrics = metrics || metricsBase;
+const metrics = metricsBase;
 
 /**
  * Convert a short metric name to the full format.

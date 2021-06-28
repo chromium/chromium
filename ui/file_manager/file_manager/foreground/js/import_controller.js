@@ -145,7 +145,7 @@ importer.ImportController = class {
     if (this.activeImport_) {
       this.activeImport_.task.requestCancel();
       this.finalizeActiveImport_();
-      metrics.recordBoolean('ImportController.DeviceYanked');
+      metrics.recordBoolean('ImportController.DeviceYanked', true);
     }
     this.scanManager_.reset();
     this.checkState_();
@@ -309,7 +309,7 @@ importer.ImportController = class {
     if (this.activeImport_) {
       this.activeImport_.task.requestCancel();
       this.finalizeActiveImport_();
-      metrics.recordBoolean('ImportController.ImportCancelled');
+      metrics.recordBoolean('ImportController.ImportCancelled', true);
     }
 
     this.scanManager_.reset();

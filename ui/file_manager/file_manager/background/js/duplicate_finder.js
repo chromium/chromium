@@ -13,8 +13,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {importerHistory} from './import_history.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
-// eslint-disable-next-line no-var
-var duplicateFinder = {};
+const duplicateFinder = {};
 
 /**
  * A duplicate finder for Google Drive.

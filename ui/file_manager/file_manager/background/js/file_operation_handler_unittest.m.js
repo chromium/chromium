@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import { assertArrayEquals,assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
@@ -13,8 +12,6 @@ import {FileOperationHandler} from './file_operation_handler.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {MockFileOperationManager} from './mock_file_operation_manager.js';
 import {MockProgressCenter} from './mock_progress_center.js';
-// clang-format on
-
 
 /** @type {!MockFileOperationManager} */
 let fileOperationManager;

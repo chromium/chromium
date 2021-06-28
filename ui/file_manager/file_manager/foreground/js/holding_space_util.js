@@ -109,7 +109,7 @@ export class HoldingSpaceUtil {
     const oneDayInMillis = 24 * 60 * 60 * 1000;
     metrics.recordValue(
         /*name=*/ 'HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin',
-        /*type=*/ 'histogram-log',
+        chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
         /*min=*/ oneSecondInMillis,
         /*max=*/ oneDayInMillis,
         /*buckets=*/ 50,

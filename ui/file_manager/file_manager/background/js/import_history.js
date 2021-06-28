@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {importer} from '../../common/js/importer_common.js';
@@ -16,8 +11,7 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {metadataProxy} from './metadata_proxy.js';
 
 // Namespace
-// eslint-disable-next-line no-var
-var importerHistory = {};
+const importerHistory = {};
 
 /**
  * @enum {string}
@@ -848,5 +842,4 @@ importerHistory.createMetadataHashcode = function(fileEntry) {
       .catch(importer.getLogger().catcher('importer-common-create-hashcode'));
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {importerHistory};

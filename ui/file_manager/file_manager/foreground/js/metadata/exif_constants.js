@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 const Exif = {};
 
 /**
@@ -64,5 +59,4 @@ Exif.Tag = {
   SOFTWARE: 0x0131,
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {Exif};

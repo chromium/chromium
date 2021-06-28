@@ -7,8 +7,7 @@ import {importer} from '../../common/js/importer_common.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 
 // Namespace
-// eslint-disable-next-line no-var
-var importerTestHistory = {};
+const importerTestHistory = {};
 
 /**
  * importerHistoryInterfaces.ImportHistory and

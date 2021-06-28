@@ -6,8 +6,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {VolumeManagerImpl} from './volume_manager_impl.js';
 
-// eslint-disable-next-line no-var
-var volumeManagerFactory = (() => {
+const volumeManagerFactory = (() => {
   /**
    * The singleton instance of VolumeManager. Initialized by the first
    * invocation of getInstance().

@@ -12,8 +12,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
  * Namespace for test related things.
  */
 window.test = window.test || {};
-// eslint-disable-next-line no-var
-var test = window.test;
+const test = window.test;
 
 /**
  * Namespace for test utility functions.

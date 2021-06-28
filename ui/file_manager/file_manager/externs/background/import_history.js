@@ -5,8 +5,7 @@
 import {importer} from '../../common/js/importer_common.js';
 
 // Namespace
-// eslint-disable-next-line no-var
-var importerHistoryInterfaces = {};
+const importerHistoryInterfaces = {};
 
 /**
  * A persistent data store for Cloud Import history information.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import {DirectoryModel} from './directory_model.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationModelVolumeItem} from './navigation_list_model.js';
 
@@ -66,5 +61,4 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
   return null;
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {crossoverSearchUtils};

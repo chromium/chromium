@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 
 import {metadataProxy} from './metadata_proxy.js';
-
-// clang-format on
 
 export function testMetadataCaching(doneCallback) {
   reportPromise(

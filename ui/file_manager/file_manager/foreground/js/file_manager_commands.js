@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import './webui_command_extender.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -3009,5 +3004,4 @@ CommandHandler.COMMANDS_['show-providers-submenu'] =
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {CommandUtil};

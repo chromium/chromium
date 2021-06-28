@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
@@ -10,7 +9,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 import {util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
-// clang-format on
 
 /** @type {!DisplayPanel|!Element} */
 let displayPanel;
