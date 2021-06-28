@@ -728,7 +728,7 @@ if (is_android) {
       "//components/policy/core/browser:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core:client_model_proto",
-      "//components/safe_browsing/core/fbs:client_model",
+      "//components/safe_browsing/core/common/fbs:client_model",
       "//components/spellcheck:buildflags",
       "//components/spellcheck/renderer:renderer",
     ]
@@ -2731,7 +2731,7 @@ if (!is_android) {
       }
 
       if (!is_chromeos_lacros) {
-        sources += ["../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
+        sources += [ "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
       }
       if (is_chromeos_ash || is_chromeos_lacros) {
         sources +=
@@ -3542,7 +3542,7 @@ if (!is_android) {
         "../renderer/safe_browsing/phishing_dom_feature_extractor_browsertest.cc",
         "../renderer/safe_browsing/threat_dom_details_browsertest.cc",
       ]
-      deps += [ "//components/safe_browsing/core/fbs:client_model" ]
+      deps += [ "//components/safe_browsing/core/common/fbs:client_model" ]
     }
 
     if (enable_captive_portal_detection) {

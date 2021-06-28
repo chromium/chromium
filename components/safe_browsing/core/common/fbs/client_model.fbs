@@ -12,7 +12,7 @@
 // flatbuffer definition or you have questions regarding its format please contact
 // chrome-anti-phishing@googlegroups.com.
 
-include "components/safe_browsing/core/fbs/csd.fbs";
+include "components/safe_browsing/core/common/fbs/csd.fbs";
 
 namespace safe_browsing.flat;
 
