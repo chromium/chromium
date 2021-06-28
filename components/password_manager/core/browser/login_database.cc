@@ -1282,7 +1282,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
         form.password_value != old_primary_key_password.decrypted_password;
 
     InsecureCredentialsChanged insecure_changed(
-        password_changed ? insecure_credentials_table().RemoveRow(
+        password_changed ? insecure_credentials_table().RemoveRows(
                                form.signon_realm, form.username_value,
                                RemoveInsecureCredentialsReason::kUpdate)
                          : false);

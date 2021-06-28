@@ -81,12 +81,12 @@ class InsecureCredentialsTable {
   bool AddRow(const InsecureCredential& compromised_credentials);
 
   // Removes information about the credentials compromised for |username| on
-  // |signon_realm|. |reason| is the reason why the credentials is removed from
+  // |signon_realm|. |reason| is the reason why the credentials are removed from
   // the table. Returns true if the SQL completed successfully.
   // Also logs the compromise type in UMA.
-  bool RemoveRow(const std::string& signon_realm,
-                 const std::u16string& username,
-                 RemoveInsecureCredentialsReason reason);
+  bool RemoveRows(const std::string& signon_realm,
+                  const std::u16string& username,
+                  RemoveInsecureCredentialsReason reason);
 
   // Gets all the rows in the database for |signon_realm|.
   std::vector<InsecureCredential> GetRows(

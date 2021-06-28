@@ -115,7 +115,7 @@ bool InsecureCredentialsTable::AddRow(
   return result && db_->GetLastChangeCount();
 }
 
-bool InsecureCredentialsTable::RemoveRow(
+bool InsecureCredentialsTable::RemoveRows(
     const std::string& signon_realm,
     const std::u16string& username,
     RemoveInsecureCredentialsReason reason) {

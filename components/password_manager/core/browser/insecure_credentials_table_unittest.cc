@@ -188,15 +188,15 @@ TEST_F(InsecureCredentialsTableTest,
   EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1, 1));
 }
 
-TEST_F(InsecureCredentialsTableTest, RemoveRow) {
+TEST_F(InsecureCredentialsTableTest, RemoveRows) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   EXPECT_TRUE(db()->AddRow(test_data()));
   EXPECT_THAT(db()->GetRows(test_data().signon_realm),
               ElementsAre(test_data()));
   EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
 
-  EXPECT_TRUE(db()->RemoveRow(test_data().signon_realm, test_data().username,
-                              RemoveInsecureCredentialsReason::kUpdate));
+  EXPECT_TRUE(db()->RemoveRows(test_data().signon_realm, test_data().username,
+                               RemoveInsecureCredentialsReason::kUpdate));
 
   EXPECT_THAT(db()->GetAllRows(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().signon_realm), IsEmpty());
