@@ -89,6 +89,7 @@ public class WebContentsAccessibilityTest {
             "Value for <input type='range'> is incorrect, did you honor 'step' value?";
     private static final String INPUT_RANGE_EVENT_ERROR =
             "TYPE_VIEW_SCROLLED event not received before timeout.";
+    private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -1235,6 +1236,35 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(nodeInfoP2.isAccessibilityFocused());
         Assert.assertFalse(nodeInfoP2.getActionList().contains(ACTION_ACCESSIBILITY_FOCUS));
         Assert.assertTrue(nodeInfoP2.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
+    }
+
+    /**
+     * Test our internal cache of |AccessibilityNodeInfo| objects for proper leaf node updates.
+     */
+    @Test
+    @SmallTest
+    public void testNodeInfoCache_LeafNodeText() throws Throwable {
+        // Build a simple web page with a text node inside a leaf node.
+        setupTestFromFile("content/test/data/android/leaf_node_updates.html");
+
+        // Find the encompassing <div> node.
+        int vvIdDiv = waitForNodeMatching(sClassNameMatcher, "android.view.View");
+        mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Example text 1", mNodeInfo.getText());
+
+        // Focus the encompassing node.
+        focusNode(vvIdDiv);
+
+        // Run JS code to update the text.
+        executeJS("updateText()");
+
+        // Signal end of test.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Check whether the text of the encompassing node has been updated.
+        mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
+        Assert.assertEquals(CACHING_ERROR, "Example text 2", mNodeInfo.getText());
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)

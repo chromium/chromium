@@ -2373,6 +2373,19 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
   manager->ClearNodeInfoCacheForGivenId(unique_id());
+
+  // For any nodes that are the children of a leaf, we also want to invalidate
+  // the cache for the ancestry chain up until the first non-leaf node.
+  if (IsChildOfLeaf()) {
+    BrowserAccessibilityAndroid* parent =
+        static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
+
+    while (parent != nullptr && (parent->IsChildOfLeaf() || parent->IsLeaf())) {
+      manager->ClearNodeInfoCacheForGivenId(parent->unique_id());
+      parent = static_cast<BrowserAccessibilityAndroid*>(
+          parent->PlatformGetParent());
+    }
+  }
 }
 
 int BrowserAccessibilityAndroid::CountChildrenWithRole(
