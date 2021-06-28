@@ -8,8 +8,10 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -17,7 +19,7 @@
 namespace blink {
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
-    : HTMLElement(html_names::kFencedframeTag, document),
+    : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
       frame_delegate_(FencedFrameDelegate::Create(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
@@ -26,7 +28,7 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
 
 void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
-  HTMLElement::Trace(visitor);
+  HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
 }
 
@@ -42,16 +44,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     return MakeGarbageCollected<FencedFrameShadowDOMDelegate>(outer_element);
   }
 
-  // TODO(domfarolino): Once we land testable parts of the MPArch
-  // implementation, remove this and return the correct delegate. Note that this
-  // should be a NOTREACHED(), but for extra consistency we need to trip this on
-  // non-debug builds as well, since it is technically possible to hit this code
-  // path in a production build with the kFencedFrames feature enabled, and the
-  // param set to kMPArch.
-  CHECK(false) << "The MPArch path for fenced frames is currently not "
-                  "implemented, please do not use the kMPArch feature "
-                  "parameter as it is not supported at this time.";
-  return nullptr;
+  return MakeGarbageCollected<FencedFrameMPArchDelegate>(outer_element);
 }
 
 HTMLFencedFrameElement::FencedFrameDelegate::~FencedFrameDelegate() = default;
@@ -65,7 +58,7 @@ void HTMLFencedFrameElement::FencedFrameDelegate::Trace(
 
 Node::InsertionNotificationRequest HTMLFencedFrameElement::InsertedInto(
     ContainerNode& insertion_point) {
-  HTMLElement::InsertedInto(insertion_point);
+  HTMLFrameOwnerElement::InsertedInto(insertion_point);
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 
@@ -74,12 +67,18 @@ void HTMLFencedFrameElement::DidNotifySubtreeInsertionsToDocument() {
   Navigate();
 }
 
+void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
+  // We should verify that the underlying frame has already been disconnected.
+  DCHECK_EQ(ContentFrame(), nullptr);
+  HTMLFrameOwnerElement::RemovedFrom(node);
+}
+
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kSrcAttr) {
     Navigate();
   } else {
-    HTMLElement::ParseAttribute(params);
+    HTMLFrameOwnerElement::ParseAttribute(params);
   }
 }
 
@@ -95,6 +94,28 @@ void HTMLFencedFrameElement::Navigate() {
 
   DCHECK(frame_delegate_);
   frame_delegate_->Navigate(url);
+}
+
+void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
+  HTMLFrameOwnerElement::AttachLayoutTree(context);
+
+  if (features::kFencedFramesImplementationTypeParam.Get() ==
+      features::FencedFramesImplementationType::kMPArch) {
+    if (GetLayoutEmbeddedContent() && ContentFrame()) {
+      SetEmbeddedContentView(ContentFrame()->View());
+    }
+  }
+}
+
+LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy_layout) {
+  if (features::kFencedFramesImplementationTypeParam.Get() ==
+      features::FencedFramesImplementationType::kMPArch) {
+    return new LayoutIFrame(this);
+  }
+
+  return HTMLFrameOwnerElement::CreateLayoutObject(style, legacy_layout);
 }
 
 }  // namespace blink

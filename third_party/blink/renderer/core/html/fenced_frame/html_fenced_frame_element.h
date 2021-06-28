@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ class KURL;
 // not exposed by default, but can be enabled by one of the following:
 // - Enabling the Fenced Frames about:flags entry
 // - Passing --enable-features=FencedFrames
-class CORE_EXPORT HTMLFencedFrameElement : public HTMLElement {
+class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -33,7 +33,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLElement {
   // For as long as both of these implementations need to exist, we abstract a
   // common API from them which is neatly captured by `FencedFrameDelegate`. The
   // actual implementation of this interface will be one of the options listed
-  // above.
+  // above. See documentation above `FencedFrameMPArchDelegate` and
+  // `FencedFrameShadowDOMDelegate`.
   class CORE_EXPORT FencedFrameDelegate
       : public GarbageCollected<FencedFrameDelegate> {
    public:
@@ -57,6 +58,15 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLElement {
   ~HTMLFencedFrameElement() override;
   void Trace(Visitor* visitor) const override;
 
+  // HTMLFrameOwnerElement overrides.
+  mojom::blink::FrameOwnerElementType OwnerType() const override {
+    return mojom::blink::FrameOwnerElementType::kFencedframe;
+  }
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override {
+    NOTREACHED();
+    return ParsedPermissionsPolicy();
+  }
+
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
 
@@ -68,10 +78,13 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLElement {
   // Node overrides.
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void DidNotifySubtreeInsertionsToDocument() override;
+  void RemovedFrom(ContainerNode& node) override;
 
   // Element overrides.
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsURLAttribute(const Attribute&) const override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  void AttachLayoutTree(AttachContext& context) override;
 
   // The underlying <fencedframe> implementation that we delegate all of the
   // important bits to. See the comment above this class declaration.

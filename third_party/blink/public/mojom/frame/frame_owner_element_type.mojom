@@ -15,4 +15,5 @@ enum FrameOwnerElementType {
   kEmbed,
   kFrame,
   kPortal,
+  kFencedframe,
 };

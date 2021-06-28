@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
+
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+
+namespace blink {
+
+FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
+    HTMLFencedFrameElement* outer_element)
+    : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
+  DCHECK_EQ(features::kFencedFramesImplementationTypeParam.Get(),
+            features::FencedFramesImplementationType::kMPArch);
+}
+
+void FencedFrameMPArchDelegate::DidGetInserted() {}
+
+void FencedFrameMPArchDelegate::Navigate(const KURL& url) {}
+
+}  // namespace blink

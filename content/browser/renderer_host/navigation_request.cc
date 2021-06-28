@@ -650,6 +650,9 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
       case blink::mojom::FrameOwnerElementType::kFrame:
         return network::mojom::RequestDestination::kFrame;
       case blink::mojom::FrameOwnerElementType::kPortal:
+      // TODO(crbug.com/1223807): Introduce the `Sec-Fetch-Dest` header for
+      // fenced frames.
+      case blink::mojom::FrameOwnerElementType::kFencedframe:
       case blink::mojom::FrameOwnerElementType::kNone:
         NOTREACHED();
         return network::mojom::RequestDestination::kDocument;

@@ -94,6 +94,8 @@ AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
       return "frame";
     case mojom::blink::FrameOwnerElementType::kPortal:
       return "portal";
+    case mojom::blink::FrameOwnerElementType::kFencedframe:
+      return "fencedframe";
   }
   NOTREACHED();
   return "";
