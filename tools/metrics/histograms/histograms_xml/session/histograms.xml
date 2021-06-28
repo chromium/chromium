@@ -261,6 +261,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     profiles, instead of only from the profile that the user is using at that
     moment.
 
+    Note: As part of crbug/1223007, we discovered this histogram was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M93.
+
     This histogram is of special interest to the chrome-analysis-team@ and
     chrome-signin-team@. Do not change its semantics or retire it without
     talking to them first.
@@ -443,6 +447,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
+
+    Note: As part of crbug/1223007, we discovered this histogram was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M93.
 
     This histogram is of special interest to the chrome-signin-team@. Do not
     change its semantics or retire it without talking to them first.
