@@ -1386,6 +1386,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.TypedURLDatabaseError" enum="SyncTypedUrlDatabaseError"
+    expires_after="2021-12-20">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when TypedURLSyncBridge encounters a database error. As a result,
+    the bridge stops operating (and tracking metadata) for the rest of the
+    runtime of Chrome.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Sync.UndecryptedEntitiesOnDataTypeDisabled"
     units="sync entities" expires_after="2021-12-12">
   <owner>victorvianna@google.com</owner>

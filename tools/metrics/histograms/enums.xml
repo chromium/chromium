@@ -78089,6 +78089,18 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Android master sync setting"/>
 </enum>
 
+<enum name="SyncTypedUrlDatabaseError">
+  <int value="0" label="Error in MergeSyncData(): reading"/>
+  <int value="1" label="Error in MergeSyncData(): writing data"/>
+  <int value="2" label="Error in MergeSyncData(): writing metadata"/>
+  <int value="3" label="Error in ApplySyncChanges(): writing data"/>
+  <int value="4" label="Error in ApplySyncChanges(): writing metadata"/>
+  <int value="5" label="Error in OnURLsDeleted(): reading metadata"/>
+  <int value="6" label="OnDatabaseError() called"/>
+  <int value="7" label="Error in LoadMetadata(): opening DB"/>
+  <int value="8" label="Error in LoadMetadata(): reading"/>
+</enum>
+
 <enum name="SyncUnrecoverableErrorReason">
   <summary>Reasons for sync unrecoverable errors.</summary>
   <int value="0" label="No error"/>
