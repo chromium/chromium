@@ -213,6 +213,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_DITHER
 
+// Temporary disable while we sort through pixel diffs.
+#define GR_DISABLE_GL_ANGLE_instanced_arrays
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
