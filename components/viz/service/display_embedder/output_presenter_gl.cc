@@ -198,6 +198,12 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
   ANativeWindow* window =
       gpu::GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
           deps->GetSurfaceHandle(), &can_be_used_with_surface_control);
+  base::ScopedClosureRunner release_runner(base::BindOnce(
+      [](gfx::AcceleratedWidget widget) {
+        if (widget)
+          ANativeWindow_release(widget);
+      },
+      window));
   if (!window || !can_be_used_with_surface_control)
     return nullptr;
   // TODO(https://crbug.com/1012401): don't depend on GL.
