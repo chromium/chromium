@@ -119,6 +119,7 @@ class GpuClient;
 
 namespace content {
 class AgentSchedulingGroupHost;
+class CodeCacheHostImpl;
 class FileSystemManagerImpl;
 class InProcessChildThreadParams;
 class IsolationContext;
@@ -465,6 +466,17 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver)>;
   static void SetBroadcastChannelProviderReceiverHandlerForTesting(
       BroadcastChannelProviderReceiverHandler handler);
+
+  // Allows external code to supply a callback that is invoked immediately
+  // after the CodeCacheHostImpl is created and bound.  Used for swapping
+  // the binding for a test version of the service.
+  using CodeCacheHostReceiverHandler = base::RepeatingCallback<void(
+      RenderProcessHost*,
+      CodeCacheHostImpl*,
+      mojo::ReceiverId,
+      mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
+  static void SetCodeCacheHostReceiverHandlerForTesting(
+      CodeCacheHostReceiverHandler handler);
 
   // Sets this RenderProcessHost to be guest only. For Testing only.
   void SetForGuestsOnlyForTesting();

@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
-#include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -18,7 +16,7 @@ namespace {
 
 // Structure holding cache metadata sent to the platform.
 struct CacheMetadataEntry {
-  CacheMetadataEntry(const GURL& url,
+  CacheMetadataEntry(const WebURL& url,
                      base::Time response_time,
                      const uint8_t* data,
                      wtf_size_t data_size)
@@ -26,18 +24,30 @@ struct CacheMetadataEntry {
     this->data.Append(data, data_size);
   }
 
-  GURL url;
+  WebURL url;
   base::Time response_time;
   Vector<uint8_t> data;
 };
 
-// Mock GeneratedCodeCache implementation that provides basic caching.
-class MockGeneratedCodeCache {
+// Mock Platform implementation that provides basic crypto and caching.
+class SourceKeyedCachedMetadataHandlerMockPlatform final
+    : public TestingPlatformSupportWithMockScheduler {
  public:
+  SourceKeyedCachedMetadataHandlerMockPlatform() {}
+  ~SourceKeyedCachedMetadataHandlerMockPlatform() override = default;
+
+  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
+                     const WebURL& url,
+                     base::Time response_time,
+                     const uint8_t* data,
+                     size_t data_size) override {
+    cache_entries_.emplace_back(url, response_time, data,
+                                SafeCast<wtf_size_t>(data_size));
+  }
+
   bool HasCacheMetadataFor(const WebURL& url) {
-    GURL gurl = WebStringToGURL(url.GetString());
     for (const CacheMetadataEntry& entry : cache_entries_) {
-      if (entry.url == gurl) {
+      if (entry.url == url) {
         return true;
       }
     }
@@ -46,70 +56,27 @@ class MockGeneratedCodeCache {
 
   Vector<CacheMetadataEntry> GetCacheMetadatasFor(const WebURL& url) {
     Vector<CacheMetadataEntry> url_entries;
-    GURL gurl = WebStringToGURL(url.GetString());
     for (const CacheMetadataEntry& entry : cache_entries_) {
-      if (entry.url == gurl) {
+      if (entry.url == url) {
         url_entries.push_back(entry);
       }
     }
     return url_entries;
   }
 
-  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
-                     const GURL& url,
-                     base::Time response_time,
-                     const uint8_t* data,
-                     size_t data_size) {
-    cache_entries_.emplace_back(url, response_time, data,
-                                SafeCast<wtf_size_t>(data_size));
-  }
-
  private:
   Vector<CacheMetadataEntry> cache_entries_;
 };
 
-class CodeCacheHostMockImpl : public blink::mojom::CodeCacheHost {
- public:
-  CodeCacheHostMockImpl(MockGeneratedCodeCache* mock_disk_cache)
-      : mock_disk_cache_(mock_disk_cache) {}
-
- private:
-  // blink::mojom::CodeCacheHost implementation.
-  void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
-                                    const GURL& url,
-                                    base::Time expected_response_time,
-                                    mojo_base::BigBuffer data) override {
-    mock_disk_cache_->CacheMetadata(cache_type, url, expected_response_time,
-                                    data.data(), data.size());
-  }
-
-  void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
-                       const GURL& url,
-                       FetchCachedCodeCallback) override {}
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
-                           const GURL& url) override {}
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const GURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const url::Origin& cache_storage_origin,
-      const std::string& cache_storage_cache_name) override {}
-
-  MockGeneratedCodeCache* mock_disk_cache_;
-};
-
-// Mock CachedMetadataSender implementation that forwards data to the
-// mock_disk_cache.
+// Mock CachedMetadataSender implementation that forwards data to the platform.
 class MockCachedMetadataSender final : public CachedMetadataSender {
  public:
   MockCachedMetadataSender(KURL response_url) : response_url_(response_url) {}
 
-  void Send(blink::mojom::CodeCacheHost* code_cache_host,
-            const uint8_t* data,
-            size_t size) override {
-    code_cache_host->DidGenerateCacheableMetadata(
-        blink::mojom::CodeCacheType::kJavascript, response_url_, response_time_,
-        mojo_base::BigBuffer(base::make_span(data, size)));
+  void Send(const uint8_t* data, size_t size) override {
+    Platform::Current()->CacheMetadata(blink::mojom::CodeCacheType::kJavascript,
+                                       response_url_, response_time_, data,
+                                       size);
   }
 
   bool IsServedFromCacheStorage() override { return false; }
@@ -179,7 +146,8 @@ class MockCachedMetadataSender final : public CachedMetadataSender {
 
 TEST(SourceKeyedCachedMetadataHandlerTest,
      HandlerForSource_InitiallyNonNullHandlersWithNullData) {
-  MockGeneratedCodeCache mock_disk_cache;
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
@@ -202,11 +170,8 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
 
 TEST(SourceKeyedCachedMetadataHandlerTest,
      HandlerForSource_OneHandlerSetOtherNull) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
@@ -222,8 +187,7 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
       handler->HandlerForSource(source2);
 
   Vector<uint8_t> data1 = {1, 2, 3};
-  source1_handler->SetCachedMetadata(code_cache_host.get(), 0xbeef,
-                                     data1.data(), data1.size());
+  source1_handler->SetCachedMetadata(0xbeef, data1.data(), data1.size());
 
   EXPECT_NE(nullptr, source1_handler);
   EXPECT_METADATA(data1, source1_handler->GetCachedMetadata(0xbeef));
@@ -233,11 +197,8 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
 }
 
 TEST(SourceKeyedCachedMetadataHandlerTest, HandlerForSource_BothHandlersSet) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
@@ -253,12 +214,10 @@ TEST(SourceKeyedCachedMetadataHandlerTest, HandlerForSource_BothHandlersSet) {
       handler->HandlerForSource(source2);
 
   Vector<uint8_t> data1 = {1, 2, 3};
-  source1_handler->SetCachedMetadata(code_cache_host.get(), 0xbeef,
-                                     data1.data(), data1.size());
+  source1_handler->SetCachedMetadata(0xbeef, data1.data(), data1.size());
 
   Vector<uint8_t> data2 = {3, 4, 5, 6};
-  source2_handler->SetCachedMetadata(code_cache_host.get(), 0x5eed,
-                                     data2.data(), data2.size());
+  source2_handler->SetCachedMetadata(0x5eed, data2.data(), data2.size());
 
   EXPECT_NE(nullptr, source1_handler);
   EXPECT_METADATA(data1, source1_handler->GetCachedMetadata(0xbeef));
@@ -268,34 +227,27 @@ TEST(SourceKeyedCachedMetadataHandlerTest, HandlerForSource_BothHandlersSet) {
 }
 
 TEST(SourceKeyedCachedMetadataHandlerTest, Serialize_EmptyClearDoesSend) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
       MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
           WTF::TextEncoding(), std::make_unique<MockCachedMetadataSender>(url));
 
-  // Clear and send to the mock_disk_cache
-  handler->ClearCachedMetadata(code_cache_host.get(),
-                               CachedMetadataHandler::kClearPersistentStorage);
+  // Clear and send to the platform
+  handler->ClearCachedMetadata(CachedMetadataHandler::kClearPersistentStorage);
 
-  // Load from mock_disk_cache
+  // Load from platform
   Vector<CacheMetadataEntry> cache_metadatas =
-      mock_disk_cache.GetCacheMetadatasFor(url);
+      platform->GetCacheMetadatasFor(url);
 
   EXPECT_EQ(1u, cache_metadatas.size());
 }
 
 TEST(SourceKeyedCachedMetadataHandlerTest, Serialize_EachSetDoesSend) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
@@ -311,26 +263,21 @@ TEST(SourceKeyedCachedMetadataHandlerTest, Serialize_EachSetDoesSend) {
       handler->HandlerForSource(source2);
 
   Vector<uint8_t> data1 = {1, 2, 3};
-  source1_handler->SetCachedMetadata(code_cache_host.get(), 0xbeef,
-                                     data1.data(), data1.size());
+  source1_handler->SetCachedMetadata(0xbeef, data1.data(), data1.size());
 
   Vector<uint8_t> data2 = {3, 4, 5, 6};
-  source2_handler->SetCachedMetadata(code_cache_host.get(), 0x5eed,
-                                     data2.data(), data2.size());
+  source2_handler->SetCachedMetadata(0x5eed, data2.data(), data2.size());
 
-  // Load from mock_disk_cache
+  // Load from platform
   Vector<CacheMetadataEntry> cache_metadatas =
-      mock_disk_cache.GetCacheMetadatasFor(url);
+      platform->GetCacheMetadatasFor(url);
 
   EXPECT_EQ(2u, cache_metadatas.size());
 }
 
 TEST(SourceKeyedCachedMetadataHandlerTest, Serialize_SetWithNoSendDoesNotSend) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   SourceKeyedCachedMetadataHandler* handler =
@@ -347,27 +294,22 @@ TEST(SourceKeyedCachedMetadataHandlerTest, Serialize_SetWithNoSendDoesNotSend) {
 
   Vector<uint8_t> data1 = {1, 2, 3};
   source1_handler->DisableSendToPlatformForTesting();
-  source1_handler->SetCachedMetadata(code_cache_host.get(), 0xbeef,
-                                     data1.data(), data1.size());
+  source1_handler->SetCachedMetadata(0xbeef, data1.data(), data1.size());
 
   Vector<uint8_t> data2 = {3, 4, 5, 6};
-  source2_handler->SetCachedMetadata(code_cache_host.get(), 0x5eed,
-                                     data2.data(), data2.size());
+  source2_handler->SetCachedMetadata(0x5eed, data2.data(), data2.size());
 
-  // Load from mock_disk_cache
+  // Load from platform
   Vector<CacheMetadataEntry> cache_metadatas =
-      mock_disk_cache.GetCacheMetadatasFor(url);
+      platform->GetCacheMetadatasFor(url);
 
   EXPECT_EQ(1u, cache_metadatas.size());
 }
 
 TEST(SourceKeyedCachedMetadataHandlerTest,
      SerializeAndDeserialize_NoHandlersSet) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   WTF::String source1("source1");
@@ -378,16 +320,16 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
             WTF::TextEncoding(),
             std::make_unique<MockCachedMetadataSender>(url));
 
-    // Clear and persist in the mock_disk_cache.
+    // Clear and persist in the platform.
     handler->ClearCachedMetadata(
-        code_cache_host.get(), CachedMetadataHandler::kClearPersistentStorage);
+        CachedMetadataHandler::kClearPersistentStorage);
   }
 
-  // Reload from mock_disk_cache
+  // Reload from platform
   {
     Vector<CacheMetadataEntry> cache_metadatas =
-        mock_disk_cache.GetCacheMetadatasFor(url);
-    // Use the last data received by the mock_disk_cache
+        platform->GetCacheMetadatasFor(url);
+    // Use the last data received by the platform
     EXPECT_EQ(1u, cache_metadatas.size());
     CacheMetadataEntry& last_cache_metadata = cache_metadatas[0];
 
@@ -414,11 +356,8 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
 
 TEST(SourceKeyedCachedMetadataHandlerTest,
      SerializeAndDeserialize_BothHandlersSet) {
-  MockGeneratedCodeCache mock_disk_cache;
-
-  std::unique_ptr<blink::mojom::CodeCacheHost> code_cache_host =
-      std::make_unique<CodeCacheHostMockImpl>(
-          CodeCacheHostMockImpl(&mock_disk_cache));
+  ScopedTestingPlatformSupport<SourceKeyedCachedMetadataHandlerMockPlatform>
+      platform;
 
   KURL url("http://SourceKeyedCachedMetadataHandlerTest.com");
   WTF::String source1("source1");
@@ -436,17 +375,15 @@ TEST(SourceKeyedCachedMetadataHandlerTest,
     SingleCachedMetadataHandler* source2_handler =
         handler->HandlerForSource(source2);
 
-    source1_handler->SetCachedMetadata(code_cache_host.get(), 0xbeef,
-                                       data1.data(), data1.size());
-    source2_handler->SetCachedMetadata(code_cache_host.get(), 0x5eed,
-                                       data2.data(), data2.size());
+    source1_handler->SetCachedMetadata(0xbeef, data1.data(), data1.size());
+    source2_handler->SetCachedMetadata(0x5eed, data2.data(), data2.size());
   }
 
-  // Reload from mock_disk_cache
+  // Reload from platform
   {
     Vector<CacheMetadataEntry> cache_metadatas =
-        mock_disk_cache.GetCacheMetadatasFor(url);
-    // Use the last data received by the mock_disk_cache
+        platform->GetCacheMetadatasFor(url);
+    // Use the last data received by the platform
     EXPECT_EQ(2u, cache_metadatas.size());
     CacheMetadataEntry& last_cache_metadata = cache_metadatas[1];
 

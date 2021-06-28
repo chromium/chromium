@@ -29,10 +29,6 @@ class SingleCachedMetadataHandler;
 class ScriptSourceCode;
 class ModuleRecordProduceCacheData;
 
-namespace mojom {
-class CodeCacheHost;
-}
-
 class CORE_EXPORT V8CodeCache final {
   STATIC_ONLY(V8CodeCache);
 
@@ -50,8 +46,7 @@ class CORE_EXPORT V8CodeCache final {
 
   static uint32_t TagForCodeCache(const SingleCachedMetadataHandler*);
   static uint32_t TagForTimeStamp(const SingleCachedMetadataHandler*);
-  static void SetCacheTimeStamp(blink::mojom::CodeCacheHost*,
-                                SingleCachedMetadataHandler*);
+  static void SetCacheTimeStamp(SingleCachedMetadataHandler*);
 
   // Returns true iff the SingleCachedMetadataHandler contains a code cache
   // that can be consumed by V8.
@@ -73,12 +68,10 @@ class CORE_EXPORT V8CodeCache final {
       const SingleCachedMetadataHandler*);
 
   static void ProduceCache(v8::Isolate*,
-                           blink::mojom::CodeCacheHost*,
                            v8::Local<v8::Script>,
                            const ScriptSourceCode&,
                            ProduceCacheOptions);
   static void ProduceCache(v8::Isolate*,
-                           blink::mojom::CodeCacheHost*,
                            ModuleRecordProduceCacheData*,
                            size_t source_text_length,
                            const KURL& source_url,

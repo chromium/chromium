@@ -697,11 +697,6 @@ FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
 
 blink::mojom::CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
   if (!code_cache_host_) {
-    // We may not have a valid browser interface in tests. For ex:
-    // FakeWorkerGlobalScope doesn't provide a valid interface. These tests
-    // don't rely on code caching so it's safe to return nullptr here.
-    if (!GetBrowserInterfaceBroker().is_bound())
-      return nullptr;
     GetBrowserInterfaceBroker().GetInterface(
         code_cache_host_.BindNewPipeAndPassReceiver());
   }

@@ -34,6 +34,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
@@ -2374,30 +2375,35 @@ namespace {
 
 class CodeCacheHostInterceptor
     : public blink::mojom::CodeCacheHostInterceptorForTesting,
-      public WebContentsObserver {
+      public RenderProcessHostObserver {
  public:
-  CodeCacheHostInterceptor(RenderFrameHost* rfh,
+  CodeCacheHostInterceptor(RenderProcessHost* rph,
                            CodeCacheHostImpl* code_cache_host_impl)
-      : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-        render_frame_host_(rfh),
-        code_cache_host_impl_(code_cache_host_impl) {}
+      : render_process_host_(rph), code_cache_host_impl_(code_cache_host_impl) {
+
+    // Register with the RenderProcessHost so we can cleanup properly.
+    render_process_host_->AddObserver(this);
+  }
 
   ~CodeCacheHostInterceptor() override {
+    if (render_process_host_)
+      render_process_host_->RemoveObserver(this);
   }
 
   CodeCacheHost* GetForwardingInterface() override {
     return code_cache_host_impl_;
   }
 
-  // WebContentsObserver implementation.
-  void RenderFrameDeleted(RenderFrameHost* host) override {
-    DCHECK(host == render_frame_host_);
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override {
+    DCHECK(host == render_process_host_);
 
     // The CodeCacheHostImpl will be destroyed when the renderer exits.
     // Drop our reference to avoid holding a stale pointer.
     code_cache_host_impl_ = nullptr;
 
-    render_frame_host_ = nullptr;
+    render_process_host_->RemoveObserver(this);
+    render_process_host_ = nullptr;
   }
 
   void DidGenerateCacheableMetadataInCacheStorage(
@@ -2414,9 +2420,9 @@ class CodeCacheHostInterceptor
 
  private:
   // These can be held as raw pointers since we use the
-  // RenderFrameHostObserver interface to clear them before they are
+  // RenderProcessHostObserver interface to clear them before they are
   // destroyed.
-  RenderFrameHost* render_frame_host_;
+  RenderProcessHost* render_process_host_;
   CodeCacheHostImpl* code_cache_host_impl_;
 };
 
@@ -2463,7 +2469,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
       : cache_storage_control_(
             std::make_unique<CacheStorageControlForBadOrigin>()) {
     // Register a callback to be notified of new CodeCacheHostImpl objects.
-    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
+    RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
         base::BindRepeating(
             &ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest::
                 CreateTestCodeCacheHost,
@@ -2481,12 +2487,12 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 
   ~ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest() override {
     // Disable the callback now that this object is being destroyed.
-    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
-        RenderFrameHostImpl::CodeCacheHostReceiverHandler());
+    RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
+        RenderProcessHostImpl::CodeCacheHostReceiverHandler());
   }
 
   void CreateTestCodeCacheHost(
-      RenderFrameHost* rfh,
+      RenderProcessHost* rph,
       CodeCacheHostImpl* code_cache_host_impl,
       mojo::ReceiverId receiver_id,
       mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>& receiver_set) {
@@ -2497,7 +2503,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 
     // Create an interceptor that passes a bad origin to CodeCacheHostImpl.
     auto interceptor =
-        std::make_unique<CodeCacheHostInterceptor>(rfh, code_cache_host_impl);
+        std::make_unique<CodeCacheHostInterceptor>(rph, code_cache_host_impl);
     code_cache_host_interfaces_.push_back(
         receiver_set.SwapImplForTesting(receiver_id, std::move(interceptor)));
   }
