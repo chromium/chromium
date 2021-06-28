@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -119,16 +120,16 @@ public class NoteCreationDialog extends DialogFragment {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
         LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
         View noteContainerView = layoutManager.findViewByPosition(index);
-        return noteContainerView == null ? null : noteContainerView.findViewById(R.id.background);
+        return noteContainerView == null ? null : noteContainerView.findViewById(R.id.item);
     }
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
 
-        View background = parent.findViewById(R.id.background);
-        template.mainBackground.apply(background, getNoteCornerRadius());
-        background.setClipToOutline(true);
-        background.setContentDescription(
+        View carouselItemView = parent.findViewById(R.id.item);
+        template.mainBackground.apply(carouselItemView, getNoteCornerRadius());
+        carouselItemView.setClipToOutline(true);
+        carouselItemView.setContentDescription(
                 getActivity().getString(R.string.content_creation_note_template_selected,
                         model.get(NoteProperties.TEMPLATE).localizedName));
         Typeface typeface = model.get(NoteProperties.TYPEFACE);
@@ -167,8 +168,11 @@ public class NoteCreationDialog extends DialogFragment {
         if (isFirst) {
             paddingLeft = (int) ((dialogWidth - templateWidth) * FIRST_NOTE_PADDING_RATIO + 0.5f);
         }
-        itemView.setPadding(paddingLeft, itemView.getPaddingTop(), itemView.getPaddingRight(),
-                itemView.getPaddingBottom());
+
+        MarginLayoutParams params = (MarginLayoutParams) itemView.getLayoutParams();
+        params.setMarginStart(paddingLeft);
+        itemView.setLayoutParams(params);
+        itemView.requestLayout();
     }
 
     private void maybeShowToast() {
