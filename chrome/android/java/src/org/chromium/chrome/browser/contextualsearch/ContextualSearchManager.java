@@ -1376,6 +1376,11 @@ public class ContextualSearchManager
         mIsRelatedSearchesSerp = true;
         // TODO(donnd): determine what to show in the Caption, if anything.
         loadSearchUrl();
+
+        // Make sure we show the serp contents
+        if (getSearchPanelWebContents() != null) {
+            getSearchPanelWebContents().onShow();
+        }
     }
 
     /** @return The {@link SelectionClient} used by Contextual Search. */
