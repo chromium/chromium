@@ -336,7 +336,13 @@ class CloudPolicyTest : public InProcessBrowserTest,
   base::OnceClosure on_policy_updated_;
 };
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyTest, FetchPolicy) {
+// crbug.com/1224925 flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_FetchPolicy DISABLED_FetchPolicy
+#else
+#define MAYBE_FetchPolicy FetchPolicy
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyTest, MAYBE_FetchPolicy) {
   PolicyService* policy_service = GetPolicyService();
   {
     base::RunLoop run_loop;
@@ -386,7 +392,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyTest, InvalidatePolicy) {
+// crbug.com/1224925 flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
+#else
+#define MAYBE_InvalidatePolicy InvalidatePolicy
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyTest, MAYBE_InvalidatePolicy) {
   PolicyService* policy_service = GetPolicyService();
   policy_service->AddObserver(POLICY_DOMAIN_CHROME, this);
 

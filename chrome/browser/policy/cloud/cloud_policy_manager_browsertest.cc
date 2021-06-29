@@ -240,13 +240,13 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 };
 
-// https://crbug.com/1224321
+// https://crbug.com/1224321, crbug.com/1224925
 #if defined(OS_WIN)
 #define MAYBE_Register DISABLED_Register
 #else
 #define MAYBE_Register Register
 #endif
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_Register) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         // Accept one register request. The initial request should not include
@@ -266,12 +266,6 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
   EXPECT_TRUE(policy_manager()->core()->client()->is_registered());
 }
 
-// https://crbug.com/1224321
-#if defined(OS_WIN)
-#define MAYBE_RegisterWithFails DISABLED_RegisterWithFails
-#else
-#define MAYBE_RegisterWithFails RegisterWithFails
-#endif
 IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFails) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -284,13 +278,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFails) {
   EXPECT_FALSE(policy_manager()->core()->client()->is_registered());
 }
 
-// https://crbug.com/1224321
+// https://crbug.com/1224321, crbug.com/1224925
 #if defined(OS_WIN)
 #define MAYBE_RegisterFailsWithRetries DISABLED_RegisterFailsWithRetries
 #else
 #define MAYBE_RegisterFailsWithRetries RegisterFailsWithRetries
 #endif
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFailsWithRetries) {
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterFailsWithRetries) {
   // Fail 4 times with ERR_NETWORK_CHANGED; the first 3 will trigger a retry,
   // the last one will forward the error to the client and unblock the
   // register process.
@@ -310,13 +304,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFailsWithRetries) {
   EXPECT_EQ(4, count);
 }
 
-// https://crbug.com/1224321
+// https://crbug.com/1224321, crbug.com/1224925
 #if defined(OS_WIN)
 #define MAYBE_RegisterWithRetry DISABLED_RegisterWithRetry
 #else
 #define MAYBE_RegisterWithRetry RegisterWithRetry
 #endif
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterWithRetry) {
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterWithRetry) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         em::DeviceRegisterRequest::Type expected_type =

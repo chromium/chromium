@@ -243,14 +243,26 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   CloudPolicyClient* client_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, FetchExtensionPolicy) {
+// crbug.com/1224925 flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_FetchExtensionPolicy DISABLED_FetchExtensionPolicy
+#else
+#define MAYBE_FetchExtensionPolicy FetchExtensionPolicy
+#endif
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_FetchExtensionPolicy) {
   // Read the initial policy.
   ExtensionTestMessageListener policy_listener(kTestPolicyJSON, false);
   event_listener_->Reply("get-policy-Name");
   EXPECT_TRUE(policy_listener.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, UpdateExtensionPolicy) {
+// crbug.com/1224925 flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_UpdateExtensionPolicy DISABLED_UpdateExtensionPolicy
+#else
+#define MAYBE_UpdateExtensionPolicy UpdateExtensionPolicy
+#endif
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
   // Read the initial policy.
   ExtensionTestMessageListener policy_listener(kTestPolicyJSON, true);
   event_listener_->Reply("get-policy-Name");
@@ -278,7 +290,13 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, UpdateExtensionPolicy) {
   EXPECT_TRUE(policy_listener2.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, InstallNewExtension) {
+// crbug.com/1224925 flaky on Win.
+#if defined(OS_WIN)
+#define MAYBE_InstallNewExtension DISABLED_InstallNewExtension
+#else
+#define MAYBE_InstallNewExtension InstallNewExtension
+#endif
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
   event_listener_->Reply("idle");
   event_listener_.reset();
 
@@ -310,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, InstallNewExtension) {
 // This test verifies that when the user signs out then any existing component
 // policy caches are dropped, and that it's still possible to sign back in and
 // get policy for components working again.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// crbug.com/1224925 flaky on Win.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
   // Read the initial policy.
   ExtensionTestMessageListener initial_policy_listener(kTestPolicyJSON, true);
