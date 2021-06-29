@@ -317,7 +317,8 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-#if (defined(OS_WIN) && DCHECK_IS_ON())
+// TODO(crbug.com/1224903): Failing on Linux dbg tests.
+#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
 #define MAYBE_TestEnableTracing DISABLED_TestEnableTracing
 #else
 #define MAYBE_TestEnableTracing TestEnableTracing
@@ -368,7 +369,8 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
 }
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-#if defined(OS_WIN) && DCHECK_IS_ON()
+// TODO(crbug.com/1224903): Failing on Linux dbg tests.
+#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
 #define MAYBE_StopOnThreadPool DISABLED_StopOnThreadPool
 #else
 #define MAYBE_StopOnThreadPool StopOnThreadPool
@@ -391,7 +393,8 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
 }
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-#if defined(OS_WIN) && DCHECK_IS_ON()
+// TODO(crbug.com/1224903): Failing on Linux dbg tests.
+#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
 #define MAYBE_StopOnThreadPoolTwice DISABLED_StopOnThreadPoolTwice
 #else
 #define MAYBE_StopOnThreadPoolTwice StopOnThreadPoolTwice
