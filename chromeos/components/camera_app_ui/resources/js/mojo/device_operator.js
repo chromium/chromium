@@ -15,6 +15,7 @@ import {
 } from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
+import {MockDocumentScanner} from './mock_document_scanner.js';
 import {closeWhenUnload} from './util.js';
 
 /**
@@ -611,6 +612,47 @@ export class DeviceOperator {
     if (deviceId) {
       await this.deviceProvider_.setMultipleStreamsEnabled(deviceId, enabled);
     }
+  }
+
+  /**
+   * Returns true if the document mode is supported on the device.
+   * @param {string} deviceId The id of target camera device.
+   * @return {!Promise<boolean>}
+   */
+  async isDocumentModeSupported(deviceId) {
+    // TODO(b/180564352): Switch to the actual implementation once it is ready.
+    const {isSupported} =
+        await MockDocumentScanner.getInstance().isDocumentModeSupported();
+    return isSupported;
+  }
+
+  /**
+   * Registers a document corners detector and triggers |callback| if the
+   * detected corners are updated.
+   * @param {string} deviceId The id of target camera device.
+   * @param {function(!Array<gfx.mojom.PointF>): void} callback Callback to
+   *     trigger when the detected corners are updated.
+   * @return {!Promise<number>} Id for the added detector.
+   */
+  async registerDocumentCornersDetector(deviceId, callback) {
+    // TODO(b/180564352): Switch to the actual implementation once it is ready.
+    const {id} =
+        await MockDocumentScanner.getInstance().registerDocumentCornersDetector(
+            callback);
+    return id;
+  }
+
+  /**
+   * Unregisters the document corners detector given by its id.
+   * @param {string} deviceId The id of target camera device.
+   * @param {number} detectorId The id of the detector.
+   * @return {!Promise<boolean>} True if it succeed.
+   */
+  async unregisterDocumentCornersDetector(deviceId, detectorId) {
+    // TODO(b/180564352): Switch to the actual implementation once it is ready.
+    const {isSuccess} = await MockDocumentScanner.getInstance()
+                            .unregisterDocumentCornersDetector(detectorId);
+    return isSuccess;
   }
 
   /**

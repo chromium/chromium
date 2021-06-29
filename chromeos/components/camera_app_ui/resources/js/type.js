@@ -78,6 +78,15 @@ export class Resolution {
 }
 
 /**
+ * Types of common mime types.
+ * @enum {string}
+ */
+export const MimeType = {
+  JPEG: 'image/jpeg',
+  PDF: 'application/pdf',
+};
+
+/**
  * Capture modes.
  * @enum {string}
  */
