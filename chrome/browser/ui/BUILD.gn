@@ -858,8 +858,6 @@ static_library("ui") {
       "blocked_content/framebust_block_tab_helper.h",
       "blocked_content/popunder_preventer.cc",
       "blocked_content/popunder_preventer.h",
-      "bluetooth/bluetooth_chooser_controller.cc",
-      "bluetooth/bluetooth_chooser_controller.h",
       "bluetooth/bluetooth_chooser_desktop.cc",
       "bluetooth/bluetooth_chooser_desktop.h",
       "bluetooth/bluetooth_scanning_prompt_controller.cc",

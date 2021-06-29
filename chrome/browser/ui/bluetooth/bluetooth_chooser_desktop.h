@@ -10,11 +10,13 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
-class BluetoothChooserController;
-
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace permissions {
+class BluetoothChooserController;
+}  // namespace permissions
 
 // Represents a Bluetooth chooser to ask the user to select a Bluetooth
 // device from a list of options. This implementation is for desktop.
@@ -38,7 +40,8 @@ class BluetoothChooserDesktop : public content::BluetoothChooser {
 
  private:
   // DeviceChooserContentView owns the controller.
-  base::WeakPtr<BluetoothChooserController> bluetooth_chooser_controller_;
+  base::WeakPtr<permissions::BluetoothChooserController>
+      bluetooth_chooser_controller_;
 
   // Closes the displayed UI if it is still open. Used to ensure the bubble
   // closes if this controller is torn down.

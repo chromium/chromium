@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_CONTROLLER_H_
-#define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_CONTROLLER_H_
+#ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_CONTROLLER_H_
+#define COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_CONTROLLER_H_
 
 #include <stddef.h>
 
@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/chooser_controller.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -21,18 +20,26 @@ namespace content {
 class RenderFrameHost;
 }
 
+namespace permissions {
+
 // BluetoothChooserController is a chooser that presents a list of
 // Bluetooth device names, which come from |bluetooth_chooser_desktop_|.
 // It can be used by WebBluetooth API to get the user's permission to
 // access a Bluetooth device.
-class BluetoothChooserController : public permissions::ChooserController {
+class BluetoothChooserController : public ChooserController {
  public:
   BluetoothChooserController(
       content::RenderFrameHost* owner,
-      const content::BluetoothChooser::EventHandler& event_handler);
+      const content::BluetoothChooser::EventHandler& event_handler,
+      std::u16string title);
+
+  BluetoothChooserController(const BluetoothChooserController&) = delete;
+  BluetoothChooserController& operator=(const BluetoothChooserController&) =
+      delete;
+
   ~BluetoothChooserController() override;
 
-  // permissions::ChooserController:
+  // ChooserController:
   bool ShouldShowIconBeforeText() const override;
   bool ShouldShowReScanButton() const override;
   std::u16string GetNoOptionsText() const override;
@@ -96,8 +103,8 @@ class BluetoothChooserController : public permissions::ChooserController {
   content::BluetoothChooser::EventHandler event_handler_;
 
   base::WeakPtrFactory<BluetoothChooserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothChooserController);
 };
 
-#endif  // CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_CHOOSER_CONTROLLER_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_CONTROLLER_H_

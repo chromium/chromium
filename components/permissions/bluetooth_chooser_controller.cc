@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
+#include "components/permissions/bluetooth_chooser_controller.h"
 
 #include <algorithm>
 
@@ -10,10 +10,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chooser_controller/title_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace permissions {
 
 namespace {
 
@@ -25,12 +25,9 @@ void RecordInteractionWithChooser(bool has_null_handler) {
 
 BluetoothChooserController::BluetoothChooserController(
     content::RenderFrameHost* owner,
-    const content::BluetoothChooser::EventHandler& event_handler)
-    : ChooserController(CreateChooserTitle(
-          owner,
-          IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
-          IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)),
-      event_handler_(event_handler) {}
+    const content::BluetoothChooser::EventHandler& event_handler,
+    std::u16string title)
+    : ChooserController(title), event_handler_(event_handler) {}
 
 BluetoothChooserController::~BluetoothChooserController() {
   if (event_handler_) {
@@ -271,3 +268,5 @@ void BluetoothChooserController::ClearAllDevices() {
   device_id_to_name_map_.clear();
   device_name_counts_.clear();
 }
+
+}  // namespace permissions

@@ -158,6 +158,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Scanning for Bluetooth devices...
     </message>
   </if>
+  <message name="IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID" desc="To distinguish devices with the same name, the device chooser shows the device name with id.">
+    <ph name="DEVICE_NAME">$1<ex>device name</ex></ph> (<ph name="DEVICE_ID">$2<ex>device id</ex></ph>)
+  </message>
 
   <!-- Bluetooth Scanning Prompt -->
   <message name="IDS_BLUETOOTH_SCANNING_PROMPT_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no nearby Bluetooth devices were found using the requirements that the application provided." formatter_data="android_java">

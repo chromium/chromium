@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_BLUETOOTH_CHROME_BLUETOOTH_CHOOSER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_BLUETOOTH_CHROME_BLUETOOTH_CHOOSER_CONTROLLER_H_
 
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
+#include "components/permissions/bluetooth_chooser_controller.h"
 
 // The concrete version of BluetoothChooserController for Chrome.
-class ChromeBluetoothChooserController : public BluetoothChooserController {
+class ChromeBluetoothChooserController
+    : public permissions::BluetoothChooserController {
  public:
   ChromeBluetoothChooserController(
       content::RenderFrameHost* owner,

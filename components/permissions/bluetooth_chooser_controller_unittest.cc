@@ -5,14 +5,30 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/bluetooth/chrome_bluetooth_chooser_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/permissions/bluetooth_chooser_controller.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
+
+namespace permissions {
+
+class TestBluetoothChooserController : public BluetoothChooserController {
+ public:
+  TestBluetoothChooserController(
+      content::RenderFrameHost* owner,
+      const content::BluetoothChooser::EventHandler& event_handler,
+      std::u16string title)
+      : BluetoothChooserController(owner, event_handler, title) {}
+
+  TestBluetoothChooserController(const TestBluetoothChooserController&) =
+      delete;
+  TestBluetoothChooserController& operator=(
+      const TestBluetoothChooserController&) = delete;
+
+  void OpenAdapterOffHelpUrl() const override {}
+  void OpenPermissionPreferences() const override {}
+  void OpenHelpCenterUrl() const override {}
+};
 
 class BluetoothChooserControllerTest : public testing::Test {
  public:
@@ -21,9 +37,15 @@ class BluetoothChooserControllerTest : public testing::Test {
             nullptr,
             base::BindRepeating(
                 &BluetoothChooserControllerTest::OnBluetoothChooserEvent,
-                base::Unretained(this))) {
+                base::Unretained(this)),
+            u"title") {
     bluetooth_chooser_controller_.set_view(&mock_bluetooth_chooser_view_);
   }
+
+  BluetoothChooserControllerTest(const BluetoothChooserControllerTest&) =
+      delete;
+  BluetoothChooserControllerTest& operator=(
+      const BluetoothChooserControllerTest&) = delete;
 
  protected:
   void OnBluetoothChooserEvent(content::BluetoothChooserEvent event,
@@ -32,13 +54,10 @@ class BluetoothChooserControllerTest : public testing::Test {
     last_device_id_ = device_id;
   }
 
-  ChromeBluetoothChooserController bluetooth_chooser_controller_;
-  permissions::MockChooserControllerView mock_bluetooth_chooser_view_;
+  TestBluetoothChooserController bluetooth_chooser_controller_;
+  MockChooserControllerView mock_bluetooth_chooser_view_;
   content::BluetoothChooserEvent last_event_;
   std::string last_device_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothChooserControllerTest);
 };
 
 class BluetoothChooserControllerWithDevicesAddedTest
@@ -312,3 +331,5 @@ TEST_F(BluetoothChooserControllerWithDevicesAddedTest,
   EXPECT_EQ(content::BluetoothChooserEvent::CANCELLED, last_event_);
   EXPECT_EQ(std::string(), last_device_id_);
 }
+
+}  // namespace permissions

@@ -8,11 +8,14 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
@@ -50,7 +53,13 @@ Browser* GetBrowser() {
 ChromeBluetoothChooserController::ChromeBluetoothChooserController(
     content::RenderFrameHost* owner,
     const content::BluetoothChooser::EventHandler& event_handler)
-    : BluetoothChooserController(owner, event_handler) {
+    : permissions::BluetoothChooserController(
+          owner,
+          event_handler,
+          CreateChooserTitle(
+              owner,
+              IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
+              IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)) {
   if (owner)
     frame_tree_node_id_ = owner->GetFrameTreeNodeId();
 }
