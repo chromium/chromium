@@ -100,6 +100,11 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
                 mNativePtr, ContextMenuNativeDelegateImpl.this, mRenderFrameHost);
     }
 
+    @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
     /**
      * The class hold the |retrieveImageForShare| callback result.
      */

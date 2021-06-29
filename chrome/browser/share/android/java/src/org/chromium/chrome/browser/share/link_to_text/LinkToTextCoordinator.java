@@ -192,8 +192,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void reshareHighlightedText() {
-        mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                TextFragmentReceiver.MANAGER);
+        setTextFragmentReceiver();
         mProducer.extractTextFragmentsMatches(
                 new TextFragmentReceiver.ExtractTextFragmentsMatchesResponse() {
                     @Override
@@ -233,6 +232,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public void onCrash(Tab tab) {
         LinkToTextBridge.logGenerateErrorTabCrash();
         cleanup();
+    }
+
+    private void setTextFragmentReceiver() {
+        mProducer = mChromeShareExtras.getRenderFrameHost() != null
+                ? mChromeShareExtras.getRenderFrameHost().getInterfaceToRendererFrame(
+                        TextFragmentReceiver.MANAGER)
+                : mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+                        TextFragmentReceiver.MANAGER);
     }
 
     private void cleanup() {

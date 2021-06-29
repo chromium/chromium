@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.Clipboard;
@@ -356,9 +357,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void removeHighlighting() {
-        TextFragmentReceiver producer =
-                mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+    public void removeHighlighting(RenderFrameHost renderFrameHost) {
+        TextFragmentReceiver producer = renderFrameHost != null
+                ? renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER)
+                : mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
                         TextFragmentReceiver.MANAGER);
         producer.removeFragments();
     }

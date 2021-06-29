@@ -54,6 +54,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/share/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]

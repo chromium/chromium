@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * Interface to handle context menu actions in native.
@@ -45,4 +46,10 @@ public interface ContextMenuNativeDelegate {
      * Does a reverse image search for the current image that the context menu was triggered on.
      */
     void searchForImage();
+
+    /**
+     * Get the current {@link RenderFrameHost} that the context menu was triggered on, to be shared.
+     * @return {@link RenderFrameHost}.
+     */
+    RenderFrameHost getRenderFrameHost();
 }
