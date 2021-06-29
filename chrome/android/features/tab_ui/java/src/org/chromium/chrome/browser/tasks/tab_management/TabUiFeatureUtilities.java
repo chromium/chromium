@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST;
 
+import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -113,26 +113,26 @@ public class TabUiFeatureUtilities {
 
     /**
      * @return Whether the Grid Tab Switcher UI is enabled and available for use.
+     * @param context The activity context.
      */
-    public static boolean isGridTabSwitcherEnabled() {
+    public static boolean isGridTabSwitcherEnabled(Context context) {
         // Disable grid tab switcher for tablet.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    ContextUtils.getApplicationContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return false;
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
-        return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled()
+        return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
                 || StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
 
     /**
      * @return Whether the tab group feature is enabled and available for use.
+     * @param context The activity context.
      */
-    public static boolean isTabGroupsAndroidEnabled() {
+    public static boolean isTabGroupsAndroidEnabled(Context context) {
         // Disable tab group for tablet.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                    ContextUtils.getApplicationContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return false;
         }
 
@@ -143,9 +143,10 @@ public class TabUiFeatureUtilities {
 
     /**
      * @return Whether the tab group continuation feature is enabled and available for use.
+     * @param context The activity context.
      */
-    public static boolean isTabGroupsAndroidContinuationEnabled() {
-        return isTabGroupsAndroidEnabled()
+    public static boolean isTabGroupsAndroidContinuationEnabled(Context context) {
+        return isTabGroupsAndroidEnabled(context)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID);
     }
 
@@ -153,8 +154,9 @@ public class TabUiFeatureUtilities {
      * @return Whether the conditional tab strip feature is enabled and available for use.
      */
     public static boolean isConditionalTabStripEnabled() {
+        // TODO(crbug.com/1222946): Deprecate this feature.
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID)
-                && !isGridTabSwitcherEnabled() && isTabManagementModuleSupported()
+                && isTabManagementModuleSupported()
                 && !ConditionalTabStripUtils.getOptOutIndicator();
     }
 

@@ -97,7 +97,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 }
                 // If grid / group M5 is enabled, show the undo snack bar regardless of whether
                 // accessibility mode is enabled.
-                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
                     return false;
                 }
                 return ChromeAccessibilityUtil.get().isAccessibilityEnabled()

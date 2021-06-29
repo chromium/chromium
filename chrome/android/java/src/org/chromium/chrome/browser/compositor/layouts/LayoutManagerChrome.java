@@ -116,7 +116,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         if (createOverviewLayout) {
             if (startSurface != null) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled();
+                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 assert tabManagementDelegate != null;
@@ -283,7 +283,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
         return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp
-                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled();
+                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
     }
 
     @Override

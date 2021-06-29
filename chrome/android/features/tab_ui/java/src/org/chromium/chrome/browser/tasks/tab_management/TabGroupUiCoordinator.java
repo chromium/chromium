@@ -148,7 +148,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
         //  and the dialog here.
         TabGridDialogMediator.DialogController dialogController = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled() && mScrimCoordinator != null) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
+                && mScrimCoordinator != null) {
             mTabGridDialogCoordinator =
                     new TabGridDialogCoordinator(mContext, mTabModelSelector, mTabContentManager,
                             mTabCreatorManager, mActivity.findViewById(R.id.coordinator), null,
@@ -283,7 +284,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 (TabGroupModelFilter) provider.getTabModelFilter(true);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
         RecordHistogram.recordCountHistogram("TabGroups.UserGroupCount", groupCount);
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             int namedGroupCount = 0;
             for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
                 int rootId = CriticalPersistedTabData.from(normalFilter.getTabAt(i)).getRootId();

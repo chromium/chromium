@@ -20,6 +20,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -129,8 +131,8 @@ public class TabPersistentStoreTest {
         final MockTabPersistentStoreObserver mTabPersistentStoreObserver;
         private final TabModelOrderController mTabModelOrderController;
 
-        public TestTabModelSelector() throws Exception {
-            super(new MockTabCreatorManager(), new ChromeTabModelFilterFactory(), false);
+        public TestTabModelSelector(Activity activity) throws Exception {
+            super(new MockTabCreatorManager(), new ChromeTabModelFilterFactory(activity), false);
             ((MockTabCreatorManager) getTabCreatorManager()).initialize(this);
             mTabPersistentStoreObserver = new MockTabPersistentStoreObserver();
             mTabPersistentStore =
@@ -237,7 +239,7 @@ public class TabPersistentStoreTest {
                         TabCreatorManager tabCreatorManager,
                         NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
                     try {
-                        return new TestTabModelSelector();
+                        return new TestTabModelSelector(activity);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -261,6 +263,14 @@ public class TabPersistentStoreTest {
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
     private SharedPreferencesManager mPreferences;
+
+    // This is used to pretend we've started the activity, so we can attach a base context to the
+    // activity.
+    private final ActivityStateListener mActivityStateListener = (activity, state) -> {
+        if (state == ActivityState.STARTED) {
+            mChromeActivity.onStart();
+        }
+    };
 
     @BeforeClass
     public static void beforeClassSetUp() {
@@ -310,7 +320,17 @@ public class TabPersistentStoreTest {
                 public int getActivityType() {
                     return ActivityType.TABBED;
                 }
+
+                // This is intended to pretend we've started the activity, so we can attach a base
+                // context to the activity.
+                @Override
+                public void onStart() {
+                    if (getBaseContext() == null) {
+                        attachBaseContext(mAppContext);
+                    }
+                }
             };
+            ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
         });
 
         // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
@@ -322,13 +342,17 @@ public class TabPersistentStoreTest {
         mMockDirectory = new TestTabModelDirectory(
                 mAppContext, "TabPersistentStoreTest", Integer.toString(SELECTOR_INDEX));
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
+
+        ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, mChromeActivity);
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sTabWindowManager.onActivityStateChange(mChromeActivity, ActivityState.DESTROYED);
+            ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.DESTROYED);
         });
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
         mMockDirectory.tearDown();
     }
 
@@ -810,6 +834,10 @@ public class TabPersistentStoreTest {
      */
     private TestTabModelSelector createAndRestoreRealTabModelImpls(TabModelMetaDataInfo info,
             boolean restoreIncognito, boolean expectMatchingIds) throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.STARTED);
+        });
+
         TestTabModelSelector selector =
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<TestTabModelSelector>() {
                     @Override

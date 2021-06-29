@@ -389,11 +389,14 @@ public class InstantStartTest {
             "force-fieldtrial-params=Study.Group:start_surface_variation/single"})
     public void testShouldShowStartSurfaceAsTheHomePagePreNative() {
         // clang-format on
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         Assert.assertTrue(StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled());
         Assert.assertFalse(TextUtils.isEmpty(HomepageManager.getHomepageUri()));
 
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) ReturnToChromeExperimentsUtil::shouldShowStartSurfaceAsTheHomePage);
+                (Runnable) ()
+                        -> ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                mActivityTestRule.getActivity()));
     }
 
     @Test
@@ -712,14 +715,16 @@ public class InstantStartTest {
     public void testNoGURLPreNative() {
         // clang-format on
         if (!BuildConfig.ENABLE_ASSERTS) return;
-
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         collector.checkThat(StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled(), is(true));
         collector.checkThat(TextUtils.isEmpty(HomepageManager.getHomepageUri()), is(false));
         Assert.assertFalse(
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
-        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage();
-        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs();
-        PseudoTab.getAllPseudoTabsFromStateFile();
+        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                mActivityTestRule.getActivity());
+        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(
+                mActivityTestRule.getActivity());
+        PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity());
 
         Assert.assertFalse("There should be no GURL usages triggering native library loading",
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
@@ -1024,7 +1029,8 @@ public class InstantStartTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.waitForOverviewVisible(mActivityTestRule.getActivity());
         ViewUtils.onViewWaiting(withId(R.id.tab_list_view));
-        Assert.assertEquals(1, PseudoTab.getAllPseudoTabsFromStateFile().size());
+        Assert.assertEquals(
+                1, PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity()).size());
     }
 
     @Test

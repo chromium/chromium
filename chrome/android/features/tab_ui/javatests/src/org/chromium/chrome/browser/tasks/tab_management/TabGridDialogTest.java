@@ -1099,7 +1099,7 @@ public class TabGridDialogTest {
     }
 
     private void verifyTabGroupsContinuation(ChromeTabbedActivity cta, boolean isEnabled) {
-        assertEquals(isEnabled, TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
+        assertEquals(isEnabled, TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(cta));
 
         // Verify whether the menu button exists.
         onView(withId(R.id.toolbar_menu_button))

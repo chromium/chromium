@@ -398,7 +398,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!mActivity.isTablet()
-                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
                         || TabUiFeatureUtilities.isConditionalTabStripEnabled())) {
             getToolbarManager().enableBottomControls();
         }

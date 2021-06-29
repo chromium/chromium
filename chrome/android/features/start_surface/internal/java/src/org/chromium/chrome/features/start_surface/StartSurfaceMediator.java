@@ -446,7 +446,7 @@ class StartSurfaceMediator
                     && !mTabModelSelector.isTabStateInitialized()) {
                 List<PseudoTab> allTabs;
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    allTabs = PseudoTab.getAllPseudoTabsFromStateFile();
+                    allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
                 }
                 hasNormalTab = allTabs != null && !allTabs.isEmpty();
             } else {

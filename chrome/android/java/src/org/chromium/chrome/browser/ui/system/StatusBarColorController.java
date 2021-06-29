@@ -301,7 +301,9 @@ public class StatusBarColorController
         if (mIsInOverviewMode) {
             if (shouldDarkenStatusBarColor()) return Color.BLACK;
 
-            return (mIsIncognito && ToolbarColors.canUseIncognitoToolbarThemeColorInOverview())
+            return (mIsIncognito
+                           && ToolbarColors.canUseIncognitoToolbarThemeColorInOverview(
+                                   mWindow.getContext()))
                     ? mIncognitoPrimaryBgColor
                     : mStandardPrimaryBgColor;
         }

@@ -98,7 +98,7 @@ public class ContextMenuLoadUrlParamsTest {
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
                         return new RecordingTabModelSelector(activity, tabCreatorManager,
-                                new ChromeTabModelFilterFactory(), selectorIndex);
+                                new ChromeTabModelFilterFactory(activity), selectorIndex);
                     }
                 });
     }

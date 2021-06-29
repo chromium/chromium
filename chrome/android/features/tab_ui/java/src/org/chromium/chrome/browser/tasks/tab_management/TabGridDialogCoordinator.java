@@ -77,22 +77,22 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
         // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to take
         // in a mode parameter instead.
-        mTabListCoordinator =
-                new TabListCoordinator(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
-                                        && SysUtils.isLowEndDevice()
-                                ? TabListCoordinator.TabListMode.LIST
-                                : TabListCoordinator.TabListMode.GRID,
-                        context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback,
-                        null, false, gridCardOnClickListenerProvider,
-                        mMediator.getTabGridDialogHandler(), TabProperties.UiType.CLOSABLE, null,
-                        null, containerView, false, mComponentName, rootView);
+        mTabListCoordinator = new TabListCoordinator(
+                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)
+                                && SysUtils.isLowEndDevice()
+                        ? TabListCoordinator.TabListMode.LIST
+                        : TabListCoordinator.TabListMode.GRID,
+                context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback, null,
+                false, gridCardOnClickListenerProvider, mMediator.getTabGridDialogHandler(),
+                TabProperties.UiType.CLOSABLE, null, null, containerView, false, mComponentName,
+                rootView);
         TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
         TabGroupUiToolbarView toolbarView =
                 (TabGroupUiToolbarView) LayoutInflater.from(context).inflate(
                         R.layout.bottom_tab_grid_toolbar, recyclerView, false);
         toolbarView.setupDialogToolbarLayout();
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
             toolbarView.hideTabGroupsContinuationWidgets();
         }
         mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
@@ -105,7 +105,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         if (mIsInitialized) return;
 
         TabSelectionEditorCoordinator.TabSelectionEditorController controller = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
             @TabListCoordinator.TabListMode
             int mode = SysUtils.isLowEndDevice() ? TabListCoordinator.TabListMode.LIST
                                                  : TabListCoordinator.TabListMode.GRID;
