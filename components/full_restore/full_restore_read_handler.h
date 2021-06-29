@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
                             const std::string& app_id,
                             int32_t restore_window_id);
 
+  // Returns true if there are app type browsers from the full restore file.
+  // Otherwise, returns false..
+  bool HasAppTypeBrowser(const base::FilePath& profile_path);
+
   // Returns true if there is a window info for |restore_window_id| from the
   // full restore file. Otherwise, returns false. This interface can't be used
   // for Arc app windows.
@@ -125,6 +129,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // Sets |arc session id| for |window_id| to |arc_session_id_to_window_id_|.
   // |arc session id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
+
+  void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
  private:
   friend class ArcReadHandler;

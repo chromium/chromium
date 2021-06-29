@@ -84,6 +84,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/full_restore/features.h"
+#include "components/full_restore/full_restore_utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -103,10 +105,21 @@ namespace {
 // Utility functions ----------------------------------------------------------
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-// ChromeOS always restores apps unconditionally. Other platforms restore apps
-// only when the browser is automatically restarted.
-bool ShouldRestoreApps(bool is_post_restart) {
+// In ChromeOS, if the full restore feature is disabled, always restores apps
+// unconditionally. If the full restore feature is enabled, check the previous
+// apps launching history info to decide whether restore apps.
+//
+// In other platforms, restore apps only when the browser is automatically
+// restarted.
+bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If the full restore feature is enabled, check the full restore file.
+  // Restore apps only when there are apps launched before reboot.
+  if (full_restore::features::IsFullRestoreEnabled())
+    return full_restore::HasAppTypeBrowser(profile->GetPath());
+
+  // If the full restore feature is disabled, always restores apps
+  // unconditionally.
   return true;
 #else
   return is_post_restart;
@@ -535,7 +548,8 @@ bool StartupBrowserCreatorImpl::MaybeAsyncRestore(const StartupTabs& tabs,
 
   bool restore_apps = false;
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-  restore_apps = ShouldRestoreApps(StartupBrowserCreator::WasRestarted());
+  restore_apps =
+      ShouldRestoreApps(StartupBrowserCreator::WasRestarted(), profile_);
 #endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // Note: there's no session service in incognito or guest mode.
   SessionService* service =
@@ -557,7 +571,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     // because we want to avoid a crash restore loop, so we don't
     // automatically restore after a crash.
     // Crash restores are triggered via session_crashed_bubble_view.cc
-    if (ShouldRestoreApps(StartupBrowserCreator::WasRestarted()))
+    if (ShouldRestoreApps(StartupBrowserCreator::WasRestarted(), profile_))
       restore_options |= SessionRestore::RESTORE_APPS;
 #endif  //  BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 

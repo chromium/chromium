@@ -24,6 +24,7 @@ constexpr char kUrlsKey[] = "urls";
 constexpr char kActiveTabIndexKey[] = "active_tab_index";
 constexpr char kIntentKey[] = "intent";
 constexpr char kFilePathsKey[] = "file_paths";
+constexpr char kAppTypeBrowserKey[] = "is_app";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kDeskIdKey[] = "desk_id";
 constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
@@ -240,6 +241,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   urls = GetUrlsFromDict(*data_dict);
   active_tab_index = GetIntValueFromDict(*data_dict, kActiveTabIndexKey);
   file_paths = GetFilePathsFromDict(*data_dict);
+  app_type_browser = GetBoolValueFromDict(*data_dict, kAppTypeBrowserKey);
   activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
   visible_on_all_workspaces =
@@ -272,6 +274,7 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   active_tab_index = std::move(app_launch_info->active_tab_index);
   file_paths = std::move(app_launch_info->file_paths);
   intent = std::move(app_launch_info->intent);
+  app_type_browser = std::move(app_launch_info->app_type_browser);
 }
 
 AppRestoreData::~AppRestoreData() = default;
@@ -302,6 +305,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (file_paths.has_value())
     data->file_paths = file_paths.value();
+
+  if (app_type_browser.has_value())
+    data->app_type_browser = app_type_browser.value();
 
   if (activation_index.has_value())
     data->activation_index = activation_index.value();
@@ -377,6 +383,9 @@ base::Value AppRestoreData::ConvertToValue() const {
       file_paths_list.Append(base::Value(file_path.value()));
     launch_info_dict.SetKey(kFilePathsKey, std::move(file_paths_list));
   }
+
+  if (app_type_browser.has_value())
+    launch_info_dict.SetBoolKey(kAppTypeBrowserKey, app_type_browser.value());
 
   if (activation_index.has_value())
     launch_info_dict.SetIntKey(kActivationIndexKey, activation_index.value());
@@ -496,6 +505,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->file_paths = file_paths;
   if (intent.has_value())
     app_launch_info->intent = intent->Clone();
+  app_launch_info->app_type_browser = app_type_browser;
   return app_launch_info;
 }
 

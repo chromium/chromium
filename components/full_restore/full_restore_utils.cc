@@ -21,6 +21,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kGhostWindowSessionIdKey, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIdKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppTypeBrowser, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
@@ -96,6 +97,13 @@ void SetActiveProfilePath(const base::FilePath& profile_path) {
   FullRestoreReadHandler::GetInstance()->SetActiveProfilePath(profile_path);
 }
 
+bool HasAppTypeBrowser(const base::FilePath& profile_path) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return false;
+
+  return FullRestoreReadHandler::GetInstance()->HasAppTypeBrowser(profile_path);
+}
+
 bool HasWindowInfo(int32_t restore_window_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return false;
@@ -132,6 +140,11 @@ void OnTaskThemeColorUpdated(int32_t task_id,
                              uint32_t status_bar_color) {
   FullRestoreSaveHandler::GetInstance()->OnTaskThemeColorUpdated(
       task_id, primary_color, status_bar_color);
+}
+
+void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
+  FullRestoreReadHandler::GetInstance()->AddChromeBrowserLaunchInfoForTesting(
+      profile_path);
 }
 
 }  // namespace full_restore

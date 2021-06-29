@@ -19,6 +19,7 @@
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -138,6 +139,15 @@ void FullRestoreReadHandler::RemoveAppRestoreData(
     return;
 
   it->second->RemoveAppRestoreData(app_id, restore_window_id);
+}
+
+bool FullRestoreReadHandler::HasAppTypeBrowser(
+    const base::FilePath& profile_path) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return false;
+
+  return it->second->HasAppTypeBrowser();
 }
 
 bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
@@ -273,6 +283,25 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
   DCHECK(arc_read_handler_);
   arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
+    const base::FilePath& profile_path) {
+  auto session_id = SessionID::NewUnique();
+  auto app_launch_info = std::make_unique<AppLaunchInfo>(
+      extension_misc::kChromeAppId, session_id.id());
+  app_launch_info->app_type_browser = true;
+
+  if (profile_path_to_restore_data_.find(profile_path) ==
+      profile_path_to_restore_data_.end()) {
+    profile_path_to_restore_data_[profile_path] =
+        std::make_unique<RestoreData>();
+  }
+
+  profile_path_to_restore_data_[profile_path]->AddAppLaunchInfo(
+      std::move(app_launch_info));
+  window_id_to_app_restore_info_[session_id.id()] =
+      std::make_pair(profile_path, extension_misc::kChromeAppId);
 }
 
 std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetAppLaunchInfo(

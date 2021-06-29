@@ -96,6 +96,12 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   } else {
     app_launch_info = std::make_unique<AppLaunchInfo>(
         extension_misc::kChromeAppId, window_id);
+
+    // If the window is an app type browser window, set `app_type_browser` as
+    // true, to call the browser session restore to restore apps for the next
+    // system startup.
+    if (window->GetProperty(full_restore::kAppTypeBrowser))
+      app_launch_info->app_type_browser = true;
   }
 
   AddAppLaunchInfo(active_profile_path_, std::move(app_launch_info));

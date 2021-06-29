@@ -58,6 +58,10 @@ extern const ui::ClassProperty<int32_t>* const kGhostWindowSessionIdKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<std::string*>* const kAppIdKey;
 
+// A property key to indicate that the browser window type is an app type.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<bool>* const kAppTypeBrowser;
+
 // A property key to store the activation index of an app. Used by ash to
 // determine where to stack a window among its siblings. Also used to determine
 // if a window is restored by the full restore process. Only a window, restored
@@ -127,6 +131,11 @@ bool CanPerformRestore(const AccountId& account_id);
 COMPONENT_EXPORT(FULL_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);
 
+// Returns true if there are app type browsers from the full restore file.
+// Otherwise, returns false.
+COMPONENT_EXPORT(FULL_RESTORE)
+bool HasAppTypeBrowser(const base::FilePath& profile_path);
+
 // Returns true if there is a window info for |restore_window_id| from the full
 // restore file. Otherwise, returns false. This interface can't be used for Arc
 // app windows.
@@ -154,6 +163,9 @@ COMPONENT_EXPORT(FULL_RESTORE)
 void OnTaskThemeColorUpdated(int32_t task_id,
                              uint32_t primary_color,
                              uint32_t status_bar_color);
+
+COMPONENT_EXPORT(FULL_RESTORE)
+void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
 }  // namespace full_restore
 

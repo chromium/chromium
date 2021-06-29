@@ -143,6 +143,7 @@ void AppLaunchHandler::SetShouldRestore() {
 }
 
 void AppLaunchHandler::ForceLaunchBrowserForTesting() {
+  ::full_restore::AddChromeBrowserLaunchInfoForTesting(profile_->GetPath());
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }

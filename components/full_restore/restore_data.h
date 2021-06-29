@@ -79,6 +79,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // }
   base::Value ConvertToValue() const;
 
+  // Returns true if there are app type browsers. Otherwise, returns false.
+  bool HasAppTypeBrowser();
+
   // Returns true if there is a AppRestoreData for the given |app_id| and
   // |window_id|. Otherwise, returns false.
   bool HasAppRestoreData(const std::string& app_id, int32_t window_id);
