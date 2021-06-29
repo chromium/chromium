@@ -6,7 +6,11 @@
 
 #include <string>
 
+#include <userenv.h>
+
 #include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
+#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/win/win_constants.h"
@@ -15,14 +19,12 @@ namespace updater {
 
 // Registry values.
 // Preferences Category.
-const wchar_t kRegValueAutoUpdateCheckPeriodOverrideMinutes[] =
-    L"AutoUpdateCheckPeriodMinutes";
-const wchar_t kRegValueUpdatesSuppressedStartHour[] =
-    L"UpdatesSuppressedStartHour";
-const wchar_t kRegValueUpdatesSuppressedStartMin[] =
-    L"UpdatesSuppressedStartMin";
-const wchar_t kRegValueUpdatesSuppressedDurationMin[] =
-    L"UpdatesSuppressedDurationMin";
+const char kRegValueAutoUpdateCheckPeriodOverrideMinutes[] =
+    "AutoUpdateCheckPeriodMinutes";
+const char kRegValueUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
+const char kRegValueUpdatesSuppressedStartMin[] = "UpdatesSuppressedStartMin";
+const char kRegValueUpdatesSuppressedDurationMin[] =
+    "UpdatesSuppressedDurationMin";
 
 // This policy specifies what kind of download URLs could be returned to the
 // client in the update response and in which order of priority. The client
@@ -30,37 +32,37 @@ const wchar_t kRegValueUpdatesSuppressedDurationMin[] =
 // The server may decide to ignore the hint. As a general idea, some urls are
 // cacheable, some urls have higher bandwidth, and some urls are slightly more
 // secure since they are https.
-const wchar_t kRegValueDownloadPreference[] = L"DownloadPreference";
+const char kRegValueDownloadPreference[] = "DownloadPreference";
 
 // Proxy Server Category.  (The registry keys used, and the values of ProxyMode,
 // directly mirror that of Chrome.  However, we omit ProxyBypassList, as the
 // domains that Omaha uses are largely fixed.)
-const wchar_t kRegValueProxyMode[] = L"ProxyMode";
-const wchar_t kRegValueProxyServer[] = L"ProxyServer";
-const wchar_t kRegValueProxyPacUrl[] = L"ProxyPacUrl";
+const char kRegValueProxyMode[] = "ProxyMode";
+const char kRegValueProxyServer[] = "ProxyServer";
+const char kRegValueProxyPacUrl[] = "ProxyPacUrl";
 
 // Package cache constants.
-const wchar_t kRegValueCacheSizeLimitMBytes[] = L"PackageCacheSizeLimit";
-const wchar_t kRegValueCacheLifeLimitDays[] = L"PackageCacheLifeLimit";
+const char kRegValueCacheSizeLimitMBytes[] = "PackageCacheSizeLimit";
+const char kRegValueCacheLifeLimitDays[] = "PackageCacheLifeLimit";
 
 // Applications Category.
 // The prefix strings have the app's GUID appended to them.
-const wchar_t kRegValueInstallAppsDefault[] = L"InstallDefault";
-const wchar_t kRegValueInstallAppPrefix[] = L"Install";
-const wchar_t kRegValueUpdateAppsDefault[] = L"UpdateDefault";
-const wchar_t kRegValueUpdateAppPrefix[] = L"Update";
-const wchar_t kRegValueTargetVersionPrefix[] = L"TargetVersionPrefix";
-const wchar_t kRegValueTargetChannel[] = L"TargetChannel";
-const wchar_t kRegValueRollbackToTargetVersion[] = L"RollbackToTargetVersion";
+const char kRegValueInstallAppsDefault[] = "InstallDefault";
+const char kRegValueInstallAppPrefix[] = "Install";
+const char kRegValueUpdateAppsDefault[] = "UpdateDefault";
+const char kRegValueUpdateAppPrefix[] = "Update";
+const char kRegValueTargetVersionPrefix[] = "TargetVersionPrefix";
+const char kRegValueTargetChannel[] = "TargetChannel";
+const char kRegValueRollbackToTargetVersion[] = "RollbackToTargetVersion";
 
 GroupPolicyManager::GroupPolicyManager() {
-  key_.Open(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY, KEY_READ);
+  LoadAllPolicies();
 }
 
 GroupPolicyManager::~GroupPolicyManager() = default;
 
 bool GroupPolicyManager::IsManaged() const {
-  return key_.Valid() && base::win::IsEnrolledToDomain();
+  return policies_.DictSize() > 0 && base::win::IsEnrolledToDomain();
 }
 
 std::string GroupPolicyManager::source() const {
@@ -68,76 +70,76 @@ std::string GroupPolicyManager::source() const {
 }
 
 bool GroupPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
-  return ReadValueDW(kRegValueAutoUpdateCheckPeriodOverrideMinutes, minutes);
+  return GetIntPolicy(kRegValueAutoUpdateCheckPeriodOverrideMinutes, minutes);
 }
 
 bool GroupPolicyManager::GetUpdatesSuppressedTimes(
     UpdatesSuppressedTimes* suppressed_times) const {
-  return ReadValueDW(kRegValueUpdatesSuppressedStartHour,
-                     &suppressed_times->start_hour) &&
-         ReadValueDW(kRegValueUpdatesSuppressedStartMin,
-                     &suppressed_times->start_minute) &&
-         ReadValueDW(kRegValueUpdatesSuppressedDurationMin,
-                     &suppressed_times->duration_minute);
+  return GetIntPolicy(kRegValueUpdatesSuppressedStartHour,
+                      &suppressed_times->start_hour) &&
+         GetIntPolicy(kRegValueUpdatesSuppressedStartMin,
+                      &suppressed_times->start_minute) &&
+         GetIntPolicy(kRegValueUpdatesSuppressedDurationMin,
+                      &suppressed_times->duration_minute);
 }
 
 bool GroupPolicyManager::GetDownloadPreferenceGroupPolicy(
     std::string* download_preference) const {
-  return ReadValue(kRegValueDownloadPreference, download_preference);
+  return GetStringPolicy(kRegValueDownloadPreference, download_preference);
 }
 
 bool GroupPolicyManager::GetPackageCacheSizeLimitMBytes(
     int* cache_size_limit) const {
-  return ReadValueDW(kRegValueCacheSizeLimitMBytes, cache_size_limit);
+  return GetIntPolicy(kRegValueCacheSizeLimitMBytes, cache_size_limit);
 }
 
 bool GroupPolicyManager::GetPackageCacheExpirationTimeDays(
     int* cache_life_limit) const {
-  return ReadValueDW(kRegValueCacheLifeLimitDays, cache_life_limit);
+  return GetIntPolicy(kRegValueCacheLifeLimitDays, cache_life_limit);
 }
 
 bool GroupPolicyManager::GetEffectivePolicyForAppInstalls(
     const std::string& app_id,
     int* install_policy) const {
-  std::wstring app_value_name(kRegValueInstallAppPrefix);
-  app_value_name.append(base::SysUTF8ToWide(app_id));
-  return ReadValueDW(app_value_name.c_str(), install_policy)
+  std::string app_value_name(kRegValueInstallAppPrefix);
+  app_value_name.append(app_id);
+  return GetIntPolicy(app_value_name.c_str(), install_policy)
              ? true
-             : ReadValueDW(kRegValueInstallAppsDefault, install_policy);
+             : GetIntPolicy(kRegValueInstallAppsDefault, install_policy);
 }
 
 bool GroupPolicyManager::GetEffectivePolicyForAppUpdates(
     const std::string& app_id,
     int* update_policy) const {
-  std::wstring app_value_name(kRegValueUpdateAppPrefix);
-  app_value_name.append(base::SysUTF8ToWide(app_id));
-  return ReadValueDW(app_value_name.c_str(), update_policy)
+  std::string app_value_name(kRegValueUpdateAppPrefix);
+  app_value_name.append(app_id);
+  return GetIntPolicy(app_value_name.c_str(), update_policy)
              ? true
-             : ReadValueDW(kRegValueUpdateAppsDefault, update_policy);
+             : GetIntPolicy(kRegValueUpdateAppsDefault, update_policy);
 }
 
 bool GroupPolicyManager::GetTargetChannel(const std::string& app_id,
                                           std::string* channel) const {
-  std::wstring app_value_name(kRegValueTargetChannel);
-  app_value_name.append(base::SysUTF8ToWide(app_id));
-  return ReadValue(app_value_name.c_str(), channel);
+  std::string app_value_name(kRegValueTargetChannel);
+  app_value_name.append(app_id);
+  return GetStringPolicy(app_value_name.c_str(), channel);
 }
 
 bool GroupPolicyManager::GetTargetVersionPrefix(
     const std::string& app_id,
     std::string* target_version_prefix) const {
-  std::wstring app_value_name(kRegValueTargetVersionPrefix);
-  app_value_name.append(base::SysUTF8ToWide(app_id));
-  return ReadValue(app_value_name.c_str(), target_version_prefix);
+  std::string app_value_name(kRegValueTargetVersionPrefix);
+  app_value_name.append(app_id);
+  return GetStringPolicy(app_value_name.c_str(), target_version_prefix);
 }
 
 bool GroupPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id,
     bool* rollback_allowed) const {
-  std::wstring app_value_name(kRegValueRollbackToTargetVersion);
-  app_value_name.append(base::SysUTF8ToWide(app_id));
+  std::string app_value_name(kRegValueRollbackToTargetVersion);
+  app_value_name.append(app_id);
   int is_rollback_allowed = 0;
-  if (ReadValueDW(app_value_name.c_str(), &is_rollback_allowed)) {
+  if (GetIntPolicy(app_value_name.c_str(), &is_rollback_allowed)) {
     *rollback_allowed = is_rollback_allowed;
     return true;
   }
@@ -146,30 +148,77 @@ bool GroupPolicyManager::IsRollbackToTargetVersionAllowed(
 }
 
 bool GroupPolicyManager::GetProxyMode(std::string* proxy_mode) const {
-  return ReadValue(kRegValueProxyMode, proxy_mode);
+  return GetStringPolicy(kRegValueProxyMode, proxy_mode);
 }
 
 bool GroupPolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
-  return ReadValue(kRegValueProxyPacUrl, proxy_pac_url);
+  return GetStringPolicy(kRegValueProxyPacUrl, proxy_pac_url);
 }
 
 bool GroupPolicyManager::GetProxyServer(std::string* proxy_server) const {
-  return ReadValue(kRegValueProxyServer, proxy_server);
+  return GetStringPolicy(kRegValueProxyServer, proxy_server);
 }
 
-bool GroupPolicyManager::ReadValue(const wchar_t* name,
-                                   std::string* value) const {
-  std::wstring value_wide;
-  if (key_.ReadValue(name, &value_wide) != ERROR_SUCCESS)
+bool GroupPolicyManager::GetIntPolicy(const std::string& key,
+                                      int* value) const {
+  const base::Value* policy =
+      policies_.FindKeyOfType(key, base::Value::Type::INTEGER);
+  if (policy == nullptr)
     return false;
 
-  *value = base::SysWideToUTF8(value_wide);
+  *value = policy->GetInt();
   return true;
 }
 
-bool GroupPolicyManager::ReadValueDW(const wchar_t* name, int* value) const {
-  return key_.ReadValueDW(name, reinterpret_cast<DWORD*>(value)) ==
-         ERROR_SUCCESS;
+bool GroupPolicyManager::GetStringPolicy(const std::string& key,
+                                         std::string* value) const {
+  const base::Value* policy =
+      policies_.FindKeyOfType(key, base::Value::Type::STRING);
+  if (policy == nullptr)
+    return false;
+
+  *value = policy->GetString();
+  return true;
+}
+
+void GroupPolicyManager::LoadAllPolicies() {
+  HANDLE policy_lock(NULL);
+  if (base::win::IsEnrolledToDomain()) {
+    // GPO rules mandate a call to EnterCriticalPolicySection() before reading
+    // policies (and a matching LeaveCriticalPolicySection() call after read).
+    // Acquire the lock for domain-joined machines because group policies are
+    // applied only in this case, and the lock acquisition can take a long
+    // time, in the worst case scenarios.
+    policy_lock = ::EnterCriticalPolicySection(true);
+    CHECK(policy_lock) << "Failed to get policy lock.";
+  }
+
+  base::Value::DictStorage policy_storage;
+
+  for (base::win::RegistryValueIterator it(HKEY_LOCAL_MACHINE,
+                                           UPDATER_POLICIES_KEY);
+       it.Valid(); ++it) {
+    const std::string key_name = base::SysWideToUTF8(it.Name());
+    switch (it.Type()) {
+      case REG_SZ:
+        policy_storage.emplace(key_name,
+                               base::Value(base::SysWideToUTF8(it.Value())));
+        break;
+
+      case REG_DWORD:
+        policy_storage.emplace(
+            key_name, base::Value(*(reinterpret_cast<const int*>(it.Value()))));
+        break;
+
+      default:
+        // Ignore all types that are not used by updater policies.
+        break;
+    }
+  }
+
+  policies_ = base::Value(std::move(policy_storage));
+
+  ::LeaveCriticalPolicySection(policy_lock);
 }
 
 }  // namespace updater
