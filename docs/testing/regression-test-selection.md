@@ -8,4 +8,4 @@ code changes.
 
 ## Design Doc
 
-- [Browser RTS](bit.ly/chromium-rts)
+- [Browser RTS](https://bit.ly/chromium-rts)
