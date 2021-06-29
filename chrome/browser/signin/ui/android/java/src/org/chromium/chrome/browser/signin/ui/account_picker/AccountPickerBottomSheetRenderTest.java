@@ -35,11 +35,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -52,17 +51,13 @@ import java.io.IOException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 @Batch(Batch.PER_CLASS)
 public class AccountPickerBottomSheetRenderTest {
-    private static final ProfileDataSource.ProfileData PROFILE_DATA1 =
-            new ProfileDataSource.ProfileData(
-                    /* accountName= */ "test.account1@gmail.com", /* avatar= */ null,
-                    /* fullName= */ "Test Account1", /* givenName= */ "Account1");
-    private static final ProfileDataSource.ProfileData PROFILE_DATA2 =
-            new ProfileDataSource.ProfileData(
-                    /* accountName= */ "test.account2@gmail.com", /* avatar= */ null,
-                    /* fullName= */ null, /* givenName= */ null);
+    private static final String TEST_EMAIL1 = "test.account1@gmail.com";
+    private static final String FULL_NAME1 = "Test Account1";
+    private static final String GIVEN_NAME1 = "Account1";
+    private static final String TEST_EMAIL2 = "test.account2@gmail.com";
 
     private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
         private @Nullable GoogleServiceAuthError mError;
@@ -106,7 +101,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -148,7 +143,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testCollapsedSheetWithAccountView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
@@ -159,8 +154,8 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        mAccountManagerTestRule.addAccount(PROFILE_DATA2);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
         buildAndShowCollapsedBottomSheet();
         expandBottomSheet();
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
@@ -171,7 +166,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSignInInProgressView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSigninInProgressView();
     }
@@ -182,7 +177,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
@@ -196,7 +191,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
@@ -209,7 +204,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
