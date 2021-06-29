@@ -51,9 +51,9 @@ void SessionStorageNamespaceImpl::ClearChildNamespacesWaitingForClone() {
   child_namespaces_waiting_for_clone_call_.clear();
 }
 
-bool SessionStorageNamespaceImpl::HasAreaForOrigin(
-    const url::Origin& origin) const {
-  return origin_areas_.find(origin) != origin_areas_.end();
+bool SessionStorageNamespaceImpl::HasAreaForStorageKey(
+    const blink::StorageKey& storage_key) const {
+  return storage_key_areas_.find(storage_key) != storage_key_areas_.end();
 }
 
 void SessionStorageNamespaceImpl::PopulateFromMetadata(
@@ -72,7 +72,7 @@ void SessionStorageNamespaceImpl::PopulateFromMetadata(
       data_map = SessionStorageDataMap::CreateFromDisk(data_map_listener_,
                                                        pair.second, database_);
     }
-    origin_areas_[pair.first] = std::make_unique<SessionStorageAreaImpl>(
+    storage_key_areas_[pair.first] = std::make_unique<SessionStorageAreaImpl>(
         namespace_entry_, pair.first, std::move(data_map),
         register_new_map_callback_);
   }
@@ -86,14 +86,14 @@ void SessionStorageNamespaceImpl::PopulateFromMetadata(
 void SessionStorageNamespaceImpl::PopulateAsClone(
     AsyncDomStorageDatabase* database,
     SessionStorageMetadata::NamespaceEntry namespace_metadata,
-    const OriginAreas& areas_to_clone) {
+    const StorageKeyAreas& areas_to_clone) {
   DCHECK(!IsPopulated());
   database_ = database;
   state_ = State::kPopulated;
   pending_population_from_parent_namespace_.clear();
   namespace_entry_ = namespace_metadata;
   std::transform(areas_to_clone.begin(), areas_to_clone.end(),
-                 std::inserter(origin_areas_, origin_areas_.begin()),
+                 std::inserter(storage_key_areas_, storage_key_areas_.begin()),
                  [namespace_metadata](const auto& source) {
                    return std::make_pair(
                        source.first, source.second->Clone(namespace_metadata));
@@ -113,7 +113,7 @@ void SessionStorageNamespaceImpl::Reset() {
   run_after_population_.clear();
   state_ = State::kNotPopulated;
   child_namespaces_waiting_for_clone_call_.clear();
-  origin_areas_.clear();
+  storage_key_areas_.clear();
   receivers_.Clear();
 }
 
@@ -132,27 +132,28 @@ void SessionStorageNamespaceImpl::Bind(
 }
 
 void SessionStorageNamespaceImpl::PurgeUnboundAreas() {
-  auto it = origin_areas_.begin();
-  while (it != origin_areas_.end()) {
+  auto it = storage_key_areas_.begin();
+  while (it != storage_key_areas_.end()) {
     if (!it->second->IsBound())
-      it = origin_areas_.erase(it);
+      it = storage_key_areas_.erase(it);
     else
       ++it;
   }
 }
 
-void SessionStorageNamespaceImpl::RemoveOriginData(const url::Origin& origin,
-                                                   base::OnceClosure callback) {
+void SessionStorageNamespaceImpl::RemoveStorageKeyData(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {
   DCHECK_NE(state_, State::kNotPopulated);
   if (!IsPopulated()) {
-    run_after_population_.push_back(
-        base::BindOnce(&SessionStorageNamespaceImpl::RemoveOriginData,
-                       base::Unretained(this), origin, std::move(callback)));
+    run_after_population_.push_back(base::BindOnce(
+        &SessionStorageNamespaceImpl::RemoveStorageKeyData,
+        base::Unretained(this), storage_key, std::move(callback)));
     return;
   }
   DCHECK(IsPopulated());
-  auto it = origin_areas_.find(origin);
-  if (it == origin_areas_.end()) {
+  auto it = storage_key_areas_.find(storage_key);
+  if (it == storage_key_areas_.end()) {
     std::move(callback).Run();
     return;
   }
@@ -166,21 +167,21 @@ void SessionStorageNamespaceImpl::RemoveOriginData(const url::Origin& origin,
 }
 
 void SessionStorageNamespaceImpl::OpenArea(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   if (!IsPopulated()) {
-    run_after_population_.push_back(
-        base::BindOnce(&SessionStorageNamespaceImpl::OpenArea,
-                       base::Unretained(this), origin, std::move(receiver)));
+    run_after_population_.push_back(base::BindOnce(
+        &SessionStorageNamespaceImpl::OpenArea, base::Unretained(this),
+        storage_key, std::move(receiver)));
     return;
   }
 
-  auto it = origin_areas_.find(origin);
-  if (it == origin_areas_.end()) {
+  auto it = storage_key_areas_.find(storage_key);
+  if (it == storage_key_areas_.end()) {
     // The area may have been purged due to lack of bindings, so check the
     // metadata for the map.
     scoped_refptr<SessionStorageDataMap> data_map;
-    auto map_data_it = namespace_entry_->second.find(origin);
+    auto map_data_it = namespace_entry_->second.find(storage_key);
     if (map_data_it != namespace_entry_->second.end()) {
       // The map exists already, either on disk or being used by another
       // namespace.
@@ -196,13 +197,15 @@ void SessionStorageNamespaceImpl::OpenArea(
       // The map doesn't exist yet.
       data_map = SessionStorageDataMap::CreateEmpty(
           data_map_listener_,
-          register_new_map_callback_.Run(namespace_entry_, origin), database_);
+          register_new_map_callback_.Run(namespace_entry_, storage_key),
+          database_);
     }
-    it = origin_areas_
+    it = storage_key_areas_
              .emplace(std::make_pair(
-                 origin, std::make_unique<SessionStorageAreaImpl>(
-                             namespace_entry_, origin, std::move(data_map),
-                             register_new_map_callback_)))
+                 storage_key,
+                 std::make_unique<SessionStorageAreaImpl>(
+                     namespace_entry_, storage_key, std::move(data_map),
+                     register_new_map_callback_)))
              .first;
   }
   it->second->Bind(std::move(receiver));
@@ -211,8 +214,8 @@ void SessionStorageNamespaceImpl::OpenArea(
 void SessionStorageNamespaceImpl::Clone(const std::string& clone_to_namespace) {
   DCHECK(IsPopulated());
   child_namespaces_waiting_for_clone_call_.erase(clone_to_namespace);
-  delegate_->RegisterShallowClonedNamespace(namespace_entry_,
-                                            clone_to_namespace, origin_areas_);
+  delegate_->RegisterShallowClonedNamespace(
+      namespace_entry_, clone_to_namespace, storage_key_areas_);
 }
 
 void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
@@ -246,7 +249,7 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
     if (parent->IsPopulated()) {
       delegate->RegisterShallowClonedNamespace(parent->namespace_entry(),
                                                destination_namespace,
-                                               parent->origin_areas_);
+                                               parent->storage_key_areas_);
     } else {
       parent->AddChildNamespaceWaitingForClone(destination_namespace);
       parent->run_after_population_.push_back(
@@ -265,16 +268,16 @@ void SessionStorageNamespaceImpl::CloneAllNamespacesWaitingForClone(
 }
 
 void SessionStorageNamespaceImpl::FlushAreasForTesting() {
-  for (auto& area : origin_areas_)
+  for (auto& area : storage_key_areas_)
     area.second->FlushForTesting();
 }
 
-void SessionStorageNamespaceImpl::FlushOriginForTesting(
-    const url::Origin& origin) {
+void SessionStorageNamespaceImpl::FlushStorageKeyForTesting(
+    const blink::StorageKey& storage_key) {
   if (!IsPopulated())
     return;
-  auto it = origin_areas_.find(origin);
-  if (it == origin_areas_.end())
+  auto it = storage_key_areas_.find(storage_key);
+  if (it == storage_key_areas_.end())
     return;
   it->second->data_map()->storage_area()->ScheduleImmediateCommit();
 }

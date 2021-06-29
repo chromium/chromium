@@ -16,11 +16,11 @@ namespace storage {
 
 SessionStorageAreaImpl::SessionStorageAreaImpl(
     SessionStorageMetadata::NamespaceEntry namespace_entry,
-    url::Origin origin,
+    blink::StorageKey storage_key,
     scoped_refptr<SessionStorageDataMap> data_map,
     RegisterNewAreaMap register_new_map_callback)
     : namespace_entry_(namespace_entry),
-      origin_(std::move(origin)),
+      storage_key_(std::move(storage_key)),
       shared_data_map_(std::move(data_map)),
       register_new_map_callback_(std::move(register_new_map_callback)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
@@ -46,8 +46,9 @@ bool SessionStorageAreaImpl::IsBound() const {
 std::unique_ptr<SessionStorageAreaImpl> SessionStorageAreaImpl::Clone(
     SessionStorageMetadata::NamespaceEntry namespace_entry) {
   DCHECK(namespace_entry_ != namespace_entry);
-  return base::WrapUnique(new SessionStorageAreaImpl(
-      namespace_entry, origin_, shared_data_map_, register_new_map_callback_));
+  return base::WrapUnique(
+      new SessionStorageAreaImpl(namespace_entry, storage_key_,
+                                 shared_data_map_, register_new_map_callback_));
 }
 
 void SessionStorageAreaImpl::NotifyObserversAllDeleted() {
@@ -173,7 +174,7 @@ void SessionStorageAreaImpl::CreateNewMap(
     case NewMapType::FORKED:
       shared_data_map_ = SessionStorageDataMap::CreateClone(
           shared_data_map_->listener(),
-          register_new_map_callback_.Run(namespace_entry_, origin_),
+          register_new_map_callback_.Run(namespace_entry_, storage_key_),
           shared_data_map_);
       break;
     case NewMapType::EMPTY_FROM_DELETE_ALL: {
@@ -182,7 +183,7 @@ void SessionStorageAreaImpl::CreateNewMap(
       // be correctly called. To do that, we manually call them here.
       shared_data_map_ = SessionStorageDataMap::CreateEmpty(
           shared_data_map_->listener(),
-          register_new_map_callback_.Run(namespace_entry_, origin_),
+          register_new_map_callback_.Run(namespace_entry_, storage_key_),
           shared_data_map_->storage_area()->database());
       break;
     }

@@ -69,6 +69,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void PurgeUnusedAreasIfNeeded();
 
   // mojom::LocalStorageControl implementation:
+  // TODO(crbug.com/1212808): Update mojo interface to use StorageKey.
   void BindStorageArea(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;

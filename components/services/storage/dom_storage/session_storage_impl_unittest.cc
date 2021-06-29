@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -697,7 +698,8 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id,
+                                                blink::StorageKey(origin1));
   }
   area_o1.reset();
 
@@ -805,7 +807,8 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id,
+                                                blink::StorageKey(origin1));
 
     old_value = value;
     value[0]++;
@@ -838,7 +841,8 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id,
+                                                blink::StorageKey(origin1));
 
     old_value = value;
     value[0]++;
@@ -937,7 +941,8 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
                             StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
-  session_storage_impl()->FlushAreaForTesting(namespace_id1, origin1);
+  session_storage_impl()->FlushAreaForTesting(namespace_id1,
+                                              blink::StorageKey(origin1));
 
   area.reset();
 
@@ -1132,6 +1137,7 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1(origin1);
 
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area_n1;
@@ -1153,7 +1159,7 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
                             StringPieceToUint8Vector("value2"), absl::nullopt,
                             "source1"));
 
-  session_storage_impl()->FlushAreaForTesting(namespace_id1, origin1);
+  session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
 
   area_n2.reset();
 
@@ -1164,7 +1170,7 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
 
   size_t memory_used = session_storage_impl()
                            ->GetNamespaceForTesting(namespace_id1)
-                           ->origin_areas_[origin1]
+                           ->storage_key_areas_[storage_key1]
                            ->data_map()
                            ->storage_area()
                            ->memory_used();
@@ -1318,9 +1324,10 @@ TEST_F(SessionStorageImplTest, Bug1128318) {
   // As such, the namespace_entry for the namespace should be null.
   auto* ns = session_storage_impl()->GetNamespaceForTesting(namespace_id3);
   EXPECT_TRUE(ns);
-  EXPECT_FALSE(base::Contains(
-      session_storage_impl()->GetMetadataForTesting().namespace_origin_map(),
-      namespace_id3));
+  EXPECT_FALSE(base::Contains(session_storage_impl()
+                                  ->GetMetadataForTesting()
+                                  .namespace_storage_key_map(),
+                              namespace_id3));
   EXPECT_EQ(ns->namespace_entry(), SessionStorageMetadata::NamespaceEntry());
 }
 

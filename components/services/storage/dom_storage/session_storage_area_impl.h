@@ -15,8 +15,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 
@@ -24,7 +24,7 @@ class SessionStorageDataMap;
 
 // This class provides session storage access to the renderer by binding to the
 // StorageArea mojom interface. It represents the data stored for a
-// namespace-origin area.
+// namespace-StorageKey area.
 //
 // This class delegates calls to SessionStorageDataMap objects, and can share
 // them with other SessionStorageLevelDBImpl instances to support shallow
@@ -43,14 +43,14 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
   using RegisterNewAreaMap =
       base::RepeatingCallback<scoped_refptr<SessionStorageMetadata::MapData>(
           SessionStorageMetadata::NamespaceEntry namespace_entry,
-          const url::Origin& origin)>;
+          const blink::StorageKey& storage_key)>;
 
-  // Creates a area for the given |namespace_entry|-|origin| data area. All
+  // Creates a area for the given |namespace_entry|-|storage_key| data area. All
   // StorageArea calls are delegated to the |data_map|. The
   // |register_new_map_callback| is called when a shared |data_map| needs to be
   // forked for the copy-on-write behavior and a new map needs to be registered.
   SessionStorageAreaImpl(SessionStorageMetadata::NamespaceEntry namespace_entry,
-                         url::Origin origin,
+                         blink::StorageKey storage_key,
                          scoped_refptr<SessionStorageDataMap> data_map,
                          RegisterNewAreaMap register_new_map_callback);
   ~SessionStorageAreaImpl() override;
@@ -111,7 +111,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
                     const absl::optional<std::string>& delete_all_source);
 
   SessionStorageMetadata::NamespaceEntry namespace_entry_;
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   scoped_refptr<SessionStorageDataMap> shared_data_map_;
   RegisterNewAreaMap register_new_map_callback_;
 

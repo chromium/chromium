@@ -19,6 +19,7 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -69,8 +70,7 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
 
 class SessionStorageDataMapTest : public testing::Test {
  public:
-  SessionStorageDataMapTest()
-      : test_origin_(url::Origin::Create(GURL("http://host1.com:1"))) {
+  SessionStorageDataMapTest() {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
         absl::nullopt, "SessionStorageDataMapTest",
@@ -120,7 +120,8 @@ class SessionStorageDataMapTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   testing::StrictMock<MockListener> listener_;
-  url::Origin test_origin_;
+  const blink::StorageKey test_storage_key_ =
+      blink::StorageKey::CreateFromStringForTesting("http://host1.com:1");
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
@@ -134,8 +135,8 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
   scoped_refptr<SessionStorageDataMap> map =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              1, test_storage_key_),
           database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -163,7 +164,8 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   scoped_refptr<SessionStorageDataMap> map = SessionStorageDataMap::CreateEmpty(
       &listener_,
-      base::MakeRefCounted<SessionStorageMetadata::MapData>(1, test_origin_),
+      base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
+                                                            test_storage_key_),
       database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -190,8 +192,8 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   scoped_refptr<SessionStorageDataMap> map1 =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              1, test_storage_key_),
           database_.get());
 
   EXPECT_CALL(listener_,
@@ -203,8 +205,8 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   scoped_refptr<SessionStorageDataMap> map2 =
       SessionStorageDataMap::CreateClone(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(2,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              2, test_storage_key_),
           map1);
 
   std::vector<blink::mojom::KeyValuePtr> data;

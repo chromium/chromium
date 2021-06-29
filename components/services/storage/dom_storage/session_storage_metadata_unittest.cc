@@ -23,6 +23,7 @@
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -57,9 +58,7 @@ class SessionStorageMetadataTest : public testing::Test {
   SessionStorageMetadataTest()
       : test_namespace1_id_(base::GenerateGUID()),
         test_namespace2_id_(base::GenerateGUID()),
-        test_namespace3_id_(base::GenerateGUID()),
-        test_origin1_(url::Origin::Create(GURL("http://host1:1/"))),
-        test_origin2_(url::Origin::Create(GURL("http://host2:2/"))) {
+        test_namespace3_id_(base::GenerateGUID()) {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
         absl::nullopt, "SessionStorageMetadataTest",
@@ -126,19 +125,19 @@ class SessionStorageMetadataTest : public testing::Test {
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace1_id_ + "-" +
-                                        test_origin1_.GetURL().spec()),
+                                        test_storage_key1_.Serialize()),
                  StdStringToUint8Vector("1"));
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace1_id_ + "-" +
-                                        test_origin2_.GetURL().spec()),
+                                        test_storage_key2_.Serialize()),
                  StdStringToUint8Vector("3"));
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace2_id_ + "-" +
-                                        test_origin1_.GetURL().spec()),
+                                        test_storage_key1_.Serialize()),
                  StdStringToUint8Vector("1"));
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace2_id_ + "-" +
-                                        test_origin2_.GetURL().spec()),
+                                        test_storage_key2_.Serialize()),
                  StdStringToUint8Vector("4"));
 
           db.Put(next_map_id_key_, StdStringToUint8Vector("5"));
@@ -188,11 +187,13 @@ class SessionStorageMetadataTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::string test_namespace1_id_;
-  std::string test_namespace2_id_;
-  std::string test_namespace3_id_;
-  url::Origin test_origin1_;
-  url::Origin test_origin2_;
+  const std::string test_namespace1_id_;
+  const std::string test_namespace2_id_;
+  const std::string test_namespace3_id_;
+  const blink::StorageKey test_storage_key1_ =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const blink::StorageKey test_storage_key2_ =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:2/");
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 
   std::vector<uint8_t> database_version_key_;
@@ -220,7 +221,7 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   ReadMetadataFromDatabase(&metadata);
 
   EXPECT_EQ(5, metadata.NextMapId());
-  EXPECT_EQ(2ul, metadata.namespace_origin_map().size());
+  EXPECT_EQ(2ul, metadata.namespace_storage_key_map().size());
 
   // Namespace 1 should have 2 origins, referencing map 1 and 3. Map 1 is shared
   // between namespace 1 and namespace 2.
@@ -228,22 +229,22 @@ TEST_F(SessionStorageMetadataTest, LoadingData) {
   EXPECT_EQ(test_namespace1_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
   EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            entry->second[test_origin1_]->KeyPrefix());
-  EXPECT_EQ(2, entry->second[test_origin1_]->ReferenceCount());
+            entry->second[test_storage_key1_]->KeyPrefix());
+  EXPECT_EQ(2, entry->second[test_storage_key1_]->ReferenceCount());
   EXPECT_EQ(StdStringToUint8Vector("map-3-"),
-            entry->second[test_origin2_]->KeyPrefix());
-  EXPECT_EQ(1, entry->second[test_origin2_]->ReferenceCount());
+            entry->second[test_storage_key2_]->KeyPrefix());
+  EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
 
   // Namespace 2 is the same, except the second origin references map 4.
   entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
   EXPECT_EQ(test_namespace2_id_, entry->first);
   EXPECT_EQ(2ul, entry->second.size());
   EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            entry->second[test_origin1_]->KeyPrefix());
-  EXPECT_EQ(2, entry->second[test_origin1_]->ReferenceCount());
+            entry->second[test_storage_key1_]->KeyPrefix());
+  EXPECT_EQ(2, entry->second[test_storage_key1_]->ReferenceCount());
   EXPECT_EQ(StdStringToUint8Vector("map-4-"),
-            entry->second[test_origin2_]->KeyPrefix());
-  EXPECT_EQ(1, entry->second[test_origin2_]->ReferenceCount());
+            entry->second[test_storage_key2_]->KeyPrefix());
+  EXPECT_EQ(1, entry->second[test_storage_key2_]->ReferenceCount());
 }
 
 TEST_F(SessionStorageMetadataTest, SaveNewMap) {
@@ -253,15 +254,16 @@ TEST_F(SessionStorageMetadataTest, SaveNewMap) {
 
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
-  auto map_data = metadata.RegisterNewMap(ns1_entry, test_origin1_, &tasks);
+  auto map_data =
+      metadata.RegisterNewMap(ns1_entry, test_storage_key1_, &tasks);
   ASSERT_TRUE(map_data);
 
   // Verify in-memory metadata is correct.
   EXPECT_EQ(StdStringToUint8Vector("map-5-"),
-            ns1_entry->second[test_origin1_]->KeyPrefix());
-  EXPECT_EQ(1, ns1_entry->second[test_origin1_]->ReferenceCount());
+            ns1_entry->second[test_storage_key1_]->KeyPrefix());
+  EXPECT_EQ(1, ns1_entry->second[test_storage_key1_]->ReferenceCount());
   EXPECT_EQ(1, metadata.GetOrCreateNamespaceEntry(test_namespace2_id_)
-                   ->second[test_origin1_]
+                   ->second[test_storage_key1_]
                    ->ReferenceCount());
 
   leveldb::Status status;
@@ -274,7 +276,7 @@ TEST_F(SessionStorageMetadataTest, SaveNewMap) {
   EXPECT_EQ(StdStringToUint8Vector("5"),
             contents[StdStringToUint8Vector(std::string("namespace-") +
                                             test_namespace1_id_ + "-" +
-                                            test_origin1_.GetURL().spec())]);
+                                            test_storage_key1_.Serialize())]);
 }
 
 TEST_F(SessionStorageMetadataTest, ShallowCopies) {
@@ -294,26 +296,26 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
 
   // Verify in-memory metadata is correct.
   EXPECT_EQ(StdStringToUint8Vector("map-1-"),
-            ns3_entry->second[test_origin1_]->KeyPrefix());
+            ns3_entry->second[test_storage_key1_]->KeyPrefix());
   EXPECT_EQ(StdStringToUint8Vector("map-3-"),
-            ns3_entry->second[test_origin2_]->KeyPrefix());
-  EXPECT_EQ(ns1_entry->second[test_origin1_].get(),
-            ns3_entry->second[test_origin1_].get());
-  EXPECT_EQ(ns1_entry->second[test_origin2_].get(),
-            ns3_entry->second[test_origin2_].get());
-  EXPECT_EQ(3, ns3_entry->second[test_origin1_]->ReferenceCount());
-  EXPECT_EQ(2, ns3_entry->second[test_origin2_]->ReferenceCount());
+            ns3_entry->second[test_storage_key2_]->KeyPrefix());
+  EXPECT_EQ(ns1_entry->second[test_storage_key1_].get(),
+            ns3_entry->second[test_storage_key1_].get());
+  EXPECT_EQ(ns1_entry->second[test_storage_key2_].get(),
+            ns3_entry->second[test_storage_key2_].get());
+  EXPECT_EQ(3, ns3_entry->second[test_storage_key1_]->ReferenceCount());
+  EXPECT_EQ(2, ns3_entry->second[test_storage_key2_]->ReferenceCount());
 
   // Verify metadata was written to disk.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(StdStringToUint8Vector("1"),
             contents[StdStringToUint8Vector(std::string("namespace-") +
                                             test_namespace3_id_ + "-" +
-                                            test_origin1_.GetURL().spec())]);
+                                            test_storage_key1_.Serialize())]);
   EXPECT_EQ(StdStringToUint8Vector("3"),
             contents[StdStringToUint8Vector(std::string("namespace-") +
                                             test_namespace3_id_ + "-" +
-                                            test_origin2_.GetURL().spec())]);
+                                            test_storage_key2_.Serialize())]);
 }
 
 TEST_F(SessionStorageMetadataTest, DeleteNamespace) {
@@ -327,24 +329,24 @@ TEST_F(SessionStorageMetadataTest, DeleteNamespace) {
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
-  EXPECT_FALSE(
-      base::Contains(metadata.namespace_origin_map(), test_namespace1_id_));
+  EXPECT_FALSE(base::Contains(metadata.namespace_storage_key_map(),
+                              test_namespace1_id_));
 
   // Verify in-memory metadata is correct.
   auto ns2_entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
-  EXPECT_EQ(1, ns2_entry->second[test_origin1_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_origin2_]->ReferenceCount());
+  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
+  EXPECT_EQ(1, ns2_entry->second[test_storage_key2_]->ReferenceCount());
 
   // Verify metadata and data was deleted from disk.
   auto contents = GetDatabaseContents();
   EXPECT_FALSE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_origin1_.GetURL().spec())));
+                             "-" + test_storage_key1_.Serialize())));
   EXPECT_FALSE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_origin2_.GetURL().spec())));
+                             "-" + test_storage_key2_.Serialize())));
   EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
 }
@@ -356,7 +358,7 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
 
   // First delete an area with a shared map.
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  metadata.DeleteArea(test_namespace1_id_, test_origin1_, &tasks);
+  metadata.DeleteArea(test_namespace1_id_, test_storage_key1_, &tasks);
   leveldb::Status status;
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
@@ -364,46 +366,46 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   // Verify in-memory metadata is correct.
   auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
   auto ns2_entry = metadata.GetOrCreateNamespaceEntry(test_namespace2_id_);
-  EXPECT_FALSE(base::Contains(ns1_entry->second, test_origin1_));
-  EXPECT_EQ(1, ns1_entry->second[test_origin2_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_origin1_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_origin2_]->ReferenceCount());
+  EXPECT_FALSE(base::Contains(ns1_entry->second, test_storage_key1_));
+  EXPECT_EQ(1, ns1_entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
+  EXPECT_EQ(1, ns2_entry->second[test_storage_key2_]->ReferenceCount());
 
   // Verify only the applicable data was deleted.
   auto contents = GetDatabaseContents();
   EXPECT_FALSE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_origin1_.GetURL().spec())));
+                             "-" + test_storage_key1_.Serialize())));
   EXPECT_TRUE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_origin2_.GetURL().spec())));
+                             "-" + test_storage_key2_.Serialize())));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
 
   // Now delete an area with a unique map.
   tasks.clear();
-  metadata.DeleteArea(test_namespace2_id_, test_origin2_, &tasks);
+  metadata.DeleteArea(test_namespace2_id_, test_storage_key2_, &tasks);
   RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
   EXPECT_TRUE(status.ok());
 
   // Verify in-memory metadata is correct.
-  EXPECT_FALSE(base::Contains(ns1_entry->second, test_origin1_));
-  EXPECT_EQ(1, ns1_entry->second[test_origin2_]->ReferenceCount());
-  EXPECT_EQ(1, ns2_entry->second[test_origin1_]->ReferenceCount());
-  EXPECT_FALSE(base::Contains(ns2_entry->second, test_origin2_));
+  EXPECT_FALSE(base::Contains(ns1_entry->second, test_storage_key1_));
+  EXPECT_EQ(1, ns1_entry->second[test_storage_key2_]->ReferenceCount());
+  EXPECT_EQ(1, ns2_entry->second[test_storage_key1_]->ReferenceCount());
+  EXPECT_FALSE(base::Contains(ns2_entry->second, test_storage_key2_));
 
   // Verify only the applicable data was deleted.
   contents = GetDatabaseContents();
   EXPECT_TRUE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace2_id_ +
-                             "-" + test_origin1_.GetURL().spec())));
+                             "-" + test_storage_key1_.Serialize())));
   EXPECT_FALSE(base::Contains(
       contents,
       StdStringToUint8Vector(std::string("namespace-") + test_namespace2_id_ +
-                             "-" + test_origin2_.GetURL().spec())));
+                             "-" + test_storage_key2_.Serialize())));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
   EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));

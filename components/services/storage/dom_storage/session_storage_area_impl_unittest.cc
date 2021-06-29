@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -57,9 +58,7 @@ class SessionStorageAreaImplTest : public testing::Test {
  public:
   SessionStorageAreaImplTest()
       : test_namespace_id1_(base::GenerateGUID()),
-        test_namespace_id2_(base::GenerateGUID()),
-        test_origin1_(url::Origin::Create(GURL("https://host1.com:1/"))),
-        test_origin2_(url::Origin::Create(GURL("https://host2.com:2/"))) {
+        test_namespace_id2_(base::GenerateGUID()) {
     leveldb_database_ = AsyncDomStorageDatabase::OpenInMemory(
         absl::nullopt, "SessionStorageAreaImplTestDatabase",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
@@ -70,8 +69,8 @@ class SessionStorageAreaImplTest : public testing::Test {
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks =
         metadata_.SetupNewDatabase();
     auto map_id = metadata_.RegisterNewMap(
-        metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
-        &save_tasks);
+        metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+        test_storage_key1_, &save_tasks);
     DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
     leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
                                              base::DoNothing());
@@ -80,10 +79,10 @@ class SessionStorageAreaImplTest : public testing::Test {
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
       SessionStorageMetadata::NamespaceEntry namespace_entry,
-      const url::Origin& origin) {
+      const blink::StorageKey& storage_key) {
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
     auto map_data =
-        metadata_.RegisterNewMap(namespace_entry, origin, &save_tasks);
+        metadata_.RegisterNewMap(namespace_entry, storage_key, &save_tasks);
     leveldb_database_->RunBatchDatabaseTasks(std::move(save_tasks),
                                              base::DoNothing());
     return map_data;
@@ -98,8 +97,10 @@ class SessionStorageAreaImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   const std::string test_namespace_id1_;
   const std::string test_namespace_id2_;
-  const url::Origin test_origin1_;
-  const url::Origin test_origin2_;
+  const blink::StorageKey test_storage_key1_ =
+      blink::StorageKey::CreateFromStringForTesting("https://host1.com:1/");
+  const blink::StorageKey test_storage_key2_ =
+      blink::StorageKey::CreateFromStringForTesting("https://host2.com:2/");
   std::unique_ptr<AsyncDomStorageDatabase> leveldb_database_;
   SessionStorageMetadata metadata_;
 
@@ -113,11 +114,12 @@ TEST_F(SessionStorageAreaImplTest, BasicUsage) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -141,11 +143,12 @@ TEST_F(SessionStorageAreaImplTest, ExplicitlyEmptyMap) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateEmpty(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -166,11 +169,12 @@ TEST_F(SessionStorageAreaImplTest, DoubleBind) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -205,11 +209,12 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -278,11 +283,12 @@ TEST_F(SessionStorageAreaImplTest, NotifyAllDeleted) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -309,11 +315,12 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -369,11 +376,12 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBinding) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 
@@ -396,11 +404,12 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), test_origin1_,
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
+      test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
-              ->second[test_origin1_],
+              ->second[test_storage_key1_],
           leveldb_database_.get()),
       GetRegisterNewAreaMapCallback());
 

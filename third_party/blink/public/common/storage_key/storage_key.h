@@ -58,6 +58,10 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   std::string GetDebugString() const;
 
+  // Provides a concise string representation suitable for memory dumps.
+  // Limits the length to `max_length` chars and strips special characters.
+  std::string GetMemoryDumpString(size_t max_length) const;
+
  private:
   BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);

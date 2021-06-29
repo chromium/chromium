@@ -29,6 +29,7 @@
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "url/origin.h"
 
@@ -71,6 +72,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   ~SessionStorageImpl() override;
 
   // mojom::SessionStorageControl implementation:
+  // TODO(crbug.com/1212808): Update mojo interface to use StorageKey.
   void BindNamespace(
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
@@ -115,7 +117,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   AsyncDomStorageDatabase* DatabaseForTesting() { return database_.get(); }
 
   void FlushAreaForTesting(const std::string& namespace_id,
-                           const url::Origin& origin);
+                           const blink::StorageKey& origin);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
@@ -155,7 +157,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
       SessionStorageMetadata::NamespaceEntry namespace_entry,
-      const url::Origin& origin);
+      const blink::StorageKey& storage_key);
 
   // SessionStorageAreaImpl::Listener implementation:
   void OnDataMapCreation(const std::vector<uint8_t>& map_prefix,
@@ -171,8 +173,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void RegisterShallowClonedNamespace(
       SessionStorageMetadata::NamespaceEntry source_namespace_entry,
       const std::string& new_namespace_id,
-      const SessionStorageNamespaceImpl::OriginAreas& clone_from_areas)
-      override;
+      const SessionStorageNamespaceImpl::StorageKeyAreas&
+          clone_from_storage_keys) override;
 
   std::unique_ptr<SessionStorageNamespaceImpl>
   CreateSessionStorageNamespaceImpl(std::string namespace_id);

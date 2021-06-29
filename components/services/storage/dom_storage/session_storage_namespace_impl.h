@@ -17,15 +17,15 @@
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 
 class AsyncDomStorageDatabase;
 
 // Implements the Blink SessionStorageNamespace interface. Stores data maps per
-// origin, which are accessible using the StorageArea interface with the
+// StorageKey, which are accessible using the StorageArea interface with the
 // |OpenArea| call. Supports cloning (shallow cloning with copy-on-write
 // behavior) from another SessionStorageNamespaceImpl.
 //
@@ -50,8 +50,8 @@ class AsyncDomStorageDatabase;
 class SessionStorageNamespaceImpl final
     : public blink::mojom::SessionStorageNamespace {
  public:
-  using OriginAreas =
-      std::map<url::Origin, std::unique_ptr<SessionStorageAreaImpl>>;
+  using StorageKeyAreas =
+      std::map<blink::StorageKey, std::unique_ptr<SessionStorageAreaImpl>>;
 
   enum class State {
     // This is the default state when a namespace is first constructed. It has
@@ -76,7 +76,7 @@ class SessionStorageNamespaceImpl final
     virtual void RegisterShallowClonedNamespace(
         SessionStorageMetadata::NamespaceEntry source_namespace,
         const std::string& destination_namespace,
-        const OriginAreas& areas_to_clone) = 0;
+        const StorageKeyAreas& areas_to_clone) = 0;
 
     // This is called when |OpenArea()| is called. The map could have been
     // purged in a call to |PurgeUnboundAreas| but the map could still be alive
@@ -91,9 +91,9 @@ class SessionStorageNamespaceImpl final
   // |data_map_listener| are given to any data maps constructed for this
   // namespace. The |delegate| is called when the |Clone| method
   // is called by mojo, as well as when the |OpenArea| method is called and the
-  // map id for that origin is found in our metadata. The
+  // map id for that StorageKey is found in our metadata. The
   // |register_new_map_callback| is given to the the
-  // SessionStorageAreaImpl's, used per-origin, that are bound to in
+  // SessionStorageAreaImpl's, used per-StorageKey, that are bound to in
   // OpenArea.
   SessionStorageNamespaceImpl(
       std::string namespace_id,
@@ -118,8 +118,8 @@ class SessionStorageNamespaceImpl final
   bool HasChildNamespacesWaitingForClone() const;
   void ClearChildNamespacesWaitingForClone();
 
-  // Returns if a storage area exists for the given origin in this map.
-  bool HasAreaForOrigin(const url::Origin& origin) const;
+  // Returns if a storage area exists for the given StorageKey in this map.
+  bool HasAreaForStorageKey(const blink::StorageKey& StorageKey) const;
 
   // Called when this is a new namespace, or when the namespace was loaded from
   // disk. Should be called before |Bind|.
@@ -133,7 +133,7 @@ class SessionStorageNamespaceImpl final
   void PopulateAsClone(
       AsyncDomStorageDatabase* database,
       SessionStorageMetadata::NamespaceEntry namespace_metadata,
-      const OriginAreas& areas_to_clone);
+      const StorageKeyAreas& areas_to_clone);
 
   // Resets to a pre-populated and pre-bound state. Used when the owner needs to
   // delete & recreate the database. This call should happen on every namespace
@@ -161,15 +161,16 @@ class SessionStorageNamespaceImpl final
   // Removes any StorageAreas bound in |OpenArea| that are no longer bound.
   void PurgeUnboundAreas();
 
-  // Removes data for the given origin from this namespace. If there is no data
-  // map for that given origin, this does nothing. Expects that this namespace
-  // is either populated or waiting for clone population.
-  void RemoveOriginData(const url::Origin& origin, base::OnceClosure callback);
+  // Removes data for the given StorageKey from this namespace. If there is no
+  // data map for that given StorageKey, this does nothing. Expects that this
+  // namespace is either populated or waiting for clone population.
+  void RemoveStorageKeyData(const blink::StorageKey& storage_key,
+                            base::OnceClosure callback);
 
   // Connects the given database mojo request to the data map for the given
-  // origin. Note that the source of |receiver| must have already been
-  // access-checked for access to |origin|.
-  void OpenArea(const url::Origin& origin,
+  // StorageKey. Note that the source of |receiver| must have already been
+  // access-checked for access to |StorageKey|.
+  void OpenArea(const blink::StorageKey& storage_key,
                 mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
   // SessionStorageNamespace:
@@ -188,7 +189,7 @@ class SessionStorageNamespaceImpl final
           namespaces_map);
 
   void FlushAreasForTesting();
-  void FlushOriginForTesting(const url::Origin& origin);
+  void FlushStorageKeyForTesting(const blink::StorageKey& storage_key);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SessionStorageImplTest,
@@ -214,7 +215,7 @@ class SessionStorageNamespaceImpl final
   // waiting and should be unblocked.
   base::flat_set<std::string> child_namespaces_waiting_for_clone_call_;
 
-  OriginAreas origin_areas_;
+  StorageKeyAreas storage_key_areas_;
   mojo::ReceiverSet<blink::mojom::SessionStorageNamespace> receivers_;
 };
 

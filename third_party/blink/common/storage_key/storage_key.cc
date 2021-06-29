@@ -4,8 +4,10 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+#include <cctype>
 #include <ostream>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "url/gurl.h"
 
@@ -36,6 +38,14 @@ std::string StorageKey::SerializeForLocalStorage() const {
 
 std::string StorageKey::GetDebugString() const {
   return base::StrCat({"{ origin: ", origin_.GetDebugString(), " }"});
+}
+
+std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
+  std::string memory_dump_str = origin_.Serialize().substr(0, max_length);
+  base::ranges::replace_if(
+      memory_dump_str.begin(), memory_dump_str.end(),
+      [](char c) { return !std::isalnum(static_cast<unsigned char>(c)); }, '_');
+  return memory_dump_str;
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {

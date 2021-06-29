@@ -7,7 +7,6 @@
 #include <inttypes.h>
 
 #include <algorithm>
-#include <cctype>  // for std::isalnum
 #include <set>
 #include <string>
 #include <utility>
@@ -557,14 +556,10 @@ bool LocalStorageImpl::OnMemoryDump(
     return true;
   }
   for (const auto& it : areas_) {
-    // Limit the url length to 50 and strip special characters.
-    std::string url = it.first.Serialize().substr(0, 50);
-    for (size_t index = 0; index < url.size(); ++index) {
-      if (!std::isalnum(url[index]))
-        url[index] = '_';
-    }
+    std::string storage_key_str =
+        it.first.GetMemoryDumpString(/*max_length=*/50);
     std::string area_dump_name = base::StringPrintf(
-        "%s/%s/0x%" PRIXPTR, context_name.c_str(), url.c_str(),
+        "%s/%s/0x%" PRIXPTR, context_name.c_str(), storage_key_str.c_str(),
         reinterpret_cast<uintptr_t>(it.second->storage_area()));
     it.second->storage_area()->OnMemoryDump(area_dump_name, pmd);
   }
