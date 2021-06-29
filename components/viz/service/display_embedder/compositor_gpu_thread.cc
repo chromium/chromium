@@ -56,7 +56,7 @@ bool CompositorGpuThread::Initialize() {
   base::Thread::Options thread_options(base::MessagePumpType::DEFAULT, 0);
   if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority))
     thread_options.priority = base::ThreadPriority::DISPLAY;
-  StartWithOptions(thread_options);
+  StartWithOptions(std::move(thread_options));
 
   // Initialize on display compositor gpu thread and wait for init to happen.
   base::WaitableEvent event;
