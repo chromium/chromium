@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest,
 // Assert that activating ChromeVox (after the hint is given) closes the hint
 // dialog.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest,
-                       ActivateChromeVoxAfterHint) {
+                       DISABLED_ActivateChromeVoxAfterHint) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
