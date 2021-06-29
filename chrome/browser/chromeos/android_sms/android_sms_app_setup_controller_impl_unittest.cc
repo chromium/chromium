@@ -25,7 +25,7 @@
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -203,8 +203,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     controller().SetUp(&profile_);
 
     test_externally_managed_app_manager_ =
-        std::make_unique<web_app::TestExternallyManagedAppManagerImpl>(
-            &profile_);
+        std::make_unique<web_app::TestExternallyManagedAppManager>(&profile_);
     test_externally_managed_app_manager_->SetSubsystems(
         &controller().registrar(), nullptr, nullptr, nullptr, nullptr);
     test_externally_managed_app_manager_->SetHandleInstallRequestCallback(
@@ -459,7 +458,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   std::unique_ptr<FakeCookieManager> fake_cookie_manager_;
   std::unique_ptr<web_app::TestWebAppRegistryController>
       test_registry_controller_;
-  std::unique_ptr<web_app::TestExternallyManagedAppManagerImpl>
+  std::unique_ptr<web_app::TestExternallyManagedAppManager>
       test_externally_managed_app_manager_;
   TestPwaDelegate* test_pwa_delegate_;
   std::unique_ptr<AndroidSmsAppSetupController> setup_controller_;

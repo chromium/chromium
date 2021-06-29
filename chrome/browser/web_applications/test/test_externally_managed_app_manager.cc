@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 
 #include <algorithm>
 
 namespace web_app {
 
-TestExternallyManagedAppManagerImpl::TestExternallyManagedAppManagerImpl(
+TestExternallyManagedAppManager::TestExternallyManagedAppManager(
     Profile* profile)
     : ExternallyManagedAppManagerImpl(profile) {}
 
-TestExternallyManagedAppManagerImpl::~TestExternallyManagedAppManagerImpl() =
-    default;
+TestExternallyManagedAppManager::~TestExternallyManagedAppManager() = default;
 
-void TestExternallyManagedAppManagerImpl::InstallNow(
+void TestExternallyManagedAppManager::InstallNow(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
   Install(install_options, std::move(callback));
 }
 
-void TestExternallyManagedAppManagerImpl::Install(
+void TestExternallyManagedAppManager::Install(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
   install_requests_.push_back(install_options);
@@ -36,7 +35,7 @@ void TestExternallyManagedAppManagerImpl::Install(
                                            std::move(callback));
 }
 
-void TestExternallyManagedAppManagerImpl::InstallApps(
+void TestExternallyManagedAppManager::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
   if (handle_install_request_callback_) {
@@ -53,7 +52,7 @@ void TestExternallyManagedAppManagerImpl::InstallApps(
   }
 }
 
-void TestExternallyManagedAppManagerImpl::UninstallApps(
+void TestExternallyManagedAppManager::UninstallApps(
     std::vector<GURL> uninstall_urls,
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
@@ -73,12 +72,12 @@ void TestExternallyManagedAppManagerImpl::UninstallApps(
                                                  std::move(callback));
 }
 
-void TestExternallyManagedAppManagerImpl::SetHandleInstallRequestCallback(
+void TestExternallyManagedAppManager::SetHandleInstallRequestCallback(
     HandleInstallRequestCallback callback) {
   handle_install_request_callback_ = std::move(callback);
 }
 
-void TestExternallyManagedAppManagerImpl::SetHandleUninstallRequestCallback(
+void TestExternallyManagedAppManager::SetHandleUninstallRequestCallback(
     HandleUninstallRequestCallback callback) {
   handle_uninstall_request_callback_ = std::move(callback);
 }

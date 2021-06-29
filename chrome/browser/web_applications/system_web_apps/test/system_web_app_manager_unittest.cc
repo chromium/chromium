@@ -31,7 +31,7 @@
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
@@ -144,7 +144,7 @@ class SystemWebAppManagerTest : public WebAppTest {
         profile(), &icon_manager(), web_app_policy_manager_.get());
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_externally_managed_app_manager_impl_ =
-        std::make_unique<TestExternallyManagedAppManagerImpl>(profile());
+        std::make_unique<TestExternallyManagedAppManager>(profile());
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
@@ -208,7 +208,7 @@ class SystemWebAppManagerTest : public WebAppTest {
 
   WebAppInstallManager& install_manager() { return *install_manager_; }
 
-  TestExternallyManagedAppManagerImpl& externally_managed_app_manager() {
+  TestExternallyManagedAppManager& externally_managed_app_manager() {
     return *test_externally_managed_app_manager_impl_;
   }
 
@@ -286,7 +286,7 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<TestExternallyManagedAppManagerImpl>
+  std::unique_ptr<TestExternallyManagedAppManager>
       test_externally_managed_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;

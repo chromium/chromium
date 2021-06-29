@@ -23,7 +23,7 @@
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -266,7 +266,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
 
     auto test_externally_managed_app_manager =
-        std::make_unique<TestExternallyManagedAppManagerImpl>(profile());
+        std::make_unique<TestExternallyManagedAppManager>(profile());
     test_externally_managed_app_manager_ =
         test_externally_managed_app_manager.get();
     provider->SetExternallyManagedAppManager(
@@ -345,7 +345,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestExternallyManagedAppManagerImpl* externally_managed_app_manager() {
+  TestExternallyManagedAppManager* externally_managed_app_manager() {
     return test_externally_managed_app_manager_;
   }
 
@@ -402,7 +402,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   WebAppRegistrarMutable* test_app_registrar_ = nullptr;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  TestExternallyManagedAppManagerImpl* test_externally_managed_app_manager_ =
+  TestExternallyManagedAppManager* test_externally_managed_app_manager_ =
       nullptr;
   WebAppPolicyManager* web_app_policy_manager_ = nullptr;
 };

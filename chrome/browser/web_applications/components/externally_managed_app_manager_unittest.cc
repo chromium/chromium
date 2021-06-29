@@ -14,7 +14,7 @@
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -34,7 +34,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     externally_managed_app_manager_ =
-        std::make_unique<TestExternallyManagedAppManagerImpl>(profile());
+        std::make_unique<TestExternallyManagedAppManager>(profile());
 
     externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
                                                    nullptr, nullptr, nullptr);
@@ -140,7 +140,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     return *externally_installed_app_prefs_;
   }
 
-  TestExternallyManagedAppManagerImpl& externally_managed_app_manager() {
+  TestExternallyManagedAppManager& externally_managed_app_manager() {
     return *externally_managed_app_manager_;
   }
 
@@ -151,7 +151,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  std::unique_ptr<TestExternallyManagedAppManagerImpl>
+  std::unique_ptr<TestExternallyManagedAppManager>
       externally_managed_app_manager_;
 };
 

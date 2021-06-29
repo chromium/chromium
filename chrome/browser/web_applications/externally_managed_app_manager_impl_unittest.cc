@@ -147,15 +147,14 @@ class TestExternallyManagedAppInstallTaskManager {
   bool should_save_requests_ = false;
 };
 
-class TestExternallyManagedAppManagerImpl
-    : public ExternallyManagedAppManagerImpl {
+class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
  public:
   struct TestTaskResult {
     InstallResultCode code;
     bool did_install_placeholder;
   };
 
-  TestExternallyManagedAppManagerImpl(
+  TestExternallyManagedAppManager(
       Profile* profile,
       TestWebAppRegistryController& test_registry_controller,
       TestExternallyManagedAppInstallTaskManager& test_install_task_manager)
@@ -163,7 +162,7 @@ class TestExternallyManagedAppManagerImpl
         test_registry_controller_(test_registry_controller),
         test_install_task_manager_(test_install_task_manager) {}
 
-  ~TestExternallyManagedAppManagerImpl() override {
+  ~TestExternallyManagedAppManager() override {
     DCHECK(next_installation_task_results_.empty());
     DCHECK(next_installation_launch_urls_.empty());
     DCHECK(!preempt_registration_callback_);
@@ -276,8 +275,7 @@ class TestExternallyManagedAppManagerImpl
       : public ExternallyManagedAppInstallTask {
    public:
     TestExternallyManagedAppInstallTask(
-        TestExternallyManagedAppManagerImpl*
-            externally_managed_app_manager_impl,
+        TestExternallyManagedAppManager* externally_managed_app_manager_impl,
         Profile* profile,
         TestWebAppUrlLoader* test_url_loader,
         TestExternallyManagedAppInstallTaskManager& test_install_task_manager,
@@ -347,7 +345,7 @@ class TestExternallyManagedAppManagerImpl
     }
 
    private:
-    TestExternallyManagedAppManagerImpl* externally_managed_app_manager_impl_;
+    TestExternallyManagedAppManager* externally_managed_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
   };
@@ -357,8 +355,7 @@ class TestExternallyManagedAppManagerImpl
    public:
     TestExternallyManagedAppRegistrationTask(
         const GURL& install_url,
-        TestExternallyManagedAppManagerImpl*
-            externally_managed_app_manager_impl)
+        TestExternallyManagedAppManager* externally_managed_app_manager_impl)
         : ExternallyManagedAppRegistrationTaskBase(install_url),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl) {
@@ -381,8 +378,7 @@ class TestExternallyManagedAppManagerImpl
           install_url, RegistrationResultCode::kSuccess);
     }
 
-    TestExternallyManagedAppManagerImpl* const
-        externally_managed_app_manager_impl_;
+    TestExternallyManagedAppManager* const externally_managed_app_manager_impl_;
 
     base::WeakPtrFactory<TestExternallyManagedAppRegistrationTask>
         weak_ptr_factory_{this};
@@ -423,7 +419,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     test_registry_controller_->SetUp(profile());
 
     externally_managed_app_manager_impl_ =
-        std::make_unique<TestExternallyManagedAppManagerImpl>(
+        std::make_unique<TestExternallyManagedAppManager>(
             profile(), controller(), test_install_task_manager_);
 
     install_finalizer_ = std::make_unique<TestInstallFinalizer>();
@@ -538,7 +534,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     return install_finalizer_->uninstall_external_web_app_urls().back();
   }
 
-  TestExternallyManagedAppManagerImpl& externally_managed_app_manager_impl() {
+  TestExternallyManagedAppManager& externally_managed_app_manager_impl() {
     return *externally_managed_app_manager_impl_;
   }
 
@@ -558,7 +554,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
 
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
-  std::unique_ptr<TestExternallyManagedAppManagerImpl>
+  std::unique_ptr<TestExternallyManagedAppManager>
       externally_managed_app_manager_impl_;
   std::unique_ptr<TestInstallFinalizer> install_finalizer_;
   std::unique_ptr<TestWebAppUiManager> ui_manager_;
