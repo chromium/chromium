@@ -1825,7 +1825,7 @@
   {
     "name": "enable-experimental-accessibility-switch-access-setup-guide",
     "owners": ["ansatasi@google.com", "josiahk@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 92
+    "expiry_milestone": 94
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",
