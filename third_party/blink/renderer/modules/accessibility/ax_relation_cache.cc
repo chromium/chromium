@@ -182,11 +182,7 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       // parent and calling childrenChanged on its real parent.
       removed_child->DetachFromParent();
       // Recompute the real parent and cache it.
-      AXObject* real_parent = removed_child->ParentObject();
-      SANITIZER_CHECK(real_parent) << "No parent to restore for object with "
-                                      "unmapped aria-owns, child is: "
-                                   << removed_child->ToString(true, true);
-      if (real_parent)
+      if (AXObject* real_parent = RestoreParentOrPrune(removed_child))
         ChildrenChanged(real_parent);
     }
   }
@@ -235,7 +231,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       validated_owned_children_result.push_back(child);
     } else if (child) {
       // Invalid owns relation: repair the parent that was set above.
-      child->SetParent(child->ComputeParent());
+      RestoreParentOrPrune(child);
     }
   }
 
@@ -318,7 +314,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
         owned_children.push_back(child);
       } else if (child) {
         // Invalid owns relation: repair the parent that was set above.
-        child->SetParent(child->ComputeParent());
+        RestoreParentOrPrune(child);
       }
     }
   }
@@ -408,6 +404,16 @@ void AXRelationCache::GetReverseRelated(
     if (source_object)
       source_objects.push_back(source_object);
   }
+}
+
+AXObject* AXRelationCache::RestoreParentOrPrune(AXObject* child) {
+  AXObject* parent = child->ComputeParent();
+  if (parent)
+    child->SetParent(parent);
+  else  // If no parent is possible, the child is no longer part of the tree.
+    object_cache_->Remove(child);
+
+  return parent;
 }
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {

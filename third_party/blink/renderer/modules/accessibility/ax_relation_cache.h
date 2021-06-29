@@ -108,6 +108,11 @@ class AXRelationCache {
   void MapOwnedChildren(const AXObject* owner, Vector<AXID>);
   void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
 
+  // Set the parent of |child| to its natural parent, without any aria-owns.
+  // If no natural parent is possible, this means the child can no longer be in
+  // the AXTree, so remove the child.
+  AXObject* RestoreParentOrPrune(AXObject* child);
+
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
   // either the content attribute or the attr associated elements.
   void UpdateAriaOwnerToChildrenMappingWithCleanLayout(
