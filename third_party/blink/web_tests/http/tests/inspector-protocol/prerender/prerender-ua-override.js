@@ -3,7 +3,6 @@
       `Tests that prerender gets the UA override.`);
 
   const target = testRunner.browserP().Target;
-  await target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
   await target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
   await session.protocol.Emulation.setUserAgentOverride({userAgent: 'Lynx v0.1'});

@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 
+#include "base/auto_reset.h"
 #include "base/containers/queue.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -245,6 +246,7 @@ class BrowserAutoAttacher : public TargetAutoAttacher,
 
   void UpdateAutoAttach(base::OnceClosure callback) override {
     if (auto_attach()) {
+      base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
       DevToolsAgentHost::AddObserver(this);
       ReattachServiceWorkers();
@@ -261,8 +263,11 @@ class BrowserAutoAttacher : public TargetAutoAttacher,
     // In the top level target handler auto-attach to pages as soon as they
     // are created, otherwise if they don't incur any network activity we'll
     // never get a chance to throttle them (and auto-attach there).
-    if (IsMainFrameHost(host))
-      delegate()->AutoAttach(host, wait_for_debugger_on_start());
+
+    if (IsMainFrameHost(host)) {
+      delegate()->AutoAttach(
+          host, wait_for_debugger_on_start() && !processing_existent_targets_);
+    }
   }
 
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
@@ -277,6 +282,8 @@ class BrowserAutoAttacher : public TargetAutoAttacher,
       return false;
     return host == RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
   }
+
+  bool processing_existent_targets_ = false;
 };
 
 // Internal implementation class, use its derivied classes instead.
