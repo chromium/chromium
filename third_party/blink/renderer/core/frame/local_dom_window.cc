@@ -437,6 +437,9 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
     mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
     const String& message) const {
+  if (disposition == mojom::blink::PolicyDisposition::kEnforce)
+    CountPermissionsPolicyViolation(feature);
+
   if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled(this))
     return;
   if (!GetFrame())
@@ -463,8 +466,6 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
     GetFrame()->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kViolation,
         mojom::blink::ConsoleMessageLevel::kError, body->message()));
-
-    CountPermissionsPolicyViolation(feature);
   }
 }
 

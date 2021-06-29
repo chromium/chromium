@@ -68,6 +68,9 @@ class PageLoadMetricsTestWaiter
   // Add a single WebFeature expectation.
   void AddWebFeatureExpectation(blink::mojom::WebFeature web_feature);
 
+  // Add a single UseCounterFeature expectation.
+  void AddUseCounterFeatureExpectation(const blink::UseCounterFeature& feature);
+
   // Wait for the subframe to navigate at least once.
   void AddSubframeNavigationExpectation();
 

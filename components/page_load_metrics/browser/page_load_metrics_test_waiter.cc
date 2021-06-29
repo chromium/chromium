@@ -63,9 +63,14 @@ void PageLoadMetricsTestWaiter::AddSubFrameExpectation(TimingField field) {
 
 void PageLoadMetricsTestWaiter::AddWebFeatureExpectation(
     blink::mojom::WebFeature web_feature) {
-  expected_.feature_tracker_.TestAndSet(
+  AddUseCounterFeatureExpectation(
       {blink::mojom::UseCounterFeatureType::kWebFeature,
        static_cast<blink::UseCounterFeature::EnumValue>(web_feature)});
+}
+
+void PageLoadMetricsTestWaiter::AddUseCounterFeatureExpectation(
+    const blink::UseCounterFeature& feature) {
+  expected_.feature_tracker_.TestAndSet(feature);
 }
 
 void PageLoadMetricsTestWaiter::AddSubframeNavigationExpectation() {

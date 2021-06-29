@@ -1922,6 +1922,73 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterPermissionsPolicyUsageInMainFrame) {
+  auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
+      blink::mojom::PermissionsPolicyFeature::kFullscreen);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddUseCounterFeatureExpectation({
+      blink::mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
+      test_feature,
+  });
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/page_load_metrics/use_counter_features.html"));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterPermissionsPolicyUsageInIframe) {
+  auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
+      blink::mojom::PermissionsPolicyFeature::kFullscreen);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddUseCounterFeatureExpectation({
+      blink::mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
+      test_feature,
+  });
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/page_load_metrics/use_counter_features_in_iframe.html"));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       UseCounterPermissionsPolicyUsageInIframes) {
+  auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
+      blink::mojom::PermissionsPolicyFeature::kFullscreen);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddUseCounterFeatureExpectation({
+      blink::mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
+      test_feature,
+  });
+  ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/page_load_metrics/use_counter_features_in_iframes.html"));
+  waiter->Wait();
+  NavigateToUntrackedUrl();
+
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, LoadingMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter();
