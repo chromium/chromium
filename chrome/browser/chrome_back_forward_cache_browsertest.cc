@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -156,38 +157,31 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, Basic) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
-  content::RenderFrameHost* rfh_a = current_frame_host();
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  EXPECT_TRUE(content::ExecJs(rfh_a, "token = 'rfh_a'"));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // 2) Navigate to B.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
-  content::RenderFrameHost* rfh_b = current_frame_host();
-  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
-  EXPECT_TRUE(content::ExecJs(rfh_b, "token = 'rfh_b'"));
+  content::RenderFrameHostWrapper rfh_b(current_frame_host());
 
   // A is frozen in the BackForwardCache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 3) Navigate back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // A is restored, B is stored.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
-
-  EXPECT_EQ("rfh_a", content::EvalJs(rfh_a, "token"));
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 4) Navigate forward.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // A is stored, B is restored.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
-
-  EXPECT_EQ("rfh_b", content::EvalJs(rfh_b, "token"));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
@@ -195,12 +189,10 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
-  content::RenderFrameHost* rfh_a = current_frame_host();
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  EXPECT_TRUE(content::ExecJs(rfh_a, "token = 'rfh_a'"));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // 2) Add an iframe B.
-  EXPECT_TRUE(content::ExecJs(rfh_a, R"(
+  EXPECT_TRUE(content::ExecJs(rfh_a.get(), R"(
     let url = new URL(location.href);
     url.hostname = 'b.com';
     let iframe = document.createElement('iframe');
@@ -210,31 +202,31 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   content::RenderFrameHost* rfh_b = nullptr;
-  for (content::RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
-    if (rfh != rfh_a)
-      rfh_b = rfh;
-  }
-  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
-
-  EXPECT_TRUE(content::ExecJs(rfh_a, "token = 'rfh_a'"));
-  EXPECT_TRUE(content::ExecJs(rfh_b, "token = 'rfh_b'"));
+  rfh_a->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](content::RenderFrameHost* rfh) {
+        if (rfh != rfh_a.get())
+          rfh_b = rfh;
+      }));
+  EXPECT_TRUE(rfh_b);
+  content::RenderFrameHostWrapper rfh_b_wrapper(rfh_b);
 
   // 2) Navigate to C.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("c.com")));
+  content::RenderFrameHostWrapper rfh_c(current_frame_host());
 
   // A and B are frozen. The page A(B) is stored in the BackForwardCache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  EXPECT_EQ(rfh_b_wrapper->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 3) Navigate back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
-  // The page A(B) is restored.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
-  EXPECT_EQ("rfh_a", content::EvalJs(rfh_a, "token"));
-  EXPECT_EQ("rfh_b", content::EvalJs(rfh_b, "token"));
+  // The page A(B) is restored and C is frozen.
+  EXPECT_EQ(rfh_c->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
@@ -250,19 +242,21 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a));
-  content::RenderFrameHost* rfh_a = current_frame_host();
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(web_contents(), url_b));
-  ASSERT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   base::MockOnceCallback<void(ContentSetting)> callback;
   EXPECT_CALL(callback, Run(ContentSetting::CONTENT_SETTING_ASK));
   PermissionManagerFactory::GetForProfile(browser()->profile())
-      ->RequestPermission(ContentSettingsType::GEOLOCATION, rfh_a, url_a,
+      ->RequestPermission(ContentSettingsType::GEOLOCATION, rfh_a.get(), url_a,
                           /* user_gesture = */ true, callback.Get());
 
-  delete_observer_rfh_a.WaitUntilDeleted();
+  // Ensure |rfh_a| is evicted from the cache because it is not allowed to
+  // service the GEOLOCATION permission request.
+  rfh_a.WaitUntilRenderFrameDeleted();
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
