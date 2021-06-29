@@ -514,9 +514,9 @@ public class RootUiCoordinator
                     new ChromeMessageAutodismissDurationProvider(),
                     mWindowAndroid::startAnimationOverContent);
             mMessageQueueMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
-                    mMessageContainerCoordinator, mActivity.getFullscreenManager(),
-                    mActivityTabProvider, mLayoutStateProviderOneShotSupplier,
-                    mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
+                    mMessageContainerCoordinator, mActivityTabProvider,
+                    mLayoutStateProviderOneShotSupplier, mActivity.getModalDialogManagerSupplier(),
+                    mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }

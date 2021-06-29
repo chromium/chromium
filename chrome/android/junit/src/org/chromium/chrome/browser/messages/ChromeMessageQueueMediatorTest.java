@@ -21,7 +21,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -44,9 +43,6 @@ public class ChromeMessageQueueMediatorTest {
 
     @Mock
     private MessageContainerCoordinator mMessageContainerCoordinator;
-
-    @Mock
-    private FullscreenManager mFullscreenManager;
 
     @Mock
     private LayoutStateProvider mLayoutStateProvider;
@@ -76,25 +72,10 @@ public class ChromeMessageQueueMediatorTest {
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
-                mMessageContainerCoordinator, mFullscreenManager, mActivityTabProvider,
+                mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
-    }
-
-    /**
-     * Test the queue can be suspended and resumed correctly when toggling full screen mode.
-     */
-    @Test
-    public void testFullScreenModeChange() {
-        final ArgumentCaptor<FullscreenManager.Observer> observer =
-                ArgumentCaptor.forClass(FullscreenManager.Observer.class);
-        doNothing().when(mFullscreenManager).addObserver(observer.capture());
-        initMediator();
-        observer.getValue().onEnterFullscreen(null, null);
-        verify(mMessageDispatcher).suspend();
-        observer.getValue().onExitFullscreen(null);
-        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
 
     /**
@@ -139,7 +120,7 @@ public class ChromeMessageQueueMediatorTest {
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
-                mMessageContainerCoordinator, mFullscreenManager, mActivityTabProvider,
+                mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         // To offer a null value, we have to offer a value other than null first.

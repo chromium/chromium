@@ -14,9 +14,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -38,7 +35,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private ManagedMessageDispatcher mQueueController;
     private MessageContainerCoordinator mContainerCoordinator;
     private BrowserControlsManager mBrowserControlsManager;
-    private FullscreenManager mFullscreenManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private BrowserControlsObserver mBrowserControlsObserver;
     @Nullable
@@ -48,21 +44,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     @Nullable
     private ModalDialogManager mModalDialogManager;
     private final CallbackController mCallbackController = new CallbackController();
-
-    // TODO(crbug.com/1192907): Remove logic that suspends message queue on entering fullscreen
-    // mode.
-    private FullscreenManager.Observer mFullScreenObserver = new Observer() {
-        private int mToken = TokenHolder.INVALID_TOKEN;
-        @Override
-        public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-            mToken = suspendQueue();
-        }
-
-        @Override
-        public void onExitFullscreen(Tab tab) {
-            resumeQueue(mToken);
-        }
-    };
 
     private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
         private int mToken = TokenHolder.INVALID_TOKEN;
@@ -108,7 +89,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
      * @param browserControlsManager The browser controls manager able to toggle the visibility of
      *                               browser controls.
      * @param messageContainerCoordinator The coordinator able to show and hide message container.
-     * @param fullscreenManager The full screen manager able to notify the fullscreen mode change.
      * @param activityTabProvider The {@link ActivityTabProvider} to get current tab of activity.
      * @param layoutStateProviderOneShotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
@@ -116,16 +96,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
      */
     public ChromeMessageQueueMediator(BrowserControlsManager browserControlsManager,
             MessageContainerCoordinator messageContainerCoordinator,
-            FullscreenManager fullscreenManager, ActivityTabProvider activityTabProvider,
+            ActivityTabProvider activityTabProvider,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ManagedMessageDispatcher messageDispatcher) {
         mBrowserControlsManager = browserControlsManager;
         mContainerCoordinator = messageContainerCoordinator;
-        mFullscreenManager = fullscreenManager;
         mQueueController = messageDispatcher;
         mActivityTabProvider = activityTabProvider;
-        mFullscreenManager.addObserver(mFullScreenObserver);
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
         layoutStateProviderOneShotSupplier.onAvailable(
@@ -135,7 +113,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
 
     public void destroy() {
         mCallbackController.destroy();
-        mFullscreenManager.removeObserver(mFullScreenObserver);
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         setLayoutStateProvider(null);
         setModalDialogManager(null);
@@ -147,7 +124,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
                     mBrowserControlsToken);
         }
         mBrowserControlsManager = null;
-        mFullscreenManager = null;
     }
 
     @Override
