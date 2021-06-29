@@ -540,35 +540,6 @@ suite('InternetDetailPage', function() {
       });
     });
 
-    test('Cellular roaming subtext', async function() {
-      init();
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
-      mojoApi_.setManagedPropertiesForTest(
-          getManagedProperties(mojom.NetworkType.kCellular, 'cellular'));
-      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-      await flushAsync();
-      const roamingToggle =
-          internetDetailPage.$$('cellular-roaming-toggle-button')
-              .getCellularRoamingToggle();
-      assertTrue(!!roamingToggle);
-      assertEquals(
-          internetDetailPage.i18n('networkAllowDataRoamingDisabled'),
-          roamingToggle.subLabel);
-
-      const cellularNetwork =
-          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
-      cellularNetwork.typeProperties.cellular.allowRoaming = true;
-      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-      // Notify device state list change since allow roaming is
-      // device level property in shill.
-      internetDetailPage.onDeviceStateListChanged();
-      await flushAsync();
-      assertEquals(
-          internetDetailPage.i18n('networkAllowDataRoamingEnabledHome'),
-          roamingToggle.subLabel);
-    });
-
     test('Deep link to disconnect button', async () => {
       // Add listener for popstate event fired when the dialog closes and the
       // router navigates backwards.

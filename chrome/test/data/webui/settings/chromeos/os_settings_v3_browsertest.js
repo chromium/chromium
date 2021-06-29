@@ -292,6 +292,7 @@ TEST_F(
  ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
+ ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['CrostiniPage', 'crostini_page_test.m.js'],
  ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
