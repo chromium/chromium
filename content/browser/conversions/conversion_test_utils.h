@@ -289,16 +289,11 @@ class ConversionBuilder {
   url::Origin reporting_origin_;
 };
 
-testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
-                                          const StorableImpression& actual);
+bool operator==(const StorableImpression& a, const StorableImpression& b);
 
-testing::AssertionResult ReportsEqual(
-    const std::vector<ConversionReport>& expected,
-    const std::vector<ConversionReport>& actual);
+bool operator==(const ConversionReport& a, const ConversionReport& b);
 
-testing::AssertionResult SentReportInfosEqual(
-    const base::circular_deque<SentReportInfo>& expected,
-    const base::circular_deque<SentReportInfo>& actual);
+bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,

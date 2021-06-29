@@ -53,7 +53,7 @@ struct CONTENT_EXPORT ConversionReport {
   // null, an ID has not been assigned yet.
   absl::optional<int64_t> conversion_id;
 
-  // When adding new members, the `ReportsEqual()` testing utility in
+  // When adding new members, the corresponding `operator==()` definition in
   // `conversion_test_utils.h` should also be updated.
 };
 

@@ -19,6 +19,9 @@ struct CONTENT_EXPORT SentReportInfo {
   GURL report_url;
   std::string report_body;
   int http_response_code;
+
+  // When adding new members, the corresponding `operator==()` definition in
+  // `conversion_test_utils.h` should also be updated.
 };
 
 // Only used for logging.

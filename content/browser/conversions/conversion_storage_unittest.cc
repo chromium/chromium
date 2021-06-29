@@ -33,6 +33,9 @@ namespace content {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
 
@@ -124,10 +127,7 @@ TEST_F(ConversionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   storage()->StoreImpression(impression);
   std::vector<StorableImpression> stored_impressions =
       storage()->GetActiveImpressions();
-  EXPECT_EQ(1u, stored_impressions.size());
-
-  // Verify that each field was stored as expected.
-  EXPECT_TRUE(ImpressionsEqual(impression, stored_impressions[0]));
+  EXPECT_THAT(stored_impressions, ElementsAre(impression));
 }
 
 #if defined(OS_ANDROID)
@@ -142,10 +142,9 @@ TEST_F(ConversionStorageTest,
   storage()->StoreImpression(impression);
   std::vector<StorableImpression> stored_impressions =
       storage()->GetActiveImpressions();
-  EXPECT_EQ(1u, stored_impressions.size());
 
   // Verify that each field was stored as expected.
-  EXPECT_TRUE(ImpressionsEqual(impression, stored_impressions[0]));
+  EXPECT_THAT(stored_impressions, ElementsAre(impression));
 }
 #endif
 
@@ -271,7 +270,7 @@ TEST_F(ConversionStorageTest, OneConversion_OneReportScheduled) {
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
 }
 
 TEST_F(ConversionStorageTest,
@@ -438,8 +437,8 @@ TEST_F(ConversionStorageTest,
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
   // Verify it was the new impression that converted.
-  EXPECT_TRUE(ReportsEqual({expected_report},
-                           storage()->GetConversionsToReport(clock()->Now())));
+  EXPECT_THAT(storage()->GetConversionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 }
 
 TEST_F(ConversionStorageTest,
@@ -473,8 +472,8 @@ TEST_F(ConversionStorageTest,
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
   // Verify it was the first impression that converted.
-  EXPECT_TRUE(ReportsEqual({expected_report},
-                           storage()->GetConversionsToReport(clock()->Now())));
+  EXPECT_THAT(storage()->GetConversionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 }
 
 TEST_F(
@@ -501,11 +500,10 @@ TEST_F(
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
-  std::vector<ConversionReport> expected_reports = {third_expected_conversion};
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
 
-  EXPECT_TRUE(ReportsEqual(expected_reports, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(third_expected_conversion));
 }
 
 TEST_F(ConversionStorageTest,
@@ -546,10 +544,8 @@ TEST_F(ConversionStorageTest, GetConversionsToReportMultipleTimes_SameResult) {
   std::vector<ConversionReport> second_call_reports =
       storage()->GetConversionsToReport(clock()->Now());
 
-  // Expect that |GetConversionsToReport| did not delete any conversions.
-  EXPECT_EQ(1u, first_call_reports.size());
-  EXPECT_EQ(1u, second_call_reports.size());
-  EXPECT_TRUE(ReportsEqual(first_call_reports, second_call_reports));
+  // Expect that |GetConversionsToReport()| did not delete any conversions.
+  EXPECT_EQ(first_call_reports, second_call_reports);
 }
 
 TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
@@ -741,8 +737,8 @@ TEST_F(ConversionStorageTest, ClearDataRangeBetweenEvents) {
       ImpressionBuilder(start).SetExpiry(base::TimeDelta::FromDays(30)).Build();
   auto conversion = DefaultConversion();
 
-  std::vector<ConversionReport> expected_reports = {
-      GetExpectedReport(impression, conversion)};
+  const ConversionReport expected_report =
+      GetExpectedReport(impression, conversion);
 
   storage()->StoreImpression(impression);
 
@@ -756,7 +752,7 @@ TEST_F(ConversionStorageTest, ClearDataRangeBetweenEvents) {
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(base::Time::Max());
-  EXPECT_TRUE(ReportsEqual(expected_reports, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
 }
 // Test that only a subset of impressions / conversions are deleted with
 // multiple impressions per conversion, if only a subset of impressions match.
@@ -850,11 +846,12 @@ TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
   EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 
-  ConversionReport expected_report = GetExpectedReport(impression, conversion);
+  const ConversionReport expected_report =
+      GetExpectedReport(impression, conversion);
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(base::Time::Max());
-  EXPECT_TRUE(ReportsEqual({expected_report, expected_report}, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report, expected_report));
 }
 
 TEST_F(ConversionStorageTest,
@@ -909,7 +906,7 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({}, actual_reports));
+  EXPECT_THAT(actual_reports, IsEmpty());
 }
 
 TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
@@ -943,7 +940,7 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
 }
 
 TEST_F(ConversionStorageTest,
@@ -966,7 +963,7 @@ TEST_F(ConversionStorageTest,
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({}, actual_reports));
+  EXPECT_THAT(actual_reports, IsEmpty());
 }
 
 TEST_F(ConversionStorageTest,
@@ -1214,7 +1211,7 @@ TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
 
   EXPECT_TRUE(storage()->GetActiveImpressions().empty());
 
@@ -1224,7 +1221,7 @@ TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
       storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   actual_reports = storage()->GetConversionsToReport(clock()->Now());
-  EXPECT_TRUE(ReportsEqual({expected_report}, actual_reports));
+  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
 }
 
 }  // namespace content

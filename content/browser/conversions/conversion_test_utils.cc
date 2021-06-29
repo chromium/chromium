@@ -300,10 +300,9 @@ StorableConversion ConversionBuilder::Build() const {
                             reporting_origin_, event_source_trigger_data_);
 }
 
-// Custom comparator for StorableImpressions that does not take impression id's
+// Custom comparator for StorableImpressions that does not take impression IDs
 // into account.
-testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
-                                          const StorableImpression& actual) {
+bool operator==(const StorableImpression& a, const StorableImpression& b) {
   const auto tie = [](const StorableImpression& impression) {
     return std::make_tuple(
         impression.impression_data(), impression.impression_origin(),
@@ -311,68 +310,26 @@ testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
         impression.impression_time(), impression.expiry_time(),
         impression.source_type(), impression.priority());
   };
-
-  if (tie(expected) != tie(actual)) {
-    return testing::AssertionFailure();
-  }
-  return testing::AssertionSuccess();
+  return tie(a) == tie(b);
 }
 
 // Custom comparator for comparing two vectors of conversion reports. Does not
-// compare impression and conversion id's as they are set by the underlying
+// compare impression and conversion IDs as they are set by the underlying
 // sqlite db and should not be tested.
-testing::AssertionResult ReportsEqual(
-    const std::vector<ConversionReport>& expected,
-    const std::vector<ConversionReport>& actual) {
+bool operator==(const ConversionReport& a, const ConversionReport& b) {
   const auto tie = [](const ConversionReport& conversion) {
-    return std::make_tuple(conversion.impression.impression_data(),
-                           conversion.impression.impression_origin(),
-                           conversion.impression.conversion_origin(),
-                           conversion.impression.reporting_origin(),
-                           conversion.impression.impression_time(),
-                           conversion.impression.expiry_time(),
-                           conversion.impression.source_type(),
-                           conversion.impression.priority(),
-                           conversion.conversion_data, conversion.report_time,
-                           conversion.extra_delay);
+    return std::make_tuple(conversion.impression, conversion.conversion_data,
+                           conversion.report_time, conversion.extra_delay);
   };
-
-  if (expected.size() != actual.size())
-    return testing::AssertionFailure() << "Expected length " << expected.size()
-                                       << ", actual: " << actual.size();
-
-  for (size_t i = 0; i < expected.size(); i++) {
-    if (tie(expected[i]) != tie(actual[i])) {
-      return testing::AssertionFailure()
-             << "Expected " << expected[i] << " at index " << i
-             << ", actual: " << actual[i];
-    }
-  }
-
-  return testing::AssertionSuccess();
+  return tie(a) == tie(b);
 }
 
-testing::AssertionResult SentReportInfosEqual(
-    const base::circular_deque<SentReportInfo>& expected,
-    const base::circular_deque<SentReportInfo>& actual) {
+bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
   const auto tie = [](const SentReportInfo& info) {
     return std::make_tuple(info.report_url, info.report_body,
                            info.http_response_code);
   };
-
-  if (expected.size() != actual.size())
-    return testing::AssertionFailure() << "Expected length " << expected.size()
-                                       << ", actual: " << actual.size();
-
-  for (size_t i = 0; i < expected.size(); i++) {
-    if (tie(expected[i]) != tie(actual[i])) {
-      return testing::AssertionFailure()
-             << "Expected " << expected[i] << " at index " << i
-             << ", actual: " << actual[i];
-    }
-  }
-
-  return testing::AssertionSuccess();
+  return tie(a) == tie(b);
 }
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(

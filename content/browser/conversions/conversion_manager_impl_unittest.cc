@@ -34,6 +34,8 @@ namespace content {
 
 namespace {
 
+using ::testing::ElementsAre;
+
 constexpr base::TimeDelta kExpiredReportOffset =
     base::TimeDelta::FromMinutes(2);
 
@@ -183,8 +185,7 @@ TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
   base::RunLoop run_loop;
   auto get_impressions_callback = base::BindLambdaForTesting(
       [&](std::vector<StorableImpression> impressions) {
-        EXPECT_EQ(1u, impressions.size());
-        EXPECT_TRUE(ImpressionsEqual(impression, impressions.back()));
+        EXPECT_THAT(impressions, ElementsAre(impression));
         run_loop.Quit();
       });
   conversion_manager_->GetActiveImpressionsForWebUI(
@@ -229,8 +230,7 @@ TEST_F(ConversionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   base::RunLoop run_loop;
   auto reports_callback =
       base::BindLambdaForTesting([&](std::vector<ConversionReport> reports) {
-        EXPECT_EQ(1u, reports.size());
-        EXPECT_TRUE(ReportsEqual({expected_report}, reports));
+        EXPECT_THAT(reports, ElementsAre(expected_report));
         run_loop.Quit();
       });
   conversion_manager_->GetPendingReportsForWebUI(std::move(reports_callback),
@@ -314,9 +314,8 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
-  EXPECT_TRUE(
-      SentReportInfosEqual({sent_report_info_1, sent_report_info_2},
-                           conversion_manager_->GetSentReportsForWebUI()));
+  EXPECT_THAT(conversion_manager_->GetSentReportsForWebUI(),
+              ElementsAre(sent_report_info_1, sent_report_info_2));
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {
@@ -333,13 +332,10 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {
   }
 
   // Only the last |kMaxSentReportsToStore| should be stored.
-  EXPECT_TRUE(SentReportInfosEqual(
-      {
-          {.http_response_code = 2},
-          {.http_response_code = 3},
-          {.http_response_code = 4},
-      },
-      conversion_manager_->GetSentReportsForWebUI()));
+  EXPECT_THAT(conversion_manager_->GetSentReportsForWebUI(),
+              ElementsAre(SentReportInfo{.http_response_code = 2},
+                          SentReportInfo{.http_response_code = 3},
+                          SentReportInfo{.http_response_code = 4}));
 }
 
 // Add a conversion to storage and reset the manager to mimic a report being

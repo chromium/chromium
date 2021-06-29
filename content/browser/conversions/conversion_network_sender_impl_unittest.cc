@@ -34,6 +34,9 @@ namespace content {
 
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
 const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
 
@@ -100,13 +103,13 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_CallbackFired) {
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
-  EXPECT_TRUE(SentReportInfosEqual(
-      {{
+  EXPECT_THAT(
+      sent_reports_,
+      ElementsAre(SentReportInfo{
           .report_url = GURL(kReportUrl),
           .report_body = R"({"source_event_id":"1","trigger_data":"1"})",
           .http_response_code = 200,
-      }},
-      sent_reports_));
+      }));
 }
 
 TEST_F(ConversionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
@@ -116,7 +119,7 @@ TEST_F(ConversionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
   network_sender_.reset();
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
-  EXPECT_TRUE(SentReportInfosEqual({}, sent_reports_));
+  EXPECT_THAT(sent_reports_, IsEmpty());
 }
 
 TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
@@ -132,13 +135,13 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   // Also verify that the sent callback runs if the request times out.
   // TODO(apaseltiner): Should we propagate the timeout via the SentReportInfo
   // instead of just setting |http_response_code = 0|?
-  EXPECT_TRUE(SentReportInfosEqual(
-      {{
+  EXPECT_THAT(
+      sent_reports_,
+      ElementsAre(SentReportInfo{
           .report_url = GURL(kReportUrl),
           .report_body = R"({"source_event_id":"1","trigger_data":"1"})",
           .http_response_code = 0,
-      }},
-      sent_reports_));
+      }));
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -251,18 +254,18 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
 TEST_F(ConversionNetworkSenderTest, ReportResultsInHttpError_SentCallbackRuns) {
   auto report = GetReport(/*conversion_id=*/1);
   network_sender_->SendReport(report, GetSentCallback());
-  EXPECT_TRUE(SentReportInfosEqual({}, sent_reports_));
+  EXPECT_THAT(sent_reports_, IsEmpty());
 
   // We should run the sent callback even if there is an http error.
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
-  EXPECT_TRUE(SentReportInfosEqual(
-      {{
+  EXPECT_THAT(
+      sent_reports_,
+      ElementsAre(SentReportInfo{
           .report_url = GURL(kReportUrl),
           .report_body = R"({"source_event_id":"1","trigger_data":"1"})",
           .http_response_code = net::HttpStatusCode::HTTP_BAD_REQUEST,
-      }},
-      sent_reports_));
+      }));
 }
 
 TEST_F(ConversionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
