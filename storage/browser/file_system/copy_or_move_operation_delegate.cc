@@ -312,7 +312,7 @@ class SnapshotCopyOrMoveImpl
     // validation.
     if (!validator_) {
       // No validation is needed.
-      RunAfterPostWriteValidation(std::move(callback), error);
+      RunAfterPostWriteValidation(std::move(callback), base::File::FILE_OK);
       return;
     }
 
@@ -634,7 +634,7 @@ class StreamCopyOrMoveImpl
 
     if (error != base::File::FILE_OK ||
         operation_type_ == CopyOrMoveOperationDelegate::OPERATION_COPY) {
-      DidEndCopy(std::move(callback), error);
+      DidEndCopy(std::move(callback), base::File::FILE_OK);
       return;
     }
 
