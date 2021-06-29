@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.signin.SigninHelperProvider;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -424,6 +425,10 @@ public class ChromeBrowserInitializer {
             @Override
             public void onActivityStateChange(Activity activity, int newState) {
                 if (newState == ActivityState.CREATED || newState == ActivityState.DESTROYED) {
+                    // When the app locale is overridden a change in system locale will not effect
+                    // Chrome's UI language. There is race condition where the initial locale may
+                    // not equal the overridden default locale (https://crbug.com/1224756).
+                    if (GlobalAppLocaleController.getInstance().isOverridden()) return;
                     // Android destroys Activities at some point after a locale change, but doesn't
                     // kill the process.  This can lead to a bug where Chrome is halfway RTL, where
                     // stale natively-loaded resources are not reloaded (http://crbug.com/552618).
