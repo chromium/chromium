@@ -1064,7 +1064,7 @@ bool AutocompleteMatch::IsTrivialAutocompletion() const {
 bool AutocompleteMatch::SupportsDeletion() const {
   return deletable ||
          std::any_of(duplicate_matches.begin(), duplicate_matches.end(),
-                     [](auto m) { return m.deletable; });
+                     [](const auto& m) { return m.deletable; });
 }
 
 AutocompleteMatch
