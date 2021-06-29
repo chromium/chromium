@@ -6,8 +6,6 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-// <include src="components/display_manager_types.js">
-
 // TODO(xiyuan): Find a better to share those constants.
 /** @const */ var SCREEN_WELCOME = 'connect';
 /** @const */ var SCREEN_OOBE_NETWORK = 'network-selection';
