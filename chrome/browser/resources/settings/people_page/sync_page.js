@@ -204,15 +204,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
             'syncPrefs.explicitPassphraseTime)',
       },
-
-      /**
-       * TODO: The following boolean is not hooked up anywhere and seems like a
-       * bug introduced at
-       * https://chromium-review.googlesource.com/c/chromium/src/+/2106092.
-       * Investigate and remove?
-       * @private {boolean}
-       */
-      creatingNewPassphrase_: Boolean,
     };
   }
 
@@ -505,15 +496,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   handleSyncPrefsChanged_(syncPrefs) {
     this.syncPrefs = syncPrefs;
     this.pageStatus_ = PageStatus.CONFIGURE;
-
-    // Hide the new passphrase box if (a) full data encryption is enabled,
-    // (b) encrypting all data is not allowed (so far, only applies to
-    // supervised accounts), or (c) the user is a supervised account.
-    if (this.syncPrefs.encryptAllData ||
-        !this.syncPrefs.customPassphraseAllowed ||
-        (this.syncStatus && this.syncStatus.supervisedUser)) {
-      this.creatingNewPassphrase_ = false;
-    }
   }
 
   /** @private */
