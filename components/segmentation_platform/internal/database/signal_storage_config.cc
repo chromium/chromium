@@ -84,9 +84,9 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
   // been collected long enough.
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     const proto::Feature& feature = model_metadata.features(i);
-    // Skip the signals that has length set to 0. These ones are only for
+    // Skip the signals that has bucket_count set to 0. These ones are only for
     // collection purposes and hence don't get used in model evaluation.
-    if (feature.has_length() && feature.length() == 0)
+    if (feature.has_bucket_count() && feature.bucket_count() == 0)
       continue;
 
     auto name_hash = metadata_utils::GetNameHashForFeature(feature);

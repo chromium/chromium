@@ -59,18 +59,107 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
   proto::Feature feature;
   EXPECT_EQ(metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
             metadata_utils::ValidateMetadataFeature(feature));
-  auto* user_action = feature.mutable_user_action();
-  EXPECT_EQ(metadata_utils::ValidationResult::NAME_HASH_NOT_FOUND,
+
+  feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
+  EXPECT_EQ(metadata_utils::ValidationResult::SIGNAL_TYPE_INVALID,
             metadata_utils::ValidateMetadataFeature(feature));
-  user_action->set_user_action_hash(123);
-  EXPECT_EQ(metadata_utils::ValidationResult::AGGREGATION_NOT_FOUND,
+
+  // name not required for USER_ACTION.
+  feature.set_type(proto::SignalType::USER_ACTION);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_NAME_HASH_NOT_FOUND,
             metadata_utils::ValidateMetadataFeature(feature));
-  feature.set_aggregation(proto::Aggregation::SUM_COUNT);
-  EXPECT_EQ(metadata_utils::ValidationResult::LENGTH_NOT_FOUND,
+
+  feature.set_type(proto::SignalType::HISTOGRAM_ENUM);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_NAME_NOT_FOUND,
             metadata_utils::ValidateMetadataFeature(feature));
-  feature.set_length(456);
-  EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+
+  feature.set_type(proto::SignalType::HISTOGRAM_VALUE);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_NAME_NOT_FOUND,
             metadata_utils::ValidateMetadataFeature(feature));
+
+  feature.set_name("test name");
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_NAME_HASH_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+
+  feature.set_name_hash(123);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_AGGREGATION_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+
+  feature.set_aggregation(proto::Aggregation::COUNT);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_BUCKET_COUNT_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+
+  feature.set_bucket_count(456);
+  EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_NOT_FOUND,
+            metadata_utils::ValidateMetadataFeature(feature));
+
+  std::vector<proto::Aggregation> tensor_length_1 = {
+      proto::Aggregation::COUNT,
+      proto::Aggregation::COUNT_BOOLEAN,
+      proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT,
+      proto::Aggregation::SUM,
+      proto::Aggregation::SUM_BOOLEAN,
+      proto::Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT,
+  };
+  std::vector<proto::Aggregation> tensor_length_bucket_count = {
+      proto::Aggregation::BUCKETED_COUNT,
+      proto::Aggregation::BUCKETED_COUNT_BOOLEAN,
+      proto::Aggregation::BUCKETED_CUMULATIVE_COUNT,
+      proto::Aggregation::BUCKETED_SUM,
+      proto::Aggregation::BUCKETED_SUM_BOOLEAN,
+      proto::Aggregation::BUCKETED_CUMULATIVE_SUM,
+  };
+
+  for (auto aggregation : tensor_length_1) {
+    feature.set_aggregation(aggregation);
+
+    // If bucket count is 0, do not use for output, i.e. tensor_length should be
+    // 0.
+    feature.set_bucket_count(0);
+    feature.set_tensor_length(1);
+    EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_INVALID,
+              metadata_utils::ValidateMetadataFeature(feature));
+    feature.set_tensor_length(0);
+    EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+              metadata_utils::ValidateMetadataFeature(feature));
+
+    // Tensor length should otherwise always be 1 for this aggregation type.
+    feature.set_bucket_count(456);
+    feature.set_tensor_length(10);
+    EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_INVALID,
+              metadata_utils::ValidateMetadataFeature(feature));
+
+    feature.set_bucket_count(456);
+    feature.set_tensor_length(1);
+    EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+              metadata_utils::ValidateMetadataFeature(feature));
+  }
+
+  for (auto aggregation : tensor_length_bucket_count) {
+    feature.set_aggregation(aggregation);
+
+    // If bucket count is 0, do not use for output, i.e. tensor_length should be
+    // 0.
+    feature.set_bucket_count(0);
+    feature.set_tensor_length(1);
+    EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_INVALID,
+              metadata_utils::ValidateMetadataFeature(feature));
+    feature.set_tensor_length(0);
+    EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+              metadata_utils::ValidateMetadataFeature(feature));
+
+    // Tensor length should otherwise always be equal to bucket_count for this
+    // aggregation type.
+    feature.set_bucket_count(456);
+    feature.set_tensor_length(1);
+    EXPECT_EQ(metadata_utils::ValidationResult::FEATURE_TENSOR_LENGTH_INVALID,
+              metadata_utils::ValidateMetadataFeature(feature));
+
+    feature.set_bucket_count(456);
+    feature.set_tensor_length(456);
+    EXPECT_EQ(metadata_utils::ValidationResult::VALIDATION_SUCCESS,
+              metadata_utils::ValidateMetadataFeature(feature));
+  }
 }
 
 TEST_F(MetadataUtilsTest, HasFreshResults) {
@@ -148,24 +237,11 @@ TEST_F(MetadataUtilsTest, GetTimeUnit) {
 
 TEST_F(MetadataUtilsTest, GetNameHashForFeature) {
   proto::Feature feature;
-  proto::UserActionFeature* user_action = feature.mutable_user_action();
-  user_action->set_user_action_hash(1);
+  EXPECT_FALSE(metadata_utils::GetNameHashForFeature(feature).has_value());
+  feature.set_name_hash(42);
   auto name_hash = metadata_utils::GetNameHashForFeature(feature);
-  EXPECT_EQ(1u, name_hash.value());
-  feature.clear_user_action();
-
-  proto::HistogramEnumFeature* histogram_enum =
-      feature.mutable_histogram_enum();
-  histogram_enum->set_name_hash(2);
-  name_hash = metadata_utils::GetNameHashForFeature(feature);
-  EXPECT_EQ(2u, name_hash.value());
-  feature.clear_histogram_enum();
-
-  proto::HistogramValueFeature* histogram_value =
-      feature.mutable_histogram_value();
-  histogram_value->set_name_hash(3);
-  name_hash = metadata_utils::GetNameHashForFeature(feature);
-  EXPECT_EQ(3u, name_hash.value());
+  EXPECT_TRUE(name_hash.has_value());
+  EXPECT_EQ(42u, name_hash.value());
 }
 
 TEST_F(MetadataUtilsTest, GetSignalTypeForFeature) {
@@ -173,22 +249,19 @@ TEST_F(MetadataUtilsTest, GetSignalTypeForFeature) {
   EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
             metadata_utils::GetSignalTypeForFeature(feature));
 
-  proto::UserActionFeature* user_action = feature.mutable_user_action();
-  user_action->set_user_action_hash(1);
+  feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
+  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
+            metadata_utils::GetSignalTypeForFeature(feature));
+
+  feature.set_type(proto::SignalType::USER_ACTION);
   EXPECT_EQ(proto::SignalType::USER_ACTION,
             metadata_utils::GetSignalTypeForFeature(feature));
-  feature.clear_user_action();
 
-  proto::HistogramEnumFeature* histogram_enum =
-      feature.mutable_histogram_enum();
-  histogram_enum->set_name_hash(2);
+  feature.set_type(proto::SignalType::HISTOGRAM_ENUM);
   EXPECT_EQ(proto::SignalType::HISTOGRAM_ENUM,
             metadata_utils::GetSignalTypeForFeature(feature));
-  feature.clear_histogram_enum();
 
-  proto::HistogramValueFeature* histogram_value =
-      feature.mutable_histogram_value();
-  histogram_value->set_name_hash(3);
+  feature.set_type(proto::SignalType::HISTOGRAM_VALUE);
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE,
             metadata_utils::GetSignalTypeForFeature(feature));
 }

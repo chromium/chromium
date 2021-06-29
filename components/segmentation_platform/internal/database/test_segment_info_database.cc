@@ -9,12 +9,37 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
 namespace test {
+
+namespace {
+void AddFeature(proto::SegmentInfo* segment_info,
+                proto::SignalType signal_type,
+                const std::string& name,
+                uint64_t bucket_count,
+                uint64_t tensor_length,
+                proto::Aggregation aggregation,
+                const std::vector<int32_t>& accepted_enum_ids) {
+  proto::SegmentationModelMetadata* metadata =
+      segment_info->mutable_model_metadata();
+  proto::Feature* feature = metadata->add_features();
+  feature->set_type(signal_type);
+  feature->set_name(name);
+  feature->set_name_hash(base::HashMetricName(name));
+  feature->set_bucket_count(bucket_count);
+  feature->set_tensor_length(tensor_length);
+  feature->set_aggregation(aggregation);
+
+  for (int32_t accepted_enum_id : accepted_enum_ids)
+    feature->add_enum_ids(accepted_enum_id);
+}
+}  // namespace
 
 TestSegmentInfoDatabase::TestSegmentInfoDatabase()
     : SegmentInfoDatabase(nullptr) {}
@@ -79,52 +104,36 @@ void TestSegmentInfoDatabase::SaveSegmentResult(OptimizationTarget segment_id,
 
 void TestSegmentInfoDatabase::AddUserActionFeature(
     OptimizationTarget segment_id,
-    const std::string& user_action_name,
-    int64_t length,
+    const std::string& name,
+    uint64_t bucket_count,
+    uint64_t tensor_length,
     proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
-  proto::Feature* feature = metadata->add_features();
-  proto::UserActionFeature* user_action = feature->mutable_user_action();
-  user_action->set_user_action_hash(base::HashMetricName(user_action_name));
-  feature->set_length(length);
-  feature->set_aggregation(aggregation);
+  AddFeature(info, proto::SignalType::USER_ACTION, name, bucket_count,
+             tensor_length, aggregation, {});
 }
 
 void TestSegmentInfoDatabase::AddHistogramValueFeature(
     OptimizationTarget segment_id,
-    const std::string& histogram_name,
-    int64_t length,
+    const std::string& name,
+    uint64_t bucket_count,
+    uint64_t tensor_length,
     proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
-  proto::Feature* feature = metadata->add_features();
-  proto::HistogramValueFeature* histogram_value =
-      feature->mutable_histogram_value();
-  histogram_value->set_name(histogram_name);
-  histogram_value->set_name_hash(base::HashMetricName(histogram_name));
-  feature->set_length(length);
-  feature->set_aggregation(aggregation);
+  AddFeature(info, proto::SignalType::HISTOGRAM_VALUE, name, bucket_count,
+             tensor_length, aggregation, {});
 }
 
 void TestSegmentInfoDatabase::AddHistogramEnumFeature(
     OptimizationTarget segment_id,
-    const std::string& histogram_name,
-    int64_t length,
+    const std::string& name,
+    uint64_t bucket_count,
+    uint64_t tensor_length,
     proto::Aggregation aggregation,
     const std::vector<int32_t>& accepted_enum_ids) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
-  proto::Feature* feature = metadata->add_features();
-  proto::HistogramEnumFeature* histogram_enum =
-      feature->mutable_histogram_enum();
-  histogram_enum->set_name(histogram_name);
-  histogram_enum->set_name_hash(base::HashMetricName(histogram_name));
-  for (int32_t accepted_enum_id : accepted_enum_ids)
-    histogram_enum->add_enum_ids(accepted_enum_id);
-
-  feature->set_length(length);
-  feature->set_aggregation(aggregation);
+  AddFeature(info, proto::SignalType::HISTOGRAM_ENUM, name, bucket_count,
+             tensor_length, aggregation, accepted_enum_ids);
 }
 
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
@@ -155,7 +164,7 @@ void TestSegmentInfoDatabase::AddDiscreteMapping(
 }
 
 void TestSegmentInfoDatabase::SetBucketDuration(OptimizationTarget segment_id,
-                                                int64_t bucket_duration,
+                                                uint64_t bucket_duration,
                                                 proto::TimeUnit time_unit) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   info->mutable_model_metadata()->set_bucket_duration(bucket_duration);

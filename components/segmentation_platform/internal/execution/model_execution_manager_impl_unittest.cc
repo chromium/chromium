@@ -60,7 +60,7 @@ class MockFeatureAggregator : public FeatureAggregator {
               Process,
               (proto::SignalType signal_type,
                proto::Aggregation aggregation,
-               uint64_t length,
+               uint64_t bucket_count,
                const base::Time& end_time,
                const base::TimeDelta& bucket_duration,
                const Samples& samples),
@@ -138,8 +138,8 @@ class ModelExecutionManagerTest : public testing::Test {
     return *(*model_handlers_.find(segment_id)).second;
   }
 
-  base::Time StartTime(base::TimeDelta bucket_duration, int64_t length) {
-    return clock_.Now() - length * bucket_duration;
+  base::Time StartTime(base::TimeDelta bucket_duration, int64_t bucket_count) {
+    return clock_.Now() - bucket_duration * bucket_count;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -185,8 +185,8 @@ TEST_F(ModelExecutionManagerTest, SingleUserAction) {
 
   // Set up a single user action feature.
   std::string user_action_name_1 = "some_action_1";
-  segment_database_->AddUserActionFeature(segment_id, user_action_name_1, 2,
-                                          proto::Aggregation::SUM_COUNT);
+  segment_database_->AddUserActionFeature(segment_id, user_action_name_1, 2, 1,
+                                          proto::Aggregation::COUNT);
 
   // When the particular user action is looked up with the correct start time,
   // end time, and aggregation type, return 3 samples.
@@ -202,10 +202,9 @@ TEST_F(ModelExecutionManagerTest, SingleUserAction) {
       .WillOnce(RunOnceCallback<4>(samples));
 
   // After retrieving the samples, they should be processed and aggregated.
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION, proto::Aggregation::SUM_COUNT, 2,
-              clock_.Now(), bucket_duration, samples))
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT,
+                      2, clock_.Now(), bucket_duration, samples))
       .WillOnce(Return(std::vector<float>{3}));
 
   // The next step should be to execute the model.
@@ -243,14 +242,14 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
 
   // Set up 3 metadata feature, one of each signal type.
   std::string user_action_name = "some_user_action";
-  segment_database_->AddUserActionFeature(segment_id, user_action_name, 2,
-                                          proto::Aggregation::SUM_COUNT);
+  segment_database_->AddUserActionFeature(segment_id, user_action_name, 2, 1,
+                                          proto::Aggregation::COUNT);
   std::string histogram_value_name = "some_histogram_value";
-  segment_database_->AddHistogramValueFeature(
-      segment_id, histogram_value_name, 3, proto::Aggregation::SUM_VALUES);
+  segment_database_->AddHistogramValueFeature(segment_id, histogram_value_name,
+                                              3, 1, proto::Aggregation::SUM);
   std::string histogram_enum_name = "some_histogram_enum";
   segment_database_->AddHistogramEnumFeature(segment_id, histogram_enum_name, 4,
-                                             proto::Aggregation::SUM_COUNT, {});
+                                             1, proto::Aggregation::COUNT, {});
 
   // First feature should be the user action.
   Samples user_action_samples{
@@ -263,10 +262,9 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
                          base::HashMetricName(user_action_name),
                          StartTime(bucket_duration, 2), clock_.Now(), _))
       .WillOnce(RunOnceCallback<4>(user_action_samples));
-  EXPECT_CALL(
-      *feature_aggregator_,
-      Process(proto::SignalType::USER_ACTION, proto::Aggregation::SUM_COUNT, 2,
-              clock_.Now(), bucket_duration, user_action_samples))
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT,
+                      2, clock_.Now(), bucket_duration, user_action_samples))
       .WillOnce(Return(std::vector<float>{3}));
 
   // Second feature should be the value histogram.
@@ -280,10 +278,10 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
                          base::HashMetricName(histogram_value_name),
                          StartTime(bucket_duration, 3), clock_.Now(), _))
       .WillOnce(RunOnceCallback<4>(histogram_value_samples));
-  EXPECT_CALL(*feature_aggregator_,
-              Process(proto::SignalType::HISTOGRAM_VALUE,
-                      proto::Aggregation::SUM_VALUES, 3, clock_.Now(),
-                      bucket_duration, histogram_value_samples))
+  EXPECT_CALL(
+      *feature_aggregator_,
+      Process(proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM, 3,
+              clock_.Now(), bucket_duration, histogram_value_samples))
       .WillOnce(Return(std::vector<float>{6}));
 
   // Third feature should be the value histogram.
@@ -300,8 +298,8 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
       .WillOnce(RunOnceCallback<4>(histogram_enum_samples));
   EXPECT_CALL(
       *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::SUM_COUNT,
-              4, clock_.Now(), bucket_duration, histogram_enum_samples))
+      Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::COUNT, 4,
+              clock_.Now(), bucket_duration, histogram_enum_samples))
       .WillOnce(Return(std::vector<float>{4}));
 
   // The input tensor should contain all three values: 3, 6, and 4.
@@ -309,6 +307,77 @@ TEST_F(ModelExecutionManagerTest, MultipleFeatures) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(FindHandler(segment_id),
               ExecuteModelWithInput(_, std::vector<float>{3, 6, 4}))
+      .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
+
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
+}
+
+TEST_F(ModelExecutionManagerTest, SkipCollectionOnlyFeatures) {
+  auto segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  CreateModelExecutionManager({segment_id});
+
+  // Initialize with required metadata.
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+  base::TimeDelta bucket_duration = base::TimeDelta::FromHours(3);
+
+  // Set up 3 metadata feature, one of each signal type.
+  std::string collected_user_action = "some_user_action";
+  segment_database_->AddUserActionFeature(segment_id, collected_user_action, 1,
+                                          1, proto::Aggregation::COUNT);
+  std::string no_collection_user_action = "no_collection_user_action";
+  segment_database_->AddUserActionFeature(segment_id, no_collection_user_action,
+                                          0, 0, proto::Aggregation::SUM);
+  std::string no_collection_histogram_value = "no_collection_histogram_value";
+  segment_database_->AddHistogramValueFeature(
+      segment_id, no_collection_histogram_value, 0, 0, proto::Aggregation::SUM);
+  std::string no_collection_histogram_enum = "no_collection_histogram_enum";
+  segment_database_->AddHistogramEnumFeature(segment_id,
+                                             no_collection_histogram_enum, 0, 0,
+                                             proto::Aggregation::SUM, {});
+  std::string collected_histogram_value = "collected_histogram_value";
+  segment_database_->AddHistogramValueFeature(
+      segment_id, collected_histogram_value, 1, 1, proto::Aggregation::SUM);
+
+  // The first feature in use should be the very first feature.
+  Samples user_action_samples{
+      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), absl::nullopt},
+  };
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::USER_ACTION,
+                         base::HashMetricName(collected_user_action),
+                         StartTime(bucket_duration, 1), clock_.Now(), _))
+      .WillOnce(RunOnceCallback<4>(user_action_samples));
+  EXPECT_CALL(*feature_aggregator_,
+              Process(proto::SignalType::USER_ACTION, proto::Aggregation::COUNT,
+                      1, clock_.Now(), bucket_duration, user_action_samples))
+      .WillOnce(Return(std::vector<float>{3}));
+
+  // The three features in the middle should all be ignored, so the next one
+  // should be the last feature.
+  Samples histogram_value_samples{
+      {clock_.Now(), 1},
+      {clock_.Now(), 2},
+      {clock_.Now(), 3},
+  };
+  EXPECT_CALL(*signal_database_,
+              GetSamples(proto::SignalType::HISTOGRAM_VALUE,
+                         base::HashMetricName(collected_histogram_value),
+                         StartTime(bucket_duration, 1), clock_.Now(), _))
+      .WillOnce(RunOnceCallback<4>(histogram_value_samples));
+  EXPECT_CALL(
+      *feature_aggregator_,
+      Process(proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM, 1,
+              clock_.Now(), bucket_duration, histogram_value_samples))
+      .WillOnce(Return(std::vector<float>{6}));
+
+  // The input tensor should contain only the first and last feature.
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(FindHandler(segment_id),
+              ExecuteModelWithInput(_, std::vector<float>{3, 6}))
       .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
 
   ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::SUCCESS));
@@ -327,7 +396,7 @@ TEST_F(ModelExecutionManagerTest, FilteredEnumSamples) {
   std::string histogram_enum_name = "some_histogram_enum";
   std::vector<int32_t> accepted_enum_ids = {2, 4};
   segment_database_->AddHistogramEnumFeature(segment_id, histogram_enum_name, 4,
-                                             proto::Aggregation::SUM_COUNT,
+                                             1, proto::Aggregation::COUNT,
                                              accepted_enum_ids);
 
   // When the particular enum histogram is looked up with the correct start
@@ -352,8 +421,8 @@ TEST_F(ModelExecutionManagerTest, FilteredEnumSamples) {
   // Only filtered_enum_samples should be processed.
   EXPECT_CALL(
       *feature_aggregator_,
-      Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::SUM_COUNT,
-              4, clock_.Now(), bucket_duration, filtered_enum_samples))
+      Process(proto::SignalType::HISTOGRAM_ENUM, proto::Aggregation::COUNT, 4,
+              clock_.Now(), bucket_duration, filtered_enum_samples))
       .WillOnce(Return(std::vector<float>{2}));
 
   // The input tensor should contain a single value.

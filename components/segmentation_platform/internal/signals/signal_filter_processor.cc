@@ -39,22 +39,19 @@ void SignalFilterProcessor::FilterSignals(
     const auto& metadata = segment_info.model_metadata();
     for (int i = 0; i < metadata.features_size(); i++) {
       const auto& feature = metadata.features(i);
-      if (feature.has_user_action() &&
-          feature.user_action().has_user_action_hash()) {
-        user_actions.insert(feature.user_action().user_action_hash());
+      if (feature.has_type() &&
+          feature.type() == proto::SignalType::USER_ACTION &&
+          feature.has_name_hash()) {
+        user_actions.insert(feature.name_hash());
         continue;
       }
 
-      if (feature.has_histogram_value() &&
-          feature.histogram_value().has_name()) {
-        histograms.insert(std::make_pair(feature.histogram_value().name(),
-                                         proto::SignalType::HISTOGRAM_VALUE));
+      if (feature.has_type() &&
+          (feature.type() == proto::SignalType::HISTOGRAM_VALUE ||
+           feature.type() == proto::SignalType::HISTOGRAM_ENUM) &&
+          feature.has_name()) {
+        histograms.insert(std::make_pair(feature.name(), feature.type()));
         continue;
-      }
-
-      if (feature.has_histogram_enum() && feature.histogram_enum().has_name()) {
-        histograms.insert(std::make_pair(feature.histogram_enum().name(),
-                                         proto::SignalType::HISTOGRAM_ENUM));
       }
 
       // TODO(shaktisahu): We can filter out enum values as an optimization

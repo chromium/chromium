@@ -41,7 +41,7 @@ TEST_F(FeatureAggregatorImplTest, SumCountAggregation) {
   };
 
   std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_COUNT, 1u,
+      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::COUNT, 1u,
       clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
   // SUM_COUNT always produces a single value.
   EXPECT_EQ(1u, res.size());
@@ -57,7 +57,7 @@ TEST_F(FeatureAggregatorImplTest, SumValuesAggregationHistogram) {
   };
 
   std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_VALUES, 1u,
+      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM, 1u,
       clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
   // SUM_VALUES always produces a single value.
   EXPECT_EQ(1u, res.size());
@@ -73,8 +73,8 @@ TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserAction) {
   };
 
   std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::USER_ACTION, proto::Aggregation::SUM_VALUES, 1u,
-      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
+      proto::SignalType::USER_ACTION, proto::Aggregation::SUM, 1u, clock_.Now(),
+      base::TimeDelta::FromSeconds(10), samples);
   // SUM_VALUES always produces a single value.
   EXPECT_EQ(1u, res.size());
   // We should have summed up to 1+1+1=3.
@@ -89,8 +89,8 @@ TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserActionIgnoresValue) {
   };
 
   std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::USER_ACTION, proto::Aggregation::SUM_VALUES, 1u,
-      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
+      proto::SignalType::USER_ACTION, proto::Aggregation::SUM, 1u, clock_.Now(),
+      base::TimeDelta::FromSeconds(10), samples);
   // SUM_VALUES always produces a single value.
   EXPECT_EQ(1u, res.size());
   // We should have summed up to 1+1+1=3.
