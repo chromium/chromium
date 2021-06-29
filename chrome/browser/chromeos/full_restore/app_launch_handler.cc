@@ -128,8 +128,14 @@ void AppLaunchHandler::LaunchBrowserWhenReady() {
   // launch the browser.
   if (should_restore_ && restore_data_) {
     LaunchBrowser();
+
+    // OS Setting should be launched after browser to have OS setting window in
+    // front.
+    UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
     return;
   }
+
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 
   // If the restore data hasn't been loaded, or the user hasn't chosen to
   // restore, set should_launch_browser_ as true, and wait the restore data
@@ -236,7 +242,6 @@ void AppLaunchHandler::LaunchBrowser() {
       ::switches::kRestoreLastSession);
 
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
-  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
 
 void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
