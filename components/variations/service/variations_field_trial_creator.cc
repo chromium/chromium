@@ -600,7 +600,8 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) const {
   version_info::Channel channel = client_->GetChannelForVariations();
   if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::BETA) {
     return;
   }
 

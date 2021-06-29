@@ -692,8 +692,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, DisableExperiment) {
       .WillByDefault(Return(false));
 
   std::vector<version_info::Channel> channels = {
-      version_info::Channel::BETA, version_info::Channel::STABLE,
-      version_info::Channel::UNKNOWN};
+      version_info::Channel::STABLE, version_info::Channel::UNKNOWN};
   for (const version_info::Channel channel : channels) {
     NiceMock<MockVariationsServiceClient> variations_service_client;
     ON_CALL(variations_service_client, GetChannel())
@@ -791,12 +790,12 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
-       EnableExperimentOnDev_WritePrefsGroup) {
+       EnableExperimentOnBeta_WritePrefsGroup) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
   NiceMock<MockVariationsServiceClient> variations_service_client;
   ON_CALL(variations_service_client, GetChannel())
-      .WillByDefault(Return(version_info::Channel::DEV));
+      .WillByDefault(Return(version_info::Channel::BETA));
 
   // Ensure that variations safe mode is not triggered.
   NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
