@@ -15,14 +15,16 @@ var kWindowRect = {
   'height': 400
 };
 
-var kTestDir = '/extensions/api_test/tabs/capture_visible_tab/common/';
+var kTestDir = '/extensions/api_test/tabs/capture_visible_tab/test_png/';
 var kURLBaseA = 'http://a.com:PORT' + kTestDir;
-var kURLBaseB = 'http://b.com:PORT' + kTestDir;
 
 var whiteImageUrl;
 var textImageUrl;
 
-chrome.test.getConfig(function(config) {
+var scriptUrl =
+    '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+loadScript.then(() => {chrome.test.getConfig(function(config) {
   var fixPort = function(url) {
     return url.replace(/PORT/, config.testServer.port);
   };
@@ -94,7 +96,7 @@ chrome.test.getConfig(function(config) {
     },
 
     function captureVisibleTabChromeExtensionScheme() {
-      var url = chrome.extension.getURL("/common/white.html");
+      var url = chrome.extension.getURL("/white.html");
       createWindow([url], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
           chrome.tabs.getSelected(winId, pass(function(tab) {
@@ -113,5 +115,5 @@ chrome.test.getConfig(function(config) {
       }));
     }
 
-  ]);
+  ])})
 });

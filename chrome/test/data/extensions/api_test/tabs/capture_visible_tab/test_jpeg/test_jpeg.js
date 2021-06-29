@@ -15,15 +15,18 @@ var kWindowRect = {
   'height': 400
 };
 
-var kTestDir = '/extensions/api_test/tabs/capture_visible_tab/common/';
+var kTestDir = '/extensions/api_test/tabs/capture_visible_tab/test_jpeg/';
 var kURLBaseA = 'http://a.com:PORT' + kTestDir;
-var kURLBaseB = 'http://b.com:PORT' + kTestDir;
 
 // Globals used to allow a test to read data from a previous test.
 var blackImageUrl;
 var whiteImageUrl;
 
-chrome.test.getConfig(function(config) {
+const scriptUrl =
+      '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(() => {chrome.test.getConfig(function(config) {
   var fixPort = function(url) {
     return url.replace(/PORT/, config.testServer.port);
   };
@@ -78,7 +81,7 @@ chrome.test.getConfig(function(config) {
     },
 
     function captureVisibleTabChromeExtensionScheme() {
-      var url = chrome.extension.getURL("/common/white.html");
+      var url = chrome.extension.getURL("/white.html");
       createWindow([url], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
           chrome.tabs.getSelected(winId, pass(function(tab) {
@@ -120,5 +123,5 @@ chrome.test.getConfig(function(config) {
       }));
     },
 
-  ]);
+  ])});
 });
