@@ -11,6 +11,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {EntryLocation} from '../../externs/entry_location.js';
@@ -81,10 +82,10 @@ let mockChrome;
  * @type {!TaskHistory}
  */
 const mockTaskHistory = /** @type {!TaskHistory} */ ({
-  getLastExecutedTime: function(id) {
+  getLastExecutedTime: function(descriptor) {
     return 0;
   },
-  recordTaskExecuted: function(id) {},
+  recordTaskExecuted: function(descriptor) {},
 });
 
 /**
@@ -160,7 +161,7 @@ export function setUp() {
       getFileTasks: function(entries, callback) {
         setTimeout(callback.bind(null, [mockTask]), 0);
       },
-      executeTask: function(taskId, entries, onViewFiles) {
+      executeTask: function(descriptor, entries, onViewFiles) {
         onViewFiles('failed');
       },
       sharePathsWithCrostini: function(vmName, entries, persist, callback) {
@@ -423,9 +424,6 @@ export function testOpenTaskPicker(callback) {
  * task execution order should execute.
  */
 export function testOpenWithMostRecentlyExecuted(callback) {
-  const latestTaskId = 'handler-extension-most-recently-executed|app|any';
-  const oldTaskId = 'handler-extension-executed-before|app|any';
-
   const latestTaskDescriptor = {
     appId: 'handler-extension-most-recently-executed',
     taskType: 'app',
@@ -470,22 +468,22 @@ export function testOpenWithMostRecentlyExecuted(callback) {
   };
 
   const taskHistory = /** @type {!TaskHistory} */ ({
-    getLastExecutedTime: function(id) {
-      if (id == oldTaskId) {
+    getLastExecutedTime: function(descriptor) {
+      if (util.descriptorEqual(descriptor, oldTaskDescriptor)) {
         return 10000;
       }
-      if (id == latestTaskId) {
+      if (util.descriptorEqual(descriptor, latestTaskDescriptor)) {
         return 20000;
       }
       return 0;
     },
-    recordTaskExecuted: function(id) {},
+    recordTaskExecuted: function(descriptor) {},
   });
 
   let executedTask = null;
   window.chrome.fileManagerPrivate.executeTask =
-      (taskId, entries, onViewFiles) => {
-        executedTask = taskId;
+      (descriptor, entries, onViewFiles) => {
+        executedTask = descriptor;
         onViewFiles('success');
       };
 
@@ -510,7 +508,7 @@ export function testOpenWithMostRecentlyExecuted(callback) {
             fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
-          assertEquals(latestTaskId, executedTask);
+          assertTrue(util.descriptorEqual(latestTaskDescriptor, executedTask));
           resolve();
         });
   });
@@ -522,7 +520,11 @@ export function testOpenWithMostRecentlyExecuted(callback) {
  * Tests opening a .zip file.
  */
 export function testOpenZipWithZipArchiver(callback) {
-  const zipArchiverTaskId = 'dmboannefpncccogfdikhmhpmdnddgoe|app|open';
+  const zipArchiverDescriptor = {
+    appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
+    taskType: 'app',
+    actionId: 'open',
+  };
 
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
@@ -530,11 +532,7 @@ export function testOpenZipWithZipArchiver(callback) {
             null,
             [
               {
-                descriptor: {
-                  appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-                  taskType: 'app',
-                  actionId: 'open',
-                },
+                descriptor: zipArchiverDescriptor,
                 isDefault: false,
                 isGenericFileHandler: false,
                 title: 'Zip Archiver',
@@ -545,16 +543,16 @@ export function testOpenZipWithZipArchiver(callback) {
 
   // None of the tasks has ever been executed.
   const taskHistory = /** @type {!TaskHistory} */ ({
-    getLastExecutedTime: function(id) {
+    getLastExecutedTime: function(descriptor) {
       return 0;
     },
-    recordTaskExecuted: function(id) {},
+    recordTaskExecuted: function(descriptor) {},
   });
 
   let executedTask = null;
   window.chrome.fileManagerPrivate.executeTask =
-      (taskId, entries, onViewFiles) => {
-        executedTask = taskId;
+      (descriptor, entries, onViewFiles) => {
+        executedTask = descriptor;
         onViewFiles('success');
       };
 
@@ -579,7 +577,7 @@ export function testOpenZipWithZipArchiver(callback) {
             fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
-          assertEquals(zipArchiverTaskId, executedTask);
+          assertTrue(util.descriptorEqual(zipArchiverDescriptor, executedTask));
           resolve();
         });
   });

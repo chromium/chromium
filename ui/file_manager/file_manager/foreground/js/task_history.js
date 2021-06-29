@@ -5,6 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 
 /**
@@ -28,9 +29,10 @@ export class TaskHistory extends EventTarget {
 
   /**
    * Records the timing of task execution.
-   * @param {string} taskId
+   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
    */
-  recordTaskExecuted(taskId) {
+  recordTaskExecuted(descriptor) {
+    const taskId = util.makeTaskID(descriptor);
     this.lastExecutedTime_[taskId] = Date.now();
     this.truncate_();
     this.save_();
@@ -39,10 +41,11 @@ export class TaskHistory extends EventTarget {
   /**
    * Gets the time stamp of last execution of given task. If the record is not
    * found, returns 0.
-   * @param {string} taskId
+   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
    * @return {number}
    */
-  getLastExecutedTime(taskId) {
+  getLastExecutedTime(descriptor) {
+    const taskId = util.makeTaskID(descriptor);
     return this.lastExecutedTime_[taskId] ? this.lastExecutedTime_[taskId] : 0;
   }
 

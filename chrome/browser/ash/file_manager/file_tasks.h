@@ -141,6 +141,7 @@ enum TaskType {
   NUM_TASK_TYPE,
 };
 
+TaskType StringToTaskType(const std::string& str);
 std::string TaskTypeToString(TaskType task_type);
 
 // Describes a task.
@@ -224,7 +225,7 @@ class FullTaskDescriptor {
 // Update the default file handler for the given sets of suffixes and MIME
 // types.
 void UpdateDefaultTask(PrefService* pref_service,
-                       const std::string& task_id,
+                       const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types);
 

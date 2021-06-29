@@ -373,14 +373,14 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
     }, 0);
   };
 
-  const executeTask = (taskId, entries, callback) => {
-    test.util.executedTasks_.push({taskId, entries, callback});
+  const executeTask = (descriptor, entries, callback) => {
+    test.util.executedTasks_.push({descriptor, entries, callback});
   };
 
-  const setDefaultTask = taskId => {
+  const setDefaultTask = descriptor => {
     for (let i = 0; i < taskList.length; i++) {
-      const {appId, taskType, actionId} = taskList[i].descriptor;
-      taskList[i].isDefault = `${appId}|${taskType}|${actionId}` === taskId;
+      taskList[i].isDefault =
+          util.descriptorEqual(taskList[i].descriptor, descriptor);
     }
   };
 
@@ -394,35 +394,55 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
 /**
  * Obtains the list of executed tasks.
  * @param {Window} contentWindow Window to be tested.
- * @return {Array<string>} List of executed task ID.
+ * @return {Array<!chrome.fileManagerPrivate.FileTaskDescriptor>} List of
+ *     executed tasks.
  */
 test.util.sync.getExecutedTasks = contentWindow => {
   if (!test.util.executedTasks_) {
     console.error('Please call overrideTasks() first.');
     return null;
   }
-  return test.util.executedTasks_.map(task => task.taskId);
+  return test.util.executedTasks_.map(task => task.descriptor);
+};
+
+/**
+ * Obtains the list of executed tasks.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     check.
+ * @return {boolean} True if the task was executed.
+ */
+test.util.sync.taskWasExecuted = (contentWindow, descriptor) => {
+  if (!test.util.executedTasks_) {
+    console.error('Please call overrideTasks() first.');
+    return null;
+  }
+  return !!test.util.executedTasks_.find(util.descriptorEqual.bind(descriptor));
 };
 
 /**
  * Invokes an executed task with |responseArgs|.
  * @param {Window} contentWindow Window to be tested.
- * @param {string} taskId the task to be replied to.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     be replied to.
  * @param {Array<Object>} responseArgs the arguments to inoke the callback with.
  */
-test.util.sync.replyExecutedTask = (contentWindow, taskId, responseArgs) => {
-  if (!test.util.executedTasks_) {
-    console.error('Please call overrideTasks() first.');
-    return false;
-  }
-  const found = test.util.executedTasks_.find(task => task.taskId === taskId);
-  if (!found) {
-    console.error(`No task with id ${taskId}`);
-    return false;
-  }
-  found.callback(...responseArgs);
-  return true;
-};
+test.util.sync.replyExecutedTask =
+    (contentWindow, descriptor, responseArgs) => {
+      if (!test.util.executedTasks_) {
+        console.error('Please call overrideTasks() first.');
+        return false;
+      }
+      const found = test.util.executedTasks_.find(
+          task => util.descriptorEqual(task.descriptor, descriptor));
+      if (!found) {
+        const {appId, taskType, actionId} = descriptor;
+        console.error(`No task with id ${appId}|${taskType}|${actionId}`);
+        return false;
+      }
+      found.callback(...responseArgs);
+      return true;
+    };
 
 /**
  * Calls the unload handler for the window.

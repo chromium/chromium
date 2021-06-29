@@ -552,22 +552,27 @@ export class RemoteCallFilesApp extends RemoteCall {
   /**
    * Waits until the given taskId appears in the executed task list.
    * @param {string} appId App window Id.
-   * @param {string} taskId Task ID to watch.
+   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task to
+   *     watch.
    * @param {Array<Object>=} opt_replyArgs arguments to reply to executed task.
    * @return {Promise} Promise to be fulfilled when the task appears in the
    *     executed task list.
    */
-  waitUntilTaskExecutes(appId, taskId, opt_replyArgs) {
+  waitUntilTaskExecutes(appId, descriptor, opt_replyArgs) {
     const caller = getCaller();
     return repeatUntil(async () => {
-      const executedTasks =
-          await this.callRemoteTestUtil('getExecutedTasks', appId, []);
-      if (executedTasks.indexOf(taskId) === -1) {
+      if (!await this.callRemoteTestUtil(
+              'taskWasExecuted', appId, [descriptor])) {
+        const executedTasks =
+            (await this.callRemoteTestUtil('getExecutedTasks', appId, []))
+                .map(
+                    ({appId, taskType, actionId}) =>
+                        `${appId}|${taskType}|${actionId}`);
         return pending(caller, 'Executed task is %j', executedTasks);
       }
       if (opt_replyArgs) {
         await this.callRemoteTestUtil(
-            'replyExecutedTask', appId, [taskId, opt_replyArgs]);
+            'replyExecutedTask', appId, [descriptor, opt_replyArgs]);
       }
     });
   }

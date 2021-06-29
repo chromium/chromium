@@ -1046,23 +1046,23 @@ interface Functions {
   static void cancelDialog();
 
   // Executes file browser task over selected files.
-  // |taskId| The unique identifier of task to execute.
+  // |descriptor| The unique identifier of task to execute.
   // |entries| Array of entries
   // |callback|
   [nocompile]
-  static void executeTask(DOMString taskId,
+  static void executeTask(FileTaskDescriptor descriptor,
                           [instanceof=Entry] object[] entries,
                           ExecuteTaskCallback callback);
 
   // Sets the default task for the supplied MIME types and path extensions.
   // Lists of MIME types and URLs may contain duplicates. Additionally, the
   // list of MIME types can be empty.
-  // |taskId| The unique identifier of task to mark as default.
+  // |descriptor| The unique identifier of task to mark as default.
   // |entries| Array of selected entries to extract path extensions from.
   // |mimeTypes| Array of selected file MIME types.
   // |callback|
   [nocompile]
-  static void setDefaultTask(DOMString taskId,
+  static void setDefaultTask(FileTaskDescriptor descriptor,
                              [instanceof=Entry] object[] entries,
                              DOMString[] mimeTypes,
                              SimpleCallback callback);

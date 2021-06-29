@@ -85,30 +85,31 @@ testcase.sharePathWithCrostini = async () => {
 
 testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const pluginVmAppDescriptor = {
+    appId: 'plugin-vm-app-id',
+    taskType: 'pluginvm',
+    actionId: 'open-with',
+  };
 
   // Override the tasks so the "Open with Plugin VM App" button becomes a
   // dropdown option.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('overrideTasks', appId, [[
-                                              {
-                                                descriptor: {
-                                                  appId: 'text-app-id',
-                                                  taskType: 'app',
-                                                  actionId: 'text',
-                                                },
-                                                title: 'Text',
-                                                verb: 'open_with',
-                                              },
-                                              {
-                                                descriptor: {
-                                                  appId: 'plugin-vm-app-id',
-                                                  taskType: 'pluginvm',
-                                                  actionId: 'open-with',
-                                                },
-                                                title: 'App (Windows)',
-                                                verb: 'open_with',
-                                              }
-                                            ]]));
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [[
+        {
+          descriptor: {
+            appId: 'text-app-id',
+            taskType: 'app',
+            actionId: 'text',
+          },
+          title: 'Text',
+          verb: 'open_with',
+        },
+        {
+          descriptor: pluginVmAppDescriptor,
+          title: 'App (Windows)',
+          verb: 'open_with',
+        }
+      ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.
   await remoteCall.callRemoteTestUtil(
@@ -134,8 +135,7 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
         appOptions.map(el => el.text).indexOf('Open with App (Windows)') + 1})`
   ]);
   await remoteCall.waitUntilTaskExecutes(
-      appId, 'plugin-vm-app-id|pluginvm|open-with',
-      ['failed_plugin_vm_directory_not_shared']);
+      appId, pluginVmAppDescriptor, ['failed_plugin_vm_directory_not_shared']);
   await remoteCall.waitForElement(
       appId, '.cr-dialog-frame:not(#default-task-dialog):not([hidden])');
 
@@ -160,30 +160,31 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
 testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   // Use files outside of MyFiles to show 'copy' rather than 'move'.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  const pluginVmAppDescriptor = {
+    appId: 'plugin-vm-app-id',
+    taskType: 'pluginvm',
+    actionId: 'open-with',
+  };
 
   // Override the tasks so the "Open with Plugin VM App" button becomes a
   // dropdown option.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('overrideTasks', appId, [[
-                                              {
-                                                descriptor: {
-                                                  appId: 'text-app-id',
-                                                  taskType: 'app',
-                                                  actionId: 'text',
-                                                },
-                                                title: 'Text',
-                                                verb: 'open_with',
-                                              },
-                                              {
-                                                descriptor: {
-                                                  appId: 'plugin-vm-app-id',
-                                                  taskType: 'pluginvm',
-                                                  actionId: 'open-with',
-                                                },
-                                                title: 'App (Windows)',
-                                                verb: 'open_with',
-                                              }
-                                            ]]));
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [[
+        {
+          descriptor: {
+            appId: 'text-app-id',
+            taskType: 'app',
+            actionId: 'text',
+          },
+          title: 'Text',
+          verb: 'open_with',
+        },
+        {
+          descriptor: pluginVmAppDescriptor,
+          title: 'App (Windows)',
+          verb: 'open_with',
+        }
+      ]]));
 
   // Right click on 'hello.txt' file, and wait for dialog with 'Open with'.
   await remoteCall.callRemoteTestUtil(
@@ -209,8 +210,7 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
         appOptions.map(el => el.text).indexOf('Open with App (Windows)') + 1})`
   ]);
   await remoteCall.waitUntilTaskExecutes(
-      appId, 'plugin-vm-app-id|pluginvm|open-with',
-      ['failed_plugin_vm_directory_not_shared']);
+      appId, pluginVmAppDescriptor, ['failed_plugin_vm_directory_not_shared']);
   await remoteCall.waitForElement(
       appId, '.cr-dialog-frame:not(#default-task-dialog):not([hidden])');
 

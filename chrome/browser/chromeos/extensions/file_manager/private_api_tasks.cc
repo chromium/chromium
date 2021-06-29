@@ -41,7 +41,7 @@ namespace extensions {
 namespace {
 
 // Error messages.
-const char kInvalidTask[] = "Invalid task: ";
+const char kInvalidTaskType[] = "Invalid task type: ";
 const char kInvalidFileUrl[] = "Invalid file URL";
 
 // Make a set of unique filename suffixes out of the list of file URLs.
@@ -86,10 +86,13 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  file_manager::file_tasks::TaskDescriptor task;
-  if (!file_manager::file_tasks::ParseTaskID(params->task_id, &task)) {
-    return RespondNow(Error(kInvalidTask + params->task_id));
+  file_manager::file_tasks::TaskType task_type =
+      file_manager::file_tasks::StringToTaskType(params->descriptor.task_type);
+  if (task_type == file_manager::file_tasks::TASK_TYPE_UNKNOWN) {
+    return RespondNow(Error(kInvalidTaskType + params->descriptor.task_type));
   }
+  file_manager::file_tasks::TaskDescriptor task(
+      params->descriptor.app_id, task_type, params->descriptor.action_id);
 
   if (params->urls.empty()) {
     return RespondNow(ArgumentList(
@@ -257,8 +260,16 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
     return RespondNow(OneArgument(base::Value(true)));
   }
 
-  file_manager::file_tasks::UpdateDefaultTask(
-      profile->GetPrefs(), params->task_id, suffixes, mime_types);
+  file_manager::file_tasks::TaskType task_type =
+      file_manager::file_tasks::StringToTaskType(params->descriptor.task_type);
+  if (task_type == file_manager::file_tasks::TASK_TYPE_UNKNOWN) {
+    return RespondNow(Error(kInvalidTaskType + params->descriptor.task_type));
+  }
+  file_manager::file_tasks::TaskDescriptor descriptor(
+      params->descriptor.app_id, task_type, params->descriptor.action_id);
+
+  file_manager::file_tasks::UpdateDefaultTask(profile->GetPrefs(), descriptor,
+                                              suffixes, mime_types);
   return RespondNow(NoArguments());
 }
 

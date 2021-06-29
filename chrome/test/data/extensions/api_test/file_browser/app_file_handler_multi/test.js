@@ -184,9 +184,8 @@ function launchWithEntries(isolatedEntries) {
             });
             var taskExecutedPromise = tasksPromise.then(function(task) {
               return new Promise(function(fulfill, reject) {
-                const {appId, taskType, actionId} = task.descriptor;
                 chrome.fileManagerPrivate.executeTask(
-                    `${appId}|${taskType}|${actionId}`, entries,
+                  task.descriptor, entries,
                     function(result) {
                       if (result)
                         fulfill();

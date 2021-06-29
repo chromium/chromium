@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {assertEquals, assertNotReached} from 'chrome://test/chai_assert.js';
+import {assertNotReached} from 'chrome://test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -191,8 +191,10 @@ export function testExecuteEntryTask(callback) {
   reportPromise(
       new Promise(resolve => {
         mockChrome.fileManagerPrivate.executeTask = resolve;
-      }).then(taskId => {
-        assertEquals('handler-extension-id|file|play', taskId);
+      }).then(descriptor => {
+        assert(util.descriptorEqual(
+            {appId: 'handler-extension-id', taskType: 'file', actionId: 'play'},
+            descriptor));
       }),
       callback);
 }

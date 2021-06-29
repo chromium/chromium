@@ -643,27 +643,27 @@ chrome.fileManagerPrivate.logoutUserForReauthentication = function() {};
 chrome.fileManagerPrivate.cancelDialog = function() {};
 
 /**
- * Executes file browser task over selected files. |taskId| The unique
+ * Executes file browser task over selected files. |descriptor| The unique
  * identifier of task to execute. |entries| Array of file entries |callback|
- * @param {string} taskId
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
  * @param {!Array<!Entry>} entries
  * @param {function(!chrome.fileManagerPrivate.TaskResult)} callback |result|
  *     Result of the task execution.
  */
-chrome.fileManagerPrivate.executeTask = function(taskId, entries, callback) {};
+chrome.fileManagerPrivate.executeTask = function(descriptor, entries, callback) {};
 
 /**
- * Sets the default task for the supplied MIME types and path extensions.
- * Lists of MIME types and entries may contain duplicates.
- * |taskId| The unique identifier of task to mark as default. |entries| Array
- * of selected file entries to extract path extensions from. |mimeTypes| Array
- * of selected file MIME types. |callback|
- * @param {string} taskId
+ * Sets the default task for the supplied MIME types and path extensions. Lists
+ * of MIME types and entries may contain duplicates. |descriptor| The unique
+ * identifier of task to mark as default. |entries| Array of selected file
+ * entries to extract path extensions from. |mimeTypes| Array of selected file
+ * MIME types. |callback|
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
  * @param {!Array<!Entry>} entries
  * @param {!Array<string>} mimeTypes
  * @param {!function()} callback Callback that does not take arguments.
  */
-chrome.fileManagerPrivate.setDefaultTask = function(taskId, entries, mimeTypes,
+chrome.fileManagerPrivate.setDefaultTask = function(descriptor, entries, mimeTypes,
     callback) {};
 
 /**

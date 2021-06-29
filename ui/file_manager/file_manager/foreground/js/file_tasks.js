@@ -155,7 +155,7 @@ export class FileTasks {
               constants.DEFAULT_CROSTINI_VM, entries[0],
               false /* persist */))) {
       tasks = tasks.filter(
-          task => !FileTasks.descriptorEqual(
+          task => !util.descriptorEqual(
               task.descriptor,
               FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
@@ -164,9 +164,9 @@ export class FileTasks {
     // 'Zip selection' context menu button
     tasks = tasks.filter(
         task =>
-            !FileTasks.descriptorEqual(
+            !util.descriptorEqual(
                 task.descriptor, FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR) &&
-            !FileTasks.descriptorEqual(
+            !util.descriptorEqual(
                 task.descriptor,
                 FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR));
 
@@ -176,8 +176,8 @@ export class FileTasks {
     const toExclude = util.isZipMountEnabled() ?
         FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR :
         FileTasks.FILES_OPEN_ZIP_TASK_DESCRIPTOR;
-    tasks = tasks.filter(
-        task => !FileTasks.descriptorEqual(task.descriptor, toExclude));
+    tasks =
+        tasks.filter(task => !util.descriptorEqual(task.descriptor, toExclude));
 
     tasks = FileTasks.annotateTasks_(tasks, entries);
 
@@ -311,12 +311,11 @@ export class FileTasks {
    */
   static recordZipHandlerUMA_(descriptor) {
     if (FileTasks.UMA_ZIP_HANDLER_TASK_DESCRIPTORS_.some(
-            zipDescriptor =>
-                FileTasks.descriptorEqual(zipDescriptor, descriptor))) {
+            zipDescriptor => util.descriptorEqual(zipDescriptor, descriptor))) {
       metrics.recordEnum(
-          'ZipFileTask', FileTasks.makeTaskID(descriptor),
+          'ZipFileTask', util.makeTaskID(descriptor),
           FileTasks.UMA_ZIP_HANDLER_TASK_DESCRIPTORS_.map(
-              desc => FileTasks.makeTaskID(desc)));
+              desc => util.makeTaskID(desc)));
     }
   }
 
@@ -646,12 +645,13 @@ export class FileTasks {
     };
 
     this.checkAvailability_(() => {
-      const taskId = FileTasks.makeTaskID({
+      const descriptor = {
         appId: chrome.runtime.id,
         taskType: 'file',
         actionId: 'view-in-browser'
-      });
-      chrome.fileManagerPrivate.executeTask(taskId, this.entries_, onViewFiles);
+      };
+      chrome.fileManagerPrivate.executeTask(
+          descriptor, this.entries_, onViewFiles);
     });
   }
 
@@ -709,8 +709,7 @@ export class FileTasks {
     };
 
     this.checkAvailability_(() => {
-      this.taskHistory_.recordTaskExecuted(
-          FileTasks.makeTaskID(task.descriptor));
+      this.taskHistory_.recordTaskExecuted(task.descriptor);
       let msg;
       if (this.entries_.length === 1) {
         msg = strf('OPEN_A11Y', this.entries_[0].name);
@@ -723,8 +722,7 @@ export class FileTasks {
       } else {
         FileTasks.recordZipHandlerUMA_(task.descriptor);
         chrome.fileManagerPrivate.executeTask(
-            FileTasks.makeTaskID(task.descriptor), this.entries_,
-            onFileManagerPrivateExecuteTask);
+            task.descriptor, this.entries_, onFileManagerPrivateExecuteTask);
       }
     });
   }
@@ -848,7 +846,7 @@ export class FileTasks {
 
     console.error(
         'The specified task is not a valid internal task: ' +
-        FileTasks.makeTaskID(descriptor));
+        util.makeTaskID(descriptor));
   }
 
   /**
@@ -1189,10 +1187,8 @@ export class FileTasks {
       }
 
       // Sort by last-executed time.
-      const aTime = this.taskHistory_.getLastExecutedTime(
-          FileTasks.makeTaskID(a.task.descriptor));
-      const bTime = this.taskHistory_.getLastExecutedTime(
-          FileTasks.makeTaskID(b.task.descriptor));
+      const aTime = this.taskHistory_.getLastExecutedTime(a.task.descriptor);
+      const bTime = this.taskHistory_.getLastExecutedTime(b.task.descriptor);
       if (aTime != bTime) {
         return bTime - aTime;
       }
@@ -1251,7 +1247,7 @@ export class FileTasks {
     let defaultIdx = 0;
     if (this.defaultTask_) {
       for (let j = 0; j < items.length; j++) {
-        if (FileTasks.descriptorEqual(
+        if (util.descriptorEqual(
                 items[j].task.descriptor, this.defaultTask_.descriptor)) {
           defaultIdx = j;
         }
@@ -1290,8 +1286,7 @@ export class FileTasks {
     // 2. Most recently executed or sole non-generic task.
     const latest = nonGenericTasks[0];
     if (nonGenericTasks.length == 1 ||
-        taskHistory.getLastExecutedTime(
-            FileTasks.makeTaskID(latest.descriptor))) {
+        taskHistory.getLastExecutedTime(latest.descriptor)) {
       return latest;
     }
 
@@ -1316,27 +1311,6 @@ export class FileTasks {
     });
   }
 }
-
-/**
- * Create a taskID which is a string unique-ID for a task. This is temporary
- * and will be removed once we use task.descriptor everywhere instead.
- * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
- * @returns {string}
- */
-FileTasks.makeTaskID = function({appId, taskType, actionId}) {
-  return `${appId}|${taskType}|${actionId}`;
-};
-
-/**
- *
- * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} left
- * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} right
- * @returns {boolean}
- */
-FileTasks.descriptorEqual = function(left, right) {
-  return left.appId === right.appId && left.taskType === right.taskType &&
-      left.actionId === right.actionId;
-};
 
 /**
  * The task descriptor of 'Install Linux package'.

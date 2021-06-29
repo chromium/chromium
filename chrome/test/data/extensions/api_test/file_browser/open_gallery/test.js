@@ -39,12 +39,16 @@ function getFileEntry(volumeType, path) {
 function openGallery(entry, expectedResult) {
   // "jhdjimmaggjajfjphpljagpgkidjilnj" is the MediaApp app id. This task id is
   // hard-coded in the Camera component app.
-  const id = 'jhdjimmaggjajfjphpljagpgkidjilnj|web|open';
+  const descriptor = {
+    appId: 'jhdjimmaggjajfjphpljagpgkidjilnj',
+    taskType: 'web',
+    actionId: 'open'
+  };
   function taskCallback(taskResult) {
     chrome.test.assertEq(expectedResult, taskResult);
     chrome.test.succeed();
   }
-  chrome.fileManagerPrivate.executeTask(id, [entry], taskCallback);
+  chrome.fileManagerPrivate.executeTask(descriptor, [entry], taskCallback);
 }
 
 function openGalleryExpectOpened(entry) {

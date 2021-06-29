@@ -95,24 +95,6 @@ const char kWebAppTaskType[] = "web";
 const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
 const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
 
-
-// Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
-TaskType StringToTaskType(const std::string& str) {
-  if (str == kFileBrowserHandlerTaskType)
-    return TASK_TYPE_FILE_BROWSER_HANDLER;
-  if (str == kFileHandlerTaskType)
-    return TASK_TYPE_FILE_HANDLER;
-  if (str == kArcAppTaskType)
-    return TASK_TYPE_ARC_APP;
-  if (str == kCrostiniAppTaskType)
-    return TASK_TYPE_CROSTINI_APP;
-  if (str == kWebAppTaskType)
-    return TASK_TYPE_WEB_APP;
-  if (str == kPluginVmAppTaskType)
-    return TASK_TYPE_PLUGIN_VM_APP;
-  return TASK_TYPE_UNKNOWN;
-}
-
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
   for (const auto& it : entries) {
@@ -330,6 +312,23 @@ bool OpenFilesWithBrowser(Profile* profile,
 
 }  // namespace
 
+// Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
+TaskType StringToTaskType(const std::string& str) {
+  if (str == kFileBrowserHandlerTaskType)
+    return TASK_TYPE_FILE_BROWSER_HANDLER;
+  if (str == kFileHandlerTaskType)
+    return TASK_TYPE_FILE_HANDLER;
+  if (str == kArcAppTaskType)
+    return TASK_TYPE_ARC_APP;
+  if (str == kCrostiniAppTaskType)
+    return TASK_TYPE_CROSTINI_APP;
+  if (str == kWebAppTaskType)
+    return TASK_TYPE_WEB_APP;
+  if (str == kPluginVmAppTaskType)
+    return TASK_TYPE_PLUGIN_VM_APP;
+  return TASK_TYPE_UNKNOWN;
+}
+
 // Converts a TaskType to a string.
 std::string TaskTypeToString(TaskType task_type) {
   switch (task_type) {
@@ -375,12 +374,13 @@ FullTaskDescriptor::FullTaskDescriptor(const FullTaskDescriptor& other) =
     default;
 
 void UpdateDefaultTask(PrefService* pref_service,
-                       const std::string& task_id,
+                       const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types) {
   if (!pref_service)
     return;
 
+  std::string task_id = TaskDescriptorToId(task_descriptor);
   if (!mime_types.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);

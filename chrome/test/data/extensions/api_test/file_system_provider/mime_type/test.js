@@ -123,9 +123,8 @@ function runTests() {
                                   onLaunched);
                             });
                         chrome.app.runtime.onLaunched.addListener(onLaunched);
-                        const {appId, taskType, actionId} = tasks[0].descriptor;
                         chrome.fileManagerPrivate.executeTask(
-                            `${appId}|${taskType}|${actionId}`,
+                          tasks[0].descriptor,
                             [externalEntry],
                             chrome.test.callbackPass(function() {}));
                       }));

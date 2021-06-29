@@ -280,8 +280,7 @@ export class TaskController {
     Promise.all(entries.map((entry) => this.getMimeType_(entry)))
         .then(mimeTypes => {
           chrome.fileManagerPrivate.setDefaultTask(
-              FileTasks.makeTaskID(task.descriptor), entries, mimeTypes,
-              util.checkAPIError);
+              task.descriptor, entries, mimeTypes, util.checkAPIError);
           this.metadataUpdateController_.refreshCurrentDirectoryMetadata();
 
           // Update task menu button unless the task button was updated other
@@ -507,7 +506,7 @@ export class TaskController {
         this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '';
       }
 
-      if (FileTasks.descriptorEqual(
+      if (util.descriptorEqual(
               defaultTask.descriptor,
               FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR)) {
         this.ui_.defaultTaskMenuItem.label = str('TASK_OPEN');
