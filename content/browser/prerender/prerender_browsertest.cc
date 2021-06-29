@@ -1037,6 +1037,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation",
+      PrerenderHost::FinalStatus::kMainFrameNavigation, 1);
 }
 
 // Regression test for https://crbug.com/1198051
@@ -2483,6 +2486,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // prerender navigation when activation has already started.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MainFrameNavigationDuringActivation) {
+  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -2536,6 +2540,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   condition.CallResumeClosure();
   prerender_observer.WaitForActivation();
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+
+  // The navigation in the prerendered page actually attempted to cancel
+  // prerendering but it was ignored as cancellation during activation is not
+  // supported yet,
+  // TODO(https://crbug.com/1195751): Update the final status once cancellation
+  // during activation is supported.
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kActivated, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostCancelReasonDuringActivation",
+      PrerenderHost::FinalStatus::kNavigationRequestFailure, 1);
 }
 
 // Ensures WebContents::OpenURL to a frame in a currently activating (i.e.

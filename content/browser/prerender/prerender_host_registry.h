@@ -142,7 +142,17 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are reserved for activation.
-  base::flat_map<int, std::unique_ptr<PrerenderHost>>
+  struct ReservationInfo {
+    ReservationInfo(std::unique_ptr<PrerenderHost> prerender_host,
+                    int activator_frame_tree_node_id);
+    ReservationInfo(ReservationInfo&& info);
+    ReservationInfo& operator=(ReservationInfo&& info) = default;
+    ~ReservationInfo();
+
+    std::unique_ptr<PrerenderHost> prerender_host;
+    int activator_frame_tree_node_id;
+  };
+  base::flat_map<int, ReservationInfo>
       reserved_prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.

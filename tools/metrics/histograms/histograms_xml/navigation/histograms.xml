@@ -1419,6 +1419,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation"
+    enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
+  <owner>falken@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>lingqi@chromium.org</owner>
+  <summary>
+    Reason of cancelling a prerendering attempt requested before activation
+    starts. Recorded by PrerenderHostRegistry in the browser process when the
+    cancellation is requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="Prerender.Experimental.PrerenderHostCancelReasonDuringActivation"
+    enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
+  <owner>falken@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>lingqi@chromium.org</owner>
+  <summary>
+    Reason of cancelling a prerendering attempt requested during activation.
+    Recorded by PrerenderHostRegistry in the browser process when the
+    cancellation is requested.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.Experimental.PrerenderHostFinalStatus"
     enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
   <owner>falken@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -98,25 +99,50 @@ void PrerenderHostRegistry::CancelHost(
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHost",
                "frame_tree_node_id", frame_tree_node_id);
 
-  // Look up the id in the non-reserved host map and remove it from the map if
-  // it's found.
-  auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (found != prerender_host_by_frame_tree_node_id_.end()) {
+  // Look up the id in the non-reserved host map, remove it from the map, and
+  // record the cancellation reason.
+  auto iter1 = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (iter1 != prerender_host_by_frame_tree_node_id_.end()) {
     DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
                            frame_tree_node_id));
 
     // Remove the prerender host from the host maps so that it's not used for
     // activation during asynchronous deletion.
-    std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
-    prerender_host_by_frame_tree_node_id_.erase(found);
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(iter1->second);
+    prerender_host_by_frame_tree_node_id_.erase(iter1);
 
     // Asynchronously delete the prerender host.
     ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation",
+        final_status);
+    return;
   }
 
-  // TODO(https://crbug.com/1195751): Look up the id in the reserved host map
-  // and remove it from the map if it's found. In addition to that, fallback
+  // Look up the id in the reserved host map and record the cancellation reason.
+  // TODO(https://crbug.com/1195751): Remove the host from the map and fallback
   // ongoing activation to regular network navigation.
+  auto iter2 =
+      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (iter2 != reserved_prerender_host_by_frame_tree_node_id_.end()) {
+    auto* activator_frame_tree_node = FrameTreeNode::GloballyFindByID(
+        iter2->second.activator_frame_tree_node_id);
+
+    // Cancelation must not be requested after ready for activation commit.
+    CHECK_LT(activator_frame_tree_node->navigation_request()->state(),
+             NavigationRequest::NavigationState::READY_TO_COMMIT);
+
+    // TODO(https://crbug.com/1195751): Stop the ongoing activation and then
+    // start the fallback navigation.
+    // TODO(https://crbug.com/1195751): Asynchronously delete the prerender
+    // host.
+
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostCancelReasonDuringActivation",
+        final_status);
+    return;
+  }
 }
 
 int PrerenderHostRegistry::ReserveHostToActivate(
@@ -170,8 +196,9 @@ int PrerenderHostRegistry::ReserveHostToActivate(
 
   // Reserve the host for activation.
   const int prerender_frame_tree_node_id = host->frame_tree_node_id();
-  auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
-      prerender_frame_tree_node_id, std::move(host));
+  auto result = reserved_prerender_host_by_frame_tree_node_id_.try_emplace(
+      prerender_frame_tree_node_id, std::move(host),
+      navigation_request.frame_tree_node()->frame_tree_node_id());
   DCHECK(result.second);
 
   return prerender_frame_tree_node_id;
@@ -184,7 +211,7 @@ RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
   if (iter == reserved_prerender_host_by_frame_tree_node_id_.end()) {
     return nullptr;
   }
-  return iter->second->GetPrerenderedMainFrameHost();
+  return iter->second.prerender_host->GetPrerenderedMainFrameHost();
 }
 
 std::unique_ptr<BackForwardCacheImpl::Entry>
@@ -194,7 +221,8 @@ PrerenderHostRegistry::ActivateReservedHost(
   auto iter =
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   CHECK(iter != reserved_prerender_host_by_frame_tree_node_id_.end());
-  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
+  std::unique_ptr<PrerenderHost> prerender_host =
+      std::move(iter->second.prerender_host);
   reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
   return prerender_host->Activate(navigation_request);
 }
@@ -248,7 +276,7 @@ PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
     return nullptr;
-  return iter->second.get();
+  return iter->second.prerender_host.get();
 }
 
 std::vector<RenderFrameHostImpl*>
@@ -258,7 +286,7 @@ PrerenderHostRegistry::GetPrerenderedMainFrames() {
     result.push_back(i.second->GetPrerenderedMainFrameHost());
   }
   for (auto& i : reserved_prerender_host_by_frame_tree_node_id_) {
-    result.push_back(i.second->GetPrerenderedMainFrameHost());
+    result.push_back(i.second.prerender_host->GetPrerenderedMainFrameHost());
   }
   return result;
 }
@@ -296,5 +324,17 @@ void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
   for (Observer& obs : observers_)
     obs.OnTrigger(url);
 }
+
+PrerenderHostRegistry::ReservationInfo::ReservationInfo(
+    std::unique_ptr<PrerenderHost> prerender_host,
+    int activator_frame_tree_node_id)
+    : prerender_host(std::move(prerender_host)),
+      activator_frame_tree_node_id(activator_frame_tree_node_id) {}
+
+PrerenderHostRegistry::ReservationInfo::ReservationInfo(ReservationInfo&& info)
+    : ReservationInfo(std::move(info.prerender_host),
+                      info.activator_frame_tree_node_id) {}
+
+PrerenderHostRegistry::ReservationInfo::~ReservationInfo() = default;
 
 }  // namespace content
