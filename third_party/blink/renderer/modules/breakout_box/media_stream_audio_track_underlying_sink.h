@@ -39,7 +39,9 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
   GetTransferringOptimizer();
 
  private:
+  void Disconnect();
   const scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker_;
+  bool is_connected_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

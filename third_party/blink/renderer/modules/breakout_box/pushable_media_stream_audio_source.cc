@@ -17,6 +17,23 @@ PushableMediaStreamAudioSource::Broker::Broker(
   DCHECK(main_task_runner_);
 }
 
+void PushableMediaStreamAudioSource::Broker::OnClientStarted() {
+  WTF::MutexLocker locker(mutex_);
+  DCHECK_GE(num_clients_, 0);
+  ++num_clients_;
+}
+
+void PushableMediaStreamAudioSource::Broker::OnClientStopped() {
+  bool should_stop = false;
+  {
+    WTF::MutexLocker locker(mutex_);
+    should_stop = --num_clients_ == 0;
+    DCHECK_GE(num_clients_, 0);
+  }
+  if (should_stop)
+    StopSource();
+}
+
 bool PushableMediaStreamAudioSource::Broker::IsRunning() {
   WTF::MutexLocker locker(mutex_);
   return is_running_;

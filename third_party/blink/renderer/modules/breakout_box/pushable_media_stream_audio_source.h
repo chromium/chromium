@@ -27,6 +27,20 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     Broker(const Broker&) = delete;
     Broker& operator=(const Broker&) = delete;
 
+    // Increases the count of connected clients.
+    void OnClientStarted();
+    // Decreases the count of connected clients. If the count reaches zero,
+    // StopSource() is called.
+    // OnClientStarted() should not be called after the number of clients
+    // reaches zero and StopSource() has been been called. It would have
+    // no effect.
+    // In practice, the clients are WritableStream underlying sources that
+    // use the same PushableMediaStreamAudioSource, such as the sources for
+    // the transferred version of a stream (for example, in a Worker) and the
+    // corresponding original stream (for example, in the Window scope).
+    // During a transfer, a new client is created in the new realm, then the
+    // old client disconnects.
+    void OnClientStopped();
     bool IsRunning();
     void PushAudioData(scoped_refptr<media::AudioBuffer> data);
     void StopSource();
@@ -55,6 +69,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     // interactions with owners, like |source_| does, we always guard it for
     // simplicity.
     bool is_running_ GUARDED_BY(mutex_) = false;
+    int num_clients_ GUARDED_BY(mutex_) = 0;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   };
 

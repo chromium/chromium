@@ -18,14 +18,23 @@
 namespace blink {
 
 namespace {
-class PlaceholderTransferringOptimizer
-    : public WritableStreamTransferringOptimizer {
+
+class TransferringOptimizer : public WritableStreamTransferringOptimizer {
+ public:
+  explicit TransferringOptimizer(
+      scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker)
+      : source_broker_(std::move(source_broker)) {}
   UnderlyingSinkBase* PerformInProcessOptimization(
       ScriptState* script_state) override {
     RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableAudioWorker);
-    return nullptr;
+    return MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSink>(
+        source_broker_);
   }
+
+ private:
+  const scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker_;
 };
+
 }  // namespace
 
 MediaStreamAudioTrackUnderlyingSink::MediaStreamAudioTrackUnderlyingSink(
@@ -40,6 +49,8 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::start(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  source_broker_->OnClientStarted();
+  is_connected_ = true;
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -78,7 +89,7 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::abort(
     ScriptValue reason,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  source_broker_->StopSource();
+  Disconnect();
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -86,14 +97,23 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  source_broker_->StopSource();
+  Disconnect();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 std::unique_ptr<WritableStreamTransferringOptimizer>
 MediaStreamAudioTrackUnderlyingSink::GetTransferringOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<PlaceholderTransferringOptimizer>();
+  return std::make_unique<TransferringOptimizer>(source_broker_);
+}
+
+void MediaStreamAudioTrackUnderlyingSink::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_connected_)
+    return;
+
+  source_broker_->OnClientStopped();
+  is_connected_ = false;
 }
 
 }  // namespace blink
