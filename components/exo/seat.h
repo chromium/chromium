@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_SEAT_H_
 #define COMPONENTS_EXO_SEAT_H_
 
+#include <array>
+
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -64,8 +66,22 @@ class Seat : public aura::client::FocusChangeObserver,
 
   void Shutdown();
 
-  void AddObserver(SeatObserver* observer);
+  // Registers the observer with the given priority.
+  // Observers with smaller priority value will be called earlier.
+  // The same observer should not be registered twice or more even with
+  // different priorities. If the order of observer invocations with
+  // the same priority is implementation dependent.
+  // The priority must be in a range of
+  // [0, kMaxObserverPriority] inclusive.
+  void AddObserver(SeatObserver* observer, int priority);
+
+  // Unregisters the observer.
   void RemoveObserver(SeatObserver* observer);
+
+  // Returns true if the given priority can be used for AddObserver.
+  static constexpr bool IsValidObserverPriority(int priority) {
+    return 0 <= priority && priority <= kMaxObserverPriority;
+  }
 
   // Returns currently focused surface. This is vertual so that we can override
   // the behavior for testing.
@@ -177,7 +193,14 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnAllReadsFinished(
       scoped_refptr<RefCountedScopedClipboardWriter> writer);
 
-  base::ObserverList<SeatObserver>::Unchecked observers_;
+  // Max value of SeatObserver's priority. Both side are inclusive.
+  static constexpr int kMaxObserverPriority = 1;
+
+  // Map from priority to a list of SeatOberver pointers.
+  std::array<base::ObserverList<SeatObserver>::Unchecked,
+             kMaxObserverPriority + 1>
+      priority_observer_list_;
+
   // The platform code is the key in this map as it represents the physical
   // key that was pressed. The value is a potentially rewritten code that the
   // physical key press generated.

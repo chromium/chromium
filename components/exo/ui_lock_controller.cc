@@ -56,6 +56,11 @@ constexpr float kExitPopupDisplayHeight = 3.f;
 // Hide the exit popup if mouse is below this height.
 constexpr float kExitPopupHideHeight = 150.f;
 
+constexpr int kUILockControllerSeatObserverPriority = 1;
+static_assert(
+    exo::Seat::IsValidObserverPriority(kUILockControllerSeatObserverPriority),
+    "kUILockCOntrollerSeatObserverPriority is not in the valid range");
+
 // Create and position Esc notification.
 views::Widget* CreateEscNotification(aura::Window* parent) {
   auto content_view = std::make_unique<SubtleNotificationView>();
@@ -220,7 +225,7 @@ constexpr auto kExcludedFlags = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
 
 UILockController::UILockController(Seat* seat) : seat_(seat) {
   WMHelper::GetInstance()->AddPreTargetHandler(this);
-  seat_->AddObserver(this);
+  seat_->AddObserver(this, kUILockControllerSeatObserverPriority);
 }
 
 UILockController::~UILockController() {

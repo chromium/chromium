@@ -37,7 +37,6 @@ class UILockController : public ui::EventHandler, public SeatObserver {
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // Overridden from SeatObserver:
-  void OnSurfaceFocusing(Surface* gaining_focus) override {}
   void OnSurfaceFocused(Surface* gained_focus) override;
 
   views::Widget* GetEscNotificationForTesting(aura::Window* window);

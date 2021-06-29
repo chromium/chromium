@@ -70,7 +70,6 @@ class DataDevice : public WMHelper::DragDropObserver,
   void OnClipboardDataChanged() override;
 
   // Overridden from SeatObserver:
-  void OnSurfaceFocusing(Surface* surface) override;
   void OnSurfaceFocused(Surface* surface) override;
 
   // Overridden from DataOfferObserver:

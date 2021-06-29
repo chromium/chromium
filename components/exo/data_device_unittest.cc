@@ -283,14 +283,14 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
 
 TEST_F(DataDeviceTest, ClipboardCopy) {
   // Selection event sent when getting a focus.
-  device_->OnSurfaceFocusing(surface_.get());
+  device_->OnSurfaceFocused(surface_.get());
   std::vector<DataEvent> events;
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kSelection, events[1]);
 
   // Next focus does not send selection.
-  device_->OnSurfaceFocusing(surface_.get());
+  device_->OnSurfaceFocused(surface_.get());
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
   // Clipboard change
@@ -299,8 +299,8 @@ TEST_F(DataDeviceTest, ClipboardCopy) {
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kSelection, events[1]);
 
-  // Losing focuse does not create events.
-  device_->OnSurfaceFocusing(nullptr);
+  // Losing focus does not create events.
+  device_->OnSurfaceFocused(nullptr);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -324,7 +324,7 @@ TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
 }
 
 TEST_F(DataDeviceTest, ClipboardFocusedSurfaceDestroyed) {
-  device_->OnSurfaceFocusing(surface_.get());
+  device_->OnSurfaceFocused(surface_.get());
   surface_.reset();
   std::vector<DataEvent> events;
   delegate_.PopEvents(&events);

@@ -35,11 +35,16 @@
 namespace exo {
 namespace {
 
+// This value must be bigger than the priority for DataDevice.
+constexpr int kKeyboardSeatObserverPriority = 1;
+static_assert(Seat::IsValidObserverPriority(kKeyboardSeatObserverPriority),
+              "kKeyboardSeatObserverPriority is not in the valid range.");
+
 // Delay until a key state change expected to be acknowledged is expired.
-const int kExpirationDelayForPendingKeyAcksMs = 1000;
+constexpr int kExpirationDelayForPendingKeyAcksMs = 1000;
 
 // The accelerator keys reserved to be processed by chrome.
-const struct {
+constexpr struct {
   ui::KeyboardCode keycode;
   int modifiers;
 } kReservedAccelerators[] = {
@@ -163,7 +168,7 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
       expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
           kExpirationDelayForPendingKeyAcksMs)) {
   AddEventHandler();
-  seat_->AddObserver(this);
+  seat_->AddObserver(this, kKeyboardSeatObserverPriority);
   ash::KeyboardController::Get()->AddObserver(this);
   ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
   ime_controller->AddObserver(this);
@@ -381,8 +386,6 @@ void Keyboard::OnSurfaceDestroying(Surface* surface) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // SeatObserver overrides:
-
-void Keyboard::OnSurfaceFocusing(Surface* gaining_focus) {}
 
 void Keyboard::OnSurfaceFocused(Surface* gained_focus) {
   Surface* gained_focus_surface =
