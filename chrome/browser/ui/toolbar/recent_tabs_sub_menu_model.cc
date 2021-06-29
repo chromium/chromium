@@ -501,9 +501,10 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
         ThemeService::GetThemeProviderForProfile(browser_->profile());
     const int color_id =
         GetTabGroupContextMenuColorId(visual_data.value().color());
-    SetMinorIcon(curr_model_index, ui::ImageModel::FromVectorIcon(
-                                       kTabGroupIcon, theme.GetColor(color_id),
-                                       gfx::kFaviconSize));
+    constexpr int kIconSize = 12;
+    SetMinorIcon(curr_model_index,
+                 ui::ImageModel::FromVectorIcon(
+                     kTabGroupIcon, theme.GetColor(color_id), kIconSize));
   }
 }
 
