@@ -5,13 +5,8 @@
 import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {
   assert,
-  assertInstanceof,
   assertString,
 } from '../../../chrome_util.js';
-import {
-  CaptureStream,
-  StreamManager,
-} from '../../../device/stream_manager.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import * as h264 from '../../../h264.js';
@@ -174,12 +169,12 @@ export class VideoHandler {
  */
 export class Video extends ModeBase {
   /**
-   * @param {!CaptureStream} stream
+   * @param {!MediaStream} stream Preview stream.
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
   constructor(stream, facing, handler) {
-    super(stream.stream, facing, null);
+    super(stream, facing);
 
     /**
      * @const {!VideoHandler}
@@ -220,12 +215,6 @@ export class Video extends ModeBase {
      * Whether current recording ever paused/resumed before it ended.
      */
     this.everPaused_ = false;
-
-    /**
-     * @type {!CaptureStream}
-     * @private
-     */
-    this.captureStream_ = stream;
   }
 
   /**
@@ -233,7 +222,6 @@ export class Video extends ModeBase {
    */
   async clear() {
     await this.stopCapture();
-    await this.captureStream_.close();
   }
 
   /**
@@ -470,13 +458,6 @@ export class VideoFactory extends ModeFactory {
      * @private
      */
     this.handler_ = handler;
-
-    /**
-     * Stream for video capturing.
-     * @type {?CaptureStream}
-     * @private
-     */
-    this.captureStream_ = null;
   }
 
   /**
@@ -512,28 +493,7 @@ export class VideoFactory extends ModeFactory {
   /**
    * @override
    */
-  async setupExtraStreams(constraints, resolution) {
-    const captureConstraints = {
-      audio: constraints.audio,
-      video: {
-        deviceId: constraints.video.deviceId,
-        frameRate: constraints.video.frameRate,
-      },
-    };
-    if (resolution !== null) {
-      captureConstraints.video.width = resolution.width;
-      captureConstraints.video.height = resolution.height;
-    }
-    this.captureStream_ =
-        await StreamManager.getInstance().openCaptureStream(captureConstraints);
-  }
-
-  /**
-   * @override
-   */
   produce_() {
-    return new Video(
-        assertInstanceof(this.captureStream_, CaptureStream), this.facing_,
-        this.handler_);
+    return new Video(this.previewStream_, this.facing_, this.handler_);
   }
 }

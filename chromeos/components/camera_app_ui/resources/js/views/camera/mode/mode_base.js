@@ -22,10 +22,8 @@ export class ModeBase {
   /**
    * @param {!MediaStream} stream
    * @param {!Facing} facing
-   * @param {?Resolution} captureResolution Capturing resolution width and
-   *     height.
    */
-  constructor(stream, facing, captureResolution) {
+  constructor(stream, facing) {
     /**
      * Stream of current mode.
      * @type {!MediaStream}
@@ -39,14 +37,6 @@ export class ModeBase {
      * @protected
      */
     this.facing_ = facing;
-
-    /**
-     * Capture resolution. May be null on device not support of setting
-     * resolution.
-     * @type {?Resolution}
-     * @protected
-     */
-    this.captureResolution_ = captureResolution;
 
     /**
      * Promise for ongoing capture operation.
@@ -181,15 +171,6 @@ export class ModeFactory {
    * @abstract
    */
   async prepareDevice(constraints, resolution) {}
-
-  /**
-   * Setups required extra streams for the mdoe.
-   * @param {!MediaStreamConstraints} constraints Constraints for preview
-   *     stream.
-   * @param {?Resolution} resolution Capture resolution
-   * @return {!Promise}
-   */
-  async setupExtraStreams(constraints, resolution) {}
 
   /**
    * @return {!ModeBase}

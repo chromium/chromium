@@ -67,7 +67,15 @@ export class Photo extends ModeBase {
    * @param {!PhotoHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {
-    super(stream, facing, captureResolution);
+    super(stream, facing);
+
+    /**
+     * Capture resolution. May be null on device not support of setting
+     * resolution.
+     * @type {?Resolution}
+     * @protected
+     */
+    this.captureResolution_ = captureResolution;
 
     /**
      * @const {!PhotoHandler}

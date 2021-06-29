@@ -508,9 +508,6 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @override
    */
   getSortedCandidates(deviceId) {
-    /** @type {!Resolution} */
-    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
-
     /**
      * Maps specified video resolution to object of resolution and all supported
      * constant fps under that resolution or null fps for not support constant
@@ -536,36 +533,29 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     };
 
     /**
-     * @param {{videoRs: !ResolutionList, previewRs: !ResolutionList}} capture
-     * @return {!Array<!CaptureCandidate>}
+     * @param {!Resolution} r
+     * @param {number} fps
+     * @return {!MediaStreamConstraints}
      */
-    const toVideoCandidate = ({videoRs, previewRs}) => {
-      let /** !Resolution */ videoR = prefR;
-      if (!videoRs.some((r) => r.equals(prefR))) {
-        videoR = videoRs.reduce(
-            (videoR, r) => (r.width > videoR.width ? r : videoR));
-      }
+    const toPreivewConstraints = ({width, height}, fps) => ({
+      audio: {echoCancellation: false},
+      video: {
+        deviceId: {exact: deviceId},
+        frameRate: fps ? {exact: fps} : {min: 20, ideal: 30},
+        width,
+        height,
+      },
+    });
 
-      return getFpses(videoR).map(
-          ({r, fps}) => ({
-            resolution: videoR,
-            previewCandidates:
-                this.sortPreview_(previewRs, videoR)
-                    .map(({width, height}) => ({
-                           audio: {echoCancellation: false},
-                           video: {
-                             deviceId: {exact: deviceId},
-                             frameRate: fps ? {exact: fps} :
-                                              {min: 20, ideal: 30},
-                             width,
-                             height,
-                           },
-                         })),
-          }));
-    };
-
-    return this.deviceVideoPreviewResolutionMap_.get(deviceId)
-        .flatMap(toVideoCandidate)
+    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+    return [...this.supportedResolutions_.get(deviceId)]
+        .flatMap(getFpses)
+        .map(({r, fps}) => ({
+               resolution: r,
+               // For non-multistream recording, preview stream is used directly
+               // to do video recording.
+               previewCandidates: [toPreivewConstraints(r, fps)],
+             }))
         .sort(this.getPreferResolutionSort_(prefR));
   }
 }
