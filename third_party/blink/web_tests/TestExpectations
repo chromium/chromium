@@ -5492,7 +5492,7 @@ crbug.com/943503 virtual/backface-visibility-interop/external/wpt/css/css-transf
 crbug.com/943503 virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-children-only-fixpos.html [ Pass ]
 crbug.com/943503 virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-children-only-inline.html [ Pass ]
 
-crbug.com/1219750 wpt_internal/app-history/navigate/goTo-detach-in-onnavigate.html [ Timeout ]
+crbug.com/1219750 external/wpt/app-history/navigate/goTo-detach-in-onnavigate.html [ Timeout ]
 
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-non-integer-innerwidth.html [ Crash Timeout ]
