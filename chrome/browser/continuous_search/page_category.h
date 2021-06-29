@@ -11,7 +11,7 @@ namespace continuous_search {
 enum class PageCategory {
   kOrganicSrp = 0,
   kNewsSrp = 1,
-  kDiscover = 2,
+  kDiscoverDeprecated = 2,
   kNone = 3,
 };
 

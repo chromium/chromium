@@ -22,7 +22,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="ContinuousSearchExperiment">
-  <variant name=".Discover"/>
+  <variant name=".Discover">
+    <obsolete>
+      Deprecated as of 2021-06.
+    </obsolete>
+  </variant>
   <variant name=".News"/>
   <variant name=".Organic"/>
 </variants>
