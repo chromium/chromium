@@ -23,7 +23,7 @@ IGNORE_TABLES.add('ethio-g1.ctb')
 IGNORE_TABLES.add('or-in-g1.utb')
 
 def Error(msg):
-  print >> sys.stderr, 'liblouis_list_tables: %s' % msg
+  sys.stderr.write('liblouis_list_tables: %s' % msg)
   sys.exit(1)
 
 
@@ -35,7 +35,7 @@ def LoadTablesFile(filename):
   with open(ToNativePath(filename), 'r') as fh:
     try:
       return json.load(fh)
-    except ValueError, e:
+    except ValueError as e:
       raise ValueError('Error parsing braille table file %s: %s' %
                        (filename, e.message))
 
@@ -59,7 +59,7 @@ def FindAllTableFiles(directory):
 def GetIncludeFiles(filename):
   result = []
   with open(ToNativePath(filename), 'r') as fh:
-    for line in fh.xreadlines():
+    for line in fh.readlines():
       match = INCLUDE_RE.match(line)
       if match:
         result.append(match.group(1))
@@ -88,7 +88,7 @@ def GetTableFiles(tables_file, directories, extra_files):
 
 def CheckTables(tables_file):
   tables = LoadTablesFile(tables_file)
-  actual_set = set();
+  actual_set = set()
   for table in tables:
     for name in table['fileNames'].split(','):
       actual_set.add(name)
@@ -126,7 +126,7 @@ def DoMain(argv):
 
 
 def main(argv):
-  print DoMain(argv[1:])
+  print(DoMain(argv[1:]))
 
 
 if __name__ == '__main__':
