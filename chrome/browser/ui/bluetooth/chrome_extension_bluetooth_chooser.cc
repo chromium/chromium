@@ -5,21 +5,21 @@
 #include "chrome/browser/ui/bluetooth/chrome_extension_bluetooth_chooser.h"
 
 #include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
+#include "chrome/browser/ui/bluetooth/chrome_bluetooth_chooser_controller.h"
 #include "content/public/browser/web_contents.h"
 
 ChromeExtensionBluetoothChooser::ChromeExtensionBluetoothChooser(
     content::RenderFrameHost* frame,
     const content::BluetoothChooser::EventHandler& event_handler) {
-  std::unique_ptr<BluetoothChooserController> bluetooth_chooser_controller(
-      new BluetoothChooserController(frame, event_handler));
+  auto controller =
+      std::make_unique<ChromeBluetoothChooserController>(frame, event_handler);
   // Since ChromeExtensionBluetoothChooser object is destroyed before the
   // view object which owns |bluetooth_chooser_controller_| when the chooser
   // bubble/dialog closes, it is safe to store and use the raw pointer here.
-  bluetooth_chooser_controller_ = bluetooth_chooser_controller.get();
+  bluetooth_chooser_controller_ = controller.get();
   chooser_dialog_ = std::make_unique<ChromeExtensionChooserDialog>(
       content::WebContents::FromRenderFrameHost(frame));
-  chooser_dialog_->ShowDialog(std::move(bluetooth_chooser_controller));
+  chooser_dialog_->ShowDialog(std::move(controller));
 }
 
 ChromeExtensionBluetoothChooser::~ChromeExtensionBluetoothChooser() {}

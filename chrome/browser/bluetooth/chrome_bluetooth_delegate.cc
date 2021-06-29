@@ -25,9 +25,7 @@
 #include "components/permissions/android/bluetooth_chooser_android.h"
 #include "components/permissions/android/bluetooth_scanning_prompt_android.h"
 #else
-#include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_controller.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extensions_browser_client.h"

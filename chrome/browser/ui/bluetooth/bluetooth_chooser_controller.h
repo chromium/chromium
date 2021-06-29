@@ -45,12 +45,9 @@ class BluetoothChooserController : public permissions::ChooserController {
   bool IsPaired(size_t index) const override;
   std::u16string GetOption(size_t index) const override;
   void RefreshOptions() override;
-  void OpenAdapterOffHelpUrl() const override;
-  void OpenPermissionPreferences() const override;
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;
   void Close() override;
-  void OpenHelpCenterUrl() const override;
 
   // Update the state of the Bluetooth adapter.
   void OnAdapterPresenceChanged(
@@ -90,8 +87,6 @@ class BluetoothChooserController : public permissions::ChooserController {
   // Clears |device_names_and_ids_| and |device_name_counts_|. Called when
   // Bluetooth adapter is turned on or off, or when re-scan happens.
   void ClearAllDevices();
-
-  int frame_tree_node_id_ = -1;
 
   std::vector<BluetoothDeviceInfo> devices_;
   std::unordered_map<std::string, std::u16string> device_id_to_name_map_;
