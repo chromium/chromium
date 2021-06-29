@@ -48,43 +48,6 @@ struct ModuleScriptFetchTarget {
 
 }  // namespace
 
-void ModuleTreeLinker::Fetch(
-    const KURL& url,
-    const ModuleType& module_type,
-    ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::blink::RequestContextType context_type,
-    network::mojom::RequestDestination destination,
-    const ScriptFetchOptions& options,
-    Modulator* modulator,
-    ModuleScriptCustomFetchType custom_fetch_type,
-    ModuleTreeLinkerRegistry* registry,
-    ModuleTreeClient* client) {
-  ModuleTreeLinker* fetcher = MakeGarbageCollected<ModuleTreeLinker>(
-      fetch_client_settings_object_fetcher, context_type, destination,
-      modulator, custom_fetch_type, registry, client);
-  registry->AddFetcher(fetcher);
-  fetcher->FetchRoot(url, module_type, options);
-  DCHECK(fetcher->IsFetching());
-}
-
-void ModuleTreeLinker::FetchDescendantsForInlineScript(
-    ModuleScript* module_script,
-    ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::blink::RequestContextType context_type,
-    network::mojom::RequestDestination destination,
-    Modulator* modulator,
-    ModuleScriptCustomFetchType custom_fetch_type,
-    ModuleTreeLinkerRegistry* registry,
-    ModuleTreeClient* client) {
-  DCHECK(module_script);
-  ModuleTreeLinker* fetcher = MakeGarbageCollected<ModuleTreeLinker>(
-      fetch_client_settings_object_fetcher, context_type, destination,
-      modulator, custom_fetch_type, registry, client);
-  registry->AddFetcher(fetcher);
-  fetcher->FetchRootInline(module_script);
-  DCHECK(fetcher->IsFetching());
-}
-
 ModuleTreeLinker::ModuleTreeLinker(
     ResourceFetcher* fetch_client_settings_object_fetcher,
     mojom::blink::RequestContextType context_type,
@@ -92,7 +55,8 @@ ModuleTreeLinker::ModuleTreeLinker(
     Modulator* modulator,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeLinkerRegistry* registry,
-    ModuleTreeClient* client)
+    ModuleTreeClient* client,
+    base::PassKey<ModuleTreeLinkerRegistry>)
     : fetch_client_settings_object_fetcher_(
           fetch_client_settings_object_fetcher),
       context_type_(context_type),
@@ -175,7 +139,7 @@ void ModuleTreeLinker::AdvanceState(State new_state) {
     }
 #endif
 
-    registry_->ReleaseFinishedFetcher(this);
+    registry_->ReleaseFinishedLinker(this);
 
     // <spec label="IMSGF" step="6">When the appropriate algorithm
     // asynchronously completes with final result, asynchronously complete this
@@ -188,7 +152,8 @@ void ModuleTreeLinker::AdvanceState(State new_state) {
 // #fetch-a-module-worker-script-tree.
 void ModuleTreeLinker::FetchRoot(const KURL& original_url,
                                  ModuleType module_type,
-                                 const ScriptFetchOptions& options) {
+                                 const ScriptFetchOptions& options,
+                                 base::PassKey<ModuleTreeLinkerRegistry>) {
 #if DCHECK_IS_ON()
   original_url_ = original_url;
   module_type_ = module_type;
@@ -262,7 +227,9 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
 
 // <specdef
 // href="https://html.spec.whatwg.org/C/#fetch-an-inline-module-script-graph">
-void ModuleTreeLinker::FetchRootInline(ModuleScript* module_script) {
+void ModuleTreeLinker::FetchRootInline(
+    ModuleScript* module_script,
+    base::PassKey<ModuleTreeLinkerRegistry>) {
   DCHECK(module_script);
 #if DCHECK_IS_ON()
   original_url_ = module_script->BaseURL();

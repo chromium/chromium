@@ -71,10 +71,9 @@ void ModulatorImplBase::FetchTree(
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeClient* client) {
-  ModuleTreeLinker::Fetch(url, module_type,
-                          fetch_client_settings_object_fetcher, context_type,
-                          destination, options, this, custom_fetch_type,
-                          tree_linker_registry_, client);
+  tree_linker_registry_->Fetch(
+      url, module_type, fetch_client_settings_object_fetcher, context_type,
+      destination, options, this, custom_fetch_type, client);
 }
 
 void ModulatorImplBase::FetchDescendantsForInlineScript(
@@ -83,10 +82,9 @@ void ModulatorImplBase::FetchDescendantsForInlineScript(
     mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     ModuleTreeClient* client) {
-  ModuleTreeLinker::FetchDescendantsForInlineScript(
+  tree_linker_registry_->FetchDescendantsForInlineScript(
       module_script, fetch_client_settings_object_fetcher, context_type,
-      destination, this, ModuleScriptCustomFetchType::kNone,
-      tree_linker_registry_, client);
+      destination, this, ModuleScriptCustomFetchType::kNone, client);
 }
 
 void ModulatorImplBase::FetchSingle(

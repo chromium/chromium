@@ -6,25 +6,60 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 
 namespace blink {
+
+void ModuleTreeLinkerRegistry::Fetch(
+    const KURL& url,
+    const ModuleType& module_type,
+    ResourceFetcher* fetch_client_settings_object_fetcher,
+    mojom::blink::RequestContextType context_type,
+    network::mojom::RequestDestination destination,
+    const ScriptFetchOptions& options,
+    Modulator* modulator,
+    ModuleScriptCustomFetchType custom_fetch_type,
+    ModuleTreeClient* client) {
+  ModuleTreeLinker* linker = MakeGarbageCollected<ModuleTreeLinker>(
+      fetch_client_settings_object_fetcher, context_type, destination,
+      modulator, custom_fetch_type, this, client,
+      base::PassKey<ModuleTreeLinkerRegistry>());
+  AddLinker(linker);
+  linker->FetchRoot(url, module_type, options,
+                    base::PassKey<ModuleTreeLinkerRegistry>());
+  DCHECK(linker->IsFetching());
+}
+
+void ModuleTreeLinkerRegistry::FetchDescendantsForInlineScript(
+    ModuleScript* module_script,
+    ResourceFetcher* fetch_client_settings_object_fetcher,
+    mojom::blink::RequestContextType context_type,
+    network::mojom::RequestDestination destination,
+    Modulator* modulator,
+    ModuleScriptCustomFetchType custom_fetch_type,
+    ModuleTreeClient* client) {
+  ModuleTreeLinker* linker = MakeGarbageCollected<ModuleTreeLinker>(
+      fetch_client_settings_object_fetcher, context_type, destination,
+      modulator, custom_fetch_type, this, client,
+      base::PassKey<ModuleTreeLinkerRegistry>());
+  AddLinker(linker);
+  linker->FetchRootInline(module_script,
+                          base::PassKey<ModuleTreeLinkerRegistry>());
+  DCHECK(linker->IsFetching());
+}
 
 void ModuleTreeLinkerRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(active_tree_linkers_);
 }
 
-void ModuleTreeLinkerRegistry::AddFetcher(ModuleTreeLinker* fetcher) {
-  DCHECK(!active_tree_linkers_.Contains(fetcher));
-  active_tree_linkers_.insert(fetcher);
+void ModuleTreeLinkerRegistry::AddLinker(ModuleTreeLinker* linker) {
+  DCHECK(!active_tree_linkers_.Contains(linker));
+  active_tree_linkers_.insert(linker);
 }
 
-void ModuleTreeLinkerRegistry::ReleaseFinishedFetcher(
-    ModuleTreeLinker* fetcher) {
-  DCHECK(fetcher->HasFinished());
+void ModuleTreeLinkerRegistry::ReleaseFinishedLinker(ModuleTreeLinker* linker) {
+  DCHECK(linker->HasFinished());
 
-  auto it = active_tree_linkers_.find(fetcher);
+  auto it = active_tree_linkers_.find(linker);
   DCHECK_NE(it, active_tree_linkers_.end());
   active_tree_linkers_.erase(it);
 }
