@@ -264,61 +264,69 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.SafeMode.FellBackToSafeMode2"
-    enum="BooleanSafeMode" expires_after="2021-10-25">
+    enum="BooleanSafeMode" expires_after="2021-12-07">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Whether or not the VariationsService fell back to Safe Mode, due to either
-    too many crashes or too many failures to fetch a new seed. Recorded during
-    Chrome startup, immediately before field trials are created. Only recorded
-    if either a recent or a safe seed was loaded successfully.
+    Whether or not the VariationsService fell back to safe mode due to too many
+    crashes or failed seed fetches. Recorded during Chrome startup immediately
+    before field trials are created. Only recorded if either a recent seed or a
+    safe seed was loaded successfully.
   </summary>
 </histogram>
 
 <histogram name="Variations.SafeMode.LoadSafeSeed.Result"
-    enum="VariationsSeedLoadResult" expires_after="M77">
+    enum="VariationsSeedLoadResult" expires_after="2021-12-07">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Records whether the safe variations seed was successfully read from local
-    state on startup. Records a detailed reason on read failure. Only recorded
-    when attempting to run in safe mode.
+    Records whether the safe variations seed was successfully read from disk on
+    startup. Records a detailed reason on read failure. Only recorded when
+    attempting to run in safe mode.
+
+    Expired after M77 and revived in M93.
   </summary>
 </histogram>
 
 <histogram name="Variations.SafeMode.LoadSafeSeed.SignatureValidity"
-    enum="VariationSeedSignature" expires_after="M77">
+    enum="VariationSeedSignature" expires_after="2021-12-07">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The result of verifying the safe variations seed's signature, recorded when
-    the seed is loaded from Local State. Only recorded when attempting to run in
-    safe mode.
+    The result of verifying the safe variations seed's signature. Recorded when
+    the seed is loaded from disk. Only recorded when attempting to run in safe
+    mode.
+
+    Expired after M77 and revived in M93.
   </summary>
 </histogram>
 
 <histogram name="Variations.SafeMode.StoreSafeSeed.Result"
-    enum="VariationsSeedStoreResult" expires_after="M77">
+    enum="VariationsSeedStoreResult" expires_after="2021-12-07">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Records the result of storing a safe variations seed (and all associated
-    metadata) to the seed store.
+    Records the result of attempting to store a safe variations seed (and all
+    associated metadata) on disk.
+
+    Expired after M77 and revived in M93.
   </summary>
 </histogram>
 
 <histogram name="Variations.SafeMode.StoreSafeSeed.SignatureValidity"
-    enum="VariationSeedSignature" expires_after="M77">
+    enum="VariationSeedSignature" expires_after="2021-12-07">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The result of verifying the safe variations seed's signature, recorded when
-    the safe seed is stored to Local State.
+    The result of verifying the safe variations seed's signature. Recorded when
+    attempting to store the safe seed on disk.
+
+    Expired after M77 and revived in M93.
   </summary>
 </histogram>
 

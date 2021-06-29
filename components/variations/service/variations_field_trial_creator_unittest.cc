@@ -243,25 +243,35 @@ class TestVariationsSeedStore : public VariationsSeedStore {
     return true;
   }
 
-  bool LoadSafeSeed(VariationsSeed* seed,
-                    ClientFilterableState* client_state,
-                    base::Time* seed_fetch_time) override {
+  LoadSeedResult LoadSafeSeed(VariationsSeed* seed,
+                              ClientFilterableState* client_state,
+                              base::Time* seed_fetch_time) override {
     if (has_corrupted_safe_seed_)
-      return false;
+      return LoadSeedResult::CORRUPT_BASE64;
+
+    if (has_empty_safe_seed_)
+      return LoadSeedResult::EMPTY;
 
     *seed = CreateTestSafeSeed();
     *seed_fetch_time =
         local_state_->GetTime(prefs::kVariationsSafeSeedFetchTime);
-    return true;
+    return LoadSeedResult::SUCCESS;
   }
 
   void set_has_corrupted_safe_seed(bool is_corrupted) {
     has_corrupted_safe_seed_ = is_corrupted;
   }
 
+  void set_has_empty_safe_seed(bool is_empty) {
+    has_empty_safe_seed_ = is_empty;
+  }
+
  private:
   // Whether to simulate having a corrupted safe seed.
   bool has_corrupted_safe_seed_ = false;
+
+  // Whether to simulate having an empty safe seed.
+  bool has_empty_safe_seed_ = false;
 
   PrefService* local_state_;
 
@@ -476,17 +486,19 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed) {
                                       true, 1);
 }
 
-TEST_F(FieldTrialCreatorTest,
-       SetupFieldTrials_CorruptedSafeSeed_FallsBackToLatestSeed) {
+// Verify that Chrome applies the latest variations seed when Chrome should run
+// in variations safe mode but the safe seed is empty.
+TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesLatestSeed) {
   DisableTestingConfig();
 
-  // With a corrupted safe seed, the field trial creator should fall back to the
-  // latest seed. Hence, the safe seed manager *should* be informed of the
-  // active seed state.
-  const base::Time now = base::Time::Now();
-  const base::Time recent_time = now - base::TimeDelta::FromMinutes(17);
   NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+
+  const base::Time recent_time =
+      base::Time::Now() - base::TimeDelta::FromMinutes(17);
+  prefs_.SetTime(prefs::kVariationsLastFetchTime, recent_time);
+  // When using the latest seed, the safe seed manager should be informed of the
+  // active seed state.
   EXPECT_CALL(
       safe_seed_manager,
       DoSetActiveSeedState(kTestSeedData, kTestSeedSignature, _, recent_time))
@@ -495,10 +507,7 @@ TEST_F(FieldTrialCreatorTest,
   TestVariationsServiceClient variations_service_client;
   TestVariationsFieldTrialCreator field_trial_creator(
       &prefs_, &variations_service_client, &safe_seed_manager);
-  field_trial_creator.seed_store()->set_has_corrupted_safe_seed(true);
-  prefs_.SetTime(prefs::kVariationsLastFetchTime, recent_time);
-  prefs_.SetTime(prefs::kVariationsSafeSeedFetchTime,
-                 now - base::TimeDelta::FromDays(4));
+  field_trial_creator.seed_store()->set_has_empty_safe_seed(true);
 
   // Check that field trials are created from the latest seed. Since the test
   // study has only 1 experiment with 100% probability weight, we must be part
@@ -512,6 +521,37 @@ TEST_F(FieldTrialCreatorTest,
   histogram_tester.ExpectUniqueSample("Variations.SeedFreshness", 17, 1);
   histogram_tester.ExpectUniqueSample("Variations.SafeMode.FellBackToSafeMode2",
                                       false, 1);
+}
+
+// Verify that Chrome does not apply a variations seed when Chrome should run in
+// variations safe mode and a safe seed cannot be loaded.
+TEST_F(FieldTrialCreatorTest,
+       SetupFieldTrials_CorruptedSafeSeed_DoesNotUseSeed) {
+  DisableTestingConfig();
+
+  NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+
+  // When falling back to client-side defaults, the safe seed manager should not
+  // be informed of the active seed state.
+  EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _)).Times(0);
+
+  TestVariationsServiceClient variations_service_client;
+  TestVariationsFieldTrialCreator field_trial_creator(
+      &prefs_, &variations_service_client, &safe_seed_manager);
+  field_trial_creator.seed_store()->set_has_corrupted_safe_seed(true);
+
+  base::HistogramTester histogram_tester;
+
+  // Verify that field trials were not set up.
+  EXPECT_FALSE(field_trial_creator.SetupFieldTrials());
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
+
+  // Verify that this metric was not recorded. This metric is recorded only when
+  // a variations seed is used to create field trials.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Variations.SafeMode.FellBackToSafeMode2"),
+      ::testing::IsEmpty());
 }
 
 #if defined(OS_ANDROID)

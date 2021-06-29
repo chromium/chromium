@@ -479,21 +479,21 @@ bool VariationsFieldTrialCreator::LoadSeed(VariationsSeed* seed,
   return true;
 }
 
-bool VariationsFieldTrialCreator::LoadSafeSeed(
+LoadSeedResult VariationsFieldTrialCreator::LoadSafeSeed(
     VariationsSeed* seed,
     ClientFilterableState* client_state) {
   base::Time safe_seed_fetch_time;
-  if (!GetSeedStore()->LoadSafeSeed(seed, client_state, &safe_seed_fetch_time))
-    return false;
+  LoadSeedResult result =
+      GetSeedStore()->LoadSafeSeed(seed, client_state, &safe_seed_fetch_time);
 
-  // Record the safe seed's age. Note, however, that the safe seed fetch time
-  // pref was added about a milestone later than most of the other safe seed
-  // prefs, so it might be absent. If it's absent, don't attempt to guess what
-  // value to record; just skip recording the metric.
+  // Record the safe seed's age unless it's null. The safe seed fetch time may
+  // be null because the pref was added about a milestone later than most of the
+  // other safe seed prefs. Alternatively, the fetch time may be null because
+  // loading the safe seed failed.
   if (!safe_seed_fetch_time.is_null())
     RecordSeedFreshness(base::Time::Now() - safe_seed_fetch_time);
 
-  return true;
+  return result;
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
@@ -519,8 +519,20 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
                                 client_filterable_state->policy_restriction);
 
   VariationsSeed seed;
-  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode() &&
-                          LoadSafeSeed(&seed, client_filterable_state.get());
+  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
+  if (run_in_safe_mode) {
+    LoadSeedResult result = LoadSafeSeed(&seed, client_filterable_state.get());
+    if (result != LoadSeedResult::SUCCESS && result != LoadSeedResult::EMPTY) {
+      // If Chrome should run in safe mode, but the safe seed is corrupted or
+      // has an invalid signature, fall back to the client-side defaults.
+      return false;
+    }
+    if (result == LoadSeedResult::EMPTY) {
+      // If the safe seed is empty, attempt to run with the most recent seed
+      // instead of falling back to client-side defaults.
+      run_in_safe_mode = false;
+    }
+  }
 
   std::string seed_data;
   std::string base64_seed_signature;
