@@ -228,10 +228,8 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
                                           const WaitingCB& waiting_cb) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(!init_cb_);
 
   client_output_cb_ = std::move(output_cb);
-  init_cb_ = std::move(init_cb);
   waiting_cb_ = std::move(waiting_cb);
 
   // Initialize() and correspondingly InitializeTask(), are called both on first
@@ -245,7 +243,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     if (!decoder_) {
       DVLOGF(2) << "|decoder_| creation failed.";
       client_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(init_cb_),
+          FROM_HERE, base::BindOnce(std::move(init_cb),
                                     StatusCode::kDecoderFailedCreation));
       return;
     }
@@ -254,17 +252,17 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   decoder_->Initialize(
       config, cdm_context,
       base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
-                     decoder_weak_this_, cdm_context),
+                     decoder_weak_this_, std::move(init_cb), cdm_context),
       base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
                           decoder_weak_this_),
       base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
                           decoder_weak_this_));
 }
 
-void VideoDecoderPipeline::OnInitializeDone(CdmContext* cdm_context,
+void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
+                                            CdmContext* cdm_context,
                                             Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(init_cb_);
   DVLOGF(4) << "Initialization status = " << status.code();
 
   if (!status.is_ok()) {
@@ -287,7 +285,7 @@ void VideoDecoderPipeline::OnInitializeDone(CdmContext* cdm_context,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   client_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(init_cb_), status));
+                                base::BindOnce(std::move(init_cb), status));
 }
 
 void VideoDecoderPipeline::Reset(base::OnceClosure reset_cb) {

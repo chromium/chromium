@@ -43,10 +43,10 @@ class MediaLog;
 // Note: All methods and callbacks should be called on the same sequence.
 class MEDIA_GPU_EXPORT DecoderInterface {
  public:
-  using InitCB = base::OnceCallback<void(Status status)>;
+  using InitCB = VideoDecoder::InitCB;
   // TODO(crbug.com/998413): Replace VideoFrame to GpuMemoryBuffer-based
   // instance.
-  using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
+  using OutputCB = VideoDecoder::OutputCB;
   using DecodeCB = VideoDecoder::DecodeCB;
 
   // Client interface of DecoderInterface.
@@ -197,7 +197,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void ResetTask(base::OnceClosure reset_cb);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
-  void OnInitializeDone(CdmContext* cdm_context, Status status);
+  void OnInitializeDone(InitCB init_cb, CdmContext* cdm_context, Status status);
 
   void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
   void OnResetDone(base::OnceClosure reset_cb);
@@ -268,7 +268,6 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // Callback from the client. These callback are called on
   // |client_task_runner_|.
-  InitCB init_cb_;
   OutputCB client_output_cb_;
   DecodeCB client_flush_cb_;
   WaitingCB waiting_cb_;
