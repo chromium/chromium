@@ -9,6 +9,8 @@
 namespace chromeos {
 namespace settings {
 
+using apps_notification::mojom::AppNotificationsHandler;
+
 AppNotificationHandler ::AppNotificationHandler() {
   ash::MessageCenterAsh::Get()->AddObserver(this);
 }

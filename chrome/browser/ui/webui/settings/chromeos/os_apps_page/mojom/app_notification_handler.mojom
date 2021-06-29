@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.settings.apps_notification.mojom;
+
+// Browser interface.
+// Interface for for fetching and setting App notification
+// properties in OSSettings.
+interface AppNotificationsHandler {
+  // Updates QuietMode to enabled or disabled based on toggle state.
+  SetQuietMode(bool enabled);
+};

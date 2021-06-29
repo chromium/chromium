@@ -2755,6 +2755,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/nearby_share/public/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
+      "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chrome/browser/web_applications/preinstalled_web_apps",
       "//chrome/services/file_util/public/cpp",
