@@ -107,9 +107,9 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 // Removes all tasks except tasks handled by file manager.
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    if ((*tasks)[i].task_descriptor().app_id == kFileManagerAppId)
-      filtered.push_back((*tasks)[i]);
+  for (FullTaskDescriptor& task : *tasks) {
+    if (task.task_descriptor().app_id == kFileManagerAppId)
+      filtered.push_back(task);
   }
   tasks->swap(filtered);
 }
@@ -118,12 +118,12 @@ void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
 void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
                                       std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    const auto& action = (*tasks)[i].task_descriptor().action_id;
-    if ((*tasks)[i].task_descriptor().app_id != kFileManagerAppId) {
-      filtered.push_back((*tasks)[i]);
+  for (FullTaskDescriptor& task : *tasks) {
+    const auto& action = task.task_descriptor().action_id;
+    if (task.task_descriptor().app_id != kFileManagerAppId) {
+      filtered.push_back(task);
     } else if (actions.find(action) == actions.end()) {
-      filtered.push_back((*tasks)[i]);
+      filtered.push_back(task);
     }
   }
 
@@ -300,8 +300,7 @@ bool OpenFilesWithBrowser(Profile* profile,
                           const std::vector<FileSystemURL>& file_urls,
                           const std::string& action_id) {
   int num_opened = 0;
-  for (size_t i = 0; i < file_urls.size(); ++i) {
-    const FileSystemURL& file_url = file_urls[i];
+  for (const FileSystemURL& file_url : file_urls) {
     if (chromeos::FileSystemBackend::CanHandleURL(file_url)) {
       num_opened +=
           util::OpenFileWithBrowser(profile, file_url, action_id) ? 1 : 0;
@@ -384,19 +383,17 @@ void UpdateDefaultTask(PrefService* pref_service,
   if (!mime_types.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
-    for (std::set<std::string>::const_iterator iter = mime_types.begin();
-        iter != mime_types.end(); ++iter) {
-      mime_type_pref->SetKey(*iter, base::Value(task_id));
+    for (const std::string& mime_type : mime_types) {
+      mime_type_pref->SetKey(mime_type, base::Value(task_id));
     }
   }
 
   if (!suffixes.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksBySuffix);
-    for (std::set<std::string>::const_iterator iter = suffixes.begin();
-        iter != suffixes.end(); ++iter) {
+    for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
-      std::string lower_suffix = base::ToLowerASCII(*iter);
+      std::string lower_suffix = base::ToLowerASCII(suffix);
       mime_type_pref->SetKey(lower_suffix, base::Value(task_id));
     }
   }
@@ -558,8 +555,8 @@ bool ExecuteFileTask(Profile* profile,
         std::move(done));
   } else if (task.task_type == TASK_TYPE_FILE_HANDLER) {
     std::vector<base::FilePath> paths;
-    for (size_t i = 0; i != file_urls.size(); ++i)
-      paths.push_back(file_urls[i].path());
+    for (const FileSystemURL& file_url : file_urls)
+      paths.push_back(file_url.path());
 
     DCHECK(!extension->from_bookmark());
     apps::LaunchPlatformAppWithFileHandler(extension_task_profile, extension,
@@ -656,15 +653,11 @@ void FindFileHandlerTasks(Profile* profile,
   const extensions::ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
 
-  for (extensions::ExtensionSet::const_iterator iter =
-           enabled_extensions.begin();
-       iter != enabled_extensions.end();
-       ++iter) {
-    const Extension* extension = iter->get();
-
+  for (const scoped_refptr<const extensions::Extension> extension :
+       enabled_extensions) {
     // Check that the extension can be launched with files. This includes all
     // platform apps and allowlisted extensions.
-    if (!CanLaunchViaEvent(extension)) {
+    if (!CanLaunchViaEvent(extension.get())) {
       continue;
     }
 
@@ -758,11 +751,7 @@ void FindFileBrowserHandlerTasks(
 
   const extensions::ExtensionSet& enabled_extensions =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-  for (file_browser_handlers::FileBrowserHandlerList::const_iterator iter =
-           common_tasks.begin();
-       iter != common_tasks.end();
-       ++iter) {
-    const FileBrowserHandler* handler = *iter;
+  for (const FileBrowserHandler* handler : common_tasks) {
     const std::string extension_id = handler->extension_id();
     const Extension* extension = enabled_extensions.GetByID(extension_id);
     DCHECK(extension);
@@ -833,10 +822,9 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
                              std::vector<FullTaskDescriptor>* tasks) {
   // Collect the default tasks from the preferences into a set.
   std::set<TaskDescriptor> default_tasks;
-  for (std::vector<extensions::EntryInfo>::const_iterator it = entries.begin();
-       it != entries.end(); ++it) {
-    const base::FilePath& file_path = it->path;
-    const std::string& mime_type = it->mime_type;
+  for (const extensions::EntryInfo& entry : entries) {
+    const base::FilePath& file_path = entry.path;
+    const std::string& mime_type = entry.mime_type;
     TaskDescriptor default_task;
     if (file_tasks::GetDefaultTaskFromPrefs(
             pref_service, mime_type, file_path.Extension(), &default_task)) {
@@ -846,11 +834,10 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
 
   // Go through all the tasks from the beginning and see if there is any
   // default task. If found, pick and set it as default and return.
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    FullTaskDescriptor* task = &tasks->at(i);
-    DCHECK(!task->is_default());
-    if (base::Contains(default_tasks, task->task_descriptor())) {
-      task->set_is_default(true);
+  for (FullTaskDescriptor& task : *tasks) {
+    DCHECK(!task.is_default());
+    if (base::Contains(default_tasks, task.task_descriptor())) {
+      task.set_is_default(true);
       return;
     }
   }
@@ -858,8 +845,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // No default task, check for an explicit file extension match (without
   // MIME match) in the extension manifest and pick that over the fallback
   // handlers below (see crbug.com/803930)
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    FullTaskDescriptor& task = (*tasks)[i];
+  for (FullTaskDescriptor& task : *tasks) {
     if (task.is_file_extension_match() && !task.is_generic_file_handler() &&
         !IsFallbackFileHandler(task)) {
       task.set_is_default(true);
@@ -869,8 +855,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
 
   // Prefer a fallback app over viewing in the browser (crbug.com/1111399).
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    FullTaskDescriptor& task = (*tasks)[i];
+  for (FullTaskDescriptor& task : *tasks) {
     if (IsFallbackFileHandler(task) &&
         task.task_descriptor().action_id != "view-in-browser") {
       const extensions::EntryInfo entry = entries[0];
@@ -886,8 +871,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
 
   // No default tasks found. If there is any fallback file browser handler,
   // make it as default task, so it's selected by default.
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    FullTaskDescriptor& task = (*tasks)[i];
+  for (FullTaskDescriptor& task : *tasks) {
     DCHECK(!task.is_default());
     if (IsFallbackFileHandler(task)) {
       task.set_is_default(true);
