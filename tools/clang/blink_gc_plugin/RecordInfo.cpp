@@ -318,17 +318,11 @@ CXXMethodDecl* RecordInfo::DeclaresNewOperator() {
 bool RecordInfo::RequiresTraceMethod() {
   if (IsStackAllocated())
     return false;
-  if (GetTraceMethod())
-    return true;
   unsigned bases_with_trace = 0;
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.NeedsTracing().IsNeeded())
       ++bases_with_trace;
   }
-  // If a single base has a Trace method, this type can inherit the Trace
-  // method from that base. If more than a single base has a Trace method,
-  // this type needs it's own Trace method which will delegate to each of
-  // the bases' Trace methods.
   if (bases_with_trace > 1)
     return true;
   GetFields();
@@ -592,8 +586,6 @@ bool RecordInfo::NeedsFinalization() {
 
 // A class needs tracing if:
 // - it is allocated on the managed heap,
-// - it has a Trace method (i.e. the plugin assumes such a method was added for
-//                          a reason).
 // - it is derived from a class that needs tracing, or
 // - it contains fields that need tracing.
 //
@@ -603,9 +595,6 @@ TracingStatus RecordInfo::NeedsTracing(Edge::NeedsTracingOption option) {
 
   if (IsStackAllocated())
     return TracingStatus::Unneeded();
-
-  if (GetTraceMethod())
-    return TracingStatus::Needed();
 
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.info()->NeedsTracing(option).IsNeeded())
