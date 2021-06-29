@@ -401,8 +401,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Renderer.CALayerResult" enum="CALayerResult"
-    expires_after="2020-04-19">
+    expires_after="2021-12-31">
   <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The outcome of attempting to replace all renderer tiles with CALayers.
     Either success, or the first reason why a DrawQuad couldn't be replaced by a
