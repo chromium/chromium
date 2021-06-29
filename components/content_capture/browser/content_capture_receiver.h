@@ -59,6 +59,9 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   void UpdateFaviconURL(
       const std::vector<blink::mojom::FaviconURLPtr>& candidates);
 
+  static void DisableGetFaviconFromWebContentsForTesting();
+  static bool disable_get_favicon_from_web_contents_for_testing();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, RenderFrameHostGone);
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, TitleUpdateTaskDelay);
@@ -103,6 +106,8 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   // The delay of |notify_title_update_callback_|, is increased exponentially to
   // prevent running frequently.
   unsigned exponential_delay_ = 1;
+
+  static bool disable_get_favicon_from_web_contents_for_testing_;
 
   mojo::AssociatedRemote<mojom::ContentCaptureSender> content_capture_sender_;
   DISALLOW_COPY_AND_ASSIGN(ContentCaptureReceiver);

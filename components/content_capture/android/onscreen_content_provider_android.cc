@@ -55,10 +55,14 @@ ScopedJavaLocalRef<jobject> ToJavaObjectOfContentCaptureFrame(
   if (!data.title.empty())
     jtitle = ConvertUTF16ToJavaString(env, data.title);
 
+  ScopedJavaLocalRef<jstring> jfavicon;
+  if (!data.favicon.empty())
+    jfavicon = ConvertUTF8ToJavaString(env, data.favicon);
+
   ScopedJavaLocalRef<jobject> jdata =
       Java_ContentCaptureFrame_createContentCaptureFrame(
           env, data.id, jurl, data.bounds.x(), data.bounds.y() + offset_y,
-          data.bounds.width(), data.bounds.height(), jtitle);
+          data.bounds.width(), data.bounds.height(), jtitle, jfavicon);
   if (jdata.is_null())
     return jdata;
   for (const auto& child : data.children) {
@@ -188,6 +192,22 @@ void OnscreenContentProviderAndroid::DidUpdateTitle(
   if (jdata.is_null())
     return;
   Java_OnscreenContentProvider_didUpdateTitle(env, java_ref_, jdata);
+}
+
+void OnscreenContentProviderAndroid::DidUpdateFavicon(
+    const ContentCaptureFrame& main_frame) {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(java_ref_.obj());
+
+  auto* web_contents = GetWebContents();
+  DCHECK(web_contents);
+  const int offset_y = Java_OnscreenContentProvider_getOffsetY(
+      env, java_ref_, web_contents->GetJavaWebContents());
+  ScopedJavaLocalRef<jobject> jdata =
+      ToJavaObjectOfContentCaptureFrame(env, main_frame, offset_y);
+  if (jdata.is_null())
+    return;
+  Java_OnscreenContentProvider_didUpdateFavicon(env, java_ref_, jdata);
 }
 
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {

@@ -16,19 +16,21 @@ import org.chromium.base.annotations.CalledByNative;
 public class ContentCaptureFrame extends ContentCaptureDataBase {
     private final String mUrl;
     private final String mTitle;
+    private final String mFavicon;
 
     @CalledByNative
     @VisibleForTesting
-    public static ContentCaptureFrame createContentCaptureFrame(
-            long id, String value, int x, int y, int width, int height, String title) {
-        return new ContentCaptureFrame(id, value, x, y, width, height, title);
+    public static ContentCaptureFrame createContentCaptureFrame(long id, String value, int x, int y,
+            int width, int height, String title, String favicon) {
+        return new ContentCaptureFrame(id, value, x, y, width, height, title, favicon);
     }
 
-    private ContentCaptureFrame(
-            long id, String value, int x, int y, int width, int height, String title) {
+    private ContentCaptureFrame(long id, String value, int x, int y, int width, int height,
+            String title, String favicon) {
         super(id, new Rect(x, y, x + width, y + height));
         mUrl = value;
         mTitle = title;
+        mFavicon = favicon;
     }
 
     public String getUrl() {
@@ -37,6 +39,10 @@ public class ContentCaptureFrame extends ContentCaptureDataBase {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public String getFavicon() {
+        return mFavicon;
     }
 
     @Override

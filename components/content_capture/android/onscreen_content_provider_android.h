@@ -32,6 +32,7 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
                         const std::vector<int64_t>& data) override;
   void DidRemoveSession(const ContentCaptureSession& session) override;
   void DidUpdateTitle(const ContentCaptureFrame& main_frame) override;
+  void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
   bool ShouldCapture(const GURL& url) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

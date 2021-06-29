@@ -55,6 +55,8 @@ class ContentCaptureConsumer {
   virtual void DidRemoveSession(const ContentCaptureSession& session) = 0;
   // Invoked when the given |main_frame|'s title updated.
   virtual void DidUpdateTitle(const ContentCaptureFrame& main_frame) = 0;
+  // Invoked when the given |main_frame|'s favicon updated.
+  virtual void DidUpdateFavicon(const ContentCaptureFrame& main_frame) = 0;
 
   // Return if the |url| shall be captured. Even return false, the content might
   // still be streamed because of the other consumers require it. Consumer can

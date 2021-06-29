@@ -291,7 +291,7 @@ public class PlatformAPIWrapperTest {
         FrameSession frameSession = new FrameSession(1);
         frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
                 MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), MAIN_TITLE));
+                MAIN_FRAME_RECT.height(), MAIN_TITLE, null));
         return frameSession;
     }
 
@@ -300,7 +300,7 @@ public class PlatformAPIWrapperTest {
         frameSessionForRemoveTask.add(0,
                 ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID, CHILD_URL,
                         CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                        CHILD_FRAME_RECT.height(), CHILD_TITLE));
+                        CHILD_FRAME_RECT.height(), CHILD_TITLE, null));
         return frameSessionForRemoveTask;
     }
 
@@ -309,7 +309,7 @@ public class PlatformAPIWrapperTest {
         FrameSession frameSession = createFrameSession();
         ContentCaptureFrame data = ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID,
                 CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                CHILD_FRAME_RECT.height(), CHILD_TITLE);
+                CHILD_FRAME_RECT.height(), CHILD_TITLE, null);
         ContentCaptureData.createContentCaptureData(data, CHILD1_ID, CHILD1_TEXT, CHILD1_RECT.left,
                 CHILD1_RECT.top, CHILD1_RECT.width(), CHILD1_RECT.height());
         ContentCaptureData.createContentCaptureData(data, CHILD2_ID, CHILD2_TEXT, CHILD2_RECT.left,
@@ -321,7 +321,7 @@ public class PlatformAPIWrapperTest {
         // Modifies child2
         ContentCaptureFrame changeTextData = ContentCaptureFrame.createContentCaptureFrame(
                 CHILD_FRAME_ID, CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top,
-                CHILD_FRAME_RECT.width(), CHILD_FRAME_RECT.height(), CHILD_TITLE);
+                CHILD_FRAME_RECT.width(), CHILD_FRAME_RECT.height(), CHILD_TITLE, null);
         ContentCaptureData.createContentCaptureData(changeTextData, CHILD2_ID, CHILD2_NEW_TEXT,
                 CHILD2_RECT.left, CHILD2_RECT.top, CHILD2_RECT.width(), CHILD2_RECT.height());
         return new ContentUpdateTask(createFrameSession(), changeTextData, mRootPlatformSession);
@@ -340,7 +340,7 @@ public class PlatformAPIWrapperTest {
     private TitleUpdateTask createTitleUpdateTask() {
         ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
                 MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE);
+                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, null);
         return new TitleUpdateTask(mainFrame, mRootPlatformSession);
     }
 

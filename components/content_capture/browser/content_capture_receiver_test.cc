@@ -113,6 +113,8 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
     updated_title_ = main_frame.title;
   }
 
+  void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override {}
+
   bool ShouldCapture(const GURL& url) override { return false; }
 
   const ContentCaptureSession& parent_session() const {

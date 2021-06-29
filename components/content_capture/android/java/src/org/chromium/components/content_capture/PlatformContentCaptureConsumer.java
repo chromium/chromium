@@ -83,6 +83,9 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     }
 
     @Override
+    public void onFaviconUpdated(ContentCaptureFrame mainFrame) {}
+
+    @Override
     public void onContentRemoved(FrameSession frame, long[] removedIds) {
         if (frame.isEmpty() || mPlatformSession == null) return;
         new ContentRemovedTask(frame, removedIds, mPlatformSession)

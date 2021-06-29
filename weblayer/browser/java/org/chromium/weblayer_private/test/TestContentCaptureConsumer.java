@@ -19,6 +19,7 @@ public class TestContentCaptureConsumer implements ContentCaptureConsumer {
     public static final int CONTENT_REMOVED = 3;
     public static final int SESSION_REMOVED = 4;
     public static final int TITLE_UPDATED = 5;
+    public static final int FAVICON_UPDATED = 6;
 
     public TestContentCaptureConsumer(Runnable onNewEvents, ArrayList<Integer> eventsObserved) {
         mOnNewEvents = onNewEvents;
@@ -53,6 +54,12 @@ public class TestContentCaptureConsumer implements ContentCaptureConsumer {
     @Override
     public void onTitleUpdated(ContentCaptureFrame mainFrame) {
         mEventsObserved.add(TITLE_UPDATED);
+        mOnNewEvents.run();
+    }
+
+    @Override
+    public void onFaviconUpdated(ContentCaptureFrame mainFrame) {
+        mEventsObserved.add(FAVICON_UPDATED);
         mOnNewEvents.run();
     }
 

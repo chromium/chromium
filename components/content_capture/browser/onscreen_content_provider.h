@@ -58,6 +58,7 @@ class OnscreenContentProvider : public content::WebContentsObserver,
                         const std::vector<int64_t>& data);
   void DidRemoveSession(ContentCaptureReceiver* content_capture_receiver);
   void DidUpdateTitle(ContentCaptureReceiver* content_capture_receiver);
+  void DidUpdateFavicon(ContentCaptureReceiver* content_capture_receiver);
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -73,6 +74,12 @@ class OnscreenContentProvider : public content::WebContentsObserver,
 
   base::WeakPtr<OnscreenContentProvider> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void NotifyFaviconURLUpdatedForTesting(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+    NotifyFaviconURLUpdated(render_frame_host, candidates);
   }
 
 #ifdef UNIT_TEST
@@ -109,6 +116,10 @@ class OnscreenContentProvider : public content::WebContentsObserver,
   bool BuildContentCaptureSessionForMainFrame(ContentCaptureSession* session);
 
   bool ShouldCapture(const GURL& url);
+
+  void NotifyFaviconURLUpdated(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates);
 
   std::map<content::RenderFrameHost*, std::unique_ptr<ContentCaptureReceiver>>
       frame_map_;

@@ -216,10 +216,15 @@ void ContentCaptureReceiver::UpdateFaviconURL(
   if (!has_session_)
     return;
   frame_content_capture_data_.favicon = ToJSON(candidates);
+  auto* provider = GetOnscreenContentProvider(rfh_);
+  if (!provider)
+    return;
+  provider->DidUpdateFavicon(this);
 }
 
 void ContentCaptureReceiver::RetrieveFaviconURL() {
-  if (!rfh()->IsActive() || rfh()->GetMainFrame() != rfh()) {
+  if (!rfh()->IsActive() || rfh()->GetMainFrame() != rfh() ||
+      disable_get_favicon_from_web_contents_for_testing()) {
     frame_content_capture_data_.favicon = std::string();
   } else {
     frame_content_capture_data_.favicon = ToJSON(
@@ -265,6 +270,21 @@ const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
 
   has_session_ = true;
   return frame_content_capture_data_;
+}
+
+// static
+bool
+    ContentCaptureReceiver::disable_get_favicon_from_web_contents_for_testing_ =
+        false;
+
+void ContentCaptureReceiver::DisableGetFaviconFromWebContentsForTesting() {
+  disable_get_favicon_from_web_contents_for_testing_ = true;
+}
+
+// static
+bool ContentCaptureReceiver::
+    disable_get_favicon_from_web_contents_for_testing() {
+  return disable_get_favicon_from_web_contents_for_testing_;
 }
 
 }  // namespace content_capture

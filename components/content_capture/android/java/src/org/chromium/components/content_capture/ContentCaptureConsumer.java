@@ -45,6 +45,12 @@ public interface ContentCaptureConsumer {
     void onTitleUpdated(ContentCaptureFrame mainFrame);
 
     /**
+     * Invoked when the favicon is updated.
+     * @param mainFrame the frame whose favicon is updated.
+     */
+    void onFaviconUpdated(ContentCaptureFrame mainFrame);
+
+    /**
      * @param urls
      * @return if the urls shall be captured.
      *

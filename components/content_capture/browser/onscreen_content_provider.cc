@@ -217,6 +217,16 @@ void OnscreenContentProvider::DidUpdateTitle(
 void OnscreenContentProvider::DidUpdateFaviconURL(
     content::RenderFrameHost* render_frame_host,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  if (ContentCaptureReceiver::
+          disable_get_favicon_from_web_contents_for_testing()) {
+    return;
+  }
+  NotifyFaviconURLUpdated(render_frame_host, candidates);
+}
+
+void OnscreenContentProvider::NotifyFaviconURLUpdated(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   // Only set the favicons for the mainframe.
   if (render_frame_host != web_contents()->GetMainFrame())
     return;
@@ -224,6 +234,18 @@ void OnscreenContentProvider::DidUpdateFaviconURL(
   if (auto* receiver = ContentCaptureReceiverForFrame(render_frame_host)) {
     receiver->UpdateFaviconURL(candidates);
   }
+}
+
+void OnscreenContentProvider::DidUpdateFavicon(
+    ContentCaptureReceiver* content_capture_receiver) {
+  ContentCaptureSession session;
+  BuildContentCaptureSession(content_capture_receiver,
+                             /*ancestor_only=*/false, &session);
+
+  // Shall only update mainframe's title.
+  DCHECK(session.size() == 1);
+  for (auto* consumer : consumers_)
+    consumer->DidUpdateFavicon(*session.begin());
 }
 
 void OnscreenContentProvider::BuildContentCaptureSession(

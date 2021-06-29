@@ -44,6 +44,11 @@ public class ExperimentContentCaptureConsumer implements ContentCaptureConsumer 
     }
 
     @Override
+    public void onFaviconUpdated(ContentCaptureFrame mainFrame) {
+        if (sDump) Log.d(TAG, "onFaviconUpdated");
+    }
+
+    @Override
     public boolean shouldCapture(String[] urls) {
         return true;
     }

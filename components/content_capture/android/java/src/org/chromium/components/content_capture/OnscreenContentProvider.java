@@ -156,7 +156,18 @@ public class OnscreenContentProvider {
                 consumer.onTitleUpdated(mainFrame);
             }
         }
-        if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame);
+        if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame.getTitle());
+    }
+
+    @CalledByNative
+    private void didUpdateFavicon(ContentCaptureFrame mainFrame) {
+        String[] urls = buildUrls(null, mainFrame);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onFaviconUpdated(mainFrame);
+            }
+        }
+        if (sDump.booleanValue()) Log.i(TAG, "Updated Favicon: %s", mainFrame.getFavicon());
     }
 
     @CalledByNative
