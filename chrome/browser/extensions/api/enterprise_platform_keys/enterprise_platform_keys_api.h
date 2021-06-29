@@ -18,12 +18,6 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h"
-#else
-#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_ash.h"
-#endif
-
 class Extension;
 class Profile;
 
@@ -96,6 +90,30 @@ class EnterprisePlatformKeysInternalGetTokensFunction
   void OnGetKeyStores(crosapi::mojom::GetKeyStoresResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
+};
+
+class EnterprisePlatformKeysChallengeMachineKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysChallengeMachineKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnChallengeAttestationOnlyKeystore(
+      crosapi::mojom::KeystoreStringResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
+                             ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
+};
+
+class EnterprisePlatformKeysChallengeUserKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysChallengeUserKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnChallengeAttestationOnlyKeystore(
+      crosapi::mojom::KeystoreStringResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
+                             ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };
 
 }  // namespace extensions

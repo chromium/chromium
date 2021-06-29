@@ -43,11 +43,17 @@ using crosapi::mojom::KeystoreService;
 const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kExtensionDoesNotHavePermission[] =
+    "The extension does not have permission to call this function.";
 
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  (void)browser_context;
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
+      << "Attempted to use an incorrect profile. Please file a bug at "
+         "https://bugs.chromium.org/ if this happens.";
   return chromeos::LacrosService::Get()->GetRemote<KeystoreService>().get();
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -102,6 +108,14 @@ std::string ValidateInput(const std::string& token_id,
 
   *keystore = keystore_type.value();
   return "";
+}
+
+std::vector<uint8_t> VectorFromString(const std::string& s) {
+  return std::vector<uint8_t>(s.begin(), s.end());
+}
+
+std::string StringFromVector(const std::vector<uint8_t>& v) {
+  return std::string(v.begin(), v.end());
 }
 
 }  // namespace
@@ -350,6 +364,92 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores(
     }
   }
   Respond(ArgumentList(api_epki::GetTokens::Results::Create(key_stores)));
+}
+
+//------------------------------------------------------------------------------
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
+  std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
+      api_epk::ChallengeMachineKey::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::string error = ValidateCrosapi(
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      browser_context());
+  if (!error.empty())
+    return RespondNow(Error(error));
+
+  if (!platform_keys::IsExtensionAllowed(
+          Profile::FromBrowserContext(browser_context()), extension())) {
+    return RespondNow(Error(kExtensionDoesNotHavePermission));
+  }
+
+  auto c = base::BindOnce(&EnterprisePlatformKeysChallengeMachineKeyFunction::
+                              OnChallengeAttestationOnlyKeystore,
+                          this);
+  GetKeystoreService(browser_context())
+      ->ChallengeAttestationOnlyKeystore(
+          StringFromVector(params->challenge),
+          crosapi::mojom::KeystoreType::kDevice,
+          /*migrate=*/params->register_key ? *params->register_key : false,
+          std::move(c));
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysChallengeMachineKeyFunction::
+    OnChallengeAttestationOnlyKeystore(
+        crosapi::mojom::KeystoreStringResultPtr result) {
+  if (result->is_error_message()) {
+    Respond(Error(result->get_error_message()));
+    return;
+  }
+  DCHECK(result->is_challenge_response());
+
+  Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
+      VectorFromString(result->get_challenge_response()))));
+}
+
+//------------------------------------------------------------------------------
+
+ExtensionFunction::ResponseAction
+EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
+  std::unique_ptr<api_epk::ChallengeUserKey::Params> params(
+      api_epk::ChallengeUserKey::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::string error = ValidateCrosapi(
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      browser_context());
+  if (!error.empty())
+    return RespondNow(Error(error));
+
+  if (!platform_keys::IsExtensionAllowed(
+          Profile::FromBrowserContext(browser_context()), extension())) {
+    return RespondNow(Error(kExtensionDoesNotHavePermission));
+  }
+
+  auto c = base::BindOnce(&EnterprisePlatformKeysChallengeUserKeyFunction::
+                              OnChallengeAttestationOnlyKeystore,
+                          this);
+  GetKeystoreService(browser_context())
+      ->ChallengeAttestationOnlyKeystore(StringFromVector(params->challenge),
+                                         crosapi::mojom::KeystoreType::kUser,
+                                         /*migrate=*/params->register_key,
+                                         std::move(c));
+  return RespondLater();
+}
+
+void EnterprisePlatformKeysChallengeUserKeyFunction::
+    OnChallengeAttestationOnlyKeystore(
+        crosapi::mojom::KeystoreStringResultPtr result) {
+  if (result->is_error_message()) {
+    Respond(Error(result->get_error_message()));
+    return;
+  }
+  DCHECK(result->is_challenge_response());
+  Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
+      VectorFromString(result->get_challenge_response()))));
 }
 
 }  // namespace extensions
