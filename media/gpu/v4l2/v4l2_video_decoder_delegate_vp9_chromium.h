@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_H_
-#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_H_
+#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_CHROMIUM_H_
+#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_CHROMIUM_H_
 
 #include "media/gpu/vp9_decoder.h"
 
@@ -13,12 +13,12 @@ class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
 class V4L2Device;
 
-class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
+class V4L2VideoDecoderDelegateVP9Chromium : public VP9Decoder::VP9Accelerator {
  public:
-  explicit V4L2VideoDecoderDelegateVP9(
+  explicit V4L2VideoDecoderDelegateVP9Chromium(
       V4L2DecodeSurfaceHandler* surface_handler,
       V4L2Device* device);
-  ~V4L2VideoDecoderDelegateVP9() override;
+  ~V4L2VideoDecoderDelegateVP9Chromium() override;
 
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
@@ -42,9 +42,9 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
 
   bool device_needs_frame_context_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP9);
+  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP9Chromium);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_H_
+#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_CHROMIUM_H_

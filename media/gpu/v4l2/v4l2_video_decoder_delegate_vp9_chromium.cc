@@ -12,7 +12,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
-#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_chromium.h"
 
 namespace media {
 
@@ -169,7 +169,7 @@ void GetVP9ProbsParams(const struct v4l2_vp9_probabilities* v4l2_probs,
 
 }  // namespace
 
-V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
+V4L2VideoDecoderDelegateVP9Chromium::V4L2VideoDecoderDelegateVP9Chromium(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
     : surface_handler_(surface_handler), device_(device) {
@@ -180,9 +180,11 @@ V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
       device_->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0));
 }
 
-V4L2VideoDecoderDelegateVP9::~V4L2VideoDecoderDelegateVP9() = default;
+V4L2VideoDecoderDelegateVP9Chromium::~V4L2VideoDecoderDelegateVP9Chromium() =
+    default;
 
-scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
+scoped_refptr<VP9Picture>
+V4L2VideoDecoderDelegateVP9Chromium::CreateVP9Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       surface_handler_->CreateSurface();
   if (!dec_surface)
@@ -191,7 +193,7 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
   return new V4L2VP9Picture(std::move(dec_surface));
 }
 
-DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
+DecodeStatus V4L2VideoDecoderDelegateVP9Chromium::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
@@ -328,7 +330,8 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   return DecodeStatus::kOk;
 }
 
-bool V4L2VideoDecoderDelegateVP9::OutputPicture(scoped_refptr<VP9Picture> pic) {
+bool V4L2VideoDecoderDelegateVP9Chromium::OutputPicture(
+    scoped_refptr<VP9Picture> pic) {
   // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP9PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
@@ -336,8 +339,9 @@ bool V4L2VideoDecoderDelegateVP9::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                                  Vp9FrameContext* frame_ctx) {
+bool V4L2VideoDecoderDelegateVP9Chromium::GetFrameContext(
+    scoped_refptr<VP9Picture> pic,
+    Vp9FrameContext* frame_ctx) {
   auto ctx_id = pic->frame_hdr->frame_context_idx_to_save_probs;
 
   struct v4l2_ctrl_vp9_frame_ctx v4l2_vp9_ctx;
@@ -362,7 +366,7 @@ bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9::IsFrameContextRequired() const {
+bool V4L2VideoDecoderDelegateVP9Chromium::IsFrameContextRequired() const {
   return device_needs_frame_context_;
 }
 
