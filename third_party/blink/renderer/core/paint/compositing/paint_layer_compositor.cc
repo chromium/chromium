@@ -174,7 +174,7 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursive(
   UpdateAssignmentsIfNeededRecursiveInternal(target_state,
                                              compositing_reasons_stats);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Compositing.LayerPromotionCount.Overlap",
-                              compositing_reasons_stats.overlap_layers, 1, 100,
+                              compositing_reasons_stats.overlap_layers, 1, 1000,
                               5);
   UMA_HISTOGRAM_CUSTOM_COUNTS(
       "Blink.Compositing.LayerPromotionCount.ActiveAnimation",
