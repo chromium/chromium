@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -89,6 +92,7 @@ public class AdaptiveToolbarButtonControllerTest {
     public void tearDown() {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
+        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }
 
     @Test
@@ -331,6 +335,36 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
+    public void testCustomization_prefChangeTriggersButtonChange() {
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.VOICE));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        verify(mActivityLifecycleDispatcher).register(adaptiveToolbarButtonController);
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        adaptiveToolbarButtonController.onFinishNativeInitialization();
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(mVoiceToolbarButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        SharedPreferencesManager.getInstance().writeInt(
+                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.NEW_TAB);
+
+        verify(observer, times(2)).buttonDataChanged(true);
+        Assert.assertEquals(mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
     @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testLongPress() {
@@ -349,8 +383,9 @@ public class AdaptiveToolbarButtonControllerTest {
         doAnswer(listenerAnswer).when(menuCoordinator).createOnLongClickListener(any());
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                new AdaptiveToolbarButtonController(
-                        activity, settingsLauncher, mActivityLifecycleDispatcher, menuCoordinator);
+                new AdaptiveToolbarButtonController(activity, settingsLauncher,
+                        mActivityLifecycleDispatcher, menuCoordinator,
+                        SharedPreferencesManager.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         mButtonData.setCanShow(true);
@@ -373,7 +408,8 @@ public class AdaptiveToolbarButtonControllerTest {
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController(mock(Activity.class),
                         mock(SettingsLauncher.class), mActivityLifecycleDispatcher,
-                        mock(AdaptiveButtonActionMenuCoordinator.class));
+                        mock(AdaptiveButtonActionMenuCoordinator.class),
+                        SharedPreferencesManager.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
