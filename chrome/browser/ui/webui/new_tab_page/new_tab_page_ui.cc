@@ -492,7 +492,7 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+      web_contents_, GURL(chrome::kChromeUINewTabPageURL),
       navigation_start_time_);
   most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
