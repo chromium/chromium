@@ -396,32 +396,37 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
     }
   }
 
-  auto callback =
-      base::BindRepeating(&BlobUnderConstruction::OnReadyForTransport,
-                          weak_ptr_factory_.GetWeakPtr());
-
+  // BuildPreregisterdBlob might delete `this`, so store some members in local
+  // variables before calling that method.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   auto blob_impl = std::move(blob_impl_);
 
   // OnReadyForTransport can be called synchronously, which can call
   // MarkAsFinishedAndDeleteSelf synchronously, so don't access any members
   // after this call.
   std::unique_ptr<BlobDataHandle> new_handle =
-      context()->BuildPreregisteredBlob(std::move(builder_), callback);
+      context()->BuildPreregisteredBlob(
+          std::move(builder_),
+          base::BindOnce(&BlobUnderConstruction::OnReadyForTransport,
+                         weak_ptr_factory_.GetWeakPtr()));
 
-  bool is_being_built = new_handle->IsBeingBuilt();
-  auto blob_status = new_handle->GetBlobStatus();
+  // BuildPreregisteredBlob might or might not have called the callback if
+  // it finished synchronously. Additionally even if the blob didn't finish
+  // synchronously, the callback might end up never being called, for example
+  // if no transport of bytes will be needed. To make sure `this` will get
+  // cleaned up regardless of how construction completes, add a
+  // OnConstructionComplete callback.
+  if (weak_this) {
+    new_handle->RunOnConstructionComplete(base::BindOnce(
+        [](base::WeakPtr<BlobUnderConstruction> blob, BlobStatus) {
+          if (blob)
+            blob->MarkAsFinishedAndDeleteSelf();
+        },
+        std::move(weak_this)));
+  }
 
   if (blob_impl)
     blob_impl->UpdateHandle(std::move(new_handle));
-
-  // BuildPreregisteredBlob might or might not have called the callback if
-  // it finished synchronously, so call the callback directly. If it was
-  // already called |this| would have been deleted making calling the
-  // callback a no-op.
-  if (!is_being_built) {
-    callback.Run(blob_status,
-                 std::vector<BlobMemoryController::FileCreationInfo>());
-  }
 }
 
 void BlobRegistryImpl::BlobUnderConstruction::OnReadyForTransport(

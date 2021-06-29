@@ -527,6 +527,55 @@ TEST_F(BlobRegistryImplTest, Register_ValidBlobReferences) {
   EXPECT_EQ(0u, BlobsUnderConstruction());
 }
 
+TEST_F(BlobRegistryImplTest, Register_BlobReferencingPendingBlob) {
+  // Create a blob that is pending population of its data.
+  const std::string kId1 = "id1";
+  const std::string kBlob1Data = "foobar";
+  auto builder = std::make_unique<BlobDataBuilder>(kId1);
+  builder->set_content_type("text/plain");
+  BlobDataBuilder::FutureData future_data =
+      builder->AppendFutureData(kBlob1Data.length());
+  std::unique_ptr<BlobDataHandle> handle =
+      context_->BuildBlob(std::move(builder), base::DoNothing());
+
+  mojo::PendingRemote<blink::mojom::Blob> blob1_remote;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(kId1),
+                              blob1_remote.InitWithNewPipeAndPassReceiver());
+
+  // Now create a blob referencing the pending blob above.
+  std::vector<blink::mojom::DataElementPtr> elements;
+  elements.push_back(
+      blink::mojom::DataElement::NewBlob(blink::mojom::DataElementBlob::New(
+          std::move(blob1_remote), 0, kBlob1Data.length())));
+
+  mojo::PendingRemote<blink::mojom::Blob> final_blob;
+  const std::string kId2 = "id2";
+  EXPECT_TRUE(registry_->Register(final_blob.InitWithNewPipeAndPassReceiver(),
+                                  kId2, "", "", std::move(elements)));
+
+  // Run the runloop to make sure registration of blob kId2 gets far enough
+  // before blob kId1 is populated.
+  base::RunLoop().RunUntilIdle();
+
+  // Populate the data for the first blob.
+  future_data.Populate(base::as_bytes(base::make_span(kBlob1Data)));
+  context_->NotifyTransportComplete(kId1);
+
+  // Wait for kId2 to also complete.
+  std::unique_ptr<BlobDataHandle> handle2 = context_->GetBlobDataFromUUID(kId2);
+  WaitForBlobCompletion(handle2.get());
+
+  // Make sure blob was constructed correctly.
+  EXPECT_FALSE(handle2->IsBroken());
+  ASSERT_EQ(BlobStatus::DONE, handle2->GetBlobStatus());
+  BlobDataBuilder expected_blob_data(kId2);
+  expected_blob_data.AppendData(kBlob1Data);
+  EXPECT_EQ(expected_blob_data, *handle2->CreateSnapshot());
+
+  // And make sure we're not leaking any under construction blobs.
+  EXPECT_EQ(0u, BlobsUnderConstruction());
+}
+
 TEST_F(BlobRegistryImplTest, Register_UnreadableFile) {
   delegate_ptr_->can_read_file_result = false;
 
@@ -601,7 +650,7 @@ TEST_F(BlobRegistryImplTest, Register_FileSystemFile_InvalidScheme) {
   EXPECT_EQ(0u, BlobsUnderConstruction());
 }
 
-TEST_F(BlobRegistryImplTest, Register_FileSystemFile_UnreadablFile) {
+TEST_F(BlobRegistryImplTest, Register_FileSystemFile_UnreadableFile) {
   delegate_ptr_->can_read_file_system_file_result = false;
 
   const std::string kId = "id";
