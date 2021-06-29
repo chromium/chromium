@@ -12,6 +12,9 @@ for the rules we're checking against here.
 
 import os
 
+USE_PYTHON3 = True
+
+
 def GetPathsToPrepend(input_api):
   web_dev_style_path = input_api.os_path.join(
       input_api.change.RepositoryRoot(),

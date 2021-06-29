@@ -8,6 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
 ACTION_XML_PATH = '../../../tools/metrics/actions/actions.xml'
 
 
