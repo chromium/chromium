@@ -154,8 +154,6 @@ class Extractor {
           return false;
       }
     }
-
-    return true;
   }
 
  private:

@@ -202,7 +202,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
         default:
           return BluetoothDeviceType::AUDIO;
       }
-      break;
     case 0x05:
       // Peripheral major device class.
       switch ((bluetooth_class & 0xc0) >> 6) {
@@ -218,7 +217,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
             default:
               return BluetoothDeviceType::PERIPHERAL;
           }
-          break;
         case 0x01:
           // Keyboard.
           return BluetoothDeviceType::KEYBOARD;
@@ -232,7 +230,6 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
               // Mouse.
               return BluetoothDeviceType::MOUSE;
           }
-          break;
         case 0x03:
           // Combo device.
           return BluetoothDeviceType::KEYBOARD_MOUSE_COMBO;
