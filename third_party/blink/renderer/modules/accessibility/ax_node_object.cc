@@ -3875,11 +3875,16 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
   Node* child_node = child->GetNode();
 
   // <area> children should only be added via AddImageMapChildren(), as the
-  // children of an <image usemap>, and never alone or as children of a <map>.
-  DCHECK(IsA<HTMLImageElement>(GetNode()) || !IsA<HTMLAreaElement>(child_node))
-      << "Area elements can only be added by image parents: "
-      << child->ToString(true, true) << " had a parent of "
-      << ToString(true, true);
+  // descendants of an <image usemap> -- never alone or as children of a <map>.
+  if (IsA<HTMLAreaElement>(child_node)) {
+    AXObject* ancestor = this;
+    while (ancestor && !IsA<HTMLImageElement>(ancestor->GetNode()))
+      ancestor = ancestor->CachedParentObject();
+    DCHECK(ancestor && IsA<HTMLImageElement>(ancestor->GetNode()))
+        << "Area elements can only be added by image parents: "
+        << child->ToString(true, true) << " had a parent of "
+        << ToString(true, true);
+  }
 
   // An option or popup for a <select size=1> must only be added via an
   // overridden AddChildren() on AXMenuList/AXMenuListPopup.

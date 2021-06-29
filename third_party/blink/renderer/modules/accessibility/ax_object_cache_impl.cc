@@ -460,9 +460,8 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (!node->IsElementNode())
     return false;  // Only documents, elements and text nodes get ax objects.
 
-  if (IsA<HTMLAreaElement>(node) &&
-      !Traversal<HTMLMapElement>::FirstAncestor(*node)) {
-    return false;  // <area> without ancestor <map> is not relevant.
+  if (IsA<HTMLAreaElement>(node) && !IsA<HTMLMapElement>(node->parentNode())) {
+    return false;  // <area> without parent <map> is not relevant.
   }
 
   if (IsA<HTMLMapElement>(node))

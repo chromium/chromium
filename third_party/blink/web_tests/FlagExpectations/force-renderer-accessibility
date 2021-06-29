@@ -6,7 +6,6 @@
 # crbug.com/1138028 tracks the removal of these failure expectations
 
 # Crashes
-accessibility/image-map-with-indirect-area-crash.html [ CRASH ]
 editing/execCommand/delete-image-in-anchor.html [ CRASH ]
 external/wpt/css/CSS2/normal-flow/block-in-inline-remove-002.xht [ CRASH ]
 external/wpt/css/CSS2/normal-flow/block-in-inline-remove-004.xht [ CRASH ]
