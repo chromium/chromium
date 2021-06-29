@@ -379,7 +379,10 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
   BookmarkEditor::EditDetails details =
       BookmarkEditor::EditDetails::AddFolder(bb_node, 1);
-  details.urls.push_back(std::make_pair(GURL(base_path() + "x"), u"z"));
+  BookmarkEditor::EditDetails::BookmarkData url_data;
+  url_data.title = u"z";
+  url_data.url = GURL(base_path() + "x");
+  details.bookmark_data.children.push_back(url_data);
   CreateEditor(profile_.get(), bb_node, details, BookmarkEditorView::SHOW_TREE);
 
   // The url field shouldn't be visible.
@@ -398,8 +401,8 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
   const BookmarkNode* new_child = new_node->children()[0].get();
   // Make sure the child url/title match.
   EXPECT_EQ(BookmarkNode::URL, new_child->type());
-  EXPECT_EQ(details.urls[0].second, new_child->GetTitle());
-  EXPECT_EQ(details.urls[0].first, new_child->url());
+  EXPECT_EQ(details.bookmark_data.children.at(0).title, new_child->GetTitle());
+  EXPECT_EQ(details.bookmark_data.children.at(0).url, new_child->url());
 }
 
 // Creates a new folder and selects a different folder for the folder to appear
@@ -407,7 +410,10 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
 TEST_F(BookmarkEditorViewTest, MoveFolder) {
   BookmarkEditor::EditDetails details = BookmarkEditor::EditDetails::AddFolder(
       model_->bookmark_bar_node(), static_cast<size_t>(-1));
-  details.urls.push_back(std::make_pair(GURL(base_path() + "x"), u"z"));
+  BookmarkEditor::EditDetails::BookmarkData url_data;
+  url_data.title = u"z";
+  url_data.url = GURL(base_path() + "x");
+  details.bookmark_data.children.push_back(url_data);
   CreateEditor(profile_.get(), model_->bookmark_bar_node(),
                details, BookmarkEditorView::SHOW_TREE);
 
@@ -426,8 +432,8 @@ TEST_F(BookmarkEditorViewTest, MoveFolder) {
   const BookmarkNode* new_child = new_node->children()[0].get();
   // Make sure the child url/title match.
   EXPECT_EQ(BookmarkNode::URL, new_child->type());
-  EXPECT_EQ(details.urls[0].second, new_child->GetTitle());
-  EXPECT_EQ(details.urls[0].first, new_child->url());
+  EXPECT_EQ(details.bookmark_data.children.at(0).title, new_child->GetTitle());
+  EXPECT_EQ(details.bookmark_data.children.at(0).url, new_child->url());
 }
 
 // Verifies the title of a new folder is updated correctly if ApplyEdits() is

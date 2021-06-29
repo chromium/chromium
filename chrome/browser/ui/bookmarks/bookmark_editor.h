@@ -35,6 +35,18 @@ class BookmarkEditor {
   // Describes what the user is editing.
   class EditDetails {
    public:
+    struct BookmarkData {
+      BookmarkData();
+      BookmarkData(BookmarkData const& other);
+      ~BookmarkData();
+
+      std::u16string title;
+
+      // Exactly one of the following should be non-empty.
+      absl::optional<GURL> url;
+      std::vector<BookmarkData> children;
+    };
+
     // Returns the type of the existing or new node.
     bookmarks::BookmarkNode::Type GetNodeType() const;
 
@@ -90,13 +102,10 @@ class BookmarkEditor {
     // the new node at.
     absl::optional<size_t> index;
 
-    // If type == NEW_URL this gives the URL/title.
-    GURL url;
-    std::u16string title;
-
-    // If type == NEW_FOLDER, this is the urls/title pairs to add to the
-    // folder.
-    std::vector<std::pair<GURL, std::u16string>> urls;
+    // If type == NEW_URL this contains the URL/title. If type == NEW_FOLDER,
+    // this contains the folder title and any urls/title pairs or nested
+    // folders it should contain.
+    BookmarkData bookmark_data;
 
    private:
     explicit EditDetails(Type node_type);

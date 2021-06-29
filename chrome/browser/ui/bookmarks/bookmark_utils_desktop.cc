@@ -15,7 +15,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -77,14 +78,28 @@ int ChildURLCountTotal(const BookmarkNode* node) {
 
 #if !defined(OS_ANDROID)
 // Returns in |urls|, the url and title pairs for each open tab in browser.
-void GetURLsForOpenTabs(Browser* browser,
-                        std::vector<std::pair<GURL, std::u16string>>* urls) {
+void GetURLsAndFoldersForOpenTabs(
+    Browser* browser,
+    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
+  std::vector<std::pair<GURL, std::u16string>> tab_entries;
+  base::flat_map<int, TabGroupData> groups_by_index;
   for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
     std::pair<GURL, std::u16string> entry;
     auto* contents = browser->tab_strip_model()->GetWebContentsAt(i);
-    if (GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second)))
-      urls->push_back(entry);
+    GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second));
+    tab_entries.push_back(entry);
+    auto tab_group_id = browser->tab_strip_model()->GetTabGroupForTab(i);
+    std::u16string title;
+    if (tab_group_id.has_value()) {
+      title = browser->tab_strip_model()
+                  ->group_model()
+                  ->GetTabGroup(tab_group_id.value())
+                  ->visual_data()
+                  ->title();
+    }
+    groups_by_index.emplace(i, std::make_pair(tab_group_id, title));
   }
+  GetURLsAndFoldersForTabEntries(folder_data, tab_entries, groups_by_index);
 }
 #endif
 
@@ -211,9 +226,9 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
   const BookmarkNode* parent = GetParentForNewNodes(model);
   BookmarkEditor::EditDetails details =
       BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
-  GetURLsForOpenTabs(browser, &(details.urls));
-  DCHECK(!details.urls.empty());
 
+  GetURLsAndFoldersForOpenTabs(browser, &(details.bookmark_data.children));
+  DCHECK(!details.bookmark_data.children.empty());
   BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile, details,
                        BookmarkEditor::SHOW_TREE);
 }
@@ -226,6 +241,33 @@ bool HasBookmarkURLsAllowedInIncognitoMode(
     const std::vector<const BookmarkNode*>& selection,
     content::BrowserContext* browser_context) {
   return !GetURLsToOpen(selection, browser_context, true).empty();
+}
+
+void GetURLsAndFoldersForTabEntries(
+    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data,
+    std::vector<std::pair<GURL, std::u16string>> tab_entries,
+    base::flat_map<int, TabGroupData> groups_by_index) {
+  absl::optional<tab_groups::TabGroupId> current_group_id;
+  for (size_t i = 0; i < tab_entries.size(); ++i) {
+    std::pair<GURL, std::u16string> entry = tab_entries.at(i);
+    if (entry.first.is_empty()) {
+      continue;
+    }
+    BookmarkEditor::EditDetails::BookmarkData child;
+    child.url = entry.first;
+    child.title = entry.second;
+    if (groups_by_index.at(i).first.has_value()) {
+      if (current_group_id != groups_by_index.at(i).first.value()) {
+        BookmarkEditor::EditDetails::BookmarkData tab_group;
+        tab_group.title = groups_by_index.at(i).second;
+        folder_data->push_back(tab_group);
+        current_group_id = groups_by_index.at(i).first;
+      }
+      folder_data->back().children.push_back(child);
+    } else {
+      folder_data->push_back(child);
+    }
+  }
 }
 #endif  // !defined(OS_ANDROID)
 
