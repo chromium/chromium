@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/autofillable_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
@@ -906,14 +907,13 @@ void WebController::OnGetFormAndFieldDataForFilling(
     return;
   }
 
-  if (data_to_autofill->card) {
-    driver->browser_autofill_manager()->FillCreditCardForm(
-        autofill::kNoQueryId, form_data, form_field, *data_to_autofill->card,
-        data_to_autofill->cvc);
-  } else {
-    driver->browser_autofill_manager()->FillProfileForm(
-        *data_to_autofill->profile, form_data, form_field);
-  }
+  DCHECK(data_to_autofill->card || data_to_autofill->profile);
+  auto fill_data =
+      data_to_autofill->card
+          ? autofill::AutofillableData(data_to_autofill->card.get(),
+                                       data_to_autofill->cvc)
+          : autofill::AutofillableData(data_to_autofill->profile.get());
+  driver->FillFormForAssistant(fill_data, form_data, form_field);
 
   std::move(callback).Run(OkClientStatus());
 }

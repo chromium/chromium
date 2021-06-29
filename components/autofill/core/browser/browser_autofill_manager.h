@@ -127,6 +127,8 @@ class BrowserAutofillManager
 #endif
 
   // Called from our external delegate so they cannot be private.
+  // FillCreditCardForm() is also called by Autofill Assistant through
+  // ContentAutofillDriver::FillFormForAssistant().
   virtual void FillOrPreviewForm(AutofillDriver::RendererFormDataAction action,
                                  int query_id,
                                  const FormData& form,
@@ -141,7 +143,8 @@ class BrowserAutofillManager
                           const FormData& form,
                           const FormFieldData& field);
 
-  // Called from autofill assistant.
+  // Called only from Autofill Assistant through
+  // ContentAutofillDriver::FillFormForAssistant().
   virtual void FillProfileForm(const autofill::AutofillProfile& profile,
                                const FormData& form,
                                const FormFieldData& field);

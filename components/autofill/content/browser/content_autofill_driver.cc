@@ -15,8 +15,10 @@
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/autofillable_data.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -438,6 +440,23 @@ void ContentAutofillDriver::SelectFieldOptionsDidChangeImpl(
   autofill_manager_->SelectFieldOptionsDidChange(form);
 }
 
+void ContentAutofillDriver::FillFormForAssistantImpl(
+    const AutofillableData& fill_data,
+    const FormData& form,
+    const FormFieldData& field) {
+  DCHECK(browser_autofill_manager_);
+  if (fill_data.is_profile()) {
+    browser_autofill_manager_->FillProfileForm(fill_data.profile(), form,
+                                               field);
+  } else if (fill_data.is_credit_card()) {
+    browser_autofill_manager_->FillCreditCardForm(
+        /*query_id=*/kNoQueryId, form, field, fill_data.credit_card(),
+        fill_data.cvc());
+  } else {
+    NOTREACHED();
+  }
+}
+
 void ContentAutofillDriver::ProbablyFormSubmitted() {
   if (potentially_submitted_form_.has_value()) {
     autofill_router_->FormSubmitted(
@@ -545,6 +564,15 @@ void ContentAutofillDriver::SelectFieldOptionsDidChange(
     const FormData& raw_form) {
   autofill_router_->SelectFieldOptionsDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form));
+}
+
+void ContentAutofillDriver::FillFormForAssistant(
+    const AutofillableData& fill_data,
+    const FormData& raw_form,
+    const FormFieldData& raw_field) {
+  autofill_router_->FillFormForAssistant(
+      this, fill_data, GetFormWithFrameAndFormMetaData(raw_form),
+      GetFieldWithFrameAndFormMetaData(raw_form, raw_field));
 }
 
 void ContentAutofillDriver::DidNavigateFrame(

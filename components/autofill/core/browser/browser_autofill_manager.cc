@@ -1147,7 +1147,7 @@ void BrowserAutofillManager::FillProfileForm(
     const FormData& form,
     const FormFieldData& field) {
   FillOrPreviewProfileForm(AutofillDriver::FORM_DATA_ACTION_FILL,
-                           /*query_id=*/-1, form, field, profile);
+                           /*query_id=*/kNoQueryId, form, field, profile);
 }
 
 void BrowserAutofillManager::FillVirtualCardInformation(

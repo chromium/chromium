@@ -122,6 +122,8 @@ static_library("browser") {
     "data_model/autofill_structured_address_regex_provider.h",
     "data_model/autofill_structured_address_utils.cc",
     "data_model/autofill_structured_address_utils.h",
+    "data_model/autofillable_data.cc",
+    "data_model/autofillable_data.h",
     "data_model/borrowed_transliterator.cc",
     "data_model/borrowed_transliterator.h",
     "data_model/contact_info.cc",

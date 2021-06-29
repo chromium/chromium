@@ -21,6 +21,7 @@
 
 namespace autofill {
 
+class AutofillableData;
 class ContentAutofillDriver;
 
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
@@ -202,6 +203,12 @@ class ContentAutofillRouter {
   void DidEndTextFieldEditing(ContentAutofillDriver* source_driver);
   void SelectFieldOptionsDidChange(ContentAutofillDriver* source_driver,
                                    const FormData& form);
+
+  // Event called by Autofill Assistant as if it was called by the renderer.
+  void FillFormForAssistant(ContentAutofillDriver* source_driver,
+                            const AutofillableData& fill_data,
+                            const FormData& form,
+                            const FormFieldData& field);
 
   // Routing of events called by the browser:
   void SendFormDataToRenderer(

@@ -199,6 +199,18 @@ void ContentAutofillRouter::SelectFieldOptionsDidChange(
   NOTREACHED();
 }
 
+void ContentAutofillRouter::FillFormForAssistant(
+    ContentAutofillDriver* source,
+    const AutofillableData& fill_data,
+    const FormData& form,
+    const FormFieldData& field) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    source->FillFormForAssistantImpl(fill_data, form, field);
+    return;
+  }
+  NOTREACHED();
+}
+
 // Routing of events called by the browser.
 
 void ContentAutofillRouter::SendFormDataToRenderer(

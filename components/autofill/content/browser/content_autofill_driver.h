@@ -32,6 +32,7 @@ class RenderFrameHost;
 namespace autofill {
 
 class AutofillClient;
+class AutofillableData;
 class ContentAutofillRouter;
 class LogManager;
 
@@ -151,7 +152,8 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // AutofillDriver functions called by the browser.
   // These events are forwarded to ContentAutofillRouter.
-  // Their implementations (*Impl()) call into mojom::AutofillAgent.
+  // Their implementations (*Impl()) call into the renderer via
+  // mojom::AutofillAgent.
   void SendFormDataToRenderer(
       int query_id,
       RendererFormDataAction action,
@@ -236,7 +238,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void SelectFieldOptionsDidChange(const FormData& form) override;
 
   // Implementations of the mojom::AutofillDriver functions called by the
-  // browser. These functions are called by ContentAutofillRouter.
+  // renderer. These functions are called by ContentAutofillRouter.
   void SetFormToBeProbablySubmittedImpl(const absl::optional<FormData>& form);
   void FormsSeenImpl(const std::vector<FormData>& forms);
   void FormSubmittedImpl(const FormData& form,
@@ -267,6 +269,23 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidPreviewAutofillFormDataImpl();
   void DidEndTextFieldEditingImpl();
   void SelectFieldOptionsDidChangeImpl(const FormData& form);
+
+  // Triggers filling of |fill_data| into |raw_form| and |raw_field|. This event
+  // is called only by Autofill Assistant on the browser side and provides the
+  // |fill_data| itself. This is different from the usual Autofill flow, where
+  // the renderer triggers Autofill with the QueryFormFieldAutofill() event,
+  // which displays the Autofill popup to select the fill data.
+  // FillFormForAssistant() is located in ContentAutofillDriver so that
+  // |raw_form| and |raw_field| get their meta data set analogous to
+  // QueryFormFieldAutofill().
+  // TODO(crbug/1224094): Migrate Autofill Assistant to the standard Autofill
+  // flow.
+  void FillFormForAssistant(const AutofillableData& fill_data,
+                            const FormData& raw_form,
+                            const FormFieldData& raw_field);
+  void FillFormForAssistantImpl(const AutofillableData& fill_data,
+                                const FormData& form,
+                                const FormFieldData& field);
 
   // Transform bounding box coordinates to real viewport coordinates. In the
   // case of a page spanning multiple renderer processes, subframe renderers
