@@ -1336,12 +1336,17 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     SkMatrix to_device;
     gfx::TransformToFlattenedSkMatrix(target_to_device, &to_device);
 
+    // SkRRect::transform should always succeed here, since we know
+    // corner_bounds is not empty and 'to_device' should just be scale+translate
     SkRRect device_bounds;
-    bool success = corner_bounds.transform(to_device, &device_bounds);
-    // Since to_device should just be scale+translate, transform always succeeds
-    DCHECK(success);
-    if (!device_bounds.isEmpty()) {
+    if (corner_bounds.transform(to_device, &device_bounds)) {
       params.rounded_corner_bounds.emplace(device_bounds);
+    } else {
+      // TODO(crbug/1220004): We used to assert transform succeeded, but an
+      // unreproduceable fuzzer test case could trip it. To be safe, and to
+      // match the most likely scenario that the device transform has scale=0,
+      // just force the clip to empty so we don't draw anything.
+      params.rounded_corner_bounds.emplace(SkRRect::MakeEmpty());
     }
   }
 
