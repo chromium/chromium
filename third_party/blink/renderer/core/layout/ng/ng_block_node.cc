@@ -1635,12 +1635,15 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
          box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
   scoped_refptr<const NGLayoutResult> layout_result =
-      box_->GetCachedLayoutResult();
+      constraint_space.CacheSlot() == NGCacheSlot::kMeasure
+          ? box_->GetCachedMeasureResult()
+          : box_->GetCachedLayoutResult();
+  if (constraint_space.CacheSlot() == NGCacheSlot::kLayout && !layout_result)
+    layout_result = box_->GetCachedMeasureResult();
 
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
     DCHECK(layout_result);
     DCHECK(!box_->NeedsLayout());
-    DCHECK(!box_->NeedsLayoutOverflowRecalc());
     DCHECK(MaySkipLegacyLayout(*this, *layout_result, constraint_space));
     return layout_result;
   }
