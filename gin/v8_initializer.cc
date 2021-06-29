@@ -211,9 +211,8 @@ void RunArrayBufferCageReservationExperiment() {
 #if defined(ARCH_CPU_64_BITS)
   constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
   constexpr size_t kTeraBytes = 1024 * kGigaBytes;
-  constexpr size_t kExaBytes = 1024 * kTeraBytes;
 
-  constexpr size_t kCageMaxSize = 1 * kExaBytes;
+  constexpr size_t kCageMaxSize = 1 * kTeraBytes;
   constexpr size_t kCageMinSize = 8 * kGigaBytes;
 
   void* reservation = nullptr;
