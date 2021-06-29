@@ -15,6 +15,7 @@ public class TopBarCoordinator {
     public TopBarCoordinator(Context context, View parentView, TopBarDelegate delegate) {
         TopBarView topBarView = (TopBarView) parentView.findViewById(R.id.top_bar);
         topBarView.setOnCloseListener(delegate::dismiss);
+        topBarView.setOnPublishListener(delegate::publish);
         topBarView.setOnNextListener(delegate::executeAction);
     }
 }

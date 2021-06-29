@@ -28,6 +28,14 @@ public class TopBarView extends FrameLayout {
     }
 
     /**
+     * Set listener for publish button.
+     */
+    void setOnPublishListener(Runnable listener) {
+        View button = findViewById(R.id.publish);
+        button.setOnClickListener(v -> listener.run());
+    }
+
+    /**
      * Set listener for next button.
      */
     void setOnNextListener(Runnable listener) {

@@ -49,6 +49,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     private final NoteCreationDialog mDialog;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final String mShareUrl;
+    private final String mSelectedText;
 
     private TopBarCoordinator mTopBarCoordinator;
 
@@ -59,6 +60,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mTab = tab;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mShareUrl = shareUrl;
+        mSelectedText = selectedText;
 
         selectedText = addQuotes(selectedText);
 
@@ -73,7 +75,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         String urlDomain =
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mShareUrl);
         mDialog = new NoteCreationDialog();
-        mDialog.initDialog(this::onViewCreated, urlDomain, title, selectedText);
+        mDialog.initDialog(this::onViewCreated, urlDomain, title, selectedText,
+                noteService.isPublishAvailable());
     }
 
     @Override
@@ -88,6 +91,14 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     @Override
     public void dismiss() {
         mDialog.dismiss();
+    }
+
+    /**
+     * Publish the selected note
+     */
+    @Override
+    public void publish() {
+        mMediator.publishNote(mSelectedText, mShareUrl, this::resolvePublishedNote);
     }
 
     /**
@@ -170,5 +181,23 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                 .append(text)
                 .append(mActivity.getString(R.string.quotation_mark_suffix))
                 .toString();
+    }
+
+    /**
+     * Starts the sharing flow for the newly published note.
+     * @param noteUrl The url where the new note can be accessed.
+     */
+    private void resolvePublishedNote(String noteUrl) {
+        final String sheetTitle = getShareSheetTitle();
+        ShareParams params =
+                new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, noteUrl).build();
+
+        long shareStartTime = System.currentTimeMillis();
+        ChromeShareExtras extras =
+                new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+
+        // Dismiss current dialog before showing the share sheet.
+        this.dismiss();
+        mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
     }
 }

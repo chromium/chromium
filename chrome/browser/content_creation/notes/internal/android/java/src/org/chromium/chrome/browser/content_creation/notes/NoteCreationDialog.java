@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class NoteCreationDialog extends DialogFragment {
     private String mSelectedText;
     private int mSelectedItemIndex;
     private Toast mToast;
+    private boolean mIsPublishAvailable;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -49,11 +51,12 @@ public class NoteCreationDialog extends DialogFragment {
     private NoteDialogObserver mNoteDialogObserver;
 
     public void initDialog(NoteDialogObserver noteDialogObserver, String urlDomain, String title,
-            String selectedText) {
+            String selectedText, boolean isPublishAvailable) {
         mNoteDialogObserver = noteDialogObserver;
         mUrlDomain = urlDomain;
         mTitle = title;
         mSelectedText = selectedText;
+        mIsPublishAvailable = isPublishAvailable;
     }
 
     @Override
@@ -62,6 +65,11 @@ public class NoteCreationDialog extends DialogFragment {
                 new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_Fullscreen);
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.creation_dialog, null);
         builder.setView(mContentView);
+
+        if (mIsPublishAvailable) {
+            Button publishButton = (Button) mContentView.findViewById(R.id.publish);
+            publishButton.setVisibility(View.VISIBLE);
+        }
 
         if (mNoteDialogObserver != null) mNoteDialogObserver.onViewCreated(mContentView);
 
