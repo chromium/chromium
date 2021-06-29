@@ -24,22 +24,11 @@ using KeystoreService = crosapi::mojom::KeystoreService;
 namespace {
 const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
-const char kErrorAlgorithmNotPermittedByCertificate[] =
-    "The requested Algorithm is not permitted by the certificate.";
 const char kErrorAlgorithmNotSupported[] = "Algorithm not supported.";
 const char kErrorInvalidToken[] = "The token is not valid.";
 
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
-
-absl::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
-    const std::string& input) {
-  if (input == kWebCryptoRsassaPkcs1v15)
-    return SigningAlgorithmName::kRsassaPkcs115;
-  if (input == kWebCryptoEcdsa)
-    return SigningAlgorithmName::kEcdsa;
-  return absl::nullopt;
-}
 
 absl::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
     const std::string& input) {
@@ -95,65 +84,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
   return RespondNow(Error(kUnsupportedByAsh));
 }
 
-PlatformKeysInternalGetPublicKeyFunction::
-    ~PlatformKeysInternalGetPublicKeyFunction() {}
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalGetPublicKeyFunction::Run() {
-  std::unique_ptr<api_pki::GetPublicKey::Params> params(
-      api_pki::GetPublicKey::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          KeystoreService::Uuid_) <
-      static_cast<int>(KeystoreService::kGetPublicKeyMinVersion)) {
-    return RespondNow(Error(kUnsupportedByAsh));
-  }
-
-  // These APIs are used in security-sensitive contexts. We need to ensure that
-  // the user for ash is the same as the user for lacros. We do this by
-  // restricting the API to the default profile, which is guaranteed to be the
-  // same user.
-  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
-    return RespondNow(Error(kUnsupportedProfile));
-
-  absl::optional<SigningAlgorithmName> algorithm_name =
-      SigningAlgorithmNameFromString(params->algorithm_name);
-  if (!algorithm_name) {
-    return RespondNow(Error(kErrorAlgorithmNotPermittedByCertificate));
-  }
-
-  auto cb = base::BindOnce(
-      &PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->GetPublicKey(params->certificate, algorithm_name.value(),
-                     std::move(cb));
-  return RespondLater();
-}
-
-void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
-    ResultPtr result) {
-  using Result = crosapi::mojom::GetPublicKeyResult;
-  switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::SUCCESS_RESULT:
-      api_pki::GetPublicKey::Results::Algorithm algorithm;
-      absl::optional<base::DictionaryValue> dict =
-          crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
-              result->get_success_result()->algorithm_properties);
-      if (!dict) {
-        Respond(Error(kUnsupportedByAsh));
-        return;
-      }
-      algorithm.additional_properties = std::move(dict.value());
-      Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
-          result->get_success_result()->public_key, std::move(algorithm))));
-      return;
-  }
-}
+//------------------------------------------------------------------------------
 
 PlatformKeysInternalGetPublicKeyBySpkiFunction::
     ~PlatformKeysInternalGetPublicKeyBySpkiFunction() = default;
@@ -162,6 +93,8 @@ ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   return RespondNow(Error("Not implemented."));
 }
+
+//------------------------------------------------------------------------------
 
 PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
 
@@ -214,6 +147,8 @@ void PlatformKeysInternalSignFunction::OnSign(ResultPtr result) {
       return;
   }
 }
+
+//------------------------------------------------------------------------------
 
 PlatformKeysVerifyTLSServerCertificateFunction::
     ~PlatformKeysVerifyTLSServerCertificateFunction() {}

@@ -20,18 +20,6 @@ class PlatformKeysInternalSelectClientCertificatesFunction
                              PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
 };
 
-class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalGetPublicKeyFunction() override;
-  ResponseAction Run() override;
-
-  using ResultPtr = crosapi::mojom::GetPublicKeyResultPtr;
-  void OnGetPublicKey(ResultPtr result_ptr);
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKey",
-                             PLATFORMKEYSINTERNAL_GETPUBLICKEY)
-};
-
 class PlatformKeysInternalGetPublicKeyBySpkiFunction
     : public ExtensionFunction {
  private:

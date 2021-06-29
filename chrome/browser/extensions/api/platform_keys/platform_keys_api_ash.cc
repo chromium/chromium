@@ -78,28 +78,7 @@ std::string PlatformKeysTokenIdToApiId(
 
 }  // namespace platform_keys
 
-PlatformKeysInternalGetPublicKeyFunction::
-    ~PlatformKeysInternalGetPublicKeyFunction() {}
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalGetPublicKeyFunction::Run() {
-  std::unique_ptr<api_pki::GetPublicKey::Params> params(
-      api_pki::GetPublicKey::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  chromeos::platform_keys::GetPublicKeyAndAlgorithmOutput output =
-      chromeos::platform_keys::GetPublicKeyAndAlgorithm(params->certificate,
-                                                        params->algorithm_name);
-  if (output.status != chromeos::platform_keys::Status::kSuccess) {
-    return RespondNow(
-        Error(chromeos::platform_keys::StatusToString(output.status)));
-  }
-
-  api_pki::GetPublicKey::Results::Algorithm algorithm;
-  algorithm.additional_properties = std::move(output.algorithm);
-  return RespondNow(ArgumentList(api_pki::GetPublicKey::Results::Create(
-      std::move(output.public_key), std::move(algorithm))));
-}
+//------------------------------------------------------------------------------
 
 PlatformKeysInternalGetPublicKeyBySpkiFunction::
     ~PlatformKeysInternalGetPublicKeyBySpkiFunction() = default;
@@ -140,6 +119,8 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
       public_key_spki_der, algorithm)));
 }
+
+//------------------------------------------------------------------------------
 
 PlatformKeysInternalSelectClientCertificatesFunction::
     ~PlatformKeysInternalSelectClientCertificatesFunction() {}
@@ -264,6 +245,8 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
       api_pki::SelectClientCertificates::Results::Create(result_matches)));
 }
 
+//------------------------------------------------------------------------------
+
 PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
 
 ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
@@ -348,6 +331,8 @@ void PlatformKeysInternalSignFunction::OnSigned(
         Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
   }
 }
+
+//------------------------------------------------------------------------------
 
 PlatformKeysVerifyTLSServerCertificateFunction::
     ~PlatformKeysVerifyTLSServerCertificateFunction() {}

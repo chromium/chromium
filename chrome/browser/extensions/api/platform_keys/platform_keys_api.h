@@ -13,6 +13,9 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -32,6 +35,18 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id);
 
 }  // namespace platform_keys
+
+class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalGetPublicKeyFunction() override;
+  ResponseAction Run() override;
+
+  void OnGetPublicKey(crosapi::mojom::GetPublicKeyResultPtr result_ptr);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKey",
+                             PLATFORMKEYSINTERNAL_GETPUBLICKEY)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_

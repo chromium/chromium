@@ -321,6 +321,7 @@ void EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate(
     Respond(Error(error));
   }
 }
+
 //------------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction
