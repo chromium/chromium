@@ -80,7 +80,7 @@ void DlpRulesManagerFactory::BuildReportingQueue(Profile* profile,
                                                  SuccessCallback success_cb) {
   auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
   if (!dm_token.is_valid()) {
-    VLOG(1) << "DlpReporting has invalid DMToken. Reporting disabled.";
+    LOG(ERROR) << "DlpReporting has invalid DMToken. Reporting disabled.";
     return;
   }
 
@@ -88,7 +88,7 @@ void DlpRulesManagerFactory::BuildReportingQueue(Profile* profile,
       dm_token.value(), reporting::Destination::DLP_EVENTS,
       base::BindRepeating([]() { return reporting::Status::StatusOK(); }));
   if (!config_result.ok()) {
-    VLOG(1) << "ReportQueueConfiguration must be valid";
+    LOG(ERROR) << "ReportQueueConfiguration must be valid";
     return;
   }
 
@@ -107,7 +107,7 @@ void DlpRulesManagerFactory::TrySetReportQueue(
     reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
         report_queue_result) {
   if (!report_queue_result.ok()) {
-    VLOG(1) << "ReportQueue could not be created";
+    LOG(ERROR) << "ReportQueue could not be created";
     return;
   }
   std::move(success_cb).Run(std::move(report_queue_result.ValueOrDie()));

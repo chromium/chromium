@@ -6,12 +6,14 @@
 
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/core/user_cloud_policy_manager_chromeos.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/user_manager/user.h"
 #else
 #include "chrome/browser/browser_process.h"
@@ -38,15 +40,30 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!profile)
     return dm_token;
-  auto* policy_manager = profile->GetUserCloudPolicyManagerChromeOS();
+
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (dm_token.is_empty() && user &&
-      (user->IsAffiliated() || !only_affiliated) && policy_manager &&
-      policy_manager->IsClientRegistered()) {
+  if (!user)
+    return dm_token;
+
+  CloudPolicyManager* policy_manager;
+  if (user->IsDeviceLocalAccount()) {
+    // Policy Manager for Device DM Token (Kiosk and Managed Guest Session).
+    policy::BrowserPolicyConnectorChromeOS* connector =
+        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    DCHECK(connector);
+    policy_manager = connector->GetDeviceCloudPolicyManager();
+  } else {
+    // Policy Manager for User DM Token.
+    policy_manager = profile->GetUserCloudPolicyManagerChromeOS();
+  }
+
+  if (dm_token.is_empty() && (user->IsAffiliated() || !only_affiliated) &&
+      policy_manager && policy_manager->IsClientRegistered()) {
     dm_token = DMToken(DMToken::Status::kValid,
                        policy_manager->core()->client()->dm_token());
   }
+
 #elif !defined(OS_ANDROID)
   if (dm_token.is_empty() && g_browser_process->browser_policy_connector()
                                  ->chrome_browser_cloud_management_controller()
