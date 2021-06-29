@@ -47,6 +47,7 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
     // Necessary for Mac. On other platforms this happens in the focus
     // manager, but it's disabled for Mac due to crbug.com/650859.
     parent_widget_->Activate();
+    widget_->Activate();
 #endif
 
     ASSERT_NE(nullptr, table_view());
