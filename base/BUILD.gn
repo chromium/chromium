@@ -1848,6 +1848,7 @@ component("base") {
         "allocator/partition_allocator/extended_api.h",
         "allocator/partition_allocator/memory_reclaimer.cc",
         "allocator/partition_allocator/memory_reclaimer.h",
+        "allocator/partition_allocator/oom.cc",
         "allocator/partition_allocator/oom.h",
         "allocator/partition_allocator/oom_callback.cc",
         "allocator/partition_allocator/oom_callback.h",
