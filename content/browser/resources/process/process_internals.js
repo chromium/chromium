@@ -154,7 +154,7 @@ function webContentsToTreeItem(webContents) {
 
   const result = frameToTreeItem(webContents.rootFrame);
   const rootItem = result[0];
-  const count = result[1];
+  const activeCount = result[1];
   item.add(rootItem);
 
   // Add data for all root nodes retrieved from back-forward cache.
@@ -173,13 +173,21 @@ function webContentsToTreeItem(webContents) {
     prerenderCount++;
   }
 
-  const totalCount = count + cachedCount + prerenderCount;
-  itemLabel += `${totalCount} frame` + (totalCount > 1 ? 's, ' : ', ');
-  itemLabel += `(${count} active, `;
-  itemLabel +=
-      `${cachedCount} bfcached root` + (cachedCount != 1 ? 's' : ``) + `, `;
-  itemLabel += `${prerenderCount} prerender root` +
-      (prerenderCount != 1 ? 's' : ``) + `).`;
+  // Builds a string according to English pluralization rules:
+  // buildCountString(0, 'frame') => "0 frames"
+  // buildCountString(1, 'frame') => "1 frame"
+  // buildCountString(2, 'frame') => "2 frames"
+  const buildCountString = ((count, name) => {
+    return `${count} ${name}` + (count != 1 ? 's' : '');
+  });
+
+  itemLabel += buildCountString(activeCount, 'active frame');
+  if (cachedCount > 0) {
+    itemLabel += ', ' + buildCountString(cachedCount, 'bfcached root');
+  }
+  if (prerenderCount > 0) {
+    itemLabel += ', ' + buildCountString(prerenderCount, 'prerender root');
+  }
   item.label = itemLabel;
 
   return item;
