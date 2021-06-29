@@ -7,9 +7,8 @@ import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 
-# TODO(crbug.com/1171629): Change this back to is_chromeos.
 # CrOS doesn't install GTK or any gnome packages.
-assert(!is_chromeos_ash)
+assert(!is_chromeos)
 
 # These packages should _only_ be expected when building for a target.
 assert(current_toolchain == default_toolchain)

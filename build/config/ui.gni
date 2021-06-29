@@ -41,18 +41,12 @@ declare_args() {
   # True means the UI is built using the "views" framework.
   toolkit_views = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
 
-  # TODO(crbug.com/1171629): Remove is_chromeos_lacros.
-  # Whether we should use glib, a low level C utility library.
-  use_glib = (is_linux || is_chromeos_lacros) && !is_chromecast
+  use_glib = is_linux && !is_chromecast
 }
 
-# TODO(crbug.com/1171629): Remove is_chromeos_lacros.
-# Make sure glib is not used if building for ChromeOS/Chromecast
-assert(!use_glib || ((is_linux || is_chromeos_lacros) && !is_chromecast))
+assert(!use_glib || (is_linux && !is_chromecast))
 
-# TODO(crbug.com/1171629): Remove is_chromeos_lacros.
-# Whether to use atk, the Accessibility ToolKit library
-use_atk = (is_linux || is_chromeos_lacros) && !is_chromecast && use_glib
+use_atk = is_linux && !is_chromecast && use_glib
 
 # Whether using Xvfb to provide a display server for a test might be
 # necessary.
