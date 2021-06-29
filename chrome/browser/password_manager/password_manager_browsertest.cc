@@ -3969,14 +3969,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223445
-#define MAYBE_SavePasswordOnRestoredPage DISABLED_SavePasswordOnRestoredPage
-#else
-#define MAYBE_SavePasswordOnRestoredPage SavePasswordOnRestoredPage
-#endif
+// https://crbug.com/1224826
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       MAYBE_SavePasswordOnRestoredPage) {
+                       DISABLED_SavePasswordOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
   content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
