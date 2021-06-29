@@ -2355,6 +2355,18 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
     url_request_->set_allow_credentials(allow_credentials);
 
   url_request_->set_send_client_certs(allow_client_certificates);
+
+  // Contrary to Firefox or blink's cache, the HTTP cache doesn't distinguish
+  // requests including user's credentials from the anonymous ones yet. See
+  // https://docs.google.com/document/d/1lvbiy4n-GM5I56Ncw304sgvY5Td32R6KHitjRXvkZ6U
+  // As a workaround until a solution is implemented, the cached responses
+  // aren't used for those requests.
+  if (!coep_allow_credentials) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kCrossOriginEmbedderPolicyCredentialless));
+    url_request_->SetLoadFlags(url_request_->load_flags() |
+                               net::LOAD_BYPASS_CACHE);
+  }
 }
 
 // https://github.com/mikewest/credentiallessness
