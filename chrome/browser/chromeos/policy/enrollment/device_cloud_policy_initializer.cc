@@ -101,10 +101,10 @@ void DeviceCloudPolicyInitializer::Init() {
   policy_store_->AddObserver(this);
   state_keys_update_subscription_ =
       state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
-          &DeviceCloudPolicyInitializer::TryToCreateClient,
+          &DeviceCloudPolicyInitializer::TryToStartConnection,
           base::Unretained(this), StartConnectionReason::kStateKeysStored));
 
-  TryToCreateClient(StartConnectionReason::kInitialCreation);
+  TryToStartConnection(StartConnectionReason::kInitialCreation);
 }
 
 void DeviceCloudPolicyInitializer::Shutdown() {
@@ -292,7 +292,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
 }
 
 void DeviceCloudPolicyInitializer::OnStoreLoaded(CloudPolicyStore* store) {
-  TryToCreateClient(StartConnectionReason::kCloudPolicyLoaded);
+  TryToStartConnection(StartConnectionReason::kCloudPolicyLoaded);
 }
 
 void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
@@ -313,7 +313,7 @@ void DeviceCloudPolicyInitializer::EnrollmentCompleted(
   } else {
     // Some attempts to create a client may be blocked because the enrollment
     // was in progress. We give it a try again.
-    TryToCreateClient(StartConnectionReason::kEnrollmentCompleted);
+    TryToStartConnection(StartConnectionReason::kEnrollmentCompleted);
   }
 
   if (!enrollment_callback.is_null())
@@ -356,16 +356,23 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
       CloudPolicyClient::DeviceDMTokenCallback());
 }
 
-void DeviceCloudPolicyInitializer::TryToCreateClient(
+void DeviceCloudPolicyInitializer::TryToStartConnection(
     DeviceCloudPolicyInitializer::StartConnectionReason reason) {
-  // TODO(b/181140445): If we had a separate state keys upload request to DM
-  // Server we could drop the `state_keys_broker_->available()` requirement.
-  if (!policy_store_->is_initialized() || !policy_store_->has_policy() ||
-      !state_keys_broker_->available() || enrollment_handler_ ||
-      install_attributes_->IsActiveDirectoryManaged()) {
+  if (enrollment_handler_) {
+    // This could happen in case |PrepareEnrollment| was called.
     return;
   }
-  StartConnection(reason, CreateClient(enterprise_service_));
+  if (install_attributes_->IsActiveDirectoryManaged()) {
+    // This will go away once ChromeAd deprecation is completed.
+    return;
+  }
+
+  // TODO(b/181140445): If we had a separate state keys upload request to DM
+  // Server we could drop the `state_keys_broker_->available()` requirement.
+  if (policy_store_->is_initialized() && policy_store_->has_policy() &&
+      state_keys_broker_->available()) {
+    StartConnection(reason, CreateClient(enterprise_service_));
+  }
 }
 
 void DeviceCloudPolicyInitializer::StartConnection(

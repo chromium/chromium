@@ -50,8 +50,25 @@ struct EnrollmentConfig;
 class EnrollmentHandlerChromeOS;
 class EnrollmentStatus;
 
-// This class connects DCPM to the correct device management service, and
-// handles the enrollment process.
+// The |DeviceCloudPolicyInitializer| is a helper class which calls
+// `DeviceCloudPolicyManager::StartConnection` with a new `CloudPolicyClient`
+// for a given |DeviceManagementService|. It does so, once
+// - the `DeviceCloudPolicyStoreChromeOS` is initialized and has policy,
+// - the `ServerBackedStateKeysBroker` is available,
+// - `chromeos::InstallAttributes::IsActiveDirectoryManaged() == false`
+//
+// However, this helper is also used by another helper class:
+// |EnterpriseEnrollmentHelperImpl|.
+//
+// If it is used for enrollment, then |StartConnection| is called only after
+// enrollment is completed.
+//
+// It is expected that the |DeviceCloudPolicyInitializer| will be
+// destroyed soon after it called |StartConnection|, but see
+// crbug.com/705758 for complications.
+//
+// TODO(https://crbug.com/1219487) Move the enrollment part out the
+// |DeviceCloudPolicyInitializer|.
 class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
  public:
   using EnrollmentCallback = base::OnceCallback<void(EnrollmentStatus)>;
@@ -164,7 +181,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   std::unique_ptr<CloudPolicyClient> CreateClient(
       DeviceManagementService* device_management_service);
 
-  void TryToCreateClient(StartConnectionReason reason);
+  void TryToStartConnection(StartConnectionReason reason);
   void StartConnection(StartConnectionReason reason,
                        std::unique_ptr<CloudPolicyClient> client);
 
