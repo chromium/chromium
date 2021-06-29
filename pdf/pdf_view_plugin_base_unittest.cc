@@ -116,7 +116,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   MOCK_METHOD(void, DidOpen, (std::unique_ptr<UrlLoader>, int32_t), (override));
 
   void SendMessage(base::Value message) override {
-    sent_message_ = std::move(message);
+    sent_messages_.push_back(std::move(message));
   }
 
   MOCK_METHOD(void, SaveAs, (), (override));
@@ -162,10 +162,12 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, UserMetricsRecordAction, (const std::string&), (override));
 
-  const base::Value& sent_message() const { return sent_message_; }
+  const std::vector<base::Value>& sent_messages() const {
+    return sent_messages_;
+  }
 
  private:
-  base::Value sent_message_;
+  std::vector<base::Value> sent_messages_;
 };
 
 base::Value CreateSaveRequestMessage(PdfViewPluginBase::SaveRequestType type,
@@ -339,7 +341,8 @@ TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
   expected_response.SetStringKey("type", "setIsEditing");
 
   EXPECT_TRUE(fake_plugin_.edit_mode());
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages()[0]);
 }
 
 #if BUILDFLAG(ENABLE_INK)
@@ -357,7 +360,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
@@ -375,7 +379,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
@@ -395,7 +400,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(false)).Times(2);
 
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
@@ -416,7 +422,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
 
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 
 #if BUILDFLAG(ENABLE_INK)
@@ -433,7 +440,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
@@ -450,7 +458,8 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
 
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(expected_response, fake_plugin_.sent_message());
+  ASSERT_FALSE(fake_plugin_.sent_messages().empty());
+  EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
 }
 
 TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
