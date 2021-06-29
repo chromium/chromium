@@ -7067,3 +7067,6 @@ crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-o
 crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Failure Pass ]
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failure Pass ]
 crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Pass Failure ]
+
+# DevTools roll
+crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]
