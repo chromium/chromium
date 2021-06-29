@@ -13,7 +13,7 @@ import sys
 import unittest
 
 from auditor import *
-from typing import Tuple
+from typing import cast, Tuple
 
 # Path to this script's dir.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -25,7 +25,7 @@ TESTS_DIR = os.path.join(SCRIPT_DIR, "../test_data")
 # the Python auditor has fully replaced the C++ one.
 CPP_TESTS_DIR = os.path.join(SRC_DIR, "tools/traffic_annotation/auditor/tests")
 
-TEST_DEPRECATED_IDS = [100, 101, 102]
+TEST_DEPRECATED_IDS = [UniqueId("abc"), UniqueId("def"), UniqueId("ghi")]
 
 
 class AuditorTest(unittest.TestCase):
@@ -75,7 +75,7 @@ class AuditorTest(unittest.TestCase):
       return instance
     instance = Annotation()
     instance.type = type
-    instance.proto.unique_id = "S{}".format(unique_id)
+    instance.unique_id = UniqueId("S{}".format(unique_id))
     if second_id:
       instance.second_id = UniqueId("S{}".format(second_id))
       instance.second_id_hash_code = HashCode(second_id)
@@ -84,7 +84,7 @@ class AuditorTest(unittest.TestCase):
       instance.second_id_hash_code = HashCode(0)
     return instance
 
-  def run_id_checker(self, annotation):
+  def run_id_checker(self, annotation: Annotation) -> List[AuditorError]:
     id_checker = IdChecker(RESERVED_IDS, TEST_DEPRECATED_IDS)
     return id_checker.check_ids([annotation])
 
@@ -204,7 +204,7 @@ class AuditorTest(unittest.TestCase):
     ]
 
     for test_case in test_cases:
-      logger.info("Testing: {}".format(test_case))
+      logger.debug("Testing: {}".format(test_case))
 
       (file_name, error_type, annotation_type) = test_case
 
@@ -227,7 +227,7 @@ class AuditorTest(unittest.TestCase):
       if file_name != "good_complete_annotation.txt":
         continue
 
-      self.assertEqual(annotation.proto.unique_id,
+      self.assertEqual(annotation.unique_id,
                        "supervised_user_refresh_token_fetcher")
       self.assertEqual(
           annotation.proto.source.file, "chrome/browser/supervised_user/legacy/"
@@ -241,40 +241,42 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(["test", "test_partial", "missing", "undefined"],
                      RESERVED_IDS)
 
-  @unittest.skip("not yet implemented")
   def test_reserved_ids_usage_detection(self):
     """Tests if use of reserved ids are detected."""
     for reserved_id in RESERVED_IDS:
-      errors = self.run_id_checker(
-          self.create_annotation_sample(Annotation.Type.COMPLETE, reserved_id))
+      annotation = Annotation()
+      annotation.type = Annotation.Type.COMPLETE
+      annotation.unique_id = reserved_id
+      errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
 
-      errors = self.run_id_checker(
-          self.create_annotation_sample(Annotation.Type.PARTIAL, 1,
-                                        reserved_id))
+      annotation.type = Annotation.Type.PARTIAL
+      annotation.unique_id = "nonempty"
+      annotation.second_id = reserved_id
+      errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.RESERVED_ID_HASH_CODE, errors[0].type)
 
-  @unittest.skip("not yet implemented")
   def test_deprecated_ids_usage_detection(self):
     """Tests if use of deprecated ids are detected."""
     for deprecated_id in TEST_DEPRECATED_IDS:
-      errors = self.run_id_checker(
-          self.create_annotation_sample(Annotation.Type.COMPLETE,
-                                        deprecated_id))
+      annotation = Annotation()
+      annotation.type = Annotation.Type.COMPLETE
+      annotation.unique_id = deprecated_id
+      errors = self.run_id_checker(annotation)
+      self.assertEqual(1, len(errors), deprecated_id)
+      self.assertEqual(AuditorError.Type.DEPRECATED_ID_HASH_CODE,
+                       errors[0].type)
+
+      annotation.type = Annotation.Type.PARTIAL
+      annotation.unique_id = "nonempty"
+      annotation.second_id = deprecated_id
+      errors = self.run_id_checker(annotation)
       self.assertEqual(1, len(errors))
       self.assertEqual(AuditorError.Type.DEPRECATED_ID_HASH_CODE,
                        errors[0].type)
 
-      errors = self.run_id_checker(
-          self.create_annotation_sample(Annotation.Type.PARTIAL, 1,
-                                        deprecated_id))
-      self.assertEqual(1, len(errors))
-      self.assertEqual(AuditorError.Type.DEPRECATED_ID_HASH_CODE,
-                       errors[0].type)
-
-  @unittest.skip("not yet implemented")
   def test_repeated_ids_detection(self):
     """Tests if use of repeated ids are detected."""
     id_checker = IdChecker([], [])
@@ -291,75 +293,88 @@ class AuditorTest(unittest.TestCase):
         self.create_annotation_sample(unique_id=i // 2) for i in range(20)
     ]
     errors = id_checker.check_ids(annotations)
-    self.assertContEqual([AuditorError.Type.REPEATED_ID] * 10,
-                         [e.type for e in errors])
+    self.assertCountEqual([AuditorError.Type.REPEATED_ID] * 10,
+                          [e.type for e in errors])
 
-  @unittest.skip("not yet implemented")
   def test_similar_unique_and_second_ids_detection(self):
     """Tests if having the same unique id and second id is detected."""
     for t in Annotation.Type:
-      errors = self.run_id_checker(self.create_annotation_sample(t, 1, 1))
+      annotation = Annotation()
+      annotation.type = t
+      annotation.unique_id = "the_same"
+      annotation.second_id = "the_same"
+      annotation.second_id_hash_code = compute_hash_value("the_same")
+      errors = self.run_id_checker(annotation)
       if annotation.needs_two_ids():
         self.assertEqual(1, len(errors), t)
       else:
         self.assertEqual(0, len(errors), t)
 
-  @unittest.skip("not yet implemented")
   def test_duplicate_ids_detection(self):
     """Tests unique id and second id collision cases."""
     T = Annotation.Type
     for type1, type2 in itertools.product(*[list(T)] * 2):
+      if type2.value[0] < type1.value[0]:
+        continue
+
       for id1, id2, id3, id4 in \
           itertools.product(*[range(1, 5) for i in range(4)]):
-        logger.info("Testing ({}, {}, {}, {}, {}, {})", type1, type2, id1, id2,
-                    id3, id4)
-        annotation1 = self.create_annotation_sample(type1, id1, id2)
-        annotation2 = self.create_annotation_sample(type2, id3, id4)
+        logger.debug("Testing ({}, {}, {}, {}, {}, {})".format(
+            type1, type2, id1, id2, id3, id4))
+
+        annotation1 = Annotation()
+        annotation1.type = type1
+        annotation1.unique_id = str(id1)
+        annotation1.second_id = str(id2)
+        annotation1.second_id_hash_code = compute_hash_value(str(id2))
+
+        annotation2 = Annotation()
+        annotation2.type = type2
+        annotation2.unique_id = str(id3)
+        annotation2.second_id = str(id4)
+        annotation2.second_id_hash_code = compute_hash_value(str(id4))
+
         id_checker = IdChecker([], [])
         errors = id_checker.check_ids([annotation1, annotation2])
 
         first_needs_two = annotation1.needs_two_ids()
         second_needs_two = annotation2.needs_two_ids()
 
-        unique_ids = set([id1])
-        if first_needs_two:
-          unique_ids.add(id2)
-        unique_ids.add(id3)
-        if second_needs_two:
-          unique_ids.add(id4)
+        unique_ids = set(id for a in [annotation1, annotation2]
+                         for id, hash_code in a.get_ids())
 
         if first_needs_two and second_needs_two:
           # If both need 2 ids, either the 4 ids should be different, or the
           # second ids should be equal and both annotations should be of types
           # partial/branched-completing.
           if len(unique_ids) == 4:
-            self.assertEqual([], errors)
+            self.assertFalse(errors)
           elif len(unique_ids) == 3:
             acceptable = (id2 == id4
                           and type1 in [T.PARTIAL, T.BRANCHED_COMPLETING]
                           and type2 in [T.PARTIAL, T.BRANCHED_COMPLETING])
-            self.assertEqual(acceptable, bool(errors))
+            self.assertEqual(not acceptable, bool(errors))
           else:
-            self.assertEqual([], errors)
+            self.assertTrue(errors)
         elif first_needs_two and not second_needs_two:
           # If just the first one needs two ids, then either the 3 ids should be
-          # different or the first annotation would be partial and teh second
+          # different or the first annotation would be partial and the second
           # completing, with one common id.
           if len(unique_ids) == 3:
-            self.assertTrue(bool(errors))
+            self.assertFalse(errors)
           elif len(unique_ids) == 2:
-            acceptable = (id2 == id3 and type1 in [T.PARTIAL, T.COMPLETING])
-            self.assertEqual(acceptable, bool(errors))
+            acceptable = (id2 == id3 and type1 == T.PARTIAL
+                          and type2 == T.COMPLETING)
+            self.assertEqual(not acceptable, bool(errors))
           else:
-            self.assertEqual([], errors)
+            self.assertTrue(errors)
         elif not first_needs_two and second_needs_two:
           # Can only be valid if all 3 are different.
-          self.assertEqual(len(unique_id) == 3, bool(errors))
+          self.assertEqual(len(unique_ids) != 3, bool(errors))
         else:
           # If none requires 2 ids, it can only be valid if ids are different.
-          self.assertEqual(len(unique_ids) == 2, bool(errors))
+          self.assertEqual(len(unique_ids) != 2, bool(errors))
 
-  @unittest.skip("not yet implemented")
   def test_check_ids_format(self):
     """Tests if IDs' format is correctly checked."""
     test_cases = [
@@ -375,17 +390,17 @@ class AuditorTest(unittest.TestCase):
     for test_case in test_cases:
       # Set type to complete to require just unique ID.
       annotation.type = Annotation.Type.COMPLETE
-      annotation.proto.unique_id = test_case[0]
+      annotation.unique_id = test_case[0]
       errors = self.run_id_checker(annotation)
-      self.assertEqual(test_case[1], bool(errors), test_case[0])
+      self.assertEqual(not test_case[1], bool(errors), test_case[0])
 
       # Set type to partial to require both ids.
       annotation.type = Annotation.Type.PARTIAL
-      annotation.proto.unique_id = "Something_Good"
+      annotation.unique_id = "Something_Good"
       annotation.second_id = test_case[0]
       annotation.second_id_hash_code = compute_hash_value(test_case[0])
       self.run_id_checker(annotation)
-      self.assertEqual(test_case[1], bool(errors), test_case[0])
+      self.assertEqual(not test_case[1], bool(errors), test_case[0])
 
     # Test all cases together.
     annotations = []
@@ -394,13 +409,14 @@ class AuditorTest(unittest.TestCase):
     for test_case in test_cases:
       annotation = self.create_annotation_sample()
       annotation.type = Annotation.Type.COMPLETE
-      annotation.proto.unique_id = test_case[0]
+      annotation.unique_id = test_case[0]
       annotations.append(annotation)
       if not test_case[1]:
         false_sample_count += 1
 
-    errors = self.run_id_checker(annotations)
-    self.assertEqual(false_sample_count, errors)
+    id_checker = IdChecker([], [])
+    errors = id_checker.check_ids(annotations)
+    self.assertEqual(false_sample_count, len(errors))
 
   def test_check_complete_annotations(self):
     """Tests if Auditor.check_annotations_contents() works as expected for
@@ -416,7 +432,7 @@ class AuditorTest(unittest.TestCase):
     test_no = 0
     while True:
       annotation = self.create_annotation_sample()
-      annotation.proto.unique_id = "foobar_policy_fetcher{}".format(test_no)
+      annotation.unique_id = "foobar_policy_fetcher{}".format(test_no)
       test_description = ""
       expect_error = True
       if test_no == 0:
@@ -496,7 +512,7 @@ class AuditorTest(unittest.TestCase):
         # Done checking individual test cases.
         break
 
-      logger.info("Testing: {}".format(test_description))
+      logger.debug("Testing: {}".format(test_description))
 
       self.auditor.errors = []
       self.auditor.extracted_annotations = [annotation]
@@ -559,7 +575,7 @@ class AuditorTest(unittest.TestCase):
     # Partial and Completing.
     instance.second_id = "SomeID"
     instance.second_id_hash_code = compute_hash_value(instance.second_id)
-    other.proto.unique_id = "SomeID"
+    other.unique_id = "SomeID"
     combination, errors = instance.create_complete_annotation(other)
     self.assertEqual([], errors)
     self.assertEqual(combination.unique_id_hash_code,
@@ -602,7 +618,7 @@ class AuditorTest(unittest.TestCase):
     annotation = Annotation.load_from_archive(archived)
     self.assertTrue(annotation.is_loaded_from_archive)
     self.assertEqual(annotation.type, Annotation.Type.PARTIAL)
-    self.assertEqual(annotation.proto.unique_id, archived.unique_id)
+    self.assertEqual(annotation.unique_id, archived.unique_id)
     self.assertEqual(annotation.unique_id_hash_code,
                      archived.unique_id_hash_code)
     self.assertEqual(annotation.second_id_hash_code,

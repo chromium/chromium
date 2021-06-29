@@ -18,7 +18,7 @@ from functools import reduce
 from google.protobuf import text_format
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.message import Message
-from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, NamedTuple, Tuple, Union
+from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, Set, NamedTuple, Tuple, Union
 
 # Path to the directory where this script is.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -45,9 +45,9 @@ HashCode = NewType("HashCode", int)
 
 # Reserved annotation unique IDs that should only be used in untracked files
 # (e.g., test files or files that aren't compiled on this platform).
-TEST_IDS = ["test", "test_partial"]
-MISSING_ID = "missing"
-NO_ANNOTATION_ID = "undefined"
+TEST_IDS = [UniqueId("test"), UniqueId("test_partial")]
+MISSING_ID = UniqueId("missing")
+NO_ANNOTATION_ID = UniqueId("undefined")
 RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
@@ -150,6 +150,20 @@ class AuditorError:
     TEST_ANNOTATION = auto()
     # A function is called with NO_TRAFFIC_ANNOTATION_YET tag.
     NO_ANNOTATION = auto()
+    # An id has a hash code equal to a reserved word.
+    RESERVED_ID_HASH_CODE = auto()
+    # An id has a hash code equal to a deprecated one.
+    DEPRECATED_ID_HASH_CODE = auto()
+    # An id contains an invalid character (not alphanumeric or underscore).
+    ID_INVALID_CHARACTER = auto()
+    # An id is used in two places without matching conditions. Proper conditions
+    # include when 2 annotations are completing each other, or are different
+    # branches of the same annotation.
+    REPEATED_ID = auto()
+    # Annotation does not have a valid second id.
+    MISSING_SECOND_ID = auto()
+    # Two ids have equal hash codes.
+    HASH_CODE_COLLISION = auto()
 
   def __init__(self,
                result_type: "AuditorError.Type",
@@ -165,7 +179,8 @@ class AuditorError:
 
     assert message or result_type in [
         AuditorError.Type.MISSING_TAG_USED, AuditorError.Type.TEST_ANNOTATION,
-        AuditorError.Type.NO_ANNOTATION
+        AuditorError.Type.NO_ANNOTATION, AuditorError.Type.MISSING_SECOND_ID,
+        AuditorError.Type.MUTABLE_TAG
     ]
 
     if message:
@@ -216,6 +231,40 @@ class AuditorError:
       return "NO_ANNOTATION: Empty annotation in '{}:{}'.".format(
           self.file_path, self.line)
 
+    if self.type == AuditorError.Type.RESERVED_ID_HASH_CODE:
+      assert self._details
+      return ("RESERVED_ID_HASH_CODE: Id '{}' in '{}:{}' has a hash code equal "
+              "to a reserved word and should be changed.".format(
+                  self._details[0], self.file_path, self.line))
+
+    if self.type == AuditorError.Type.DEPRECATED_ID_HASH_CODE:
+      assert self._details
+      return ("DEPRECATED_ID_HASH_CODE: Id '{}' in '{}:{}' has a hash code "
+              "equal to a deprecated id and should be changed.".format(
+                  self._details[0], self.file_path, self.line))
+
+    if self.type == AuditorError.Type.HASH_CODE_COLLISION:
+      assert len(self._details) == 2
+      return ("HASH_CODE_COLLISION: The following annotations have colliding "
+              "hash codes and should be updated: '{}', '{}'.".format(
+                  self._details[0], self._details[1]))
+
+    if self.type == AuditorError.Type.REPEATED_ID:
+      assert len(self._details) == 2
+      return ("REPEATED_ID: The following annotations have equal ids and "
+              "should be updated: {}, {}.".format(self._details[0],
+                                                  self._details[1]))
+
+    if self.type == AuditorError.Type.ID_INVALID_CHARACTER:
+      assert self._details
+      return ("ID_INVALID_CHARACTER: Id '{}' in '{}:{}' contains an invalid "
+              "character.".format(self._details[0], self.file_path, self.line))
+
+    if self.type == AuditorError.Type.MISSING_SECOND_ID:
+      return ("MISSING_SECOND_ID: Second id of annotation at '{}:{}' should be "
+              "updated, as it has the same hash code as the first one.".format(
+                  self.file_path, self.line))
+
     raise NotImplementedError("Unimplemented AuditorError.Type: {}".format(
         self.type.name))
 
@@ -229,7 +278,9 @@ class Annotation:
   Attributes:
     type: An Annotation.Type with the kind of annotation this is.
     proto: A NetworkTrafficAnnotation protobuf message.
-    unique_id_hash_code: HashCode of the proto's unique_id.
+
+    unique_id: The unique ID for this annotation/proto.
+    unique_id_hash_code: HashCode of the unique_id.
 
     second_id: A UniqueId with the other annotation's unique id. This can be the
         completing id for partial annotations, or group id for branched
@@ -272,8 +323,14 @@ class Annotation:
     self.type = Annotation.Type.COMPLETING
     self.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
 
-    self.second_id: UniqueId = -1
+    # TODO(nicolaso): Remove hash_code="" from annotations.xml, and instead
+    # compute its value from unique_id.
+
+    self.second_id: UniqueId = ""
     self.second_id_hash_code: HashCode = -1
+    # TODO(nicolaso): Store the second_id instead of its hashcode in
+    # annotations.xml. Then, make second_id_hash_code a computed property like
+    # unique_id_hash_code.
 
     self.is_loaded_from_archive = False
     self.archived_content_hash_code: HashCode = -1
@@ -282,8 +339,28 @@ class Annotation:
     self.is_merged = False
 
   @property
+  def unique_id(self) -> UniqueId:
+    # Transparently expose the unique_id stored in the proto for convenience.
+    return self.proto.unique_id
+
+  @unique_id.setter
+  def unique_id(self, unique_id: UniqueId):
+    # Transparently expose the unique_id stored in the proto for convenience.
+    self.proto.unique_id = unique_id
+
+  @property
   def unique_id_hash_code(self) -> HashCode:
-    return compute_hash_value(self.proto.unique_id)
+    return compute_hash_value(self.unique_id)
+
+  def get_ids(self) -> List[Tuple[UniqueId, HashCode]]:
+    """Returns the ids/hashcodes used by this annotation (up to 2 tuples)."""
+    if self.needs_two_ids():
+      return [
+          (self.unique_id, self.unique_id_hash_code),
+          (self.second_id, self.second_id_hash_code),
+      ]
+    else:
+      return [(self.unique_id, self.unique_id_hash_code)]
 
   @classmethod
   def load_from_archive(cls, archived: "ArchivedAnnotation") -> "Annotation":
@@ -291,7 +368,7 @@ class Annotation:
     annotation = Annotation()
     annotation.is_loaded_from_archive = True
     annotation.type = Annotation.Type.from_int(archived.type)
-    annotation.proto.unique_id = archived.unique_id
+    annotation.unique_id = archived.unique_id
     annotation.proto.source.file = archived.file_path
     annotation.archived_content_hash_code = archived.content_hash_code
     annotation.archived_added_in_milestone = archived.added_in_milestone
@@ -327,7 +404,7 @@ class Annotation:
     annotation and returns the combined complete annotation."""
     if not self.is_completable_with(completing_annotation):
       raise ValueError("{} is not completable with {}".format(
-          self.proto.unique_id, completing_annotation.proto.unique_id))
+          self.unique_id, completing_annotation.unique_id))
 
     # To keep the source information meta data, if completing annotation is of
     # type COMPLETING, keep |self| as the main and the other as completing.
@@ -355,8 +432,8 @@ class Annotation:
     combination.proto.comments += (
         "This annotation is a merge of the following two annotations:\n"
         "'{}' in '{}:{}' and '{}' in '{}:{}'".format(
-            self.proto.unique_id, self.proto.source.file,
-            self.proto.source.line, completing_annotation.proto.unique_id,
+            self.unique_id, self.proto.source.file, self.proto.source.line,
+            completing_annotation.unique_id,
             completing_annotation.proto.source.file,
             completing_annotation.proto.source.line))
 
@@ -379,7 +456,7 @@ class Annotation:
           AuditorError(
               AuditorError.Type.MERGE_FAILED,
               "Annotations contain different semantics::destination values", "",
-              0, self.proto.unique_id, completing_annotation.proto.unique_id)
+              0, self.unique_id, completing_annotation.unique_id)
       ]
 
     # Copy TrafficPolicy.
@@ -468,24 +545,24 @@ class Annotation:
     self.proto.source.line = line_number
 
     self.type = Annotation.Type.from_string(serialized_annotation.type_name)
-    self.proto.unique_id = serialized_annotation.unique_id
+    self.unique_id = serialized_annotation.unique_id
     self.second_id = serialized_annotation.extra_id
     self.second_id_hash_code = compute_hash_value(self.second_id)
 
     # Check for reserved IDs first, before trying to parse the Proto.
-    if self.proto.unique_id in TEST_IDS:
+    if self.unique_id in TEST_IDS:
       return [
           AuditorError(AuditorError.Type.TEST_ANNOTATION, "", file_path,
                        line_number)
       ]
 
-    if self.proto.unique_id == MISSING_ID:
+    if self.unique_id == MISSING_ID:
       return [
           AuditorError(AuditorError.Type.MISSING_TAG_USED, "", file_path,
                        line_number)
       ]
 
-    if self.proto.unique_id == NO_ANNOTATION_ID:
+    if self.unique_id == NO_ANNOTATION_ID:
       return [
           AuditorError(AuditorError.Type.NO_ANNOTATION, "", file_path,
                        line_number)
@@ -659,6 +736,174 @@ class FileFilter:
 
     # Now that we're done, undo the chdir().
     os.chdir(original_cwd)
+
+
+class IdChecker:
+  """Performs tests to ensure that annotations have correct ids.
+
+  Attributes:
+    reserved_ids: List of IDs that shouldn't be used in code (e.g. test,
+        missing, no_traffic_annotation_yet ids).
+    deprecated_ids: List of IDs that were used in code before, but shouldn't be
+        anymore."""
+
+  def __init__(self, reserved_ids: List[UniqueId],
+               deprecated_ids: List[UniqueId]):
+    self.reserved_ids = reserved_ids
+    self.deprecated_ids = deprecated_ids
+
+    self._annotations: Set[Annotation] = set()
+
+  def check_ids(self, annotations: List[Annotation]) -> List[AuditorError]:
+    """Checks annotations for UniqueId-related errors and returns them."""
+    self._annotations = set(annotations)
+    errors = []
+
+    errors.extend(self._check_ids_format())
+    errors.extend(self._check_for_second_ids())
+    errors.extend(
+        self._check_for_invalid_values(self.reserved_ids,
+                                       AuditorError.Type.RESERVED_ID_HASH_CODE))
+    errors.extend(
+        self._check_for_invalid_values(
+            self.deprecated_ids, AuditorError.Type.DEPRECATED_ID_HASH_CODE))
+    errors.extend(self._check_for_hash_collisions())
+    errors.extend(self._check_for_invalid_repeated_ids())
+
+    return errors
+
+  def _check_ids_format(self) -> List[AuditorError]:
+    """Checks if ids only include alphanumeric chars and underscores."""
+    errors = []
+
+    for annotation in self._annotations:
+      for id, hash_code in annotation.get_ids():
+        if not re.match(r"^[0-9a-zA-Z_]*$", id):
+          errors.append(
+              AuditorError(AuditorError.Type.ID_INVALID_CHARACTER, id,
+                           annotation.proto.source.file,
+                           annotation.proto.source.line))
+
+    return errors
+
+  def _check_for_second_ids(self) -> List[AuditorError]:
+    """Checks if annotation that needs 2 ids, have 2 different ids."""
+    errors = []
+
+    for annotation in self._annotations:
+      if (annotation.needs_two_ids() and
+          (not annotation.second_id or
+           annotation.second_id_hash_code == annotation.unique_id_hash_code)):
+        errors.append(
+            AuditorError(AuditorError.Type.MISSING_SECOND_ID, "",
+                         annotation.proto.source.file,
+                         annotation.proto.source.line))
+
+    return errors
+
+  def _check_for_invalid_values(self, invalid_ids: List[UniqueId],
+                                error_type: AuditorError.Type
+                                ) -> List[AuditorError]:
+    """Checks that invalid_ids are not used in annotations.
+
+    If found, returns an error with error_type."""
+    errors = []
+
+    for annotation in self._annotations:
+      for id, hash_code in annotation.get_ids():
+        if id in invalid_ids:
+          errors.append(
+              AuditorError(error_type, id, annotation.proto.source.file,
+                           annotation.proto.source.line))
+
+    return errors
+
+  def _check_for_hash_collisions(self) -> List[AuditorError]:
+    """Checks that there are no ids with colliding hash values."""
+    errors = []
+    collisions: Dict[HashCode, UniqueId] = {}
+
+    for annotation in self._annotations:
+      for id, hash_code in annotation.get_ids():
+        if hash_code not in collisions:
+          # If item is loaded from archive, do not keep the second ID for
+          # checks. The archive only keeps the hash code, not the second ID
+          # itself.
+          if (not annotation.is_loaded_from_archive
+              or id == annotation.unique_id):
+            collisions[hash_code] = id
+        else:
+          if annotation.is_loaded_from_archive and id == annotation.second_id:
+            continue
+          if id != collisions[hash_code]:
+            errors.append(
+                AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, "", 0,
+                             collisions[hash_code]))
+
+    return errors
+
+  def _check_for_invalid_repeated_ids(self) -> List[AuditorError]:
+    """Check that there are no invalid repeated ids."""
+    errors = []
+
+    first_ids: Dict[HashCode, Annotation] = {}
+    second_ids: Dict[HashCode, Annotation] = {}
+
+    # Check if first ids are unique.
+    for annotation in self._annotations:
+      if annotation.unique_id_hash_code not in first_ids:
+        first_ids[annotation.unique_id_hash_code] = annotation
+      else:
+        errors.append(
+            IdChecker._create_repeated_id_error(
+                annotation.unique_id, annotation,
+                first_ids[annotation.unique_id_hash_code]))
+
+    # If a second id is equal to a first id, the second id should be PARTIAL and
+    # the first id should be COMPLETING.
+    for annotation in self._annotations:
+      if (annotation.needs_two_ids()
+          and annotation.second_id_hash_code in first_ids):
+        partial = annotation
+        completing: Annotation = first_ids[partial.second_id_hash_code]
+        if (completing != partial
+            and (partial.type != Annotation.Type.PARTIAL
+                 or completing.type != Annotation.Type.COMPLETING)):
+          errors.append(
+              IdChecker._create_repeated_id_error(partial.second_id, partial,
+                                                  completing))
+
+    # If two second ids are equal, they should be either PARTIAL or
+    # BRANCHED_COMPLETING.
+    for annotation in self._annotations:
+      if not annotation.needs_two_ids():
+        continue
+      if annotation.second_id_hash_code not in second_ids:
+        second_ids[annotation.second_id_hash_code] = annotation
+      else:
+        other = second_ids[annotation.second_id_hash_code]
+        allowed_types = [
+            Annotation.Type.PARTIAL, Annotation.Type.BRANCHED_COMPLETING
+        ]
+        if (annotation.type not in allowed_types
+            or other.type not in allowed_types):
+          errors.append(
+              self._create_repeated_id_error(annotation.second_id, annotation,
+                                             other))
+
+    return errors
+
+  @classmethod
+  def _create_repeated_id_error(cls, common_id: UniqueId,
+                                annotation1: Annotation,
+                                annotation2: Annotation) -> AuditorError:
+    """Constructs and returns a REPEATED_ID error."""
+    return AuditorError(
+        AuditorError.Type.REPEATED_ID,
+        "{} in '{}:{}'".format(common_id, annotation1.proto.source.file,
+                               annotation1.proto.source.line), "", 0,
+        "'{}:{}'".format(annotation2.proto.source.file,
+                         annotation2.proto.source.line))
 
 
 class ArchivedAnnotation(NamedTuple):
