@@ -94,8 +94,9 @@ std::unique_ptr<base::Value> ConvertDictKeyStyle(const base::Value& value) {
         new base::DictionaryValue());
     for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
          it.Advance()) {
-      out_dict->Set(ConvertFromCamelCase(it.key(), '_'),
-                    ConvertDictKeyStyle(it.value()));
+      out_dict->SetKey(
+          ConvertFromCamelCase(it.key(), '_'),
+          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(it.value())));
     }
     return std::move(out_dict);
   }

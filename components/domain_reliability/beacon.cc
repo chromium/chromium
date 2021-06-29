@@ -42,10 +42,9 @@ std::unique_ptr<Value> DomainReliabilityBeacon::ToValue(
   if (!quic_error.empty())
     beacon_value->SetString("quic_error", quic_error);
   if (chrome_error != net::OK) {
-    auto failure_value = std::make_unique<DictionaryValue>();
-    failure_value->SetString("custom_error",
-                             net::ErrorToString(chrome_error));
-    beacon_value->Set("failure_data", std::move(failure_value));
+    DictionaryValue failure_value;
+    failure_value.SetString("custom_error", net::ErrorToString(chrome_error));
+    beacon_value->SetKey("failure_data", std::move(failure_value));
   }
   beacon_value->SetString("server_ip", server_ip);
   beacon_value->SetBoolean("was_proxied", was_proxied);

@@ -128,22 +128,22 @@ TEST(IPCMessageTest, ListValue) {
 
 TEST(IPCMessageTest, DictionaryValue) {
   base::DictionaryValue input;
-  input.Set("null", std::make_unique<base::Value>());
+  input.SetKey("null", base::Value());
   input.SetBoolean("bool", true);
   input.SetInteger("int", 42);
   input.SetKey("int.with.dot", base::Value(43));
 
-  auto subdict = std::make_unique<base::DictionaryValue>();
-  subdict->SetString("str", "forty two");
-  subdict->SetBoolean("bool", false);
+  base::DictionaryValue subdict;
+  subdict.SetString("str", "forty two");
+  subdict.SetBoolean("bool", false);
 
-  auto sublist = std::make_unique<base::ListValue>();
-  sublist->Append(42.42);
-  sublist->AppendString("forty");
-  sublist->AppendString("two");
-  subdict->Set("list", std::move(sublist));
+  base::ListValue sublist;
+  sublist.Append(42.42);
+  sublist.AppendString("forty");
+  sublist.AppendString("two");
+  subdict.SetKey("list", std::move(sublist));
 
-  input.Set("dict", std::move(subdict));
+  input.SetKey("dict", std::move(subdict));
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::WriteParam(&msg, input);

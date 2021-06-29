@@ -87,9 +87,9 @@ std::string GenerateJWKSet(const uint8_t* key,
 
 std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
                            CdmSessionType session_type) {
-  auto list = std::make_unique<base::ListValue>();
+  base::ListValue list;
   for (const auto& key_pair : keys) {
-    list->Append(CreateJSONDictionary(
+    list.Append(CreateJSONDictionary(
         reinterpret_cast<const uint8_t*>(key_pair.second.data()),
         key_pair.second.length(),
         reinterpret_cast<const uint8_t*>(key_pair.first.data()),
@@ -97,7 +97,7 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
   }
 
   base::DictionaryValue jwk_set;
-  jwk_set.Set(kKeysTag, std::move(list));
+  jwk_set.SetKey(kKeysTag, std::move(list));
   switch (session_type) {
     case CdmSessionType::kTemporary:
       jwk_set.SetString(kTypeTag, kTemporarySession);

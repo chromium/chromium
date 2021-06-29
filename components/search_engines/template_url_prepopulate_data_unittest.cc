@@ -159,9 +159,9 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
 
   // Test the optional settings too.
   entry->SetString("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  auto alternate_urls = std::make_unique<base::ListValue>();
-  alternate_urls->AppendString("http://foo.com/alternate?q={searchTerms}");
-  entry->Set("alternate_urls", std::move(alternate_urls));
+  base::ListValue alternate_urls;
+  alternate_urls.AppendString("http://foo.com/alternate?q={searchTerms}");
+  entry->SetKey("alternate_urls", std::move(alternate_urls));
   overrides = std::make_unique<base::ListValue>();
   overrides->Append(entry->CreateDeepCopy());
   prefs_.SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));

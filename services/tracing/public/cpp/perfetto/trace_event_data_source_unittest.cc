@@ -637,9 +637,9 @@ std::unique_ptr<base::DictionaryValue> AddJsonMetadataGenerator() {
   metadata->SetString("foo_str", "bar");
   metadata->SetBoolean("foo_bool", true);
 
-  auto child_dict = std::make_unique<base::DictionaryValue>();
-  child_dict->SetString("child_str", "child_val");
-  metadata->Set("child_dict", std::move(child_dict));
+  base::DictionaryValue child_dict;
+  child_dict.SetString("child_str", "child_val");
+  metadata->SetKey("child_dict", std::move(child_dict));
   return metadata;
 }
 
@@ -1495,9 +1495,9 @@ TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
     metadata->SetString("foo_str", "bar");
     metadata->SetBoolean("foo_bool", true);
 
-    auto child_dict = std::make_unique<base::DictionaryValue>();
-    child_dict->SetString("child_str", "child_val");
-    metadata->Set("child_dict", std::move(child_dict));
+    base::DictionaryValue child_dict;
+    child_dict.SetString("child_str", "child_val");
+    metadata->SetKey("child_dict", std::move(child_dict));
     return metadata;
   }));
 

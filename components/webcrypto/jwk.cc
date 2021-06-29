@@ -362,7 +362,8 @@ JwkWriter::JwkWriter(const std::string& algorithm,
                      const std::string& kty) {
   if (!algorithm.empty())
     dict_.SetString("alg", algorithm);
-  dict_.Set("key_ops", CreateJwkKeyOpsFromWebCryptoUsages(usages));
+  dict_.SetKey("key_ops", base::Value::FromUniquePtrValue(
+                              CreateJwkKeyOpsFromWebCryptoUsages(usages)));
   dict_.SetBoolean("ext", extractable);
   dict_.SetString("kty", kty);
 }

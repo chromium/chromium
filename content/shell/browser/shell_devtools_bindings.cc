@@ -71,16 +71,16 @@ base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
   response.SetInteger("netError", net_error);
   response.SetString("netErrorName", net::ErrorToString(net_error));
 
-  auto headers = std::make_unique<base::DictionaryValue>();
+  base::DictionaryValue headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers->SetString(name, value);
+    headers.SetString(name, value);
 
-  response.Set("headers", std::move(headers));
+  response.SetKey("headers", std::move(headers));
   return response;
 }
 

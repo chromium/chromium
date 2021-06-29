@@ -488,7 +488,7 @@ void HeadlessDevToolsClientImpl::SendMessageWithParams(
     CallbackType callback) {
   base::DictionaryValue message;
   message.SetString("method", method);
-  message.Set("params", std::move(params));
+  message.SetKey("params", base::Value::FromUniquePtrValue(std::move(params)));
   FinalizeAndSendMessage(&message, std::move(callback));
 }
 

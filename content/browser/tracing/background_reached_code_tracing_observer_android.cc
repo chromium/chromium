@@ -84,9 +84,9 @@ BackgroundReachedCodeTracingObserver::IncludeReachedCodeConfigIfNeeded(
   rules_dict->SetInteger("trigger_delay", 30);
 
   base::DictionaryValue dict;
-  auto rules_list = std::make_unique<base::ListValue>();
-  rules_list->Append(std::move(rules_dict));
-  dict.Set("configs", std::move(rules_list));
+  base::ListValue rules_list;
+  rules_list.Append(std::move(rules_dict));
+  dict.SetKey("configs", std::move(rules_list));
   dict.SetString(
       "enabled_data_sources",
       base::StrCat({tracing::mojom::kMetaDataSourceName, ",",

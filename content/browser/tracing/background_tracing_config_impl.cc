@@ -115,16 +115,16 @@ void BackgroundTracingConfigImpl::IntoDict(base::DictionaryValue* dict) {
       break;
   }
 
-  std::unique_ptr<base::ListValue> configs_list(new base::ListValue());
+  base::ListValue configs_list;
   for (const auto& rule : rules_) {
     std::unique_ptr<base::DictionaryValue> config_dict(
         new base::DictionaryValue());
     DCHECK(rule);
     rule->IntoDict(config_dict.get());
-    configs_list->Append(std::move(config_dict));
+    configs_list.Append(std::move(config_dict));
   }
 
-  dict->Set(kConfigsKey, std::move(configs_list));
+  dict->SetKey(kConfigsKey, std::move(configs_list));
 
   if (!scenario_name_.empty())
     dict->SetString(kConfigScenarioName, scenario_name_);

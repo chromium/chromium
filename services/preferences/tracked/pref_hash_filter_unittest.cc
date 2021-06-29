@@ -1222,11 +1222,11 @@ TEST_P(PrefHashFilterTest, DontResetReportOnly) {
 
 TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacks) {
   base::DictionaryValue root_dict;
-  auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetBoolean("a", true);
+  base::DictionaryValue dict_value;
+  dict_value.SetBoolean("a", true);
   root_dict.SetInteger(kAtomicPref, 1);
   root_dict.SetInteger(kAtomicPref2, 2);
-  root_dict.Set(kSplitPref, std::move(dict_value));
+  root_dict.SetKey(kSplitPref, std::move(dict_value));
 
   // Skip updating kAtomicPref2.
   pref_hash_filter_->FilterUpdate(kAtomicPref);
@@ -1296,12 +1296,12 @@ TEST_P(PrefHashFilterTest, CallFilterSerializeDataCallbacksWithFailure) {
 TEST_P(PrefHashFilterTest, ExternalValidationValueChanged) {
   pref_store_contents_->SetInteger(kAtomicPref, 1234);
 
-  auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString("a", "foo");
-  dict_value->SetInteger("b", 1234);
-  dict_value->SetInteger("c", 56);
-  dict_value->SetBoolean("d", false);
-  pref_store_contents_->Set(kSplitPref, std::move(dict_value));
+  base::DictionaryValue dict_value;
+  dict_value.SetString("a", "foo");
+  dict_value.SetInteger("b", 1234);
+  dict_value.SetInteger("c", 56);
+  dict_value.SetBoolean("d", false);
+  pref_store_contents_->SetKey(kSplitPref, std::move(dict_value));
 
   mock_external_validation_pref_hash_store_->SetCheckResult(
       kAtomicPref, ValueState::CHANGED);

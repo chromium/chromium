@@ -95,9 +95,9 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
   rules_dict->SetString("trigger_name", "test");
   base::DictionaryValue dict;
-  std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
-  rules_list->Append(std::move(rules_dict));
-  dict.Set("configs", std::move(rules_list));
+  base::ListValue rules_list;
+  rules_list.Append(std::move(rules_dict));
+  dict.SetKey("configs", std::move(rules_list));
   dict.SetString("custom_categories",
                  tracing::TraceStartupConfig::kDefaultStartupCategories);
   config_impl = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);

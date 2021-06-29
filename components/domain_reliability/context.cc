@@ -96,7 +96,8 @@ std::unique_ptr<Value> DomainReliabilityContext::GetWebUIData() const {
   context_value->SetInteger("beacon_count", static_cast<int>(beacons_.size()));
   context_value->SetInteger("uploading_beacon_count",
       static_cast<int>(uploading_beacons_size_));
-  context_value->Set("scheduler", scheduler_.GetWebUIData());
+  context_value->SetKey(
+      "scheduler", base::Value::FromUniquePtrValue(scheduler_.GetWebUIData()));
 
   return std::unique_ptr<Value>(context_value);
 }
@@ -202,7 +203,7 @@ std::unique_ptr<const Value> DomainReliabilityContext::CreateReport(
 
   int max_upload_depth = 0;
 
-  std::unique_ptr<ListValue> beacons_value(new ListValue());
+  ListValue beacons_value;
   for (const auto& beacon : beacons_) {
     // Only include beacons with a matching NetworkIsolationKey in the report.
     if (beacon->network_isolation_key !=
@@ -210,10 +211,9 @@ std::unique_ptr<const Value> DomainReliabilityContext::CreateReport(
       continue;
     }
 
-    beacons_value->Append(beacon->ToValue(upload_time,
-                                          *last_network_change_time_,
-                                          collector_url,
-                                          config().path_prefixes));
+    beacons_value.Append(
+        beacon->ToValue(upload_time, *last_network_change_time_, collector_url,
+                        config().path_prefixes));
     if (beacon->upload_depth > max_upload_depth)
       max_upload_depth = beacon->upload_depth;
     ++uploading_beacons_size_;
@@ -223,7 +223,7 @@ std::unique_ptr<const Value> DomainReliabilityContext::CreateReport(
 
   std::unique_ptr<DictionaryValue> report_value(new DictionaryValue());
   report_value->SetString("reporter", upload_reporter_string_);
-  report_value->Set("entries", std::move(beacons_value));
+  report_value->SetKey("entries", std::move(beacons_value));
 
   *max_upload_depth_out = max_upload_depth;
   return std::move(report_value);

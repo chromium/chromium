@@ -62,7 +62,8 @@ base::DictionaryValue* DevToolsProtocolTest::SendSessionCommand(
   command.SetInteger(kIdParam, ++last_sent_id_);
   command.SetString(kMethodParam, method);
   if (params)
-    command.Set(kParamsParam, std::move(params));
+    command.SetKey(kParamsParam,
+                   base::Value::FromUniquePtrValue(std::move(params)));
   if (!session_id.empty())
     command.SetString(kSessionIdParam, session_id);
 

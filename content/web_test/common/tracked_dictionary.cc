@@ -33,8 +33,9 @@ void TrackedDictionary::Set(const std::string& path,
       return;
   }
 
-  changed_values_.Set(path, new_value->CreateDeepCopy());
-  current_values_.Set(path, std::move(new_value));
+  changed_values_.SetKey(path, new_value->Clone());
+  current_values_.SetKey(path,
+                         base::Value::FromUniquePtrValue(std::move(new_value)));
 }
 
 void TrackedDictionary::SetBoolean(const std::string& path, bool new_value) {

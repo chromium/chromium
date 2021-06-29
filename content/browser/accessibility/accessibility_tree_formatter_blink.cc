@@ -412,19 +412,19 @@ void AccessibilityTreeFormatterBlink::AddProperties(
     if (node.HasIntListAttribute(attr)) {
       std::vector<int32_t> values;
       node.GetIntListAttribute(attr, &values);
-      auto value_list = std::make_unique<base::ListValue>();
+      base::ListValue value_list;
       for (size_t i = 0; i < values.size(); ++i) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
           BrowserAccessibility* target = node.manager()->GetFromID(values[i]);
           if (target)
-            value_list->AppendString(ui::ToString(target->GetData().role));
+            value_list.AppendString(ui::ToString(target->GetData().role));
           else
-            value_list->AppendString("null");
+            value_list.AppendString("null");
         } else {
-          value_list->AppendInteger(values[i]);
+          value_list.AppendInteger(values[i]);
         }
       }
-      dict->Set(ui::ToString(attr), std::move(value_list));
+      dict->SetKey(ui::ToString(attr), std::move(value_list));
     }
   }
 
@@ -558,7 +558,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
     if (node.HasIntListAttribute(attr)) {
       std::vector<int32_t> values;
       node.GetIntListAttribute(attr, &values);
-      auto value_list = std::make_unique<base::ListValue>();
+      base::ListValue value_list;
       for (auto value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
           ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
@@ -567,14 +567,14 @@ void AccessibilityTreeFormatterBlink::AddProperties(
                                    ->GetNodeFromTree(tree_id, node.id());
 
           if (target)
-            value_list->AppendString(ui::ToString(target->data().role));
+            value_list.AppendString(ui::ToString(target->data().role));
           else
-            value_list->AppendString("null");
+            value_list.AppendString("null");
         } else {
-          value_list->AppendInteger(value);
+          value_list.AppendInteger(value);
         }
       }
-      dict->Set(ui::ToString(attr), std::move(value_list));
+      dict->SetKey(ui::ToString(attr), std::move(value_list));
     }
   }
 

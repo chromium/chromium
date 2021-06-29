@@ -169,17 +169,17 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
       base::NumberToString(data.last_visited.ToInternalValue()));
   url_dict->SetInteger(DefaultSearchManager::kUsageCount, data.usage_count);
 
-  auto alternate_urls = std::make_unique<base::ListValue>();
+  base::ListValue alternate_urls;
   for (const auto& alternate_url : data.alternate_urls)
-    alternate_urls->AppendString(alternate_url);
+    alternate_urls.AppendString(alternate_url);
 
-  url_dict->Set(DefaultSearchManager::kAlternateURLs,
-                std::move(alternate_urls));
+  url_dict->SetKey(DefaultSearchManager::kAlternateURLs,
+                   std::move(alternate_urls));
 
-  auto encodings = std::make_unique<base::ListValue>();
+  base::ListValue encodings;
   for (const auto& input_encoding : data.input_encodings)
-    encodings->AppendString(input_encoding);
-  url_dict->Set(DefaultSearchManager::kInputEncodings, std::move(encodings));
+    encodings.AppendString(input_encoding);
+  url_dict->SetKey(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
   url_dict->SetBoolean(DefaultSearchManager::kCreatedByPolicy,
                        data.created_by_policy);

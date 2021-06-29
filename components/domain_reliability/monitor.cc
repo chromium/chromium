@@ -159,7 +159,8 @@ void DomainReliabilityMonitor::ClearBrowsingData(
 std::unique_ptr<base::Value> DomainReliabilityMonitor::GetWebUIData() const {
   std::unique_ptr<base::DictionaryValue> data_value(
       new base::DictionaryValue());
-  data_value->Set("contexts", context_manager_.GetWebUIData());
+  data_value->SetKey("contexts", base::Value::FromUniquePtrValue(
+                                     context_manager_.GetWebUIData()));
   return std::move(data_value);
 }
 

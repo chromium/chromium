@@ -52,16 +52,16 @@ bool HasHeaderValues(net::URLRequest* request,
   return false;
 }
 
-std::unique_ptr<base::ListValue> GetPEMEncodedChainAsList(
+base::ListValue GetPEMEncodedChainAsList(
     const net::X509Certificate* cert_chain) {
   if (!cert_chain)
-    return std::make_unique<base::ListValue>();
+    return base::ListValue();
 
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::ListValue result;
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
   for (const std::string& cert : pem_encoded_chain)
-    result->Append(std::make_unique<base::Value>(cert));
+    result.Append(std::make_unique<base::Value>(cert));
 
   return result;
 }
@@ -175,17 +175,17 @@ void ExpectCTReporter::OnExpectCTFailed(
   report->SetString("date-time", base::TimeToISO8601(base::Time::Now()));
   report->SetString("effective-expiration-date",
                     base::TimeToISO8601(expiration));
-  report->Set("served-certificate-chain",
-              GetPEMEncodedChainAsList(served_certificate_chain));
-  report->Set("validated-certificate-chain",
-              GetPEMEncodedChainAsList(validated_certificate_chain));
+  report->SetKey("served-certificate-chain",
+                 GetPEMEncodedChainAsList(served_certificate_chain));
+  report->SetKey("validated-certificate-chain",
+                 GetPEMEncodedChainAsList(validated_certificate_chain));
 
-  std::unique_ptr<base::ListValue> scts(new base::ListValue());
+  base::ListValue scts;
   for (const auto& sct_and_status : signed_certificate_timestamps) {
-    if (!AddSCT(sct_and_status, scts.get()))
+    if (!AddSCT(sct_and_status, &scts))
       LOG(ERROR) << "Failed to add signed certificate timestamp to list";
   }
-  report->Set("scts", std::move(scts));
+  report->SetKey("scts", std::move(scts));
 
   std::string serialized_report;
   if (!base::JSONWriter::Write(outer_report, &serialized_report)) {

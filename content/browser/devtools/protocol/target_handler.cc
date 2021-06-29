@@ -210,7 +210,8 @@ class BrowserToPageConnector {
     base::DictionaryValue message;
     message.SetInteger("id", page_message_id_++);
     message.SetString("method", method);
-    message.Set("params", std::move(params));
+    message.SetKey("params",
+                   base::Value::FromUniquePtrValue(std::move(params)));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
     page_host_->DispatchProtocolMessage(

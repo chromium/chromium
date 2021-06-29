@@ -148,16 +148,16 @@ void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
   if (!ShouldDumpChildren(node))
     return;
 
-  auto children = std::make_unique<base::ListValue>();
+  base::ListValue children;
 
   for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
     BrowserAccessibility* child_node = node.PlatformGetChild(i);
     std::unique_ptr<base::DictionaryValue> child_dict(
         new base::DictionaryValue);
     RecursiveBuildTree(*child_node, child_dict.get());
-    children->Append(std::move(child_dict));
+    children.Append(std::move(child_dict));
   }
-  dict->Set(kChildrenDictAttr, std::move(children));
+  dict->SetKey(kChildrenDictAttr, std::move(children));
 }
 
 void AccessibilityTreeFormatterAndroid::AddProperties(

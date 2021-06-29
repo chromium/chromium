@@ -264,11 +264,11 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkUseInconsisteWithKeyOps) {
   dict.SetString("alg", "HS256");
   dict.SetString("use", "sig");
 
-  auto key_ops = std::make_unique<base::ListValue>();
-  key_ops->AppendString("sign");
-  key_ops->AppendString("verify");
-  key_ops->AppendString("encrypt");
-  dict.Set("key_ops", std::move(key_ops));
+  base::ListValue key_ops;
+  key_ops.AppendString("sign");
+  key_ops.AppendString("verify");
+  key_ops.AppendString("encrypt");
+  dict.SetKey("key_ops", std::move(key_ops));
   EXPECT_EQ(
       Status::ErrorJwkUseAndKeyopsInconsistent(),
       ImportKeyJwkFromDict(

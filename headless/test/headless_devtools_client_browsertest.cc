@@ -723,9 +723,9 @@ class RawDevtoolsProtocolTest
     base::DictionaryValue message;
     message.SetInteger("id", devtools_client_->GetNextRawDevToolsMessageId());
     message.SetString("method", "Runtime.evaluate");
-    std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-    params->SetString("expression", "1+1");
-    message.Set("params", std::move(params));
+    base::DictionaryValue params;
+    params.SetString("expression", "1+1");
+    message.SetKey("params", std::move(params));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
     devtools_client_->SendRawDevToolsMessage(json_message);
@@ -842,8 +842,9 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
         const std::unique_ptr<dom_snapshot::LayoutTreeNode>& layout_node =
             (*result->GetLayoutTreeNodes())[layout_node_index];
 
-        node_dict->Set("boundingBox",
-                       layout_node->GetBoundingBox()->Serialize());
+        node_dict->SetKey("boundingBox",
+                          base::Value::FromUniquePtrValue(
+                              layout_node->GetBoundingBox()->Serialize()));
 
         if (layout_node->HasLayoutText())
           node_dict->SetString("layoutText", layout_node->GetLayoutText());
@@ -852,14 +853,13 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
           node_dict->SetInteger("styleIndex", layout_node->GetStyleIndex());
 
         if (layout_node->HasInlineTextNodes()) {
-          std::unique_ptr<base::ListValue> inline_text_nodes(
-              new base::ListValue());
+          base::ListValue inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            size_t index = inline_text_nodes->GetSize();
-            inline_text_nodes->Set(index, inline_text_box->Serialize());
+            size_t index = inline_text_nodes.GetSize();
+            inline_text_nodes.Set(index, inline_text_box->Serialize());
           }
-          node_dict->Set("inlineTextNodes", std::move(inline_text_nodes));
+          node_dict->SetKey("inlineTextNodes", std::move(inline_text_nodes));
         }
       }
     }

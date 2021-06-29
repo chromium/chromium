@@ -440,14 +440,13 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
       params->SetBoolean("captureBeyondViewport", true);
     }
     if (clip_scale) {
-      std::unique_ptr<base::DictionaryValue> clip_value(
-          new base::DictionaryValue());
-      clip_value->SetDouble("x", clip.x());
-      clip_value->SetDouble("y", clip.y());
-      clip_value->SetDouble("width", clip.width());
-      clip_value->SetDouble("height", clip.height());
-      clip_value->SetDouble("scale", clip_scale);
-      params->Set("clip", std::move(clip_value));
+      base::DictionaryValue clip_value;
+      clip_value.SetDouble("x", clip.x());
+      clip_value.SetDouble("y", clip.y());
+      clip_value.SetDouble("width", clip.width());
+      clip_value.SetDouble("height", clip.height());
+      clip_value.SetDouble("scale", clip_scale);
+      params->SetKey("clip", std::move(clip_value));
     }
     SendCommand("Page.captureScreenshot", std::move(params));
 
@@ -752,13 +751,13 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
   Attach();
 
   // Override background to blue.
-  std::unique_ptr<base::DictionaryValue> color(new base::DictionaryValue());
-  color->SetInteger("r", 0x00);
-  color->SetInteger("g", 0x00);
-  color->SetInteger("b", 0xff);
-  color->SetDouble("a", 1.0);
+  base::DictionaryValue color;
+  color.SetInteger("r", 0x00);
+  color.SetInteger("g", 0x00);
+  color.SetInteger("b", 0xff);
+  color.SetDouble("a", 1.0);
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-  params->Set("color", std::move(color));
+  params->SetKey("color", std::move(color));
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   SkBitmap expected_bitmap;
@@ -792,14 +791,16 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
-  // Override background to fully transparent.
-  auto color = std::make_unique<base::DictionaryValue>();
-  color->SetInteger("r", 0);
-  color->SetInteger("g", 0);
-  color->SetInteger("b", 0);
-  color->SetDouble("a", 0);
   auto params = std::make_unique<base::DictionaryValue>();
-  params->Set("color", std::move(color));
+  {
+    // Override background to fully transparent.
+    base::DictionaryValue color;
+    color.SetInteger("r", 0);
+    color.SetInteger("g", 0);
+    color.SetInteger("b", 0);
+    color.SetDouble("a", 0);
+    params->SetKey("color", std::move(color));
+  }
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   SkBitmap expected_bitmap;
@@ -830,14 +831,16 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
 #endif  // !defined(OS_ANDROID)
 
-  // Override background to a semi-transparent color.
-  color = std::make_unique<base::DictionaryValue>();
-  color->SetInteger("r", 255);
-  color->SetInteger("g", 0);
-  color->SetInteger("b", 0);
-  color->SetDouble("a", 1.0 / 255 * 16);
-  params = std::make_unique<base::DictionaryValue>();
-  params->Set("color", std::move(color));
+  {
+    // Override background to a semi-transparent color.
+    base::DictionaryValue color;
+    color.SetInteger("r", 255);
+    color.SetInteger("g", 0);
+    color.SetInteger("b", 0);
+    color.SetDouble("a", 1.0 / 255 * 16);
+    params = std::make_unique<base::DictionaryValue>();
+    params->SetKey("color", std::move(color));
+  }
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   expected_bitmap.eraseColor(SkColorSetARGB(16, 255, 0, 0));

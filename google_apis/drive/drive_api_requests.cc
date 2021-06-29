@@ -95,7 +95,7 @@ void AttachProperties(const Properties& properties,
   if (properties.empty())
     return;
 
-  auto properties_value = std::make_unique<base::ListValue>();
+  base::ListValue properties_value;
   for (const auto& property : properties) {
     auto property_value = std::make_unique<base::DictionaryValue>();
     std::string visibility_as_string;
@@ -110,9 +110,9 @@ void AttachProperties(const Properties& properties,
     property_value->SetString("visibility", visibility_as_string);
     property_value->SetString("key", property.key());
     property_value->SetString("value", property.value());
-    properties_value->Append(std::move(property_value));
+    properties_value.Append(std::move(property_value));
   }
-  request_body->Set("properties", std::move(properties_value));
+  request_body->SetKey("properties", std::move(properties_value));
 }
 
 // Creates metadata JSON string for multipart uploading.
@@ -130,9 +130,9 @@ std::string CreateMultipartUploadMetadataJson(
 
   // Fill parent link.
   if (!parent_resource_id.empty()) {
-    auto parents = std::make_unique<base::ListValue>();
-    parents->Append(google_apis::util::CreateParentValue(parent_resource_id));
-    root.Set("parents", std::move(parents));
+    base::ListValue parents;
+    parents.Append(google_apis::util::CreateParentValue(parent_resource_id));
+    root.SetKey("parents", std::move(parents));
   }
 
   if (!modified_date.is_null()) {
@@ -358,13 +358,13 @@ bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    auto parents_value = std::make_unique<base::ListValue>();
+    base::ListValue parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
       auto parent = std::make_unique<base::DictionaryValue>();
       parent->SetString("id", parents_[i]);
-      parents_value->Append(std::move(parent));
+      parents_value.Append(std::move(parent));
     }
-    root.Set("parents", std::move(parents_value));
+    root.SetKey("parents", std::move(parents_value));
   }
 
   if (!title_.empty())
@@ -433,13 +433,13 @@ bool FilesPatchRequest::GetContentData(std::string* upload_content_type,
   }
 
   if (!parents_.empty()) {
-    auto parents_value = std::make_unique<base::ListValue>();
+    base::ListValue parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
       auto parent = std::make_unique<base::DictionaryValue>();
       parent->SetString("id", parents_[i]);
-      parents_value->Append(std::move(parent));
+      parents_value.Append(std::move(parent));
     }
-    root.Set("parents", std::move(parents_value));
+    root.SetKey("parents", std::move(parents_value));
   }
 
   AttachProperties(properties_, &root);
@@ -484,13 +484,13 @@ bool FilesCopyRequest::GetContentData(std::string* upload_content_type,
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    auto parents_value = std::make_unique<base::ListValue>();
+    base::ListValue parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
       auto parent = std::make_unique<base::DictionaryValue>();
       parent->SetString("id", parents_[i]);
-      parents_value->Append(std::move(parent));
+      parents_value.Append(std::move(parent));
     }
-    root.Set("parents", std::move(parents_value));
+    root.SetKey("parents", std::move(parents_value));
   }
 
   if (!title_.empty())
@@ -743,9 +743,9 @@ bool InitiateUploadNewFileRequest::GetContentData(
   root.SetString("title", title_);
 
   // Fill parent link.
-  auto parents = std::make_unique<base::ListValue>();
-  parents->Append(util::CreateParentValue(parent_resource_id_));
-  root.Set("parents", std::move(parents));
+  base::ListValue parents;
+  parents.Append(util::CreateParentValue(parent_resource_id_));
+  root.SetKey("parents", std::move(parents));
 
   if (!modified_date_.is_null())
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
@@ -805,9 +805,9 @@ bool InitiateUploadExistingFileRequest::GetContentData(
     std::string* upload_content) {
   base::DictionaryValue root;
   if (!parent_resource_id_.empty()) {
-    auto parents = std::make_unique<base::ListValue>();
-    parents->Append(util::CreateParentValue(parent_resource_id_));
-    root.Set("parents", std::move(parents));
+    base::ListValue parents;
+    parents.Append(util::CreateParentValue(parent_resource_id_));
+    root.SetKey("parents", std::move(parents));
   }
 
   if (!title_.empty())

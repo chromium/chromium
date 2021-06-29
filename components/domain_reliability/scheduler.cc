@@ -174,24 +174,24 @@ std::unique_ptr<base::Value> DomainReliabilityScheduler::GetWebUIData() const {
   data->SetInteger("collector_index", static_cast<int>(collector_index_));
 
   if (last_upload_finished_) {
-    std::unique_ptr<base::DictionaryValue> last(new base::DictionaryValue());
-    last->SetInteger("start_time", (now - last_upload_start_time_).InSeconds());
-    last->SetInteger("end_time", (now - last_upload_end_time_).InSeconds());
-    last->SetInteger("collector_index",
-        static_cast<int>(last_upload_collector_index_));
-    last->SetBoolean("success", last_upload_success_);
-    data->Set("last_upload", std::move(last));
+    base::DictionaryValue last;
+    last.SetInteger("start_time", (now - last_upload_start_time_).InSeconds());
+    last.SetInteger("end_time", (now - last_upload_end_time_).InSeconds());
+    last.SetInteger("collector_index",
+                    static_cast<int>(last_upload_collector_index_));
+    last.SetBoolean("success", last_upload_success_);
+    data->SetKey("last_upload", std::move(last));
   }
 
-  std::unique_ptr<base::ListValue> collectors_value(new base::ListValue());
+  base::ListValue collectors_value;
   for (const auto& collector : collectors_) {
     std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
     value->SetInteger("failures", collector->failure_count());
     value->SetInteger("next_upload",
         (collector->GetReleaseTime() - now).InSeconds());
-    collectors_value->Append(std::move(value));
+    collectors_value.Append(std::move(value));
   }
-  data->Set("collectors", std::move(collectors_value));
+  data->SetKey("collectors", std::move(collectors_value));
 
   return std::move(data);
 }

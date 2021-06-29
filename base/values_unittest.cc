@@ -1666,24 +1666,20 @@ TEST(ValuesTest, DictionaryRemovePath) {
 
 TEST(ValuesTest, DeepCopy) {
   DictionaryValue original_dict;
-  Value* null_weak = original_dict.Set("null", std::make_unique<Value>());
-  Value* bool_weak = original_dict.Set("bool", std::make_unique<Value>(true));
-  Value* int_weak = original_dict.Set("int", std::make_unique<Value>(42));
-  Value* double_weak =
-      original_dict.Set("double", std::make_unique<Value>(3.14));
-  Value* string_weak =
-      original_dict.Set("string", std::make_unique<Value>("hello"));
-  Value* string16_weak =
-      original_dict.Set("string16", std::make_unique<Value>(u"hello16"));
+  Value* null_weak = original_dict.SetKey("null", Value());
+  Value* bool_weak = original_dict.SetKey("bool", Value(true));
+  Value* int_weak = original_dict.SetKey("int", Value(42));
+  Value* double_weak = original_dict.SetKey("double", Value(3.14));
+  Value* string_weak = original_dict.SetKey("string", Value("hello"));
+  Value* string16_weak = original_dict.SetKey("string16", Value(u"hello16"));
 
-  Value* binary_weak = original_dict.Set(
-      "binary", std::make_unique<Value>(Value::BlobStorage(42, '!')));
+  Value* binary_weak =
+      original_dict.SetKey("binary", Value(Value::BlobStorage(42, '!')));
 
   Value::ListStorage storage;
   storage.emplace_back(0);
   storage.emplace_back(1);
-  Value* list_weak =
-      original_dict.Set("list", std::make_unique<Value>(std::move(storage)));
+  Value* list_weak = original_dict.SetKey("list", Value(std::move(storage)));
   Value* list_element_0_weak = &list_weak->GetList()[0];
   Value* list_element_1_weak = &list_weak->GetList()[1];
 
@@ -1810,7 +1806,7 @@ TEST(ValuesTest, Equals) {
   dv.SetDoubleKey("c", 2.5);
   dv.SetStringKey("d1", "string");
   dv.SetStringKey("d2", u"http://google.com");
-  dv.Set("e", std::make_unique<Value>());
+  dv.SetKey("e", Value());
 
   auto copy = dv.CreateDeepCopy();
   EXPECT_EQ(dv, *copy);
@@ -1818,11 +1814,11 @@ TEST(ValuesTest, Equals) {
   std::unique_ptr<ListValue> list(new ListValue);
   list->Append(std::make_unique<Value>());
   list->Append(std::make_unique<DictionaryValue>());
-  auto list_copy = std::make_unique<Value>(list->Clone());
+  Value list_copy(list->Clone());
 
   ListValue* list_weak = dv.SetList("f", std::move(list));
   EXPECT_NE(dv, *copy);
-  copy->Set("f", std::move(list_copy));
+  copy->SetKey("f", std::move(list_copy));
   EXPECT_EQ(dv, *copy);
 
   list_weak->Append(std::make_unique<Value>(true));
@@ -2003,15 +1999,15 @@ TEST(ValuesTest, DeepCopyCovariantReturnTypes) {
 TEST(ValuesTest, RemoveEmptyChildren) {
   auto root = std::make_unique<DictionaryValue>();
   // Remove empty lists and dictionaries.
-  root->Set("empty_dict", std::make_unique<DictionaryValue>());
-  root->Set("empty_list", std::make_unique<ListValue>());
-  root->SetKey("a.b.c.d.e", DictionaryValue());
+  root->SetKey("empty_dict", DictionaryValue());
+  root->SetKey("empty_list", ListValue());
+  root->SetPath("a.b.c.d.e", DictionaryValue());
   root = root->DeepCopyWithoutEmptyChildren();
   EXPECT_TRUE(root->DictEmpty());
 
   // Make sure we don't prune too much.
   root->SetBoolKey("bool", true);
-  root->Set("empty_dict", std::make_unique<DictionaryValue>());
+  root->SetKey("empty_dict", DictionaryValue());
   root->SetStringKey("empty_string", std::string());
   root = root->DeepCopyWithoutEmptyChildren();
   EXPECT_EQ(2U, root->DictSize());
@@ -2023,49 +2019,49 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   // Nested test cases.  These should all reduce back to the bool and string
   // set above.
   {
-    root->Set("a.b.c.d.e", std::make_unique<DictionaryValue>());
+    root->SetPath("a.b.c.d.e", DictionaryValue());
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(2U, root->DictSize());
   }
   {
-    auto inner = std::make_unique<DictionaryValue>();
-    inner->Set("empty_dict", std::make_unique<DictionaryValue>());
-    inner->Set("empty_list", std::make_unique<ListValue>());
-    root->Set("dict_with_empty_children", std::move(inner));
+    Value inner(Value::Type::DICTIONARY);
+    inner.SetKey("empty_dict", DictionaryValue());
+    inner.SetKey("empty_list", ListValue());
+    root->SetKey("dict_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(2U, root->DictSize());
   }
   {
-    auto inner = std::make_unique<ListValue>();
-    inner->Append(std::make_unique<DictionaryValue>());
-    inner->Append(std::make_unique<ListValue>());
-    root->Set("list_with_empty_children", std::move(inner));
+    ListValue inner;
+    inner.Append(std::make_unique<DictionaryValue>());
+    inner.Append(std::make_unique<ListValue>());
+    root->SetKey("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(2U, root->DictSize());
   }
 
   // Nested with siblings.
   {
-    auto inner = std::make_unique<ListValue>();
-    inner->Append(std::make_unique<DictionaryValue>());
-    inner->Append(std::make_unique<ListValue>());
-    root->Set("list_with_empty_children", std::move(inner));
-    auto inner2 = std::make_unique<DictionaryValue>();
-    inner2->Set("empty_dict", std::make_unique<DictionaryValue>());
-    inner2->Set("empty_list", std::make_unique<ListValue>());
-    root->Set("dict_with_empty_children", std::move(inner2));
+    ListValue inner;
+    inner.Append(std::make_unique<DictionaryValue>());
+    inner.Append(std::make_unique<ListValue>());
+    root->SetKey("list_with_empty_children", std::move(inner));
+    DictionaryValue inner2;
+    inner2.SetKey("empty_dict", DictionaryValue());
+    inner2.SetKey("empty_list", ListValue());
+    root->SetKey("dict_with_empty_children", std::move(inner2));
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(2U, root->DictSize());
   }
 
   // Make sure nested values don't get pruned.
   {
-    auto inner = std::make_unique<ListValue>();
+    ListValue inner;
     auto inner2 = std::make_unique<ListValue>();
     inner2->Append(std::make_unique<Value>("hello"));
-    inner->Append(std::make_unique<DictionaryValue>());
-    inner->Append(std::move(inner2));
-    root->Set("list_with_empty_children", std::move(inner));
+    inner.Append(std::make_unique<DictionaryValue>());
+    inner.Append(std::move(inner2));
+    root->SetKey("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(3U, root->DictSize());
 
@@ -2082,19 +2078,18 @@ TEST(ValuesTest, MergeDictionary) {
   std::unique_ptr<DictionaryValue> base(new DictionaryValue);
   base->SetStringKey("base_key", "base_key_value_base");
   base->SetStringKey("collide_key", "collide_key_value_base");
-  std::unique_ptr<DictionaryValue> base_sub_dict(new DictionaryValue);
-  base_sub_dict->SetStringKey("sub_base_key", "sub_base_key_value_base");
-  base_sub_dict->SetStringKey("sub_collide_key", "sub_collide_key_value_base");
-  base->Set("sub_dict_key", std::move(base_sub_dict));
+  DictionaryValue base_sub_dict;
+  base_sub_dict.SetStringKey("sub_base_key", "sub_base_key_value_base");
+  base_sub_dict.SetStringKey("sub_collide_key", "sub_collide_key_value_base");
+  base->SetKey("sub_dict_key", std::move(base_sub_dict));
 
   std::unique_ptr<DictionaryValue> merge(new DictionaryValue);
   merge->SetStringKey("merge_key", "merge_key_value_merge");
   merge->SetStringKey("collide_key", "collide_key_value_merge");
-  std::unique_ptr<DictionaryValue> merge_sub_dict(new DictionaryValue);
-  merge_sub_dict->SetStringKey("sub_merge_key", "sub_merge_key_value_merge");
-  merge_sub_dict->SetStringKey("sub_collide_key",
-                               "sub_collide_key_value_merge");
-  merge->Set("sub_dict_key", std::move(merge_sub_dict));
+  DictionaryValue merge_sub_dict;
+  merge_sub_dict.SetStringKey("sub_merge_key", "sub_merge_key_value_merge");
+  merge_sub_dict.SetStringKey("sub_collide_key", "sub_collide_key_value_merge");
+  merge->SetKey("sub_dict_key", std::move(merge_sub_dict));
 
   base->MergeDictionary(merge.get());
 
