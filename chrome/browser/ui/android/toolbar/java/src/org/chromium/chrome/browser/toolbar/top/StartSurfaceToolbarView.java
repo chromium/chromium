@@ -292,9 +292,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * */
     void setStartSurfaceMode(boolean inStartSurfaceMode) {
         mInStartSurfaceMode = inStartSurfaceMode;
-        // When showing or hiding toolbar from a tab, the fade-in and fade-out animations are not
-        // needed. (eg: cold start, changing theme, changing incognito status...)
-        showStartSurfaceToolbar(mInStartSurfaceMode && mShouldShow, false);
+        updateToolbarVisibility();
     }
 
     /**
@@ -303,9 +301,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * */
     void setToolbarVisibility(boolean shouldShowStartSurfaceToolbar) {
         mShouldShow = shouldShowStartSurfaceToolbar;
-        // When simply setting visibility, the animations should be shown. (eg: search box has
-        // focus)
-        showStartSurfaceToolbar(mInStartSurfaceMode && mShouldShow, true);
+        updateToolbarVisibility();
     }
 
     /**
@@ -337,44 +333,36 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     /**
      * Start animation to show or hide toolbar.
-     * @param showStartSurfaceToolbar Whether or not toolbar should be shown or hidden.
-     * @param showAnimation Whether or not to show the animation.
      */
-    private void showStartSurfaceToolbar(boolean showStartSurfaceToolbar, boolean showAnimation) {
-        if (showStartSurfaceToolbar == mIsShowing) return;
+    private void updateToolbarVisibility() {
+        boolean shouldShowStartSurfaceToolbar = mInStartSurfaceMode && mShouldShow;
+        if (shouldShowStartSurfaceToolbar == mIsShowing) return;
 
         if (mVisibilityAnimator != null) {
             mVisibilityAnimator.cancel();
-            finishAnimation(showStartSurfaceToolbar);
+            finishAnimation(shouldShowStartSurfaceToolbar);
         }
 
-        mIsShowing = showStartSurfaceToolbar;
+        mIsShowing = shouldShowStartSurfaceToolbar;
 
         if (DeviceClassManager.enableAccessibilityLayout()) {
-            finishAnimation(showStartSurfaceToolbar);
-            return;
-        }
-
-        // TODO(https://crbug.com/1139024): Show the fade-in animation when
-        // TabUiFeatureUtilities#isTabToGtsAnimationEnabled is true.
-        if (!showAnimation) {
-            setVisibility(showStartSurfaceToolbar ? View.VISIBLE : View.GONE);
+            finishAnimation(shouldShowStartSurfaceToolbar);
             return;
         }
 
         // Show the fade-in and fade-out animation. Set visibility as VISIBLE here to show the
         // animation. The visibility will be finally set in finishAnimation().
         setVisibility(View.VISIBLE);
-        setAlpha(showStartSurfaceToolbar ? 0.0f : 1.0f);
+        setAlpha(shouldShowStartSurfaceToolbar ? 0.0f : 1.0f);
 
         final long duration = TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
 
         mVisibilityAnimator =
                 animate()
-                        .alpha(showStartSurfaceToolbar ? 1.0f : 0.0f)
+                        .alpha(shouldShowStartSurfaceToolbar ? 1.0f : 0.0f)
                         .setDuration(duration)
                         .setInterpolator(Interpolators.LINEAR_INTERPOLATOR)
-                        .withEndAction(() -> { finishAnimation(showStartSurfaceToolbar); });
+                        .withEndAction(() -> { finishAnimation(shouldShowStartSurfaceToolbar); });
     }
 
     private void finishAnimation(boolean showStartSurfaceToolbar) {

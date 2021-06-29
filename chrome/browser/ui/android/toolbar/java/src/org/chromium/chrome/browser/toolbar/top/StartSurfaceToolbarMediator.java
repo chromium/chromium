@@ -178,16 +178,14 @@ class StartSurfaceToolbarMediator {
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
         mOverviewModeState = newState;
-        setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateIncognitoToggleTabVisibility();
         updateNewTabButtonVisibility();
         updateHomeButtonVisibility();
         updateLogoVisibility(mIsGoogleSearchEngine);
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+        updateTabSwitcherButtonVisibility();
+        setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateTranslationY(mNonIncognitoHomepageTranslationY);
-        if (mShouldShowTabSwitcherButtonOnHomepage) {
-            updateTabSwitcherButtonVisibility();
-        }
     }
 
     void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
@@ -287,7 +285,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateIncognitoToggleTabVisibility() {
-        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE) {
+        if (mOverviewModeState != StartSurfaceState.SHOWN_TABSWITCHER
+                && mOverviewModeState != StartSurfaceState.SHOWING_TABSWITCHER) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             return;
         }
@@ -436,10 +435,11 @@ class StartSurfaceToolbarMediator {
     private void updateTabSwitcherButtonVisibility() {
         // This button should only be shown on homepage. On tab switcher page, new tab button is
         // shown.
-        boolean shouldTabSwitcherButton = mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
-        mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldTabSwitcherButton);
+        boolean shouldShow = mShouldShowTabSwitcherButtonOnHomepage
+                && mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
+        mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldShow);
         // If tab switcher button is visible, we should move identity disc to the left.
-        mPropertyModel.set(IDENTITY_DISC_AT_START, shouldTabSwitcherButton);
+        mPropertyModel.set(IDENTITY_DISC_AT_START, shouldShow);
     }
 
     private void updateTranslationY(float transY) {
