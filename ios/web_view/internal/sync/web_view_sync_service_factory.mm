@@ -86,8 +86,6 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
   init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client = WebViewSyncClient::Create(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
-  // ios/web_view has no need to update network time.
-  init_params.network_time_update_callback = base::DoNothing();
   init_params.network_connection_tracker =
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
   init_params.channel = version_info::Channel::STABLE;

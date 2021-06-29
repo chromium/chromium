@@ -171,8 +171,7 @@ class MockActiveDevicesProvider : public ActiveDevicesProvider {
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
   return std::make_unique<HttpBridgeFactory>(
       /*user_agent=*/"",
-      /*pending_url_loader_factory=*/nullptr,
-      /*network_time_update_callback=*/base::DoNothing());
+      /*pending_url_loader_factory=*/nullptr);
 }
 
 class SyncEngineImplTest : public testing::Test {

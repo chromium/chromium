@@ -121,11 +121,9 @@ DataTypeController::TypeMap BuildDataTypeControllerMap(
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
     const std::string& user_agent,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory,
-    const NetworkTimeUpdateCallback& network_time_update_callback) {
+        pending_url_loader_factory) {
   return std::make_unique<HttpBridgeFactory>(
-      user_agent, std::move(pending_url_loader_factory),
-      network_time_update_callback);
+      user_agent, std::move(pending_url_loader_factory));
 }
 
 }  // namespace
@@ -149,8 +147,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       sync_service_url_(
           GetSyncServiceURL(*base::CommandLine::ForCurrentProcess(), channel_)),
       crypto_(this, sync_client_->GetTrustedVaultClient()),
-      network_time_update_callback_(
-          std::move(init_params.network_time_update_callback)),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
       network_connection_tracker_(init_params.network_connection_tracker),
       is_first_time_sync_configure_(false),
@@ -477,7 +473,7 @@ void SyncServiceImpl::StartUpSlowEngineComponents() {
   params.service_url = sync_service_url_;
   params.http_factory_getter = base::BindOnce(
       create_http_post_provider_factory_cb_, MakeUserAgentForSync(channel_),
-      url_loader_factory_->Clone(), network_time_update_callback_);
+      url_loader_factory_->Clone());
   params.authenticated_account_info = authenticated_account_info;
   if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
     invalidation::InvalidationService* invalidator =

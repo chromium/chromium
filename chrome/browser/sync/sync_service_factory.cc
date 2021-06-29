@@ -84,22 +84,6 @@
 
 namespace {
 
-void UpdateNetworkTimeOnUIThread(base::Time network_time,
-                                 base::TimeDelta resolution,
-                                 base::TimeDelta latency,
-                                 base::TimeTicks post_time) {
-  g_browser_process->network_time_tracker()->UpdateNetworkTime(
-      network_time, resolution, latency, post_time);
-}
-
-void UpdateNetworkTime(const base::Time& network_time,
-                       const base::TimeDelta& resolution,
-                       const base::TimeDelta& latency) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateNetworkTimeOnUIThread, network_time,
-                                resolution, latency, base::TimeTicks::Now()));
-}
-
 std::unique_ptr<KeyedService> BuildSyncService(
     content::BrowserContext* context) {
   syncer::SyncServiceImpl::InitParams init_params;
@@ -108,8 +92,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
   init_params.sync_client =
       std::make_unique<browser_sync::ChromeSyncClient>(profile);
-  init_params.network_time_update_callback =
-      base::BindRepeating(&UpdateNetworkTime);
   init_params.url_loader_factory = profile->GetDefaultStoragePartition()
                                        ->GetURLLoaderFactoryForBrowserProcess();
   init_params.network_connection_tracker =

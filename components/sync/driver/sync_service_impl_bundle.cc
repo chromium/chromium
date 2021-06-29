@@ -46,7 +46,6 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
   init_params.start_behavior = start_behavior;
   init_params.sync_client = std::move(sync_client);
   init_params.identity_manager = identity_manager();
-  init_params.network_time_update_callback = base::DoNothing();
   init_params.url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);

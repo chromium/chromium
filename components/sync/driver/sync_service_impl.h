@@ -37,7 +37,6 @@
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/network_time_update_callback.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_engine_host.h"
@@ -86,7 +85,6 @@ class SyncServiceImpl : public SyncService,
     // SyncClient::GetIdentityManager (but mind LocalSync).
     signin::IdentityManager* identity_manager = nullptr;
     StartBehavior start_behavior = MANUAL_START;
-    NetworkTimeUpdateCallback network_time_update_callback;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
     network::NetworkConnectionTracker* network_connection_tracker = nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
@@ -397,9 +395,6 @@ class SyncServiceImpl : public SyncService,
 
   // Cache of the last SyncCycleSnapshot received from the sync engine.
   SyncCycleSnapshot last_snapshot_;
-
-  // Callback to update the network time; used for initializing the engine.
-  NetworkTimeUpdateCallback network_time_update_callback_;
 
   // The URL loader factory for the sync.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
