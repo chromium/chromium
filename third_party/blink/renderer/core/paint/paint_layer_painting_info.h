@@ -63,7 +63,6 @@ class PaintLayer;
 
 enum PaintLayerFlag {
   kPaintLayerNoFlag = 0,
-  kPaintLayerHaveTransparency = 1,
   kPaintLayerPaintingOverlayOverflowControls = 1 << 3,
   kPaintLayerPaintingCompositingBackgroundPhase = 1 << 4,
   kPaintLayerPaintingCompositingForegroundPhase = 1 << 5,
@@ -135,8 +134,6 @@ inline String PaintLayerFlagsToDebugString(PaintLayerFlags flags) {
       append("kPaintLayerPaintingCompositingDecorationPhase");
   }
 
-  if (flags & kPaintLayerHaveTransparency)
-    append("kPaintLayerHaveTransparency");
   if (flags & kPaintLayerPaintingOverlayOverflowControls)
     append("kPaintLayerPaintingOverlayOverflowControls");
   if (flags & kPaintLayerPaintingCompositingScrollingPhase)

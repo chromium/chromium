@@ -135,12 +135,12 @@ class DraggedNodeImageBuilder {
     PaintLayerPaintingInfo painting_info(
         layer, CullRect(EnclosingIntRect(bounding_box)),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
-    PaintLayerFlags flags = kPaintLayerHaveTransparency;
     PaintRecordBuilder builder;
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder.Context(), painting_info, flags);
+    PaintLayerPainter(*layer).Paint(builder.Context(), painting_info,
+                                    kPaintLayerNoFlag);
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
 

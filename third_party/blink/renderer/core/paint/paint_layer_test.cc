@@ -2509,6 +2509,10 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
 }
 
 TEST_P(PaintLayerTest, BackgroundIsKnownToBeOpaqueInRectChildren) {
+  // This test doesn't apply in CompositeAfterPaint.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       div {

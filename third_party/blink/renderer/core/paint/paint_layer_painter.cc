@@ -87,13 +87,11 @@ PaintResult PaintLayerPainter::Paint(
   // In CompositeAfterPaint we simplify this optimization by painting even when
   // effectively invisible but skipping the painted content during layerization
   // in PaintArtifactCompositor.
-  if (paint_layer_.PaintsWithTransparency(
-          painting_info.GetGlobalPaintFlags())) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        PaintedOutputInvisible(paint_layer_.GetLayoutObject().StyleRef()))
-      return kFullyPainted;
-
-    paint_flags |= kPaintLayerHaveTransparency;
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      paint_layer_.PaintsWithTransparency(
+          painting_info.GetGlobalPaintFlags()) &&
+      PaintedOutputInvisible(paint_layer_.GetLayoutObject().StyleRef())) {
+    return kFullyPainted;
   }
 
   // If the transform can't be inverted, then don't paint anything.

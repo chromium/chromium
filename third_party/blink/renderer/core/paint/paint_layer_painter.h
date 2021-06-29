@@ -35,7 +35,7 @@ class CORE_EXPORT PaintLayerPainter {
   void Paint(GraphicsContext&,
              const CullRect&,
              const GlobalPaintFlags = kGlobalPaintNormalPhase,
-             PaintLayerFlags = 0);
+             PaintLayerFlags = kPaintLayerNoFlag);
   // Paint() assumes that the caller will clip to the bounds of the painting
   // dirty if necessary.
   PaintResult Paint(GraphicsContext&,

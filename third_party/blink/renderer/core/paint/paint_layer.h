@@ -619,6 +619,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
       PhysicalOffset&);
 
   bool PaintsWithTransparency(GlobalPaintFlags global_paint_flags) const {
+    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     return IsTransparent() && !PaintsIntoOwnBacking(global_paint_flags);
   }
 

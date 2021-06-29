@@ -48,6 +48,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/containers/adapters.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -3154,6 +3155,7 @@ bool PaintLayer::CompositesWithTransform() const {
 bool PaintLayer::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect,
     bool should_check_children) const {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   // We can't use hasVisibleContent(), because that will be true if our
   // layoutObject is hidden, but some child is visible and that child doesn't
   // cover the entire rect.
@@ -3198,6 +3200,7 @@ bool PaintLayer::BackgroundIsKnownToBeOpaqueInRect(
 
 bool PaintLayer::ChildBackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   PaintLayerPaintOrderReverseIterator reverse_iterator(*this, kAllChildren);
   while (PaintLayer* child_layer = reverse_iterator.Next()) {
     // Stop at composited paint boundaries and non-self-painting layers.

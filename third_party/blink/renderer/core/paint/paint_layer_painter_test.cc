@@ -26,17 +26,14 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
       const char* element_name,
       bool expected_invisible,
       bool expected_paints_with_transparency) {
-    // The optimization to skip painting for effectively-invisible content is
-    // limited to pre-CAP.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return;
-
     PaintLayer* target_layer = GetPaintLayerByElementId(element_name);
     bool invisible = PaintLayerPainter::PaintedOutputInvisible(
         target_layer->GetLayoutObject().StyleRef());
     EXPECT_EQ(expected_invisible, invisible);
-    EXPECT_EQ(expected_paints_with_transparency,
-              target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      EXPECT_EQ(expected_paints_with_transparency,
+                target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
+    }
   }
 
   PaintController& MainGraphicsLayerPaintController() {
