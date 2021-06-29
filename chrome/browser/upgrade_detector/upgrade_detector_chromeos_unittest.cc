@@ -57,7 +57,7 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD0(OnCriticalUpgradeInstalled, void());
   MOCK_METHOD0(OnOutdatedInstall, void());
   MOCK_METHOD0(OnOutdatedInstallNoAutoUpdate, void());
-  MOCK_METHOD1(OnRelaunchOverriddenToRequired, void(bool override));
+  MOCK_METHOD1(OnRelaunchOverriddenToRequired, void(bool overridden));
 
  private:
   UpgradeDetector* const upgrade_detector_;

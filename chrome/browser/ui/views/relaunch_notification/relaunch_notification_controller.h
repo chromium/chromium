@@ -74,7 +74,7 @@ class RelaunchNotificationController : public UpgradeObserver {
 
   // UpgradeObserver:
   void OnUpgradeRecommended() override;
-  void OnRelaunchOverriddenToRequired(bool override) override;
+  void OnRelaunchOverriddenToRequired(bool overridden) override;
 
  private:
   enum class NotificationStyle {
@@ -200,7 +200,7 @@ class RelaunchNotificationController : public UpgradeObserver {
   // A flag to denote that the relaunch notification type policy value has been
   // overridden to required. Changes to the policy value will not affect the
   // notification type.
-  bool notification_type_required_override_ = false;
+  bool notification_type_required_overridden_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationController);
 };

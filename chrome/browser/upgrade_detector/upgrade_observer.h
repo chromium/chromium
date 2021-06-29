@@ -36,7 +36,7 @@ class UpgradeObserver {
 
   // Triggered when a request to override the relaunch notification style to
   // required or reset the overridden style is received.
-  virtual void OnRelaunchOverriddenToRequired(bool override) {}
+  virtual void OnRelaunchOverriddenToRequired(bool overridden) {}
 
  protected:
   virtual ~UpgradeObserver() {}

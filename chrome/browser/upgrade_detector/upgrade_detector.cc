@@ -109,8 +109,8 @@ void UpgradeDetector::Shutdown() {
   pref_change_registrar_.RemoveAll();
 }
 
-void UpgradeDetector::OverrideRelaunchNotificationToRequired(bool override) {
-  NotifyRelaunchOverriddenToRequired(override);
+void UpgradeDetector::OverrideRelaunchNotificationToRequired(bool overridden) {
+  NotifyRelaunchOverriddenToRequired(overridden);
 }
 
 void UpgradeDetector::AddObserver(UpgradeObserver* observer) {
@@ -356,13 +356,13 @@ void UpgradeDetector::NotifyUpdateOverCellularOneTimePermissionGranted() {
     observer.OnUpdateOverCellularOneTimePermissionGranted();
 }
 
-void UpgradeDetector::NotifyRelaunchOverriddenToRequired(bool override) {
+void UpgradeDetector::NotifyRelaunchOverriddenToRequired(bool overridden) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
-    observer.OnRelaunchOverriddenToRequired(override);
+    observer.OnRelaunchOverriddenToRequired(overridden);
 }
 
 void UpgradeDetector::TriggerCriticalUpdate() {

@@ -148,8 +148,8 @@ class FakeUpgradeDetector : public UpgradeDetector {
     NotifyUpgrade();
   }
 
-  void BroadcastNotificationTypeOverriden(bool override) {
-    NotifyRelaunchOverriddenToRequired(override);
+  void BroadcastNotificationTypeOverriden(bool overridden) {
+    NotifyRelaunchOverriddenToRequired(overridden);
   }
 
   base::TimeDelta high_threshold() const { return high_threshold_; }

@@ -136,17 +136,17 @@ void RelaunchNotificationController::OnUpgradeRecommended() {
 }
 
 void RelaunchNotificationController::OnRelaunchOverriddenToRequired(
-    bool override) {
-  if (notification_type_required_override_ == override)
+    bool overridden) {
+  if (notification_type_required_overridden_ == overridden)
     return;
-  notification_type_required_override_ = override;
+  notification_type_required_overridden_ = overridden;
   HandleCurrentStyle();
 }
 
 void RelaunchNotificationController::HandleCurrentStyle() {
   NotificationStyle notification_style = NotificationStyle::kNone;
 
-  if (notification_type_required_override_) {
+  if (notification_type_required_overridden_) {
     notification_style = NotificationStyle::kRequired;
   } else {
     switch (ReadPreference()) {

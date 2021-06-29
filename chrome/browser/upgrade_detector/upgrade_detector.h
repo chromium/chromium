@@ -171,7 +171,7 @@ class UpgradeDetector {
 
   // Overrides the relaunch notification style to required if |override|; else
   // resets the override so that the policy settings take effect.
-  void OverrideRelaunchNotificationToRequired(bool override);
+  void OverrideRelaunchNotificationToRequired(bool overridden);
 
   void AddObserver(UpgradeObserver* observer);
 
@@ -259,7 +259,7 @@ class UpgradeDetector {
 
   // Notifies about a request to override the relaunch notification style to
   // required or reset the overridden style.
-  void NotifyRelaunchOverriddenToRequired(bool override);
+  void NotifyRelaunchOverriddenToRequired(bool overridden);
 
   // Triggers a critical update, which starts a timer that checks the machine
   // idle state. Protected and virtual so that it could be overridden by tests.
