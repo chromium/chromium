@@ -29,6 +29,9 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   if (!contents)
     return;
 
+  const GURL last_committed_origin =
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(contents);
+
   // Page with the notification permission shouldn't be frozen as this is a
   // strong signal that the user wants to receive updates from this page while
   // it's in background. This information isn't available in the PM graph, this
@@ -37,8 +40,7 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
       PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(contents->GetBrowserContext()))
           ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                contents->GetLastCommittedURL(),
-                                contents->GetLastCommittedURL());
+                                last_committed_origin, last_committed_origin);
   if (notif_permission.content_setting == CONTENT_SETTING_ALLOW)
     return;
 

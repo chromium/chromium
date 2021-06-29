@@ -362,7 +362,8 @@ void PermissionManager::RequestPermissions(
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  const GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+  const GURL embedding_origin =
+      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
 
   for (size_t i = 0; i < permissions.size(); ++i) {
     const ContentSettingsType permission = permissions[i];
@@ -410,7 +411,8 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
     const GURL& requesting_origin) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+  GURL embedding_origin =
+      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   return GetPermissionStatusHelper(permission, render_frame_host,
                                    requesting_origin, embedding_origin);
 }
@@ -518,7 +520,8 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
   if (context) {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
-    GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+    GURL embedding_origin =
+        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
     result = context->UpdatePermissionStatusWithDeviceStatus(
         result, GetCanonicalOrigin(type, requesting_origin, embedding_origin),
         embedding_origin);
@@ -565,7 +568,8 @@ PermissionManager::SubscribePermissionStatusChange(
   if (render_frame_host) {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
-    embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+    embedding_origin =
+        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
     subscription->render_frame_id = render_frame_host->GetRoutingID();
     subscription->render_process_id = render_frame_host->GetProcess()->GetID();
     subscription->current_value =
@@ -641,7 +645,8 @@ void PermissionManager::OnPermissionChanged(
     if (rfh) {
       content::WebContents* web_contents =
           content::WebContents::FromRenderFrameHost(rfh);
-      embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+      embedding_origin =
+          PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
     } else {
       embedding_origin = subscription->requesting_origin;
     }

@@ -239,6 +239,7 @@ static_library("content_shell_lib") {
     "//components/metrics:net",
     "//components/network_session_configurator/common",
     "//components/performance_manager",
+    "//components/permissions",
     "//components/prefs",
     "//components/services/storage/test_api",
     "//components/url_formatter",

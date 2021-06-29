@@ -21,6 +21,7 @@ extern const base::FeatureParam<int> kPermissionChipAutoDismissDelay;
 extern const base::Feature kPermissionChipGestureSensitive;
 extern const base::Feature kPermissionChipRequestTypeSensitive;
 extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
+extern const base::Feature kRevisedOriginHandling;
 
 }  // namespace features
 namespace feature_params {

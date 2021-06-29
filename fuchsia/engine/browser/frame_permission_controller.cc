@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/frame_permission_controller.h"
 
 #include "base/check_op.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -100,8 +101,8 @@ void FramePermissionController::SetDefaultPermissionState(
 PermissionStatus FramePermissionController::GetPermissionState(
     PermissionType permission,
     const url::Origin& requesting_origin) {
-  url::Origin embedding_origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  url::Origin embedding_origin = url::Origin::Create(
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents_));
   const url::Origin& canonical_origin =
       GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
 
