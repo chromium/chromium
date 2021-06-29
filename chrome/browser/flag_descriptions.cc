@@ -622,12 +622,6 @@ const char kDocumentTransitionName[] = "documentTransition API";
 const char kDocumentTransitionDescription[] =
     "Controls the availability of the documentTransition JavaScript API.";
 
-const char kEnableAccessibilityObjectModelName[] =
-    "Accessibility Object Model v0 (deprecated)";
-const char kEnableAccessibilityObjectModelDescription[] =
-    "Enables experimental support for an earlier version of Accessibility"
-    "Object Model APIs that are now deprecated.";
-
 const char kEnableAudioFocusEnforcementName[] = "Audio Focus Enforcement";
 const char kEnableAudioFocusEnforcementDescription[] =
     "Enables enforcement of a single media session having audio focus at "

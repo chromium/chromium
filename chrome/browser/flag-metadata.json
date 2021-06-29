@@ -1293,11 +1293,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-accessibility-object-model",
-    "owners": [ "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 79
-  },
-  {
     "name": "enable-advanced-ppd-attributes",
     "owners": [ "vkuzkokov", "skau" ],
     "expiry_milestone": 83
