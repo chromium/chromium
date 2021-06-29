@@ -58,6 +58,7 @@ void BlitRGBAToYUVA(sk_sp<SkImage> src_image,
     SkSamplingOptions sampling_options(SkFilterMode::kLinear);
 
     SkPaint paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
     paint.setColorFilter(SkColorFilters::Matrix(color_matrix));
 
     float subsampling_factors[2] = {
