@@ -194,30 +194,32 @@ bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
 }
 
 absl::optional<std::u16string> ConnectorsManager::GetCustomMessage(
-    AnalysisConnector connector) {
+    AnalysisConnector connector,
+    const std::string& tag) {
   if (IsConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
     if (analysis_connector_settings_.count(connector) &&
         !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          .GetCustomMessage();
+      return analysis_connector_settings_.at(connector).at(0).GetCustomMessage(
+          tag);
     }
   }
   return absl::nullopt;
 }
 
 absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
-    AnalysisConnector connector) {
+    AnalysisConnector connector,
+    const std::string& tag) {
   if (IsConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
       CacheAnalysisConnectorPolicy(connector);
 
     if (analysis_connector_settings_.count(connector) &&
         !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0).GetLearnMoreUrl();
+      return analysis_connector_settings_.at(connector).at(0).GetLearnMoreUrl(
+          tag);
     }
   }
   return absl::nullopt;

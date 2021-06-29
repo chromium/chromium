@@ -82,7 +82,8 @@ const char* ConnectorScopePref(ReportingConnector connector) {
 }
 
 TriggeredRule::Action GetHighestPrecedenceAction(
-    const ContentAnalysisResponse& response) {
+    const ContentAnalysisResponse& response,
+    std::string* tag) {
   auto action = TriggeredRule::ACTION_UNSPECIFIED;
 
   for (const auto& result : response.results()) {
@@ -91,8 +92,14 @@ TriggeredRule::Action GetHighestPrecedenceAction(
       continue;
     }
 
-    for (const auto& rule : result.triggered_rules())
-      action = GetHighestPrecedenceAction(action, rule.action());
+    for (const auto& rule : result.triggered_rules()) {
+      auto higher_precedence_action =
+          GetHighestPrecedenceAction(action, rule.action());
+      if (higher_precedence_action != action && tag != nullptr) {
+        *tag = result.tag();
+      }
+      action = higher_precedence_action;
+    }
   }
   return action;
 }

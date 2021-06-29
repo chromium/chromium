@@ -136,6 +136,9 @@ constexpr int kTopBottomPadding = 6;
 // This is only used when the text size is large.
 constexpr int kMinimumVerticalPadding = 2 + kTopBottomPadding;
 
+// The analysis service tag for data loss prevention.
+const char kDlpTag[] = "dlp";
+
 // A stub subclass of Button that has no visuals.
 class TransparentButton : public views::Button {
  public:
@@ -828,7 +831,8 @@ void DownloadItemView::UpdateButtons() {
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             model_->profile())
             ->HasCustomInfoToDisplay(
-                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+                kDlpTag);
 
     prompt_to_discard =
         !prompt_to_review && !prompt_to_scan &&
@@ -1250,12 +1254,14 @@ void DownloadItemView::ReviewButtonPressed() {
   std::u16string custom_message =
       connectors_service
           ->GetCustomMessage(
-              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)
+              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+              kDlpTag)
           .value_or(u"");
   GURL learn_more_url =
       connectors_service
           ->GetLearnMoreUrl(
-              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)
+              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+              kDlpTag)
           .value_or(GURL());
 
   // This dialog opens itself, and is thereafter owned by constrained window

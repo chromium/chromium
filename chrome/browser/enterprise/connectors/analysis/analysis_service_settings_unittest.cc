@@ -101,7 +101,16 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
   "block_unsupported_file_types": true,
   "minimum_data_size": 123,
   "custom_messages": [
-    {"message": "abcèéç"},
+    {
+      "message": "dlpabcèéç",
+      "learn_more_url": "http://www.example.com/dlp",
+      "tag": "dlp"
+    },
+    {
+      "message": "malwareabcèéç",
+      "learn_more_url": "http://www.example.com/malware",
+      "tag": "malware"
+    },
   ],
 })";
 
@@ -110,6 +119,13 @@ constexpr char kScan2DotCom[] = "https://scan2.com";
 constexpr char kNoDlpDotCom[] = "https://no.dlp.com";
 constexpr char kNoMalwareDotCom[] = "https://no.malware.com";
 constexpr char kNoDlpOrMalwareDotCa[] = "https://no.dlp.or.malware.ca";
+
+// These URLs can't be added directly to the "expected" settings object, because
+// it's created statically and statically initializing GURLs is prohibited.
+const std::map<std::string, std::string> kExpectedLearnMoreUrlSpecs{
+    {"dlp", "http://www.example.com/dlp"},
+    {"malware", "http://www.example.com/malware"},
+};
 
 AnalysisSettings* OnlyEnabledSettings() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
@@ -152,7 +168,8 @@ AnalysisSettings* NormalDlpAndMalwareSettings() {
 AnalysisSettings* NormalSettingsWithCustomMessage() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings = NormalSettingsWithTags({"dlp", "malware"});
-    settings.custom_message_text = u"abcèéç";
+    settings.custom_message_data["dlp"].message = u"dlpabcèéç";
+    settings.custom_message_data["malware"].message = u"malwareabcèéç";
     return settings;
   }());
   return settings.get();
@@ -206,6 +223,20 @@ TEST_P(AnalysisServiceSettingsTest, Test) {
               expected_settings()->analysis_url);
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
+    for (const auto& entry : expected_settings()->custom_message_data) {
+      ASSERT_EQ(
+          entry.second.message,
+          analysis_settings.value().custom_message_data[entry.first].message);
+      ASSERT_EQ(kExpectedLearnMoreUrlSpecs.at(entry.first),
+                analysis_settings.value()
+                    .custom_message_data[entry.first]
+                    .learn_more_url.spec());
+
+      ASSERT_EQ(entry.second.message,
+                service_settings.GetCustomMessage(entry.first).value());
+      ASSERT_EQ(kExpectedLearnMoreUrlSpecs.at(entry.first),
+                service_settings.GetLearnMoreUrl(entry.first).value().spec());
+    }
   }
 }
 

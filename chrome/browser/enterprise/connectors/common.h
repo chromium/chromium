@@ -32,6 +32,7 @@ constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
 constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
 constexpr char kKeyCustomMessages[] = "custom_messages";
+constexpr char kKeyCustomMessagesTag[] = "tag";
 constexpr char kKeyCustomMessagesMessage[] = "message";
 constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 constexpr char kKeyMimeTypes[] = "mime_types";
@@ -56,6 +57,13 @@ enum class BlockUntilVerdict {
   BLOCK = 1,
 };
 
+// A struct representing a custom message and associated "learn more" URL. These
+// are scoped to a tag.
+struct CustomMessageData {
+  std::u16string message;
+  GURL learn_more_url;
+};
+
 // Structs representing settings to be used for an analysis or a report. These
 // settings should only be kept and considered valid for the specific
 // analysis/report they were obtained for.
@@ -71,8 +79,7 @@ struct AnalysisSettings {
   bool block_password_protected_files = false;
   bool block_large_files = false;
   bool block_unsupported_file_types = false;
-  std::u16string custom_message_text;
-  GURL custom_message_learn_more_url;
+  std::map<std::string, CustomMessageData> custom_message_data;
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.
   size_t minimum_data_size = 100;
@@ -134,9 +141,11 @@ const char* ConnectorPref(FileSystemConnector connector);
 const char* ConnectorScopePref(AnalysisConnector connector);
 const char* ConnectorScopePref(ReportingConnector connector);
 
-// Returns the highest precedence action in the given parameters.
+// Returns the highest precedence action in the given parameters. Writes the tag
+// field of the result containing the highest precedence action into |tag|.
 TriggeredRule::Action GetHighestPrecedenceAction(
-    const ContentAnalysisResponse& response);
+    const ContentAnalysisResponse& response,
+    std::string* tag);
 TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2);

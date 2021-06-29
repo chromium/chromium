@@ -66,23 +66,33 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 
   const base::Value* custom_messages =
       settings_value.FindListKey(kKeyCustomMessages);
-  if (custom_messages && custom_messages->is_list() &&
-      !custom_messages->GetList().empty()) {
-    // As of now, this list can only contain one value. At some point, it
-    // might be necessary to iterate further in order to find the most
-    // appropriate message, for instance by considering the message and
-    // browser's locales or other signals.
-    const base::Value& value = custom_messages->GetList()[0];
-    const std::string* message = value.FindStringKey(kKeyCustomMessagesMessage);
-    // This string originates as a protobuf string on the server, which are utf8
-    // and it's used in the UI where it needs to be encoded as utf16. Do the
-    // conversion now, otherwise code down the line may not be able to determine
-    // if the std::string is ASCII or UTF8 before passing it to the UI.
-    custom_message_text_ = base::UTF8ToUTF16(message ? *message : "");
+  if (custom_messages && custom_messages->is_list()) {
+    for (const base::Value& value : custom_messages->GetList()) {
+      // As of now, this list will contain one message per tag. At some point,
+      // the server may start sending one message per language/tag pair. If this
+      // is the case, this code should be changed to match the language to
+      // Chrome's UI language.
+      const std::string* tag = value.FindStringKey(kKeyCustomMessagesTag);
+      if (!tag)
+        continue;
 
-    const std::string* url =
-        value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);
-    custom_message_learn_more_url_ = url ? GURL(*url) : GURL();
+      CustomMessageData data;
+
+      const std::string* message =
+          value.FindStringKey(kKeyCustomMessagesMessage);
+      // This string originates as a protobuf string on the server, which are
+      // utf8 and it's used in the UI where it needs to be encoded as utf16. Do
+      // the conversion now, otherwise code down the line may not be able to
+      // determine if the std::string is ASCII or UTF8 before passing it to the
+      // UI.
+      data.message = base::UTF8ToUTF16(message ? *message : "");
+
+      const std::string* url =
+          value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);
+      data.learn_more_url = url ? GURL(*url) : GURL();
+
+      custom_message_data_[*tag] = data;
+    }
   }
 }
 
@@ -131,8 +141,7 @@ absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   settings.analysis_url = GURL(service_provider_->analysis_url());
   DCHECK(settings.analysis_url.is_valid());
   settings.minimum_data_size = minimum_data_size_;
-  settings.custom_message_text = custom_message_text_;
-  settings.custom_message_learn_more_url = custom_message_learn_more_url_;
+  settings.custom_message_data = custom_message_data_;
 
   return settings;
 }
@@ -143,16 +152,28 @@ bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
   return block_until_verdict_ == BlockUntilVerdict::BLOCK;
 }
 
-absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage() {
-  if (!IsValid() || custom_message_text_.empty())
+absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
+    const std::string& tag) {
+  const auto& element = custom_message_data_.find(tag);
+
+  if (!IsValid() || element == custom_message_data_.end() ||
+      element->second.message.empty()) {
     return absl::nullopt;
-  return custom_message_text_;
+  }
+
+  return element->second.message;
 }
 
-absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl() {
-  if (!IsValid() || custom_message_learn_more_url_.is_empty())
+absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
+    const std::string& tag) {
+  const auto& element = custom_message_data_.find(tag);
+
+  if (!IsValid() || element == custom_message_data_.end() ||
+      element->second.learn_more_url.is_empty()) {
     return absl::nullopt;
-  return custom_message_learn_more_url_;
+  }
+
+  return element->second.learn_more_url;
 }
 
 void AnalysisServiceSettings::AddUrlPatternSettings(

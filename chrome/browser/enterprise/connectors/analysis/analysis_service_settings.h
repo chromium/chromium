@@ -34,8 +34,8 @@ class AnalysisServiceSettings {
 
   // Get the custom message/learn more URL. Returns absl::nullopt if the
   // settings are invalid or if the message/URL are empty.
-  absl::optional<std::u16string> GetCustomMessage();
-  absl::optional<GURL> GetLearnMoreUrl();
+  absl::optional<std::u16string> GetCustomMessage(const std::string& tag);
+  absl::optional<GURL> GetLearnMoreUrl(const std::string& tag);
 
   std::string service_provider_name() const { return service_provider_name_; }
 
@@ -105,8 +105,9 @@ class AnalysisServiceSettings {
   bool block_large_files_ = false;
   bool block_unsupported_file_types_ = false;
   size_t minimum_data_size_ = 100;
-  std::u16string custom_message_text_;
-  GURL custom_message_learn_more_url_;
+  // A map from tag (dlp, malware, etc) to the custom message and "learn more"
+  // link associated with it.
+  std::map<std::string, CustomMessageData> custom_message_data_;
   std::string service_provider_name_;
 };
 

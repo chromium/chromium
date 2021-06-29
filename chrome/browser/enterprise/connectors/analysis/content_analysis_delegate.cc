@@ -219,18 +219,22 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
 
 absl::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
-  if (!data_.settings.custom_message_text.empty()) {
+  auto element = data_.settings.custom_message_data.find(final_result_tag_);
+  if (element != data_.settings.custom_message_data.end() &&
+      !element->second.message.empty()) {
     return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                      data_.settings.custom_message_text);
+                                      element->second.message);
   }
 
   return absl::nullopt;
 }
 
 absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
-  if (data_.settings.custom_message_learn_more_url.is_valid() &&
-      !data_.settings.custom_message_learn_more_url.is_empty()) {
-    return data_.settings.custom_message_learn_more_url;
+  auto element = data_.settings.custom_message_data.find(final_result_tag_);
+  if (element != data_.settings.custom_message_data.end() &&
+      element->second.learn_more_url.is_valid() &&
+      !element->second.learn_more_url.is_empty()) {
+    return element->second.learn_more_url;
   }
 
   return absl::nullopt;
@@ -390,7 +394,9 @@ void ContentAnalysisDelegate::StringRequestCallback(
                         content_size, result, response);
 
   text_request_complete_ = true;
-  auto action = enterprise_connectors::GetHighestPrecedenceAction(response);
+  std::string tag;
+  auto action =
+      enterprise_connectors::GetHighestPrecedenceAction(response, &tag);
   bool text_complies = ResultShouldAllowDataUse(result, data_.settings) &&
                        ContentAnalysisActionAllowsDataUse(action);
   bool should_warn = action == enterprise_connectors::ContentAnalysisResponse::
@@ -409,9 +415,9 @@ void ContentAnalysisDelegate::StringRequestCallback(
     if (should_warn) {
       text_warning_ = true;
       text_response_ = std::move(response);
-      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING, tag);
     } else {
-      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE, tag);
     }
   }
 
@@ -434,7 +440,8 @@ void ContentAnalysisDelegate::FileRequestCallback(
                         base::TimeTicks::Now() - upload_start_time_,
                         file_info_[index].size, result, response);
 
-  auto action = GetHighestPrecedenceAction(response);
+  std::string tag;
+  auto action = GetHighestPrecedenceAction(response, &tag);
   bool file_complies = ResultShouldAllowDataUse(result, data_.settings) &&
                        ContentAnalysisActionAllowsDataUse(action);
   bool should_warn = action == enterprise_connectors::TriggeredRule::WARN;
@@ -451,15 +458,16 @@ void ContentAnalysisDelegate::FileRequestCallback(
 
   if (!file_complies) {
     if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::LARGE_FILES);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::LARGE_FILES,
+                        tag);
     } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED) {
       UpdateFinalResult(
-          ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES);
+          ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES, tag);
     } else if (should_warn) {
       file_warnings_[index] = std::move(response);
-      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING, tag);
     } else {
-      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE);
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::FAILURE, tag);
     }
   }
 
@@ -634,9 +642,12 @@ void ContentAnalysisDelegate::OnGotFileInfo(
 }
 
 void ContentAnalysisDelegate::UpdateFinalResult(
-    ContentAnalysisDelegateBase::FinalResult result) {
-  if (result < final_result_)
+    ContentAnalysisDelegateBase::FinalResult result,
+    const std::string& tag) {
+  if (result < final_result_) {
     final_result_ = result;
+    final_result_tag_ = tag;
+  }
 }
 
 }  // namespace enterprise_connectors

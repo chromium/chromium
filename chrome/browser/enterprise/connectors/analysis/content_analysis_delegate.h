@@ -286,7 +286,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Updates |final_result_| following the precedence established by the
   // FinalResult enum.
-  void UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult message);
+  void UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult message,
+                         const std::string& tag);
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
@@ -334,6 +335,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Scanning result to be shown to the user once every request is done.
   ContentAnalysisDelegateBase::FinalResult final_result_ =
       ContentAnalysisDelegateBase::FinalResult::SUCCESS;
+  // The tag (dlp, malware, etc) of the result that triggered the verdict
+  // represented by |final_result_|.
+  std::string final_result_tag_;
 
   // Set to true at the end of UploadData to indicate requests have been made
   // for every file/text. This is read to ensure |this| isn't deleted too early.

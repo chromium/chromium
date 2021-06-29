@@ -69,7 +69,8 @@ constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
   "block_until_verdict": 1,
   "custom_messages": [{
     "message": "Custom message",
-    "learn_more_url": "http://www.example.com/"
+    "learn_more_url": "http://www.example.com/",
+    "tag": "dlp"
   }]
 })";
 
