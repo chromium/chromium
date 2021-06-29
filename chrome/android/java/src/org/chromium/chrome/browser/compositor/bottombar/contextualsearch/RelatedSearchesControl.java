@@ -205,6 +205,7 @@ public class RelatedSearchesControl {
             mControlView = new RelatedSearchesControlView(
                     mOverlayPanel, mContext, mViewContainer, mResourceLoader, layoutId, viewId);
         }
+        assert mChipsSelected == 0 || hasReleatedSearchesToShow();
         mRelatedSearchesSuggestions = relatedSearches;
         mChips = null;
         if (hasReleatedSearchesToShow()) {
@@ -213,7 +214,6 @@ public class RelatedSearchesControl {
             hide();
         }
         calculateHeight();
-        assert mChipsSelected == 0;
         mSelectedChip = NO_SELECTED_CHIP;
     }
 

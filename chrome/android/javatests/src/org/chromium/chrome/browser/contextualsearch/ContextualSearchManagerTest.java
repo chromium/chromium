@@ -1316,6 +1316,15 @@ public class ContextualSearchManagerTest {
     }
 
     /**
+     * Force the Panel to peek.
+     */
+    private void peekPanel() {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> { mPanel.peekPanel(StateChangeReason.UNKNOWN); });
+        waitForPanelToPeek();
+    }
+
+    /**
      * Waits for the Action Bar to be visible in response to a selection.
      */
     private void waitForSelectActionBarVisible() {
@@ -3927,6 +3936,14 @@ public class ContextualSearchManagerTest {
         final int chipToSelect = 2;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
+        Assert.assertEquals("The Related Searches query was not shown in the Bar!",
+                "Related Search 3", mPanel.getSearchBarControl().getSearchTerm());
+
+        // Collapse the panel back to the peeking state
+        peekPanel();
+        Assert.assertEquals(
+                "The default query was not shown in the Bar after returning to peeking state!",
+                "Intelligence", mPanel.getSearchBarControl().getSearchTerm());
 
         // Close the panel
         closePanel();

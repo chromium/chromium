@@ -251,11 +251,14 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mPanelMetrics.onPanelStateChanged(
                 fromState, toState, reason, Profile.getLastUsedRegularProfile());
 
-        if (toState == PanelState.PEEKED
-                && (fromState == PanelState.CLOSED || fromState == PanelState.UNDEFINED)) {
-            // If the Bar Banner is visible, it should animate when the SearchBar peeks.
-            if (getBarBannerControl().isVisible()) {
-                getBarBannerControl().animateAppearance();
+        if (toState == PanelState.PEEKED) {
+            if (fromState == PanelState.CLOSED || fromState == PanelState.UNDEFINED) {
+                // If the Bar Banner is visible, it should animate when the SearchBar peeks.
+                if (getBarBannerControl().isVisible()) {
+                    getBarBannerControl().animateAppearance();
+                }
+            } else if (fromState == PanelState.EXPANDED || fromState == PanelState.MAXIMIZED) {
+                mManagementDelegate.onPanelCollapsed();
             }
         }
 

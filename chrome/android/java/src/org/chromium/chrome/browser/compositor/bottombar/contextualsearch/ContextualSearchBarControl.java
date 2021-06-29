@@ -298,6 +298,11 @@ public class ContextualSearchBarControl {
         return mSearchTermControl.getViewId();
     }
 
+    @VisibleForTesting
+    public CharSequence getSearchTerm() {
+        return mSearchTermControl.getTextView().getText();
+    }
+
     /**
      * @return The Id of the Search Caption View.
      */
