@@ -90,6 +90,11 @@ bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
       return true;
     case NGFragmentItem::kText:
     case NGFragmentItem::kSVGText:
+      if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved())) {
+        // See http://crbug.com/1217079
+        NOTREACHED() << item;
+        return true;
+      }
       // Returns true when |item.GetLayoutObject().IsStyleGenerated()|.
       // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
       return item.IsGeneratedText();
