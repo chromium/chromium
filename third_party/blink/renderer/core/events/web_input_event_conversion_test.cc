@@ -109,7 +109,7 @@ TEST(WebInputEventConversionTest, WebKeyboardEventBuilder) {
 
 TEST(WebInputEventConversionTest, WebMouseEventBuilder) {
   TouchEvent* event = TouchEvent::Create();
-  WebMouseEventBuilder mouse(nullptr, nullptr, *event);
+  WebMouseEventBuilder mouse(nullptr, *event);
   EXPECT_EQ(WebInputEvent::Type::kUndefined, mouse.GetType());
 }
 

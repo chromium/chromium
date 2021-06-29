@@ -59,12 +59,8 @@ class CORE_EXPORT WebMouseEventBuilder : public WebMouseEvent {
   // NOTE: This is only implemented for mousemove, mouseover, mouseout,
   // mousedown and mouseup. If the event mapping fails, the event type will
   // be set to Undefined.
-  WebMouseEventBuilder(const LocalFrameView*,
-                       const LayoutObject*,
-                       const MouseEvent&);
-  WebMouseEventBuilder(const LocalFrameView*,
-                       const LayoutObject*,
-                       const TouchEvent&);
+  WebMouseEventBuilder(const LayoutObject*, const MouseEvent&);
+  WebMouseEventBuilder(const LayoutObject*, const TouchEvent&);
 };
 
 // Converts a KeyboardEvent to a corresponding WebKeyboardEvent.
