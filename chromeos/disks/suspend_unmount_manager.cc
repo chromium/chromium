@@ -6,12 +6,17 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
 namespace chromeos {
 namespace disks {
 namespace {
+
+// Threshold for logging the blocking of suspend.
+constexpr base::TimeDelta kBlockSuspendThreshold =
+    base::TimeDelta::FromSeconds(5);
 
 void OnRefreshCompleted(bool success) {}
 
@@ -45,6 +50,7 @@ void SuspendUnmountManager::SuspendImminent(
   for (const auto& mount_path : mount_paths) {
     if (block_suspend_token_.is_empty()) {
       block_suspend_token_ = base::UnguessableToken::Create();
+      block_suspend_time_ = base::TimeTicks::Now();
       PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
                                               "SuspendUnmountManager");
     }
@@ -72,6 +78,10 @@ void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
   if (unmounting_paths_.empty() && block_suspend_token_) {
     PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
     block_suspend_token_ = {};
+
+    auto block_time = base::TimeTicks::Now() - block_suspend_time_;
+    LOG_IF(WARNING, block_time > kBlockSuspendThreshold)
+        << "Blocked suspend for " << block_time.InSecondsF() << " seconds";
   }
 }
 
