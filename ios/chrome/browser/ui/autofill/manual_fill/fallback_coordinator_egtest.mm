@@ -346,6 +346,10 @@ BOOL WaitForKeyboardToAppear() {
         @"Undocking the keyboard does not work on iPhone or iPad Pro");
   }
 
+  // Give the iPad 2 seconds to settle the split animation.
+  [[NSRunLoop currentRunLoop]
+      runUntilDate:[[NSDate date] dateByAddingTimeInterval:2]];
+
   // When keyboard is split, icons are not visible, so we rely on timeout before
   // docking again, because EarlGrey synchronization isn't working properly with
   // the keyboard.
