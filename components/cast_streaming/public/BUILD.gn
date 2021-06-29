@@ -5,8 +5,18 @@
 import("//testing/test.gni")
 
 source_set("public") {
+  deps = [ "//url" ]
+
+  sources = [
+    "cast_streaming_url.cc",
+    "cast_streaming_url.h",
+  ]
+}
+
+source_set("config_conversions") {
   deps = [
     "//base",
+    "//components/openscreen_platform",
     "//media",
     "//ui/gfx/geometry",
     "//url",
@@ -16,8 +26,6 @@ source_set("public") {
     "//third_party/openscreen/src/cast/streaming:streaming_configs",
   ]
   sources = [
-    "cast_streaming_url.cc",
-    "cast_streaming_url.h",
     "config_conversions.cc",
     "config_conversions.h",
   ]
@@ -26,12 +34,14 @@ source_set("public") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":config_conversions",
     ":public",
     "//base/test:test_support",
     "//media:test_support",
     "//media/mojo:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
   ]
   sources = [ "config_conversions_unittest.cc" ]
 }

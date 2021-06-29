@@ -68,6 +68,7 @@ source_set("streaming_session") {
     ":receiver_session_public",
     "//base",
     "//components/cast_streaming/public",
+    "//components/cast_streaming/public:config_conversions",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
@@ -111,6 +112,7 @@ source_set("test_sender") {
   deps = [
     ":core",
     "//components/cast_streaming/public",
+    "//components/cast_streaming/public:config_conversions",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",
@@ -139,6 +141,7 @@ source_set("test_receiver") {
     ":streaming_session",
     "//base",
     "//components/cast_streaming/public",
+    "//components/cast_streaming/public:config_conversions",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
