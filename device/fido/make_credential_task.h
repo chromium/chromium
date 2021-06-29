@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
 
   MakeCredentialTask(FidoDevice* device,
                      CtapMakeCredentialRequest request,
+                     MakeCredentialOptions options,
                      MakeCredentialTaskCallback callback);
   ~MakeCredentialTask() override;
 
@@ -50,7 +51,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
   // WillUseCTAP2 returns true iff |MakeCredentialTask| will use the CTAP2
   // protocol to satisfy the given |request|.
   static bool WillUseCTAP2(const FidoDevice* device,
-                           const CtapMakeCredentialRequest& request);
+                           const CtapMakeCredentialRequest& request,
+                           const MakeCredentialOptions& options);
 
   // FidoTask:
   void Cancel() override;
@@ -74,6 +76,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialTask : public FidoTask {
       absl::optional<AuthenticatorMakeCredentialResponse> response);
 
   CtapMakeCredentialRequest request_;
+  MakeCredentialOptions options_;
   std::vector<std::vector<PublicKeyCredentialDescriptor>> exclude_list_batches_;
   size_t current_exclude_list_batch_ = 0;
 

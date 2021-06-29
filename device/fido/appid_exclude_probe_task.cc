@@ -11,16 +11,18 @@ namespace device {
 
 AppIdExcludeProbeTask::AppIdExcludeProbeTask(FidoDevice* device,
                                              CtapMakeCredentialRequest request,
+                                             MakeCredentialOptions options,
                                              Callback callback)
     : FidoTask(device),
       request_(std::move(request)),
+      options_(std::move(options)),
       callback_(std::move(callback)) {}
 
 AppIdExcludeProbeTask::~AppIdExcludeProbeTask() = default;
 
 void AppIdExcludeProbeTask::StartTask() {
-  DCHECK(request_.app_id);
-  DCHECK(!request_.is_u2f_only);
+  DCHECK(request_.app_id_exclude);
+  DCHECK(!options_.is_u2f_only);
   DCHECK_EQ(device()->supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(!device()->NoSilentRequests());
 
@@ -51,7 +53,8 @@ void AppIdExcludeProbeTask::Cancel() {
 
 void AppIdExcludeProbeTask::NextSilentSignOperation() {
   DCHECK(current_exclude_list_batch_ < exclude_list_batches_.size());
-  CtapGetAssertionRequest request(*request_.app_id, /*client_data_json=*/"");
+  CtapGetAssertionRequest request(*request_.app_id_exclude,
+                                  /*client_data_json=*/"");
 
   request.allow_list = exclude_list_batches_.at(current_exclude_list_batch_);
   request.user_presence_required = false;

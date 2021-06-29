@@ -109,6 +109,7 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
 
 void FidoDeviceAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
     CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
     base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>
         callback) {
   // If the device (or request) is U2F-only then |MakeCredential| will handle
@@ -117,7 +118,7 @@ void FidoDeviceAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
   //
   // (If the device is AlwaysUV then it should still support up=false requests
   // without a PUAT, so they aren't excluded here.)
-  if (!MakeCredentialTask::WillUseCTAP2(device_.get(), request) ||
+  if (!MakeCredentialTask::WillUseCTAP2(device_.get(), request, options) ||
       device_->NoSilentRequests()) {
     std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);
     return;
@@ -128,12 +129,15 @@ void FidoDeviceAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
   // Therefore appidExclude probing has to happen before the PUAT is obtained.
   // For CTAP 2.0 devices we follow the same pattern, even though a PIN token
   // doesn't have that issue.
-  RunTask<AppIdExcludeProbeTask, bool, CtapMakeCredentialRequest>(
-      std::move(request), std::move(callback));
+  RunTask<AppIdExcludeProbeTask, bool, CtapMakeCredentialRequest,
+          MakeCredentialOptions>(std::move(request), std::move(options),
+                                 std::move(callback));
 }
 
-void FidoDeviceAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
-                                             MakeCredentialCallback callback) {
+void FidoDeviceAuthenticator::MakeCredential(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions request_options,
+    MakeCredentialCallback callback) {
   // If the authenticator has UV configured then UV will be required in
   // order to create a credential (as specified by CTAP 2.0), even if
   // user-verification is "discouraged". However, if the request is U2F-only
@@ -142,14 +146,15 @@ void FidoDeviceAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   if (!request.pin_auth &&
       options_->user_verification_availability ==
           UserVerificationAvailability::kSupportedAndConfigured &&
-      !options_->make_cred_uv_not_required && !request.is_u2f_only) {
+      !options_->make_cred_uv_not_required && !request_options.is_u2f_only) {
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request.user_verification = UserVerificationRequirement::kDiscouraged;
   }
 
   RunTask<MakeCredentialTask, AuthenticatorMakeCredentialResponse,
-          CtapMakeCredentialRequest>(std::move(request), std::move(callback));
+          CtapMakeCredentialRequest, MakeCredentialOptions>(
+      std::move(request), std::move(request_options), std::move(callback));
 }
 
 void FidoDeviceAuthenticator::GetAssertion(CtapGetAssertionRequest request,
@@ -225,7 +230,7 @@ void FidoDeviceAuthenticator::GetTouch(base::OnceClosure callback) {
     return;
   }
   MakeCredential(
-      MakeCredentialTask::GetTouchRequest(device()),
+      MakeCredentialTask::GetTouchRequest(device()), MakeCredentialOptions(),
       base::BindOnce(
           [](std::string authenticator_id, base::OnceCallback<void()> callback,
              CtapDeviceResponseCode status,

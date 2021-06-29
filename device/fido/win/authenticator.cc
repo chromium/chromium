@@ -69,6 +69,7 @@ void WinWebAuthnApiAuthenticator::InitializeAuthenticator(
 
 void WinWebAuthnApiAuthenticator::MakeCredential(
     CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
     MakeCredentialCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_pending_) {
@@ -80,7 +81,8 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&AuthenticatorMakeCredentialBlocking, win_api_,
-                     current_window_, cancellation_id_, std::move(request)),
+                     current_window_, cancellation_id_, std::move(request),
+                     std::move(options)),
       base::BindOnce(&WinWebAuthnApiAuthenticator::MakeCredentialDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

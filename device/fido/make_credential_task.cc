@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/pin.h"
 #include "device/fido/u2f_command_constructor.h"
 #include "device/fido/u2f_register_operation.h"
@@ -103,9 +104,11 @@ absl::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
 
 MakeCredentialTask::MakeCredentialTask(FidoDevice* device,
                                        CtapMakeCredentialRequest request,
+                                       MakeCredentialOptions options,
                                        MakeCredentialTaskCallback callback)
     : FidoTask(device),
       request_(std::move(request)),
+      options_(std::move(options)),
       callback_(std::move(callback)) {
   // The UV parameter should have been made binary by this point because CTAP2
   // only takes a binary value.
@@ -154,11 +157,11 @@ CtapMakeCredentialRequest MakeCredentialTask::GetTouchRequest(
 }
 
 // static
-bool MakeCredentialTask::WillUseCTAP2(
-    const FidoDevice* device,
-    const CtapMakeCredentialRequest& request) {
+bool MakeCredentialTask::WillUseCTAP2(const FidoDevice* device,
+                                      const CtapMakeCredentialRequest& request,
+                                      const MakeCredentialOptions& options) {
   return device->supported_protocol() == ProtocolVersion::kCtap2 &&
-         !request.is_u2f_only &&
+         !options.is_u2f_only &&
          !CtapDeviceShouldUseU2fBecauseClientPinIsSet(device, request);
 }
 
@@ -174,7 +177,7 @@ void MakeCredentialTask::Cancel() {
 }
 
 void MakeCredentialTask::StartTask() {
-  if (WillUseCTAP2(device(), request_)) {
+  if (WillUseCTAP2(device(), request_, options_)) {
     MakeCredential();
   } else {
     // |device_info| should be present iff the device is CTAP2. This will be

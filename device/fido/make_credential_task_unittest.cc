@@ -54,7 +54,7 @@ class FidoMakeCredentialTaskTest : public testing::Test {
             test_data::kClientDataJson, std::move(rp), std::move(user),
             PublicKeyCredentialParams(
                 std::vector<PublicKeyCredentialParams::CredentialInfo>(1))),
-        callback_receiver_.callback());
+        MakeCredentialOptions(), callback_receiver_.callback());
   }
 
   TestMakeCredentialTaskCallback& make_credential_callback_receiver() {
@@ -161,7 +161,8 @@ TEST_F(FidoMakeCredentialTaskTest, EnforceClientPinWhenUserVerificationSet) {
           std::vector<PublicKeyCredentialParams::CredentialInfo>(1)));
   request.user_verification = UserVerificationRequirement::kRequired;
   const auto task = std::make_unique<MakeCredentialTask>(
-      device.get(), std::move(request), callback_receiver_.callback());
+      device.get(), std::move(request), MakeCredentialOptions(),
+      callback_receiver_.callback());
 
   make_credential_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -186,9 +187,11 @@ TEST_F(FidoMakeCredentialTaskTest, TestU2fOnly) {
       test_data::kClientDataJson, std::move(rp), std::move(user),
       PublicKeyCredentialParams(
           std::vector<PublicKeyCredentialParams::CredentialInfo>(1)));
-  request.is_u2f_only = true;
+  MakeCredentialOptions request_options;
+  request_options.is_u2f_only = true;
   const auto task = std::make_unique<MakeCredentialTask>(
-      device.get(), std::move(request), callback_receiver_.callback());
+      device.get(), std::move(request), std::move(request_options),
+      callback_receiver_.callback());
   make_credential_callback_receiver().WaitForCallback();
 
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,

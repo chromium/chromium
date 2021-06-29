@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/credential_store.h"
@@ -58,6 +59,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
+                      MakeCredentialOptions options,
                       MakeCredentialCallback callback) override;
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,

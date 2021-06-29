@@ -15,6 +15,7 @@ namespace device {
 
 void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
     CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
     base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>
         callback) {
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess, absl::nullopt);

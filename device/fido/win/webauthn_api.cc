@@ -201,7 +201,8 @@ std::pair<CtapDeviceResponseCode,
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
                                     GUID cancellation_id,
-                                    CtapMakeCredentialRequest request) {
+                                    CtapMakeCredentialRequest request,
+                                    MakeCredentialOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
@@ -281,10 +282,10 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   }
 
   uint32_t authenticator_attachment;
-  if (request.is_u2f_only) {
+  if (request_options.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_off_the_record_context) {
+  } else if (request_options.is_off_the_record_context) {
     // Disable all platform authenticators in off-the-record contexts.
     //
     // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports

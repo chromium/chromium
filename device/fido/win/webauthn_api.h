@@ -78,7 +78,8 @@ std::pair<CtapDeviceResponseCode,
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
                                     GUID cancellation_id,
-                                    CtapMakeCredentialRequest request);
+                                    CtapMakeCredentialRequest request,
+                                    MakeCredentialOptions request_options);
 
 std::pair<CtapDeviceResponseCode,
           absl::optional<AuthenticatorGetAssertionResponse>>

@@ -522,8 +522,7 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   return response;
 }
 
-bool UsesDiscoverableCreds(
-    const device::MakeCredentialRequestHandler::Options& options) {
+bool UsesDiscoverableCreds(const device::MakeCredentialOptions& options) {
   return options.resident_key == device::ResidentKeyRequirement::kRequired;
 }
 
@@ -1027,8 +1026,8 @@ void AuthenticatorCommon::MakeCredential(
           options->authenticator_selection
               ? *options->authenticator_selection
               : device::AuthenticatorSelectionCriteria();
-  make_credential_options_ = device::MakeCredentialRequestHandler::Options(
-      authenticator_selection_criteria);
+  make_credential_options_ =
+      device::MakeCredentialOptions(authenticator_selection_criteria);
 
   const bool might_create_resident_key =
       make_credential_options_->resident_key !=
@@ -1153,11 +1152,11 @@ void AuthenticatorCommon::MakeCredential(
     ctap_make_credential_request_->cred_blob = *options->cred_blob;
   }
   make_credential_options_->large_blob_support = options->large_blob_enable;
-  ctap_make_credential_request_->app_id = std::move(appid_exclude);
-  ctap_make_credential_request_->is_off_the_record_context =
+  ctap_make_credential_request_->app_id_exclude = std::move(appid_exclude);
+  make_credential_options_->is_off_the_record_context =
       GetBrowserContext()->IsOffTheRecord();
   // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
-  ctap_make_credential_request_->is_u2f_only = origin_is_crypto_token_extension;
+  make_credential_options_->is_u2f_only = origin_is_crypto_token_extension;
 
   // Compute the effective attestation conveyance preference.
   device::AttestationConveyancePreference attestation = options->attestation;

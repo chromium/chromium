@@ -68,8 +68,10 @@ void ChromeOSAuthenticator::InitializeAuthenticator(
   std::move(callback).Run();
 }
 
-void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
-                                           MakeCredentialCallback callback) {
+void ChromeOSAuthenticator::MakeCredential(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions request_options,
+    MakeCredentialCallback callback) {
   u2f::MakeCredentialRequest req;
   // Requests with UserPresence get upgraded to UserVerification unless
   // verification is explicitly discouraged.
@@ -121,8 +123,8 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
     const std::vector<uint8_t>& id = descriptor.id();
     req.add_excluded_credential_id(std::string(id.begin(), id.end()));
   }
-  if (request.app_id) {
-    req.set_app_id_exclude(*request.app_id);
+  if (request.app_id_exclude) {
+    req.set_app_id_exclude(*request.app_id_exclude);
   }
 
   chromeos::U2FClient::Get()->MakeCredential(

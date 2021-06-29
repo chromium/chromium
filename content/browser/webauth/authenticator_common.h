@@ -244,8 +244,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   absl::optional<std::string> app_id_;
   absl::optional<device::CtapMakeCredentialRequest>
       ctap_make_credential_request_;
-  absl::optional<device::MakeCredentialRequestHandler::Options>
-      make_credential_options_;
+  absl::optional<device::MakeCredentialOptions> make_credential_options_;
   absl::optional<device::CtapGetAssertionRequest> ctap_get_assertion_request_;
   absl::optional<device::CtapGetAssertionOptions> ctap_get_assertion_options_;
   // awaiting_attestation_response_ is true if the embedder has been queried

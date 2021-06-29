@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -81,13 +82,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // the new credential through the "largeBlobKey" extension.
   bool large_blob_key = false;
 
-  // Instructs the request handler only to dispatch this request via U2F.
-  bool is_u2f_only = false;
-
-  // Indicates whether the request was created in an off-the-record
-  // BrowserContext (e.g. Chrome Incognito mode).
-  bool is_off_the_record_context = false;
-
   std::vector<PublicKeyCredentialDescriptor> exclude_list;
 
   // The pinUvAuthParam field. This is the result of calling
@@ -110,7 +104,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
       AttestationConveyancePreference::kNone;
 
   // U2F AppID for excluding credentials.
-  absl::optional<std::string> app_id;
+  absl::optional<std::string> app_id_exclude;
 
   // cred_protect indicates the level of protection afforded to a credential.
   // This depends on a CTAP2 extension that not all authenticators will support.
@@ -126,6 +120,61 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // cred_blob contains an optional credBlob extension.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   absl::optional<std::vector<uint8_t>> cred_blob;
+};
+
+// MakeCredentialOptions contains higher-level request parameters that aren't
+// part of the makeCredential request itself, or that need to be combined with
+// knowledge of the specific authenticator, thus don't live in
+// |CtapMakeCredentialRequest|.
+struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
+  MakeCredentialOptions();
+  explicit MakeCredentialOptions(
+      const AuthenticatorSelectionCriteria& authenticator_selection_criteria);
+  ~MakeCredentialOptions();
+  MakeCredentialOptions(const MakeCredentialOptions&);
+  MakeCredentialOptions(MakeCredentialOptions&&);
+  MakeCredentialOptions& operator=(const MakeCredentialOptions&);
+  MakeCredentialOptions& operator=(MakeCredentialOptions&&);
+
+  // authenticator_attachment is a constraint on the type of authenticator
+  // that a credential should be created on.
+  AuthenticatorAttachment authenticator_attachment =
+      AuthenticatorAttachment::kAny;
+
+  // resident_key indicates whether the request should result in the creation
+  // of a client-side discoverable credential (aka resident key).
+  ResidentKeyRequirement resident_key = ResidentKeyRequirement::kDiscouraged;
+
+  // user_verification indicates whether the authenticator should (or must)
+  // perform user verficiation before creating the credential.
+  UserVerificationRequirement user_verification =
+      UserVerificationRequirement::kPreferred;
+
+  // cred_protect_request extends |CredProtect| to include information that
+  // applies at request-routing time. The second element is true if the
+  // indicated protection level must be provided by the target authenticator
+  // for the MakeCredential request to be sent.
+  absl::optional<std::pair<CredProtectRequest, bool>> cred_protect_request;
+
+  // allow_skipping_pin_touch causes the handler to forego the first
+  // "touch-only" step to collect a PIN if exactly one authenticator is
+  // discovered.
+  bool allow_skipping_pin_touch = false;
+
+  // large_blob_support indicates whether the request should select for
+  // authenticators supporting the largeBlobs extension (kRequired), merely
+  // indicate support on the response (kPreferred), or ignore it
+  // (kNotRequested).
+  // Values other than kNotRequested will attempt to initialize the large blob
+  // on the authenticator.
+  LargeBlobSupport large_blob_support = LargeBlobSupport::kNotRequested;
+
+  // Instructs the request handler only to dispatch this request via U2F.
+  bool is_u2f_only = false;
+
+  // Indicates whether the request was created in an off-the-record
+  // BrowserContext (e.g. Chrome Incognito mode).
+  bool is_off_the_record_context = false;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with

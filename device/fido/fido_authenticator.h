@@ -24,6 +24,7 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/large_blob.h"
+#include "device/fido/make_credential_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -31,6 +32,7 @@ namespace device {
 struct CtapGetAssertionRequest;
 struct CtapGetAssertionOptions;
 struct CtapMakeCredentialRequest;
+struct MakeCredentialOptions;
 
 namespace pin {
 struct RetriesResponse;
@@ -97,9 +99,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // if an excluded credential is found. (An optional<void> is an error.)
   virtual void ExcludeAppIdCredentialsBeforeMakeCredential(
       CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
       base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>);
 
   virtual void MakeCredential(CtapMakeCredentialRequest request,
+                              MakeCredentialOptions options,
                               MakeCredentialCallback callback) = 0;
   virtual void GetAssertion(CtapGetAssertionRequest request,
                             CtapGetAssertionOptions options,

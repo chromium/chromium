@@ -80,8 +80,7 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
         test_data::kClientDataJson, std::move(rp), std::move(user),
         std::move(credential_params));
 
-    MakeCredentialRequestHandler::Options options(
-        authenticator_selection_criteria);
+    MakeCredentialOptions options(authenticator_selection_criteria);
     options.allow_skipping_pin_touch = true;
 
     auto handler = std::make_unique<MakeCredentialRequestHandler>(

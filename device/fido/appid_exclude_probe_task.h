@@ -30,6 +30,7 @@ class AppIdExcludeProbeTask : public FidoTask {
 
   AppIdExcludeProbeTask(FidoDevice* device,
                         CtapMakeCredentialRequest request,
+                        MakeCredentialOptions options,
                         Callback callback);
   ~AppIdExcludeProbeTask() override;
 
@@ -44,6 +45,7 @@ class AppIdExcludeProbeTask : public FidoTask {
       absl::optional<AuthenticatorGetAssertionResponse> response_data);
 
   const CtapMakeCredentialRequest request_;
+  const MakeCredentialOptions options_;
   Callback callback_;
 
   bool canceled_ = false;

@@ -71,59 +71,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       absl::optional<AuthenticatorMakeCredentialResponse>,
       const FidoAuthenticator*)>;
 
-  // Options contains higher-level request parameters that aren't part of the
-  // makeCredential request itself, or that need to be combined with knowledge
-  // of the specific authenticator, thus don't live in
-  // |CtapMakeCredentialRequest|.
-  struct COMPONENT_EXPORT(DEVICE_FIDO) Options {
-    Options();
-    explicit Options(
-        const AuthenticatorSelectionCriteria& authenticator_selection_criteria);
-    ~Options();
-    Options(const Options&);
-    Options(Options&&);
-    Options& operator=(const Options&);
-    Options& operator=(Options&&);
-
-    // authenticator_attachment is a constraint on the type of authenticator
-    // that a credential should be created on.
-    AuthenticatorAttachment authenticator_attachment =
-        AuthenticatorAttachment::kAny;
-
-    // resident_key indicates whether the request should result in the creation
-    // of a client-side discoverable credential (aka resident key).
-    ResidentKeyRequirement resident_key = ResidentKeyRequirement::kDiscouraged;
-
-    // user_verification indicates whether the authenticator should (or must)
-    // perform user verficiation before creating the credential.
-    UserVerificationRequirement user_verification =
-        UserVerificationRequirement::kPreferred;
-
-    // cred_protect_request extends |CredProtect| to include information that
-    // applies at request-routing time. The second element is true if the
-    // indicated protection level must be provided by the target authenticator
-    // for the MakeCredential request to be sent.
-    absl::optional<std::pair<CredProtectRequest, bool>> cred_protect_request;
-
-    // allow_skipping_pin_touch causes the handler to forego the first
-    // "touch-only" step to collect a PIN if exactly one authenticator is
-    // discovered.
-    bool allow_skipping_pin_touch = false;
-
-    // large_blob_support indicates whether the request should select for
-    // authenticators supporting the largeBlobs extension (kRequired), merely
-    // indicate support on the response (kPreferred), or ignore it
-    // (kNotRequested).
-    // Values other than kNotRequested will attempt to initialize the large blob
-    // on the authenticator.
-    LargeBlobSupport large_blob_support = LargeBlobSupport::kNotRequested;
-  };
-
   MakeCredentialRequestHandler(
       FidoDiscoveryFactory* fido_discovery_factory,
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       CtapMakeCredentialRequest request_parameter,
-      const Options& options,
+      const MakeCredentialOptions& options,
       CompletionCallback completion_callback);
   ~MakeCredentialRequestHandler() override;
 
@@ -198,7 +150,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   bool suppress_attestation_ = false;
   CtapMakeCredentialRequest request_;
   absl::optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
-  const Options options_;
+  const MakeCredentialOptions options_;
 
   std::map<FidoAuthenticator*, std::unique_ptr<AuthTokenRequester>>
       auth_token_requester_map_;

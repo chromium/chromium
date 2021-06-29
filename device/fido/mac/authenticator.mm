@@ -110,6 +110,7 @@ void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {
 }
 
 void TouchIdAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
+                                          MakeCredentialOptions options,
                                           MakeCredentialCallback callback) {
   if (__builtin_available(macOS 10.12.2, *)) {
     DCHECK(!operation_);
