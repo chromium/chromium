@@ -427,8 +427,15 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       kUpdateHistogramName, ManifestUpdateResult::kWebContentsDestroyed, 1);
 }
 
+// crbug.com/1224914: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_CheckCancelledByAppUninstalled \
+  DISABLED_CheckCancelledByAppUninstalled
+#else
+#define MAYBE_CheckCancelledByAppUninstalled CheckCancelledByAppUninstalled
+#endif
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckCancelledByAppUninstalled) {
+                       MAYBE_CheckCancelledByAppUninstalled) {
   AppId app_id = InstallWebApp();
   GetManifestUpdateManager(browser()).hang_update_checks_for_testing();
 
