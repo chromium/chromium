@@ -25,10 +25,22 @@
 
 // A version of METADATA_ACCESSORS_INTERNAL for View, the root of the metadata
 // hierarchy; here GetClassName() is not declared as an override.
+//
+// This also introduces the ReinterpretToBaseClass(), which should exist at the
+// root of the hierarchy on which the metadata will be attached. This will take
+// the given void*, which should be some instance of a subclass of this base
+// class, and return a properly typed class_name*. The body of this function
+// does a reinterpret_cast<> of the void* to obtain a class_name*. Doing a
+// direct static_cast<> from the void* may result in an incorrect
+// pointer-to-instance, which may cause a crash. Using this intermediate step of
+// reinterpret_cast<> provides more information to the compiler in order to
+// obtain the proper result from the static_cast<>. See |AsClass(void* obj)|
+// in property_metadata.h for additional info.
 #define METADATA_ACCESSORS_INTERNAL_BASE(class_name) \
   static const char kViewClassName[];                \
   virtual const char* GetClassName() const;          \
   static ui::metadata::ClassMetaData* MetaData();    \
+  class_name* ReinterpretToBaseClass(void* obj);     \
   ui::metadata::ClassMetaData* GetClassMetaData() override;
 
 // Metadata Class -------------------------------------------------------------
@@ -48,7 +60,7 @@
                                                                       \
    private:                                                           \
     friend class class_name;                                          \
-    virtual void BuildMetaData();                                     \
+    void BuildMetaData();                                             \
     static ui::metadata::ClassMetaData* meta_data_ ALLOW_UNUSED_TYPE; \
   }
 
@@ -99,6 +111,17 @@
                                                                              \
   void qualified_class_name::metadata_class_name::BuildMetaData() {          \
     SetTypeName(std::string(#qualified_class_name));
+
+// See the comment above on the METADATA_ACCESSORS_INTERNAL_BASE macro for more
+// information. NOTE: This function should not be modified to access |this|,
+// directly or indirectly. It should only do what is necessary to convert |obj|
+// to a properly typed pointer.
+#define METADATA_REINTERPRET_BASE_CLASS_INTERNAL(qualified_class_name, \
+                                                 metadata_class_name)  \
+  qualified_class_name* qualified_class_name::ReinterpretToBaseClass(  \
+      void* obj) {                                                     \
+    return reinterpret_cast<qualified_class_name*>(obj);               \
+  }
 
 #define METADATA_PARENT_CLASS_INTERNAL(parent_class_name) \
   SetParentClassMetaData(parent_class_name::MetaData());

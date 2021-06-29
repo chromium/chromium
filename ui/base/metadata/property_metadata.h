@@ -51,6 +51,17 @@ struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
   }
 };
 
+// Works around static casting issues related to the void*. See the comment on
+// the METADATA_ACCESSORS_INTERNAL_BASE macro for more information about why
+// this is necessary. NOTE: The reinterpret_cast<> here is merely to bring
+// ReinterpretToBaseClass() into scope and make it callable. The body of that
+// function does not access |this|, so this call is safe.
+template <typename TClass>
+TClass* AsClass(void* obj) {
+  return static_cast<TClass*>(
+      reinterpret_cast<TClass*>(obj)->ReinterpretToBaseClass(obj));
+}
+
 }  // namespace internal
 
 // Represents meta data for a specific read-only property member of class
@@ -74,7 +85,7 @@ class ObjectPropertyReadOnlyMetaData : public ui::metadata::MemberMetaDataBase {
   std::u16string GetValueAsString(void* obj) const override {
     if (!kTypeIsSerializable && !kTypeIsReadOnly)
       return std::u16string();
-    return TConverter::ToString((static_cast<TClass*>(obj)->*Get)());
+    return TConverter::ToString((internal::AsClass<TClass>(obj)->*Get)());
   }
 
   ui::metadata::PropertyFlags GetPropertyFlags() const override {
@@ -121,7 +132,7 @@ class ObjectPropertyMetaData
     if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
     if (absl::optional<TValue> result = TConverter::FromString(new_value)) {
-      (static_cast<TClass*>(obj)->*Set)(std::move(result.value()));
+      (internal::AsClass<TClass>(obj)->*Set)(std::move(result.value()));
     }
   }
 
@@ -167,7 +178,7 @@ class ClassPropertyMetaData : public ui::metadata::MemberMetaDataBase {
   // |TKValue| == |TValue|, dereferences the pointer.
   std::u16string GetValueAsString(void* obj) const override {
     typename TypeHelper::TKValue value =
-        static_cast<TClass*>(obj)->GetProperty(key_);
+        internal::AsClass<TClass>(obj)->GetProperty(key_);
     if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
       return u"(not assigned)";
     } else {
@@ -181,7 +192,7 @@ class ClassPropertyMetaData : public ui::metadata::MemberMetaDataBase {
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
     absl::optional<TValue> value = TConverter::FromString(new_value);
     if (value)
-      static_cast<TClass*>(obj)->SetProperty(key_, *value);
+      internal::AsClass<TClass>(obj)->SetProperty(key_, *value);
   }
 
   ui::metadata::PropertyFlags GetPropertyFlags() const override {

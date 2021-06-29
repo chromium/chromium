@@ -15,8 +15,10 @@
 // Generate the implementation of the metadata accessors and internal class with
 // additional macros for defining the class' properties.
 
-#define BEGIN_METADATA_BASE(class_name) \
-  BEGIN_METADATA_INTERNAL(              \
+#define BEGIN_METADATA_BASE(class_name)                     \
+  METADATA_REINTERPRET_BASE_CLASS_INTERNAL(                 \
+      class_name, METADATA_CLASS_NAME_INTERNAL(class_name)) \
+  BEGIN_METADATA_INTERNAL(                                  \
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name), class_name)
 
 #define _BEGIN_NESTED_METADATA(outer_class, class_name, parent_class_name) \
