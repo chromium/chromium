@@ -23,8 +23,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
@@ -62,9 +60,8 @@ import java.util.List;
 /**
  * Handles updating the model state for the currently visible omnibox suggestions.
  */
-class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWithNativeObserver,
+class AutocompleteMediator implements OnSuggestionsReceivedListener,
                                       OmniboxSuggestionsDropdown.Observer, SuggestionHost {
-    private static final String TAG = "Autocomplete";
     private static final int SUGGESTION_NOT_FOUND = -1;
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
@@ -73,25 +70,23 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
     private static final int OMNIBOX_HISTOGRAMS_MAX_SUGGESTIONS = 10;
 
-    private final Context mContext;
-    private final AutocompleteDelegate mDelegate;
-    private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private final PropertyModel mListPropertyModel;
-    private final ModelList mSuggestionModels;
-    private final Handler mHandler;
-    @NonNull
-    private AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
-    @Nullable
-    private Runnable mCurrentAutocompleteRequest;
-    @Nullable
-    private Runnable mDeferredLoadAction;
+    private final @NonNull Context mContext;
+    private final @NonNull AutocompleteDelegate mDelegate;
+    private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
+    private final @NonNull PropertyModel mListPropertyModel;
+    private final @NonNull ModelList mSuggestionModels;
+    private final @NonNull Handler mHandler;
+    private final @NonNull LocationBarDataProvider mDataProvider;
+    private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final @NonNull DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
+    private final @NonNull DropdownItemViewInfoListManager mDropdownViewInfoListManager;
+    private final @NonNull Callback<Tab> mBringTabToFrontCallback;
+    private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
 
-    private @NonNull LocationBarDataProvider mDataProvider;
+    private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
+    private @Nullable Runnable mCurrentAutocompleteRequest;
+    private @Nullable Runnable mDeferredLoadAction;
 
-    @NonNull
-    private final Callback<Tab> mBringTabToFrontCallback;
-    @NonNull
-    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
@@ -135,23 +130,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      * compared to the URL bar text to determine whether the first suggestion is still valid.
      */
     private String mUrlTextAfterSuggestionsReceived;
-
     private boolean mShouldPreventOmniboxAutocomplete;
-
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
-
-    @NonNull
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @NonNull
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
-    private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
 
     public AutocompleteMediator(@NonNull Context context, @NonNull AutocompleteDelegate delegate,
             @NonNull UrlBarEditingTextStateProvider textProvider,
             @NonNull PropertyModel listPropertyModel, @NonNull Handler handler,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
@@ -163,8 +148,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
-        mLifecycleDispatcher = lifecycleDispatcher;
-        mLifecycleDispatcher.register(this);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
@@ -199,17 +182,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
         mDropdownViewInfoListBuilder.destroy();
-        if (mLifecycleDispatcher != null) {
-            mLifecycleDispatcher.unregister(this);
-        }
-    }
-
-    @Override
-    public void onStartWithNative() {}
-
-    @Override
-    public void onStopWithNative() {
-        mDropdownViewInfoListManager.recordSuggestionsShown();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -255,13 +227,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     public AutocompleteMatch getSuggestionAt(int index) {
         return mAutocompleteResult.getSuggestionsList().get(index);
-    }
-
-    /**
-     * Sets the data provider for the toolbar.
-     */
-    void setLocationBarDataProviderForTesting(LocationBarDataProvider provider) {
-        mDataProvider = provider;
     }
 
     /**
@@ -339,7 +304,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             }
         } else {
             cancelAutocompleteRequests();
-            if (mNativeInitialized) mDropdownViewInfoListManager.recordSuggestionsShown();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
@@ -720,11 +684,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void setGroupCollapsedState(int groupId, boolean state) {
         mDropdownViewInfoListManager.setGroupCollapsedState(groupId, state);
-    }
-
-    @NonNull
-    AutocompleteResult getAutocompleteResult() {
-        return mAutocompleteResult;
     }
 
     /**

@@ -42,7 +42,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -191,9 +190,6 @@ public class AutocompleteMediatorUnitTest {
     LocationBarDataProvider mLocationBarDataProvider;
 
     @Mock
-    ActivityLifecycleDispatcher mLifecycleDispatcher;
-
-    @Mock
     ModalDialogManager mModalDialogManager;
 
     @Mock
@@ -222,7 +218,7 @@ public class AutocompleteMediatorUnitTest {
         // clang-format off
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mListModel,
-                mHandler, mLifecycleDispatcher, () -> mModalDialogManager, null, null,
+                mHandler, () -> mModalDialogManager, null, null,
                 mLocationBarDataProvider, tab -> {}, null, url -> false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

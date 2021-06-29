@@ -372,46 +372,4 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, OmniboxTheme.INCOGNITO);
     }
-
-    @Test
-    @SmallTest
-    public void visibilityReporting_reportsOnlyForVisibleSuggestions() {
-        final List<DropdownItemViewInfo> list = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupDetails>());
-        verifyModelEquals(list);
-        reset(mBasicSuggestionProcessor);
-        reset(mHeaderProcessor);
-
-        mManager.recordSuggestionsShown();
-        verify(mHeaderProcessor, times(2)).recordItemPresented(any());
-        verify(mBasicSuggestionProcessor, times(4)).recordItemPresented(any());
-
-        // Collapse group 1.
-        mManager.setGroupCollapsedState(1, true);
-        reset(mBasicSuggestionProcessor);
-        reset(mHeaderProcessor);
-
-        mManager.recordSuggestionsShown();
-        verify(mHeaderProcessor, times(2)).recordItemPresented(any());
-        // This time we only show the 2 suggestions belonging to group 2.
-        verify(mBasicSuggestionProcessor, times(2)).recordItemPresented(any());
-
-        mManager.setGroupCollapsedState(2, true);
-        reset(mBasicSuggestionProcessor);
-        reset(mHeaderProcessor);
-
-        mManager.recordSuggestionsShown();
-        verify(mHeaderProcessor, times(2)).recordItemPresented(any());
-        // No suggestions recorded, all have been removed.
-        verifyNoMoreInteractions(mBasicSuggestionProcessor);
-    }
 }

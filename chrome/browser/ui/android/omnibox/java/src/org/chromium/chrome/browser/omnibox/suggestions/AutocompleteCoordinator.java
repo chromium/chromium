@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
@@ -75,7 +74,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull AutocompleteDelegate delegate,
             @NonNull OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
             @NonNull UrlBarEditingTextStateProvider urlBarEditingTextProvider,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
@@ -96,9 +94,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
         mQueryTileCoordinator = new OmniboxQueryTileCoordinator(context, this::onTileSelected);
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
-                listModel, new Handler(), lifecycleDispatcher, modalDialogManagerSupplier,
-                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
-                bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState);
+                listModel, new Handler(), modalDialogManagerSupplier, activityTabSupplier,
+                shareDelegateSupplier, locationBarDataProvider, bringToForegroundCallback,
+                tabWindowManagerSupplier, bookmarkState);
         mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
 
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
@@ -387,16 +385,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      */
     public void prefetchZeroSuggestResults() {
         AutocompleteControllerJni.get().prefetchZeroSuggestResults();
-    }
-
-    /**
-     * Provides data and state for the toolbar component.
-     * @param locationBarDataProvider The data provider.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setLocationBarDataProviderForTesting(
-            LocationBarDataProvider locationBarDataProvider) {
-        mMediator.setLocationBarDataProviderForTesting(locationBarDataProvider);
     }
 
     /** @return Suggestions Dropdown view, showing the list of suggestions. */

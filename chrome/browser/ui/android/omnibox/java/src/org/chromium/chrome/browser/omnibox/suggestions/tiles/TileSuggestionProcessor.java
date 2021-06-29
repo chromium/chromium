@@ -77,10 +77,5 @@ public class TileSuggestionProcessor implements SuggestionProcessor {
     }
 
     @Override
-    public void recordItemPresented(PropertyModel model) {
-        // TODO(crbug.com/1068672): Record metrics.
-    }
-
-    @Override
     public void onSuggestionsReceived() {}
 }

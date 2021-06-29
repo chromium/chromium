@@ -168,10 +168,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate());
         mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
-                mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
-                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
-                profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
-                bookmarkState);
+                mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
+                shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
+                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,

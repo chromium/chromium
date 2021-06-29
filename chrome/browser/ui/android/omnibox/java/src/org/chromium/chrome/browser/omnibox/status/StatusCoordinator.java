@@ -115,25 +115,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mLocationBarDataProvider.addObserver(this);
     }
 
-    /**
-     * Provides data and state for the toolbar component.
-     *
-     * @param locationBarDataProvider The data provider.
-     */
-    public void setLocationBarDataProviderForTesting(
-            LocationBarDataProvider locationBarDataProvider) {
-        mLocationBarDataProvider.removeObserver(this);
-        mLocationBarDataProvider = locationBarDataProvider;
-        mMediator.setLocationBarDataProviderForTesting(mLocationBarDataProvider);
-        mStatusView.setLocationBarDataProvider(mLocationBarDataProvider);
-        // Update status immediately after receiving the data provider to avoid initial presence
-        // glitch on tablet devices. This glitch would be typically seen upon launch of app, right
-        // before the landing page is presented to the user.
-        updateStatusIcon();
-        updateVerboseStatusVisibility();
-        mLocationBarDataProvider.addObserver(this);
-    }
-
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);

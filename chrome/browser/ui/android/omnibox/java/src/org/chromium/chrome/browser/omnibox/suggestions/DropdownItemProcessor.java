@@ -39,15 +39,6 @@ public interface DropdownItemProcessor {
     void onNativeInitialized();
 
     /**
-     * Record suggestion impressions for this processor.
-     * Purpose of this function is bookkeeping of presented views at the time user finishes
-     * interacting with omnibox (whether navigating somewhere, turning off screen, leaving omnibox
-     * or closing the app).
-     * This call is invoked once for every model created by the processor.
-     */
-    default void recordItemPresented(PropertyModel model) {}
-
-    /**
      * Signals that the dropdown list is about to be populated with new content.
      */
     default void onSuggestionsReceived() {}

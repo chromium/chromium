@@ -156,19 +156,6 @@ public class LocationBarLayout extends FrameLayout {
         ApiCompatibilityUtils.setImageTintList(mLensButton, colorStateList);
     }
 
-    /**
-     * Override the default LocationBarDataProvider in tests. Production code should use the
-     * {@link #initialize} method instead.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void setLocationBarDataProviderForTesting(
-            LocationBarDataProvider locationBarDataProvider) {
-        mLocationBarDataProvider = locationBarDataProvider;
-
-        mAutocompleteCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
-        mStatusCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
-    }
-
     @Override
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         // Don't restore the state of the location bar, it can lead to all kind of bad states with

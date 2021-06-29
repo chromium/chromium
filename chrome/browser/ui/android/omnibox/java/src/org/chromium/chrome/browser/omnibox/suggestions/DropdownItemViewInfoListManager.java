@@ -106,14 +106,6 @@ class DropdownItemViewInfoListManager {
         mGroupsCollapsedState.clear();
     }
 
-    /** Record histograms for all currently presented suggestions. */
-    void recordSuggestionsShown() {
-        for (int index = 0; index < mManagedModel.size(); index++) {
-            DropdownItemViewInfo info = (DropdownItemViewInfo) mManagedModel.get(index);
-            info.processor.recordItemPresented(info.model);
-        }
-    }
-
     /**
      * Specify the input list of DropdownItemViewInfo elements.
      *

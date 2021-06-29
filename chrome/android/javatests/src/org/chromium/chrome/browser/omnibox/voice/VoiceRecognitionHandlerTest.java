@@ -44,7 +44,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -124,7 +123,6 @@ public class VoiceRecognitionHandlerTest {
     private TestVoiceRecognitionHandler mHandler;
     private TestAndroidPermissionDelegate mPermissionDelegate;
     private TestWindowAndroid mWindowAndroid;
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
     private List<VoiceResult> mAutocompleteVoiceResults;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
 
@@ -425,7 +423,7 @@ public class VoiceRecognitionHandlerTest {
                 UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
             // clang-format off
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
-                    mLifecycleDispatcher, () -> mModalDialogManager, null, null, mDataProvider,
+                    () -> mModalDialogManager, null, null, mDataProvider,
                     mProfileSupplier, (tab) -> {}, null, (url) -> false);
             // clang-format on
         }
@@ -618,7 +616,6 @@ public class VoiceRecognitionHandlerTest {
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
         mActivityTestRule.startMainActivityOnBlankPage();
-        mLifecycleDispatcher = mActivityTestRule.getActivity().getLifecycleDispatcher();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());
