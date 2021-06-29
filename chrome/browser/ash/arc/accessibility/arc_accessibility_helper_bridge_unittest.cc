@@ -98,8 +98,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
       return event_router_->GetEventCount(event_name);
     }
 
-    arc::mojom::AccessibilityFilterType GetFilterTypeForProfile(
-        Profile* profile) override {
+    arc::mojom::AccessibilityFilterType GetFilterType() override {
       return filter_type_for_test_;
     }
 
@@ -375,7 +374,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, WindowIdTaskIdMapping) {
   helper_bridge->SetActiveWindowId(std::string("org.chromium.arc.1"));
   // Also, set a11y window id to the active window.
   helper_bridge->SetAccessibilityWindowId(10);
-  helper_bridge->OnWindowPropertyChanged(test_window, nullptr, -1);
+  helper_bridge->OnWindowFocused(test_window, nullptr);
 
   helper_bridge->OnAccessibilityEvent(event.Clone());
 
@@ -388,7 +387,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, WindowIdTaskIdMapping) {
 
   // In the same task, update window id.
   helper_bridge->SetAccessibilityWindowId(11);
-  helper_bridge->OnWindowPropertyChanged(test_window, nullptr, -1);
+  helper_bridge->OnWindowFocused(test_window, nullptr);
   event->window_id = 11;
 
   // Update the focused node as well.
@@ -465,10 +464,10 @@ TEST_F(ArcAccessibilityHelperBridgeTest, FilterTypeChange) {
   helper_bridge->InvokeUpdateEnabledFeatureForTesting();
   ASSERT_EQ(0U, key_to_tree.size());
 
-  // Changing from FOCUS to ALL should not result in any changes.
+  // Changing from FOCUS to ALL should not result in a existing tree recognized.
   helper_bridge->SetFilterTypeForTest(arc::mojom::AccessibilityFilterType::ALL);
   helper_bridge->InvokeUpdateEnabledFeatureForTesting();
-  ASSERT_EQ(0U, key_to_tree.size());
+  ASSERT_EQ(1U, key_to_tree.size());
 
   // Dispatch event again, to test changing of filter type from ALL to OFF.
   helper_bridge->OnAccessibilityEvent(event1.Clone());
@@ -557,8 +556,6 @@ TEST_F(ArcAccessibilityHelperBridgeTest, ToggleTalkBack) {
   std::unique_ptr<aura::WindowTracker> window_tracker =
       std::make_unique<aura::WindowTracker>();
   window_tracker->Add(helper_bridge->window_.get());
-  helper_bridge->OnSetNativeChromeVoxArcSupportProcessed(
-      std::move(window_tracker), false, true);
   helper_bridge->OnToggleNativeChromeVoxArcSupport(false);
 
   ASSERT_EQ(1, helper_bridge->GetEventCount(event_name));
@@ -588,8 +585,6 @@ TEST_F(ArcAccessibilityHelperBridgeTest, ToggleTalkBack) {
   // Disable TalkBack.
   window_tracker = std::make_unique<aura::WindowTracker>();
   window_tracker->Add(helper_bridge->window_.get());
-  helper_bridge->OnSetNativeChromeVoxArcSupportProcessed(
-      std::move(window_tracker), true, true);
   helper_bridge->OnToggleNativeChromeVoxArcSupport(true);
 
   ASSERT_EQ(4, helper_bridge->GetEventCount(event_name));

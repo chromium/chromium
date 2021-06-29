@@ -17,13 +17,10 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/accessibility/ax_action_handler.h"
-#include "ui/aura/client/focus_change_observer.h"
-#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tracker.h"
 
 class PrefService;
@@ -51,12 +48,9 @@ class ArcAccessibilityHelperBridge
     : public KeyedService,
       public mojom::AccessibilityHelperHost,
       public ConnectionObserver<mojom::AccessibilityHelperInstance>,
-      public aura::client::FocusChangeObserver,
       public AXTreeSourceArc::Delegate,
-      public ArcAppListPrefs::Observer,
       public arc::ArcInputMethodManagerService::Observer,
-      public ash::ArcNotificationSurfaceManager::Observer,
-      public aura::WindowObserver {
+      public ash::ArcNotificationSurfaceManager::Observer {
  public:
   // Builds the ArcAccessibilityHelperBridgeFactory.
   static void CreateFactory();
@@ -72,12 +66,6 @@ class ArcAccessibilityHelperBridge
 
   // Sets ChromeVox or TalkBack active for the current task.
   void SetNativeChromeVoxArcSupport(bool enabled);
-
-  // Receives the result of setting native ChromeVox Arc support.
-  void OnSetNativeChromeVoxArcSupportProcessed(
-      std::unique_ptr<aura::WindowTracker> window_tracker,
-      bool enabled,
-      bool processed);
 
   // Request Android to send the entire tree with the tree id. Returns true if
   // the specified tree exists in ARC and a request was sent.
@@ -102,8 +90,9 @@ class ArcAccessibilityHelperBridge
   void OnAction(const ui::AXActionData& data) const override;
   bool UseFullFocusMode() const override;
 
-  // ArcAppListPrefs::Observer overrides.
-  void OnTaskDestroyed(int32_t task_id) override;
+  // TODO(hirokisato): Remove this method once refactoring finishes.
+  // This exists only to do refactoring without large test change.
+  void OnTaskDestroyed(int32_t task_id);
 
   // ArcInputMethodManagerService::Observer overrides.
   void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) override;
@@ -114,15 +103,11 @@ class ArcAccessibilityHelperBridge
   void OnNotificationSurfaceRemoved(
       ash::ArcNotificationSurface* surface) override {}
 
-  // aura::client::FocusChangeObserver overrides.
-  void OnWindowFocused(aura::Window* gained_focus,
-                       aura::Window* lost_focus) override;
+  // TODO(hirokisato): Remove this method once refactoring finishes.
+  // This exists only to do refactoring without large test change.
+  void OnWindowFocused(aura::Window* gained_focus, aura::Window* lost_focus);
 
-  // aura::WindowObserver overrides.
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
-
+  // TODO(hirokisato): Remove this method once refactoring finishes.
   void InvokeUpdateEnabledFeatureForTesting();
 
   const ArcAccessibilityTreeTracker::TreeMap& trees_for_test() const {
@@ -130,11 +115,14 @@ class ArcAccessibilityHelperBridge
   }
 
  private:
+  // TODO(hirokisato): Remove this friend relationship once refactoring
+  // finishes. Used to access virtual methods below for testing purpose.
+  friend ArcAccessibilityTreeTracker;
+
   // virtual for testing.
   virtual aura::Window* GetFocusedArcWindow() const;
   virtual extensions::EventRouter* GetEventRouter() const;
-  virtual arc::mojom::AccessibilityFilterType GetFilterTypeForProfile(
-      Profile* profile);
+  virtual arc::mojom::AccessibilityFilterType GetFilterType();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   void UpdateCaptionSettings() const;
@@ -150,14 +138,10 @@ class ArcAccessibilityHelperBridge
   void OnAccessibilityStatusChanged(
       const ash::AccessibilityStatusEventDetails& event_details);
   void UpdateEnabledFeature();
-  void UpdateWindowProperties(aura::Window* window);
   void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
                                          ui::AXTreeID tree_id);
   void HandleFilterTypeFocusEvent(mojom::AccessibilityEventDataPtr event_data);
   void HandleFilterTypeAllEvent(mojom::AccessibilityEventDataPtr event_data);
-
-  // Update |window_id_to_task_id_| with a given window if necessary.
-  void UpdateWindowIdMapping(aura::Window* window);
 
   void DispatchEventTextAnnouncement(
       mojom::AccessibilityEventData* event_data) const;
@@ -173,18 +157,10 @@ class ArcAccessibilityHelperBridge
 
   ArcAccessibilityTreeTracker tree_tracker_;
 
-  std::map<int32_t, int32_t> window_id_to_task_id_;
-
   base::CallbackListSubscription accessibility_status_subscription_;
 
   arc::mojom::AccessibilityFilterType filter_type_ =
       arc::mojom::AccessibilityFilterType::OFF;
-
-  // Set of task id where TalkBack is enabled. ChromeOS native accessibility
-  // support should be disabled for these tasks.
-  std::set<int32_t> talkback_enabled_task_ids_;
-  // True if native ChromeVox support is enabled.
-  bool native_chromevox_enabled_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAccessibilityHelperBridge);
 };
