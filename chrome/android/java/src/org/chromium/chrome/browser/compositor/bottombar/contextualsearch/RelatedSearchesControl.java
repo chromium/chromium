@@ -120,12 +120,7 @@ public class RelatedSearchesControl {
         mContext = context;
         mViewContainer = container;
         mResourceLoader = resourceLoader;
-        boolean isRelatedSearchesEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
-        mIsEnabled = isRelatedSearchesEnabled
-                && (mIsInBarControl ? ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
-                                    : true);
+        mIsEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES);
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mOverlayPanel = panel;
         mPanelSectionHost = panelSectionHost;

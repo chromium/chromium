@@ -215,6 +215,10 @@ public class ContextualSearchManagerTest {
             ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
                     ChromeFeatureList.RELATED_SEARCHES_UI, true,
                     ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true);
+    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_PANEL =
+            ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
+                    ChromeFeatureList.RELATED_SEARCHES_UI, true,
+                    ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX, true);
     private static final ImmutableMap<String, Boolean> DISABLE_FORCE_CAPTION =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
@@ -3901,7 +3905,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_UI);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
@@ -3922,7 +3926,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
     public void testRelatedSearchesItemSelected() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_UI);
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_PANEL);
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();

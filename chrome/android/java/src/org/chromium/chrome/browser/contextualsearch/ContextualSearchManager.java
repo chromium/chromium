@@ -83,6 +83,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /**
  * Manages the Contextual Search feature. This class keeps track of the status of Contextual
  * Search and coordinates the control with the layout.
@@ -825,10 +827,17 @@ public class ContextualSearchManager
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
 
         assert mSearchPanel != null;
+        List<String> inBarRelatedSearches =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
+                ? mRelatedSearches.getQueries(true)
+                : null;
+        List<String> inPanelRelatedSearches =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX)
+                ? mRelatedSearches.getQueries(false)
+                : null;
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), mRelatedSearches.getQueries(true),
-                mRelatedSearches.getQueries(false));
+                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, inPanelRelatedSearches);
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will
