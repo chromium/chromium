@@ -5,6 +5,7 @@
 template("html_to_js") {
   action(target_name) {
     script = "//tools/polymer/html_to_js.py"
+    forward_variables_from(invoker, [ "visibility" ])
 
     inputs = []
     outputs = []

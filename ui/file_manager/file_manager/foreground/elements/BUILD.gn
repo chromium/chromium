@@ -52,6 +52,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 html_to_js("web_components") {
+  visibility += [ "//ui/file_manager/*" ]
   js_files = [
     "files_format_dialog.js",
     "files_icon_button.js",

@@ -12,6 +12,7 @@ template("preprocess_if_expr") {
                            [
                              "deps",
                              "public_deps",
+                             "visibility",
                            ])
 
     inputs = []

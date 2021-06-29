@@ -54,6 +54,7 @@ ts_library("build_ts") {
 }
 
 html_to_js("web_components") {
+  visibility = [ ":preprocess_generated" ]
   js_files = [
     "ca_trust_edit_dialog.ts",
     "certificate_delete_confirmation_dialog.ts",
@@ -77,6 +78,7 @@ html_to_js("web_components") {
 }
 
 preprocess_if_expr("preprocess_src") {
+  visibility = [ ":build_ts" ]
   in_folder = "./"
   out_folder = preprocess_folder_tmp
   in_files = [
@@ -90,6 +92,7 @@ preprocess_if_expr("preprocess_src") {
 }
 
 preprocess_if_expr("preprocess_generated") {
+  visibility = [ ":build_ts" ]
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder_tmp
