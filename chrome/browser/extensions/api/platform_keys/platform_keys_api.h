@@ -64,6 +64,16 @@ class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
                              PLATFORMKEYSINTERNAL_GETPUBLICKEY)
 };
 
+class PlatformKeysInternalGetPublicKeyBySpkiFunction
+    : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalGetPublicKeyBySpkiFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKeyBySpki",
+                             PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI)
+};
+
 class PlatformKeysInternalSignFunction : public ExtensionFunction {
  private:
   ~PlatformKeysInternalSignFunction() override;

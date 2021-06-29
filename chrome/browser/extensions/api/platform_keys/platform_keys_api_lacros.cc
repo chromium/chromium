@@ -23,16 +23,6 @@ using KeystoreService = crosapi::mojom::KeystoreService;
 
 //------------------------------------------------------------------------------
 
-PlatformKeysInternalGetPublicKeyBySpkiFunction::
-    ~PlatformKeysInternalGetPublicKeyBySpkiFunction() = default;
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
-  return RespondNow(Error("Not implemented."));
-}
-
-//------------------------------------------------------------------------------
-
 PlatformKeysVerifyTLSServerCertificateFunction::
     ~PlatformKeysVerifyTLSServerCertificateFunction() {}
 

@@ -56,7 +56,6 @@ const struct NameValuePair {
 
 namespace platform_keys {
 
-const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
 
@@ -71,48 +70,6 @@ std::string PlatformKeysTokenIdToApiId(
 }
 
 }  // namespace platform_keys
-
-//------------------------------------------------------------------------------
-
-PlatformKeysInternalGetPublicKeyBySpkiFunction::
-    ~PlatformKeysInternalGetPublicKeyBySpkiFunction() = default;
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
-  std::unique_ptr<api_pki::GetPublicKeyBySpki::Params> params(
-      api_pki::GetPublicKeyBySpki::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const auto& public_key_spki_der = params->public_key_spki_der;
-  if (public_key_spki_der.empty())
-    return RespondNow(Error(platform_keys::kErrorInvalidSpki));
-
-  PublicKeyInfo key_info;
-  key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
-                                      std::end(public_key_spki_der));
-
-  if (!chromeos::platform_keys::GetPublicKeyBySpki(key_info.public_key_spki_der,
-                                                   &key_info.key_type,
-                                                   &key_info.key_size_bits)) {
-    return RespondNow(Error(StatusToString(
-        chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
-  }
-
-  chromeos::platform_keys::Status check_result =
-      chromeos::platform_keys::CheckKeyTypeAndAlgorithm(key_info.key_type,
-                                                        params->algorithm_name);
-  if (check_result != chromeos::platform_keys::Status::kSuccess)
-    return RespondNow(Error(StatusToString(check_result)));
-
-  api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
-  absl::optional<base::DictionaryValue> algorithm_dictionary =
-      chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
-  DCHECK(algorithm_dictionary);
-  algorithm.additional_properties = std::move(algorithm_dictionary.value());
-
-  return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
-      public_key_spki_der, algorithm)));
-}
 
 //------------------------------------------------------------------------------
 

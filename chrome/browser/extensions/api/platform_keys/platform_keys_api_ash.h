@@ -28,16 +28,6 @@ std::string PlatformKeysTokenIdToApiId(
 
 }  // namespace platform_keys
 
-class PlatformKeysInternalGetPublicKeyBySpkiFunction
-    : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalGetPublicKeyBySpkiFunction() override;
-  ResponseAction Run() override;
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKeyBySpki",
-                             PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI)
-};
-
 class PlatformKeysVerifyTLSServerCertificateFunction
     : public ExtensionFunction {
  private:

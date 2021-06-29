@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains code that is shared between Ash and Lacros.
-// Lacros/Ash-specific counterparts are implemented in separate files.
-
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 
 #include "base/values.h"
