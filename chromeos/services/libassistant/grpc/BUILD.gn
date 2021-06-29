@@ -79,11 +79,12 @@ source_set("libassistant_client") {
     "grpc_libassistant_client.h",
   ]
 
-  public_deps = [ "//chromeos/assistant/internal:support" ]
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
 
   deps = [
     ":grpc_client",
     "//base",
+    "//chromeos/assistant/internal:support",
   ]
 
   # Make grpc_config as all dependent to avoid adding public deps

@@ -17,7 +17,8 @@ namespace chromeos {
 namespace libassistant {
 
 template <class Status, class Response>
-using ResponseCallback = base::OnceCallback<void(const Status&, Response)>;
+using ResponseCallback =
+    base::OnceCallback<void(const Status&, const Response&)>;
 
 // Returns the local connection type for the given server address.
 grpc_local_connect_type GetGrpcLocalConnectType(

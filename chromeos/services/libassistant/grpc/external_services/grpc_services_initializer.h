@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/services_initializer_base.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
@@ -70,6 +71,9 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
       libassistant_client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<chromeos::libassistant::CustomerRegistrationClient>
+      customer_registration_client_;
 
   base::WeakPtrFactory<GrpcServicesInitializer> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
 
 namespace chromeos {
@@ -16,22 +17,21 @@ namespace libassistant {
 
 namespace {
 
-// Implements one async client method. ResponseCallback will run on completion
-// queue thread |client_thread_|, so caller should bind its callback to its
-// current sequence using BindToCurrentSequence() to make sure callback will
-// always be invoked from the right sequence. The raw pointer will be handled by
-// |RPCState| internally and gets deleted upon completion of the RPC call.
-#define LIBAS_GRPC_CLIENT_METHOD(service, method)                            \
-  void GrpcLibassistantClient::method(                                       \
-      const chromeos::assistant::shared::method##Request& request,           \
-      chromeos::libassistant::ResponseCallback<                              \
-          grpc::Status, chromeos::assistant::shared::method##Response> done, \
-      chromeos::libassistant::StateConfig state_config) {                    \
-    new chromeos::libassistant::RPCState<                                    \
-        chromeos::assistant::shared::method##Response>(                      \
-        channel_, client_thread_.completion_queue(),                         \
-        chromeos::assistant::GetLibassistGrpcMethodName(service, #method),   \
-        request, std::move(done), state_config);                             \
+// Implements one async client method. ResponseCallback will be invoked from
+// caller's sequence. The raw pointer will be handled by |RPCState| internally
+// and gets deleted upon completion of the RPC call.
+#define LIBAS_GRPC_CLIENT_METHOD(service, method)                             \
+  void GrpcLibassistantClient::method(                                        \
+      const ::assistant::api::method##Request& request,                       \
+      chromeos::libassistant::ResponseCallback<                               \
+          grpc::Status, ::assistant::api::method##Response> done,             \
+      chromeos::libassistant::StateConfig state_config) {                     \
+    new chromeos::libassistant::RPCState<::assistant::api::method##Response>( \
+        channel_, client_thread_.completion_queue(),                          \
+        chromeos::assistant::GetLibassistGrpcMethodName(service, #method),    \
+        request, std::move(done),                                             \
+        /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),      \
+        state_config);                                                        \
   }
 
 }  // namespace

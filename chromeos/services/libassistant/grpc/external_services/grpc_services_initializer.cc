@@ -4,9 +4,15 @@
 
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
 #include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
@@ -19,6 +25,13 @@
 namespace chromeos {
 namespace libassistant {
 
+namespace {
+
+// Desired time between consecutive heartbeats.
+constexpr base::TimeDelta kHeartbeatInterval = base::TimeDelta::FromSeconds(2);
+
+}  // namespace
+
 GrpcServicesInitializer::GrpcServicesInitializer(
     const std::string& libassistant_service_address,
     const std::string& assistant_service_address)
@@ -30,6 +43,10 @@ GrpcServicesInitializer::GrpcServicesInitializer(
 
   InitLibassistGrpcClient();
   InitAssistantGrpcServer();
+
+  customer_registration_client_ = std::make_unique<CustomerRegistrationClient>(
+      assistant_service_address_, kHeartbeatInterval,
+      libassistant_client_.get());
 }
 
 GrpcServicesInitializer::~GrpcServicesInitializer() {
@@ -51,9 +68,11 @@ bool GrpcServicesInitializer::Start() {
     LOG(ERROR) << "Failed to start a server for ChromeOS Assistant gRPC.";
     return false;
   }
+
   DVLOG(1) << "Started ChromeOS Assistant gRPC service";
 
   StartCQ();
+  customer_registration_client_->Start();
   return true;
 }
 

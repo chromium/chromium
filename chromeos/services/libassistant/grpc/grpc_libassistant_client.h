@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chromeos/assistant/internal/util_headers.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/services/libassistant/grpc/grpc_util.h"
@@ -19,13 +19,12 @@ namespace libassistant {
 namespace {
 
 // Defines one async client method.
-#define LIBAS_GRPC_CLIENT_INTERFACE(method)                                  \
-  void method(                                                               \
-      const chromeos::assistant::shared::method##Request& request,           \
-      chromeos::libassistant::ResponseCallback<                              \
-          grpc::Status, chromeos::assistant::shared::method##Response> done, \
-      chromeos::libassistant::StateConfig state_config =                     \
-          chromeos::libassistant::StateConfig());
+#define LIBAS_GRPC_CLIENT_INTERFACE(method)                               \
+  void method(const ::assistant::api::method##Request& request,           \
+              chromeos::libassistant::ResponseCallback<                   \
+                  grpc::Status, ::assistant::api::method##Response> done, \
+              chromeos::libassistant::StateConfig state_config =          \
+                  chromeos::libassistant::StateConfig());
 
 }  // namespace
 
