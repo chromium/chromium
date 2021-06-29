@@ -10,16 +10,6 @@
 
 namespace extensions {
 
-class PlatformKeysInternalSelectClientCertificatesFunction
-    : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalSelectClientCertificatesFunction() override;
-  ResponseAction Run() override;
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
-                             PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
-};
-
 class PlatformKeysInternalGetPublicKeyBySpkiFunction
     : public ExtensionFunction {
  private:

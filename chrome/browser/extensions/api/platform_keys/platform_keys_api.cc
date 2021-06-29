@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -14,6 +15,9 @@
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "net/cert/asn1_util.h"
+#include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -25,10 +29,13 @@
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
+using PublicKeyInfo = chromeos::platform_keys::PublicKeyInfo;
+
 namespace extensions {
 
 namespace {
 
+namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
 using crosapi::mojom::KeystoreService;
 using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
@@ -40,6 +47,9 @@ const char kUnsupportedByAsh[] = "Not implemented.";
 const char kUnsupportedProfile[] = "Not available.";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
+const char kErrorInteractiveCallFromBackground[] =
+    "Interactive calls must happen in the context of a browser tab or a "
+    "window.";
 
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
@@ -98,6 +108,8 @@ absl::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
 namespace platform_keys {
 
 const char kErrorInvalidToken[] = "The token is not valid.";
+const char kErrorInvalidX509Cert[] =
+    "Certificate is not a valid X.509 certificate.";
 
 absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id) {
@@ -111,6 +123,137 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
 }
 
 }  // namespace platform_keys
+
+//------------------------------------------------------------------------------
+PlatformKeysInternalSelectClientCertificatesFunction::
+    ~PlatformKeysInternalSelectClientCertificatesFunction() {}
+
+ExtensionFunction::ResponseAction
+PlatformKeysInternalSelectClientCertificatesFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
+  // implemented for secondary profiles in Lacros.
+  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
+    return RespondNow(Error(kUnsupportedProfile));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  std::unique_ptr<api_pki::SelectClientCertificates::Params> params(
+      api_pki::SelectClientCertificates::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  chromeos::ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
+          browser_context());
+  DCHECK(service);
+
+  chromeos::platform_keys::ClientCertificateRequest request;
+  request.certificate_authorities =
+      std::move(params->details.request.certificate_authorities);
+
+  for (const api_pk::ClientCertificateType& cert_type :
+       params->details.request.certificate_types) {
+    switch (cert_type) {
+      case api_pk::CLIENT_CERTIFICATE_TYPE_ECDSASIGN:
+        request.certificate_key_types.push_back(
+            net::X509Certificate::kPublicKeyTypeECDSA);
+        break;
+      case api_pk::CLIENT_CERTIFICATE_TYPE_RSASIGN:
+        request.certificate_key_types.push_back(
+            net::X509Certificate::kPublicKeyTypeRSA);
+        break;
+      case api_pk::CLIENT_CERTIFICATE_TYPE_NONE:
+        NOTREACHED();
+    }
+  }
+
+  std::unique_ptr<net::CertificateList> client_certs;
+  if (params->details.client_certs) {
+    client_certs = std::make_unique<net::CertificateList>();
+    for (const std::vector<uint8_t>& client_cert_der :
+         *params->details.client_certs) {
+      if (client_cert_der.empty())
+        return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      // Allow UTF-8 inside PrintableStrings in client certificates. See
+      // crbug.com/770323 and crbug.com/788655.
+      net::X509Certificate::UnsafeCreateOptions options;
+      options.printable_string_is_utf8 = true;
+      scoped_refptr<net::X509Certificate> client_cert_x509 =
+          net::X509Certificate::CreateFromBytesUnsafeOptions(client_cert_der,
+                                                             options);
+      if (!client_cert_x509)
+        return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      client_certs->push_back(client_cert_x509);
+    }
+  }
+
+  content::WebContents* web_contents = nullptr;
+  if (params->details.interactive) {
+    web_contents = GetSenderWebContents();
+
+    // Ensure that this function is called in a context that allows opening
+    // dialogs.
+    if (!web_contents ||
+        !web_modal::WebContentsModalDialogManager::FromWebContents(
+            web_contents)) {
+      return RespondNow(Error(kErrorInteractiveCallFromBackground));
+    }
+  }
+
+  service->SelectClientCertificates(
+      request, std::move(client_certs), params->details.interactive,
+      extension_id(),
+      base::BindOnce(&PlatformKeysInternalSelectClientCertificatesFunction::
+                         OnSelectedCertificates,
+                     this),
+      web_contents);
+  return RespondLater();
+}
+
+void PlatformKeysInternalSelectClientCertificatesFunction::
+    OnSelectedCertificates(
+        std::unique_ptr<net::CertificateList> matches,
+        absl::optional<crosapi::mojom::KeystoreError> error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (error) {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
+    return;
+  }
+
+  DCHECK(matches);
+  std::vector<api_pk::Match> result_matches;
+  for (const scoped_refptr<net::X509Certificate>& match : *matches) {
+    PublicKeyInfo key_info;
+    key_info.public_key_spki_der =
+        chromeos::platform_keys::GetSubjectPublicKeyInfo(match);
+    if (!chromeos::platform_keys::GetPublicKey(match, &key_info.key_type,
+                                               &key_info.key_size_bits)) {
+      LOG(ERROR) << "Could not retrieve public key info.";
+      continue;
+    }
+
+    api_pk::Match result_match;
+    base::StringPiece der_encoded_cert =
+        net::x509_util::CryptoBufferAsStringPiece(match->cert_buffer());
+    result_match.certificate.assign(der_encoded_cert.begin(),
+                                    der_encoded_cert.end());
+
+    absl::optional<base::DictionaryValue> algorithm =
+        BuildWebCrypAlgorithmDictionary(key_info);
+    if (!algorithm) {
+      LOG(ERROR) << "Skipping unsupported certificate with key type "
+                 << key_info.key_type;
+      continue;
+    }
+    result_match.key_algorithm.additional_properties =
+        std::move(algorithm.value());
+
+    result_matches.push_back(std::move(result_match));
+  }
+  Respond(ArgumentList(
+      api_pki::SelectClientCertificates::Results::Create(result_matches)));
+}
 
 //------------------------------------------------------------------------------
 

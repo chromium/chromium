@@ -21,30 +21,12 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 namespace extensions {
 namespace platform_keys {
 
-extern const char kErrorInvalidX509Cert[];
-
 // Converts a token id from ::chromeos::platform_keys to the platformKeys API
 // token id.
 std::string PlatformKeysTokenIdToApiId(
     chromeos::platform_keys::TokenId platform_keys_token_id);
 
 }  // namespace platform_keys
-
-class PlatformKeysInternalSelectClientCertificatesFunction
-    : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalSelectClientCertificatesFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the certificates were selected. If an error occurred, |certs|
-  // will be null.
-  void OnSelectedCertificates(
-      std::unique_ptr<net::CertificateList> matches,
-      absl::optional<crosapi::mojom::KeystoreError> error);
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
-                             PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
-};
 
 class PlatformKeysInternalGetPublicKeyBySpkiFunction
     : public ExtensionFunction {

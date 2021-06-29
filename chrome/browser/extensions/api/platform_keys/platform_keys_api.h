@@ -28,6 +28,7 @@ namespace extensions {
 namespace platform_keys {
 
 extern const char kErrorInvalidToken[];
+extern const char kErrorInvalidX509Cert[];
 
 // Returns a known token if |token_id| is valid and returns nullopt for both
 // empty or unknown |token_id|.
@@ -35,6 +36,22 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id);
 
 }  // namespace platform_keys
+
+class PlatformKeysInternalSelectClientCertificatesFunction
+    : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalSelectClientCertificatesFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the certificates were selected. If an error occurred, |certs|
+  // will be null.
+  void OnSelectedCertificates(
+      std::unique_ptr<net::CertificateList> matches,
+      absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
+                             PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
+};
 
 class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
  private:

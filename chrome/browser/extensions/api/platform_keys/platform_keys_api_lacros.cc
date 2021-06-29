@@ -21,18 +21,6 @@ using SigningScheme = crosapi::mojom::KeystoreSigningScheme;
 using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
 using KeystoreService = crosapi::mojom::KeystoreService;
 
-namespace {
-const char kUnsupportedByAsh[] = "Not implemented.";
-}  // namespace
-
-PlatformKeysInternalSelectClientCertificatesFunction::
-    ~PlatformKeysInternalSelectClientCertificatesFunction() {}
-
-ExtensionFunction::ResponseAction
-PlatformKeysInternalSelectClientCertificatesFunction::Run() {
-  return RespondNow(Error(kUnsupportedByAsh));
-}
-
 //------------------------------------------------------------------------------
 
 PlatformKeysInternalGetPublicKeyBySpkiFunction::
