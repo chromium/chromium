@@ -99,6 +99,8 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
+  // RefCount disallowed because it will prevent allocations from being 16B
+  // aligned as required by ArrayBufferContents.
   array_buffer_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
         base::PartitionOptions::ThreadCache::kDisabled,
@@ -117,16 +119,14 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::RefCount::kDisallowed
 #endif
   });
+  // RefCount disallowed because layout code will be excluded from CheckedPtr
+  // rewrite due to performance.
   layout_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
         base::PartitionOptions::ThreadCache::kDisabled,
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookies::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
-#else
         base::PartitionOptions::RefCount::kDisallowed
-#endif
   });
 
   array_buffer_root_ = array_buffer_allocator->root();
