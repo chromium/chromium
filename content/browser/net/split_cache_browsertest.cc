@@ -196,7 +196,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     // 2) Navigate to a WebUI URL, which uses a new process.
     DisableForRenderFrameHostForTesting(
         shell()->web_contents()->GetMainFrame());
-    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL(kChromeUIGpuHost)));
+    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
 
     // In the case of a redirect, the observed URL will be different from
     // what NavigateToURL(...) expects.
@@ -287,10 +287,10 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
                                 const GURL& sub_frame,
                                 bool subframe_navigation_resource_cached) {
     // Do a cross-process navigation to clear the in-memory cache.
-    // We assume that we don't start this call from "chrome://gpu", as
-    // otherwise it won't be a cross-process navigation. We are relying
-    // on this navigation to discard the old process.
-    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("gpu")));
+    // We assume that we don't start this call from "chrome://blob-internals",
+    // as otherwise it won't be a cross-process navigation. We are relying on
+    // this navigation to discard the old process.
+    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
 
     // Observe network requests.
     ResourceLoadObserver observer(shell());
@@ -323,10 +323,10 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     DCHECK(worker.is_valid());
 
     // Do a cross-process navigation to clear the in-memory cache.
-    // We assume that we don't start this call from "chrome://gpu", as
-    // otherwise it won't be a cross-process navigation. We are relying
-    // on this navigation to discard the old process.
-    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("gpu")));
+    // We assume that we don't start this call from "chrome://blob-internals",
+    // as otherwise it won't be a cross-process navigation. We are relying on
+    // this navigation to discard the old process.
+    EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
 
     // Observe network requests.
     ResourceLoadObserver observer(shell());
@@ -428,14 +428,7 @@ class SplitCacheContentBrowserTestDisabled
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(THREAD_SANITIZER)
-// Flaky under TSan: https://crbug.com/995181
-#define MAYBE_SplitCache DISABLED_SplitCache
-#else
-#define MAYBE_SplitCache SplitCache
-#endif
-
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, SplitCache) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
@@ -502,15 +495,8 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
   EXPECT_FALSE(TestResourceLoad(blank_url, GURL()));
 }
 
-#if defined(THREAD_SANITIZER)
-// Flaky under TSan: https://crbug.com/1185462
-#define MAYBE_SplitCache DISABLED_SplitCache
-#else
-#define MAYBE_SplitCache SplitCache
-#endif
-
 IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
-                       MAYBE_SplitCache) {
+                       SplitCache) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
@@ -551,15 +537,8 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                                 GenURL("a.com", "/title1.html")));
 }
 
-#if defined(THREAD_SANITIZER)
-// Flaky under TSan: https://crbug.com/1185462
-#define MAYBE_SplitCacheAndDataUrl DISABLED_SplitCacheAndDataUrl
-#else
-#define MAYBE_SplitCacheAndDataUrl SplitCacheAndDataUrl
-#endif
-
 IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
-                       MAYBE_SplitCacheAndDataUrl) {
+                       SplitCacheAndDataUrl) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
@@ -573,15 +552,8 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
 }
 
-#if defined(THREAD_SANITIZER)
-// Flaky under TSan: https://crbug.com/1185462
-#define MAYBE_SplitCacheAndAboutBlank DISABLED_SplitCacheAndAboutBlank
-#else
-#define MAYBE_SplitCacheAndAboutBlank SplitCacheAndAboutBlank
-#endif
-
 IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
-                       MAYBE_SplitCacheAndAboutBlank) {
+                       SplitCacheAndAboutBlank) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
@@ -600,15 +572,8 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
       TestResourceLoadFromPopup(GenURL("a.com", "/title1.html"), blank_url));
 }
 
-#if defined(THREAD_SANITIZER)
-// Flaky under TSan: https://crbug.com/1185462
-#define MAYBE_SplitCacheAndPopup DISABLED_SplitCacheAndPopup
-#else
-#define MAYBE_SplitCacheAndPopup SplitCacheAndPopup
-#endif
-
 IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
-                       MAYBE_SplitCacheAndPopup) {
+                       SplitCacheAndPopup) {
   // Load a cacheable resource for the first time, and it's not cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
