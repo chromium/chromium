@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import android.support.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -21,6 +25,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabImpl;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
@@ -102,6 +107,19 @@ public class PersistedTabDataTest {
             helper.notifyCalled();
         });
         helper.waitForCallback(count);
+    }
+
+    @SmallTest
+    @UiThreadTest
+    @Test
+    public void testOnTabClose() throws TimeoutException {
+        TabImpl tab = (TabImpl) MockTab.createAndInitialize(1, false);
+        ShoppingPersistedTabData shoppingPersistedTabData = mock(ShoppingPersistedTabData.class);
+        tab.setIsTabSaveEnabled(true);
+        tab.getUserDataHost().setUserData(ShoppingPersistedTabData.class, shoppingPersistedTabData);
+        PersistedTabData.onTabClose(tab);
+        Assert.assertFalse(tab.getIsTabSaveEnabledSupplierForTesting().get());
+        verify(shoppingPersistedTabData, times(1)).disableSaving();
     }
 
     static class ThreadVerifierMockPersistedTabData extends MockPersistedTabData {

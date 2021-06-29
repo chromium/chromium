@@ -796,6 +796,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
     }
 
+    @VisibleForTesting
+    public ObservableSupplierImpl<Boolean> getIsTabSaveEnabledSupplierForTesting() {
+        return mIsTabSaveEnabledSupplier;
+    }
+
     // TabObscuringHandler.Observer
 
     @Override

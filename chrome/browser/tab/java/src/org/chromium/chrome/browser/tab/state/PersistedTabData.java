@@ -354,8 +354,11 @@ public abstract class PersistedTabData implements UserData {
      */
     public static void onTabClose(Tab tab) {
         tab.setIsTabSaveEnabled(false);
-        if (ShoppingPersistedTabData.from(tab) != null) {
-            ShoppingPersistedTabData.from(tab).disableSaving();
+        // TODO(crbug.com/1223965) ensure we cleanup ShoppingPersistedTabData on startup
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                tab.getUserDataHost().getUserData(ShoppingPersistedTabData.class);
+        if (shoppingPersistedTabData != null) {
+            shoppingPersistedTabData.disableSaving();
         }
     }
 }
