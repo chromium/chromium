@@ -41,6 +41,7 @@ class SignalFilterProcessor {
   void OnSignalListUpdated();
 
   // Called to enable or disable metrics collection for segmentation platform.
+  // This is often invoked early even before the signal list is obtained.
   void EnableMetrics(bool enable_metrics);
 
  private:

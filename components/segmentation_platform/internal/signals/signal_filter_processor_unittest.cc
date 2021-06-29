@@ -91,6 +91,10 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
   segment_database_->AddHistogramValueFeature(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
       kHistogramName2, 1, proto::Aggregation::SUM_COUNT);
+  std::string kHistogramName3 = "some_histogram_3";
+  segment_database_->AddHistogramEnumFeature(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      kHistogramName3, 1, proto::Aggregation::SUM_COUNT, {3, 4});
 
   std::set<std::pair<std::string, proto::SignalType>> histograms;
   EXPECT_CALL(*histogram_signal_handler_, SetRelevantHistograms(_))
@@ -104,6 +108,9 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
   ASSERT_THAT(histograms,
               Contains(std::make_pair(kHistogramName2,
                                       proto::SignalType::HISTOGRAM_VALUE)));
+  ASSERT_THAT(histograms,
+              Contains(std::make_pair(kHistogramName3,
+                                      proto::SignalType::HISTOGRAM_ENUM)));
 }
 
 TEST_F(SignalFilterProcessorTest, EnableMetrics) {

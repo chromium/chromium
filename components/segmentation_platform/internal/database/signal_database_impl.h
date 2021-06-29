@@ -84,6 +84,9 @@ class SignalDatabaseImpl : public SignalDatabase {
   // The backing LevelDB proto database.
   std::unique_ptr<SignalProtoDb> database_;
 
+  // Whether or not initialization has been completed.
+  bool initialized_{false};
+
   base::WeakPtrFactory<SignalDatabaseImpl> weak_ptr_factory_{this};
 };
 

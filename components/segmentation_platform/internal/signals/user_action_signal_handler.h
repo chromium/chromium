@@ -36,6 +36,7 @@ class UserActionSignalHandler {
   virtual void SetRelevantUserActions(std::set<uint64_t> user_actions);
 
   // Called to enable or disable metrics collection for segmentation platform.
+  // This can be called early even before relevant user actions are known.
   virtual void EnableMetrics(bool enable_metrics);
 
  private:

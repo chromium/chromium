@@ -80,11 +80,11 @@ base::TimeDelta GetTimeUnit(
   proto::TimeUnit time_unit = model_metadata.time_unit();
   switch (time_unit) {
     case proto::TimeUnit::YEAR:
-      return base::TimeDelta::FromDays(1) * 365;
+      return base::TimeDelta::FromDays(365);
     case proto::TimeUnit::MONTH:
-      return base::TimeDelta::FromDays(1) * 30;
+      return base::TimeDelta::FromDays(30);
     case proto::TimeUnit::WEEK:
-      return base::TimeDelta::FromDays(1) * 7;
+      return base::TimeDelta::FromDays(7);
     case proto::TimeUnit::DAY:
       return base::TimeDelta::FromDays(1);
     case proto::TimeUnit::HOUR:

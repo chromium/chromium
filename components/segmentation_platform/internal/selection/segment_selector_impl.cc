@@ -76,6 +76,8 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
 void SegmentSelectorImpl::set_model_execution_scheduler(
     ModelExecutionScheduler* model_execution_scheduler) {
   model_execution_scheduler_ = model_execution_scheduler;
+  // TODO(shaktisahu): After this change, this field is unused. Remove it.
+  // This will also cleanup weird dependency issue in the service constructor.
 }
 
 void SegmentSelectorImpl::FindBestSegment(
@@ -153,10 +155,6 @@ void SegmentSelectorImpl::ReadScoresFromLastSession(
 
   initialized_ = true;
   std::move(callback).Run();
-
-  // Request model execution.
-  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
-      true /* expired_only */);
 }
 
 int SegmentSelectorImpl::ConvertToDiscreteScore(
