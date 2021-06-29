@@ -222,7 +222,7 @@ Try tapping the mic to ask me anything.
         Browse as Guest
       </message>
       <message name="IDS_ASH_ADD_USER_BUTTON" desc="Text shown on an add user button on login/locker screen">
-        Add Person
+        Add User
       </message>
       <message name="IDS_ASH_PARENT_ACCESS_BUTTON" desc="Text shown on an parent access button on login/lock screen">
         Parent access
@@ -306,7 +306,7 @@ Try tapping the mic to ask me anything.
         Refresh ticket for <ph name="PRINCIPAL_NAME">$1<ex>user@EXAMPLE.COM</ex></ph>
       </message>
       <message name="IDS_KERBEROS_TICKET_EXPIRY_BUTTON" desc="Button label of the notification shown when a Kerberos ticket is about to expire.">
-        REFRESH
+        Refresh
       </message>
 
       <message name="IDS_IME_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process providing the input methods.">
