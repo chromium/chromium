@@ -1779,6 +1779,9 @@ extern const char kDecoupleSyncFromAndroidAutoSyncDescription[];
 extern const char kDirectActionsName[];
 extern const char kDirectActionsDescription[];
 
+extern const char kDynamicColorAndroidName[];
+extern const char kDynamicColorAndroidDescription[];
+
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 

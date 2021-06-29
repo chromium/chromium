@@ -3106,6 +3106,11 @@ const char kDirectActionsName[] = "Direct actions";
 const char kDirectActionsDescription[] =
     "Enables direct actions (Android Q and more).";
 
+const char kDynamicColorAndroidName[] = "Dynamic colors on Android";
+const char kDynamicColorAndroidDescription[] =
+    "Enabled dynamic colors on supported devices, such as Pixel devices "
+    "running Android 12.";
+
 const char kAutofillManualFallbackAndroidName[] =
     "Enable Autofill manual fallback for Addresses and Payments (Android)";
 const char kAutofillManualFallbackAndroidDescription[] =
