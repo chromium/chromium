@@ -112,6 +112,7 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
+#include "ash/system/message_center/message_center_ash_impl.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
@@ -886,6 +887,8 @@ Shell::~Shell() {
 
   pcie_peripheral_notification_controller_.reset();
 
+  message_center_ash_impl_.reset();
+
   // Destroys the MessageCenter singleton, so must happen late.
   message_center_controller_.reset();
 
@@ -927,6 +930,8 @@ void Shell::Init(
   // This creates the MessageCenter object which is used by some other objects
   // initialized here, so it needs to come early.
   message_center_controller_ = std::make_unique<MessageCenterController>();
+
+  message_center_ash_impl_ = std::make_unique<MessageCenterAshImpl>();
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.

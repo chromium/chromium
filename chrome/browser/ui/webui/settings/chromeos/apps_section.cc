@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/plugin_vm_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -289,6 +290,7 @@ void AppsSection::AddHandlers(content::WebUI* web_ui) {
     web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
     web_ui->AddMessageHandler(std::make_unique<PluginVmHandler>(profile()));
   }
+  web_ui->AddMessageHandler(std::make_unique<AppNotificationHandler>());
 }
 
 int AppsSection::GetSectionNameMessageId() const {

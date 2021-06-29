@@ -141,6 +141,7 @@ class LoginUnlockThroughputRecorder;
 class MarkerController;
 class TabletModeController;
 class MediaControllerImpl;
+class MessageCenterAshImpl;
 class MessageCenterController;
 class MouseCursorEventFilter;
 class MruWindowTracker;
@@ -432,6 +433,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   MarkerController* marker_controller() { return marker_controller_.get(); }
   MediaControllerImpl* media_controller() { return media_controller_.get(); }
+  MessageCenterAshImpl* message_center_ash_impl() {
+    return message_center_ash_impl_.get();
+  }
   MessageCenterController* message_center_controller() {
     return message_center_controller_.get();
   }
@@ -722,6 +726,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<LoginScreenController> login_screen_controller_;
   std::unique_ptr<LogoutConfirmationController> logout_confirmation_controller_;
   std::unique_ptr<TabletModeController> tablet_mode_controller_;
+  std::unique_ptr<MessageCenterAshImpl> message_center_ash_impl_;
   std::unique_ptr<MediaControllerImpl> media_controller_;
   std::unique_ptr<MruWindowTracker> mru_window_tracker_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
