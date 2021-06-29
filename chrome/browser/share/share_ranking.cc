@@ -8,6 +8,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -18,6 +19,9 @@ const char* const ShareRanking::kMoreTarget = "$more";
 namespace {
 
 const char* const kShareRankingFolder = "share_ranking";
+
+// TODO(ellyjones): This should probably be a field trial.
+const int kRecentWindowDays = 7;
 
 std::unique_ptr<ShareRanking::BackingDb> MakeDefaultDbForProfile(
     Profile* profile) {
@@ -186,6 +190,19 @@ bool NoEmptySlots(const std::vector<std::string>& display_ranking,
 }
 #endif  // DCHECK_IS_ON()
 
+std::map<std::string, int> BuildHistoryMap(
+    const std::vector<ShareHistory::Target>& flat_history) {
+  std::map<std::string, int> result;
+  for (const auto& entry : flat_history)
+    result[entry.component_name] += entry.count;
+  return result;
+}
+
+bool ShouldFixMore() {
+  // TODO(ellyjones): Add a field trial and wire it up here.
+  return true;
+}
+
 }  // namespace
 
 ShareRanking::ShareRanking(Profile* profile,
@@ -242,7 +259,17 @@ void ShareRanking::Rank(ShareHistory* history,
                         unsigned int fold,
                         bool persist_update,
                         GetRankingCallback callback) {
-  NOTIMPLEMENTED();
+  auto pending_call = std::make_unique<PendingRankCall>();
+  pending_call->type = type;
+  pending_call->available_on_system = available_on_system;
+  pending_call->fold = fold;
+  pending_call->persist_update = persist_update;
+  pending_call->callback = std::move(callback);
+  pending_call->history_db = history->GetWeakPtr();
+
+  history->GetFlatShareHistory(base::BindOnce(&ShareRanking::OnRankGetAllDone,
+                                              weak_factory_.GetWeakPtr(),
+                                              std::move(pending_call)));
 }
 
 // static
@@ -289,6 +316,9 @@ void ShareRanking::ComputeRanking(
 #endif  // DCHECK_IS_ON()
 }
 
+ShareRanking::PendingRankCall::PendingRankCall() = default;
+ShareRanking::PendingRankCall::~PendingRankCall() = default;
+
 void ShareRanking::Init() {
   db_->Init(
       base::BindOnce(&ShareRanking::OnInitDone, weak_factory_.GetWeakPtr()));
@@ -305,7 +335,7 @@ void ShareRanking::OnBackingGetDone(
     GetRankingCallback callback,
     bool ok,
     std::unique_ptr<proto::ShareRanking> ranking) {
-  if (!ok || db_init_status_ != leveldb_proto::Enums::kOK) {
+  if (!ok || db_init_status_ != leveldb_proto::Enums::kOK || !ranking) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -329,6 +359,50 @@ void ShareRanking::FlushToBackingDb(const std::string& key) {
   db_->UpdateEntries(std::move(keyvals),
                      std::make_unique<std::vector<std::string>>(),
                      base::DoNothing());
+}
+
+void ShareRanking::OnRankGetAllDone(std::unique_ptr<PendingRankCall> pending,
+                                    std::vector<ShareHistory::Target> history) {
+  pending->all_history = history;
+  if (pending->history_db) {
+    pending->history_db->GetFlatShareHistory(
+        base::BindOnce(&ShareRanking::OnRankGetRecentDone,
+                       weak_factory_.GetWeakPtr(), std::move(pending)),
+        kRecentWindowDays);
+  } else {
+    std::move(pending->callback).Run(absl::nullopt);
+  }
+}
+void ShareRanking::OnRankGetRecentDone(
+    std::unique_ptr<PendingRankCall> pending,
+    std::vector<ShareHistory::Target> history) {
+  pending->recent_history = history;
+  GetRanking(pending->type,
+             base::BindOnce(&ShareRanking::OnRankGetOldRankingDone,
+                            weak_factory_.GetWeakPtr(), std::move(pending)));
+}
+void ShareRanking::OnRankGetOldRankingDone(
+    std::unique_ptr<PendingRankCall> pending,
+    absl::optional<Ranking> ranking) {
+  if (!ranking)
+    ranking = GetDefaultInitialRanking();
+
+  Ranking display, persisted;
+  ComputeRanking(BuildHistoryMap(pending->all_history),
+                 BuildHistoryMap(pending->recent_history), *ranking,
+                 pending->available_on_system, pending->fold, ShouldFixMore(),
+                 &display, &persisted);
+
+  if (pending->persist_update)
+    UpdateRanking(pending->type, persisted);
+
+  std::move(pending->callback).Run(display);
+}
+
+ShareRanking::Ranking ShareRanking::GetDefaultInitialRanking() {
+  // TODO(https://crbug.com/1222156): Use default per-locale ranking values
+  // rather than an empty list.
+  return initial_ranking_for_test_.value_or(Ranking{});
 }
 
 }  // namespace sharing

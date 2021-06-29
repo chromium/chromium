@@ -38,13 +38,31 @@ class ShareHistory : public base::SupportsUserData::Data {
                         std::unique_ptr<BackingDb> backing_db = nullptr);
   ~ShareHistory() override;
 
-  void AddShareEntry(const std::string& component_name);
+  virtual void AddShareEntry(const std::string& component_name);
 
   // Returns the flattened share history. Each entry in this list contains
   // the total count of shares the corresponding target has received over
   // the past |window| days. It is required that |window| <= the backend's
   // WINDOW value. A window of -1 means all available history.
-  void GetFlatShareHistory(GetFlatHistoryCallback callback, int window = -1);
+  virtual void GetFlatShareHistory(GetFlatHistoryCallback callback,
+                                   int window = -1);
+
+  // Don't call this.
+  //
+  // TODO(ellyjones): There should be a better way to deal with this - it's used
+  // to deal with the fact that ShareHistory's destruction order wrt
+  // ShareRanking is undefined, so ShareHistory can get torn down while
+  // ShareRanking has a pending async call to it, after the pending call's reply
+  // has been posted but before the posted response has been run.
+  base::WeakPtr<ShareHistory> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ protected:
+  // Constructor for test fakes only - this constructor leaves this object in an
+  // invalid state, so you had better override the public methods with their own
+  // implementations that don't rely on the base ones!
+  ShareHistory();
 
  private:
   void Init();

@@ -7022,8 +7022,13 @@ static_library("test_support") {
       "autofill/mock_password_accessory_controller.h",
       "download/android/mock_download_controller.cc",
       "download/android/mock_download_controller.h",
+      "share/fake_share_history.cc",
+      "share/fake_share_history.h",
     ]
-    deps += [ "//chrome/android:test_support_jni_headers" ]
+    deps += [
+      "//chrome/android:test_support_jni_headers",
+      "//chrome/browser/share:share",
+    ]
   } else {
     sources += [
       "download/test_download_shelf.cc",

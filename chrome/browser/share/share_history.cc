@@ -70,6 +70,7 @@ ShareHistory* ShareHistory::Get(Profile* profile) {
 
 ShareHistory::~ShareHistory() = default;
 
+ShareHistory::ShareHistory() = default;
 ShareHistory::ShareHistory(Profile* profile,
                            std::unique_ptr<BackingDb> backing_db)
     : db_(backing_db ? std::move(backing_db)
