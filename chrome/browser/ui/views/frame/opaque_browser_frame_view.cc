@@ -325,6 +325,13 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
       minimize_button_->GetMirroredBounds().Contains(point))
     return HTMINBUTTON;
 
+  if (browser_view()->IsWindowControlsOverlayEnabled() &&
+      caption_button_placeholder_container_ &&
+      caption_button_placeholder_container_->GetMirroredBounds().Contains(
+          point)) {
+    return HTCAPTION;
+  }
+
   views::WidgetDelegate* delegate = frame()->widget_delegate();
   if (!delegate) {
     LOG(WARNING) << "delegate is null, returning safe default.";

@@ -1249,6 +1249,10 @@ class WebContents : public PageNavigator,
   // This sends the available title bar area bounds to the renderer process.
   virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
 
+  // Returns the Window Control Overlay rectangle. Only applies to an
+  // outermost main frame's widget. Other widgets always returns an empty rect.
+  virtual gfx::Rect GetWindowsControlsOverlayRect() const = 0;
+
   // Whether the WebContents has an active player that is effectively
   // fullscreen. That means that the video is either fullscreen or it is the
   // content of a fullscreen page (in other words, a fullscreen video with
