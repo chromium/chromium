@@ -41,8 +41,8 @@ constexpr int kBitsPerByte = 8;
 // Creates a bloomfilter after loading its data from file in `allowlist_fd`
 // and lookup the given `package_name` in it.
 bool IsLoggingPackageNameAllowed(int allowlist_fd,
-                                 int numHash,
-                                 int numBits,
+                                 int num_hash,
+                                 int num_bits,
                                  const std::string& package_name) {
   base::ScopedFILE file_stream(fdopen(allowlist_fd, "r"));
   if (!file_stream.get())
@@ -52,16 +52,17 @@ bool IsLoggingPackageNameAllowed(int allowlist_fd,
   // file.
   std::string bloom_filter_data;
   if (!base::ReadStreamToString(file_stream.get(), &bloom_filter_data) ||
-      bloom_filter_data.empty())
-    return false;
-
-  // Make sure the bloomfilter binary data is of the correct length.
-  if (bloom_filter_data.size() !=
-      size_t((numBits + kBitsPerByte - 1) / kBitsPerByte)) {
+      bloom_filter_data.empty()) {
     return false;
   }
 
-  return optimization_guide::BloomFilter(numHash, numBits, bloom_filter_data)
+  // Make sure the bloomfilter binary data is of the correct length.
+  if (bloom_filter_data.size() !=
+      size_t((num_bits + kBitsPerByte - 1) / kBitsPerByte)) {
+    return false;
+  }
+
+  return optimization_guide::BloomFilter(num_hash, num_bits, bloom_filter_data)
       .Contains(package_name);
 }
 
@@ -119,8 +120,8 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 
   // Being conservative and consider the allowlist expired when a valid expiry
   // date is absent.
-  if (num_hash.has_value() && num_bits.has_value() &&
-      expiry_date_ms.has_value() &&
+  if (num_hash.has_value() && num_bits.has_value() && num_hash.value() > 0 &&
+      num_bits.value() > 0 && expiry_date_ms.has_value() &&
       base::Time::UnixEpoch() +
               base::TimeDelta::FromMillisecondsD(expiry_date_ms.value()) >
           base::Time::Now() &&
@@ -139,7 +140,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
   // Close unused files.
   // TODO(https://crbug.com/1219672): use base::ScopedFD instead.
   for (auto& iterator : fd_map) {
-    if (iterator != *allowlist_iterator)
+    if (allowlist_iterator == fd_map.end() || iterator != *allowlist_iterator)
       close(iterator.second);
   }
 }
