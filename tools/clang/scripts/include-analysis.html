@@ -143,7 +143,7 @@ const numRoots = data.roots.length;
 
 document.getElementById('buildTarget').textContent = data.target;
 document.getElementById('buildRevision').innerHTML =
-    `<a href="https://crrev.com/${data.revision}">${data.revision}</a>`;
+    `<a href="https://chromium.googlesource.com/chromium/src/+/${data.revision}">${data.revision}</a>`;
 document.getElementById('analysisDate').textContent = data.date;
 
 document.getElementById('numRoots').textContent = fmt(numRoots);
