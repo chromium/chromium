@@ -7,8 +7,6 @@
     <attr name="rippleColor" format="color"/>
     <!-- The top or bottom inset of a drawable. -->
     <attr name="verticalInset" format="reference|dimension"/>
-    <!-- The rounded corner radius for the menus. -->
-    <attr name="menuCornerSize" format="reference|dimension"/>
 
     <!-- Material roles currently only used in downstream. Define them here
          so public builds do not complain the attribute is not found. Removal

@@ -43,9 +43,6 @@
         </item>
         <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
 
-        <!-- Shape -->
-        <item name="menuCornerSize">@dimen/popup_bg_corner_radius</item>
-
         <!-- This is for keeping the current TextInputLayout style.
              TODO(crbug.com/1206024): Remove or update once the design for the app is updated. -->
         <item name="textInputStyle">@style/TextInputStyle</item>

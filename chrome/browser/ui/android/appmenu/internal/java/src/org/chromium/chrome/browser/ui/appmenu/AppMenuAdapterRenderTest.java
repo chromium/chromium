@@ -67,7 +67,7 @@ public class AppMenuAdapterRenderTest extends DummyUiActivityTestCase {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Override
     public void setUpTest() throws Exception {
