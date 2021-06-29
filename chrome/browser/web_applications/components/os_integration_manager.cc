@@ -35,6 +35,10 @@
 #include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace {
 // Used to disable os hooks globally when OsIntegrationManager::SuppressOsHooks
 // can't be easily used.
@@ -388,6 +392,18 @@ void OsIntegrationManager::RegisterFileHandlers(
 void OsIntegrationManager::RegisterProtocolHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
+  // Disable protocol handler unregistration on Win7 due to bad interactions
+  // between preinstalled app scenarios and the need for elevation to unregister
+  // protocol handlers on that platform. See crbug.com/1224327 for context.
+  // TODO(crbug.com/1224747): remove this check and remove Win7 protocol handler
+  // support in Shell classes.
+#if defined(OS_WIN)
+  if (base::win::GetVersion() == base::win::Version::WIN7) {
+    std::move(callback).Run(true);
+    return;
+  }
+#endif  // defined(OS_WIN)
+
   if (!protocol_handler_manager_) {
     std::move(callback).Run(true);
     return;
@@ -520,6 +536,18 @@ void OsIntegrationManager::UnregisterFileHandlers(
 void OsIntegrationManager::UnregisterProtocolHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool)> callback) {
+  // Disable protocol handler unregistration on Win7 due to bad interactions
+  // between preinstalled app scenarios and the need for elevation to unregister
+  // protocol handlers on that platform. See crbug.com/1224327 for context.
+  // TODO(crbug.com/1224747): remove this check and remove Win7 protocol handler
+  // support in Shell classes.
+#if defined(OS_WIN)
+  if (base::win::GetVersion() == base::win::Version::WIN7) {
+    std::move(callback).Run(true);
+    return;
+  }
+#endif  // defined(OS_WIN)
+
   if (!protocol_handler_manager_) {
     std::move(callback).Run(true);
     return;
