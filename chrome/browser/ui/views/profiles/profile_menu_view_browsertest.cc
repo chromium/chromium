@@ -134,7 +134,7 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 class ProfileMenuViewTestBase {
  public:
  protected:
-  void OpenProfileMenu(Browser* browser, bool use_mouse = true) {
+  void OpenProfileMenu(Browser* browser) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
         target_browser_ ? target_browser_ : browser);
 
@@ -142,15 +142,7 @@ class ProfileMenuViewTestBase {
     views::View* avatar_button =
         browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
     ASSERT_TRUE(avatar_button);
-    if (use_mouse) {
-      Click(avatar_button);
-    } else {
-      avatar_button->RequestFocus();
-      avatar_button->OnKeyPressed(
-          ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
-      avatar_button->OnKeyReleased(
-          ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE, ui::EF_NONE));
-    }
+    Click(avatar_button);
 
     ASSERT_TRUE(profile_menu_view());
     profile_menu_view()->set_close_on_deactivate(false);
@@ -941,41 +933,3 @@ INSTANTIATE_TEST_SUITE_P(
                      base::size(kActionableItems_EphemeralGuestProfile)));
 #endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
-
-class ProfileMenuClickKeyAcceleratorTest : public ProfileMenuClickTestBase {
- public:
-  ProfileMenuClickKeyAcceleratorTest() = default;
-  ~ProfileMenuClickKeyAcceleratorTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuClickKeyAcceleratorTest);
-};
-
-IN_PROC_BROWSER_TEST_F(ProfileMenuClickKeyAcceleratorTest, FocusOtherProfile) {
-  // Add an additional profiles.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  CreateTestingProfile(profile_manager->GenerateNextProfileDirectoryPath());
-
-  // Open the menu using the keyboard.
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser(), /*use_mouse=*/false));
-
-  // This test doesn't care about performing the actual menu actions, only
-  // about the histogram recorded.
-  ASSERT_TRUE(profile_menu_view());
-  profile_menu_view()->set_perform_menu_actions_for_testing(false);
-
-  // The first other profile menu should be focused when the menu is opened
-  // via a key event.
-  views::View* focused_view = GetFocusedItem();
-  ASSERT_TRUE(focused_view);
-  focused_view->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
-  focused_view->OnKeyReleased(
-      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-
-  histogram_tester_.ExpectUniqueSample(
-      "Profile.Menu.ClickedActionableItem",
-      ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-      /*expected_count=*/1);
-}

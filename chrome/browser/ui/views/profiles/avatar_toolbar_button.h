@@ -74,16 +74,14 @@ class AvatarToolbarButton : public ToolbarButton,
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
- protected:
-  // ToolbarButton:
-  void NotifyClick(const ui::Event& event) override;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
                            HighlightMeetsMinimumContrast);
 
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
+
+  void ButtonPressed();
 
   std::u16string GetAvatarTooltipText() const;
   ui::ImageModel GetAvatarIcon(ButtonState state,

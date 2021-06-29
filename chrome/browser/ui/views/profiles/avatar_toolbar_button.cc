@@ -59,7 +59,8 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view,
                                          ToolbarIconContainerView* parent)
-    : ToolbarButton(PressedCallback()),
+    : ToolbarButton(base::BindRepeating(&AvatarToolbarButton::ButtonPressed,
+                                        base::Unretained(this))),
       browser_(browser_view->browser()),
       parent_(parent),
       creation_time_(base::TimeTicks::Now()),
@@ -255,17 +256,11 @@ void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
   g_iph_min_delay_after_creation = delay;
 }
 
-void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
-  Button::NotifyClick(event);
-  delegate_->NotifyClick();
-  // TODO(bsep): Other toolbar buttons have a ToolbarView method as a callback
-  // and let it call ExecuteCommandWithDisposition on their behalf.
-  // Unfortunately, it's not possible to plumb IsKeyEvent through, so this has
-  // to be a special case.
+void AvatarToolbarButton::ButtonPressed() {
   browser_->window()->ShowAvatarBubbleFromAvatarButton(
       BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-      event.IsKeyEvent());
+      /*is_source_accelerator=*/false);
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,

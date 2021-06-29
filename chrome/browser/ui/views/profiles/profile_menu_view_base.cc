@@ -494,11 +494,10 @@ ProfileMenuViewBase::EditButtonParams::EditButtonParams(
     const EditButtonParams&) = default;
 
 // static
-void ProfileMenuViewBase::ShowBubble(
-    profiles::BubbleViewMode view_mode,
-    views::Button* anchor_button,
-    Browser* browser,
-    bool is_source_keyboard) {
+void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
+                                     views::Button* anchor_button,
+                                     Browser* browser,
+                                     bool is_source_accelerator) {
   if (IsShowing())
     return;
 
@@ -521,8 +520,8 @@ void ProfileMenuViewBase::ShowBubble(
   bubble->ax_widget_observer_ =
       std::make_unique<AXMenuWidgetObserver>(bubble, widget);
   widget->Show();
-  if (is_source_keyboard)
-    bubble->FocusButtonOnKeyboardOpen();
+  if (is_source_accelerator)
+    bubble->FocusFirstProfileButton();
 }
 
 // static
@@ -983,7 +982,7 @@ void ProfileMenuViewBase::Reset() {
   layout->AddView(std::move(scroll_view));
 }
 
-void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
+void ProfileMenuViewBase::FocusFirstProfileButton() {
   if (first_profile_button_)
     first_profile_button_->RequestFocus();
 }

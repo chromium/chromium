@@ -3536,7 +3536,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 void BrowserView::ShowAvatarBubbleFromAvatarButton(
     AvatarBubbleMode mode,
     signin_metrics::AccessPoint access_point,
-    bool focus_first_profile_button) {
+    bool is_source_accelerator) {
   // Do not show avatar bubble if there is no avatar menu button.
   views::Button* avatar_button =
       toolbar_button_provider_->GetAvatarToolbarButton();
@@ -3554,7 +3554,7 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(
   }
 #endif
   ProfileMenuViewBase::ShowBubble(bubble_view_mode, avatar_button, browser(),
-                                  focus_first_profile_button);
+                                  is_source_accelerator);
 }
 
 void BrowserView::MaybeShowProfileSwitchIPH() {
