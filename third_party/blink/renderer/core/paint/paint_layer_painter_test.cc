@@ -148,10 +148,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
       ->setAttribute(html_names::kStyleAttr,
                      "position: absolute; width: 100px; height: 100px; "
                      "background-color: green");
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(6u, counter.NumNewCachedItems());
-  EXPECT_EQ(4u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(6u, counter.num_cached_items);
+  EXPECT_EQ(4u, counter.num_cached_subsequences);
 
   // We should still have the paint chunks forced by the cached subsequences.
   check_results();
@@ -230,11 +230,11 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
       ->setAttribute(html_names::kStyleAttr,
                      "position: absolute; width: 100px; height: 100px; "
                      "top: 100px; background-color: green");
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(1u, counter.NumNewCachedItems());         // view background.
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());  // filler layer.
+  EXPECT_EQ(1u, counter.num_cached_items);         // view background.
+  EXPECT_EQ(1u, counter.num_cached_subsequences);  // filler layer.
 
   EXPECT_THAT(
       ContentDisplayItems(),
@@ -325,15 +325,15 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
                           IsSameId(&content3, kBackgroundType)));
 
   UpdateAllLifecyclePhasesExceptPaint();
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   PaintContents(IntRect(0, 100, 300, 1000));
   // Container1 becomes partly in the interest rect, but uses cached subsequence
   // because it was fully painted before;
   // Container2's intersection with the interest rect changes;
   // Content2b is out of the interest rect and outputs nothing;
   // Container3 becomes out of the interest rect and outputs nothing.
-  EXPECT_EQ(5u, counter.NumNewCachedItems());
-  EXPECT_EQ(2u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(5u, counter.num_cached_items);
+  EXPECT_EQ(2u, counter.num_cached_subsequences);
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -405,10 +405,10 @@ TEST_P(PaintLayerPainterTest,
                      "position: absolute; width: 100px; height: 100px; "
                      "background-color: green");
   UpdateAllLifecyclePhasesExceptPaint();
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   PaintContents(IntRect(0, 0, 50, 300));
-  EXPECT_EQ(4u, counter.NumNewCachedItems());
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(4u, counter.num_cached_items);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -465,10 +465,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                                                        "display: block");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(2u, counter.NumNewCachedItems());
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(2u, counter.num_cached_items);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   // |target| is still partially painted.
   EXPECT_EQ(kMayBeClippedByCullRect, target_layer->PreviousPaintResult());
@@ -509,8 +509,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
 
   counter.Reset();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(2u, counter.NumNewCachedItems());
-  EXPECT_EQ(0u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(2u, counter.num_cached_items);
+  EXPECT_EQ(0u, counter.num_cached_subsequences);
 
   // |target| is still partially painted.
   EXPECT_EQ(kMayBeClippedByCullRect, target_layer->PreviousPaintResult());

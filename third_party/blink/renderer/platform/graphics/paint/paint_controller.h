@@ -259,19 +259,21 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t CurrentFragment() const { return current_fragment_; }
   void SetCurrentFragment(wtf_size_t fragment) { current_fragment_ = fragment; }
 
-  // The client may skip a paint when nothing changed. In the case, the client
-  // calls this method to update UMA counts as a fully cached paint.
-  void UpdateUMACountsOnFullyCached();
-  // Reports the accumulated counts as UMA metrics, and reset them, if we have
-  // enough data to report.
-  static void ReportUMACounts();
-
-  class DisableUMAReportScope : private base::AutoReset<bool> {
+  class CounterForTesting {
     STACK_ALLOCATED();
-
    public:
-    DisableUMAReportScope()
-        : base::AutoReset<bool>(&disable_uma_reporting_, true) {}
+    CounterForTesting() {
+      DCHECK(!PaintController::counter_for_testing_);
+      PaintController::counter_for_testing_ = this;
+    }
+    ~CounterForTesting() {
+      DCHECK_EQ(this, PaintController::counter_for_testing_);
+      PaintController::counter_for_testing_ = nullptr;
+    }
+    void Reset() { num_cached_items = num_cached_subsequences = 0; }
+
+    size_t num_cached_items = 0;
+    size_t num_cached_subsequences = 0;
   };
 
  private:
@@ -377,8 +379,6 @@ class PLATFORM_EXPORT PaintController {
   void ShowDebugDataInternal(DisplayItemList::JsonFlags) const;
 #endif
 
-  void UpdateUMACounts();
-
   void SetBenchmarkMode(PaintBenchmarkMode);
   bool ShouldInvalidateDisplayItemForBenchmark();
   bool ShouldInvalidateSubsequenceForBenchmark();
@@ -462,17 +462,7 @@ class PLATFORM_EXPORT PaintController {
   int partial_invalidation_display_item_count_ = 0;
   int partial_invalidation_subsequence_count_ = 0;
 
-  // Accumulated counts for UMA metrics. Updated by UpdateUMACounts() and
-  // UpdateUMACountsOnFullyCached(), and reported as UMA metrics and reset by
-  // ReportUMACounts(). The accumulation is mainly for pre-CompositeAfterPaint
-  // to sum up the data from multiple PaintControllers during a paint in
-  // document life cycle update.
-  static size_t sum_num_items_;
-  static size_t sum_num_cached_items_;
-  static size_t sum_num_subsequences_;
-  static size_t sum_num_cached_subsequences_;
-
-  static bool disable_uma_reporting_;
+  static CounterForTesting* counter_for_testing_;
 
   class PaintArtifactAsJSON;
 };

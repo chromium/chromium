@@ -2218,6 +2218,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Paint.CachedItemPercentage" units="%"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed June 2021.
+  </obsolete>
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2229,6 +2232,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Paint.CachedSubsequencePercentage" units="%"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed June 2021.
+  </obsolete>
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

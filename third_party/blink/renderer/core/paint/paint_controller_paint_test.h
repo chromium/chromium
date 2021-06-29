@@ -116,30 +116,6 @@ class PaintControllerPaintTestBase : public RenderingTest {
     return PaintChunkSubset(RootPaintController().GetPaintArtifactShared(),
                             begin_index, end_index);
   }
-
-  class CachedItemAndSubsequenceCounter {
-    STACK_ALLOCATED();
-
-   public:
-    CachedItemAndSubsequenceCounter() { Reset(); }
-    void Reset() {
-      old_num_cached_items_ = PaintController::sum_num_cached_items_;
-      old_num_cached_subsequences_ =
-          PaintController::sum_num_cached_subsequences_;
-    }
-    size_t NumNewCachedItems() const {
-      return PaintController::sum_num_cached_items_ - old_num_cached_items_;
-    }
-    size_t NumNewCachedSubsequences() const {
-      return PaintController::sum_num_cached_subsequences_ -
-             old_num_cached_subsequences_;
-    }
-
-   private:
-    PaintController::DisableUMAReportScope disable_uma_report_;
-    size_t old_num_cached_items_;
-    size_t old_num_cached_subsequences_;
-  };
 };
 
 class PaintControllerPaintTest : public PaintTestConfigurations,

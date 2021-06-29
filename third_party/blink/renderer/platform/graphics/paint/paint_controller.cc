@@ -17,6 +17,9 @@
 
 namespace blink {
 
+PaintController::CounterForTesting* PaintController::counter_for_testing_ =
+    nullptr;
+
 PaintController::PaintController(Usage usage)
     : usage_(usage),
       current_paint_artifact_(usage == kMultiplePaints
@@ -543,8 +546,11 @@ void PaintController::CommitNewDisplayItems() {
       "num_non_cached_new_items",
       new_paint_artifact_->GetDisplayItemList().size() - num_cached_new_items_);
 
-  if (usage_ == kMultiplePaints)
-    UpdateUMACounts();
+  if (counter_for_testing_) {
+    counter_for_testing_->num_cached_items += num_cached_new_items_;
+    counter_for_testing_->num_cached_subsequences +=
+        num_cached_new_subsequences_;
+  }
 
   num_cached_new_items_ = 0;
   num_cached_new_subsequences_ = 0;
@@ -734,48 +740,6 @@ void PaintController::ValidateNewChunkId(const PaintChunk::Id& id) {
                  << new_paint_artifact_->PaintChunks()[it->value];
   }
 #endif
-}
-
-size_t PaintController::sum_num_items_ = 0;
-size_t PaintController::sum_num_cached_items_ = 0;
-size_t PaintController::sum_num_subsequences_ = 0;
-size_t PaintController::sum_num_cached_subsequences_ = 0;
-bool PaintController::disable_uma_reporting_ = false;
-
-void PaintController::UpdateUMACounts() {
-  DCHECK_EQ(usage_, kMultiplePaints);
-  sum_num_items_ += new_paint_artifact_->GetDisplayItemList().size();
-  sum_num_cached_items_ += num_cached_new_items_;
-  sum_num_subsequences_ += new_subsequences_.tree.size();
-  sum_num_cached_subsequences_ += num_cached_new_subsequences_;
-}
-
-void PaintController::UpdateUMACountsOnFullyCached() {
-  DCHECK_EQ(usage_, kMultiplePaints);
-  int num_items = GetDisplayItemList().size();
-  sum_num_items_ += num_items;
-  sum_num_cached_items_ += num_items;
-
-  int num_subsequences = current_subsequences_.tree.size();
-  sum_num_subsequences_ += num_subsequences;
-  sum_num_cached_subsequences_ += num_subsequences;
-}
-
-void PaintController::ReportUMACounts() {
-  if (sum_num_items_ == 0 || disable_uma_reporting_)
-    return;
-
-  UMA_HISTOGRAM_PERCENTAGE("Blink.Paint.CachedItemPercentage",
-                           sum_num_cached_items_ * 100 / sum_num_items_);
-  if (sum_num_subsequences_) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Blink.Paint.CachedSubsequencePercentage",
-        sum_num_cached_subsequences_ * 100 / sum_num_subsequences_);
-  }
-  sum_num_items_ = 0;
-  sum_num_cached_items_ = 0;
-  sum_num_subsequences_ = 0;
-  sum_num_cached_subsequences_ = 0;
 }
 
 bool PaintController::ShouldInvalidateDisplayItemForBenchmark() {

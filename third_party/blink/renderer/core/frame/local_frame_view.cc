@@ -2927,15 +2927,9 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                           benchmark_mode);
 
-    if (!paint_controller_->ShouldForcePaintForBenchmark() &&
-        !GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() &&
-        !visual_viewport_or_overlay_needs_repaint_) {
-      paint_controller_->UpdateUMACountsOnFullyCached();
-    } else {
-      // This makes paint metrics in nested document lifecycle updates (e.g. for
-      // SVG images) accumulated in the top-level document lifecycle update.
-      PaintController::DisableUMAReportScope disable_uma_report;
-
+    if (paint_controller_->ShouldForcePaintForBenchmark() ||
+        GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
+        visual_viewport_or_overlay_needs_repaint_) {
       GraphicsContext graphics_context(*paint_controller_);
       if (Settings* settings = frame_->GetSettings()) {
         graphics_context.SetDarkModeEnabled(
@@ -3002,10 +2996,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
 
     if (GraphicsLayer* root =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      // See the CompositeAfterPaint branch. Not sure if this is needed in
-      // pre-CAP, but we'd better keep consistency for safety.
-      PaintController::DisableUMAReportScope disable_uma_report;
-
       repainted = root->PaintRecursively(
           graphics_context, pre_composited_layers_, benchmark_mode);
       if (visual_viewport_or_overlay_needs_repaint_ &&
@@ -3044,7 +3034,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
         frame_view.GetPaintTimingDetector().NotifyPaintFinished();
       });
 
-  PaintController::ReportUMACounts();
   return repainted;
 }
 

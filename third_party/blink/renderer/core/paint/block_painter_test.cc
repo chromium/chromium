@@ -166,10 +166,10 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
 
   // Trigger a repaint with the whole stacking-context subsequence cached.
   GetLayoutView().Layer()->SetNeedsRepaint();
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, counter.NumNewCachedItems());
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(1u, counter.num_cached_items);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
                                 ContentPaintChunks().begin() + 1, 1);
@@ -217,10 +217,10 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
   sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
-  EXPECT_EQ(1u, counter.NumNewCachedItems());
+  EXPECT_EQ(1u, counter.num_cached_items);
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
@@ -432,10 +432,10 @@ TEST_P(BlockPainterTest, TouchActionRectSubsequenceCaching) {
 
   // Trigger a repaint with the whole stacking-context subsequence cached.
   GetLayoutView().Layer()->SetNeedsRepaint();
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u, counter.NumNewCachedItems());
-  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+  EXPECT_EQ(1u, counter.num_cached_items);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
                                 ContentPaintChunks().begin() + 1, 1);
@@ -480,10 +480,10 @@ TEST_P(BlockPainterTest, TouchActionRectPaintCaching) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
   sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
-  CachedItemAndSubsequenceCounter counter;
+  PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
-  EXPECT_EQ(1u, counter.NumNewCachedItems());
+  EXPECT_EQ(1u, counter.num_cached_items);
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
