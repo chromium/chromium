@@ -28,6 +28,7 @@ void StaticTriggerConditions::Update(base::OnceCallback<void(void)> callback) {
   }
 
   callback_ = std::move(callback);
+  is_first_time_user_ = delegate_->GetIsFirstTimeUser();
   has_stored_login_credentials_ = false;
   delegate_->GetWebsiteLoginManager()->GetLoginsForUrl(
       deeplink_url_, base::BindOnce(&StaticTriggerConditions::OnGetLogins,
@@ -35,7 +36,7 @@ void StaticTriggerConditions::Update(base::OnceCallback<void(void)> callback) {
 }
 
 bool StaticTriggerConditions::is_first_time_user() const {
-  return delegate_->GetIsFirstTimeUser();
+  return is_first_time_user_;
 }
 
 bool StaticTriggerConditions::has_stored_login_credentials() const {

@@ -93,5 +93,24 @@ TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
   // More comprehensive test in |script_parameters_unittest|.
 }
 
+TEST_F(StaticTriggerConditionsTest, CachesFirstTimeUserFlag) {
+  TriggerContext trigger_context = {std::make_unique<ScriptParameters>(),
+                                    TriggerContext::Options{}};
+  StaticTriggerConditions static_trigger_conditions = {
+      &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};
+  fake_platform_delegate_.is_first_time_user_ = true;
+  EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl)
+      .WillRepeatedly(
+          RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{}));
+  static_trigger_conditions.Update(mock_callback_.Get());
+  EXPECT_TRUE(static_trigger_conditions.is_first_time_user());
+
+  fake_platform_delegate_.is_first_time_user_ = false;
+  EXPECT_TRUE(static_trigger_conditions.is_first_time_user());
+
+  static_trigger_conditions.Update(mock_callback_.Get());
+  EXPECT_FALSE(static_trigger_conditions.is_first_time_user());
+}
+
 }  // namespace
 }  // namespace autofill_assistant
