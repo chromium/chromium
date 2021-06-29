@@ -331,7 +331,8 @@ class CORE_EXPORT InspectorCSSAgent final
   // Container Queries implementation
   std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(
       const MediaList*,
-      CSSStyleSheet*);
+      CSSStyleSheet*,
+      const AtomicString&);
   void CollectContainerQueriesFromRule(
       CSSRule*,
       protocol::Array<protocol::CSS::CSSContainerQuery>*);

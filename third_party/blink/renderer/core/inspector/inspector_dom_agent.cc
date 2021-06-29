@@ -1521,6 +1521,24 @@ Response InspectorDOMAgent::requestNode(const String& object_id, int* node_id) {
   return Response::Success();
 }
 
+Response InspectorDOMAgent::getContainerForNode(
+    int node_id,
+    protocol::Maybe<String> container_name,
+    Maybe<int>* container_node_id) {
+  Element* element = nullptr;
+  Response response = AssertElement(node_id, element);
+  if (!response.IsSuccess())
+    return response;
+
+  element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
+  StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
+  Element* container = style_resolver.FindContainerForElement(
+      element, AtomicString(container_name.fromMaybe(g_null_atom)));
+  if (container)
+    *container_node_id = PushNodePathToFrontend(container);
+  return Response::Success();
+}
+
 // static
 String InspectorDOMAgent::DocumentURLString(Document* document) {
   if (!document || document->Url().IsNull())

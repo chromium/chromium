@@ -143,6 +143,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element*,
       PseudoId);
 
+  Element* FindContainerForElement(Element*, const AtomicString&);
+
   void ComputeFont(Element&, ComputedStyle*, const CSSPropertyValueSet&);
 
   // FIXME: Rename to reflect the purpose, like didChangeFontSize or something.

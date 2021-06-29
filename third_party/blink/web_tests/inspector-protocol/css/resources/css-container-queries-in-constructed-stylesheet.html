@@ -13,9 +13,25 @@ sheet.replaceSync(`
       font-size: 1px;
     }
   }
+
+  #named-container {
+    width: 300px;
+    container-name: container-1;
+    container-type: inline-size;
+  }
+
+  @container container-1 (max-width: 300px) {
+    .item {
+      color: #abc;
+    }
+  }
 `);
 
 // Apply the stylesheet to a document:
 document.adoptedStyleSheets = [sheet];
 </script>
-<div id="parent"><div class="item"></div></div>
+<div id="named-container">
+  <div id="parent">
+    <div class="item"></div>
+  </div>
+</div>

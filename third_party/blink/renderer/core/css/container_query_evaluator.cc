@@ -4,10 +4,37 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 
 namespace blink {
+
+// static
+Element* ContainerQueryEvaluator::FindContainer(
+    const StyleRecalcContext& context,
+    const AtomicString& container_name) {
+  Element* container = context.container;
+  if (!container)
+    return nullptr;
+
+  if (container_name == g_null_atom)
+    return container;
+
+  // TODO(crbug.com/1213888): Cache results.
+  for (Element* element = container; element;
+       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->IsContainerForContainerQueries() &&
+          style->ContainerName() == container_name)
+        return element;
+    }
+  }
+
+  return nullptr;
+}
 
 namespace {
 

@@ -14,10 +14,15 @@
 namespace blink {
 
 class ContainerQuery;
+class Element;
+class StyleRecalcContext;
 
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
+  static Element* FindContainer(const StyleRecalcContext& context,
+                                const AtomicString& container_name);
+
   // Creates an evaluator with no containment, hence all queries evaluated
   // against it will fail.
   ContainerQueryEvaluator() = default;

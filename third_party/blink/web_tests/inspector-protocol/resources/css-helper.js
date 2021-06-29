@@ -80,7 +80,12 @@
     }
 
     const containerQueries = rule.containerQueries || [];
-    const containerQueriesLine = containerQueries.map(cq => cq.text).join(' ');
+    const containerQueriesLine = containerQueries.map(cq => {
+      if (cq.name) {
+        return `${cq.name} ${cq.text}`;
+      }
+      return cq.text;
+    }).join(' ');
     if (containerQueriesLine.length) {
       this._indentLog(baseIndent, '@container ' + containerQueriesLine);
       baseIndent += 4;

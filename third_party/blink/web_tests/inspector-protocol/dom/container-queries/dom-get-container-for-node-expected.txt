@@ -1,0 +1,26 @@
+Test CSS.getContainerForNode method for node with container queries
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Is the returned container the expected named container?
+false
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Is the returned container the expected unnamed container?
+false
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Is the returned container the expected dynamic container?
+false
+

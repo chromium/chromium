@@ -1458,6 +1458,8 @@ experimental domain CSS
       optional SourceRange range
       # Identifier of the stylesheet containing this object (if exists).
       optional StyleSheetId styleSheetId
+      # Optional name for the container.
+      optional string name
 
   # Information about amount of glyphs that were rendered with given font.
   type PlatformFontUsage extends object
@@ -2610,6 +2612,17 @@ domain DOM
       # Resulting node.
       BackendNodeId backendNodeId
       # Id of the node at given coordinates, only when enabled and requested document.
+      optional NodeId nodeId
+
+  # Returns the container of the given node based on container query conditions.
+  # If containerName is given, it will find the nearest container with a matching name;
+  # otherwise it will find the nearest container regardless of its container name.
+  experimental command getContainerForNode
+    parameters
+      NodeId nodeId
+      optional string containerName
+    returns
+      # The container node for the given node, or null if not found.
       optional NodeId nodeId
 
   # Fired when `Element`'s attribute is modified.

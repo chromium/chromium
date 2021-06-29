@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<style>
+#named-container {
+  container-name: container-with-name;
+  container-type: inline-size;
+  width: 300px;
+}
+
+#unnamed-container {
+  container-type: inline-size;
+  width: 50px;
+}
+
+#dynamic-container {
+  width: 50px;
+}
+
+@container container-with-name (min-width: 100px) {
+  .item {
+    margin-top: 10px;
+  }
+}
+
+@container (max-width: 80px) {
+  .item {
+    margin-bottom: 5px;
+  }
+}
+</style>
+<body>
+<div id="named-container">
+  <div id="unnamed-container">
+    <div id="dynamic-container">
+      <div class="item"></div>
+    </div>
+  </div>
+</div>
+</body>

@@ -1514,8 +1514,8 @@ Response InspectorCSSAgent::setContainerQueryText(
   if (success) {
     CSSContainerRule* rule =
         InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
-    *result =
-        BuildContainerQueryObject(rule->container(), rule->parentStyleSheet());
+    *result = BuildContainerQueryObject(rule->container(),
+                                        rule->parentStyleSheet(), rule->Name());
   }
   return InspectorDOMAgent::ToResponse(exception_state);
 }
@@ -1852,9 +1852,9 @@ InspectorCSSAgent::BuildMediaListChain(CSSRule* rule) {
 }
 
 std::unique_ptr<protocol::CSS::CSSContainerQuery>
-InspectorCSSAgent::BuildContainerQueryObject(
-    const MediaList* media,
-    CSSStyleSheet* parent_style_sheet) {
+InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
+                                             CSSStyleSheet* parent_style_sheet,
+                                             const AtomicString& name) {
   // The |mediaText()| getter does not require an ExecutionContext as it is
   // only used for setting/parsing new media queries and features.
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
@@ -1877,6 +1877,9 @@ InspectorCSSAgent::BuildContainerQueryObject(
   container_query_object->setRange(
       inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
 
+  if (!name.IsEmpty())
+    container_query_object->setName(name);
+
   return container_query_object;
 }
 
@@ -1889,7 +1892,8 @@ void InspectorCSSAgent::CollectContainerQueriesFromRule(
       return;
 
     container_queries->emplace_back(BuildContainerQueryObject(
-        media_list, container_rule->parentStyleSheet()));
+        media_list, container_rule->parentStyleSheet(),
+        container_rule->Name()));
   }
 }
 

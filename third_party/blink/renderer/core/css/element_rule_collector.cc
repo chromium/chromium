@@ -63,22 +63,9 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
 ContainerQueryEvaluator* FindContainerQueryEvaluator(
     const AtomicString& name,
     const StyleRecalcContext& style_recalc_context) {
-  Element* container = style_recalc_context.container;
-  if (!container)
-    return nullptr;
-
-  if (name == g_null_atom)
-    return container->GetContainerQueryEvaluator();
-
-  // TODO(crbug.com/1213888): Cache results.
-  for (Element* element = container; element;
-       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
-    if (auto* evaluator = element->GetContainerQueryEvaluator()) {
-      if (const ComputedStyle* style = element->GetComputedStyle()) {
-        if (style->ContainerName() == name)
-          return evaluator;
-      }
-    }
+  if (auto* element =
+          ContainerQueryEvaluator::FindContainer(style_recalc_context, name)) {
+    return element->GetContainerQueryEvaluator();
   }
 
   return nullptr;

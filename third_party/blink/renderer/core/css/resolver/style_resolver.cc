@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -1152,6 +1153,13 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
 
   cascade.Apply();
   return cascade.GetCascadedValues();
+}
+
+Element* StyleResolver::FindContainerForElement(
+    Element* element,
+    const AtomicString& container_name) {
+  auto context = StyleRecalcContext::FromAncestors(*element);
+  return ContainerQueryEvaluator::FindContainer(context, container_name);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
