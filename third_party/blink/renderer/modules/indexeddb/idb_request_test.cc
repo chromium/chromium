@@ -54,9 +54,10 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
+#include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/mock_web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -180,8 +181,11 @@ class IDBRequestTest : public testing::Test {
   }
 
   void BuildTransaction(V8TestingScope& scope,
-                        std::unique_ptr<MockWebIDBDatabase> database_backend,
+                        MockIDBDatabase& mock_database,
                         MockIDBTransaction& mock_transaction) {
+    auto database_backend = std::make_unique<WebIDBDatabase>(
+        mock_database.BindNewEndpointAndPassDedicatedRemote(),
+        /*task_runner=*/nullptr);
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
         mojo::NullAssociatedReceiver(), mojo::NullRemote());
@@ -238,11 +242,11 @@ void EnsureIDBCallbacksDontThrow(IDBRequest* request,
 
 TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   V8TestingScope scope;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
+  MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend), transaction_backend);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(transaction_);
@@ -258,15 +262,16 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
 
   EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
+  database_backend.Flush();
 }
 
 TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   V8TestingScope scope;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
+  MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend), transaction_backend);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(transaction_);
@@ -281,15 +286,16 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
 
   EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
+  database_backend.Flush();
 }
 
 TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   V8TestingScope scope;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
+  MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend), transaction_backend);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(transaction_);
@@ -307,6 +313,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   url_loader_mock_factory_->ServeAsynchronousRequests();
   EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
+  database_backend.Flush();
 }
 
 // This test is flaky on Marshmallow 64 bit Tester because the test is
@@ -321,11 +328,11 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
 
 TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   V8TestingScope scope;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
+  MockIDBDatabase database_backend;
   MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
   EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend), transaction_backend);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(transaction_);
@@ -351,6 +358,7 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   EnsureIDBCallbacksDontThrow(request1, scope.GetExceptionState());
   EnsureIDBCallbacksDontThrow(request2, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
+  database_backend.Flush();
 }
 
 // This test is flaky on Marshmallow 64 bit Tester because the test is
@@ -392,11 +400,10 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
   const IDBDatabaseMetadata metadata;
 
   {
+    MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
-    std::unique_ptr<BackendDatabaseWithMockedClose> mock_database =
-        std::make_unique<BackendDatabaseWithMockedClose>(
-            remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(*mock_database, Close()).Times(1);
+    mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+    EXPECT_CALL(mock_database, Close()).Times(1);
 
     auto transaction_backend = std::make_unique<WebIDBTransaction>(
         /*task_runner=*/nullptr, kTransactionId);
@@ -417,11 +424,10 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
   }
 
   {
+    MockIDBDatabase mock_database;
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
-    std::unique_ptr<BackendDatabaseWithMockedClose> mock_database =
-        std::make_unique<BackendDatabaseWithMockedClose>(
-            remote.BindNewEndpointAndPassDedicatedReceiver());
-    EXPECT_CALL(*mock_database, Close()).Times(1);
+    mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+    EXPECT_CALL(mock_database, Close()).Times(1);
 
     auto transaction_backend = std::make_unique<WebIDBTransaction>(
         /*task_runner=*/nullptr, kTransactionId);

@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database_impl.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -161,8 +160,8 @@ void WebIDBCallbacksImpl::SuccessDatabase(
     const IDBDatabaseMetadata& metadata) {
   std::unique_ptr<WebIDBDatabase> db;
   if (pending_database.is_valid()) {
-    db = std::make_unique<WebIDBDatabaseImpl>(std::move(pending_database),
-                                              task_runner_);
+    db = std::make_unique<WebIDBDatabase>(std::move(pending_database),
+                                          task_runner_);
   }
   if (request_) {
     probe::AsyncTask async_task(request_->GetExecutionContext(),
@@ -305,8 +304,8 @@ void WebIDBCallbacksImpl::UpgradeNeeded(
     const IDBDatabaseMetadata& metadata) {
   std::unique_ptr<WebIDBDatabase> db;
   if (pending_database.is_valid()) {
-    db = std::make_unique<WebIDBDatabaseImpl>(std::move(pending_database),
-                                              task_runner_);
+    db = std::make_unique<WebIDBDatabase>(std::move(pending_database),
+                                          task_runner_);
   }
   if (request_) {
     probe::AsyncTask async_task(request_->GetExecutionContext(),
