@@ -3582,7 +3582,7 @@ Here are some things you can try to get started.
         Access your clipboard history by pressing <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. Copy an item to get started.
       </message>
       <message name="IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE" desc="The label used to show the keyboard shortcut for multipaste, to be seen aside the screenshot notification banner which notifies the user that the screenshot has been copied to clipboard.">
-        + V
+        <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V
       </message>
 
       <message name="IDS_APP_LIST_BLOCKED_APP" desc="The spoken feedback text when a focused app is blocked.">

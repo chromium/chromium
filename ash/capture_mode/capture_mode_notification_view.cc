@@ -36,38 +36,6 @@ constexpr int kPlayIconSizeDip = 24;
 constexpr int kPlayIconBackgroundCornerRadiusDip = 20;
 constexpr gfx::Size kPlayIconViewSize{40, 40};
 
-// Constants related to the clipboard keyboard shortcut icon.
-constexpr int kKeyboardShortcutIconSize = 14;
-constexpr int kShortcutIconTopPaddingSearch = 4;
-constexpr int kShortcutIconTopPaddingLauncher = 3;
-
-bool IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() ==
-             chromeos::assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
-}
-
-gfx::ImageSkia GetShortcutIcon(SkColor icon_color) {
-  // Set the keyboard shortcut icon depending on whether search button or
-  // launcher button is being used.
-  const bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
-
-  if (!use_launcher_key) {
-    return gfx::CreateVectorIcon(kClipboardSearchIcon,
-                                 kKeyboardShortcutIconSize, icon_color);
-  }
-
-  if (IsAssistantAvailable()) {
-    return gfx::CreateVectorIcon(gfx::IconDescription(
-        kClipboardLauncherOuterIcon, kKeyboardShortcutIconSize, icon_color,
-        &kClipboardLauncherInnerIcon));
-  }
-
-  return gfx::CreateVectorIcon(kClipboardLauncherNoAssistantIcon,
-                               kKeyboardShortcutIconSize, icon_color);
-}
-
 std::unique_ptr<views::View> CreateClipboardShortcutView() {
   std::unique_ptr<views::View> clipboard_shortcut_view =
       std::make_unique<views::View>();
@@ -83,23 +51,18 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
   clipboard_shortcut_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
-  gfx::ImageSkia shortcut_icon = GetShortcutIcon(text_icon_color);
-  auto* keyboard_shortcut_icon = clipboard_shortcut_view->AddChildView(
-      std::make_unique<views::ImageView>());
-  keyboard_shortcut_icon->SetImage(shortcut_icon);
+  const std::u16string shortcut_key = l10n_util::GetStringUTF16(
+      ui::DeviceUsesKeyboardLayout2() ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+                                      : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
 
-  views::Label* shortcut_label = clipboard_shortcut_view->AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE)));
+  const std::u16string label_text = l10n_util::GetStringFUTF16(
+      IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE, shortcut_key);
+
+  views::Label* shortcut_label =
+      clipboard_shortcut_view->AddChildView(std::make_unique<views::Label>());
+  shortcut_label->SetText(label_text);
   shortcut_label->SetBackgroundColor(background_color);
   shortcut_label->SetEnabledColor(text_icon_color);
-
-  // Center vertically keyboard shortcut icon depending on whether search button
-  // or launcher button is being used.
-  keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      (ui::DeviceUsesKeyboardLayout2() ? kShortcutIconTopPaddingLauncher
-                                       : kShortcutIconTopPaddingSearch),
-      0, 0, 0)));
 
   return clipboard_shortcut_view;
 }
