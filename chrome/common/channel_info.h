@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/types/strong_alias.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -80,9 +81,18 @@ version_info::Channel GetChannelByName(const std::string& channel);
 // true for old copies of beta and dev channels that share the same user data
 // dir as the stable channel.
 bool IsSideBySideCapable();
-#endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Sets/clears a KSChannelID value to be used in determining the browser's
+// channel. The functions above will behave as if `channel_id` had been
+// discovered as the channel identifier when CacheChannelInfo was called.
+// Clearing reverts the change.
+void SetChannelIdForTesting(const std::string& channel_id);
+void ClearChannelIdForTesting();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // defined(OS_MAC)
+
+#if defined(OS_POSIX) && !defined(OS_MAC)
 // Returns a channel-specific suffix to use when constructing the path of the
 // default user data directory, allowing multiple channels to run side-by-side.
 // In the stable channel and in unbranded builds, this returns the empty string.
