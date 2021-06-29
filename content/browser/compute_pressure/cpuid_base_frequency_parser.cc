@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -53,7 +54,7 @@ int64_t ParseBaseFrequencyFromCpuid(base::StringPiece brand_string) {
 
     // Avoid conversion overflows. double can (imprecisely) store larger numbers
     // than int64_t.
-    if (frequency > std::numeric_limits<int64_t>::max())
+    if (!base::IsValueInRangeForNumericType<int64_t>(frequency))
       continue;
 
     int64_t frequency_int = static_cast<int64_t>(frequency);
