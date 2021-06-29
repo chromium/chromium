@@ -94,8 +94,22 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToMojo) {
   ASSERT_FALSE(mojo_hints.is_null());
   EXPECT_EQ(mojo_hints->recognition_type, "recognition type");
   EXPECT_EQ(mojo_hints->input_type, "input type");
+  ASSERT_FALSE(mojo_hints->text_context.IsNull());
   EXPECT_EQ(mojo_hints->text_context, "text context");
   EXPECT_EQ(mojo_hints->alternatives, 10u);
+}
+
+// Tests whether the default values of `HandwritingHints` can be correctly
+// converted, especially for `textContext` which is not-set by default.
+TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToDefaultValue) {
+  auto* idl_hints = blink::HandwritingHints::Create();
+
+  auto mojo_hints = mojo::ConvertTo<HandwritingHintsPtr>(idl_hints);
+  ASSERT_FALSE(mojo_hints.is_null());
+  EXPECT_EQ(mojo_hints->recognition_type, "text");
+  EXPECT_EQ(mojo_hints->input_type, "mouse");
+  EXPECT_TRUE(mojo_hints->text_context.IsNull());
+  EXPECT_EQ(mojo_hints->alternatives, 3u);
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingFeatureQueryToMojo) {

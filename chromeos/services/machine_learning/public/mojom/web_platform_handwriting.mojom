@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 module chromeos.machine_learning.web_platform.mojom;
 
 // https://github.com/WICG/handwriting-recognition/blob/main/explainer.md
@@ -94,16 +96,19 @@ struct HandwritingHints {
   // The type of content to be recognized. The recognizer may use these to
   // better rank the recognition results. (e.g. "text", "email", "number",
   // "per-character").
-  string recognition_type;
+  string recognition_type@0;
   // Identifies how the strokes are captured. (e.g. "touch", "mouse", "pen")
-  string input_type;
+  string input_type@1;
+  // Deprecated because we want to change `text_context` to be optional, see
+  // the comment of `text_context` below.
+  string deprecated_text_context@2;
+  // The maximum number of alternative predictions to generate.
+  uint32 alternatives@3;
   // The text that comes before the handwriting. This can be texts that were
   // previously recognized, or were given as the writing context (e.g.
   // "Write your name here:"). This is the linguistic context to help
   // disambiguate the handwriting (e.g. “Hello world” vs. “Hello word”).
-  string text_context;
-  // The maximum number of alternative predictions to generate.
-  uint32 alternatives;
+  [MinVersion=1] string? text_context@4;
 };
 
 // Used in creating recognizer.

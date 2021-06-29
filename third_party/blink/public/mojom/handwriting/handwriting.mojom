@@ -95,7 +95,10 @@ struct HandwritingHints {
   // previously recognized, or were given as the writing context (e.g.
   // "Write your name here:"). This is the linguistic context to help
   // disambiguate the handwriting (e.g. “Hello world” vs. “Hello word”).
-  string text_context;
+  // This could be null if the application doesn't or can't provide context. It
+  // could be the empty string if a text field is empty, e.g. the beginning of
+  // input.
+  string? text_context;
   // The maximum number of alternative predictions to generate.
   uint32 alternatives;
 };

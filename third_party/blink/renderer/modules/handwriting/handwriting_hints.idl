@@ -7,6 +7,6 @@
 dictionary HandwritingHints {
   DOMString recognitionType = "text";
   DOMString inputType = "mouse";
-  DOMString textContext = "";
+  DOMString textContext;
   unsigned long alternatives = 3;
 };

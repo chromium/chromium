@@ -68,7 +68,9 @@ TypeConverter<HandwritingHintsPtr, blink::HandwritingHints*>::Convert(
   auto output = handwriting::mojom::blink::HandwritingHints::New();
   output->recognition_type = input->recognitionType();
   output->input_type = input->inputType();
-  output->text_context = input->textContext();
+  if (input->hasTextContext()) {
+    output->text_context = input->textContext();
+  }
   output->alternatives = input->alternatives();
   return output;
 }
