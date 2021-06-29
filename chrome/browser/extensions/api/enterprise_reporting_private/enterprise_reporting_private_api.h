@@ -136,7 +136,7 @@ class EnterpriseReportingPrivateGetDeviceInfoFunction
 
   // Conversion function for this class to use a DeviceInfoFetcher result.
   static api::enterprise_reporting_private::DeviceInfo ToDeviceInfo(
-      enterprise_signals::DeviceInfo device_signals);
+      enterprise_signals::DeviceInfo&& device_signals);
 
  private:
   ~EnterpriseReportingPrivateGetDeviceInfoFunction() override;

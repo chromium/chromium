@@ -46,15 +46,19 @@ api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
 #endif  // !defined(OS_CHROMEOS)
 
 api::enterprise_reporting_private::ContextInfo ToContextInfo(
-    const enterprise_signals::ContextInfo& signals) {
+    enterprise_signals::ContextInfo&& signals) {
   api::enterprise_reporting_private::ContextInfo info;
 
-  info.browser_affiliation_ids = signals.browser_affiliation_ids;
-  info.profile_affiliation_ids = signals.profile_affiliation_ids;
-  info.on_file_attached_providers = signals.on_file_attached_providers;
-  info.on_file_downloaded_providers = signals.on_file_downloaded_providers;
-  info.on_bulk_data_entry_providers = signals.on_bulk_data_entry_providers;
-  info.on_security_event_providers = signals.on_security_event_providers;
+  info.browser_affiliation_ids = std::move(signals.browser_affiliation_ids);
+  info.profile_affiliation_ids = std::move(signals.profile_affiliation_ids);
+  info.on_file_attached_providers =
+      std::move(signals.on_file_attached_providers);
+  info.on_file_downloaded_providers =
+      std::move(signals.on_file_downloaded_providers);
+  info.on_bulk_data_entry_providers =
+      std::move(signals.on_bulk_data_entry_providers);
+  info.on_security_event_providers =
+      std::move(signals.on_security_event_providers);
   info.site_isolation_enabled = signals.site_isolation_enabled;
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
@@ -67,7 +71,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
               REALTIME_URL_CHECK_MODE_ENABLED_MAIN_FRAME;
       break;
   }
-  info.browser_version = signals.browser_version;
+  info.browser_version = std::move(signals.browser_version);
   info.built_in_dns_client_enabled = signals.built_in_dns_client_enabled;
 
   switch (signals.safe_browsing_protection_level) {
@@ -304,19 +308,19 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::
 // static
 api::enterprise_reporting_private::DeviceInfo
 EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
-    enterprise_signals::DeviceInfo device_signals) {
+    enterprise_signals::DeviceInfo&& device_signals) {
   api::enterprise_reporting_private::DeviceInfo device_info;
 
-  device_info.os_name = device_signals.os_name;
-  device_info.os_version = device_signals.os_version;
-  device_info.device_host_name = device_signals.device_host_name;
-  device_info.device_model = device_signals.device_model;
-  device_info.serial_number = device_signals.serial_number;
+  device_info.os_name = std::move(device_signals.os_name);
+  device_info.os_version = std::move(device_signals.os_version);
+  device_info.device_host_name = std::move(device_signals.device_host_name);
+  device_info.device_model = std::move(device_signals.device_model);
+  device_info.serial_number = std::move(device_signals.serial_number);
   device_info.screen_lock_secured =
       ToInfoSettingValue(device_signals.screen_lock_secured);
   device_info.disk_encrypted =
       ToInfoSettingValue(device_signals.disk_encrypted);
-  device_info.mac_addresses = device_signals.mac_addresses;
+  device_info.mac_addresses = std::move(device_signals.mac_addresses);
 
   return device_info;
 }
@@ -378,8 +382,8 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
     enterprise_signals::ContextInfo context_info) {
-  Respond(OneArgument(
-      base::Value::FromUniquePtrValue(ToContextInfo(context_info).ToValue())));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      ToContextInfo(std::move(context_info)).ToValue())));
 }
 
 // getCertificate
