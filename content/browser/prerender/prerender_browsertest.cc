@@ -395,8 +395,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
 }
 
 // Tests that prerendering is cancelled if a network request for the
-// navigation results in 404.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderNotFoundPage) {
+// navigation results in an empty response with 404 status.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOnEmptyBody404) {
   base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -417,7 +417,58 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderNotFoundPage) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kNavigationRequestFailure, 1);
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
+}
+
+// Tests that prerendering is cancelled if a network request for the
+// navigation results in an non-empty response with 404 status.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderCancelledOnNonEmptyBody404) {
+  base::HistogramTester histogram_tester;
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/page404.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Add prerendering to the 404 error page, then check that it got cancelled.
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  AddPrerenderAsync(kPrerenderingUrl);
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
+}
+
+// Tests that prerendering is cancelled if a network request for the
+// navigation results in an non-empty response with 500 status.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
+  base::HistogramTester histogram_tester;
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/page500.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Add prerendering to the 500 error page, then check that it got cancelled.
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  AddPrerenderAsync(kPrerenderingUrl);
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus, 1);
 }
 
 // Tests that prerendering triggered by prerendered pages is deferred until

@@ -68,7 +68,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kDownload = 15,
     kTriggerDestroyed = 16,
     kNavigationNotCommitted = 17,
-    kMaxValue = kNavigationNotCommitted,
+    kNavigationBadHttpStatus = 18,
+    kMaxValue = kNavigationBadHttpStatus,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

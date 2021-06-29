@@ -2460,7 +2460,10 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
   observer.Register(content::Source<NavigationController>(controller));
 
   GURL prerender_url = embedded_test_server()->GetURL(kAuthBasicPage);
-  prerender_helper().AddPrerender(prerender_url);
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   EXPECT_EQ(0, observer.auth_needed_count());
 }
 }  // namespace

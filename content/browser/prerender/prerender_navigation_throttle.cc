@@ -14,6 +14,18 @@
 
 namespace content {
 
+namespace {
+
+// Returns true if a the response code is disallowed for pre-rendering (e.g 404,
+// etc), and false otherwise.
+// TODO(crbug.com/1167592): This should be eventually synced with the outcome
+// of https://github.com/jeremyroman/alternate-loading-modes/issues/30.
+bool IsDisallowedHttpResponseCode(int response_code) {
+  return response_code < 100 || response_code > 399;
+}
+
+}  // namespace
+
 PrerenderNavigationThrottle::~PrerenderNavigationThrottle() = default;
 
 // static
@@ -151,9 +163,19 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillProcessResponse() {
-  // Disallow downloads during prerendering and cancel the prerender.
+  auto* navigation_request = NavigationRequest::From(navigation_handle());
+  absl::optional<PrerenderHost::FinalStatus> cancel_reason;
+
   if (navigation_handle()->IsDownload()) {
-    auto* navigation_request = NavigationRequest::From(navigation_handle());
+    // Disallow downloads during prerendering and cancel the prerender.
+    cancel_reason = PrerenderHost::FinalStatus::kDownload;
+  } else if (IsDisallowedHttpResponseCode(
+                 navigation_request->commit_params().http_response_code)) {
+    // There's no point in trying to prerender failed navigations.
+    cancel_reason = PrerenderHost::FinalStatus::kNavigationBadHttpStatus;
+  }
+
+  if (cancel_reason.has_value()) {
     FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
     DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
@@ -163,7 +185,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
             ->GetPrerenderHostRegistry();
 
     prerender_host_registry->CancelHost(frame_tree_node->frame_tree_node_id(),
-                                        PrerenderHost::FinalStatus::kDownload);
+                                        cancel_reason.value());
     return CANCEL;
   }
   return PROCEED;
