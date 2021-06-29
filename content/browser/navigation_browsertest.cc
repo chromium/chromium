@@ -4946,9 +4946,17 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 
 // See the doc comment for the
 // URLLoaderFactoryInInitialEmptyDoc_NewFrameWithoutSrc test case.
+// crbug.com/1224893: Test flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank \
+  DISABLED_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank
+#else
+#define MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank \
+  URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank
+#endif
 IN_PROC_BROWSER_TEST_F(
     SubresourceLoadingTest,
-    URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank) {
+    MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank) {
   GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 
