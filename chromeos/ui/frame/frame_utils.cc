@@ -44,7 +44,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
       has_resize_border ? chromeos::kResizeInsideBoundsSize : 0;
 
   int frame_component = view->GetHTComponentForFrame(
-      point_in_widget, resize_border_size, resize_border_size,
+      point_in_widget, gfx::Insets(resize_border_size),
       chromeos::kResizeAreaCornerSize, chromeos::kResizeAreaCornerSize,
       has_resize_border);
   if (frame_component != HTNOWHERE)

@@ -334,9 +334,12 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   // In the window corners, the resize areas don't actually expand bigger, but
   // the 16 px at the end of each edge triggers diagonal resizing.
   constexpr int kResizeAreaCornerSize = 16;
-  int window_component = GetHTComponentForFrame(
-      point, FrameTopBorderThickness(false), FrameBorderThickness(false),
-      kResizeAreaCornerSize, kResizeAreaCornerSize, delegate->CanResize());
+  gfx::Insets resize_border(FrameBorderThickness(false));
+  // The top resize border has extra thickness.
+  resize_border.set_top(FrameTopBorderThickness(false));
+  int window_component =
+      GetHTComponentForFrame(point, resize_border, kResizeAreaCornerSize,
+                             kResizeAreaCornerSize, delegate->CanResize());
   // Fall back to the caption if no other component matches.
   return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
 }

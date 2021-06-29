@@ -56,8 +56,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // the size of the sizing edges, and whether or not the window can be
   // resized.
   int GetHTComponentForFrame(const gfx::Point& point,
-                             int top_resize_border_height,
-                             int resize_border_thickness,
+                             const gfx::Insets& resize_border,
                              int top_resize_corner_height,
                              int resize_corner_width,
                              bool can_resize);

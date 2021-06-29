@@ -189,12 +189,9 @@ int AppWindowFrameView::NonClientHitTest(const gfx::Point& point) {
   int resize_border = (widget_->IsMaximized() || widget_->IsFullscreen())
                           ? 0
                           : resize_inside_bounds_size_;
-  int frame_component = GetHTComponentForFrame(point,
-                                               resize_border,
-                                               resize_border,
-                                               resize_area_corner_size_,
-                                               resize_area_corner_size_,
-                                               can_ever_resize);
+  int frame_component = GetHTComponentForFrame(
+      point, gfx::Insets(resize_border), resize_area_corner_size_,
+      resize_area_corner_size_, can_ever_resize);
   if (frame_component != HTNOWHERE)
     return frame_component;
 

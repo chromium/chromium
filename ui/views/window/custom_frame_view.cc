@@ -141,9 +141,11 @@ int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
   if (window_icon_ && window_icon_->GetMirroredBounds().Contains(point))
     return HTSYSMENU;
 
+  gfx::Insets resize_border(NonClientBorderThickness());
+  // The top resize border has extra thickness.
+  resize_border.set_top(FrameBorderThickness());
   int window_component = GetHTComponentForFrame(
-      point, FrameBorderThickness(), NonClientBorderThickness(),
-      kResizeAreaCornerSize, kResizeAreaCornerSize,
+      point, resize_border, kResizeAreaCornerSize, kResizeAreaCornerSize,
       frame_->widget_delegate()->CanResize());
   // Fall back to the caption if no other component matches.
   return (window_component == HTNOWHERE) ? HTCAPTION : window_component;

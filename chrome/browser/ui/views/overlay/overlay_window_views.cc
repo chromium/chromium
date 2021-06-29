@@ -146,9 +146,8 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
 
     constexpr int kResizeAreaCornerSize = 16;
     int window_component = GetHTComponentForFrame(
-        point, kOverlayBorderThickness, kOverlayBorderThickness,
-        kResizeAreaCornerSize, kResizeAreaCornerSize,
-        GetWidget()->widget_delegate()->CanResize());
+        point, gfx::Insets(kOverlayBorderThickness), kResizeAreaCornerSize,
+        kResizeAreaCornerSize, GetWidget()->widget_delegate()->CanResize());
 
     // The media controls should take and handle user interaction.
     OverlayWindowViews* window = static_cast<OverlayWindowViews*>(widget_);

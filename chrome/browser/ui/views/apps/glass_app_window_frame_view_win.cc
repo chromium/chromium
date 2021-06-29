@@ -106,13 +106,9 @@ int GlassAppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // fullscreen, as it can't be resized in those states.
   int resize_border =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
-  int frame_component =
-      GetHTComponentForFrame(point,
-                             resize_border,
-                             resize_border,
-                             kResizeAreaCornerSize - resize_border,
-                             kResizeAreaCornerSize - resize_border,
-                             can_ever_resize);
+  int frame_component = GetHTComponentForFrame(
+      point, gfx::Insets(resize_border), kResizeAreaCornerSize - resize_border,
+      kResizeAreaCornerSize - resize_border, can_ever_resize);
   if (frame_component != HTNOWHERE)
     return frame_component;
 
