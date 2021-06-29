@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "sql/database.h"
@@ -191,16 +192,15 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
   if (!cur_version.has_value())
     return false;
 
+  // Metatable is corrupted. Try to recover.
   if (cur_version.value() < current_version_number_) {
-    base::UmaHistogramCounts100(histogram_tag_ + ".CorruptMetaTable", 1);
-
     meta_table_.Reset();
     db_ = std::make_unique<sql::Database>();
-    if (!sql::Database::Delete(path_) || !db()->Open(path_) ||
-        !meta_table_.Init(db(), current_version_number_,
-                          compatible_version_number_)) {
-      base::UmaHistogramCounts100(
-          histogram_tag_ + ".CorruptMetaTableRecoveryFailed", 1);
+    bool recovered = sql::Database::Delete(path_) && db()->Open(path_) &&
+                     meta_table_.Init(db(), current_version_number_,
+                                      compatible_version_number_);
+    LOCAL_HISTOGRAM_BOOLEAN("Net.SQLite.CorruptMetaTableRecovered", recovered);
+    if (!recovered) {
       NOTREACHED() << "Unable to reset the " << histogram_tag_ << " DB.";
       meta_table_.Reset();
       db_.reset();
