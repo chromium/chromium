@@ -434,6 +434,7 @@ Polymer({
   /** @private */
   setInProgress_() {
     this.error_ = ErrorType.NONE;
+    this.pendingError_ = ErrorType.NONE;
     this.inProgress_ = true;
   },
 

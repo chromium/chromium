@@ -277,4 +277,47 @@ suite('NetworkSimLockDialogsTest', function() {
     assertFalse(enterPinDialog.open);
     assertFalse(simLockDialog.isDialogOpen);
   });
+
+  test('Pending error is cleared', async function() {
+    const mojom = chromeos.networkConfig.mojom;
+    let deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+    };
+    networkConfigRemote_.setDeviceStateForTest(deviceState);
+    simLockDialog.deviceState = deviceState;
+    await flushAsync();
+
+    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+    const enterPin = async function(pin) {
+      let pinInput = enterPinDialog.querySelector('#enterPin');
+      pinInput.value = pin;
+      pinInput.fire('enter', {path: [pinInput]});
+      await flushAsync();
+    };
+
+    await enterPin('111111111');
+    // Update device state.
+    deviceState =
+        networkConfigRemote_.getDeviceStateForTest(mojom.NetworkType.kCellular);
+    simLockDialog.deviceState = {...deviceState};
+
+    await flushAsync();
+    let error =
+        enterPinDialog.querySelector('.pinEntrySubtext').textContent.trim();
+    assertEquals(
+        error, simLockDialog.i18n('networkSimErrorIncorrectPinPlural', 2));
+
+    await enterPin('1111');
+    // Update device state.
+    deviceState =
+        networkConfigRemote_.getDeviceStateForTest(mojom.NetworkType.kCellular);
+    simLockDialog.deviceState = {...deviceState};
+    await flushAsync();
+
+    error = enterPinDialog.querySelector('.pinEntrySubtext').textContent.trim();
+    assertEquals(error, simLockDialog.i18n('networkSimEnterPinSubtext'));
+  });
 });
