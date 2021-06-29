@@ -1555,6 +1555,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
+    expires_after="2022-06-25">
+  <owner>leandre@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of notification pop-up. 100% represents
+    ideally smooth 60 frames per second. Emitted when pop-up animations are
+    completed, including pop-up fade-in, fade-out, move-up, move-down.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NumberOfVisibleWindowsInPrimaryDisplay" units="Windows"
     expires_after="2021-12-12">
   <owner>jamescook@chromium.org</owner>
