@@ -90,9 +90,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
-
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  self.tableView.allowsSelection = NO;
 
   // Configure the NavigationBar.
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -168,8 +166,55 @@ typedef NS_ENUM(NSInteger, ItemType) {
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
+  } else {
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  if (itemType == ItemTypeSaveModalFields ||
+      itemType == ItemTypeUpdateModalFields) {
+    [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+  }
+}
+
+// If the context menu is not shown for a given item type, constructs that
+// menu and shows it. This method should only be called for item types
+// representing the cells with the save/update address profile modal.
+- (void)ensureContextMenuShownForItemType:(NSInteger)itemType
+                              atIndexPath:(NSIndexPath*)indexPath {
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  if (![menu isMenuVisible]) {
+    menu.menuItems = [self menuItems];
+    [self becomeFirstResponder];
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+    [menu setTargetRect:[self.tableView rectForRowAtIndexPath:indexPath]
+                 inView:self.tableView];
+    [menu setMenuVisible:YES animated:YES];
+#else
+    [menu showMenuFromView:self.tableView
+                      rect:[self.tableView rectForRowAtIndexPath:indexPath]];
+#endif
+  }
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (action == @selector(showEditAddressProfileModal)) {
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark - InfobarSaveAddressProfileModalConsumer
@@ -186,7 +231,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableView reloadData];
 }
 
-#pragma mark - Private Methods
+#pragma mark - Actions
 
 - (void)saveAddressProfileButtonWasPressed:(UIButton*)sender {
   base::RecordAction(
@@ -205,6 +250,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)showEditAddressProfileModal {
   [self.saveAddressProfileModalDelegate showEditView];
 }
+
+#pragma mark - Private Methods
 
 - (void)loadUpdateAddressModal {
   DCHECK([self.profileDataDiff count] > 0);
@@ -373,7 +420,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [self iconForAutofillUIType:(AutofillUIType)[val intValue]];
 }
 
-#pragma mark Item Constructors
+// Returns an array of UIMenuItems to display in a context menu on the site
+// cell.
+- (NSArray*)menuItems {
+  // TODO(crbug.com/1167062): Use proper i18n string for Edit.
+  UIMenuItem* editOption =
+      [[UIMenuItem alloc] initWithTitle:@"Edit"
+                                 action:@selector(showEditAddressProfileModal)];
+  return @[ editOption ];
+}
+
+#pragma mark - Item Constructors
 
 // Returns a |SettingsImageDetailTextItem| for the fields to be shown in the
 // save address modal.
