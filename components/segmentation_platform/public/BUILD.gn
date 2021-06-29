@@ -37,11 +37,18 @@ source_set("unit_tests") {
 
 if (is_android) {
   android_library("public_java") {
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
+    ]
 
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    public_deps = [
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
     ]
   }
 }

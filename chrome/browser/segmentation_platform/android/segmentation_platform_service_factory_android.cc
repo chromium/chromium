@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/segmentation_platform/jni_headers/SegmentationPlatformServiceFactory_jni.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_SegmentationPlatformServiceFactory_GetForProfile(
@@ -14,7 +15,9 @@ JNI_SegmentationPlatformServiceFactory_GetForProfile(
     const base::android::JavaParamRef<jobject>& jprofile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
-  // TODO(shaktisahu): Use native factory to get the object and its java
-  // counterpart from user data.
-  return base::android::ScopedJavaLocalRef<jobject>();
+  segmentation_platform::SegmentationPlatformService* service =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
+  return segmentation_platform::SegmentationPlatformService::GetJavaObject(
+      service);
 }

@@ -91,6 +91,15 @@ static_library("internal") {
       "//third_party/tflite-support",
     ]
   }
+
+  if (is_android) {
+    sources += [
+      "android/segmentation_platform_service_android.cc",
+      "android/segmentation_platform_service_android.h",
+    ]
+
+    deps += [ ":jni_headers" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -156,8 +165,19 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//components/segmentation_platform/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java" ]
   }
 }
