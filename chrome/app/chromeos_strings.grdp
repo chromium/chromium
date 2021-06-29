@@ -1042,6 +1042,9 @@
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK" desc="Text of the send feedback button on the OS install screen">
+    Send feedback
+  </message>
   <message name="IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON" desc="Text of the shutdown button on the OS install screen">
     Shut down
   </message>

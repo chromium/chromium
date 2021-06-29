@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
 
+#include "ash/public/cpp/login_accelerators.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -14,6 +16,8 @@ namespace {
 constexpr const char kUserActionIntroNextClicked[] = "os-install-intro-next";
 constexpr const char kUserActionConfirmNextClicked[] =
     "os-install-confirm-next";
+constexpr const char kUserActionErrorSendFeedbackClicked[] =
+    "os-install-error-send-feedback";
 constexpr const char kUserActionErrorShutdownClicked[] =
     "os-install-error-shutdown";
 constexpr const char kUserActionSuccessShutdownClicked[] =
@@ -52,6 +56,9 @@ void OsInstallScreen::OnUserAction(const std::string& action_id) {
     view_->ShowConfirmStep();
   } else if (action_id == kUserActionConfirmNextClicked) {
     view_->StartInstall();
+  } else if (action_id == kUserActionErrorSendFeedbackClicked) {
+    LoginDisplayHost::default_host()->HandleAccelerator(
+        ash::LoginAcceleratorAction::kShowFeedback);
   } else if (action_id == kUserActionErrorShutdownClicked ||
              action_id == kUserActionSuccessShutdownClicked) {
     Shutdown();

@@ -75,9 +75,13 @@ found in the LICENSE file. -->
       <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogErrorTitle')]]</h1>
       <div slot="bottom-buttons">
         <oobe-text-button
+            text-key="osInstallDialogSendFeedback"
+            id="osInstallErrorSendFeedbackButton"
+            on-click="onErrorSendFeedbackButtonPressed_"></oobe-text-button>
+        <oobe-text-button
             text-key="osInstallDialogShutdownButton" class="focus-on-show"
             id="osInstallErrorShutdownButton"
-            inverse on-click="onErrorShutdownButtonPressed_"></oobe-next-button>
+            inverse on-click="onErrorShutdownButtonPressed_"></oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
