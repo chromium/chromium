@@ -263,6 +263,8 @@ Polymer({
   initializeAssignmentPane_(action) {
     this.removeAssignmentPaneIfPresent_();
 
+    this.assignmentIllustrationElement.classList.add(action);
+
     const assignmentPane =
         document.createElement('settings-switch-access-action-assignment-pane');
     assignmentPane.action = action;
@@ -276,6 +278,7 @@ Polymer({
       this.assignmentContentsElement.removeChild(
           this.assignmentContentsElement.firstChild);
     }
+    this.assignmentIllustrationElement.classList = 'illustration';
   },
 
   /**
@@ -489,4 +492,9 @@ Polymer({
         '.sa-setup-contents');
   },
 
+  /** @private */
+  get assignmentIllustrationElement() {
+    return this['$'][SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
+        '.illustration');
+  },
 });
