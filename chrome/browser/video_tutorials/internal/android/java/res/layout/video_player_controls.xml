@@ -90,14 +90,14 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
                 android:text="@string/video_tutorials_watch_next_video"
-                android:textAppearance="@style/TextAppearance.Button.Text.Blue" />
+                android:textAppearance="@style/TextAppearance.Button.Text.Blue.Dark" />
 
             <TextView
                 android:id="@+id/change_language"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.Button.Text.Blue"
+                android:textAppearance="@style/TextAppearance.Button.Text.Blue.Dark"
                 android:text="@string/change_chrome_lang" />
         </LinearLayout>
 
