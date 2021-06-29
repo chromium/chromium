@@ -171,9 +171,11 @@ constexpr char kOobeIconButtonJS[] = "components/buttons/oobe_icon_button.js";
 
 // Components
 constexpr char kOobeSharedVarsCssHTML[] =
-    "components/oobe_shared_vars_css.html";
+    "components/oobe_vars/oobe_shared_vars_css.html";
 constexpr char kOobeCustomVarsCssHTML[] =
-    "components/oobe_custom_vars_css.html";
+    "components/oobe_vars/oobe_custom_vars_css.html";
+constexpr char kOobeCustomVarsCssJsM[] =
+    "components/oobe_vars/oobe_custom_vars_css.m.js";
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/behaviors/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/behaviors/oobe_i18n_behavior.js";
@@ -769,13 +771,20 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
       source->AddResourcePath(
           kOobeCustomVarsCssHTML,
           IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML);
+      source->AddResourcePath(
+          kOobeCustomVarsCssJsM,
+          IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS);
     } else {
       source->AddResourcePath(kOobeCustomVarsCssHTML,
                               IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
+      source->AddResourcePath(kOobeCustomVarsCssJsM,
+                              IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
     }
   } else {
     source->AddResourcePath(kOobeCustomVarsCssHTML,
                             IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML);
+    source->AddResourcePath(kOobeCustomVarsCssJsM,
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_M_JS);
   }
 
   if (features::IsNewOobeLayoutEnabled()) {

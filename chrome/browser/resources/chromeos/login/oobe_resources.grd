@@ -54,6 +54,13 @@
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML" file="components/oobe_vars/oobe_shared_vars_css.html" type="chrome_html" />
 
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_old_css.m.js"/>
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_css.m.js" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_remora_css.m.js" />
+
       <!-- OOBE Test API -->
       <include name="IDR_OOBE_TEST_API_JS" file="test_api\test_api.js" type="chrome_html" />
       <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api\no_test_api.js" type="chrome_html" />
