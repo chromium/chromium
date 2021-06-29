@@ -9,6 +9,12 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace assistant {
+namespace api {
+class Interaction;
+}  // namespace api
+}  // namespace assistant
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -31,7 +37,7 @@ std::string CreateLibAssistantConfig(
 // Returns the path where all downloaded LibAssistant resources are stored.
 base::FilePath GetBaseAssistantDir();
 
-std::string CreateVerifyProviderResponseInteraction(
+::assistant::api::Interaction CreateVerifyProviderResponseInteraction(
     const int interaction_id,
     const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info);
 

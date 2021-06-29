@@ -4,6 +4,8 @@
 
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 
+#include "base/callback.h"
+
 namespace chromeos {
 namespace libassistant {
 
@@ -21,6 +23,12 @@ bool FakeAssistantClient::StartGrpcServices() {
 
 void FakeAssistantClient::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {}
+
+void FakeAssistantClient::SendVoicelessInteraction(
+    const ::assistant::api::Interaction& interaction,
+    const std::string& description,
+    const ::assistant::api::VoicelessOptions& options,
+    base::OnceCallback<void(bool)> on_done) {}
 
 }  // namespace libassistant
 }  // namespace chromeos

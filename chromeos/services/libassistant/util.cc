@@ -21,10 +21,10 @@
 #include "chromeos/services/libassistant/constants.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 
+using ::assistant::api::Interaction;
 using chromeos::assistant::shared::ClientInteraction;
 using chromeos::assistant::shared::ClientOpResult;
 using chromeos::assistant::shared::GetDeviceSettingsResult;
-using chromeos::assistant::shared::Interaction;
 using chromeos::assistant::shared::Protobuf;
 using chromeos::assistant::shared::ProviderVerificationResult;
 using chromeos::assistant::shared::ResponseCode;
@@ -130,6 +130,8 @@ class V1InteractionBuilder {
   }
 
   std::string SerializeAsString() { return interaction_.SerializeAsString(); }
+
+  Interaction Proto() { return interaction_; }
 
  private:
   ClientInteraction* client_interaction() {
@@ -293,7 +295,7 @@ std::string CreateLibAssistantConfig(
   return json;
 }
 
-std::string CreateVerifyProviderResponseInteraction(
+Interaction CreateVerifyProviderResponseInteraction(
     const int interaction_id,
     const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info) {
   // Construct verify provider result proto.
@@ -319,7 +321,7 @@ std::string CreateVerifyProviderResponseInteraction(
       .SetInResponseTo(interaction_id)
       .SetStatusCodeFromEntityFound(any_provider_available)
       .AddResult(assistant::kResultKeyVerifyProvider, result_proto)
-      .SerializeAsString();
+      .Proto();
 }
 
 std::string CreateGetDeviceSettingInteraction(

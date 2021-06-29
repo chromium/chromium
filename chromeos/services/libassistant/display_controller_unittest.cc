@@ -38,6 +38,12 @@ class AssistantClientMock : public AssistantClient {
   MOCK_METHOD(void,
               AddExperimentIds,
               (const std::vector<std::string>& exp_ids));
+  MOCK_METHOD(void,
+              SendVoicelessInteraction,
+              (const ::assistant::api::Interaction& interaction,
+               const std::string& description,
+               const ::assistant::api::VoicelessOptions& options,
+               base::OnceCallback<void(bool)> on_done));
 };
 
 class AssistantManagerInternalMock
@@ -85,6 +91,8 @@ class DisplayControllerTest : public ::testing::Test {
     return assistant_manager_internal_;
   }
 
+  AssistantClientMock& assistant_client_mock() { return assistant_client_; }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>
@@ -109,7 +117,7 @@ TEST_F(DisplayControllerTest,
   app_info.package_name = kSamplePackageName;
   InteractionInfo interaction = {kSampleInteractionId, kSampleUserId};
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SendVoicelessInteraction);
+  EXPECT_CALL(assistant_client_mock(), SendVoicelessInteraction);
   controller()->OnVerifyAndroidApp({app_info}, interaction);
 }
 

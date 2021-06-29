@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -20,6 +21,11 @@ class AssistantClientV1 : public AssistantClient {
   // chromeos::libassistant::AssistantClient:
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
+  void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) override;
 };
 
 }  // namespace libassistant

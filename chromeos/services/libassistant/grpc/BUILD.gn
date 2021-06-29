@@ -16,6 +16,7 @@ source_set("assistant_client") {
     ":libassistant_client",
     "external_services:grpc_services_initializer",
     "//base",
+    "//chromeos/assistant/internal",
     "//chromeos/services/assistant/public/cpp",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/public",

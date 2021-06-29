@@ -7,6 +7,15 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
+
+namespace assistant {
+namespace api {
+class Interaction;
+class VoicelessOptions;
+}  // namespace api
+}  // namespace assistant
+
 namespace assistant_client {
 class AssistantManager;
 class AssistantManagerInternal;
@@ -36,6 +45,12 @@ class AssistantClient {
   virtual bool StartGrpcServices() = 0;
 
   virtual void AddExperimentIds(const std::vector<std::string>& exp_ids) = 0;
+
+  virtual void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

@@ -81,8 +81,7 @@ class DisplayController
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
       speech_recognition_observers_;
 
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   // Owned by |ConversationController|.
   chromeos::assistant::action::CrosActionModule* action_module_ = nullptr;

@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/display_connection_impl.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
@@ -94,13 +95,14 @@ void DisplayController::SetAndroidAppList(
 
 void DisplayController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
-  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
-  assistant_manager_internal_->SetDisplayConnection(display_connection_.get());
+  assistant_client_ = assistant_client;
+  assistant_client_->assistant_manager_internal()->SetDisplayConnection(
+      display_connection_.get());
 }
 
 void DisplayController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
-  assistant_manager_internal_ = nullptr;
+  assistant_client_ = nullptr;
 }
 
 // Called from Libassistant thread.
@@ -118,19 +120,19 @@ void DisplayController::OnVerifyAndroidApp(
     result_apps_info.emplace_back(result_app_info);
   }
 
-  std::string interaction_proto =
+  auto interaction_proto =
       chromeos::libassistant::CreateVerifyProviderResponseInteraction(
           interaction.interaction_id, result_apps_info);
 
-  assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = interaction.user_id;
+  ::assistant::api::VoicelessOptions options;
+  options.set_obfuscated_gaia_id(interaction.user_id);
   // Set the request to be user initiated so that a new conversation will be
   // created to handle the client OPs in the response of this request.
-  options.is_user_initiated = true;
+  options.set_is_user_initiated(true);
 
-  assistant_manager_internal_->SendVoicelessInteraction(
+  assistant_client_->SendVoicelessInteraction(
       interaction_proto, /*description=*/"verify_provider_response", options,
-      [](auto) {});
+      base::DoNothing());
 }
 
 chromeos::assistant::AppStatus DisplayController::GetAndroidAppStatus(
