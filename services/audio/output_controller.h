@@ -166,7 +166,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // LoopbackGroupMember implementation.
   const media::AudioParameters& GetAudioParameters() const override;
-  std::string GetDeviceId() const override;
   void StartSnooping(Snooper* snooper) override;
   void StopSnooping(Snooper* snooper) override;
   void StartMuting() override;

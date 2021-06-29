@@ -558,12 +558,6 @@ const media::AudioParameters& OutputController::GetAudioParameters() const {
   return params_;
 }
 
-std::string OutputController::GetDeviceId() const {
-  return output_device_id_.empty()
-             ? media::AudioDeviceDescription::kDefaultDeviceId
-             : output_device_id_;
-}
-
 void OutputController::StartSnooping(Snooper* snooper) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(snooper);
