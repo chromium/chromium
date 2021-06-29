@@ -35,6 +35,7 @@
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_people_page/os_sync_browser_proxy.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="cellular_roaming_toggle_button.html">
 <link rel="import" href="internet_page_browser_proxy.html">
 <link rel="import" href="internet_shared_css.html">
 <link rel="import" href="network_proxy_section.html">
@@ -281,17 +282,11 @@
         </template>
         <!-- Data roaming (Cellular only). -->
         <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-          <!-- TODO(crbug/1220691): Remove when allowPerNetworkRoaming flag
-              launches -->
-          <template is="dom-if" if="[[!allowPerNetworkRoaming_]]">
-            <settings-toggle-button id="allowDataRoaming" class="hr"
-                pref="{{prefs.cros.signed.data_roaming_enabled}}"
-                label="$i18n{networkAllowDataRoaming}"
-                sub-label="[[getRoamingDetails_(managedProperties_)]]"
-                deep-link-focus-id$="[[Setting.kCellularRoaming]]"
-                disabled="[[disabled_]]">
-            </settings-toggle-button>
-          </template>
+          <cellular-roaming-toggle-button
+            disabled="[[disabled_]]"
+            prefs="{{prefs}}"
+            managed-properties="[[managedProperties_]]">
+          </cellular-roaming-toggle-button>
         </template>
         <!-- SIM Info (Cellular only). -->
         <!-- TODO(crbug/1093185): Remove when updatedCellularActivationUi

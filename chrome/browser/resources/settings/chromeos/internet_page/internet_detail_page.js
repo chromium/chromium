@@ -238,14 +238,6 @@ Polymer({
       }
     },
 
-    /** @private */
-    allowPerNetworkRoaming_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('allowPerNetworkRoaming');
-      }
-    },
-
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.
@@ -403,11 +395,19 @@ Polymer({
    */
   beforeDeepLinkAttempt(settingId) {
     // Manually show the deep links for settings in shared elements.
+    if (settingId === chromeos.settings.mojom.Setting.kCellularRoaming) {
+      this.afterRenderShowDeepLink(
+          settingId,
+          () => this.$$('cellular-roaming-toggle-button')
+                    .getCellularRoamingToggle());
+      // Stop deep link attempt since we completed it manually.
+      return false;
+    }
+
     if (settingId === chromeos.settings.mojom.Setting.kCellularApn) {
       this.networkExpanded_ = true;
       this.afterRenderShowDeepLink(
           settingId, () => this.$$('network-apnlist').getApnSelect());
-      // Stop deep link attempt since we completed it manually.
       return false;
     }
 
@@ -1120,25 +1120,6 @@ Polymer({
     return this.isCellular_(managedProperties) ?
         this.i18n('networkAutoConnectCellular') :
         this.i18n('networkAutoConnect');
-  },
-
-  /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
-   * @return {string} The text to display with roaming details.
-   * @private
-   */
-  getRoamingDetails_(managedProperties) {
-    if (!this.isCellular_(managedProperties)) {
-      return '';
-    }
-    if (!managedProperties.typeProperties.cellular.allowRoaming) {
-      return this.i18n('networkAllowDataRoamingDisabled');
-    }
-
-    return managedProperties.typeProperties.cellular.roamingState ===
-            'Roaming' ?
-        this.i18n('networkAllowDataRoamingEnabledRoaming') :
-        this.i18n('networkAllowDataRoamingEnabledHome');
   },
 
   /**

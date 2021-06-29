@@ -311,6 +311,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/internet_page/esim_remove_profile_dialog.m.js",
     "chromeos/internet_page/esim_rename_dialog.m.js",
     "chromeos/internet_page/cellular_networks_list.m.js",
+    "chromeos/internet_page/cellular_roaming_toggle_button.m.js",
     "chromeos/internet_page/cellular_setup_dialog.m.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.m.js",
     "chromeos/internet_page/internet_config.m.js",

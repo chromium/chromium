@@ -354,7 +354,7 @@ suite('InternetDetailPage', function() {
     });
 
     // Tests that when the route changes to one containing a deep link to
-    // the shared proxy toggle, toggle is foxused.
+    // the shared proxy toggle, toggle is focused.
     test('Deep link to shared proxy toggle', async () => {
       init();
       const mojom = chromeos.networkConfig.mojom;
@@ -548,7 +548,9 @@ suite('InternetDetailPage', function() {
           getManagedProperties(mojom.NetworkType.kCellular, 'cellular'));
       internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
       await flushAsync();
-      const roamingToggle = internetDetailPage.$$('#allowDataRoaming');
+      const roamingToggle =
+          internetDetailPage.$$('cellular-roaming-toggle-button')
+              .getCellularRoamingToggle();
       assertTrue(!!roamingToggle);
       assertEquals(
           internetDetailPage.i18n('networkAllowDataRoamingDisabled'),
@@ -601,6 +603,36 @@ suite('InternetDetailPage', function() {
       // will interfere with its routing.
       internetDetailPage.close();
       await popStatePromise;
+    });
+
+    test('Deep link to cellular roaming toggle button', async () => {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = false;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      const params = new URLSearchParams;
+      params.append('guid', 'cellular_guid');
+      params.append('type', 'Cellular');
+      params.append('name', 'cellular');
+      params.append('settingId', '15');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.NETWORK_DETAIL, params);
+
+      await flushAsync();
+
+      const deepLinkElement =
+          internetDetailPage.$$('cellular-roaming-toggle-button')
+              .getCellularRoamingToggle()
+              .$$('cr-toggle');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Cellular roaming toggle button should be focused for settingId=15.');
     });
 
     test('Deep link to sim lock toggle with cellular flag off', async () => {
@@ -697,7 +729,8 @@ suite('InternetDetailPage', function() {
           await flushAsync();
           assertTrue(internetDetailPage.showConfigurableSections_);
           // Check that an element from the primary account section exists.
-          assertTrue(!!internetDetailPage.$$('#allowDataRoaming'));
+          assertTrue(!!internetDetailPage.$$('cellular-roaming-toggle-button')
+                           .getCellularRoamingToggle());
         });
 
     test(
@@ -901,11 +934,13 @@ suite('InternetDetailPage', function() {
       await flushAsync();
 
       const connectDisconnectButton = getButton('connectDisconnect');
-      const allowDataRoamingButton = getButton('allowDataRoaming');
       const infoFields = getButton('infoFields');
       const cellularSimInfoAdvanced = getButton('cellularSimInfoAdvanced');
       const advancedFields = getButton('advancedFields');
       const deviceFields = getButton('deviceFields');
+      const allowDataRoamingButton =
+          internetDetailPage.$$('cellular-roaming-toggle-button')
+              .getCellularRoamingToggle();
       const networkChooseMobile =
           internetDetailPage.$$('network-choose-mobile');
       const networkApnlist = internetDetailPage.$$('network-apnlist');
