@@ -92,6 +92,8 @@ int GlassBrowserCaptionButtonContainer::NonClientHitTest(
     const gfx::Point& point) const {
   DCHECK(HitTestPoint(point))
       << "should only be called with a point inside this view's bounds";
+  if (tab_search_button_ && HitTestCaptionButton(tab_search_button_, point))
+    return HTCLIENT;
   if (HitTestCaptionButton(minimize_button_, point))
     return HTMINBUTTON;
   if (HitTestCaptionButton(maximize_button_, point))
