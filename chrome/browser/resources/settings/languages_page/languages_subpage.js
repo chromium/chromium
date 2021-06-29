@@ -33,11 +33,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 
 // <if expr="chromeos">
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
@@ -51,121 +51,134 @@ import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettin
  */
 export const kMenuCloseDelay = 100;
 
-Polymer({
-  is: 'settings-languages-subpage',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PrefsBehaviorInterface}
+ */
+const SettingsLanguagesSubpageElementBase =
+    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-  ],
+/** @polymer */
+export class SettingsLanguagesSubpageElement extends
+    SettingsLanguagesSubpageElementBase {
+  static get is() {
+    return 'settings-languages-subpage';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Read-only reference to the languages model provided by the
-     * 'settings-languages' instance.
-     * @type {!LanguagesModel|undefined}
-     */
-    languages: {
-      type: Object,
-      notify: true,
-    },
-
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
-
-    /**
-     * The language to display the details for.
-     * @type {!LanguageState|undefined}
-     * @private
-     */
-    detailLanguage_: Object,
-
-    /** @private */
-    showAddLanguagesDialog_: Boolean,
-
-    /** @private */
-    showAddAlwaysTranslateDialog_: Boolean,
-
-    /** @private */
-    showAddNeverTranslateDialog_: Boolean,
-
-    /** @private {?Array<!chrome.languageSettingsPrivate.Language>} */
-    addLanguagesDialogLanguages_: Array,
-
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-        return map;
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    // <if expr="chromeos">
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       * @type {!LanguagesModel|undefined}
+       */
+      languages: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    // TODO(crbug.com/1097328): Delete this.
-    /** @private */
-    isChromeOSLanguagesSettingsUpdate_: {
-      type: Boolean,
-      value() {
-        return true;
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+
+      /**
+       * The language to display the details for.
+       * @type {!LanguageState|undefined}
+       * @private
+       */
+      detailLanguage_: Object,
+
+      /** @private */
+      showAddLanguagesDialog_: Boolean,
+
+      /** @private */
+      showAddAlwaysTranslateDialog_: Boolean,
+
+      /** @private */
+      showAddNeverTranslateDialog_: Boolean,
+
+      /** @private {?Array<!chrome.languageSettingsPrivate.Language>} */
+      addLanguagesDialogLanguages_: Array,
+
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          return map;
+        },
       },
-    },
-    // </if>
 
-    /** @private */
-    showManagedLanguageDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    enableDesktopDetailedLanguageSettings_: {
-      type: Boolean,
-      value() {
-        let enabled = false;
-        // <if expr="not chromeos and not lacros">
-        enabled =
-            loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings');
-        // </if>
-        return enabled;
+      // <if expr="chromeos">
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
       },
-    },
 
-  },
+      // TODO(crbug.com/1097328): Delete this.
+      /** @private */
+      isChromeOSLanguagesSettingsUpdate_: {
+        type: Boolean,
+        value() {
+          return true;
+        },
+      },
+      // </if>
 
-  // <if expr="chromeos">
-  /** @private {?LanguagesMetricsProxy} */
-  languagesMetricsProxy_: null,
-  // </if>
-  /** @private {?LanguageSettingsMetricsProxy} */
-  languageSettingsMetricsProxy_: null,
+      /** @private */
+      showManagedLanguageDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      enableDesktopDetailedLanguageSettings_: {
+        type: Boolean,
+        value() {
+          let enabled = false;
+          // <if expr="not chromeos and not lacros">
+          enabled =
+              loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings');
+          // </if>
+          return enabled;
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     // <if expr="chromeos">
+    /** @private {!LanguagesMetricsProxy} */
     this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
     // </if>
+    /** @private {!LanguageSettingsMetricsProxy} */
     this.languageSettingsMetricsProxy_ =
         LanguageSettingsMetricsProxyImpl.getInstance();
-  },
+
+    // <if expr="chromeos or is_win">
+    /** @private {boolean} */
+    this.isChangeInProgress_ = false;
+    // </if>
+  }
 
   // <if expr="chromeos">
   /** @private */
@@ -174,12 +187,7 @@ Polymer({
         loadTimeData.getString('chromeOSLanguagesSettingsPath');
     window.location.href =
         `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
-  },
-  // </if>
-
-  // <if expr="chromeos or is_win">
-  /** @private {boolean} */
-  isChangeInProgress_: false,
+  }
   // </if>
 
   /**
@@ -199,14 +207,14 @@ Polymer({
     this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
         language => this.languageHelper.canEnableLanguage(language));
     this.showAddLanguagesDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(assert(this.$$('#addLanguages')));
-  },
+    focusWithoutInk(assert(this.shadowRoot.querySelector('#addLanguages')));
+  }
 
   /**
    * @param {!CustomEvent<!Array<string>>} e
@@ -219,7 +227,7 @@ Polymer({
       LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
           LanguageSettingsActionType.LANGUAGE_ADDED);
     });
-  },
+  }
 
   /**
    * Stamps and opens the Add Languages dialog, registering a listener to
@@ -234,14 +242,15 @@ Polymer({
     this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
         language => !this.languages.alwaysTranslate.includes(language));
     this.showAddAlwaysTranslateDialog_ = true;
-  },
+  }
 
   /** @private */
   onAlwaysTranslateDialogClose_() {
     this.showAddAlwaysTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(assert(this.$$('#addAlwaysTranslate')));
-  },
+    focusWithoutInk(
+        assert(this.shadowRoot.querySelector('#addAlwaysTranslate')));
+  }
 
   /**
    * Helper function fired by the add dialog's on-languages-added event. Adds
@@ -254,7 +263,7 @@ Polymer({
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.setLanguageAlwaysTranslateState(languageCode, true);
     });
-  },
+  }
 
   /**
    * Removes a language from the always translate languages list.
@@ -264,7 +273,7 @@ Polymer({
   onRemoveAlwaysTranslateLanguageClick_(e) {
     const languageCode = e.model.item.code;
     this.languageHelper.setLanguageAlwaysTranslateState(languageCode, false);
-  },
+  }
 
   /**
    * Checks if there are supported languages that are not enabled but can be
@@ -277,7 +286,7 @@ Polymer({
     return languages === undefined || languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
-  },
+  }
 
   /**
    * Stamps and opens the Add Languages dialog, registering a listener to
@@ -291,14 +300,15 @@ Polymer({
     this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
         language => !this.languages.neverTranslate.includes(language));
     this.showAddNeverTranslateDialog_ = true;
-  },
+  }
 
   /** @private */
   onNeverTranslateDialogClose_() {
     this.showAddNeverTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(assert(this.$$('#addNeverTranslate')));
-  },
+    focusWithoutInk(
+        assert(this.shadowRoot.querySelector('#addNeverTranslate')));
+  }
 
   /**
    * @param {!CustomEvent<!Array<string>>} e
@@ -309,7 +319,7 @@ Polymer({
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.disableTranslateLanguage(languageCode);
     });
-  },
+  }
 
   /**
    * Removes a language from the never translate languages list.
@@ -319,7 +329,7 @@ Polymer({
   onRemoveNeverTranslateLanguageClick_(e) {
     const languageCode = e.model.item.code;
     this.languageHelper.enableTranslateLanguage(languageCode);
-  },
+  }
 
   /**
    * Used to determine whether to show the separator between checkbox settings
@@ -335,7 +345,7 @@ Polymer({
     }
     // </if>
     return this.languages !== undefined && this.languages.enabled.length > 1;
-  },
+  }
 
   /**
    * Used to determine which "Move" buttons to show for ordering enabled
@@ -356,7 +366,7 @@ Polymer({
 
     const compareLanguage = assert(this.languages.enabled[n]);
     return this.detailLanguage_.language === compareLanguage.language;
-  },
+  }
 
   /**
    * @return {boolean} True if the "Move to top" option for |language| should
@@ -367,7 +377,7 @@ Polymer({
     // "Move up" is a no-op for the top language, and redundant with
     // "Move to top" for the 2nd language.
     return !this.isNthLanguage_(0) && !this.isNthLanguage_(1);
-  },
+  }
 
   /**
    * @return {boolean} True if the "Move down" option for |language| should be
@@ -377,7 +387,7 @@ Polymer({
   showMoveDown_() {
     return this.languages !== undefined &&
         !this.isNthLanguage_(this.languages.enabled.length - 1);
-  },
+  }
 
   /**
    * @param {!Object} change Polymer change object for languages.enabled.*.
@@ -385,7 +395,7 @@ Polymer({
    */
   isHelpTextHidden_(change) {
     return this.languages !== undefined && this.languages.enabled.length <= 1;
-  },
+  }
 
   /**
    * @param {string} languageCode The language code identifying a language.
@@ -400,7 +410,7 @@ Polymer({
     } else {
       return 'non-target';
     }
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -421,7 +431,7 @@ Polymer({
     if (this.isGuest_) {
       menu.querySelector('#uiLanguageItem').hidden = true;
     }
-  },
+  }
   // </if>
 
   /**
@@ -436,7 +446,7 @@ Polymer({
         e.target.checked ?
             LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
             LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY);
-  },
+  }
 
   // <if expr="chromeos or is_win">
   /**
@@ -445,7 +455,7 @@ Polymer({
    */
   isSecondaryUser_() {
     return isChromeOS && loadTimeData.getBoolean('isSecondaryUser');
-  },
+  }
 
   /**
    * @param {string} languageCode The language code identifying a language.
@@ -457,7 +467,7 @@ Polymer({
   isRestartRequired_(languageCode, prospectiveUILanguage) {
     return prospectiveUILanguage === languageCode &&
         this.languageHelper.requiresRestart();
-  },
+  }
 
   /** @private */
   onCloseMenu_() {
@@ -466,12 +476,12 @@ Polymer({
     }
     flush();
     this.isChangeInProgress_ = false;
-    const restartButton = this.$$('#restartButton');
+    const restartButton = this.shadowRoot.querySelector('#restartButton');
     if (!restartButton) {
       return;
     }
     focusWithoutInk(restartButton);
-  },
+  }
 
   /**
    * @param {!LanguageState} languageState
@@ -509,7 +519,7 @@ Polymer({
 
     // Otherwise, the prospective language can be changed to this language.
     return false;
-  },
+  }
 
   /**
    * Handler for changes to the UI language checkbox.
@@ -530,7 +540,7 @@ Polymer({
     this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
 
     this.closeMenuSoon_();
-  },
+  }
 
   /**
    * Checks whether the prospective UI language (the pref that indicates what
@@ -545,7 +555,7 @@ Polymer({
    */
   isProspectiveUILanguage_(languageCode, prospectiveUILanguage) {
     return languageCode === prospectiveUILanguage;
-  },
+  }
 
   /**
    * Handler for the restart button.
@@ -560,7 +570,7 @@ Polymer({
     // <if expr="is_win">
     LifetimeBrowserProxyImpl.getInstance().restart();
     // </if>
-  },
+  }
   // </if>
 
   /**
@@ -581,7 +591,7 @@ Polymer({
 
     return this.languageHelper.convertLanguageCodeForTranslate(
                languageState.language.code) === targetLanguageCode;
-  },
+  }
 
   /**
    * Handler for changes to the translate checkbox.
@@ -608,7 +618,7 @@ Polymer({
         e.target.checked);
     // </if>
     this.closeMenuSoon_();
-  },
+  }
 
   /**
    * Returns "complex" if the menu includes checkboxes, which should change
@@ -621,14 +631,16 @@ Polymer({
       return 'complex';
     }
     return '';
-  },
+  }
 
   /**
    * Moves the language to the top of the list.
    * @private
    */
   onMoveToTopTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get())
+        .close();
     if (this.detailLanguage_.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
       this.showManagedLanguageDialog_ = true;
@@ -637,14 +649,16 @@ Polymer({
     this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
-  },
+  }
 
   /**
    * Moves the language up in the list.
    * @private
    */
   onMoveUpTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get())
+        .close();
     if (this.detailLanguage_.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
       this.showManagedLanguageDialog_ = true;
@@ -654,14 +668,16 @@ Polymer({
         this.detailLanguage_.language.code, true /* upDirection */);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
-  },
+  }
 
   /**
    * Moves the language down in the list.
    * @private
    */
   onMoveDownTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get())
+        .close();
     if (this.detailLanguage_.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
       this.showManagedLanguageDialog_ = true;
@@ -671,14 +687,16 @@ Polymer({
         this.detailLanguage_.language.code, false /* upDirection */);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
-  },
+  }
 
   /**
    * Disables the language.
    * @private
    */
   onRemoveLanguageTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get())
+        .close();
     if (this.detailLanguage_.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
       this.showManagedLanguageDialog_ = true;
@@ -687,7 +705,7 @@ Polymer({
     this.languageHelper.disableLanguage(this.detailLanguage_.language.code);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_REMOVED);
-  },
+  }
 
   /**
    * Returns either the "selected" class, if the language matches the
@@ -703,7 +721,7 @@ Polymer({
       return 'selected';
     }
     return '';
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -718,9 +736,11 @@ Polymer({
 
     // Ensure the template has been stamped.
     let menu =
-        /** @type {?CrActionMenuElement} */ (this.$$('#menu').getIfExists());
+        /** @type {?CrActionMenuElement} */ (
+            this.shadowRoot.querySelector('#menu').getIfExists());
     if (!menu) {
-      menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
+      menu = /** @type {!CrActionMenuElement} */ (
+          this.shadowRoot.querySelector('#menu').get());
       // <if expr="chromeos">
       this.tweakMenuForCrOS_(menu);
       // </if>
@@ -729,7 +749,7 @@ Polymer({
     menu.showAt(/** @type {!Element} */ (e.target));
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.LANGUAGE_OVERFLOW_MENU_OPENED);
-  },
+  }
 
   /**
    * Closes the shared action menu after a short delay, so when a checkbox is
@@ -737,13 +757,14 @@ Polymer({
    * @private
    */
   closeMenuSoon_() {
-    const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
+    const menu = /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get());
     setTimeout(function() {
       if (menu.open) {
         menu.close();
       }
     }, kMenuCloseDelay);
-  },
+  }
 
   /**
    * Triggered when the managed language dialog is dismissed.
@@ -751,7 +772,7 @@ Polymer({
    */
   onManagedLanguageDialogClosed_() {
     this.showManagedLanguageDialog_ = false;
-  },
+  }
 
   /**
    * @param {Array<?>} list
@@ -760,7 +781,7 @@ Polymer({
    */
   hasSome_(list) {
     return !!(list && list.length);
-  },
+  }
 
   /**
    * Gets the list of languages that chrome can translate
@@ -771,5 +792,8 @@ Polymer({
     return this.languages.supported.filter(language => {
       return this.languageHelper.isLanguageTranslatable(language);
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsLanguagesSubpageElement.is, SettingsLanguagesSubpageElement);

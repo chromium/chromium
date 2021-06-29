@@ -93,4 +93,16 @@ export class PrefsBehaviorInterface {
    * @param {*} value
    */
   setPrefValue(prefPath, value) {}
+
+  /**
+   * @param {string} key
+   * @param {*} item
+   */
+  appendPrefListItem(key, item) {}
+
+  /**
+   * @param {string} key
+   * @param {*} item
+   */
+  deletePrefListItem(key, item) {}
 }

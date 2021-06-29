@@ -83,7 +83,7 @@ suite('languages subpage', function() {
 
       document.body.appendChild(languagesSubpage);
       flush();
-      actionMenu = languagesSubpage.$$('#menu').get();
+      actionMenu = languagesSubpage.shadowRoot.querySelector('#menu').get();
 
       languageHelper = languagesSubpage.languageHelper;
       return languageHelper.whenReady();
@@ -113,7 +113,9 @@ suite('languages subpage', function() {
           })) {
         // Sanity check: the dialog should no longer be in the DOM.
         assertEquals(
-            null, languagesSubpage.$$('settings-add-languages-dialog'));
+            null,
+            languagesSubpage.shadowRoot.querySelector(
+                'settings-add-languages-dialog'));
         observer.disconnect();
         assertTrue(!!dialogClosedResolver);
         dialogClosedResolver.resolve();
@@ -121,14 +123,16 @@ suite('languages subpage', function() {
     };
 
     setup(function() {
-      const addLanguagesButton = languagesSubpage.$$('#addLanguages');
+      const addLanguagesButton =
+          languagesSubpage.shadowRoot.querySelector('#addLanguages');
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesSubpage);
       addLanguagesButton.click();
 
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new task.
       return whenDialogOpen.then(() => {
-        dialog = languagesSubpage.$$('settings-add-languages-dialog');
+        dialog = languagesSubpage.shadowRoot.querySelector(
+            'settings-add-languages-dialog');
         assertTrue(!!dialog);
 
         // Observe the removal of the dialog via MutationObserver since the
@@ -137,9 +141,9 @@ suite('languages subpage', function() {
         dialogClosedObserver = new MutationObserver(onMutation);
         dialogClosedObserver.observe(languagesSubpage.root, {childList: true});
 
-        actionButton = dialog.$$('.action-button');
+        actionButton = dialog.shadowRoot.querySelector('.action-button');
         assertTrue(!!actionButton);
-        cancelButton = dialog.$$('.cancel-button');
+        cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
         assertTrue(!!cancelButton);
         flush();
 
@@ -186,7 +190,9 @@ suite('languages subpage', function() {
       actionButton.click();
       flush();
       assertEquals(
-          dialog, languagesSubpage.$$('settings-add-languages-dialog'));
+          dialog,
+          languagesSubpage.shadowRoot.querySelector(
+              'settings-add-languages-dialog'));
 
       // Check and uncheck one language.
       dialogItems[0].click();
@@ -213,7 +219,7 @@ suite('languages subpage', function() {
     // Test that searching languages works whether the displayed or native
     // language name is queried.
     test('search languages', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
 
       const getItems = function() {
         return dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
@@ -244,7 +250,7 @@ suite('languages subpage', function() {
     });
 
     test('Escape key behavior', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
@@ -293,7 +299,7 @@ suite('languages subpage', function() {
 
     test('structure', function() {
       const languageOptionsDropdownTrigger =
-          languagesSubpage.$$('cr-icon-button');
+          languagesSubpage.shadowRoot.querySelector('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -309,8 +315,8 @@ suite('languages subpage', function() {
     });
 
     test('test translate.enable toggle', function() {
-      const settingsToggle =
-          languagesSubpage.$$('#offerTranslateOtherLanguages');
+      const settingsToggle = languagesSubpage.shadowRoot.querySelector(
+          '#offerTranslateOtherLanguages');
       assertTrue(!!settingsToggle);
       assertTrue(!!settingsToggle);
 
@@ -338,9 +344,10 @@ suite('languages subpage', function() {
       let translateTargetLabel = null;
       let item = null;
 
-      const listItems = languagesSubpage.$$('#languagesSection')
-                            .querySelectorAll('.list-item');
-      const domRepeat = languagesSubpage.$$('dom-repeat');
+      const listItems =
+          languagesSubpage.shadowRoot.querySelector('#languagesSection')
+              .querySelectorAll('.list-item');
+      const domRepeat = languagesSubpage.shadowRoot.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
 
       let num_visibles = 0;
@@ -365,7 +372,8 @@ suite('languages subpage', function() {
 
     test('toggle translate for a specific language', function(done) {
       // Open options for 'sw'.
-      const languageOptionsDropdownTrigger = languagesSubpage.$$('#more-sw');
+      const languageOptionsDropdownTrigger =
+          languagesSubpage.shadowRoot.querySelector('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -393,7 +401,7 @@ suite('languages subpage', function() {
     test('toggle translate for target language', function() {
       // Open options for 'en'.
       const languageOptionsDropdownTrigger =
-          languagesSubpage.$$('cr-icon-button');
+          languagesSubpage.shadowRoot.querySelector('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -408,7 +416,8 @@ suite('languages subpage', function() {
       languageHelper.setPrefValue('translate.enabled', false);
 
       // Open options for 'sw'.
-      const languageOptionsDropdownTrigger = languagesSubpage.$$('#more-sw');
+      const languageOptionsDropdownTrigger =
+          languagesSubpage.shadowRoot.querySelector('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -427,9 +436,10 @@ suite('languages subpage', function() {
       flush();
 
       // Find the new language item.
-      const items = languagesSubpage.$$('#languagesSection')
-                        .querySelectorAll('.list-item');
-      const domRepeat = languagesSubpage.$$('dom-repeat');
+      const items =
+          languagesSubpage.shadowRoot.querySelector('#languagesSection')
+              .querySelectorAll('.list-item');
+      const domRepeat = languagesSubpage.shadowRoot.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -456,9 +466,10 @@ suite('languages subpage', function() {
       assertDeepEquals(
           ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
 
-      const items = languagesSubpage.$$('#languagesSection')
-                        .querySelectorAll('.list-item');
-      const domRepeat = languagesSubpage.$$('dom-repeat');
+      const items =
+          languagesSubpage.shadowRoot.querySelector('#languagesSection')
+              .querySelectorAll('.list-item');
+      const domRepeat = languagesSubpage.shadowRoot.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -473,9 +484,10 @@ suite('languages subpage', function() {
     });
 
     test('remove language when starting with 2 languages', function() {
-      const items = languagesSubpage.$$('#languagesSection')
-                        .querySelectorAll('.list-item');
-      const domRepeat = languagesSubpage.$$('dom-repeat');
+      const items =
+          languagesSubpage.shadowRoot.querySelector('#languagesSection')
+              .querySelectorAll('.list-item');
+      const domRepeat = languagesSubpage.shadowRoot.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -504,7 +516,7 @@ suite('languages subpage', function() {
       flush();
 
       const menuButtons =
-          languagesSubpage.$$('#languagesSection')
+          languagesSubpage.shadowRoot.querySelector('#languagesSection')
               .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
       // First language should not have "Move up" or "Move to top".

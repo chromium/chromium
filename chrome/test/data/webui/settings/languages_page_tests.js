@@ -70,10 +70,13 @@ suite('languages page', function() {
 
       document.body.appendChild(languagesPage);
       flush();
-      languagesCollapse = languagesPage.$$('#languagesCollapse');
+      languagesCollapse =
+          languagesPage.shadowRoot.querySelector('#languagesCollapse');
       languagesCollapse.opened = true;
       actionMenu =
-          languagesPage.$$('settings-languages-subpage').$$('#menu').get();
+          languagesPage.shadowRoot.querySelector('settings-languages-subpage')
+              .shadowRoot.querySelector('#menu')
+              .get();
 
       languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
@@ -86,7 +89,8 @@ suite('languages page', function() {
 
   suite(languages_page_tests.TestNames.Spellcheck, function() {
     test('structure', function() {
-      const spellCheckCollapse = languagesPage.$$('#spellCheckCollapse');
+      const spellCheckCollapse =
+          languagesPage.shadowRoot.querySelector('#spellCheckCollapse');
       const spellCheckSettingsExist = !!spellCheckCollapse;
       if (isMac) {
         assertFalse(spellCheckSettingsExist);
@@ -95,7 +99,8 @@ suite('languages page', function() {
 
       assertTrue(spellCheckSettingsExist);
 
-      const triggerRow = languagesPage.$$('#enableSpellcheckingToggle');
+      const triggerRow =
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle');
 
       // Disable spellcheck for en-US.
       const spellcheckLanguageRow =
@@ -168,7 +173,8 @@ suite('languages page', function() {
       flush();
 
       // The policy indicator should be present.
-      assertTrue(!!triggerRow.$$('cr-policy-pref-indicator'));
+      assertTrue(
+          !!triggerRow.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
       // Force-enable spellchecking via policy, and ensure that the policy
       // indicator is not present. |enable_spellchecking| can be forced to
@@ -193,9 +199,12 @@ suite('languages page', function() {
         return;
       }
 
-      const list = languagesPage.$$('#spellCheckLanguagesList');
+      const list =
+          languagesPage.shadowRoot.querySelector('#spellCheckLanguagesList');
       assertFalse(list.hidden);
-      assertTrue(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertTrue(
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .checked);
       assertDeepEquals(
           ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
 
@@ -206,21 +215,27 @@ suite('languages page', function() {
 
       // Disable spell check should keep list hidden and remove the single
       // language from dictionaries.
-      languagesPage.$$('#enableSpellcheckingToggle').click();
+      languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+          .click();
       flush();
 
       assertTrue(list.hidden);
-      assertFalse(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertFalse(
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .checked);
       assertDeepEquals(
           [], languageHelper.getPref('spellcheck.dictionaries').value);
 
       // Enable spell check should keep list hidden and add the single language
       // to dictionaries.
-      languagesPage.$$('#enableSpellcheckingToggle').click();
+      languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+          .click();
       flush();
 
       assertTrue(list.hidden);
-      assertTrue(languagesPage.$$('#enableSpellcheckingToggle').checked);
+      assertTrue(
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .checked);
       assertDeepEquals(
           ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
     });
@@ -234,19 +249,26 @@ suite('languages page', function() {
         spellCheckDisabledReason: 'no languages!',
       });
 
-      assertFalse(languagesPage.$$('#enableSpellcheckingToggle').disabled);
+      assertFalse(
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .disabled);
       assertTrue(languageHelper.getPref('browser.enable_spellchecking').value);
       assertEquals(
-          languagesPage.$$('#enableSpellcheckingToggle').subLabel, undefined);
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .subLabel,
+          undefined);
 
       // Empty out supported languages
       for (const lang of languageHelper.languages.enabled) {
         languageHelper.disableLanguage(lang.language.code);
       }
-      assertTrue(languagesPage.$$('#enableSpellcheckingToggle').disabled);
+      assertTrue(
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .disabled);
       assertFalse(languageHelper.getPref('browser.enable_spellchecking').value);
       assertEquals(
-          languagesPage.$$('#enableSpellcheckingToggle').subLabel,
+          languagesPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .subLabel,
           'no languages!');
     });
 
@@ -260,7 +282,8 @@ suite('languages page', function() {
       };
 
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      const spellCheckCollapse = languagesPage.$$('#spellCheckCollapse');
+      const spellCheckCollapse =
+          languagesPage.shadowRoot.querySelector('#spellCheckCollapse');
       const errorDivs = Array.from(
           spellCheckCollapse.querySelectorAll('.name-with-error-list div'));
       assertEquals(4, errorDivs.length);
@@ -305,7 +328,7 @@ suite('languages page', function() {
     test('enabling and disabling the spelling service', () => {
       const previousValue =
           languagesPage.prefs.spellcheck.use_spelling_service.value;
-      languagesPage.$$('#spellingServiceEnable').click();
+      languagesPage.shadowRoot.querySelector('#spellingServiceEnable').click();
       flush();
       assertNotEquals(
           previousValue,
@@ -366,7 +389,7 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
   });
 
   test('languageSubpageTriggerClicked', function() {
-    languagesPage.$$('#languagesSubpageTrigger').click();
+    languagesPage.shadowRoot.querySelector('#languagesSubpageTrigger').click();
     assertEquals(
         Router.getInstance().getCurrentRoute(), routes.LANGUAGE_SETTINGS);
   });
