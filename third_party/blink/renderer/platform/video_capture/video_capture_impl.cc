@@ -530,6 +530,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       std::move(gpu_memory_buffer_), mailbox_holder_array,
       base::BindOnce(&BufferContext::MailboxHolderReleased, buffer_context_),
       frame_info_->timestamp);
+  if (!frame_) {
+    LOG(ERROR) << "Can't wrap GpuMemoryBuffer as VideoFrame";
+    return false;
+  }
   frame_->metadata().allow_overlay = true;
   frame_->metadata().read_lock_fences_enabled = true;
   return true;
