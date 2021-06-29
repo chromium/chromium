@@ -14,8 +14,8 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
-import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 

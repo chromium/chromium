@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.intents;
 
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -28,10 +28,7 @@ import org.w3c.dom.Document;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
-import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -49,7 +46,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- * Tests WebApkInfo.
+ * Tests {@link WebappInfo} with WebAPKs.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -76,6 +73,7 @@ public class WebApkInfoTest {
 
     /** Fakes the Resources object, allowing lookup of String value. */
     private static class FakeResources extends Resources {
+        private static AssetManager sAssetManager = createAssetManager();
         private final Map<String, Integer> mStringIdMap;
         private final Map<Integer, String> mIdValueMap;
         private String mShortcutsXmlContents;
@@ -101,12 +99,20 @@ public class WebApkInfoTest {
             }
         }
 
+        private static AssetManager createAssetManager() {
+            try {
+                return AssetManager.class.getConstructor().newInstance();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         // Do not warn about deprecated call to Resources(); the documentation says code is not
         // supposed to create its own Resources object, but we are using it to fake out the
         // Resources, and there is no other way to do that.
         @SuppressWarnings("deprecation")
         public FakeResources() {
-            super(new AssetManager(), null, null);
+            super(sAssetManager, null, null);
             mStringIdMap = new HashMap<>();
             mIdValueMap = new HashMap<>();
         }
@@ -298,7 +304,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link createWebApkInfo()} populates {@link WebApkInfo#url()} with the start URL
+     * Test that {@link createWebApkInfo()} populates {@link WebappInfo#url()} with the start URL
      * from the intent not the start URL in the WebAPK's meta data. When a WebAPK is launched via a
      * deep link from a URL within the WebAPK's scope, the WebAPK should open at the URL it was deep
      * linked from not the WebAPK's start URL.
@@ -318,7 +324,7 @@ public class WebApkInfoTest {
         WebappInfo info = createWebApkInfo(intent);
         Assert.assertEquals(intentStartUrl, info.url());
 
-        // {@link WebApkInfo#manifestStartUrl()} should contain the start URL from the Android
+        // {@link WebappInfo#manifestStartUrl()} should contain the start URL from the Android
         // Manifest.
         Assert.assertEquals(START_URL, info.manifestStartUrl());
     }
@@ -401,7 +407,7 @@ public class WebApkInfoTest {
     /**
      * Prior to SHELL_APK_VERSION 2, WebAPKs did not specify
      * {@link WebappConstants#EXTRA_FORCE_NAVIGATION} in the intent. Test that
-     * {@link WebApkInfo#shouldForceNavigation()} defaults to true when the intent extra is not
+     * {@link WebappInfo#shouldForceNavigation()} defaults to true when the intent extra is not
      * specified.
      */
     @Test
@@ -418,7 +424,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#source()} returns {@link ShortcutSource#UNKNOWN} if the source
+     * Test that {@link WebappInfo#source()} returns {@link ShortcutSource#UNKNOWN} if the source
      * in the launch intent > {@link ShortcutSource#COUNT}. This can occur if the user is using a
      * new WebAPK and an old version of Chrome.
      */
@@ -437,7 +443,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#name()} and {@link WebApkInfo#shortName()} return the name and
+     * Test that {@link WebappInfo#name()} and {@link WebappInfo#shortName()} return the name and
      * short name from the meta data before they are moved to strings in resources.
      */
     @Test
@@ -459,7 +465,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#name()} and {@link WebApkInfo#shortName()} return the string
+     * Test that {@link WebappInfo#name()} and {@link WebappInfo#shortName()} return the string
      * values from the WebAPK resources if exist.
      */
     @Test
@@ -582,7 +588,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#shareTarget()} returns a null object if the WebAPK does not
+     * Test that {@link WebappInfo#shareTarget()} returns a null object if the WebAPK does not
      * handle share intents.
      */
     @Test
@@ -681,7 +687,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#backgroundColorFallbackToDefault()} uses
+     * Test that {@link WebappInfo#backgroundColorFallbackToDefault()} uses
      * {@link SplashLayout#getDefaultBackgroundColor()} as the default background color if there is
      * no default background color in the WebAPK's resources.
      */
@@ -703,7 +709,7 @@ public class WebApkInfoTest {
     }
 
     /**
-     * Test that {@link WebApkInfo#backgroundColorFallbackToDefault()} uses the default
+     * Test that {@link WebappInfo#backgroundColorFallbackToDefault()} uses the default
      * background color from the WebAPK's resources if present.
      */
     @Test

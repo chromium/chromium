@@ -1251,7 +1251,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappDataStorage.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappDeferredStartupWithStorageHandler.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappDirectoryManager.java",
-  "java/src/org/chromium/chrome/browser/webapps/WebappInfo.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappIntentDataProviderFactory.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetrics.java",
