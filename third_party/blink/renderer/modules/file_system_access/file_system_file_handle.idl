@@ -13,4 +13,11 @@
     Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWritableOptions options = {});
 
     [CallWith=ScriptState, RaisesException] Promise<File> getFile();
+
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        Exposed=DedicatedWorker,
+        RuntimeEnabled=FileSystemAccessAccessHandle
+    ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 };

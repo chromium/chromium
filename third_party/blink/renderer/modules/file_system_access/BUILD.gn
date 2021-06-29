@@ -18,6 +18,8 @@ blink_modules_sources("file_system_access") {
     "file_system_file_handle.h",
     "file_system_handle.cc",
     "file_system_handle.h",
+    "file_system_sync_access_handle.cc",
+    "file_system_sync_access_handle.h",
     "file_system_underlying_sink.cc",
     "file_system_underlying_sink.h",
     "file_system_writable_file_stream.cc",

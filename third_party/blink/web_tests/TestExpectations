@@ -7068,5 +7068,11 @@ crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-pare
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failure Pass ]
 crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Pass Failure ]
 
+# File System Access API tests that depend on mojo interfaces that are only exposed behind a flag.
+crbug.com/1218431 external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.window.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle-dedicated-worker.https.window.html [ Pass ]
+crbug.com/1218431 external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.html [ Skip ]
+crbug.com/1218431 virtual/file-system-access-access-handle/external/wpt/file-system-access/local_FileSystemFileHandle-create-sync-access-handle-dedicated-worker-manual.https.html [ Pass ]
+
 # DevTools roll
 crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]

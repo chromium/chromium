@@ -29,6 +29,10 @@ class FileSystemFileHandle final : public FileSystemHandle {
                                ExceptionState&);
   ScriptPromise getFile(ScriptState*, ExceptionState&);
 
+  // TODO(fivedots): Define if this method should be generally exposed or only
+  // on files backed by the Origin Private File System.
+  ScriptPromise createSyncAccessHandle(ScriptState*, ExceptionState&);
+
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()
       override;
 

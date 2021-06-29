@@ -154,13 +154,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
                         const base::Time& last_modified_time,
                         StatusCallback callback);
 
-  // Opens a file at |url| with |file_flags|, where flags are OR'ed
-  // values of base::PlatformFileFlags.
-  //
-  // |peer_handle| is the process handle of a pepper plugin process, which
-  // is necessary for underlying IPC calls with Pepper plugins.
-  //
-  // This function is used only by Pepper as of writing.
+  // Opens a file at |url| with |file_flags|, where flags are OR'ed values of
+  // base::File::Flags. This operation is not supported on all filesystems or
+  // all situation e.g. it will always fail for the sandboxed system when in
+  // Incognito mode.
   OperationID OpenFile(const FileSystemURL& url,
                        int file_flags,
                        OpenFileCallback callback);

@@ -47,6 +47,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                         bool auto_close,
                         CreateFileWriterCallback callback) override;
   void Remove(RemoveCallback callback) override;
+  void OpenAccessHandle(OpenAccessHandleCallback callback) override;
   void IsSameEntry(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       IsSameEntryCallback callback) override;
@@ -85,6 +86,11 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
+  void DoOpenFile(OpenAccessHandleCallback callback);
+
+  void DidOpenFile(OpenAccessHandleCallback callback,
+                   base::File file,
+                   base::OnceClosure on_close_callback);
 
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);

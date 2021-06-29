@@ -647,6 +647,11 @@
     "args": ["--enable-features=FreezeUserAgent"]
   },
   {
+    "prefix": "file-system-access-access-handle",
+    "bases": ["external/wpt/file-system-access"],
+    "args": ["--enable-features=FileSystemAccessAccessHandle"]
+  },
+  {
     "prefix": "file-handling",
     "bases": [],
     "args": ["--enable-features=NativeFileSystemAPI,FileHandlingAPI"]

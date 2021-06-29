@@ -360,6 +360,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kFeaturePolicyForClientHints},
           {"EditingNG", blink::features::kEditingNG},
           {"FileHandling", blink::features::kFileHandlingAPI},
+          {"FileSystemAccessAccessHandle",
+           features::kFileSystemAccessAccessHandle},
           {"FontAccess", blink::features::kFontAccess},
           {"FontAccessPersistent", blink::features::kFontAccessPersistent},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching},

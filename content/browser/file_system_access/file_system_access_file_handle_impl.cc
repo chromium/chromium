@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -12,6 +13,7 @@
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -31,6 +33,45 @@ using storage::FileSystemOperationRunner;
 using storage::IsolatedContext;
 
 namespace content {
+
+namespace {
+
+void CreateBlobOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const scoped_refptr<ChromeBlobStorageContext>& blob_context,
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+    const storage::FileSystemURL& url,
+    const std::string& blob_uuid,
+    const std::string& content_type,
+    const base::File::Info& info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
+  // Only append if the file has data.
+  if (info.size > 0) {
+    // Use AppendFileSystemFile here, since we're streaming the file directly
+    // from the file system backend, and the file thus might not actually be
+    // backed by a file on disk.
+    blob_builder->AppendFileSystemFile(url, 0, info.size, info.last_modified,
+                                       std::move(file_system_context));
+  }
+  blob_builder->set_content_type(content_type);
+
+  std::unique_ptr<BlobDataHandle> blob_handle =
+      blob_context->context()->AddFinishedBlob(std::move(blob_builder));
+
+  // Since the blob we're creating doesn't depend on other blobs, and doesn't
+  // require blob memory/disk quota, creating the blob can't fail.
+  DCHECK(!blob_handle->IsBroken());
+
+  BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
+}
+
+bool IsAccessHandleEnabled() {
+  return base::FeatureList::IsEnabled(features::kFileSystemAccessAccessHandle);
+}
+
+}  // namespace
 
 FileSystemAccessFileHandleImpl::FileSystemAccessFileHandleImpl(
     FileSystemAccessManagerImpl* manager,
@@ -105,6 +146,63 @@ void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
       std::move(callback));
 }
 
+void FileSystemAccessFileHandleImpl::OpenAccessHandle(
+    OpenAccessHandleCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsAccessHandleEnabled()) {
+    mojo::ReportBadMessage("File System Access Access Handle not enabled");
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kInvalidState,
+                                "File System Access Access Handle not enabled"),
+                            base::File());
+    return;
+  }
+
+  if (url().type() != storage::kFileSystemTypeTemporary) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kInvalidState,
+            "Access handles may only be created on temporary file systems"),
+        base::File());
+    return;
+  }
+
+  RunWithWritePermission(
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        OpenAccessHandleCallback callback) {
+        std::move(callback).Run(std::move(result), base::File());
+      }),
+      std::move(callback));
+}
+
+void FileSystemAccessFileHandleImpl::DoOpenFile(
+    OpenAccessHandleCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(GetWritePermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  DoFileSystemOperation(
+      FROM_HERE, &FileSystemOperationRunner::OpenFile,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFile,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      url(),
+      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+}
+
+void FileSystemAccessFileHandleImpl::DidOpenFile(
+    OpenAccessHandleCallback callback,
+    base::File file,
+    base::OnceClosure /*on_close_callback*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  blink::mojom::FileSystemAccessErrorPtr result =
+      file_system_access_error::FromFileError(file.error_details());
+  std::move(callback).Run(std::move(result), std::move(file));
+}
+
 void FileSystemAccessFileHandleImpl::IsSameEntry(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     IsSameEntryCallback callback) {
@@ -153,41 +251,6 @@ void FileSystemAccessFileHandleImpl::Transfer(
 
   manager()->CreateTransferToken(*this, std::move(token));
 }
-
-namespace {
-
-void CreateBlobOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const scoped_refptr<ChromeBlobStorageContext>& blob_context,
-    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
-    const storage::FileSystemURL& url,
-    const std::string& blob_uuid,
-    const std::string& content_type,
-    const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
-  // Only append if the file has data.
-  if (info.size > 0) {
-    // Use AppendFileSystemFile here, since we're streaming the file directly
-    // from the file system backend, and the file thus might not actually be
-    // backed by a file on disk.
-    blob_builder->AppendFileSystemFile(url, 0, info.size, info.last_modified,
-                                       std::move(file_system_context));
-  }
-  blob_builder->set_content_type(content_type);
-
-  std::unique_ptr<BlobDataHandle> blob_handle =
-      blob_context->context()->AddFinishedBlob(std::move(blob_builder));
-
-  // Since the blob we're creating doesn't depend on other blobs, and doesn't
-  // require blob memory/disk quota, creating the blob can't fail.
-  DCHECK(!blob_handle->IsBroken());
-
-  BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
-}
-
-}  // namespace
 
 void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
     AsBlobCallback callback,

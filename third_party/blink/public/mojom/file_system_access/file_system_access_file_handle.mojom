@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/file_info.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
@@ -32,6 +33,11 @@ interface FileSystemAccessFileHandle {
   // Deletes the file represented by this handle.
   // Returns an error if the file does not exist.
   Remove() => (FileSystemAccessError result);
+
+  // TODO(fivedots): Change the return type to a host object once the access
+  // handle locking implementation is clearer.
+  // Returns an OS-level file. The file provides direct read/write access.
+  OpenAccessHandle() =>  (FileSystemAccessError result, mojo_base.mojom.File? file);
 
   // Returns true if |other| represents the same file on disk as this handle.
   IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>
