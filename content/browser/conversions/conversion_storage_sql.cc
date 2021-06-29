@@ -277,8 +277,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // conversion_destination> pair. Only get impressions that are active and not
   // past their expiry time.
   const char kGetMatchingImpressionsSql[] =
-      "SELECT impression_id, impression_data, impression_origin, "
-      "conversion_origin, impression_time, expiry_time, priority, "
+      "SELECT impression_origin, impression_id, impression_time, priority, "
+      "impression_data, conversion_origin, expiry_time, "
       "attributed_truthfully, source_type "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
@@ -292,35 +292,22 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   statement.BindTime(2, current_time);
 
   absl::optional<StorableImpression> impression_to_attribute;
-  StorableImpression::AttributionLogic attribution_logic_to_use =
+  StorableImpression::AttributionLogic attribution_logic =
       StorableImpression::AttributionLogic::kNever;
   std::vector<int64_t> impression_ids_to_delete;
 
   while (statement.Step()) {
-    int64_t impression_id = statement.ColumnInt64(0);
-    uint64_t impression_data =
-        DeserializeImpressionOrConversionData(statement.ColumnString(1));
     url::Origin impression_origin =
-        DeserializeOrigin(statement.ColumnString(2));
-    url::Origin conversion_origin =
-        DeserializeOrigin(statement.ColumnString(3));
+        DeserializeOrigin(statement.ColumnString(0));
 
     // Skip the report if the impression origin is opaque. This should only
     // happen if there is some sort of database corruption.
     if (impression_origin.opaque())
       continue;
-    base::Time impression_time = statement.ColumnTime(4);
-    base::Time expiry_time = statement.ColumnTime(5);
-    int64_t attribution_source_priority = statement.ColumnInt64(6);
-    StorableImpression::AttributionLogic attribution_logic =
-        static_cast<StorableImpression::AttributionLogic>(
-            statement.ColumnInt(7));
-    StorableImpression::SourceType source_type =
-        static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
 
-    // There should never be an unattributed impression with `kFalsely`.
-    DCHECK_NE(attribution_logic,
-              StorableImpression::AttributionLogic::kFalsely);
+    int64_t impression_id = statement.ColumnInt64(1);
+    base::Time impression_time = statement.ColumnTime(2);
+    int64_t attribution_source_priority = statement.ColumnInt64(3);
 
     // Select the row to attribute to the conversion. All other matching rows
     // will be deleted by the attribution logic.
@@ -331,11 +318,25 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
         impression_ids_to_delete.push_back(
             *impression_to_attribute->impression_id());
       }
+
+      uint64_t impression_data =
+          DeserializeImpressionOrConversionData(statement.ColumnString(4));
+      url::Origin conversion_origin =
+          DeserializeOrigin(statement.ColumnString(5));
+      base::Time expiry_time = statement.ColumnTime(6);
+      attribution_logic = static_cast<StorableImpression::AttributionLogic>(
+          statement.ColumnInt(7));
+      StorableImpression::SourceType source_type =
+          static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
+
+      // There should never be an unattributed impression with `kFalsely`.
+      DCHECK_NE(attribution_logic,
+                StorableImpression::AttributionLogic::kFalsely);
+
       impression_to_attribute = StorableImpression(
           impression_data, std::move(impression_origin),
           std::move(conversion_origin), reporting_origin, impression_time,
           expiry_time, source_type, attribution_source_priority, impression_id);
-      attribution_logic_to_use = attribution_logic;
     } else
       impression_ids_to_delete.push_back(impression_id);
   }
@@ -367,8 +368,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
-  const bool create_report = attribution_logic_to_use ==
-                             StorableImpression::AttributionLogic::kTruthfully;
+  const bool create_report =
+      attribution_logic == StorableImpression::AttributionLogic::kTruthfully;
 
   if (create_report) {
     DCHECK(report.impression.impression_id().has_value());
