@@ -11,7 +11,6 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/history_clusters/core/memories_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -37,6 +36,15 @@
 #include "components/search_engines/template_url_service.h"
 #include "ui/base/l10n/time_format.h"
 #endif
+
+namespace {
+
+// Exists temporarily only for developer usage. Never enabled via variations.
+// TODO(mahmadi): Remove once on-device clustering backend is more mature.
+const base::Feature kUIDevelopmentMakeFakeHistoryClusters{
+    "UIDevelopmentMakeFakeHistoryClusters", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
 
 HistoryClustersHandler::HistoryClustersHandler(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>
@@ -77,7 +85,7 @@ void HistoryClustersHandler::QueryClusters(
   auto result_callback =
       base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_mojom));
-  if (history_clusters::RemoteModelEndpoint().is_valid()) {
+  if (!base::FeatureList::IsEnabled(kUIDevelopmentMakeFakeHistoryClusters)) {
     // Cancel pending queries, if any.
     query_task_tracker_.TryCancelAll();
     auto* history_clusters_service =
@@ -97,8 +105,11 @@ void HistoryClustersHandler::QueryClusters(
         &query_task_tracker_);
   } else {
 #if defined(CHROME_BRANDED)
+    OnMemoriesDebugMessage(
+        "HistoryClustersHandler Error: No UI Mocks on Official Build.");
     page_->OnClustersQueryResult(history_clusters::mojom::QueryResult::New());
 #else
+    OnMemoriesDebugMessage("HistoryClustersHandler: Loading UI Mock clusters.");
     // Cancel pending queries, if any.
     query_task_tracker_.TryCancelAll();
     QueryHistoryService(std::move(query_params), {},
