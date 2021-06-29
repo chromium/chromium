@@ -84,6 +84,10 @@ class ASH_EXPORT ScreenPinningController
   // Returns the window from WindowDimmer.
   aura::Window* CreateWindowDimmer(aura::Window* container);
 
+  // Resets internal states when |pinned_window_| exits pinning state, or
+  // disappears.
+  void ResetWindowPinningState();
+
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
 
