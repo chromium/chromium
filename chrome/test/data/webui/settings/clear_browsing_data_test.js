@@ -236,22 +236,45 @@ suite('ClearBrowsingDataDesktop', function() {
     assertEquals(routes.SYNC, Router.getInstance().getCurrentRoute());
   });
 
-  test('ClearBrowsingDataSearchHistorySignedOut', function() {
-    webUIListenerCallback('update-sync-state', {
-      signedIn: false,
-    });
-    flush();
-    assertFalse(
-        isVisible(element.shadowRoot.querySelector('#searchHistoryTextBox')));
-  });
-
-  test('ClearBrowsingDataSearchHistorySignedIn', function() {
-    webUIListenerCallback('update-sync-state', {
-      signedIn: true,
-    });
-    flush();
-    assertTrue(
-        isVisible(element.shadowRoot.querySelector('#searchHistoryTextBox')));
+  test('ClearBrowsingDataSearchLabelVisibility', function() {
+    for (const signedIn of [false, true]) {
+      for (const isNonGoogleDse of [false, true]) {
+        webUIListenerCallback('update-sync-state', {
+          signedIn: signedIn,
+          isNonGoogleDse: isNonGoogleDse,
+          nonGoogleSearchHistoryString: 'Some test string',
+        });
+        flush();
+        // Test Google search history label visibility and string.
+        assertEquals(
+            signedIn,
+            isVisible(
+                element.shadowRoot.querySelector('#googleSearchHistoryLabel')),
+            'googleSearchHistoryLabel visibility');
+        if (signedIn) {
+          expectEquals(
+              isNonGoogleDse ?
+                  element.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse') :
+                  element.i18nAdvanced('clearGoogleSearchHistoryGoogleDse'),
+              element.shadowRoot.querySelector('#googleSearchHistoryLabel')
+                  .innerHTML,
+              'googleSearchHistoryLabel text');
+        }
+        // Test non-Google search history label visibility and string.
+        assertEquals(
+            isNonGoogleDse,
+            isVisible(element.shadowRoot.querySelector(
+                '#nonGoogleSearchHistoryLabel')),
+            'nonGoogleSearchHistoryLabel visibility');
+        if (isNonGoogleDse) {
+          expectEquals(
+              'Some test string',
+              element.shadowRoot.querySelector('#nonGoogleSearchHistoryLabel')
+                  .innerText,
+              'nonGoogleSearchHistoryLabel text');
+        }
+      }
+    }
   });
 });
 

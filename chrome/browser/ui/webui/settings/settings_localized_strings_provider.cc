@@ -450,10 +450,15 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED,
           base::ASCIIToUTF16(chrome::kMyActivityUrlInClearBrowsingData)));
   html_source->AddString(
-      "clearSearchHistorySummarySignedIn",
+      "clearGoogleSearchHistoryGoogleDse",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_CLEAR_SEARCH_BROWSING_HISTORY_SUMMARY_SIGNED_IN,
+          IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_GOOGLE_DSE,
           base::ASCIIToUTF16(chrome::kSearchHistoryUrlInClearBrowsingData),
+          base::ASCIIToUTF16(chrome::kMyActivityUrlInClearBrowsingData)));
+  html_source->AddString(
+      "clearGoogleSearchHistoryNonGoogleDse",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_NON_GOOGLE_DSE,
           base::ASCIIToUTF16(chrome::kMyActivityUrlInClearBrowsingData)));
   html_source->AddString(
       "historyDeletionDialogBody",

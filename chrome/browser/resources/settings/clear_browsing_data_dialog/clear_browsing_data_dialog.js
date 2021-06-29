@@ -21,6 +21,7 @@ import '../icons.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -80,20 +81,22 @@ function replaceDialog(oldDialog, newDialog) {
  *   syncConsented: boolean,
  *   syncingHistory: boolean,
  *   shouldShowCookieException: boolean,
+ *   isNonGoogleDse: boolean,
+ *   nonGoogleSearchHistoryString: string,
  * }}
  */
 let UpdateSyncStateEvent;
 
-
-
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  * @implements {RouteObserverBehaviorInterface}
  */
 const SettingsClearBrowsingDataDialogElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, RouteObserverBehavior], PolymerElement);
+    [I18nBehavior, WebUIListenerBehavior, RouteObserverBehavior],
+    PolymerElement);
 
 /** @polymer */
 class SettingsClearBrowsingDataDialogElement extends
@@ -275,10 +278,20 @@ class SettingsClearBrowsingDataDialogElement extends
       },
 
       /** @private */
-      shouldShowSearchHistoryLabel_: {
+      googleSearchHistoryString_: {
+        type: String,
+        computed: 'computeGoogleSearchHistoryString_(isNonGoogleDse_)',
+      },
+
+      /** @private */
+      isNonGoogleDse_: {
         type: Boolean,
         value: false,
-        computed: 'computeShouldShowSearchHistoryLabel_(isSignedIn_)'
+      },
+
+      /** @private */
+      nonGoogleSearchHistoryString_: {
+        type: String,
       },
     };
   }
@@ -382,6 +395,8 @@ class SettingsClearBrowsingDataDialogElement extends
     this.isSyncingHistory_ = event.syncingHistory;
     this.shouldShowCookieException_ = event.shouldShowCookieException;
     this.$.clearBrowsingDataDialog.classList.add('fully-rendered');
+    this.isNonGoogleDse_ = event.isNonGoogleDse;
+    this.nonGoogleSearchHistoryString_ = event.nonGoogleSearchHistoryString;
   }
 
   /**
@@ -407,16 +422,6 @@ class SettingsClearBrowsingDataDialogElement extends
       return historySummarySignedIn;
     }
     return historySummary;
-  }
-
-  /**
-   * Whether the search history text box should be shown.
-   * @param {boolean} isSignedIn
-   * @return {boolean}
-   * @private
-   */
-  computeShouldShowSearchHistoryLabel_(isSignedIn) {
-    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
   }
 
   /**
@@ -665,6 +670,32 @@ class SettingsClearBrowsingDataDialogElement extends
   computeHasOtherError_() {
     return this.syncStatus !== undefined && !!this.syncStatus.hasError &&
         !this.isSyncPaused_ && !this.hasPassphraseError_;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeGoogleSearchHistoryString_(isNonGoogleDse) {
+    return isNonGoogleDse ?
+        this.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse') :
+        this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowGoogleSearchHistoryLabel_(isSignedIn) {
+    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse) {
+    return this.searchHistoryLinkFlagEnabled_ && isNonGoogleDse;
   }
 
   /**

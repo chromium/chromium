@@ -449,6 +449,10 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
   event.SetBoolKey(
       "shouldShowCookieException",
       browsing_data_counter_utils::ShouldShowCookieException(profile_));
+
+  event.SetBoolKey("isNonGoogleDse", false);
+  // TODO(crbug/1192623): Set |isNonGoogleDse| and
+  // |nonGoogleSearchHistoryString| in |event| accordingly.
   FireWebUIListener("update-sync-state", event);
 }
 

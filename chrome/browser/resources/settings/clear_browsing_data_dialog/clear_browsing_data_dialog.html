@@ -101,7 +101,7 @@
         position: fixed;
       }
 
-      #searchHistoryTextBox {
+      .search-history-box {
         background-color: var(--google-grey-50);
         border: 1px solid var(--google-grey-200);
         border-radius: 4px;
@@ -111,7 +111,7 @@
 
       /* dark mode */
       @media (prefers-color-scheme: dark) {
-        #searchHistoryTextBox {
+        .search-history-box {
           background-color: rgba(0, 0, 0, .3);
           border-color: transparent;
         }
@@ -178,9 +178,15 @@
                 sub-label="[[counters_.cache_basic]]"
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
-            <div id="searchHistoryTextBox"
-                hidden="[[!shouldShowSearchHistoryLabel_]]">
-              $i18nRaw{clearSearchHistorySummarySignedIn}
+            <div id="googleSearchHistoryLabel"
+                class="search-history-box"
+                hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]"
+                inner-h-t-m-l="[[googleSearchHistoryString_]]">
+            </div>
+            <div id="nonGoogleSearchHistoryLabel"
+                class="search-history-box"
+                hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]"
+                inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
             </div>
           </div>
           <div id="advanced-tab">
