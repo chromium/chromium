@@ -152,6 +152,8 @@ class GFX_EXPORT SurfaceControl {
    private:
     int id_;
     ASurfaceTransaction* transaction_;
+    OnCommitCb on_commit_cb_;
+    OnCompleteCb on_complete_cb_;
 
     DISALLOW_COPY_AND_ASSIGN(Transaction);
   };

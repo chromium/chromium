@@ -10,6 +10,7 @@
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/debug/crash_logging.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
@@ -290,7 +291,6 @@ SurfaceControl::TransactionStats ToTransactionStats(
 
 struct TransactionAckCtx {
   int id = 0;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   SurfaceControl::Transaction::OnCompleteCb callback;
   SurfaceControl::Transaction::OnCommitCb latch_callback;
 };
@@ -313,14 +313,7 @@ void OnTransactionCompletedOnAnyThread(void* context,
       "toplevel.flow", "gfx::SurfaceControlTransaction completed",
       GetTraceIdForTransaction(ack_ctx->id), TRACE_EVENT_FLAG_FLOW_IN);
 
-  if (ack_ctx->task_runner) {
-    ack_ctx->task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(ack_ctx->callback),
-                                  std::move(transaction_stats)));
-  } else {
-    std::move(ack_ctx->callback).Run(std::move(transaction_stats));
-  }
-
+  std::move(ack_ctx->callback).Run(std::move(transaction_stats));
   delete ack_ctx;
 }
 
@@ -332,13 +325,7 @@ void OnTransactiOnCommittedOnAnyThread(void* context,
   TRACE_EVENT_INSTANT0("gpu,benchmark", "SurfaceControlTransaction committed",
                        TRACE_EVENT_SCOPE_THREAD);
 
-  if (ack_ctx->task_runner) {
-    ack_ctx->task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(ack_ctx->latch_callback)));
-  } else {
-    std::move(ack_ctx->latch_callback).Run();
-  }
-
+  std::move(ack_ctx->latch_callback).Run();
   delete ack_ctx;
 }
 
@@ -450,7 +437,10 @@ SurfaceControl::Transaction::~Transaction() {
 }
 
 SurfaceControl::Transaction::Transaction(Transaction&& other)
-    : id_(other.id_), transaction_(other.transaction_) {
+    : id_(other.id_),
+      transaction_(other.transaction_),
+      on_commit_cb_(std::move(other.on_commit_cb_)),
+      on_complete_cb_(std::move(other.on_complete_cb_)) {
   other.transaction_ = nullptr;
   other.id_ = 0;
 }
@@ -462,6 +452,8 @@ SurfaceControl::Transaction& SurfaceControl::Transaction::operator=(
 
   transaction_ = other.transaction_;
   id_ = other.id_;
+  on_commit_cb_ = std::move(other.on_commit_cb_);
+  on_complete_cb_ = std::move(other.on_complete_cb_);
 
   other.transaction_ = nullptr;
   other.id_ = 0;
@@ -551,30 +543,39 @@ void SurfaceControl::Transaction::SetOnCompleteCb(
   TRACE_EVENT_WITH_FLOW0(
       "toplevel.flow", "gfx::SurfaceControl::Transaction::SetOnCompleteCb",
       GetTraceIdForTransaction(id_), TRACE_EVENT_FLAG_FLOW_OUT);
-  TransactionAckCtx* ack_ctx = new TransactionAckCtx;
-  ack_ctx->callback = std::move(cb);
-  ack_ctx->task_runner = std::move(task_runner);
-  ack_ctx->id = id_;
 
-  SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
-      transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
+  DCHECK(!on_complete_cb_);
+  on_complete_cb_ = base::BindPostTask(std::move(task_runner), std::move(cb));
 }
 
 void SurfaceControl::Transaction::SetOnCommitCb(
     OnCommitCb cb,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  TransactionAckCtx* ack_ctx = new TransactionAckCtx;
-  ack_ctx->latch_callback = std::move(cb);
-  ack_ctx->task_runner = std::move(task_runner);
-  ack_ctx->id = id_;
-
-  SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn(
-      transaction_, ack_ctx, &OnTransactiOnCommittedOnAnyThread);
+  DCHECK(!on_commit_cb_);
+  on_commit_cb_ = base::BindPostTask(std::move(task_runner), std::move(cb));
 }
 
 void SurfaceControl::Transaction::Apply() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu,benchmark",
                                     "SurfaceControlTransaction", id_);
+  if (on_commit_cb_) {
+    TransactionAckCtx* ack_ctx = new TransactionAckCtx;
+    ack_ctx->latch_callback = std::move(on_commit_cb_);
+    ack_ctx->id = id_;
+
+    SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn(
+        transaction_, ack_ctx, &OnTransactiOnCommittedOnAnyThread);
+  }
+
+  if (on_complete_cb_) {
+    TransactionAckCtx* ack_ctx = new TransactionAckCtx;
+    ack_ctx->callback = std::move(on_complete_cb_);
+    ack_ctx->id = id_;
+
+    SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
+        transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
+  }
+
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);
 }
 
