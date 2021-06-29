@@ -357,6 +357,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   struct ViewportPropertyIds {
     int overscroll_elasticity_transform = TransformTree::kInvalidNodeId;
+    ElementId overscroll_elasticity_effect;
     int page_scale_transform = TransformTree::kInvalidNodeId;
     int inner_scroll = ScrollTree::kInvalidNodeId;
     int outer_clip = ClipTree::kInvalidNodeId;

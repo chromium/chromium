@@ -37,6 +37,7 @@ include_rules = [
   "+third_party/libyuv",
   "+third_party/skia/include",
   "+third_party/skia/src/core/SkRemoteGlyphCache.h",
+  "+third_party/skia/src/effects/imagefilters/SkRuntimeImageFilter.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+ui/events/types",
   "+ui/latency",

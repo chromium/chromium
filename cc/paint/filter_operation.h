@@ -6,6 +6,7 @@
 #define CC_PAINT_FILTER_OPERATION_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -46,7 +47,8 @@ class CC_PAINT_EXPORT FilterOperation {
     REFERENCE,
     SATURATING_BRIGHTNESS,  // Not used in CSS/SVG.
     ALPHA_THRESHOLD,        // Not used in CSS/SVG.
-    FILTER_TYPE_LAST = ALPHA_THRESHOLD
+    STRETCH,                // Not used in CSS/SVG.
+    FILTER_TYPE_LAST = STRETCH
   };
 
   FilterOperation();
@@ -64,7 +66,7 @@ class CC_PAINT_EXPORT FilterOperation {
   }
 
   float outer_threshold() const {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
+    DCHECK(type_ == ALPHA_THRESHOLD || type_ == STRETCH);
     return outer_threshold_;
   }
 
@@ -171,6 +173,10 @@ class CC_PAINT_EXPORT FilterOperation {
                            outer_threshold);
   }
 
+  static FilterOperation CreateStretchFilter(float amount_x, float amount_y) {
+    return FilterOperation(STRETCH, amount_x, amount_y);
+  }
+
   bool operator==(const FilterOperation& other) const;
 
   bool operator!=(const FilterOperation& other) const {
@@ -191,7 +197,7 @@ class CC_PAINT_EXPORT FilterOperation {
   }
 
   void set_outer_threshold(float outer_threshold) {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
+    DCHECK(type_ == ALPHA_THRESHOLD || type_ == STRETCH);
     outer_threshold_ = outer_threshold;
   }
 
@@ -264,6 +270,8 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterOperation(FilterType, const Matrix& matrix);
 
   FilterOperation(FilterType type, float amount, int inset);
+
+  FilterOperation(FilterType type, float amount, float outer_threshold);
 
   FilterOperation(FilterType type, sk_sp<PaintFilter> image_filter);
 

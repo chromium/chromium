@@ -24,7 +24,8 @@ enum FilterType {
   REFERENCE,
   SATURATING_BRIGHTNESS,
   ALPHA_THRESHOLD,
-  FILTER_TYPE_LAST = ALPHA_THRESHOLD
+  STRETCH,
+  FILTER_TYPE_LAST = STRETCH
 };
 
 // See cc/paint/filter_operation.h.

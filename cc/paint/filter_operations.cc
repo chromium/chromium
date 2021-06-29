@@ -82,6 +82,7 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
       case FilterOperation::BLUR:
       case FilterOperation::DROP_SHADOW:
       case FilterOperation::ZOOM:
+      case FilterOperation::STRETCH:
         return true;
       case FilterOperation::REFERENCE:
         // TODO(hendrikw): SkImageFilter needs a function that tells us if the
@@ -128,6 +129,10 @@ float FilterOperations::MaximumPixelMovement() const {
         // the filter can move pixels. See crbug.com/523538 (sort of).
         max_movement = fmax(max_movement, 100);
         continue;
+      case FilterOperation::STRETCH:
+        max_movement =
+            fmax(max_movement, fmax(op.amount(), op.outer_threshold()));
+        continue;
       case FilterOperation::OPACITY:
       case FilterOperation::COLOR_MATRIX:
       case FilterOperation::GRAYSCALE:
@@ -173,6 +178,7 @@ bool FilterOperations::HasFilterThatAffectsOpacity() const {
       case FilterOperation::BRIGHTNESS:
       case FilterOperation::CONTRAST:
       case FilterOperation::SATURATING_BRIGHTNESS:
+      case FilterOperation::STRETCH:
         break;
     }
   }

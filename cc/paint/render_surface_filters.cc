@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <utility>
 
 #include "cc/paint/render_surface_filters.h"
 
@@ -292,6 +293,12 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         } else {
           image_filter = std::move(alpha_filter);
         }
+        break;
+      }
+      case FilterOperation::STRETCH: {
+        image_filter = sk_make_sp<StretchPaintFilter>(
+            op.amount(), op.outer_threshold(), size.width(), size.height(),
+            std::move(image_filter));
         break;
       }
     }

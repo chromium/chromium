@@ -133,6 +133,9 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
           PaintFilter::LightingType::kDiffuse, SkPoint3::Make(0.1f, 0.2f, 0.3f),
           SkPoint3::Make(0.4f, 0.5f, 0.6f), 0.1f, 0.2f, SK_ColorWHITE, 0.4f,
           0.5f, 0.6f, image_filter, &crop_rect);
+    case PaintFilter::Type::kStretch:
+      return sk_make_sp<StretchPaintFilter>(0.1f, 0.2f, 100.f, 200.f,
+                                            image_filter, &crop_rect);
   }
   NOTREACHED();
   return nullptr;

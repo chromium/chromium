@@ -51,6 +51,15 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kElasticOverscroll;
 #endif  // defined(OS_WIN) || defined(OS_ANDROID)
 
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kElasticOverscrollType[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kElasticOverscrollTypeFilter[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kElasticOverscrollTypeTransform[];
+#endif  // defined(OS_ANDROID)
+
 #if defined(OS_WIN)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCalculateNativeWinOcclusion;

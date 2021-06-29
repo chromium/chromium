@@ -46,6 +46,8 @@ viz::mojom::FilterType CCFilterTypeToMojo(
       return viz::mojom::FilterType::SATURATING_BRIGHTNESS;
     case cc::FilterOperation::ALPHA_THRESHOLD:
       return viz::mojom::FilterType::ALPHA_THRESHOLD;
+    case cc::FilterOperation::STRETCH:
+      return viz::mojom::FilterType::STRETCH;
   }
   NOTREACHED();
   return viz::mojom::FilterType::FILTER_TYPE_LAST;
@@ -84,6 +86,8 @@ cc::FilterOperation::FilterType MojoFilterTypeToCC(
       return cc::FilterOperation::SATURATING_BRIGHTNESS;
     case viz::mojom::FilterType::ALPHA_THRESHOLD:
       return cc::FilterOperation::ALPHA_THRESHOLD;
+    case viz::mojom::FilterType::STRETCH:
+      return cc::FilterOperation::STRETCH;
   }
   NOTREACHED();
   return cc::FilterOperation::FILTER_TYPE_LAST;
@@ -155,7 +159,7 @@ bool StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation>::
       out->set_image_filter(std::move(filter));
       return true;
     }
-    case cc::FilterOperation::ALPHA_THRESHOLD:
+    case cc::FilterOperation::ALPHA_THRESHOLD: {
       out->set_amount(data.amount());
       out->set_outer_threshold(data.outer_threshold());
       cc::FilterOperation::ShapeRects shape;
@@ -163,6 +167,12 @@ bool StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation>::
         return false;
       out->set_shape(shape);
       return true;
+    }
+    case cc::FilterOperation::STRETCH: {
+      out->set_amount(data.amount());
+      out->set_outer_threshold(data.outer_threshold());
+      return true;
+    }
   }
   return false;
 }

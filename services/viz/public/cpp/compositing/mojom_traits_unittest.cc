@@ -164,6 +164,10 @@ void ExpectEqual(const cc::FilterOperation& input,
     case cc::FilterOperation::ALPHA_THRESHOLD:
       NOTREACHED();
       break;
+    case cc::FilterOperation::STRETCH:
+      EXPECT_EQ(input.amount(), output.amount());
+      EXPECT_EQ(input.outer_threshold(), output.outer_threshold());
+      break;
   }
 }
 

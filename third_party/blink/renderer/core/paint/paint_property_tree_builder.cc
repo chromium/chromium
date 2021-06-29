@@ -121,6 +121,11 @@ PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
   auto property_changed =
       visual_viewport.UpdatePaintPropertyNodesIfNeeded(context);
 
+  if (const EffectPaintPropertyNode* overscroll_elasticity_effect_node =
+          visual_viewport.GetOverscrollElasticityEffectNode()) {
+    context.current_effect = overscroll_elasticity_effect_node;
+  }
+
   context.current.transform = visual_viewport.GetScrollTranslationNode();
   context.absolute_position.transform =
       visual_viewport.GetScrollTranslationNode();
