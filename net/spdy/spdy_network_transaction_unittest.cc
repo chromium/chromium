@@ -5159,12 +5159,14 @@ TEST_F(SpdyNetworkTransactionTest, BufferedClosed) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   TransactionHelperResult out = helper.output();
-  rv = callback.WaitForResult();
-  EXPECT_EQ(rv, OK);
+  out.rv = callback.WaitForResult();
+  EXPECT_EQ(out.rv, OK);
 
   const HttpResponseInfo* response = trans->GetResponseInfo();
   EXPECT_TRUE(response->headers);
   EXPECT_TRUE(response->was_fetched_via_spdy);
+  out.status_line = response->headers->GetStatusLine();
+  out.response_info = *response;  // Make a copy so we can verify.
 
   // Read Data
   TestCompletionCallback read_callback;
@@ -5172,18 +5174,18 @@ TEST_F(SpdyNetworkTransactionTest, BufferedClosed) {
   std::string content;
   int reads_completed = 0;
   do {
-    // Allocate a large buffer to allow buffering. If a single read fills the
-    // buffer, no buffering happens.
-    const int kLargeReadSize = 1000;
+    // Read small chunks at a time.
+    const int kSmallReadSize = 14;
     scoped_refptr<IOBuffer> buf =
-        base::MakeRefCounted<IOBuffer>(kLargeReadSize);
-    rv = trans->Read(buf.get(), kLargeReadSize, read_callback.callback());
+        base::MakeRefCounted<IOBuffer>(kSmallReadSize);
+    rv = trans->Read(buf.get(), kSmallReadSize, read_callback.callback());
     if (rv == ERR_IO_PENDING) {
       data.Resume();
       rv = read_callback.WaitForResult();
     }
-
-    if (rv < 0) {
+    if (rv > 0) {
+      content.append(buf->data(), rv);
+    } else if (rv < 0) {
       // This test intentionally closes the connection, and will get an error.
       EXPECT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
       break;
@@ -5192,6 +5194,8 @@ TEST_F(SpdyNetworkTransactionTest, BufferedClosed) {
   } while (rv > 0);
 
   EXPECT_EQ(0, reads_completed);
+
+  out.response_data.swap(content);
 
   // Flush the MessageLoop while the SpdySessionDependencies (in particular, the
   // MockClientSocketFactory) are still alive.
