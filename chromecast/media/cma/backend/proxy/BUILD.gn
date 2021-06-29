@@ -29,13 +29,6 @@ cast_source_set("headers") {
 }
 
 if (!is_android) {
-  chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
-    # This rule cannot be built on android because it causes linker issues,
-    # as both `protobuf_lite` and `protobuf_full` are present.
-
-    sources = [ "//third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.proto" ]
-  }
-
   cast_source_set("proxy") {
     assert(!is_android)
 
@@ -66,13 +59,13 @@ if (!is_android) {
     ]
 
     deps = [
-      ":cast_audio_decoder_service_proto",
       ":headers",
       "//base",
       "//chromecast/base",
       "//chromecast/media/api",
       "//chromecast/public/media",
       "//third_party/grpc:grpc++",
+      "//third_party/openscreen/src/cast/cast_core/api:cast_audio_channel_service_proto",
       "//third_party/protobuf:protobuf_full",
     ]
 

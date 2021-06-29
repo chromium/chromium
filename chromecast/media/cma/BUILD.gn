@@ -91,7 +91,7 @@ cast_source_set("unittests") {
     ]
     deps += [
       "//chromecast/media/cma/backend/proxy",
-      "//chromecast/media/cma/backend/proxy:cast_audio_decoder_service_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:cast_audio_channel_service_proto",
 
       # TODO(b/174874712): Remove the explicit gRPC dependency.
       "//third_party/grpc:grpc++",
