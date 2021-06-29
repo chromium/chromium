@@ -155,12 +155,16 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
           base::AlignedAlloc(sizeof(float) * input_buffer_size_, 32))),
       r1_(input_buffer_.get()),
       r2_(input_buffer_.get() + kKernelSize / 2) {
+  CHECK_GT(request_frames, kKernelSize * 3 / 2)
+      << "request_frames must be greater than 1.5 kernels to allow sufficient "
+         "data for resampling";
+  // This means that after the first call to Flush we will have
+  // block_size_ > kKernelSize and r2_ < r3_.
+
   InitializeCPUSpecificFeatures();
   DCHECK(convolve_proc_);
   CHECK_GT(request_frames_, 0);
   Flush();
-  CHECK_GT(block_size_, kKernelSize)
-      << "block_size must be greater than kKernelSize!";
 
   memset(kernel_storage_.get(), 0,
          sizeof(*kernel_storage_.get()) * kKernelStorageSize);

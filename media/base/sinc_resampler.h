@@ -45,7 +45,7 @@ class MEDIA_EXPORT SincResampler {
   // acquire audio data for resampling.  |io_sample_rate_ratio| is the ratio
   // of input / output sample rates.  |request_frames| controls the size in
   // frames of the buffer requested by each |read_cb| call.  The value must be
-  // greater than kKernelSize.  Specify kDefaultRequestSize if there are no
+  // greater than 1.5*kKernelSize.  Specify kDefaultRequestSize if there are no
   // request size constraints.
   SincResampler(double io_sample_rate_ratio,
                 int request_frames,
