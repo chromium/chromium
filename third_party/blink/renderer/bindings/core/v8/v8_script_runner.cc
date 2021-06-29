@@ -114,7 +114,7 @@ v8::MaybeLocal<v8::Value> ThrowStackOverflowExceptionIfNeeded(
 
 v8::MaybeLocal<v8::Script> CompileScriptInternal(
     v8::Isolate* isolate,
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     const ScriptSourceCode& source_code,
     v8::ScriptOrigin origin,
     v8::ScriptCompiler::CompileOptions compile_options,
@@ -129,8 +129,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     DCHECK(streamer->IsFinished());
     DCHECK(!streamer->IsStreamingSuppressed());
     return v8::ScriptCompiler::Compile(
-        isolate->GetCurrentContext(),
-        streamer->Source(v8::ScriptType::kClassic), code, origin);
+        script_state->GetContext(), streamer->Source(v8::ScriptType::kClassic),
+        code, origin);
   }
 
   // Allow inspector to use its own compilation cache store.
@@ -138,12 +138,13 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   // The probe below allows inspector to either inject the cached code
   // or override compile_options to force eager compilation of code
   // when producing the cache.
-  probe::ApplyCompilationModeOverride(execution_context, source_code,
-                                      &inspector_data, &compile_options);
+  probe::ApplyCompilationModeOverride(ExecutionContext::From(script_state),
+                                      source_code, &inspector_data,
+                                      &compile_options);
   if (inspector_data) {
     v8::ScriptCompiler::Source source(code, origin, inspector_data);
     v8::MaybeLocal<v8::Script> script =
-        v8::ScriptCompiler::Compile(isolate->GetCurrentContext(), &source,
+        v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                     v8::ScriptCompiler::kConsumeCodeCache);
     return script;
   }
@@ -152,7 +153,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     case v8::ScriptCompiler::kNoCompileOptions:
     case v8::ScriptCompiler::kEagerCompile: {
       v8::ScriptCompiler::Source source(code, origin);
-      return v8::ScriptCompiler::Compile(isolate->GetCurrentContext(), &source,
+      return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
 
@@ -163,7 +164,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
           V8CodeCache::CreateCachedData(cache_handler);
       v8::ScriptCompiler::Source source(code, origin, cached_data);
       v8::MaybeLocal<v8::Script> script =
-          v8::ScriptCompiler::Compile(isolate->GetCurrentContext(), &source,
+          v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                       v8::ScriptCompiler::kConsumeCodeCache);
 
       if (cached_data->rejected) {
@@ -238,13 +239,13 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       referrer_info.ToV8HostDefinedOptions(isolate));
 
   if (!*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kTraceEventCategoryGroup)) {
-    return CompileScriptInternal(isolate, execution_context, source, origin,
+    return CompileScriptInternal(isolate, script_state, source, origin,
                                  compile_options, no_cache_reason, nullptr);
   }
 
   inspector_compile_script_event::V8CacheResult cache_result;
   v8::MaybeLocal<v8::Script> script =
-      CompileScriptInternal(isolate, execution_context, source, origin,
+      CompileScriptInternal(isolate, script_state, source, origin,
                             compile_options, no_cache_reason, &cache_result);
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compile", "data",
                    [&](perfetto::TracedValue context) {
