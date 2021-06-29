@@ -412,6 +412,9 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;
+
+  // Running counter for LongTask observations.
+  size_t long_task_counter_ = 0;
 };
 
 }  // namespace blink

@@ -91,6 +91,10 @@ namespace blink {
 
 namespace {
 
+// LongTask API can be a source of many events. Filter on Performance object
+// level before reporting to UKM to smooth out recorded events over all pages.
+constexpr size_t kLongTaskUkmSampleInterval = 100;
+
 const SecurityOrigin* GetSecurityOrigin(ExecutionContext* context) {
   if (context)
     return context->GetSecurityOrigin();
@@ -745,9 +749,12 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
   } else {
     UseCounter::Count(execution_context, WebFeature::kLongTaskBufferFull);
   }
-  RecordLongTaskUkm(execution_context,
-                    base::TimeDelta::FromMillisecondsD(dom_high_res_start_time),
-                    end_time - start_time);
+  if ((++long_task_counter_ % kLongTaskUkmSampleInterval) == 0) {
+    RecordLongTaskUkm(
+        execution_context,
+        base::TimeDelta::FromMillisecondsD(dom_high_res_start_time),
+        end_time - start_time);
+  }
   NotifyObserversOfEntry(*entry);
 }
 
