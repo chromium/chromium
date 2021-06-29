@@ -22,88 +22,110 @@ import '../settings_vars_css.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsBasicPageElement} from '../basic_page/basic_page.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 
 /**
  * @typedef {{about: boolean, settings: boolean}}
  */
 let MainPageVisibility;
 
-Polymer({
-  is: 'settings-main',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsMainElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement);
 
-  behaviors: [RouteObserverBehavior],
+/** @polymer */
+export class SettingsMainElement extends SettingsMainElementBase {
+  static get is() {
+    return 'settings-main';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    advancedToggleExpanded: {
-      type: Boolean,
-      notify: true,
-    },
-
-    /** @private */
-    overscroll_: {
-      type: Number,
-      observer: 'overscrollChanged_',
-    },
-
-    /**
-     * Controls which main pages are displayed via dom-ifs, based on the current
-     * route.
-     * @private {!MainPageVisibility}
-     */
-    showPages_: {
-      type: Object,
-      value() {
-        return {about: false, settings: false};
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /**
-     * Whether a search operation is in progress or previous search results are
-     * being displayed.
-     * @private {boolean}
-     */
-    inSearchMode_: {
-      type: Boolean,
-      value: false,
-    },
+      advancedToggleExpanded: {
+        type: Boolean,
+        notify: true,
+      },
 
-    /** @private */
-    showNoResultsFound_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      overscroll_: {
+        type: Number,
+        observer: 'overscrollChanged_',
+      },
 
-    /** @private */
-    showingSubpage_: Boolean,
+      /**
+       * Controls which main pages are displayed via dom-ifs, based on the
+       * current route.
+       * @private {!MainPageVisibility}
+       */
+      showPages_: {
+        type: Object,
+        value() {
+          return {about: false, settings: false};
+        },
+      },
 
-    toolbarSpinnerActive: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      /**
+       * Whether a search operation is in progress or previous search results
+       * are being displayed.
+       * @private {boolean}
+       */
+      inSearchMode_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Dictionary defining page visibility.
-     * @type {!PageVisibility}
-     */
-    pageVisibility: Object,
-  },
+      /** @private */
+      showNoResultsFound_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showingSubpage_: Boolean,
+
+      toolbarSpinnerActive: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
+      /**
+       * Dictionary defining page visibility.
+       * @type {!PageVisibility}
+       */
+      pageVisibility: Object,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?Function} */
+    this.boundScroll_ = null;
+  }
 
   /** @private */
   overscrollChanged_() {
@@ -121,7 +143,7 @@ Polymer({
       this.offsetParent.addEventListener('scroll', this.boundScroll_);
       window.addEventListener('resize', this.boundScroll_);
     }
-  },
+  }
 
   /**
    * Sets the overscroll padding. Never forces a scroll, i.e., always leaves
@@ -142,7 +164,7 @@ Polymer({
         overscroll.scrollHeight - (overscrollBottom - visibleBottom);
     this.overscroll_ =
         Math.max(opt_minHeight || 0, Math.ceil(visibleOverscroll));
-  },
+  }
 
   /**
    * Updates the hidden state of the about and settings pages based on the
@@ -160,17 +182,17 @@ Polymer({
                                      loadTimeData.getString('aboutPageTitle')) :
                                  loadTimeData.getString('settings');
     }
-  },
+  }
 
   /** @private */
   onShowingSubpage_() {
     this.showingSubpage_ = true;
-  },
+  }
 
   /** @private */
   onShowingMainPage_() {
     this.showingSubpage_ = false;
-  },
+  }
 
   /**
    * A handler for the 'showing-section' event fired from settings-basic-page,
@@ -192,25 +214,7 @@ Polymer({
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
     section.focus();
-  },
-
-  /**
-   * Returns the root page (if it exists) for a route.
-   * @param {!Route} route
-   * @return {(?SettingsAboutPageElement|?SettingsBasicPageElement)}
-   */
-  getPage_(route) {
-    if (routes.ABOUT.contains(route)) {
-      return /** @type {?SettingsAboutPageElement} */ (
-          this.$$('settings-about-page'));
-    }
-    if (routes.BASIC.contains(route) ||
-        (routes.ADVANCED && routes.ADVANCED.contains(route))) {
-      return /** @type {?SettingsBasicPageElement} */ (
-          this.$$('settings-basic-page'));
-    }
-    assertNotReached();
-  },
+  }
 
   /**
    * @param {string} query
@@ -223,9 +227,9 @@ Polymer({
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const whenSearchDone =
-            assert(this.getPage_(routes.BASIC)).searchContents(query);
-        whenSearchDone.then(result => {
+        const page = /** @type {!SettingsBasicPageElement} */ (
+            this.shadowRoot.querySelector('settings-basic-page'));
+        page.searchContents(query).then(result => {
           resolve();
           if (result.canceled) {
             // Nothing to do here. A previous search request was canceled
@@ -241,16 +245,20 @@ Polymer({
 
           if (this.inSearchMode_) {
             IronA11yAnnouncer.requestAvailability();
-            this.fire('iron-announce', {
-              text: this.showNoResultsFound_ ?
-                  loadTimeData.getString('searchNoResults') :
-                  loadTimeData.getStringF('searchResults', query)
-            });
+            this.dispatchEvent(new CustomEvent('iron-announce', {
+              bubbles: true,
+              composed: true,
+              detail: {
+                text: this.showNoResultsFound_ ?
+                    loadTimeData.getString('searchNoResults') :
+                    loadTimeData.getStringF('searchResults', query)
+              }
+            }));
           }
         });
       }, 0);
     });
-  },
+  }
 
   /**
    * @return {boolean}
@@ -259,5 +267,7 @@ Polymer({
   showManagedHeader_() {
     return !this.inSearchMode_ && !this.showingSubpage_ &&
         !this.showPages_.about;
-  },
-});
+  }
+}
+
+customElements.define(SettingsMainElement.is, SettingsMainElement);

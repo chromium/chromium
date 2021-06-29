@@ -28,7 +28,7 @@ import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -37,71 +37,82 @@ import {SettingsPrefsElement} from '../prefs/prefs.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
-Polymer({
-  is: 'settings-ui',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const SettingsUiElementBase = mixinBehaviors(
+    [RouteObserverBehavior, CrContainerShadowBehavior, FindShortcutBehavior],
+    PolymerElement);
 
-  behaviors: [
-    RouteObserverBehavior,
-    CrContainerShadowBehavior,
-    FindShortcutBehavior,
-  ],
+/** @polymer */
+export class SettingsUiElement extends SettingsUiElementBase {
+  static get is() {
+    return 'settings-ui';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    advancedOpenedInMain_: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'onAdvancedOpenedInMainChanged_',
-    },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: Object,
 
-    /** @private */
-    advancedOpenedInMenu_: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'onAdvancedOpenedInMenuChanged_',
-    },
+      /** @private */
+      advancedOpenedInMain_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'onAdvancedOpenedInMainChanged_',
+      },
 
-    /** @private {boolean} */
-    toolbarSpinnerActive_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      advancedOpenedInMenu_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'onAdvancedOpenedInMenuChanged_',
+      },
 
-    /** @private */
-    narrow_: {
-      type: Boolean,
-      observer: 'onNarrowChanged_',
-    },
+      /** @private {boolean} */
+      toolbarSpinnerActive_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * @private {!PageVisibility}
-     */
-    pageVisibility_: {type: Object, value: pageVisibility},
+      /** @private */
+      narrow_: {
+        type: Boolean,
+        observer: 'onNarrowChanged_',
+      },
 
-    /** @private */
-    lastSearchQuery_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * @private {!PageVisibility}
+       */
+      pageVisibility_: {type: Object, value: pageVisibility},
 
-  listeners: {
-    'refresh-pref': 'onRefreshPref_',
-  },
+      /** @private */
+      lastSearchQuery_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /* @private {?Debouncer} */
+    this.debouncer_ = null;
+
     Router.getInstance().initializeRouteFromUrl();
-  },
+  }
 
   /**
    * @override
@@ -109,6 +120,8 @@ Polymer({
    * ES5 strict mode.
    */
   ready() {
+    super.ready();
+
     // Lazy-create the drawer the first time it is opened or swiped into view.
     listenOnce(this.$.drawer, 'cr-drawer-opening', () => {
       this.$.drawerTemplate.if = true;
@@ -150,10 +163,16 @@ Polymer({
     this.addEventListener('hide-container', () => {
       this.$.container.style.visibility = 'hidden';
     });
-  },
+
+    this.addEventListener(
+        'refresh-pref',
+        e => this.onRefreshPref_(/** @type {!CustomEvent<string>} */ (e)));
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
 
     setTimeout(function() {
@@ -180,10 +199,11 @@ Polymer({
       const behavior = isChromeOS ? 'auto' : 'smooth';
       this.$.container.scrollTo({top: top, behavior: behavior});
       const onScroll = () => {
-        this.debounce('scrollEnd', () => {
-          this.$.container.removeEventListener('scroll', onScroll);
-          resolve();
-        }, 75);
+        this.debouncer_ =
+            Debouncer.debounce(this.debouncer_, timeOut.after(75), () => {
+              this.$.container.removeEventListener('scroll', onScroll);
+              resolve();
+            });
       };
       this.$.container.addEventListener('scroll', onScroll);
     });
@@ -194,13 +214,15 @@ Polymer({
       scrollToTop(e.detail.bottom - this.$.container.clientHeight)
           .then(e.detail.callback);
     });
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     Router.getInstance().resetRouteForTesting();
     resetGlobalScrollTargetForTesting();
-  },
+  }
 
   /** @param {!Route} route */
   currentRouteChanged(route) {
@@ -212,7 +234,8 @@ Polymer({
 
     this.lastSearchQuery_ = urlSearchQuery;
 
-    const toolbar = /** @type {!CrToolbarElement} */ (this.$$('cr-toolbar'));
+    const toolbar = /** @type {!CrToolbarElement} */ (
+        this.shadowRoot.querySelector('cr-toolbar'));
     const searchField =
         /** @type {CrToolbarSearchFieldElement} */ (toolbar.getSearchField());
 
@@ -225,21 +248,23 @@ Polymer({
     }
 
     this.$.main.searchContents(urlSearchQuery);
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   handleFindShortcut(modalContextOpen) {
     if (modalContextOpen) {
       return false;
     }
-    this.$$('cr-toolbar').getSearchField().showAndFocus();
+    this.shadowRoot.querySelector('cr-toolbar').getSearchField().showAndFocus();
     return true;
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
-    return this.$$('cr-toolbar').getSearchField().isSearchFocused();
-  },
+    return this.shadowRoot.querySelector('cr-toolbar')
+        .getSearchField()
+        .isSearchFocused();
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -247,7 +272,7 @@ Polymer({
    */
   onRefreshPref_(e) {
     return /** @type {SettingsPrefsElement} */ (this.$.prefs).refresh(e.detail);
-  },
+  }
 
   /**
    * Handles the 'search-changed' event fired from the toolbar.
@@ -262,7 +287,7 @@ Polymer({
             new URLSearchParams('search=' + encodeURIComponent(query)) :
             undefined,
         /* removeSearch */ true);
-  },
+  }
 
   /**
    * Called when a section is selected.
@@ -270,12 +295,12 @@ Polymer({
    */
   onIronActivate_() {
     this.$.drawer.close();
-  },
+  }
 
   /** @private */
   onMenuButtonTap_() {
     this.$.drawer.toggle();
-  },
+  }
 
   /**
    * When this is called, The drawer animation is finished, and the dialog no
@@ -300,21 +325,21 @@ Polymer({
     listenOnce(this.$.container, ['blur', 'pointerdown'], () => {
       this.$.container.removeAttribute('tabindex');
     });
-  },
+  }
 
   /** @private */
   onAdvancedOpenedInMainChanged_() {
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
     }
-  },
+  }
 
   /** @private */
   onAdvancedOpenedInMenuChanged_() {
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
     }
-  },
+  }
 
   /** @private */
   onNarrowChanged_() {
@@ -331,7 +356,9 @@ Polymer({
       // If changed from narrow to non-narrow and the focus was on the button
       // that opens the drawer menu, move focus to the left menu.
       this.$.leftMenu.focusFirstItem();
-    } else if (!this.narrow_ && focusedElement === this.$$('#drawerMenu')) {
+    } else if (
+        !this.narrow_ &&
+        focusedElement === this.shadowRoot.querySelector('#drawerMenu')) {
       // If changed from narrow to non-narrow and the focus was in the drawer
       // menu, wait for the drawer to close and then move focus on the left
       // menu. The drawer has a dialog element in it so moving focus to an
@@ -342,7 +369,7 @@ Polymer({
       };
       this.$.drawer.addEventListener('close', boundCloseListener);
     }
-  },
+  }
 
   /**
    * Only used in tests.
@@ -350,7 +377,7 @@ Polymer({
    */
   getAdvancedOpenedInMainForTest() {
     return this.advancedOpenedInMain_;
-  },
+  }
 
   /**
    * Only used in tests.
@@ -359,4 +386,6 @@ Polymer({
   getAdvancedOpenedInMenuForTest() {
     return this.advancedOpenedInMenu_;
   }
-});
+}
+
+customElements.define(SettingsUiElement.is, SettingsUiElement);

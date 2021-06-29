@@ -6,7 +6,7 @@
 import {isChromeOS, isMac, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, PromoteUpdaterStatus, Route, Router, UpdateStatus} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, PromoteUpdaterStatus, Route, Router, SettingsAboutPageElement, UpdateStatus} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 
@@ -95,9 +95,10 @@ suite('AboutPageTest_AllBuilds', function() {
      * incoming 'update-status-changed' events.
      */
     test('IconAndMessageUpdates', function() {
-      const icon = page.$$('iron-icon');
+      const icon = page.shadowRoot.querySelector('iron-icon');
       assertTrue(!!icon);
-      const statusMessageEl = page.$$('#updateStatusMessage div');
+      const statusMessageEl =
+          page.shadowRoot.querySelector('#updateStatusMessage div');
       let previousMessageText = statusMessageEl.textContent;
 
       fireStatusChanged(UpdateStatus.CHECKING);
@@ -143,18 +144,21 @@ suite('AboutPageTest_AllBuilds', function() {
     test('ErrorMessageWithHtml', function() {
       const htmlError = 'hello<br>there<br>was<pre>an</pre>error';
       fireStatusChanged(UpdateStatus.FAILED, {message: htmlError});
-      const statusMessageEl = page.$$('#updateStatusMessage div');
+      const statusMessageEl =
+          page.shadowRoot.querySelector('#updateStatusMessage div');
       assertEquals(htmlError, statusMessageEl.innerHTML);
     });
 
     test('FailedLearnMoreLink', function() {
       // Check that link is shown when update failed.
       fireStatusChanged(UpdateStatus.FAILED, {message: 'foo'});
-      assertTrue(!!page.$$('#updateStatusMessage a:not([hidden])'));
+      assertTrue(!!page.shadowRoot.querySelector(
+          '#updateStatusMessage a:not([hidden])'));
 
       // Check that link is hidden when update hasn't failed.
       fireStatusChanged(UpdateStatus.UPDATED, {message: ''});
-      assertTrue(!!page.$$('#updateStatusMessage a[hidden]'));
+      assertTrue(
+          !!page.shadowRoot.querySelector('#updateStatusMessage a[hidden]'));
     });
 
     /**
@@ -169,29 +173,29 @@ suite('AboutPageTest_AllBuilds', function() {
       });
 
       await initNewPage();
-      const icon = page.$$('iron-icon');
+      const icon = page.shadowRoot.querySelector('iron-icon');
       assertTrue(!!icon);
-      assertTrue(!!page.$$('#updateStatusMessage'));
-      assertTrue(!!page.$$('#deprecationWarning'));
-      assertFalse(page.$$('#deprecationWarning').hidden);
+      assertTrue(!!page.shadowRoot.querySelector('#updateStatusMessage'));
+      assertTrue(!!page.shadowRoot.querySelector('#deprecationWarning'));
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
 
       fireStatusChanged(UpdateStatus.CHECKING);
       assertEquals(SPINNER_ICON, icon.src);
       assertEquals(null, icon.getAttribute('icon'));
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertFalse(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertFalse(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
 
       fireStatusChanged(UpdateStatus.UPDATING);
       assertEquals(SPINNER_ICON, icon.src);
       assertEquals(null, icon.getAttribute('icon'));
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertFalse(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertFalse(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
 
       fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
       assertEquals(null, icon.src);
       assertEquals('settings:check-circle', icon.icon);
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertFalse(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertFalse(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
     });
 
     /**
@@ -204,42 +208,42 @@ suite('AboutPageTest_AllBuilds', function() {
         aboutObsoleteEndOfTheLine: true,
       });
       await initNewPage();
-      const icon = page.$$('iron-icon');
+      const icon = page.shadowRoot.querySelector('iron-icon');
       assertTrue(!!icon);
-      assertTrue(!!page.$$('#deprecationWarning'));
-      assertTrue(!!page.$$('#updateStatusMessage'));
+      assertTrue(!!page.shadowRoot.querySelector('#deprecationWarning'));
+      assertTrue(!!page.shadowRoot.querySelector('#updateStatusMessage'));
 
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertFalse(page.$$('#deprecationWarning').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
 
       fireStatusChanged(UpdateStatus.CHECKING);
       assertEquals(null, icon.src);
       assertEquals('cr:error', icon.icon);
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertTrue(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertTrue(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
 
       fireStatusChanged(UpdateStatus.FAILED);
       assertEquals(null, icon.src);
       assertEquals('cr:error', icon.icon);
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertTrue(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertTrue(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
 
       fireStatusChanged(UpdateStatus.UPDATED);
       assertEquals(null, icon.src);
       assertEquals('cr:error', icon.icon);
-      assertFalse(page.$$('#deprecationWarning').hidden);
-      assertTrue(page.$$('#updateStatusMessage').hidden);
+      assertFalse(page.shadowRoot.querySelector('#deprecationWarning').hidden);
+      assertTrue(page.shadowRoot.querySelector('#updateStatusMessage').hidden);
     });
 
     test('Relaunch', function() {
-      let relaunch = page.$$('#relaunch');
+      let relaunch = page.shadowRoot.querySelector('#relaunch');
       assertTrue(!!relaunch);
       assertTrue(relaunch.hidden);
 
       fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
       assertFalse(relaunch.hidden);
 
-      relaunch = page.$$('#relaunch');
+      relaunch = page.shadowRoot.querySelector('#relaunch');
       assertTrue(!!relaunch);
       relaunch.click();
       return lifetimeBrowserProxy.whenCalled('relaunch');
@@ -250,7 +254,7 @@ suite('AboutPageTest_AllBuilds', function() {
      * 'update-status-changed' events.
      */
     test('ButtonsUpdate', function() {
-      const relaunch = page.$$('#relaunch');
+      const relaunch = page.shadowRoot.querySelector('#relaunch');
       assertTrue(!!relaunch);
 
       fireStatusChanged(UpdateStatus.CHECKING);
@@ -277,8 +281,8 @@ suite('AboutPageTest_AllBuilds', function() {
   }
 
   test('GetHelp', function() {
-    assertTrue(!!page.$$('#help'));
-    page.$$('#help').click();
+    assertTrue(!!page.shadowRoot.querySelector('#help'));
+    page.shadowRoot.querySelector('#help').click();
     return aboutBrowserProxy.whenCalled('openHelpPage');
   });
 });
@@ -298,8 +302,8 @@ suite('AboutPageTest_OfficialBuilds', function() {
   });
 
   test('ReportAnIssue', function() {
-    assertTrue(!!page.$$('#reportIssue'));
-    page.$$('#reportIssue').click();
+    assertTrue(!!page.shadowRoot.querySelector('#reportIssue'));
+    page.shadowRoot.querySelector('#reportIssue').click();
     return browserProxy.whenCalled('openFeedbackDialog');
   });
 
@@ -342,27 +346,28 @@ suite('AboutPageTest_OfficialBuilds', function() {
      * Tests that the button's states are wired up to the status correctly.
      */
     test('PromoteUpdaterButtonCorrectStates', function() {
-      let item = page.$$('#promoteUpdater');
-      let arrow = page.$$('#promoteUpdater cr-icon-button');
+      let item = page.shadowRoot.querySelector('#promoteUpdater');
+      let arrow =
+          page.shadowRoot.querySelector('#promoteUpdater cr-icon-button');
       assertFalse(!!item);
       assertFalse(!!arrow);
 
       firePromoteUpdaterStatusChanged(PromoStatusScenarios.CANT_PROMOTE);
       flush();
-      item = page.$$('#promoteUpdater');
-      arrow = page.$$('#promoteUpdater cr-icon-button');
+      item = page.shadowRoot.querySelector('#promoteUpdater');
+      arrow = page.shadowRoot.querySelector('#promoteUpdater cr-icon-button');
       assertFalse(!!item);
       assertFalse(!!arrow);
 
       firePromoteUpdaterStatusChanged(PromoStatusScenarios.CAN_PROMOTE);
       flush();
 
-      item = page.$$('#promoteUpdater');
+      item = page.shadowRoot.querySelector('#promoteUpdater');
       assertTrue(!!item);
       assertFalse(item.hasAttribute('disabled'));
       assertTrue(item.hasAttribute('actionable'));
 
-      arrow = page.$$('#promoteUpdater cr-icon-button');
+      arrow = page.shadowRoot.querySelector('#promoteUpdater cr-icon-button');
       assertTrue(!!arrow);
       assertEquals('CR-ICON-BUTTON', arrow.parentElement.tagName);
       assertFalse(arrow.parentElement.hidden);
@@ -370,12 +375,12 @@ suite('AboutPageTest_OfficialBuilds', function() {
 
       firePromoteUpdaterStatusChanged(PromoStatusScenarios.IN_BETWEEN);
       flush();
-      item = page.$$('#promoteUpdater');
+      item = page.shadowRoot.querySelector('#promoteUpdater');
       assertTrue(!!item);
       assertTrue(item.hasAttribute('disabled'));
       assertTrue(item.hasAttribute('actionable'));
 
-      arrow = page.$$('#promoteUpdater cr-icon-button');
+      arrow = page.shadowRoot.querySelector('#promoteUpdater cr-icon-button');
       assertTrue(!!arrow);
       assertEquals('CR-ICON-BUTTON', arrow.parentElement.tagName);
       assertFalse(arrow.parentElement.hidden);
@@ -383,12 +388,12 @@ suite('AboutPageTest_OfficialBuilds', function() {
 
       firePromoteUpdaterStatusChanged(PromoStatusScenarios.PROMOTED);
       flush();
-      item = page.$$('#promoteUpdater');
+      item = page.shadowRoot.querySelector('#promoteUpdater');
       assertTrue(!!item);
       assertTrue(item.hasAttribute('disabled'));
       assertFalse(item.hasAttribute('actionable'));
 
-      arrow = page.$$('#promoteUpdater cr-icon-button');
+      arrow = page.shadowRoot.querySelector('#promoteUpdater cr-icon-button');
       assertTrue(!!arrow);
       assertEquals('CR-ICON-BUTTON', arrow.parentElement.tagName);
       assertTrue(arrow.parentElement.hidden);
@@ -398,7 +403,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
     test('PromoteUpdaterButtonWorksWhenEnabled', function() {
       firePromoteUpdaterStatusChanged(PromoStatusScenarios.CAN_PROMOTE);
       flush();
-      const item = page.$$('#promoteUpdater');
+      const item = page.shadowRoot.querySelector('#promoteUpdater');
       assertTrue(!!item);
 
       item.click();
