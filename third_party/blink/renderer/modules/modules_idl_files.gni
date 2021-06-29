@@ -46,120 +46,21 @@ import("//third_party/blink/renderer/config.gni")
 #   modules_typedefs_enums_only_idl_files = [
 #     # IDL files that only have typedefs/enums.
 #   ]
-_idl_imports = [
-  "//third_party/blink/renderer/modules/accessibility/idls.gni",
-  "//third_party/blink/renderer/modules/ad_auction/idls.gni",
-  "//third_party/blink/renderer/modules/animationworklet/idls.gni",
-  "//third_party/blink/renderer/modules/app_banner/idls.gni",
-  "//third_party/blink/renderer/modules/audio_output_devices/idls.gni",
-  "//third_party/blink/renderer/modules/background_fetch/idls.gni",
-  "//third_party/blink/renderer/modules/background_sync/idls.gni",
-  "//third_party/blink/renderer/modules/badging/idls.gni",
-  "//third_party/blink/renderer/modules/battery/idls.gni",
-  "//third_party/blink/renderer/modules/beacon/idls.gni",
-  "//third_party/blink/renderer/modules/bluetooth/idls.gni",
-  "//third_party/blink/renderer/modules/broadcastchannel/idls.gni",
-  "//third_party/blink/renderer/modules/buckets/idls.gni",
-  "//third_party/blink/renderer/modules/cache_storage/idls.gni",
-  "//third_party/blink/renderer/modules/canvas/idls.gni",
-  "//third_party/blink/renderer/modules/clipboard/idls.gni",
-  "//third_party/blink/renderer/modules/compression/idls.gni",
-  "//third_party/blink/renderer/modules/compute_pressure/idls.gni",
-  "//third_party/blink/renderer/modules/contacts_picker/idls.gni",
-  "//third_party/blink/renderer/modules/content_index/idls.gni",
-  "//third_party/blink/renderer/modules/cookie_store/idls.gni",
-  "//third_party/blink/renderer/modules/credentialmanager/idls.gni",
-  "//third_party/blink/renderer/modules/crypto/idls.gni",
-  "//third_party/blink/renderer/modules/csspaint/idls.gni",
-  "//third_party/blink/renderer/modules/delegated_ink/idls.gni",
-  "//third_party/blink/renderer/modules/managed_device/idls.gni",
-  "//third_party/blink/renderer/modules/device_orientation/idls.gni",
-  "//third_party/blink/renderer/modules/device_posture/idls.gni",
-  "//third_party/blink/renderer/modules/donottrack/idls.gni",
-  "//third_party/blink/renderer/modules/encoding/idls.gni",
-  "//third_party/blink/renderer/modules/encryptedmedia/idls.gni",
-  "//third_party/blink/renderer/modules/eventsource/idls.gni",
-  "//third_party/blink/renderer/modules/eyedropper/idls.gni",
-  "//third_party/blink/renderer/modules/filesystem/idls.gni",
-  "//third_party/blink/renderer/modules/file_system_access/idls.gni",
-  "//third_party/blink/renderer/modules/font_access/idls.gni",
-  "//third_party/blink/renderer/modules/gamepad/idls.gni",
-  "//third_party/blink/renderer/modules/geolocation/idls.gni",
-  "//third_party/blink/renderer/modules/handwriting/idls.gni",
-  "//third_party/blink/renderer/modules/hid/idls.gni",
-  "//third_party/blink/renderer/modules/idle/idls.gni",
-  "//third_party/blink/renderer/modules/imagecapture/idls.gni",
-  "//third_party/blink/renderer/modules/indexeddb/idls.gni",
-  "//third_party/blink/renderer/modules/installedapp/idls.gni",
-  "//third_party/blink/renderer/modules/keyboard/idls.gni",
-  "//third_party/blink/renderer/modules/launch/idls.gni",
-  "//third_party/blink/renderer/modules/locks/idls.gni",
-  "//third_party/blink/renderer/modules/lock_screen/idls.gni",
-  "//third_party/blink/renderer/modules/manifest/idls.gni",
-  "//third_party/blink/renderer/modules/media_capabilities/idls.gni",
-  "//third_party/blink/renderer/modules/mediacapturefromelement/idls.gni",
-  "//third_party/blink/renderer/modules/mediarecorder/idls.gni",
-  "//third_party/blink/renderer/modules/mediasession/idls.gni",
-  "//third_party/blink/renderer/modules/mediasource/idls.gni",
-  "//third_party/blink/renderer/modules/mediastream/idls.gni",
-  "//third_party/blink/renderer/modules/breakout_box/idls.gni",
-  "//third_party/blink/renderer/modules/modalclosewatcher/idls.gni",
-  "//third_party/blink/renderer/modules/native_io/idls.gni",
-  "//third_party/blink/renderer/modules/navigatorcontentutils/idls.gni",
-  "//third_party/blink/renderer/modules/netinfo/idls.gni",
-  "//third_party/blink/renderer/modules/nfc/idls.gni",
-  "//third_party/blink/renderer/modules/notifications/idls.gni",
-  "//third_party/blink/renderer/modules/payments/idls.gni",
-  "//third_party/blink/renderer/modules/payments/goods/idls.gni",
-  "//third_party/blink/renderer/modules/peerconnection/idls.gni",
-  "//third_party/blink/renderer/modules/permissions/idls.gni",
-  "//third_party/blink/renderer/modules/picture_in_picture/idls.gni",
-  "//third_party/blink/renderer/modules/plugins/idls.gni",
-  "//third_party/blink/renderer/modules/presentation/idls.gni",
-  "//third_party/blink/renderer/modules/push_messaging/idls.gni",
-  "//third_party/blink/renderer/modules/quota/idls.gni",
-  "//third_party/blink/renderer/modules/remoteplayback/idls.gni",
-  "//third_party/blink/renderer/modules/sanitizer_api/idls.gni",
-  "//third_party/blink/renderer/modules/scheduler/idls.gni",
-  "//third_party/blink/renderer/modules/screen_enumeration/idls.gni",
-  "//third_party/blink/renderer/modules/screen_orientation/idls.gni",
-  "//third_party/blink/renderer/modules/sensor/idls.gni",
-  "//third_party/blink/renderer/modules/service_worker/idls.gni",
-  "//third_party/blink/renderer/modules/shapedetection/idls.gni",
-  "//third_party/blink/renderer/modules/speech/idls.gni",
-  "//third_party/blink/renderer/modules/srcobject/idls.gni",
-  "//third_party/blink/renderer/modules/storage/idls.gni",
-  "//third_party/blink/renderer/modules/url_pattern/idls.gni",
-  "//third_party/blink/renderer/modules/vibration/idls.gni",
-  "//third_party/blink/renderer/modules/video_rvfc/idls.gni",
-  "//third_party/blink/renderer/modules/virtualkeyboard/idls.gni",
-  "//third_party/blink/renderer/modules/wake_lock/idls.gni",
-  "//third_party/blink/renderer/modules/webaudio/idls.gni",
-  "//third_party/blink/renderer/modules/webcodecs/idls.gni",
-  "//third_party/blink/renderer/modules/webdatabase/idls.gni",
-  "//third_party/blink/renderer/modules/webgl/idls.gni",
-  "//third_party/blink/renderer/modules/webgpu/idls.gni",
-  "//third_party/blink/renderer/modules/webid/idls.gni",
-  "//third_party/blink/renderer/modules/webmidi/idls.gni",
-  "//third_party/blink/renderer/modules/webshare/idls.gni",
-  "//third_party/blink/renderer/modules/websockets/idls.gni",
-  "//third_party/blink/renderer/modules/webtransport/idls.gni",
-  "//third_party/blink/renderer/modules/webusb/idls.gni",
-  "//third_party/blink/renderer/modules/xr/idls.gni",
-]
-
-# TODO(dcheng): For whatever reason, is_android doesn't seem to be defined, even
-# if using import() instead of read_file() in the foreach() loop below...
-if (!is_android) {
-  _idl_imports += [
-    "//third_party/blink/renderer/modules/direct_sockets/idls.gni",
-    "//third_party/blink/renderer/modules/serial/idls.gni",
-  ]
-}
+_idl_imports = []
 
 # Do not add IDL files directly to these lists. See _idl_imports above instead
 # on how to add IDL files for a module.
-modules_idl_files = []
+modules_idl_files =
+    get_path_info(
+        [
+          # This variable is effectively no longer used, but it's not easy to
+          # remove this or make this empty.  So, put a dummy entry for the time
+          # being.  The file doesn't make any sense.
+          # TODO(yukishiino): Remove the build settings of the old bindings
+          # generator entirely.
+          "//third_party/blink/renderer/core/dom/common_definitions.idl",
+        ],
+        "abspath")
 modules_callback_function_idl_files = []
 modules_dictionary_idl_files = []
 modules_dependency_idl_files = []
