@@ -180,6 +180,12 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
   NOT_DESTROYED();
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
+
+  if (IsInLayoutNGInlineFormattingContext())
+    return LayoutText::PositionForPoint(point);
+  // TODO(layout-dev): Remove this function entirely after eliminating the
+  // legacy layout.
+
   if (!HasInlineFragments() || !TextLength())
     return CreatePositionWithAffinity(0);
 

@@ -904,6 +904,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
               text_combine->AdjustOffsetForHitTest(point_in_container_fragment);
         }
       }
+      // TODO(crbug.com/1179585): Apply per-character transform.
       if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
                .Contains(FlooredIntPoint(point_in_container_fragment)))
         continue;

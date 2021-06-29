@@ -121,6 +121,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
   PositionOnPath(items);
 
   // Write back the result to NGFragmentItems.
+  FloatRect unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
     if (info.middle)
       continue;
@@ -159,7 +160,18 @@ void NGSvgTextLayoutAlgorithm::Layout(
     data->baseline_shift = info.baseline_shift;
     data->in_text_path = info.in_text_path;
     item.item.ConvertToSvgText(std::move(data), unscaled_rect, info.hidden);
+    unscaled_visual_rect.Unite(item.item.ObjectBoundingBox());
   }
+  if (items[0]->Type() == NGFragmentItem::kLine) {
+    items[0].item.SetSvgLineLocalRect(
+        PhysicalRect(EnclosingIntRect(unscaled_visual_rect)));
+  }
+  // |items| should not have kLine items other than the first one.
+  DCHECK_EQ(std::find_if(items.begin() + 1, items.end(),
+                         [](const auto& item) {
+                           return item->Type() == NGFragmentItem::kLine;
+                         }),
+            items.end());
 }
 
 bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {

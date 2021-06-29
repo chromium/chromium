@@ -1817,8 +1817,9 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
   if (hit_test_self) {
     // Table row and table section are never a hit target.
+    // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
     if (PhysicalFragment().IsTableNGRow() ||
-        PhysicalFragment().IsTableNGSection())
+        PhysicalFragment().IsTableNGSection() || PhysicalFragment().IsSvgText())
       hit_test_self = false;
   }
 
@@ -1964,6 +1965,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(
           : text_item.ComputeTextBoundsRectForHitTest(
                 hit_test.inline_root_offset,
                 hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
+  // TODO(crbug.com/1179585): Apply per-character transform.
   if (!hit_test.location.Intersects(rect))
     return false;
 

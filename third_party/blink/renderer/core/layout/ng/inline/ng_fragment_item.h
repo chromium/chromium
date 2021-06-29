@@ -115,6 +115,7 @@ class CORE_EXPORT NGFragmentItem {
   void ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
                         const PhysicalRect& unscaled_rect,
                         bool is_hidden);
+  void SetSvgLineLocalRect(const PhysicalRect& unscaled_rect);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.

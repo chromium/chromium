@@ -331,6 +331,11 @@ void NGFragmentItem::ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
   rect_ = unscaled_rect;
 }
 
+void NGFragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
+  DCHECK_EQ(Type(), kLine);
+  rect_ = unscaled_rect;
+}
+
 FloatRect NGFragmentItem::ObjectBoundingBox() const {
   if (Type() != kSvgText)
     return FloatRect(rect_);
@@ -964,10 +969,15 @@ unsigned NGFragmentItem::TextOffsetForPoint(
   const LayoutUnit& point_in_line_direction =
       style.IsHorizontalWritingMode() ? point.left : point.top;
   if (const ShapeResultView* shape_result = TextShapeResult()) {
+    float scaled_offset = point_in_line_direction.ToFloat();
+    if (Type() == kSvgText) {
+      scaled_offset *=
+          To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
+    }
     // TODO(layout-dev): Move caret logic out of ShapeResult into separate
     // support class for code health and to avoid this copy.
     return shape_result->CreateShapeResult()->CaretOffsetForHitTest(
-               point_in_line_direction.ToFloat(), Text(items), BreakGlyphs) +
+               scaled_offset, Text(items), BreakGlyphs) +
            StartOffset();
   }
 
