@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="VideoTutorials.LanguagePicker.Action"
-    enum="VideoTutorials.LanguagePickerAction" expires_after="2021-11-07">
+    enum="VideoTutorials.LanguagePickerAction" expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
-    units="position" expires_after="2021-11-07">
+    units="position" expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"
-    expires_after="2021-11-14">
+    expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.{Feature}.Player.Progress"
-    enum="VideoTutorials.WatchState" expires_after="2021-07-01">
+    enum="VideoTutorials.WatchState" expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.{Feature}.Player.UserAction"
-    enum="VideoTutorials.UserAction" expires_after="2021-07-01">
+    enum="VideoTutorials.UserAction" expires_after="2022-02-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
