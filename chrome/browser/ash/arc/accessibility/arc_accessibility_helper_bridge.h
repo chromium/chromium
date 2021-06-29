@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -158,7 +159,6 @@ class ArcAccessibilityHelperBridge
       const ash::AccessibilityStatusEventDetails& event_details);
   void UpdateEnabledFeature();
   void UpdateWindowProperties(aura::Window* window);
-  void SetExploreByTouchEnabled(bool enabled);
   void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
                                          ui::AXTreeID tree_id);
   void HandleFilterTypeFocusEvent(mojom::AccessibilityEventDataPtr event_data);
@@ -181,6 +181,8 @@ class ArcAccessibilityHelperBridge
   Profile* const profile_;
   ArcBridgeService* const arc_bridge_service_;
   TreeMap trees_;
+
+  const AccessibilityHelperInstanceRemoteProxy accessibility_helper_instance_;
 
   std::map<int32_t, int32_t> window_id_to_task_id_;
 

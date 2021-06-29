@@ -605,6 +605,8 @@ source_set("chromeos") {
     "../ash/apps/intent_helper/common_apps_navigation_throttle.h",
     "../ash/apps/metrics/intent_handling_metrics.cc",
     "../ash/apps/metrics/intent_handling_metrics.h",
+    "../ash/arc/accessibility/accessibility_helper_instance_remote_proxy.cc",
+    "../ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h",
     "../ash/arc/accessibility/accessibility_info_data_wrapper.cc",
     "../ash/arc/accessibility/accessibility_info_data_wrapper.h",
     "../ash/arc/accessibility/accessibility_node_info_data_wrapper.cc",
