@@ -331,7 +331,6 @@ button:not(.primary):hover {
   /* This UI is intentionally the same in light and dark mode. */
   background: yellow;
   color: var(--google-grey-900);
-  outline: 0;
 }
 
 .experiment-actions {
