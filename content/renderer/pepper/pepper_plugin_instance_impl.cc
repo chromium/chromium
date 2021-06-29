@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bit_cast.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/char_iterator.h"
 #include "base/location.h"

@@ -9,7 +9,6 @@
 
 #include <Cocoa/Cocoa.h>
 
-#include "base/bit_cast.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"

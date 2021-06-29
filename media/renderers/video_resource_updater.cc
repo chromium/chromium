@@ -12,7 +12,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/bit_cast.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"

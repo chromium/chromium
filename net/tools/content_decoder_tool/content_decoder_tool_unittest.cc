@@ -9,7 +9,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bit_cast.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "net/filter/brotli_source_stream.h"

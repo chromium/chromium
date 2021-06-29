@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/bit_cast.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"

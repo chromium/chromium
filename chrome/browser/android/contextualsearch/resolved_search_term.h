@@ -13,7 +13,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bit_cast.h"
 #include "base/containers/checked_iterators.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
