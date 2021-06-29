@@ -128,6 +128,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Access the UKM recorder.
   ukm::MojoUkmRecorder* ukm_recorder() const { return ukm_recorder_.get(); }
 
+  // Called when the renderer has closed the connection to reset the state
+  // machine.
+  void ConnectionClosed();
+
  protected:
   // Send queued events from the renderer to the browser.
   void SendPendingAccessibilityEvents();

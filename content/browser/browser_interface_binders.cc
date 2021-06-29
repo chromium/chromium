@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
+#include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
@@ -861,6 +862,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::TextInputHost>(
       base::BindRepeating(&BindTextInputHost));
 #endif
+
+  map->Add<mojom::RenderAccessibilityHost>(
+      base::BindRepeating(&RenderFrameHostImpl::BindRenderAccessibilityHost,
+                          base::Unretained(host)));
 }
 
 void PopulateBinderMapWithContext(

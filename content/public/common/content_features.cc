@@ -589,6 +589,13 @@ const base::Feature kReloadHiddenTabsWithCrashedSubframes {
 #endif
 };
 
+// Causes RenderAccessibilityHost messages to be handled initially on a thread
+// pool before being forwarded to the browser main thread to avoid so the
+// deserialization does not block it.
+const base::Feature kRenderAccessibilityHostDeserializationOffMainThread{
+    "RenderAccessibilityHostDeserializationOffMainThread",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // RenderDocument:
 //
 // Currently, a RenderFrameHost represents neither a frame nor a document, but a

@@ -3826,6 +3826,8 @@ void RenderFrameImpl::DidCommitNavigation(
     // sent the next time it's used. See https://crbug.com/795258 for
     // implementing a nicer solution.
     audio_input_stream_factory_.reset();
+
+    render_accessibility_manager_->CloseConnection();
   }
 
   // Notify the MediaPermissionDispatcher that its connection will be closed

@@ -30,6 +30,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -208,6 +209,7 @@ class Portal;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
 class PushMessagingManager;
+class RenderAccessibilityHost;
 class RenderFrameHostDelegate;
 class RenderFrameHostImpl;
 class RenderFrameHostOrProxy;
@@ -241,7 +243,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     : public RenderFrameHost,
       public base::SupportsUserData,
       public mojom::FrameHost,
-      public mojom::RenderAccessibilityHost,
       public mojom::DomAutomationControllerHost,
       public BrowserAccessibilityDelegate,
       public RenderProcessHostObserver,
@@ -1617,6 +1618,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindScreenEnumerationReceiver(
       mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver);
 
+  void BindRenderAccessibilityHost(
+      mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver);
+
   // Prerender2:
   // Tells PrerenderHostRegistry to cancel the prerendering of the page this
   // frame is in, which destroys this frame.
@@ -2396,12 +2400,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateUserGestureCarryoverInfo() override;
 #endif
 
-  // mojom::RenderAccessibilityHost:
-  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
-                      int32_t reset_token,
-                      HandleAXEventsCallback callback) override;
-  void HandleAXLocationChanges(
-      std::vector<mojom::LocationChangesPtr> changes) override;
+  friend class RenderAccessibilityHost;
+  void HandleAXEvents(const ui::AXTreeID& tree_id,
+                      mojom::AXUpdatesAndEventsPtr updates_and_events,
+                      int32_t reset_token);
+  void HandleAXLocationChanges(const ui::AXTreeID& tree_id,
+                               std::vector<mojom::LocationChangesPtr> changes);
 
   // mojom::DomAutomationControllerHost:
   void DomOperationResponse(const std::string& json_string) override;
@@ -3424,8 +3428,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // is an accessibility mode that includes |kWebContents|.
   mojo::AssociatedRemote<mojom::RenderAccessibility> render_accessibility_;
 
-  mojo::AssociatedReceiver<mojom::RenderAccessibilityHost>
-      render_accessibility_host_receiver_{this};
+  base::SequenceBound<RenderAccessibilityHost> render_accessibility_host_;
 
   mojo::AssociatedReceiver<mojom::DomAutomationControllerHost>
       dom_automation_controller_receiver_{this};

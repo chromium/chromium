@@ -8,6 +8,7 @@ import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_action_data.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_relative_bounds.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -44,7 +45,8 @@ struct AXUpdatesAndEvents {
 };
 
 // Interface for accessibility messages sent from the renderer to the browser,
-// implemented by RenderFrameHostImpl in the browser process.
+// implemented by RenderAccessibilityHostImpl and forwarded to
+// RenderFrameHostImpl in the browser process.
 interface RenderAccessibilityHost {
   // Sent to notify the browser about renderer accessibility events.
   //

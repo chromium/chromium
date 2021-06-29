@@ -50,6 +50,7 @@
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 using blink::WebAXContext;
 using blink::WebAXObject;
@@ -1441,6 +1442,10 @@ void RenderAccessibilityImpl::CancelScheduledEvents() {
     case EventScheduleStatus::kNotWaiting:  // Fallthrough
       break;
   }
+}
+
+void RenderAccessibilityImpl::ConnectionClosed() {
+  event_schedule_status_ = EventScheduleStatus::kNotWaiting;
 }
 
 void RenderAccessibilityImpl::MaybeSendUKM() {

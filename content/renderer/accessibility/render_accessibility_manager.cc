@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/debug/alias.h"
+#include "content/common/render_accessibility.mojom-forward.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/render_frame_impl.h"
 
@@ -104,13 +105,20 @@ void RenderAccessibilityManager::HandleLocationChanges(
       std::move(changes));
 }
 
-mojo::AssociatedRemote<mojom::RenderAccessibilityHost>&
+mojo::Remote<mojom::RenderAccessibilityHost>&
 RenderAccessibilityManager::GetOrCreateRemoteRenderAccessibilityHost() {
   if (!render_accessibility_host_) {
-    render_frame_->GetRemoteAssociatedInterfaces()->GetInterface(
-        &render_accessibility_host_);
+    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+        render_accessibility_host_.BindNewPipeAndPassReceiver());
   }
   return render_accessibility_host_;
+}
+
+void RenderAccessibilityManager::CloseConnection() {
+  if (render_accessibility_host_) {
+    render_accessibility_host_.reset();
+    render_accessibility_->ConnectionClosed();
+  }
 }
 
 }  // namespace content

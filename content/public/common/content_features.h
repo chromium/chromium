@@ -144,6 +144,8 @@ CONTENT_EXPORT extern const base::Feature
 CONTENT_EXPORT extern const base::Feature kPushSubscriptionChangeEvent;
 CONTENT_EXPORT extern const base::Feature kDirectSockets;
 CONTENT_EXPORT extern const base::Feature kReloadHiddenTabsWithCrashedSubframes;
+CONTENT_EXPORT extern const base::Feature
+    kRenderAccessibilityHostDeserializationOffMainThread;
 CONTENT_EXPORT extern const base::Feature kRenderDocument;
 CONTENT_EXPORT extern const base::Feature
     kRunVideoCaptureServiceInBrowserProcess;

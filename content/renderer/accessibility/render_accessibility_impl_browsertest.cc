@@ -29,9 +29,8 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/test/test_render_frame.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/private/ppp_pdf.h"
@@ -149,10 +148,9 @@ class RenderAccessibilityHostInterceptor
     : public content::mojom::RenderAccessibilityHostInterceptorForTesting {
  public:
   explicit RenderAccessibilityHostInterceptor(
-      blink::AssociatedInterfaceProvider* provider) {
-    provider->GetInterface(
-        local_frame_host_remote_.BindNewEndpointAndPassReceiver());
-    provider->OverrideBinderForTesting(
+      blink::BrowserInterfaceBrokerProxy* broker) {
+    broker->GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
+    broker->SetBinderForTesting(
         content::mojom::RenderAccessibilityHost::Name_,
         base::BindRepeating(&RenderAccessibilityHostInterceptor::
                                 BindRenderAccessibilityHostReceiver,
@@ -165,9 +163,16 @@ class RenderAccessibilityHostInterceptor
   }
 
   void BindRenderAccessibilityHostReceiver(
-      mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(mojo::PendingAssociatedReceiver<
-                   content::mojom::RenderAccessibilityHost>(std::move(handle)));
+      mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(
+        mojo::PendingReceiver<content::mojom::RenderAccessibilityHost>(
+            std::move(handle)));
+
+    receiver_.set_disconnect_handler(base::BindOnce(
+        [](mojo::Receiver<content::mojom::RenderAccessibilityHost>* receiver) {
+          receiver->reset();
+        },
+        base::Unretained(&receiver_)));
   }
 
   void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
@@ -203,9 +208,8 @@ class RenderAccessibilityHostInterceptor
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
-  mojo::AssociatedReceiver<content::mojom::RenderAccessibilityHost> receiver_{
-      this};
-  mojo::AssociatedRemote<content::mojom::RenderAccessibilityHost>
+  mojo::Receiver<content::mojom::RenderAccessibilityHost> receiver_{this};
+  mojo::Remote<content::mojom::RenderAccessibilityHost>
       local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
@@ -220,20 +224,6 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
   }
 
   ~RenderAccessibilityTestRenderFrame() override = default;
-
-  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
-    blink::AssociatedInterfaceProvider* associated_interface_provider =
-        RenderFrameImpl::GetRemoteAssociatedInterfaces();
-
-    // Attach our fake local frame host at the very first call to
-    // GetRemoteAssociatedInterfaces.
-    if (!render_accessibility_host_) {
-      render_accessibility_host_ =
-          std::make_unique<RenderAccessibilityHostInterceptor>(
-              associated_interface_provider);
-    }
-    return associated_interface_provider;
-  }
 
   ui::AXTreeUpdate& LastUpdate() {
     return render_accessibility_host_->last_update();
@@ -254,7 +244,10 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
  private:
   explicit RenderAccessibilityTestRenderFrame(
       RenderFrameImpl::CreateParams params)
-      : TestRenderFrame(std::move(params)) {}
+      : TestRenderFrame(std::move(params)),
+        render_accessibility_host_(
+            std::make_unique<RenderAccessibilityHostInterceptor>(
+                GetBrowserInterfaceBroker())) {}
 
   std::unique_ptr<RenderAccessibilityHostInterceptor>
       render_accessibility_host_;

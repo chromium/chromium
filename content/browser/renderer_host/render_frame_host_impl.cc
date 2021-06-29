@@ -38,6 +38,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -51,6 +53,7 @@
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
@@ -6537,24 +6540,32 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 }
 
 void RenderFrameHostImpl::HandleAXEvents(
+    const ui::AXTreeID& tree_id,
     mojom::AXUpdatesAndEventsPtr updates_and_events,
-    int32_t reset_token,
-    HandleAXEventsCallback callback) {
+    int32_t reset_token) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
   SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.HandleAXEvents");
+
+  if (tree_id != GetAXTreeID()) {
+    // The message has arrived after the frame has navigated which means its
+    // events are no longer relevant and can be discarded.
+    if (!accessibility_testing_callback_.is_null()) {
+      // The callback must still run, otherwise dump event tests can hang.
+      accessibility_testing_callback_.Run(this, ax::mojom::Event::kNone, 0);
+    }
+    return;
+  }
 
   // Don't process this IPC if either we're waiting on a reset and this IPC
   // doesn't have the matching token ID, or if we're not waiting on a reset but
   // this message includes a reset token.
   if (accessibility_reset_token_ != reset_token) {
-    std::move(callback).Run();
     return;
   }
   accessibility_reset_token_ = 0;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
   if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowActivation()) {
-    std::move(callback).Run();
     return;
   }
 
@@ -6562,7 +6573,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     GetOrCreateBrowserAccessibilityManager();
 
   AXEventNotificationDetails details;
-  details.ax_tree_id = GetAXTreeID();
+  details.ax_tree_id = tree_id;
 
   // TODO(1213848): Remove the false path when the experiment is complete.
   if (base::FeatureList::IsEnabled(kRenderAccessibilityHostAvoidCopying)) {
@@ -6571,6 +6582,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     details.updates = std::move(updates_and_events->updates);
     for (auto& update : details.updates) {
       if (update.has_tree_data) {
+        DCHECK_EQ(tree_id, update.tree_data.tree_id);
         ax_tree_data_ = update.tree_data;
         update.tree_data = GetAXTreeData();
       }
@@ -6582,6 +6594,7 @@ void RenderFrameHostImpl::HandleAXEvents(
     for (size_t i = 0; i < updates_and_events->updates.size(); ++i) {
       details.updates[i] = updates_and_events->updates[i];
       if (updates_and_events->updates[i].has_tree_data) {
+        DCHECK_EQ(tree_id, updates_and_events->updates[i].tree_data.tree_id);
         ax_tree_data_ = updates_and_events->updates[i].tree_data;
         details.updates[i].tree_data = GetAXTreeData();
       }
@@ -6609,13 +6622,17 @@ void RenderFrameHostImpl::HandleAXEvents(
       }
     }
   }
-
-  // Always send an ACK or the renderer can be in a bad state.
-  std::move(callback).Run();
 }
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
+    const ui::AXTreeID& tree_id,
     std::vector<mojom::LocationChangesPtr> changes) {
+  if (tree_id != GetAXTreeID()) {
+    // The message has arrived after the frame has navigated which means its
+    // changes are no longer relevant and can be discarded.
+    return;
+  }
+
   if (accessibility_reset_token_ || IsInactiveAndDisallowActivation())
     return;
 
@@ -7774,17 +7791,6 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
         base::Unretained(this)));
   }
 
-  associated_registry_->AddInterface(base::BindRepeating(
-      [](RenderFrameHostImpl* impl,
-         mojo::PendingAssociatedReceiver<mojom::RenderAccessibilityHost>
-             receiver) {
-        impl->render_accessibility_host_receiver_.Bind(std::move(receiver));
-        impl->render_accessibility_host_receiver_.SetFilter(
-            impl->CreateMessageFilterForAssociatedReceiver(
-                mojom::RenderAccessibilityHost::Name_));
-      },
-      base::Unretained(this)));
-
   // TODO(crbug.com/1047354): How to avoid binding if the
   // BINDINGS_POLICY_DOM_AUTOMATION policy is not set?
   associated_registry_->AddInterface(base::BindRepeating(
@@ -7860,7 +7866,8 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
   geolocation_service_.reset();
   sensor_provider_proxy_.reset();
 
-  render_accessibility_host_receiver_.reset();
+  render_accessibility_host_.Reset();
+
   local_frame_host_receiver_.reset();
   local_main_frame_host_receiver_.reset();
   associated_registry_.reset();
@@ -8620,6 +8627,16 @@ void RenderFrameHostImpl::BindScreenEnumerationReceiver(
   if (!screen_enumeration_impl_)
     screen_enumeration_impl_ = std::make_unique<ScreenEnumerationImpl>(this);
   screen_enumeration_impl_->Bind(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindRenderAccessibilityHost(
+    mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver) {
+  render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
+      base::FeatureList::IsEnabled(
+          features::kRenderAccessibilityHostDeserializationOffMainThread)
+          ? base::ThreadPool::CreateSequencedTaskRunner({})
+          : base::SequencedTaskRunnerHandle::Get(),
+      weak_ptr_factory_.GetWeakPtr(), std::move(receiver), GetAXTreeID());
 }
 
 void RenderFrameHostImpl::CancelPrerendering(
