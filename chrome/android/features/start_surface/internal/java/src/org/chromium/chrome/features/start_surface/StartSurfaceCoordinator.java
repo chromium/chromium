@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -216,7 +217,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
-        mIsStartSurfaceEnabled = StartSurfaceConfiguration.isStartSurfaceEnabled();
+        mIsStartSurfaceEnabled = ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;

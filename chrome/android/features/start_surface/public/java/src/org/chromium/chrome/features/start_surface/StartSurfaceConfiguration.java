@@ -87,6 +87,7 @@ public class StartSurfaceConfiguration {
 
     /**
      * @return Whether the Start Surface is enabled.
+     * @Deprecated Use {@link ReturnToStartSurfaceUtil#isStartSurfaceHomepageEnabled()} instead.
      */
     public static boolean isStartSurfaceEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)

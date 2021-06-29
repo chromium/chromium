@@ -116,6 +116,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -648,7 +649,7 @@ public class InstantStartTest {
 
         Assert.assertTrue(TabUiFeatureUtilities.supportInstantStart(false));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertFalse(StartSurfaceConfiguration.isStartSurfaceEnabled());
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
@@ -676,7 +677,7 @@ public class InstantStartTest {
 
         Assert.assertFalse(TabUiFeatureUtilities.supportInstantStart(false));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertTrue(StartSurfaceConfiguration.isStartSurfaceEnabled());
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
@@ -1042,6 +1043,7 @@ public class InstantStartTest {
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
         "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
     public void testNewTabFromLauncher() throws IOException {
+        // clang-format on
         testNewTabFromLauncherImpl();
     }
 
@@ -1055,12 +1057,133 @@ public class InstantStartTest {
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
         "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
     public void testNewTabFromLauncherWithInstantStartDisabled() throws IOException {
+        // clang-format on
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         testNewTabFromLauncherImpl();
     }
 
-    private void testNewTabFromLauncherImpl() throws IOException {
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
+    public void testNewTabFromLauncherWithHomepageDisabled_NoFinale() throws IOException {
         // clang-format on
+        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewTabFromLauncherWithHomepageDisabledImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
+    public void testNewTabFromLauncherWithHomepageDisabled_NoFinale_NoInstant() throws IOException {
+        // clang-format on
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewTabFromLauncherWithHomepageDisabledImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
+    public void testNewTabFromLauncherWithHomepageDisabled_Finale() throws IOException {
+        // clang-format on
+        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewTabFromLauncherWithHomepageDisabledImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single/omnibox_focused_on_new_tab/true"})
+    public void testNewTabFromLauncherWithHomepageDisabled_Finale_NoInstant() throws IOException {
+        // clang-format on
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewTabFromLauncherWithHomepageDisabledImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
+    public void testShowTabSwitcherWhenHomepageDisabled() throws IOException {
+        // clang-format on
+        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertEquals(0, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
+    public void testShowTabSwitcherWhenHomepageDisabled_NoInstant() throws IOException {
+        // clang-format on
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertEquals(0, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:" +
+        "start_surface_variation/single"})
+    public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
+        // clang-format on
+        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:" +
+        "start_surface_variation/single"})
+    public void testShowLastTabWhenHomepageDisabledNoImmediateReturn_NoInstant()
+          throws IOException {
+        // clang-format on
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl();
+    }
+
+    private void testNewTabFromLauncherImpl() throws IOException {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
@@ -1086,6 +1209,72 @@ public class InstantStartTest {
                 cta.getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
+    }
+
+    private void testNewTabFromLauncherWithHomepageDisabledImpl() throws IOException {
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        Assert.assertFalse(HomepageManager.isHomepageEnabled());
+
+        // Launches new Tab from the launcher icon and verifies that a NTP is created and showing.
+        startNewTabFromLauncherIcon();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl())); });
+    }
+
+    private void testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl()
+            throws IOException {
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        Assert.assertFalse(HomepageManager.isHomepageEnabled());
+
+        // Launches Chrome and verifies that the Tab switcher is showing.
+        mActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        Assert.assertTrue(cta.getLayoutManager().overviewVisible());
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(startSurfaceCoordinator.getController().getStartSurfaceState(),
+                    StartSurfaceState.NOT_SHOWN);
+        });
+    }
+
+    private void testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl() throws IOException {
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        Assert.assertFalse(HomepageManager.isHomepageEnabled());
+
+        // Launches Chrome and verifies that the last visited Tab is showing.
+        mActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(startSurfaceCoordinator.getController().getStartSurfaceState(),
+                    StartSurfaceState.NOT_SHOWN);
         });
     }
 

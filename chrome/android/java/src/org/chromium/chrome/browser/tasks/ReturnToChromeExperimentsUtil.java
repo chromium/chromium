@@ -334,7 +334,7 @@ public final class ReturnToChromeExperimentsUtil {
      */
     private static ChromeActivity getActivityPresentingOverviewWithOmnibox(
             String url, boolean skipOverviewCheck) {
-        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) return null;
+        if (!isStartSurfaceHomepageEnabled()) return null;
 
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (!(activity instanceof ChromeActivity)) return null;
@@ -351,6 +351,14 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
+     * @return true when both Start Surface and homepage is enabled.
+     */
+    public static boolean isStartSurfaceHomepageEnabled() {
+        return HomepageManager.isHomepageEnabled()
+                && StartSurfaceConfiguration.isStartSurfaceEnabled();
+    }
+
+    /**
      * Check whether we should show Start Surface as the home page. This is used for all cases
      * except initial tab creation, which uses {@link
      * #shouldShowStartSurfaceAsTheHomePageNoTabs(Context)}.
@@ -360,6 +368,7 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
         return shouldShowStartSurfaceAsTheHomePageNoTabs(context)
+                && HomepageManager.isHomepageEnabled()
                 && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
     }
 

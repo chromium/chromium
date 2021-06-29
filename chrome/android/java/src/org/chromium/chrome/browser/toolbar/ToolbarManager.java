@@ -515,7 +515,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         boolean isGridTabSwitcherEnabled =
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(mActivity);
         boolean isTabToGtsAnimationEnabled = TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
-        boolean isStartSurfaceEnabled = StartSurfaceConfiguration.isStartSurfaceEnabled();
+        boolean isStartSurfaceEnabled =
+                ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
         boolean isTabGroupsAndroidContinuationEnabled =
                 TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mActivity);
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
@@ -868,7 +869,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         ChromeAccessibilityUtil.get().addObserver(this);
         mLocationBarModel.setShouldShowOmniboxInOverviewMode(
-                StartSurfaceConfiguration.isStartSurfaceEnabled());
+                ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
@@ -878,14 +879,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
             mStartSurface = startSurface;
             mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                assert StartSurfaceConfiguration.isStartSurfaceEnabled();
+                assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
                 mStartSurfaceState = newState;
                 mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, toolbarHeight);
             };
             mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
 
             mStartSurfaceHeaderOffsetChangeListener = (appbarLayout, verticalOffset) -> {
-                assert StartSurfaceConfiguration.isStartSurfaceEnabled();
+                assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
                 mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset, toolbarHeight);
             };
             mStartSurface.addHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
@@ -976,7 +977,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mHomepageStateListener.onHomepageStateUpdated();
 
         if (toolbarLayout instanceof ToolbarPhone
-                && StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+                && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
             identityDiscController.addObserver(
                     (canShowHint) -> mIdentityDiscStateSupplier.set(canShowHint));
         }
@@ -1014,7 +1015,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // Without this check, ToolbarPhone#computeVisualState may return
             // VisualState.NEW_TAB_NORMAL even if it's in start surface homepage, which leads
             // ToolbarPhone#getToolbarColorForVisualState to return transparent color.
-            if (StartSurfaceConfiguration.isStartSurfaceEnabled()
+            if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
                     && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                 return false;
             }

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -123,7 +124,7 @@ public class TabUiFeatureUtilities {
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
-                || StartSurfaceConfiguration.isStartSurfaceEnabled();
+                || ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
     }
 
     /**

@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -93,7 +92,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
 
         // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
         // pre-native.
-        if (!mInitializationComplete && StartSurfaceConfiguration.isStartSurfaceEnabled()
+        if (!mInitializationComplete
+                && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
                 && TabUiFeatureUtilities.supportInstantStart(
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity))) {
             try {

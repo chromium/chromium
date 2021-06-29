@@ -30,4 +30,7 @@ specific_include_rules = {
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
+  'ToolbarColors.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
+  ],
 }
