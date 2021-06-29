@@ -384,6 +384,15 @@
           'Debug_x64',
         ],
       },
+      'Win10 Tests x64 20h2': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 28
+        },
+      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--debug',
@@ -631,6 +640,17 @@
         },
       },
       'Win10 Tests x64': {
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+        'swarming': {
+          # This is for slow test execution that often becomes a critical path of
+          # swarming jobs. crbug.com/868114
+          'shards': 15,
+        }
+      },
+      'Win10 Tests x64 20h2': {
         # crbug.com/868082
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
@@ -1221,6 +1241,12 @@
       },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+      },
+      'Win10 Tests x64 20h2': {
         # crbug.com/868082
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
@@ -2808,6 +2834,7 @@
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
+      'Win10 Tests x64 20h2',
     ],
   },
   'telemetry_unittests': {
@@ -2823,6 +2850,7 @@
       'Mac10.11 Tests',
 
       'Win10 Tests x64',
+      'Win10 Tests x64 20h2',
     ],
   },
   'test_buildbucket_api_gpu_use_cases': {
