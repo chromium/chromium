@@ -12,9 +12,23 @@ enum CommitTextCursorBehavior {
   kMoveCursorBeforeText = 1,
 };
 
+enum CompositionSpanStyle {
+  // No styling.
+  kNone = 0,
+  // Default composition style. Usually, this adds an underline to the span.
+  kDefault = 1,
+};
+
+// A span with the composition text, used for styling parts of the composition.
+// The indices are relative to the composition text.
+struct CompositionSpan {
+  uint32 start;
+  uint32 end;
+  CompositionSpanStyle style;
+};
+
 struct AutocorrectSpan {
   // The range to set the autocorrect span to, currently having `current_text`.
-  // Relative to the text inside the focused text field, in UTF-16 code units.
   gfx.mojom.Range autocorrect_range;
 
   // The original text that was replaced by autocorrect.
@@ -129,7 +143,8 @@ interface InputMethodHost {
   // Replaces the current composition if there is one. Otherwise, start a
   // new composition at the current cursor position, deleting any text in the
   // current selection if any. The cursor is moved to the end of `text`.
-  SetComposition(mojo_base.mojom.String16 text);
+  // `spans` is used to style `text`.
+  SetComposition(mojo_base.mojom.String16 text, array<CompositionSpan> spans);
 
   // Asks the focused input field to mark the range of text spanned by
   // `start_index` and `end_index` as the current composition, where index 0

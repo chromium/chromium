@@ -77,7 +77,11 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               (const std::u16string& text,
                mojom::CommitTextCursorBehavior cursor_behavior),
               (override));
-  MOCK_METHOD(void, SetComposition, (const std::u16string& text), (override));
+  MOCK_METHOD(void,
+              SetComposition,
+              (const std::u16string& text,
+               std::vector<mojom::CompositionSpanPtr> spans),
+              (override));
   MOCK_METHOD(void,
               SetCompositionRange,
               (uint32_t start_index, uint32_t end_index),
@@ -299,7 +303,15 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   ime::Wrapper proto;
   proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
 
-  EXPECT_CALL(mock_host_, SetComposition(std::u16string(u"hello")));
+  EXPECT_CALL(mock_host_,
+              SetComposition(std::u16string(u"hello"), ::testing::_))
+      .WillOnce(
+          ::testing::Invoke([](const std::u16string& text,
+                               std::vector<mojom::CompositionSpanPtr> spans) {
+            ASSERT_EQ(spans.size(), 1U);
+            EXPECT_EQ(spans[0], mojom::CompositionSpan::New(
+                                    0, 5, mojom::CompositionSpanStyle::kNone));
+          }));
 
   const std::string serialized = proto.SerializeAsString();
   decoder_entry_points_.delegate()->Process(

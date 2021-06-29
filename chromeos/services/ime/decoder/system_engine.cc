@@ -221,8 +221,12 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kSetComposition: {
-      host->SetComposition(
-          ConvertToUtf16AndNormalize(reply.set_composition().text()));
+      std::u16string text =
+          ConvertToUtf16AndNormalize(reply.set_composition().text());
+      std::vector<ime::mojom::CompositionSpanPtr> spans;
+      spans.push_back(ime::mojom::CompositionSpan::New(
+          0, text.length(), ime::mojom::CompositionSpanStyle::kNone));
+      host->SetComposition(std::move(text), std::move(spans));
       break;
     }
     case ime::PublicMessage::kSetCompositionRange: {

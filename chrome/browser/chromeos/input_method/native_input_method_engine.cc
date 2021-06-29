@@ -142,6 +142,26 @@ ime::mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
       ModifierStateFromEvent(event));
 }
 
+ui::ImeTextSpan::Thickness GetCompositionSpanThickness(
+    const ime::mojom::CompositionSpanStyle& style) {
+  switch (style) {
+    case ime::mojom::CompositionSpanStyle::kNone:
+      return ui::ImeTextSpan::Thickness::kNone;
+    case ime::mojom::CompositionSpanStyle::kDefault:
+      return ui::ImeTextSpan::Thickness::kThin;
+  }
+}
+
+// Not using a StructTraits here because the mapping is not 1:1.
+ui::ImeTextSpan CompositionSpanToImeTextSpan(
+    const ime::mojom::CompositionSpan& span) {
+  return ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, span.start,
+                         span.end, GetCompositionSpanThickness(span.style),
+                         span.style == ime::mojom::CompositionSpanStyle::kNone
+                             ? ui::ImeTextSpan::UnderlineStyle::kNone
+                             : ui::ImeTextSpan::UnderlineStyle::kSolid);
+}
+
 void OnConnected(bool bound) {
   LogEvent(bound ? ImeServiceEvent::kActivateImeSuccess
                  : ImeServiceEvent::kActivateImeFailed);
@@ -569,14 +589,16 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
 }
 
 void NativeInputMethodEngine::ImeObserver::SetComposition(
-    const std::u16string& text) {
+    const std::u16string& text,
+    std::vector<ime::mojom::CompositionSpanPtr> spans) {
   ui::CompositionText composition;
   composition.text = text;
-  // TODO(b/151884011): Turn on underlining for composition-based languages.
-  composition.ime_text_spans = {ui::ImeTextSpan(
-      ui::ImeTextSpan::Type::kComposition, 0, composition.text.length(),
-      ui::ImeTextSpan::Thickness::kNone,
-      ui::ImeTextSpan::UnderlineStyle::kNone)};
+
+  composition.ime_text_spans.reserve(spans.size());
+  for (const auto& span : spans) {
+    composition.ime_text_spans.push_back(CompositionSpanToImeTextSpan(*span));
+  }
+
   GetInputContext()->UpdateCompositionText(
       std::move(composition), /*cursor_pos=*/composition.text.length(),
       /*visible=*/true);

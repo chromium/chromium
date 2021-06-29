@@ -133,7 +133,9 @@ class NativeInputMethodEngine
     void CommitText(
         const std::u16string& text,
         ime::mojom::CommitTextCursorBehavior cursor_behavior) override;
-    void SetComposition(const std::u16string& text) override;
+    void SetComposition(
+        const std::u16string& text,
+        std::vector<ime::mojom::CompositionSpanPtr> spans) override;
     void SetCompositionRange(uint32_t start_index, uint32_t end_index) override;
     void FinishComposition() override;
     void DeleteSurroundingText(uint32_t num_before_cursor,
