@@ -2159,15 +2159,18 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->ya_tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
-  // Use provided, unclipped texture coordinates as the content area, which will
-  // force coord clamping unless the geometry was clipped, or they span the
-  // entire YUV image.
-  SkPaint paint = params->paint(GetContentColorFilter());
-
   sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
       src_color_space, dst_color_space, quad->resource_offset,
       quad->resource_multiplier);
-  paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
+
+  auto content_color_filter = GetContentColorFilter();
+  if (content_color_filter)
+    color_filter = content_color_filter->makeComposed(color_filter);
+
+  // Use provided, unclipped texture coordinates as the content area, which will
+  // force coord clamping unless the geometry was clipped, or they span the
+  // entire YUV image.
+  SkPaint paint = params->paint(color_filter);
 
   DrawSingleImage(image, quad->ya_tex_coord_rect, rpdq_params, &paint, params);
 }
