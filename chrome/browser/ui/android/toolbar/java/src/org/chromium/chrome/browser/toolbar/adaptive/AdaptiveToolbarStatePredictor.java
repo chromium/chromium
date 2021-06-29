@@ -141,7 +141,7 @@ public class AdaptiveToolbarStatePredictor {
 
     @VisibleForTesting
     boolean readToolbarToggleStateFromPrefs() {
-        return AdaptiveToolbarPrefs.isCustomizationEnabled();
+        return AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled();
     }
 
     /**

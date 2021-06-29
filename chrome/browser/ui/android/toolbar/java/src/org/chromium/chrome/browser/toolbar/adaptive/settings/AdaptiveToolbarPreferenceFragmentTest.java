@@ -78,10 +78,21 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     @Feature({"AdaptiveToolbar"})
     public void testSelectShortcuts() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(AdaptiveToolbarPrefs.isCustomizationEnabled());
+            Assert.assertFalse(SharedPreferencesManager.getInstance().contains(
+                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
+            Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
 
             mSwitchPreference.performClick();
-            Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationEnabled());
+            Assert.assertFalse(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+            Assert.assertTrue(SharedPreferencesManager.getInstance().contains(
+                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
+            Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
+
+            mSwitchPreference.performClick();
+            Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
+            Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED, false));
 
             int expectedDefaultShortcut = AdaptiveToolbarButtonVariant.AUTO;
             Assert.assertEquals("Incorrect default setting.", expectedDefaultShortcut,
