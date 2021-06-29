@@ -20,7 +20,7 @@
 @property(nonatomic, assign) BOOL stateChangedDuringAnimation;
 @property(nonatomic, assign) BOOL finalOmniboxFocusedState;
 @property(nonatomic, assign) BOOL finalToolbarExpandedState;
-@property(nonatomic, assign) int inProgressAnimationCount;
+@property(nonatomic, assign) unsigned int inProgressAnimationCount;
 
 @end
 
@@ -327,7 +327,12 @@
   // inProgressAnimation count should never be negative because it should
   // always be incremented before starting an animation and decremented
   // when the animation finishes.
-  DCHECK(self.inProgressAnimationCount == 0);
+  // TODO(crbug.com/1224915): Relaxing DCHECK for iOS15 as this negative. See
+  // crbug for steps to reproduce.
+  if (@available(iOS 15, *)) {
+  } else {
+    DCHECK(self.inProgressAnimationCount == 0);
+  }
 
   self.isAnimating = NO;
   if (self.stateChangedDuringAnimation) {
