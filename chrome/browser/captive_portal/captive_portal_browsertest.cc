@@ -3073,8 +3073,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
 
 // Test that CaptivePortalTabHelper does not support the redirect navigation on
 // non-primary trees.
+// Flaky. See https://crbug.com/1224288.
 IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
-                       DontFireOnRedirectDuringPrerendering) {
+                       DISABLED_DontFireOnRedirectDuringPrerendering) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
