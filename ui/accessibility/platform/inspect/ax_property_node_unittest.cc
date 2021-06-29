@@ -84,6 +84,9 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").IsDict(), false);
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").IsArray(), false);
   EXPECT_EQ(GetArgumentNode("ChildAt(3)").AsInt(), 3);
+  EXPECT_EQ(GetArgumentNode("AXPerformAction(AXPress)").AsString(), "AXPress");
+  EXPECT_EQ(GetArgumentNode("AXPerformAction('AXPress')").AsString(),
+            "AXPress");
 
   // Dict: FindStringKey
   EXPECT_EQ(

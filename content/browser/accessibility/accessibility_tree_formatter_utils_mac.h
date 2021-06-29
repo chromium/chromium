@@ -115,6 +115,7 @@ class CONTENT_EXPORT AttributeInvoker final {
   OptionalNSObject ParamByPropertyNode(const ui::AXPropertyNode&) const;
 
   NSNumber* PropertyNodeToInt(const ui::AXPropertyNode&) const;
+  NSString* PropertyNodeToString(const ui::AXPropertyNode&) const;
   NSArray* PropertyNodeToIntArray(const ui::AXPropertyNode&) const;
   NSValue* PropertyNodeToRange(const ui::AXPropertyNode&) const;
   gfx::NativeViewAccessible PropertyNodeToUIElement(

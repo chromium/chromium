@@ -68,6 +68,14 @@ CONTENT_EXPORT void SetAttributeValueOf(const id node,
                                         NSString* attribute,
                                         id value);
 
+// Returns a list of actions supported on a given accessible node (either
+// AXUIElement or BrowserAccessibilityCocoa).
+CONTENT_EXPORT NSArray* ActionNamesOf(const id node);
+
+// Performs action on a given accessible node (either AXUIElement or
+// BrowserAccessibilityCocoa).
+CONTENT_EXPORT void PerformAction(const id node, NSString* action);
+
 //
 // Returns DOM id of a given node (either AXUIElement or
 // BrowserAccessibilityCocoa).

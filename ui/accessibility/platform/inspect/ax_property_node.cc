@@ -71,6 +71,14 @@ absl::optional<int> AXPropertyNode::AsInt() const {
   return value;
 }
 
+std::string AXPropertyNode::AsString() const {
+  if (name_or_value.size() > 1 && name_or_value[0] == '\'' &&
+      name_or_value[name_or_value.size() - 1] == '\'') {
+    return name_or_value.substr(1, name_or_value.size() - 2);
+  }
+  return name_or_value;
+}
+
 const AXPropertyNode* AXPropertyNode::FindKey(const char* refkey) const {
   for (const auto& param : arguments) {
     if (param.key == refkey) {

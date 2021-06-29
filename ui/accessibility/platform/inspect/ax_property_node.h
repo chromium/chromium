@@ -84,6 +84,7 @@ class AX_EXPORT AXPropertyNode final {
   bool IsArray() const;
   bool IsDict() const;
   absl::optional<int> AsInt() const;
+  std::string AsString() const;
   const AXPropertyNode* FindKey(const char* refkey) const;
   absl::optional<std::string> FindStringKey(const char* refkey) const;
   absl::optional<int> FindIntKey(const char* key) const;

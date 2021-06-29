@@ -429,4 +429,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_ActionNames) {
+  TestAndCheck(
+      R"~~(data:text/html,
+                    <button id='button'>Press me</button>)~~",
+      {{"button.AXActionNames", SCRIPT}}, {{"*", "*"}},
+      R"~~(button.AXActionNames=['AXPress', 'AXShowMenu', 'AXScrollToVisible']
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_PerformAction) {
+  TestAndCheck(R"~~(data:text/html,
+                    <button id='button'>Press me</button>)~~",
+               {{"button.AXPerformAction(AXPress)", SCRIPT}}, {{"*", "*"}},
+               R"~~()~~");
+}
+
 }  // namespace content

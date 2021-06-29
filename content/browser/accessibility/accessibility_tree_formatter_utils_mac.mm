@@ -154,6 +154,19 @@ OptionalNSObject AttributeInvoker::InvokeFor(
 OptionalNSObject AttributeInvoker::InvokeForAXElement(
     const id target,
     const AXPropertyNode& property_node) const {
+  // Actions.
+  if (property_node.name_or_value == "AXActionNames") {
+    return OptionalNSObject::NotNullOrNotApplicable(ActionNamesOf(target));
+  }
+  if (property_node.name_or_value == "AXPerformAction") {
+    OptionalNSObject param = ParamByPropertyNode(property_node);
+    if (param.IsNotNil()) {
+      PerformAction(target, *param);
+      return OptionalNSObject::NotApplicable();
+    }
+    return OptionalNSObject::Error();
+  }
+
   // Attributes.
   for (NSString* attribute : AttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
@@ -277,6 +290,9 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
       property_name == "AXTextMarkerForIndex") {  // Int
     return OptionalNSObject::NotNilOrError(PropertyNodeToInt(arg_node));
   }
+  if (property_name == "AXPerformAction") {
+    return OptionalNSObject::NotNilOrError(PropertyNodeToString(arg_node));
+  }
   if (property_name == "AXCellForColumnAndRow") {  // IntArray
     return OptionalNSObject::NotNilOrError(PropertyNodeToIntArray(arg_node));
   }
@@ -309,6 +325,12 @@ NSNumber* AttributeInvoker::PropertyNodeToInt(
     INT_FAIL(intnode, "not a number")
   }
   return [NSNumber numberWithInt:*param];
+}
+
+NSString* AttributeInvoker::PropertyNodeToString(
+    const AXPropertyNode& strnode) const {
+  std::string str = strnode.AsString();
+  return base::SysUTF8ToNSString(str);
 }
 
 // NSArray of two NSNumber. Format: [integer, integer].

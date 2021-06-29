@@ -209,6 +209,39 @@ void SetAttributeValueOf(const id node, NSString* attribute, id value) {
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 
+NSArray* ActionNamesOf(const id node) {
+  if (IsBrowserAccessibilityCocoa(node))
+    return [node accessibilityActionNames];
+
+  if (IsAXUIElement(node)) {
+    CFArrayRef attributes_ref;
+    if ((AXUIElementCopyActionNames(static_cast<AXUIElementRef>(node),
+                                    &attributes_ref)) == kAXErrorSuccess)
+      return static_cast<NSArray*>(attributes_ref);
+    return nil;
+  }
+
+  NOTREACHED()
+      << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
+  return nil;
+}
+
+void PerformAction(const id node, NSString* action) {
+  if (IsBrowserAccessibilityCocoa(node)) {
+    [node accessibilityPerformAction:action];
+    return;
+  }
+
+  if (IsAXUIElement(node)) {
+    AXUIElementPerformAction(static_cast<AXUIElementRef>(node),
+                             static_cast<CFStringRef>(action));
+    return;
+  }
+
+  NOTREACHED()
+      << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
+}
+
 std::string GetDOMId(const id node) {
   const id domid_value =
       AttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
