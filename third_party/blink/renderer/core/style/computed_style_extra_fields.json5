@@ -945,6 +945,14 @@
       inherited: true,
     },
     {
+      name: "ColorSchemeOnly",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      custom_compare: true,
+      inherited: true,
+    },
+    {
       name: "IsInBlockifyingDisplay",
       field_template: "monotonic_flag",
       default_value: "false",

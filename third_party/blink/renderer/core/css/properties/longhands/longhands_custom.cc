@@ -1610,6 +1610,7 @@ const CSSValue* ColorScheme::ParseSingleValue(
   if (range.Peek().Id() == CSSValueID::kNormal)
     return css_parsing_utils::ConsumeIdent(range);
 
+  CSSValue* only = nullptr;
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   do {
     CSSValueID id = range.Peek().Id();
@@ -1621,14 +1622,29 @@ const CSSValue* ColorScheme::ParseSingleValue(
       return nullptr;
     }
     CSSValue* value =
-        css_parsing_utils::ConsumeIdent<CSSValueID::kDark, CSSValueID::kLight>(
-            range);
+        css_parsing_utils::ConsumeIdent<CSSValueID::kDark, CSSValueID::kLight,
+                                        CSSValueID::kOnly>(range);
+    if (id == CSSValueID::kOnly &&
+        RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled()) {
+      if (only)
+        return nullptr;
+      if (values->length()) {
+        values->Append(*value);
+        return values;
+      }
+      only = value;
+      continue;
+    }
     if (!value)
       value = css_parsing_utils::ConsumeCustomIdent(range, context);
     if (!value)
       return nullptr;
     values->Append(*value);
   } while (!range.AtEnd());
+  if (!values->length())
+    return nullptr;
+  if (only)
+    values->Append(*only);
   return values;
 }
 
@@ -1652,11 +1668,13 @@ const CSSValue* ColorScheme::InitialValue() const {
 void ColorScheme::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetColorScheme(Vector<AtomicString>());
   state.Style()->SetDarkColorScheme(false);
+  state.Style()->SetColorSchemeOnly(false);
 }
 
 void ColorScheme::ApplyInherit(StyleResolverState& state) const {
   state.Style()->SetColorScheme(state.ParentStyle()->ColorScheme());
   state.Style()->SetDarkColorScheme(state.ParentStyle()->DarkColorScheme());
+  state.Style()->SetColorSchemeOnly(state.ParentStyle()->ColorSchemeOnly());
 }
 
 void ColorScheme::ApplyValue(StyleResolverState& state,
@@ -1665,28 +1683,40 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal);
     state.Style()->SetColorScheme(Vector<AtomicString>());
     state.Style()->SetDarkColorScheme(false);
+    state.Style()->SetColorSchemeOnly(false);
   } else if (const auto* scheme_list = DynamicTo<CSSValueList>(value)) {
     bool prefers_dark =
         state.GetDocument().GetStyleEngine().GetPreferredColorScheme() ==
         mojom::blink::PreferredColorScheme::kDark;
     bool has_dark = false;
     bool has_light = false;
+    bool has_only = false;
     Vector<AtomicString> color_schemes;
     for (auto& item : *scheme_list) {
       if (const auto* custom_ident = DynamicTo<CSSCustomIdentValue>(*item)) {
         color_schemes.push_back(custom_ident->Value());
       } else if (const auto* ident = DynamicTo<CSSIdentifierValue>(*item)) {
         color_schemes.push_back(ident->CssText());
-        if (ident->GetValueID() == CSSValueID::kDark)
-          has_dark = true;
-        else if (ident->GetValueID() == CSSValueID::kLight)
-          has_light = true;
+        switch (ident->GetValueID()) {
+          case CSSValueID::kDark:
+            has_dark = true;
+            break;
+          case CSSValueID::kLight:
+            has_light = true;
+            break;
+          case CSSValueID::kOnly:
+            has_only = true;
+            break;
+          default:
+            break;
+        }
       } else {
         NOTREACHED();
       }
     }
     state.Style()->SetColorScheme(color_schemes);
     state.Style()->SetDarkColorScheme(has_dark && (!has_light || prefers_dark));
+    state.Style()->SetColorSchemeOnly(has_only);
 
     if (has_dark) {
       // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
