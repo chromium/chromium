@@ -824,7 +824,7 @@ def _bootstrap_properties(ctx):
             })
 
             builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
-            builder.exe.cipd_version = "refs/heads/main"
+            builder.exe.cipd_version = "latest"
             builder.exe.cmd = ["bootstrapper"]
 
 lucicfg.generator(_bootstrap_properties)
