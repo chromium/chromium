@@ -81,6 +81,7 @@ class LockToSingleUserManager;
 namespace chromeos {
 
 class BulkPrintersCalculatorFactory;
+class DebugdNotificationHandler;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class LoginScreenExtensionsLifetimeManager;
@@ -142,6 +143,7 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<FastTransitionObserver> fast_transition_observer_;
   std::unique_ptr<NetworkThrottlingObserver> network_throttling_observer_;
   std::unique_ptr<NetworkChangeManagerClient> network_change_manager_client_;
+  std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 

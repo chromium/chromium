@@ -108,6 +108,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  void PacketCaptureStartSignalReceived(dbus::Signal* signal) override;
+  void PacketCaptureStopSignalReceived(dbus::Signal* signal) override;
+  void StopPacketCapture(const std::string& handle) override;
+
   // Sets debugging features mask for testing.
   virtual void SetDebuggingFeaturesStatus(int features_mask);
 

@@ -23,6 +23,7 @@
 #include "base/trace_event/tracing_agent.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace cryptohome {
@@ -310,6 +311,15 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void SetSwapParameter(const std::string& parameter,
                                 int32_t value,
                                 DBusMethodCallback<std::string> callback) = 0;
+
+  // Stops the packet capture process identified with |handle|. |handle| is a
+  // unique process identifier that is returned from debugd's PacketCaptureStart
+  // D-Bus method when the packet capture process is started. Stops all on-going
+  // packet capture operations if the |handle| is empty.
+  virtual void StopPacketCapture(const std::string& handle) = 0;
+
+  virtual void PacketCaptureStartSignalReceived(dbus::Signal* signal) = 0;
+  virtual void PacketCaptureStopSignalReceived(dbus::Signal* signal) = 0;
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().

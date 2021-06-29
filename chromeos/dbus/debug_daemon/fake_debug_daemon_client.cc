@@ -321,4 +321,21 @@ void FakeDebugDaemonClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void FakeDebugDaemonClient::PacketCaptureStartSignalReceived(
+    dbus::Signal* signal) {
+  for (auto& observer : observers_)
+    observer.OnPacketCaptureStarted();
+}
+
+void FakeDebugDaemonClient::PacketCaptureStopSignalReceived(
+    dbus::Signal* signal) {
+  for (auto& observer : observers_)
+    observer.OnPacketCaptureStopped();
+}
+
+void FakeDebugDaemonClient::StopPacketCapture(const std::string& handle) {
+  // Act like PacketCaptureStop signal is received.
+  PacketCaptureStopSignalReceived(nullptr);
+}
+
 }  // namespace chromeos

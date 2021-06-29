@@ -91,6 +91,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -704,6 +705,11 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
   SystemProxyManager::Initialize(g_browser_process->local_state());
+
+  debugd_notification_handler_ =
+      std::make_unique<chromeos::DebugdNotificationHandler>(
+          DBusThreadManager::Get()->GetDebugDaemonClient());
+
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
 
@@ -1249,6 +1255,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   gnubby_notification_.reset();
   login_screen_extensions_lifetime_manager_.reset();
   login_screen_extensions_storage_cleaner_.reset();
+  debugd_notification_handler_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();

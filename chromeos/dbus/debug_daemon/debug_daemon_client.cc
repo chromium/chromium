@@ -649,6 +649,18 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void StopPacketCapture(const std::string& handle) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kPacketCaptureStop);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(handle);
+
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnStopMethod,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // DebugDaemonClient Observer overrides.
   void AddObserver(Observer* observer) override {
     DCHECK(observer);
@@ -665,7 +677,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     debugdaemon_proxy_ =
         bus->GetObjectProxy(debugd::kDebugdServiceName,
                             dbus::ObjectPath(debugd::kDebugdServicePath));
-
     // Listen to D-Bus signals emitted by debugd.
     auto on_connected_callback =
         base::BindRepeating(&DebugDaemonClientImpl::SignalConnected,
@@ -804,6 +815,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnStartMethod(dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to request start";
+      return;
+    }
+  }
+
+  // Called when a response for a simple stop is received.
+  void OnStopMethod(dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to request stop method through D-Bus";
       return;
     }
   }
@@ -1065,12 +1084,12 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       LOG(ERROR) << "Failed to connect to signal " << signal_name << ".";
   }
 
-  void PacketCaptureStartSignalReceived(dbus::Signal* signal) {
+  void PacketCaptureStartSignalReceived(dbus::Signal* signal) override {
     for (auto& observer : observers_)
       observer.OnPacketCaptureStarted();
   }
 
-  void PacketCaptureStopSignalReceived(dbus::Signal* signal) {
+  void PacketCaptureStopSignalReceived(dbus::Signal* signal) override {
     for (auto& observer : observers_)
       observer.OnPacketCaptureStopped();
   }
