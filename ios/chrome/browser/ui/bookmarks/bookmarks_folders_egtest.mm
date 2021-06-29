@@ -220,7 +220,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI scrollToBottom];
 
   // Folder should still be in Edit mode, because of this match for Value.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityValue(@"New Folder")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(@"New Folder"),
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }
 
