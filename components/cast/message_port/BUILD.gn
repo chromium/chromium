@@ -16,7 +16,6 @@ declare_args() {
 buildflag_header("message_port_buildflags") {
   header = "message_port_buildflags.h"
   flags = [ "USE_MESSAGE_PORT_CORE=$use_message_port_core" ]
-  visibility = [ ":*" ]
 }
 
 source_set("message_port") {
