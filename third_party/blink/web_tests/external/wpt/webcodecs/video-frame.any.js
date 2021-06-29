@@ -106,15 +106,20 @@ test(t => {
 }, 'Test constructing VideoFrames from closed ImageBitmap throws.');
 
 test(t => {
-  let vfInit = {format: 'ABCD', timestamp: 1234, codedWidth: 4,
-                codedHeight: 2};
-  assert_throws_js(TypeError, () => {
-    let frame = new VideoFrame([], vfInit);
-  }, 'invalid pixel format');
+  assert_throws_js(
+      TypeError,
+      () => new VideoFrame([], {
+          format: 'ABCD',
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2
+      }),
+      'invalid pixel format');
 
-  assert_throws_js(TypeError, () => {
-    let frame = new VideoFrame([], {format: 'RGBA', timestamp: 1234});
-  }, 'missing coded size');
+  assert_throws_js(
+      TypeError,
+      () => new VideoFrame([], {format: 'RGBA', timestamp: 1234}),
+      'missing coded size');
 
   function constructFrame(init) {
     let yPlaneData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);  // 4x2
@@ -125,68 +130,76 @@ test(t => {
                                {...init, format: 'I420'});
   }
 
-  assert_throws_dom(
-      'ConstraintError', () => {constructFrame({
-                           timestamp: 1234,
-                           codedWidth: Math.pow(2, 32) - 1,
-                           codedHeight: Math.pow(2, 32) - 1,
-                         })},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: Math.pow(2, 32) - 1,
+          codedHeight: Math.pow(2, 32) - 1,
+      }),
       'invalid coded size');
-  assert_throws_dom(
-      'ConstraintError',
-      () => {constructFrame({timestamp: 1234, codedWidth: 4, codedHeight: 0})},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({timestamp: 1234, codedWidth: 4, codedHeight: 0}),
       'invalid coded height');
-  assert_throws_dom(
-      'ConstraintError',
-      () => {constructFrame({timestamp: 1234, codedWidth: 0, codedHeight: 4})},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({timestamp: 1234, codedWidth: 0, codedHeight: 4}),
       'invalid coded width');
-  assert_throws_dom(
-      'ConstraintError', () => {constructFrame({
-                           timestamp: 1234,
-                           codedWidth: 4,
-                           codedHeight: 2,
-                           visibleRect: {x: 100, y: 100, width: 1,
-                                         height: 1}
-                         })},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          visibleRect: {x: 100, y: 100, width: 1, height: 1}
+       }),
       'invalid visible left/right');
-  assert_throws_dom(
-      'ConstraintError',
-      () => {constructFrame(
-          {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRect: {x: 0, y: 0, width: 0, height: 2}})},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          visibleRect: {x: 0, y: 0, width: 0, height: 2}
+      }),
       'invalid visible width');
-  assert_throws_dom(
-      'ConstraintError',
-      () => {constructFrame(
-          {timestamp: 1234, codedWidth: 4, codedHeight: 2,
-           visibleRect: {x: 0, y: 0, width: 2, height: 0}})},
+  assert_throws_js(
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          visibleRect: {x: 0, y: 0, width: 2, height: 0}
+      }),
       'invalid visible height');
   assert_throws_js(
       TypeError,
-      () => constructFrame({timestamp: 1234,
-                            codedWidth: 4,
-                            codedHeight: 2,
-                            visibleRect: {x: 0,
-                                          y: 0,
-                                          width: -100,
-                                          height: -100}}),
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          visibleRect: {x: 0, y: 0, width: -100, height: -100}
+      }),
       'invalid negative visible size');
   assert_throws_js(
-      TypeError, () => {constructFrame({
-                   timestamp: 1234,
-                   codedWidth: 4,
-                   codedHeight: 2,
-                   displayWidth: Math.pow(2, 32),
-                 })},
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          displayWidth: Math.pow(2, 32),
+      }),
       'invalid display width');
   assert_throws_js(
-      TypeError, () => {constructFrame({
-                   timestamp: 1234,
-                   codedWidth: 4,
-                   codedHeight: 2,
-                   displayWidth: Math.pow(2, 32) - 1,
-                   displayHeight: Math.pow(2, 32)
-                 })},
+      TypeError,
+      () => constructFrame({
+          timestamp: 1234,
+          codedWidth: 4,
+          codedHeight: 2,
+          displayWidth: Math.pow(2, 32) - 1,
+          displayHeight: Math.pow(2, 32)
+      }),
       'invalid display height');
 }, 'Test invalid planar constructed VideoFrames');
 
@@ -207,35 +220,35 @@ test(t => {
   verifyPlane(vPlane, frame.planes[2]);
   frame.close();
 
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let frame = new VideoFrame([yPlane, uPlane], vfInit);
   }, 'too few planes');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badYPlane = {...yPlane};
     badYPlane.stride = 1;
     let frame = new VideoFrame([badYPlane, uPlane, vPlane], vfInit);
   }, 'y stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badUPlane = {...uPlane};
     badUPlane.stride = 1;
     let frame = new VideoFrame([yPlane, badUPlane, vPlane], vfInit);
   }, 'u stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badVPlane = {...vPlane};
     badVPlane.stride = 1;
     let frame = new VideoFrame([yPlane, uPlane, badVPlane], vfInit);
   }, 'v stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badYPlane = {...yPlane};
     badYPlane.src = yPlaneData.slice(1, 4);
     let frame = new VideoFrame([badYPlane, uPlane, vPlane], vfInit);
   }, 'y plane size too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badUPlane = {...uPlane};
     badUPlane.src = uPlaneData.slice(1, 1);
     let frame = new VideoFrame([yPlane, badUPlane, vPlane], vfInit);
   }, 'u plane size too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badVPlane = {...vPlane};
     badVPlane.src = uPlaneData.slice(1, 1);
     let frame = new VideoFrame([yPlane, uPlane, badVPlane], vfInit);
@@ -264,13 +277,13 @@ test(t => {
 
   // Most constraints are tested as part of I420 above.
 
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badAPlane = {...aPlane};
     badAPlane.stride = 1;
     let frame =
         new VideoFrame([yPlane, uPlane, vPlane, badAPlane], vfInit);
   }, 'a stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badAPlane = {...yPlane};
     badAPlane.src = aPlaneData.slice(1, 4);
     let frame =
@@ -294,25 +307,25 @@ test(t => {
   verifyPlane(uvPlane, frame.planes[1]);
   frame.close();
 
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let frame = new VideoFrame([yPlane], vfInit);
   }, 'too few planes');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badYPlane = {...yPlane};
     badYPlane.stride = 1;
     let frame = new VideoFrame([badYPlane, uvPlane], vfInit);
   }, 'y stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badUVPlane = {...uvPlane};
     badUVPlane.stride = 2;
     let frame = new VideoFrame([yPlane, badUVPlane], vfInit);
   }, 'uv stride too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badYPlane = {...yPlane};
     badYPlane.src = yPlaneData.slice(1, 4);
     let frame = new VideoFrame([badYPlane, uvPlane], vfInit);
   }, 'y plane size too small');
-  assert_throws_dom('ConstraintError', () => {
+  assert_throws_js(TypeError, () => {
     let badUVPlane = {...uvPlane};
     badUVPlane.src = uvPlaneData.slice(1, 1);
     let frame = new VideoFrame([yPlane, badUVPlane], vfInit);
@@ -353,15 +366,15 @@ test(t => {
   frame.close();
 
   ['RGBA', 'RGBX', 'BGRA', 'BGRX'].forEach(fmt => {
-    assert_throws_dom('ConstraintError', () => {
+    assert_throws_js(TypeError, () => {
       let frame = new VideoFrame([], {...vfInit, format: fmt});
     }, fmt + ': too few planes');
-    assert_throws_dom('ConstraintError', () => {
+    assert_throws_js(TypeError, () => {
       let badARGBPlane = {...argbPlane};
       badARGBPlane.stride = 1;
       let frame = new VideoFrame([badARGBPlane], {...vfInit, format: fmt});
     }, fmt + ': stride too small');
-    assert_throws_dom('ConstraintError', () => {
+    assert_throws_js(TypeError, () => {
       let badARGBPlane = {...argbPlane};
       badARGBPlane.src = argbPlaneData.slice(1, 4);
       let frame = new VideoFrame([badARGBPlane], {...vfInit, format: fmt});

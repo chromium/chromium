@@ -26,8 +26,6 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long displayAspectHeight;
 
   // TODO(sandersd): color space.
-  // TODO(sandersd): Constraints (sequential access) and requirements
-  // (imagebitmap, colorspace conversion).
 
   HardwarePreference hardwareAcceleration = "allow";
 

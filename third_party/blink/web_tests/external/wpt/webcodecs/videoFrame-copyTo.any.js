@@ -99,7 +99,7 @@ promise_test(async t => {
 promise_test(async t => {
   const frame = makeI420_4x2();
   const data = new Uint8Array(11);
-  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data));
+  await promise_rejects_js(t, TypeError, frame.copyTo(data));
 }, 'Test undersized buffer.');
 
 promise_test(async t => {
@@ -107,9 +107,9 @@ promise_test(async t => {
   const options = {
     layout: [{offset: 0, stride: 4}],
   };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
+  assert_throws_js(TypeError, () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+  await promise_rejects_js(t, TypeError, frame.copyTo(data, options));
 }, 'Test incorrect plane count.');
 
 promise_test(async t => {
@@ -168,9 +168,9 @@ promise_test(async t => {
           {offset: 10, stride: 2},
       ],
   };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
+  assert_throws_js(TypeError, () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+  await promise_rejects_js(t, TypeError, frame.copyTo(data, options));
 }, 'Test invalid stride.');
 
 promise_test(async t => {
@@ -182,9 +182,9 @@ promise_test(async t => {
           {offset: 2 ** 32 - 2, stride: 2},
       ],
   };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
+  assert_throws_js(TypeError, () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+  await promise_rejects_js(t, TypeError, frame.copyTo(data, options));
 }, 'Test address overflow.');
 
 promise_test(async t => {
@@ -224,9 +224,9 @@ promise_test(async t => {
   const options = {
       rect: {x: 0, y: 0, width: 4, height: 1},
   };
-  assert_throws_dom('ConstraintError', () => frame.allocationSize(options));
+  assert_throws_js(TypeError, () => frame.allocationSize(options));
   const data = new Uint8Array(12);
-  await promise_rejects_dom(t, 'ConstraintError', frame.copyTo(data, options));
+  await promise_rejects_js(t, TypeError, frame.copyTo(data, options));
 }, 'Test unaligned rect.');
 
 promise_test(async t => {

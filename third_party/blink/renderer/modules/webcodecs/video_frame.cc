@@ -444,10 +444,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   if (coded_width == 0 || coded_width > media::limits::kMaxDimension ||
       coded_height == 0 || coded_height > media::limits::kMaxDimension ||
       coded_width * coded_height > media::limits::kMaxCanvas) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kConstraintError,
-        String::Format("Invalid coded size (%u, %u).", coded_width,
-                       coded_height));
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid coded size (%u, %u).", coded_width, coded_height));
     return nullptr;
   }
 
@@ -478,8 +476,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       WebCodecsLogger::From(*execution_context).LogCropDeprecation();
       visible_left = init->cropLeft();
       if (visible_left >= coded_width) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kConstraintError,
+        exception_state.ThrowTypeError(
             String::Format("Invalid cropLeft %u for codedWidth %u.",
                            visible_left, coded_width));
         return nullptr;
@@ -490,8 +487,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       WebCodecsLogger::From(*execution_context).LogCropDeprecation();
       visible_top = init->cropTop();
       if (visible_top >= coded_height) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kConstraintError,
+        exception_state.ThrowTypeError(
             String::Format("Invalid cropTop %u for codedHeight %u.",
                            visible_top, coded_height));
         return nullptr;
@@ -512,8 +508,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       visible_height == 0 || visible_height > media::limits::kMaxDimension ||
       visible_left + visible_width > coded_width ||
       visible_top + visible_height > coded_height) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kConstraintError,
+    exception_state.ThrowTypeError(
         String::Format("Invalid visibleRect {x: %u, y: %u, width: %u, "
                        "height: %u} for coded size (%u, %u).",
                        visible_left, visible_top, visible_width, visible_height,
@@ -529,15 +524,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   uint32_t natural_height = visible_height;
   if (init->hasDisplayWidth() || init->hasDisplayHeight()) {
     if (!init->hasDisplayWidth()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("Invalid display size, displayHeight specified "
                          "without displayWidth."));
       return nullptr;
     }
     if (!init->hasDisplayHeight()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("Invalid display size, displayWidth specified "
                          "without displayHeight."));
       return nullptr;
@@ -547,10 +540,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     natural_height = init->displayHeight();
     if (natural_width == 0 || natural_width > media::limits::kMaxDimension ||
         natural_height == 0 || natural_height > media::limits::kMaxDimension) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid display size (%u, %u).", natural_width,
-                         natural_height));
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid display size (%u, %u).", natural_width, natural_height));
       return nullptr;
     }
   }
@@ -559,8 +550,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   // Validate planes.
   if (media::VideoFrame::NumPlanes(media_fmt) != planes.size()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kConstraintError,
+    exception_state.ThrowTypeError(
         String::Format("Invalid number of planes for format %s; expected %zu, "
                        "received %u.",
                        IDLEnumAsString(init->format()).Ascii().c_str(),
@@ -596,12 +586,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     const size_t minimum_stride = plane_size.width();
     const size_t rows = plane_size.height();
     if (stride < minimum_stride) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format(
-              "The stride of plane %u is too small for the given coded size "
-              "(%u, %u); expected at least %zu, received %zu",
-              i, coded_width, coded_height, minimum_stride, stride));
+      exception_state.ThrowTypeError(String::Format(
+          "The stride of plane %u is too small for the given coded size "
+          "(%u, %u); expected at least %zu, received %zu",
+          i, coded_width, coded_height, minimum_stride, stride));
       return nullptr;
     }
 
@@ -609,12 +597,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // including the last.
     const auto end = base::CheckedNumeric<size_t>(stride) * rows + offset;
     if (!end.IsValid() || end.ValueOrDie() > buffer.ByteLength()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format(
-              "Plane %u with %zu rows of stride %zu bytes does not fit at "
-              "offset %zu in src buffer with length %zu.",
-              i, rows, stride, offset, buffer.ByteLength()));
+      exception_state.ThrowTypeError(String::Format(
+          "Plane %u with %zu rows of stride %zu bytes does not fit at "
+          "offset %zu in src buffer with length %zu.",
+          i, rows, stride, offset, buffer.ByteLength()));
       return nullptr;
     }
   }
@@ -626,7 +612,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                       natural_size, timestamp);
   if (!frame) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kConstraintError,
+        DOMExceptionCode::kOperationError,
         String::Format(
             "Failed to create a video frame with configuration {format: %s, "
             "coded_size: %s, visible_rect: %s, display_size: %s}",
@@ -928,8 +914,7 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
   // Validate destination buffer.
   DOMArrayPiece buffer(destination);
   if (buffer.ByteLength() < static_cast<size_t>(layout.min_buffer_size)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "destination is not large enough.");
+    exception_state.ThrowTypeError("destination is not large enough.");
     return ScriptPromise();
   }
 

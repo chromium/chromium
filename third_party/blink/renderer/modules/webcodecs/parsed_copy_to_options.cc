@@ -68,26 +68,19 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
   for (wtf_size_t i = 0; i < num_planes; i++) {
     gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     if (rect.x() % sample_size.width() != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("rect.x %d is not sample-aligned in plane %u.",
-                         rect.x(), i));
+      exception_state.ThrowTypeError(String::Format(
+          "rect.x %d is not sample-aligned in plane %u.", rect.x(), i));
       return;
     } else if (rect.width() % sample_size.width() != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("rect.width %d is not sample-aligned in plane %u.",
-                         rect.width(), i));
+      exception_state.ThrowTypeError(String::Format(
+          "rect.width %d is not sample-aligned in plane %u.", rect.width(), i));
       return;
     } else if (rect.y() % sample_size.height() != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("rect.y %d is not sample-aligned in plane %u.",
-                         rect.y(), i));
+      exception_state.ThrowTypeError(String::Format(
+          "rect.y %d is not sample-aligned in plane %u.", rect.y(), i));
       return;
     } else if (rect.height() % sample_size.height() != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("rect.height %d is not sample-aligned in plane %u.",
                          rect.height(), i));
       return;
@@ -98,8 +91,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
   bool has_explicit_layout = options->hasLayout();
   if (has_explicit_layout) {
     if (options->layout().size() != num_planes) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("Invalid layout. Expected %u planes, found %u.",
                          num_planes, options->layout().size()));
       return;
@@ -129,8 +121,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
       planes[i].stride = planes[i].width_bytes;
     } else {
       if (planes[i].stride < planes[i].width_bytes) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kConstraintError,
+        exception_state.ThrowTypeError(
             String::Format("Invalid layout, plane %u must have stride at least "
                            "%u, found %u.",
                            i, planes[i].width_bytes, planes[i].stride));
@@ -143,8 +134,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     const auto plane_size =
         base::CheckedNumeric<uint32_t>(planes[i].stride) * planes[i].height;
     if (!plane_size.IsValid()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("Invalid layout, plane %u with stride %u is too "
                          "large.",
                          i, planes[i].stride));
@@ -152,8 +142,7 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     }
     const auto plane_end = plane_size + planes[i].offset;
     if (!plane_end.IsValid()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
+      exception_state.ThrowTypeError(
           String::Format("Invalid layout, plane %u with offset %u and stride "
                          "%u exceeds bounds.",
                          i, planes[i].offset, planes[i].stride));
@@ -170,10 +159,8 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
         continue;
       }
       DCHECK(has_explicit_layout);
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kConstraintError,
-          String::Format("Invalid layout, plane %u overlaps with plane %u.", i,
-                         j));
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid layout, plane %u overlaps with plane %u.", i, j));
       return;
     }
   }

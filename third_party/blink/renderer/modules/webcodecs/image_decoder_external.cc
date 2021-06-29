@@ -198,15 +198,14 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   }
 
   if (!buffer.ByteLength()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "No image data provided");
+    exception_state.ThrowTypeError("No image data provided");
     return;
   }
 
   auto segment_reader = SegmentReader::CreateFromSkData(
       SkData::MakeWithCopy(buffer.Data(), buffer.ByteLength()));
   if (!segment_reader) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to read image data");
     return;
   }
