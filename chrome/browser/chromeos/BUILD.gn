@@ -2911,6 +2911,8 @@ source_set("chromeos") {
     "policy/scheduled_task_handler/device_scheduled_update_checker.h",
     "policy/scheduled_task_handler/os_and_policies_update_checker.cc",
     "policy/scheduled_task_handler/os_and_policies_update_checker.h",
+    "policy/scheduled_task_handler/scheduled_task_executor.cc",
+    "policy/scheduled_task_handler/scheduled_task_executor.h",
     "policy/scheduled_task_handler/scoped_wake_lock.cc",
     "policy/scheduled_task_handler/scoped_wake_lock.h",
     "policy/scheduled_task_handler/task_executor_with_retries.cc",

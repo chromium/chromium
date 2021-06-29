@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/os_and_policies_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chromeos/dbus/power/native_timer.h"
@@ -33,40 +34,6 @@ class DeviceScheduledUpdateChecker
       ash::CrosSettings* cros_settings,
       chromeos::NetworkStateHandler* network_state_handler);
   ~DeviceScheduledUpdateChecker() override;
-
-  // Frequency at which the update check should occur.
-  enum class Frequency {
-    kDaily,
-    kWeekly,
-    kMonthly,
-  };
-
-  // Holds the data associated with the current scheduled update check policy.
-  struct ScheduledUpdateCheckData {
-    ScheduledUpdateCheckData();
-    ScheduledUpdateCheckData(const ScheduledUpdateCheckData&);
-    ~ScheduledUpdateCheckData();
-
-    // Corresponds to UCAL_HOUR_OF_DAY in icu::Calendar.
-    int hour;
-
-    // Corresponds to UCAL_MINUTE in icu::Calendar.
-    int minute;
-
-    Frequency frequency;
-
-    // Only set when frequency is |kWeekly|. Corresponds to UCAL_DAY_OF_WEEK in
-    // icu::Calendar. Values between 1 (SUNDAY) to 7 (SATURDAY).
-    absl::optional<UCalendarDaysOfWeek> day_of_week;
-
-    // Only set when frequency is |kMonthly|. Corresponds to UCAL_DAY_OF_MONTH
-    // in icu::Calendar i.e. values between 1 to 31.
-    absl::optional<int> day_of_month;
-
-    // Absolute time ticks when the next update check (i.e. |UpdateCheck|) will
-    // happen.
-    base::TimeTicks next_update_check_time_ticks;
-  };
 
   // chromeos::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
@@ -132,7 +99,8 @@ class DeviceScheduledUpdateChecker
   base::CallbackListSubscription cros_settings_subscription_;
 
   // Currently active scheduled update check policy.
-  absl::optional<ScheduledUpdateCheckData> scheduled_update_check_data_;
+  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+      scheduled_update_check_data_;
 
   // Used to run and retry |StartUpdateCheckTimer| if it fails.
   TaskExecutorWithRetries start_update_check_timer_task_executor_;
@@ -165,8 +133,8 @@ constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
 
 // Parses |value| into a |ScheduledUpdateCheckData|. Returns nullopt if there
 // is any error while parsing |value|.
-absl::optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
-ParseScheduledUpdate(const base::Value& value);
+absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledUpdate(
+    const base::Value& value);
 
 // Converts an icu::Calendar to base::Time. Assumes |time| is valid.
 base::Time IcuToBaseTime(const icu::Calendar& time);

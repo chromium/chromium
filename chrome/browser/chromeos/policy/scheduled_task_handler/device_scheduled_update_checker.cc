@@ -32,16 +32,15 @@ constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
 // Reason associated to acquire |ScopedWakeLock|.
 constexpr char kWakeLockReason[] = "DeviceScheduledUpdateChecker";
 
-DeviceScheduledUpdateChecker::Frequency GetFrequency(
-    const std::string& frequency) {
+ScheduledTaskExecutor::Frequency GetFrequency(const std::string& frequency) {
   if (frequency == "DAILY")
-    return DeviceScheduledUpdateChecker::Frequency::kDaily;
+    return ScheduledTaskExecutor::Frequency::kDaily;
 
   if (frequency == "WEEKLY")
-    return DeviceScheduledUpdateChecker::Frequency::kWeekly;
+    return ScheduledTaskExecutor::Frequency::kWeekly;
 
   DCHECK_EQ(frequency, "MONTHLY");
-  return DeviceScheduledUpdateChecker::Frequency::kMonthly;
+  return ScheduledTaskExecutor::Frequency::kMonthly;
 }
 
 // Convert the string day of week to UCalendarDaysOfWeek.
@@ -88,18 +87,17 @@ bool IsCalGreaterThanEqual(const icu::Calendar& a, const icu::Calendar& b) {
 //
 // Returns true on success and false if it failed to set a valid time.
 bool AdvanceTimeBasedOnPolicy(
-    const DeviceScheduledUpdateChecker::ScheduledUpdateCheckData&
-        scheduled_update_check_data,
+    const ScheduledTaskExecutor::ScheduledTaskData& scheduled_update_check_data,
     icu::Calendar* time) {
   UCalendarDateFields field = UCAL_MONTH;
   switch (scheduled_update_check_data.frequency) {
-    case DeviceScheduledUpdateChecker::Frequency::kDaily:
+    case ScheduledTaskExecutor::Frequency::kDaily:
       field = UCAL_DAY_OF_MONTH;
       break;
-    case DeviceScheduledUpdateChecker::Frequency::kWeekly:
+    case ScheduledTaskExecutor::Frequency::kWeekly:
       field = UCAL_WEEK_OF_YEAR;
       break;
-    case DeviceScheduledUpdateChecker::Frequency::kMonthly:
+    case ScheduledTaskExecutor::Frequency::kMonthly:
       break;
   }
   UErrorCode status = U_ZERO_ERROR;
@@ -110,8 +108,7 @@ bool AdvanceTimeBasedOnPolicy(
 // Sets |time| based on the policy represented by |scheduled_update_check_data|.
 // Returns true on success and false if it failed to set a valid time.
 bool SetTimeBasedOnPolicy(
-    const DeviceScheduledUpdateChecker::ScheduledUpdateCheckData&
-        scheduled_update_check_data,
+    const ScheduledTaskExecutor::ScheduledTaskData& scheduled_update_check_data,
     icu::Calendar* time) {
   // Set the daily fields first as they will be common across different policy
   // types.
@@ -121,16 +118,16 @@ bool SetTimeBasedOnPolicy(
   time->set(UCAL_MILLISECOND, 0);
 
   switch (scheduled_update_check_data.frequency) {
-    case DeviceScheduledUpdateChecker::Frequency::kDaily:
+    case ScheduledTaskExecutor::Frequency::kDaily:
       return true;
 
-    case DeviceScheduledUpdateChecker::Frequency::kWeekly:
+    case ScheduledTaskExecutor::Frequency::kWeekly:
       DCHECK(scheduled_update_check_data.day_of_week);
       time->set(UCAL_DAY_OF_WEEK,
                 scheduled_update_check_data.day_of_week.value());
       return true;
 
-    case DeviceScheduledUpdateChecker::Frequency::kMonthly: {
+    case ScheduledTaskExecutor::Frequency::kMonthly: {
       DCHECK(scheduled_update_check_data.day_of_month);
       UErrorCode status = U_ZERO_ERROR;
       // If policy's |day_of_month| is greater than the maximum days in |time|'s
@@ -154,9 +151,9 @@ bool SetTimeBasedOnPolicy(
 
 namespace update_checker_internal {
 
-absl::optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
-ParseScheduledUpdate(const base::Value& value) {
-  DeviceScheduledUpdateChecker::ScheduledUpdateCheckData result;
+absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledUpdate(
+    const base::Value& value) {
+  ScheduledTaskExecutor::ScheduledTaskData result;
   // Parse mandatory values first i.e. hour, minute and frequency of update
   // check. These should always be present due to schema validation at higher
   // layers.
@@ -183,10 +180,10 @@ ParseScheduledUpdate(const base::Value& value) {
 
   // Parse extra fields for weekly and monthly frequencies.
   switch (result.frequency) {
-    case DeviceScheduledUpdateChecker::Frequency::kDaily:
+    case ScheduledTaskExecutor::Frequency::kDaily:
       break;
 
-    case DeviceScheduledUpdateChecker::Frequency::kWeekly: {
+    case ScheduledTaskExecutor::Frequency::kWeekly: {
       const std::string* day_of_week = value.FindStringKey({"day_of_week"});
       if (!day_of_week) {
         LOG(ERROR) << "Day of week missing";
@@ -198,7 +195,7 @@ ParseScheduledUpdate(const base::Value& value) {
       break;
     }
 
-    case DeviceScheduledUpdateChecker::Frequency::kMonthly: {
+    case ScheduledTaskExecutor::Frequency::kMonthly: {
       absl::optional<int> day_of_month = value.FindIntKey({"day_of_month"});
       if (!day_of_month) {
         LOG(ERROR) << "Day of month missing";
@@ -287,13 +284,6 @@ DeviceScheduledUpdateChecker::~DeviceScheduledUpdateChecker() {
   chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
-DeviceScheduledUpdateChecker::ScheduledUpdateCheckData::
-    ScheduledUpdateCheckData() = default;
-DeviceScheduledUpdateChecker::ScheduledUpdateCheckData::
-    ScheduledUpdateCheckData(const ScheduledUpdateCheckData&) = default;
-DeviceScheduledUpdateChecker::ScheduledUpdateCheckData::
-    ~ScheduledUpdateCheckData() = default;
-
 void DeviceScheduledUpdateChecker::OnUpdateCheckTimerExpired() {
   // Following things needs to be done on every update check event. These will
   // be done serially to make state management easier -
@@ -334,9 +324,9 @@ void DeviceScheduledUpdateChecker::TimezoneChanged(
   // Anytime the time zone changes, the update check timer delay should be
   // recalculated and the timer should be started with updated values according
   // to the new time zone.
-  // |scheduled_update_check_data_->next_update_check_time_ticks| also needs to
-  // be reset, as it would be incorrect in the context of a new time zone. For
-  // this purpose, treat it as a new policy and call
+  // |scheduled_update_check_data_->next_scheduled_task_time_ticks| also needs
+  // to be reset, as it would be incorrect in the context of a new time zone.
+  // For this purpose, treat it as a new policy and call
   // |OnScheduledUpdateCheckDataChanged| instead of |MaybeStartUpdateCheckTimer|
   // directly.
   OnScheduledUpdateCheckDataChanged();
@@ -354,8 +344,9 @@ void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
 
   // Keep any old policy timers running if a new policy is ill-formed and can't
   // be used to set a new timer.
-  absl::optional<ScheduledUpdateCheckData> scheduled_update_check_data =
-      update_checker_internal::ParseScheduledUpdate(*value);
+  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+      scheduled_update_check_data =
+          update_checker_internal::ParseScheduledUpdate(*value);
   if (!scheduled_update_check_data) {
     LOG(ERROR) << "Failed to parse policy";
     return;
@@ -440,9 +431,10 @@ void DeviceScheduledUpdateChecker::StartUpdateCheckTimer(
   const base::Time cur_time = GetCurrentTime();
 
   // If this is a retry then |cur_ticks| could be >=
-  // |next_update_check_time_ticks| i.e. the next timer schedule has already
+  // |next_scheudled_task_time_ticks| i.e. the next timer schedule has already
   // passed, recalculate it. Else respect the calculated time.
-  if (cur_ticks >= scheduled_update_check_data_->next_update_check_time_ticks) {
+  if (cur_ticks >=
+      scheduled_update_check_data_->next_scheduled_task_time_ticks) {
     // Calculate the next update check time. In case there is an error while
     // calculating, due to concurrent DST or Time Zone changes, then reschedule
     // this function and try to schedule the update check again. There should
@@ -455,7 +447,7 @@ void DeviceScheduledUpdateChecker::StartUpdateCheckTimer(
                                  true /* is_retry */);
       return;
     }
-    scheduled_update_check_data_->next_update_check_time_ticks =
+    scheduled_update_check_data_->next_scheduled_task_time_ticks =
         cur_ticks + delay;
   }
 
@@ -465,7 +457,7 @@ void DeviceScheduledUpdateChecker::StartUpdateCheckTimer(
   update_check_timer_ =
       std::make_unique<chromeos::NativeTimer>(kUpdateCheckTimerTag);
   update_check_timer_->Start(
-      scheduled_update_check_data_->next_update_check_time_ticks,
+      scheduled_update_check_data_->next_scheduled_task_time_ticks,
       base::BindOnce(&DeviceScheduledUpdateChecker::OnUpdateCheckTimerExpired,
                      base::Unretained(this)),
       base::BindOnce(
