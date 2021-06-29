@@ -18,5 +18,6 @@ source_set("test") {
   deps = [
     "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
     "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
   ]
 }

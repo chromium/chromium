@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
 
-#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_delegate.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator_delegate.h"
 
 @protocol InfobarEditAddressProfileModalConsumer;

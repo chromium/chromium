@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_TEST_FAKE_INFOBAR_EDIT_ADDRESS_PROFILE_MODAL_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_TEST_FAKE_INFOBAR_EDIT_ADDRESS_PROFILE_MODAL_CONSUMER_H_
 
-#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_consumer.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_modal_consumer.h"
 
 @interface FakeInfobarEditAddressProfileModalConsumer
     : NSObject <InfobarEditAddressProfileModalConsumer>

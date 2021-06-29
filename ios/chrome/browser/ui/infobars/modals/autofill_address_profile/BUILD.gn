@@ -1,0 +1,54 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("modals") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "infobar_edit_address_profile_modal_consumer.h",
+    "infobar_edit_address_profile_modal_delegate.h",
+    "infobar_edit_address_profile_table_view_controller.h",
+    "infobar_edit_address_profile_table_view_controller.mm",
+    "infobar_save_address_profile_modal_consumer.h",
+    "infobar_save_address_profile_modal_delegate.h",
+    "infobar_save_address_profile_table_view_controller.h",
+    "infobar_save_address_profile_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common:features",
+    "//components/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/infobars/modals:modals",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/browser/ui/settings/cells:cells",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "infobar_edit_address_profile_table_view_controller_unittest.mm",
+    "infobar_save_address_profile_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":modals",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
