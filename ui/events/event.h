@@ -802,6 +802,12 @@ class EVENTS_EXPORT KeyEvent : public Event {
 
   ~KeyEvent() override;
 
+  // Returns true if synthesizing key repeat in InitializeNative is enabled.
+  static bool IsSynthesizeKeyRepeatEnabled();
+
+  // Sets whether to enable synthesizing key repeat in InitializeNative().
+  static void SetSynthesizeKeyRepeatEnabled(bool enabled);
+
   void InitializeNative();
 
   // This bypasses the normal mapping from keystroke events to characters,
@@ -930,6 +936,8 @@ class EVENTS_EXPORT KeyEvent : public Event {
 #if defined(USE_X11) || defined(USE_OZONE)
   static KeyEvent* last_ibus_key_event_;
 #endif
+
+  static bool synthesize_key_repeat_enabled_;
 };
 
 class EVENTS_EXPORT ScrollEvent : public MouseEvent {

@@ -909,6 +909,20 @@ KeyEvent& KeyEvent::operator=(const KeyEvent& rhs) {
 
 KeyEvent::~KeyEvent() = default;
 
+// static
+// For compatibility, this is enabled by default.
+bool KeyEvent::synthesize_key_repeat_enabled_ = true;
+
+// static
+bool KeyEvent::IsSynthesizeKeyRepeatEnabled() {
+  return synthesize_key_repeat_enabled_;
+}
+
+// static
+void KeyEvent::SetSynthesizeKeyRepeatEnabled(bool enabled) {
+  synthesize_key_repeat_enabled_ = enabled;
+}
+
 void KeyEvent::InitializeNative() {
   latency()->AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, time_stamp());
@@ -916,7 +930,7 @@ void KeyEvent::InitializeNative() {
 
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
-  if (IsRepeated(GetLastKeyEvent()))
+  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
     set_flags(flags() | EF_IS_REPEAT);
 
 #if defined(USE_X11)

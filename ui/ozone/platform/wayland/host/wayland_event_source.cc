@@ -134,7 +134,8 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     UpdateKeyboardModifiers(flag, type == ET_KEY_PRESSED);
   }
 
-  KeyEvent event(type, key_code, dom_code, keyboard_modifiers_, dom_key,
+  KeyEvent event(type, key_code, dom_code,
+                 keyboard_modifiers_ | (repeat ? EF_IS_REPEAT : 0), dom_key,
                  timestamp);
   event.set_source_device_id(device_id);
   if (kind == WaylandKeyboard::KeyEventKind::kKey) {

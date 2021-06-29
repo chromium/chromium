@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -118,6 +119,9 @@ TEST(EventTest, RepeatedClick) {
   EXPECT_FALSE(MouseEvent::IsRepeatedClickEvent(event1, event2));
 }
 
+// Automatic repeat flag setting is disabled on Lacros,
+// because the repeated event is generated inside ui/ozone/platform/wayland
+// and reliable.
 TEST(EventTest, RepeatedKeyEvent) {
   base::TimeTicks start = base::TimeTicks::Now();
   base::TimeTicks time1 = start + base::TimeDelta::FromMilliseconds(1);
@@ -130,15 +134,46 @@ TEST(EventTest, RepeatedKeyEvent) {
   KeyEvent event4(ET_KEY_PRESSED, VKEY_A, 0, time3);
 
   event1.InitializeNative();
-  EXPECT_TRUE((event1.flags() & EF_IS_REPEAT) == 0);
+  EXPECT_EQ(event1.flags() & EF_IS_REPEAT, 0);
   event2.InitializeNative();
-  EXPECT_TRUE((event2.flags() & EF_IS_REPEAT) != 0);
+  EXPECT_NE(event2.flags() & EF_IS_REPEAT, 0);
 
   event3.InitializeNative();
-  EXPECT_TRUE((event3.flags() & EF_IS_REPEAT) != 0);
+  EXPECT_NE(event3.flags() & EF_IS_REPEAT, 0);
 
   event4.InitializeNative();
-  EXPECT_TRUE((event4.flags() & EF_IS_REPEAT) != 0);
+  EXPECT_NE(event4.flags() & EF_IS_REPEAT, 0);
+}
+
+TEST(EventTest, NoRepeatedKeyEvent) {
+  // Temporarily set the global synthesize_key_repeat_enabled to false.
+  base::ScopedClosureRunner runner(base::BindOnce(
+      [](bool old_value) {
+        KeyEvent::SetSynthesizeKeyRepeatEnabled(old_value);
+      },
+      KeyEvent::IsSynthesizeKeyRepeatEnabled()));
+  KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  base::TimeTicks time1 = start + base::TimeDelta::FromMilliseconds(1);
+  base::TimeTicks time2 = start + base::TimeDelta::FromMilliseconds(2);
+  base::TimeTicks time3 = start + base::TimeDelta::FromMilliseconds(3);
+
+  KeyEvent event1(ET_KEY_PRESSED, VKEY_A, 0, start);
+  KeyEvent event2(ET_KEY_PRESSED, VKEY_A, 0, time1);
+  KeyEvent event3(ET_KEY_PRESSED, VKEY_A, EF_LEFT_MOUSE_BUTTON, time2);
+  KeyEvent event4(ET_KEY_PRESSED, VKEY_A, 0, time3);
+
+  event1.InitializeNative();
+  EXPECT_EQ(event1.flags() & EF_IS_REPEAT, 0);
+  event2.InitializeNative();
+  EXPECT_EQ(event2.flags() & EF_IS_REPEAT, 0);
+
+  event3.InitializeNative();
+  EXPECT_EQ(event3.flags() & EF_IS_REPEAT, 0);
+
+  event4.InitializeNative();
+  EXPECT_EQ(event4.flags() & EF_IS_REPEAT, 0);
 }
 
 // Tests that re-processing the same mouse press event (detected by timestamp)

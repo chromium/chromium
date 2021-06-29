@@ -249,7 +249,6 @@ void WaylandKeyboard::OnKey(uint32_t serial,
     return;
   }
 
-  // TODO(tonikitoo,msisov): Handler 'repeat' parameter below.
   DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/, EventTimeForNow(),
               device_id(), EF_NONE, kind);
 }

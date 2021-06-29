@@ -19,6 +19,7 @@
 #include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/event.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
@@ -73,8 +74,22 @@ namespace {
 
 class OzonePlatformWayland : public OzonePlatform {
  public:
-  OzonePlatformWayland() { CHECK(features::IsUsingOzonePlatform()); }
-  ~OzonePlatformWayland() override {}
+  OzonePlatformWayland()
+      : old_synthesize_key_repeat_enabled_(
+            KeyEvent::IsSynthesizeKeyRepeatEnabled()) {
+    CHECK(features::IsUsingOzonePlatform());
+    // Disable key-repeat flag synthesizing. On Wayland, key repeat events are
+    // generated inside Chrome, and the flag is properly set.
+    // See also WaylandEventSource.
+    KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
+  }
+
+  OzonePlatformWayland(const OzonePlatformWayland&) = delete;
+  OzonePlatformWayland& operator=(const OzonePlatformWayland&) = delete;
+
+  ~OzonePlatformWayland() override {
+    KeyEvent::SetSynthesizeKeyRepeatEnabled(old_synthesize_key_repeat_enabled_);
+  }
 
   // OzonePlatform
   SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -308,6 +323,10 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
  private:
+  // Keeps the old value of KeyEvent::IsSynthesizeKeyRepeatEnabled(), to
+  // restore it on destruction.
+  const bool old_synthesize_key_repeat_enabled_;
+
 #if BUILDFLAG(USE_XKBCOMMON)
   XkbEvdevCodes xkb_evdev_code_converter_;
 #endif
@@ -338,8 +357,6 @@ class OzonePlatformWayland : public OzonePlatform {
 #if BUILDFLAG(USE_GTK)
   std::unique_ptr<LinuxUiDelegateWayland> gtk_ui_platform_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformWayland);
 };
 
 }  // namespace
