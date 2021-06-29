@@ -8,6 +8,7 @@
 
 #include <userenv.h>
 
+#include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
@@ -16,6 +17,8 @@
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
+
+namespace {
 
 // Registry values.
 // Preferences Category.
@@ -54,6 +57,21 @@ const char kRegValueUpdateAppPrefix[] = "Update";
 const char kRegValueTargetVersionPrefix[] = "TargetVersionPrefix";
 const char kRegValueTargetChannel[] = "TargetChannel";
 const char kRegValueRollbackToTargetVersion[] = "RollbackToTargetVersion";
+
+struct ScopedHCriticalPolicySectionTraits {
+  static HANDLE InvalidValue() { return nullptr; }
+  static void Free(HANDLE handle) {
+    if (handle != InvalidValue())
+      ::LeaveCriticalPolicySection(handle);
+  }
+};
+
+// Manages the lifetime of critical policy section handle allocated by
+// ::EnterCriticalPolicySection.
+using scoped_hpolicy =
+    base::ScopedGeneric<HANDLE, updater::ScopedHCriticalPolicySectionTraits>;
+
+}  // namespace
 
 GroupPolicyManager::GroupPolicyManager() {
   LoadAllPolicies();
@@ -182,15 +200,16 @@ bool GroupPolicyManager::GetStringPolicy(const std::string& key,
 }
 
 void GroupPolicyManager::LoadAllPolicies() {
-  HANDLE policy_lock(NULL);
+  scoped_hpolicy policy_lock;
+
   if (base::win::IsEnrolledToDomain()) {
     // GPO rules mandate a call to EnterCriticalPolicySection() before reading
     // policies (and a matching LeaveCriticalPolicySection() call after read).
     // Acquire the lock for domain-joined machines because group policies are
     // applied only in this case, and the lock acquisition can take a long
     // time, in the worst case scenarios.
-    policy_lock = ::EnterCriticalPolicySection(true);
-    CHECK(policy_lock) << "Failed to get policy lock.";
+    policy_lock.reset(::EnterCriticalPolicySection(true));
+    CHECK(policy_lock.is_valid()) << "Failed to get policy lock.";
   }
 
   base::Value::DictStorage policy_storage;
@@ -217,8 +236,6 @@ void GroupPolicyManager::LoadAllPolicies() {
   }
 
   policies_ = base::Value(std::move(policy_storage));
-
-  ::LeaveCriticalPolicySection(policy_lock);
 }
 
 }  // namespace updater
