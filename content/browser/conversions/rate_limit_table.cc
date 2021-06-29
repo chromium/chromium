@@ -78,8 +78,14 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(report.impression.impression_id().has_value());
 
-  // TODO(apaseltiner): Call this at most every X minutes.
-  DeleteExpiredRateLimits(db);
+  // Only delete expired rate limits every X minutes to avoid excessive DB
+  // operations.
+  const base::TimeDelta kDeleteFrequency = base::TimeDelta::FromMinutes(5);
+  base::Time now = clock_->Now();
+  if (now - last_cleared_ >= kDeleteFrequency) {
+    last_cleared_ = now;
+    DeleteExpiredRateLimits(db);
+  }
 
   const char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits "

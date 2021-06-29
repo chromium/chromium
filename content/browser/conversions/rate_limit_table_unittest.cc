@@ -15,11 +15,16 @@
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+using ::testing::ElementsAre;
 
 class RateLimitTableTest : public testing::Test {
  public:
@@ -55,6 +60,17 @@ class RateLimitTableTest : public testing::Test {
     return rows;
   }
 
+  std::vector<std::string> GetRateLimitImpressionOrigins(sql::Database* db) {
+    const char kSelectSql[] =
+        "SELECT impression_origin FROM rate_limits ORDER BY rate_limit_id ASC";
+    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+    std::vector<std::string> impression_origins;
+    while (statement.Step()) {
+      impression_origins.push_back(statement.ColumnString(0));
+    }
+    return impression_origins;
+  }
+
   base::FilePath db_path() {
     return temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
   }
@@ -73,6 +89,8 @@ class RateLimitTableTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<RateLimitTable> table_;
 };
+
+}  // namespace
 
 TEST_F(RateLimitTableTest, TableCreated_TableAndIndicesInitialized) {
   sql::Database db;
@@ -429,17 +447,39 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://c.example/")),
                           url::Origin::Create(GURL("https://d.example/")))));
+  EXPECT_THAT(GetRateLimitImpressionOrigins(&db),
+              ElementsAre("https://a.example", "https://c.example"));
 
   delegate()->set_rate_limits({
-      .time_window = base::TimeDelta::FromDays(3),
+      .time_window = base::TimeDelta::FromMinutes(2),
       .max_attributions_per_window = INT_MAX,
   });
-  clock()->Advance(base::TimeDelta::FromDays(4));
+  clock()->Advance(base::TimeDelta::FromMinutes(1));
   EXPECT_TRUE(table()->AddRateLimit(
       &db,
       NewConversionReport(url::Origin::Create(GURL("https://e.example/")),
                           url::Origin::Create(GURL("https://f.example/")))));
-  EXPECT_EQ(1u, GetRateLimitRows(&db));
+  EXPECT_THAT(GetRateLimitImpressionOrigins(&db),
+              ElementsAre("https://a.example", "https://c.example",
+                          "https://e.example"));
+
+  clock()->Advance(base::TimeDelta::FromMinutes(3));
+  EXPECT_TRUE(table()->AddRateLimit(
+      &db,
+      NewConversionReport(url::Origin::Create(GURL("https://g.example/")),
+                          url::Origin::Create(GURL("https://h.example/")))));
+  EXPECT_EQ(4u, GetRateLimitRows(&db));
+  EXPECT_THAT(GetRateLimitImpressionOrigins(&db),
+              ElementsAre("https://a.example", "https://c.example",
+                          "https://e.example", "https://g.example"));
+
+  clock()->Advance(base::TimeDelta::FromMinutes(1));
+  EXPECT_TRUE(table()->AddRateLimit(
+      &db,
+      NewConversionReport(url::Origin::Create(GURL("https://i.example/")),
+                          url::Origin::Create(GURL("https://j.example/")))));
+  EXPECT_THAT(GetRateLimitImpressionOrigins(&db),
+              ElementsAre("https://g.example", "https://i.example"));
 }
 
 TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {

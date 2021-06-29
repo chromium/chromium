@@ -77,6 +77,10 @@ class CONTENT_EXPORT RateLimitTable {
   // Must outlive |this|.
   const base::Clock* clock_;
 
+  // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to
+  // the NULL time.
+  base::Time last_cleared_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
