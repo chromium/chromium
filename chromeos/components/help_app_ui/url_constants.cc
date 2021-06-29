@@ -7,6 +7,7 @@
 namespace chromeos {
 
 const char kChromeUIHelpAppHost[] = "help-app";
+const char kChromeUIHelpAppKidsMagazineHost[] = "help-app-kids-magazine";
 const char kChromeUIHelpAppURL[] = "chrome://help-app/";
 const char kChromeUIHelpAppUntrustedURL[] = "chrome-untrusted://help-app/";
 const char kChromeUIHelpAppKidsMagazineUntrustedURL[] =

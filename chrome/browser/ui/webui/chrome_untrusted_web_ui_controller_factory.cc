@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
+#include "chromeos/components/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
@@ -62,6 +63,8 @@ WebUIConfigList CreateConfigs() {
   register_config(
       std::make_unique<chromeos::UntrustedPersonalizationAppUIConfig>());
   register_config(std::make_unique<HelpAppUntrustedUIConfig>());
+  register_config(
+      std::make_unique<chromeos::HelpAppKidsMagazineUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());

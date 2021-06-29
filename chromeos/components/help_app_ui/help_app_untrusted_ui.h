@@ -26,9 +26,6 @@ class HelpAppUntrustedUI : public ui::UntrustedWebUIController {
   ~HelpAppUntrustedUI() override;
 };
 
-// The data source creation for chrome-untrusted://help-app-kids-magazine.
-content::WebUIDataSource* CreateHelpAppKidsMagazineUntrustedDataSource();
-
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_HELP_APP_UNTRUSTED_UI_H_

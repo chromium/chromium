@@ -82,11 +82,6 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                             ContentSettingsType::SOUND,
                         });
 
-  content::WebUIDataSource* magazine_untrusted_source =
-      CreateHelpAppKidsMagazineUntrustedDataSource();
-
-  content::WebUIDataSource::Add(browser_context, magazine_untrusted_source);
-
   // Register common permissions for chrome-untrusted:// pages.
   // TODO(https://crbug.com/1113568): Remove this after common permissions are
   // granted by default.
