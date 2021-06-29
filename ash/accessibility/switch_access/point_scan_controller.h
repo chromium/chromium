@@ -56,7 +56,7 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
  private:
   // AccessibilityLayerDelegate implementation:
   void OnDeviceScaleFactorChanged() override;
-  void OnAnimationStep(base::TimeTicks timestamp) override;
+  bool OnAnimationStep(base::TimeTicks timestamp) override;
 
   void UpdateTimeInfo(PointScanLayerAnimationInfo* animation_info,
                       base::TimeTicks timestamp);

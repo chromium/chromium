@@ -57,10 +57,6 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
                       /*stack_at_top=*/false);
 }
 
-bool AccessibilityHighlightLayer::CanAnimate() const {
-  return false;
-}
-
 bool AccessibilityHighlightLayer::NeedToAnimate() const {
   return false;
 }

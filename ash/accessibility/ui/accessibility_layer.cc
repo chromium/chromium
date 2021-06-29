@@ -23,10 +23,7 @@ AccessibilityLayer::AccessibilityLayer(AccessibilityLayerDelegate* delegate)
   DCHECK(delegate);
 }
 
-AccessibilityLayer::~AccessibilityLayer() {
-  if (compositor_ && compositor_->HasAnimationObserver(this))
-    compositor_->RemoveAnimationObserver(this);
-}
+AccessibilityLayer::~AccessibilityLayer() = default;
 
 void AccessibilityLayer::Set(aura::Window* root_window,
                              const gfx::Rect& bounds,
@@ -49,6 +46,10 @@ void AccessibilityLayer::SetOpacity(float opacity) {
 void AccessibilityLayer::SetSubpixelPositionOffset(
     const gfx::Vector2dF& offset) {
   layer_->SetSubpixelPositionOffset(offset);
+}
+
+bool AccessibilityLayer::CanAnimate() const {
+  return animation_observation_.IsObserving();
 }
 
 void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
@@ -85,12 +86,9 @@ void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
     display::Display display =
         display::Screen::GetScreen()->GetDisplayMatching(bounds);
     ui::Compositor* compositor = root_window->layer()->GetCompositor();
-    if (compositor != compositor_) {
-      if (compositor_ && compositor_->HasAnimationObserver(this))
-        compositor_->RemoveAnimationObserver(this);
-      compositor_ = compositor;
-      if (compositor_ && !compositor_->HasAnimationObserver(this))
-        compositor_->AddAnimationObserver(this);
+    if (compositor && !animation_observation_.IsObservingSource(compositor)) {
+      animation_observation_.Reset();
+      animation_observation_.Observe(compositor);
     }
   }
 }
@@ -103,14 +101,13 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
 }
 
 void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  delegate_->OnAnimationStep(timestamp);
+  if (delegate_->OnAnimationStep(timestamp))
+    animation_observation_.Reset();
 }
 
 void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  if (compositor == compositor_) {
-    compositor->RemoveAnimationObserver(this);
-    compositor_ = nullptr;
-  }
+  if (compositor && animation_observation_.IsObservingSource(compositor))
+    animation_observation_.Reset();
 }
 
 }  // namespace ash

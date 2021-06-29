@@ -22,7 +22,6 @@ class FocusRingLayer : public AccessibilityLayer {
   ~FocusRingLayer() override;
 
   // AccessibilityLayer overrides:
-  bool CanAnimate() const override;
   bool NeedToAnimate() const override;
   int GetInset() const override;
 

@@ -25,7 +25,6 @@ class ASH_EXPORT AccessibilityHighlightLayer : public AccessibilityLayer {
   void Set(const std::vector<gfx::Rect>& rects, SkColor color);
 
   // AccessibilityLayer overrides:
-  bool CanAnimate() const override;
   bool NeedToAnimate() const override;
   int GetInset() const override;
 

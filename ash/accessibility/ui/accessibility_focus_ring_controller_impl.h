@@ -75,14 +75,14 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
  private:
   // AccessibilityLayerDelegate overrides.
   void OnDeviceScaleFactorChanged() override;
-  void OnAnimationStep(base::TimeTicks timestamp) override;
+  bool OnAnimationStep(base::TimeTicks timestamp) override;
 
   void UpdateHighlightFromHighlightRects();
 
-  void AnimateFocusRings(base::TimeTicks timestamp,
+  bool AnimateFocusRings(base::TimeTicks timestamp,
                          AccessibilityFocusRingGroup* focus_ring);
-  void AnimateCursorRing(base::TimeTicks timestamp);
-  void AnimateCaretRing(base::TimeTicks timestamp);
+  bool AnimateCursorRing(base::TimeTicks timestamp);
+  bool AnimateCaretRing(base::TimeTicks timestamp);
 
   void OnLayerChange(LayerAnimationInfo* animation_info);
 

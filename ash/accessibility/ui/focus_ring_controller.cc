@@ -96,7 +96,9 @@ void FocusRingController::OnDeviceScaleFactorChanged() {
   UpdateFocusRing();
 }
 
-void FocusRingController::OnAnimationStep(base::TimeTicks timestamp) {}
+bool FocusRingController::OnAnimationStep(base::TimeTicks timestamp) {
+  return true;
+}
 
 void FocusRingController::SetWidget(views::Widget* widget) {
   if (widget_) {

@@ -30,10 +30,7 @@ const SkColor kShadowColor = SkColorSetRGB(77, 144, 254);
 FocusRingLayer::FocusRingLayer(AccessibilityLayerDelegate* delegate)
     : AccessibilityLayer(delegate) {}
 
-FocusRingLayer::~FocusRingLayer() {
-  if (compositor_ && compositor_->HasAnimationObserver(this))
-    compositor_->RemoveAnimationObserver(this);
-}
+FocusRingLayer::~FocusRingLayer() = default;
 
 void FocusRingLayer::SetColor(SkColor color) {
   custom_color_ = color;
@@ -41,10 +38,6 @@ void FocusRingLayer::SetColor(SkColor color) {
 
 void FocusRingLayer::ResetColor() {
   custom_color_.reset();
-}
-
-bool FocusRingLayer::CanAnimate() const {
-  return compositor_ && compositor_->HasAnimationObserver(this);
 }
 
 bool FocusRingLayer::NeedToAnimate() const {

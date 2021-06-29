@@ -30,7 +30,7 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
 
   void UpdateFocusRingsFromInfo(AccessibilityLayerDelegate* delegate);
   bool CanAnimate() const;
-  void AnimateFocusRings(base::TimeTicks timestamp);
+  bool AnimateFocusRings(base::TimeTicks timestamp);
 
   // Returns true if the focus ring has changed, false if there were no changes.
   bool UpdateFocusRing(std::unique_ptr<AccessibilityFocusRingInfo> focus_ring,

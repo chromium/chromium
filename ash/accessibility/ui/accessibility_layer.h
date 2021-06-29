@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,7 +31,10 @@ namespace ash {
 class AccessibilityLayerDelegate {
  public:
   virtual void OnDeviceScaleFactorChanged() = 0;
-  virtual void OnAnimationStep(base::TimeTicks timestamp) = 0;
+
+  // Called by a layer during animation observation on its compositor. Returns
+  // true when animation has finished.
+  virtual bool OnAnimationStep(base::TimeTicks timestamp) = 0;
 
  protected:
   virtual ~AccessibilityLayerDelegate() {}
@@ -57,7 +62,7 @@ class AccessibilityLayer : public ui::LayerDelegate,
 
   // Returns true if this layer is in a composited window with an
   // animation observer.
-  virtual bool CanAnimate() const = 0;
+  bool CanAnimate() const;
 
   // Returns true if a layer needs to animate.
   virtual bool NeedToAnimate() const = 0;
@@ -84,9 +89,6 @@ class AccessibilityLayer : public ui::LayerDelegate,
   // The current layer.
   std::unique_ptr<ui::Layer> layer_;
 
-  // The compositor associated with this layer.
-  ui::Compositor* compositor_ = nullptr;
-
   // The bounding rectangle of the focused object, in |root_window_|
   // coordinates.
   gfx::Rect layer_rect_;
@@ -102,6 +104,12 @@ class AccessibilityLayer : public ui::LayerDelegate,
 
   // The object that owns this layer.
   AccessibilityLayerDelegate* delegate_;
+
+  base::ScopedObservation<ui::Compositor,
+                          ui::CompositorAnimationObserver,
+                          &ui::Compositor::AddAnimationObserver,
+                          &ui::Compositor::RemoveAnimationObserver>
+      animation_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
 };

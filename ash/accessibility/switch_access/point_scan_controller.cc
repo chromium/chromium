@@ -176,8 +176,9 @@ void PointScanController::SetSpeedDipsPerSecond(int speed_dips_per_second) {
 
 void PointScanController::OnDeviceScaleFactorChanged() {}
 
-void PointScanController::OnAnimationStep(base::TimeTicks timestamp) {
+bool PointScanController::OnAnimationStep(base::TimeTicks timestamp) {
   AnimateLine(timestamp);
+  return state_ == PointScanState::kOff;
 }
 
 void PointScanController::UpdateTimeInfo(

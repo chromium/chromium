@@ -97,7 +97,7 @@ bool AccessibilityFocusRingGroup::CanAnimate() const {
   return !focus_rings_.empty() && focus_layers_[0]->CanAnimate();
 }
 
-void AccessibilityFocusRingGroup::AnimateFocusRings(base::TimeTicks timestamp) {
+bool AccessibilityFocusRingGroup::AnimateFocusRings(base::TimeTicks timestamp) {
   CHECK(!focus_rings_.empty());
   CHECK(!focus_layers_.empty());
   CHECK(focus_layers_[0]);
@@ -114,7 +114,7 @@ void AccessibilityFocusRingGroup::AnimateFocusRings(base::TimeTicks timestamp) {
         base::TimeDelta::FromMilliseconds(kTransitionTimeMilliseconds);
     if (delta >= transition_time) {
       focus_layers_[0]->Set(focus_rings_[0]);
-      return;
+      return true;
     }
 
     // Ease-in effect.
@@ -132,6 +132,8 @@ void AccessibilityFocusRingGroup::AnimateFocusRings(base::TimeTicks timestamp) {
     for (auto& focus_layer : focus_layers_)
       focus_layer->SetOpacity(focus_animation_info_.opacity);
   }
+
+  return false;
 }
 
 bool AccessibilityFocusRingGroup::UpdateFocusRing(

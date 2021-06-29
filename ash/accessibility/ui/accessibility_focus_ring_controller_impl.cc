@@ -179,43 +179,48 @@ void AccessibilityFocusRingControllerImpl::OnDeviceScaleFactorChanged() {
     iter->second->UpdateFocusRingsFromInfo(this);
 }
 
-void AccessibilityFocusRingControllerImpl::OnAnimationStep(
+bool AccessibilityFocusRingControllerImpl::OnAnimationStep(
     base::TimeTicks timestamp) {
+  bool has_animation_finished = true;
   for (auto iter = focus_ring_groups_.begin(); iter != focus_ring_groups_.end();
        ++iter) {
     if (iter->second->CanAnimate())
-      iter->second->AnimateFocusRings(timestamp);
+      has_animation_finished &= iter->second->AnimateFocusRings(timestamp);
   }
 
   if (cursor_layer_ && cursor_layer_->CanAnimate())
-    AnimateCursorRing(timestamp);
+    has_animation_finished &= AnimateCursorRing(timestamp);
 
   if (caret_layer_ && caret_layer_->CanAnimate())
-    AnimateCaretRing(timestamp);
+    has_animation_finished &= AnimateCaretRing(timestamp);
+
+  return has_animation_finished;
 }
 
-void AccessibilityFocusRingControllerImpl::AnimateCursorRing(
+bool AccessibilityFocusRingControllerImpl::AnimateCursorRing(
     base::TimeTicks timestamp) {
   CHECK(cursor_layer_);
 
   ComputeOpacity(&cursor_animation_info_, timestamp);
   if (cursor_animation_info_.opacity == 0.0) {
     cursor_layer_.reset();
-    return;
+    return true;
   }
   cursor_layer_->SetOpacity(cursor_animation_info_.opacity);
+  return false;
 }
 
-void AccessibilityFocusRingControllerImpl::AnimateCaretRing(
+bool AccessibilityFocusRingControllerImpl::AnimateCaretRing(
     base::TimeTicks timestamp) {
   CHECK(caret_layer_);
 
   ComputeOpacity(&caret_animation_info_, timestamp);
   if (caret_animation_info_.opacity == 0.0) {
     caret_layer_.reset();
-    return;
+    return true;
   }
   caret_layer_->SetOpacity(caret_animation_info_.opacity);
+  return false;
 }
 
 AccessibilityFocusRingGroup*
