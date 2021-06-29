@@ -127,12 +127,23 @@ void BrowserAccessibility::Init(BrowserAccessibilityManager* manager,
   node_ = node;
 }
 
+#if DCHECK_IS_ON()
 bool BrowserAccessibility::IsValid() const {
   // Currently we only perform validity checks on non-empty, atomic text fields.
   // An atomic text field does not expose its internal implementation to
   // assistive software, appearing as a single leaf node in the accessibility
   // tree. It includes <input>, <textarea> and Views-based text fields.
-  if (IsAtomicTextField() && InternalChildCount()) {
+  if (!IsAtomicTextField())
+    return true;
+
+  // If the input type is not plain or text it may be a complex field, such as
+  // a datetime input. We don't try to enforce a special structure for those.
+  std::string input_type =
+      GetData().GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+  if (!input_type.empty() && input_type != "text")
+    return true;  // Not a plain text field, just consider it valid.
+
+  if (InternalChildCount()) {
     // If the atomic text field is aria-hidden then all its descendants are
     // ignored.
     //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
@@ -144,8 +155,12 @@ bool BrowserAccessibility::IsValid() const {
   return true;
 }
 
+#endif
+
 void BrowserAccessibility::OnDataChanged() {
-  DCHECK(IsValid());
+#if DCHECK_IS_ON()
+  DCHECK(IsValid()) << "Invalid node: " << *this;
+#endif
 }
 
 bool BrowserAccessibility::PlatformIsLeaf() const {
