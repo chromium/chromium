@@ -60,8 +60,9 @@ WGPURenderPassColorAttachment AsDawnType(
       break;
   }
 
-  if (webgpu_desc->hasStoreOp())
+  if (webgpu_desc->hasStoreOp()) {
     dawn_desc.storeOp = AsDawnEnum<WGPUStoreOp>(webgpu_desc->storeOp());
+  }
 
   return dawn_desc;
 }
@@ -197,6 +198,11 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
       exception_state.ThrowRangeError("loadValue color size must be 4");
       return nullptr;
     }
+
+    if (color_attachment->storeOp() == "clear") {
+      device_->AddConsoleWarning(
+          "The storeOp 'clear' has been deprecated. Use 'discard' instead.");
+    }
   }
 
   std::string label;
@@ -226,6 +232,13 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
       exception_state.ThrowTypeError("required member view is undefined.");
       return nullptr;
     }
+
+    if (descriptor->depthStencilAttachment()->depthStoreOp() == "clear" ||
+        descriptor->depthStencilAttachment()->stencilStoreOp() == "clear") {
+      device_->AddConsoleWarning(
+          "The storeOp 'clear' has been deprecated. Use 'discard' instead.");
+    }
+
     depthStencilAttachment = AsDawnType(descriptor->depthStencilAttachment());
     dawn_desc.depthStencilAttachment = &depthStencilAttachment;
   } else {
