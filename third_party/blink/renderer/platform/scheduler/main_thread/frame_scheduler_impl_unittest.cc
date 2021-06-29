@@ -3410,7 +3410,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       page_scheduler_.get(), frame_scheduler_delegate_.get(), nullptr,
       FrameScheduler::FrameType::kSubframe);
   const scoped_refptr<base::SingleThreadTaskRunner> other_task_runner =
-      frame_scheduler_->GetTaskRunner(GetTaskType());
+      other_frame_scheduler->GetTaskRunner(GetTaskType());
 
   // Fast-forward the time to a multiple of
   // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise,
