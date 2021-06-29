@@ -18,10 +18,8 @@
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
-#include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
@@ -41,13 +39,9 @@ class HttpResponseInfo;
 class HttpUserAgentSettings;
 class NetLog;
 class NetLogWithSource;
-class NetworkIsolationKey;
 class NetworkQualityEstimator;
-struct NetworkTrafficAnnotationTag;
 class ProxyDelegate;
-class ProxyServer;
 class SocketPerformanceWatcherFactory;
-struct SSLConfig;
 class StreamSocket;
 class WebSocketEndpointLockManager;
 class QuicStreamFactory;
@@ -174,26 +168,6 @@ class NET_EXPORT_PRIVATE ConnectJob {
              NetLogSourceType net_log_source_type,
              NetLogEventType net_log_connect_event_type);
   virtual ~ConnectJob();
-
-  // Creates a ConnectJob with the specified parameters.
-  // |common_connect_job_params| and |delegate| must outlive the returned
-  // ConnectJob.
-  static std::unique_ptr<ConnectJob> CreateConnectJob(
-      bool using_ssl,
-      const HostPortPair& endpoint,
-      const ProxyServer& proxy_server,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
-      bool force_tunnel,
-      PrivacyMode privacy_mode,
-      const OnHostResolutionCallback& resolution_callback,
-      RequestPriority request_priority,
-      SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
-      SecureDnsPolicy secure_dns_policy,
-      const CommonConnectJobParams* common_connect_job_params,
-      ConnectJob::Delegate* delegate);
 
   // Accessors
   const NetLogWithSource& net_log() { return net_log_; }

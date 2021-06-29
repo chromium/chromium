@@ -22,6 +22,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/connect_job_factory.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/socket/websocket_transport_connect_job.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -33,12 +34,14 @@ WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     int max_sockets_per_group,
     const ProxyServer& proxy_server,
     const CommonConnectJobParams* common_connect_job_params)
-    : proxy_server_(proxy_server),
-      common_connect_job_params_(common_connect_job_params),
+    : ClientSocketPool(/*is_for_websockets=*/true,
+                       common_connect_job_params,
+                       std::make_unique<ConnectJobFactory>()),
+      proxy_server_(proxy_server),
       max_sockets_(max_sockets),
       handed_out_socket_count_(0),
       flushing_(false) {
-  DCHECK(common_connect_job_params_->websocket_endpoint_lock_manager);
+  DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
 WebSocketTransportClientSocketPool::~WebSocketTransportClientSocketPool() {
@@ -105,7 +108,6 @@ int WebSocketTransportClientSocketPool::RequestSocket(
 
   std::unique_ptr<ConnectJob> connect_job =
       CreateConnectJob(group_id, params, proxy_server_, proxy_annotation_tag,
-                       true /* is_for_websockets */, common_connect_job_params_,
                        priority, SocketTag(), connect_job_delegate.get());
 
   int result = connect_job_delegate->Connect(std::move(connect_job));

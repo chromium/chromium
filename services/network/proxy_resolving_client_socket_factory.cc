@@ -98,7 +98,7 @@ ProxyResolvingClientSocketFactory::CreateSocket(
   network_session_->http_auth_cache()->CopyProxyEntriesFrom(*other_auth_cache);
   return std::make_unique<ProxyResolvingClientSocket>(
       network_session_.get(), common_connect_job_params_.get(), url,
-      network_isolation_key, use_tls);
+      network_isolation_key, use_tls, connect_job_factory_.get());
 }
 
 }  // namespace network

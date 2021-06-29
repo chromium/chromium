@@ -4,6 +4,7 @@
 
 #include "net/http/http_proxy_connect_job.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -155,6 +156,18 @@ HttpProxySocketParams::HttpProxySocketParams(
 }
 
 HttpProxySocketParams::~HttpProxySocketParams() = default;
+
+std::unique_ptr<HttpProxyConnectJob> HttpProxyConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<HttpProxySocketParams> params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<HttpProxyConnectJob>(
+      priority, socket_tag, common_connect_job_params, std::move(params),
+      delegate, net_log);
+}
 
 HttpProxyConnectJob::HttpProxyConnectJob(
     RequestPriority priority,

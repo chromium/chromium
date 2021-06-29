@@ -29,6 +29,7 @@
 
 namespace net {
 struct CommonConnectJobParams;
+class ConnectJobFactory;
 class HttpAuthController;
 class HttpResponseInfo;
 class HttpNetworkSession;
@@ -45,20 +46,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
     : public net::StreamSocket,
       public net::ConnectJob::Delegate {
  public:
-  // Constructs a new ProxyResolvingClientSocket. |url|'s host and port specify
+  // Constructs a new ProxyResolvingClientSocket. `url`'s host and port specify
   // where a connection will be established to. The full URL will be only used
   // for proxy resolution. Caller doesn't need to explicitly sanitize the url,
   // any sensitive data (like embedded usernames and passwords), and local data
   // (i.e. reference fragment) will be sanitized by net::ProxyResolutionService
-  // before the url is disclosed to the PAC script. If |use_tls|, this will try
-  // to do a tls connect instead of a regular tcp connect. |network_session| and
-  // |common_connect_job_params| must outlive |this|.
+  // before the url is disclosed to the PAC script. If `use_tls`, this will try
+  // to do a tls connect instead of a regular tcp connect. `network_session`,
+  // `common_connect_job_params`, and `connect_job_factory` must outlive `this`.
   ProxyResolvingClientSocket(
       net::HttpNetworkSession* network_session,
       const net::CommonConnectJobParams* common_connect_job_params,
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
-      bool use_tls);
+      bool use_tls,
+      const net::ConnectJobFactory* connect_job_factory);
   ~ProxyResolvingClientSocket() override;
 
   // net::StreamSocket implementation.
@@ -129,6 +131,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   net::HttpNetworkSession* network_session_;
 
   const net::CommonConnectJobParams* common_connect_job_params_;
+  const net::ConnectJobFactory* connect_job_factory_;
   std::unique_ptr<net::ConnectJob> connect_job_;
   std::unique_ptr<net::StreamSocket> socket_;
 

@@ -48,6 +48,7 @@
 #include "net/log/test_net_log_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/socket/connect_job_factory.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_tag.h"
@@ -540,29 +541,10 @@ class TestConnectJob : public ConnectJob {
   DISALLOW_COPY_AND_ASSIGN(TestConnectJob);
 };
 
-class TestConnectJobFactory
-    : public TransportClientSocketPool::ConnectJobFactory {
+class TestConnectJobFactory : public ConnectJobFactory {
  public:
-  TestConnectJobFactory(MockClientSocketFactory* client_socket_factory,
-                        NetLog* net_log)
-      : common_connect_job_params_(
-            nullptr /* client_socket_factory */,
-            nullptr /* host_resolver */,
-            nullptr /* http_auth_cache */,
-            nullptr /* http_auth_handler_factory */,
-            nullptr /* spdy_session_pool */,
-            nullptr /* quic_supported_versions */,
-            nullptr /* quic_stream_factory */,
-            nullptr /* proxy_delegate */,
-            nullptr /* http_user_agent_settings */,
-            nullptr /* ssl_client_context */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
-            net_log,
-            nullptr /* websocket_endpoint_lock_manager */),
-        job_type_(TestConnectJob::kMockJob),
-        job_types_(nullptr),
-        client_socket_factory_(client_socket_factory) {}
+  explicit TestConnectJobFactory(MockClientSocketFactory* client_socket_factory)
+      : client_socket_factory_(client_socket_factory) {}
 
   ~TestConnectJobFactory() override = default;
 
@@ -579,12 +561,21 @@ class TestConnectJobFactory
 
   // ConnectJobFactory implementation.
 
-  std::unique_ptr<ConnectJob> NewConnectJob(
-      ClientSocketPool::GroupId group_id,
-      scoped_refptr<ClientSocketPool::SocketParams> socket_params,
+  std::unique_ptr<ConnectJob> CreateConnectJob(
+      bool using_ssl,
+      const HostPortPair& endpoint,
+      const ProxyServer& proxy_server,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const SSLConfig* ssl_config_for_origin,
+      const SSLConfig* ssl_config_for_proxy,
+      bool force_tunnel,
+      PrivacyMode privacy_mode,
+      const OnHostResolutionCallback& resolution_callback,
       RequestPriority request_priority,
       SocketTag socket_tag,
+      const NetworkIsolationKey& network_isolation_key,
+      SecureDnsPolicy secure_dns_policy,
+      const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const override {
     EXPECT_TRUE(!job_types_ || !job_types_->empty());
     TestConnectJob::JobType job_type = job_type_;
@@ -594,13 +585,12 @@ class TestConnectJobFactory
     }
     return std::make_unique<TestConnectJob>(
         job_type, request_priority, socket_tag, timeout_duration_,
-        &common_connect_job_params_, delegate, client_socket_factory_);
+        common_connect_job_params, delegate, client_socket_factory_);
   }
 
  private:
-  const CommonConnectJobParams common_connect_job_params_;
-  TestConnectJob::JobType job_type_;
-  std::list<TestConnectJob::JobType>* job_types_;
+  TestConnectJob::JobType job_type_ = TestConnectJob::kMockJob;
+  std::list<TestConnectJob::JobType>* job_types_ = nullptr;
   base::TimeDelta timeout_duration_;
   MockClientSocketFactory* const client_socket_factory_;
 
@@ -669,12 +659,12 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       ProxyServer proxy_server = ProxyServer::Direct()) {
     DCHECK(!pool_.get());
     std::unique_ptr<TestConnectJobFactory> connect_job_factory =
-        std::make_unique<TestConnectJobFactory>(&client_socket_factory_,
-                                                &net_log_);
+        std::make_unique<TestConnectJobFactory>(&client_socket_factory_);
     connect_job_factory_ = connect_job_factory.get();
     pool_ = TransportClientSocketPool::CreateForTesting(
         max_sockets, max_sockets_per_group, unused_idle_socket_timeout,
-        used_idle_socket_timeout, proxy_server, std::move(connect_job_factory),
+        used_idle_socket_timeout, proxy_server, /*is_for_websockets=*/false,
+        &common_connect_job_params_, std::move(connect_job_factory),
         nullptr /* ssl_config_service */, enable_backup_connect_jobs);
   }
 
@@ -729,6 +719,21 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   size_t completion_count() const { return test_base_.completion_count(); }
 
   RecordingTestNetLog net_log_;
+  const CommonConnectJobParams common_connect_job_params_{
+      nullptr /* client_socket_factory */,
+      nullptr /* host_resolver */,
+      nullptr /* http_auth_cache */,
+      nullptr /* http_auth_handler_factory */,
+      nullptr /* spdy_session_pool */,
+      nullptr /* quic_supported_versions */,
+      nullptr /* quic_stream_factory */,
+      nullptr /* proxy_delegate */,
+      nullptr /* http_user_agent_settings */,
+      nullptr /* ssl_client_context */,
+      nullptr /* socket_performance_watcher_factory */,
+      nullptr /* network_quality_estimator */,
+      &net_log_,
+      nullptr /* websocket_endpoint_lock_manager */};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   TestConnectJobFactory* connect_job_factory_;

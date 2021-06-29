@@ -37,6 +37,18 @@ SOCKSSocketParams::SOCKSSocketParams(
 
 SOCKSSocketParams::~SOCKSSocketParams() = default;
 
+std::unique_ptr<SOCKSConnectJob> SOCKSConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<SOCKSSocketParams> socks_params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<SOCKSConnectJob>(
+      priority, socket_tag, common_connect_job_params, std::move(socks_params),
+      delegate, net_log);
+}
+
 SOCKSConnectJob::SOCKSConnectJob(
     RequestPriority priority,
     const SocketTag& socket_tag,

@@ -36,7 +36,7 @@ class ProcessMemoryDump;
 namespace net {
 
 class ClientSocketHandle;
-struct CommonConnectJobParams;
+class ConnectJobFactory;
 class HttpAuthController;
 class HttpResponseInfo;
 class NetLogWithSource;
@@ -341,7 +341,9 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   static void set_used_idle_socket_timeout(base::TimeDelta timeout);
 
  protected:
-  ClientSocketPool();
+  ClientSocketPool(bool is_for_websockets,
+                   const CommonConnectJobParams* common_connect_job_params,
+                   std::unique_ptr<ConnectJobFactory> connect_job_factory);
 
   void NetLogTcpClientSocketPoolRequestedSocket(const NetLogWithSource& net_log,
                                                 const GroupId& group_id);
@@ -349,18 +351,20 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // Utility method to log a GroupId with a NetLog event.
   static base::Value NetLogGroupIdParams(const GroupId& group_id);
 
-  static std::unique_ptr<ConnectJob> CreateConnectJob(
+  std::unique_ptr<ConnectJob> CreateConnectJob(
       GroupId group_id,
       scoped_refptr<SocketParams> socket_params,
       const ProxyServer& proxy_server,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      bool is_for_websockets,
-      const CommonConnectJobParams* common_connect_job_params,
       RequestPriority request_priority,
       SocketTag socket_tag,
       ConnectJob::Delegate* delegate);
 
  private:
+  const bool is_for_websockets_;
+  const CommonConnectJobParams* const common_connect_job_params_;
+  const std::unique_ptr<ConnectJobFactory> connect_job_factory_;
+
   DISALLOW_COPY_AND_ASSIGN(ClientSocketPool);
 };
 

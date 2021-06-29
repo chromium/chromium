@@ -1,0 +1,82 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef NET_SOCKET_CONNECT_JOB_FACTORY_H_
+#define NET_SOCKET_CONNECT_JOB_FACTORY_H_
+
+#include <memory>
+
+#include "net/base/privacy_mode.h"
+#include "net/base/request_priority.h"
+#include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_proxy_connect_job.h"
+#include "net/socket/connect_job.h"
+#include "net/socket/socket_tag.h"
+#include "net/socket/socks_connect_job.h"
+#include "net/socket/ssl_connect_job.h"
+#include "net/socket/transport_connect_job.h"
+#include "net/socket/websocket_transport_connect_job.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net {
+
+class HostPortPair;
+class NetworkIsolationKey;
+struct NetworkTrafficAnnotationTag;
+class ProxyServer;
+struct SSLConfig;
+
+// Common factory for all ConnectJob types. Determines and creates the correct
+// ConnectJob depending on the passed in parameters.
+class NET_EXPORT_PRIVATE ConnectJobFactory {
+ public:
+  // Default factory will be used if passed the default `nullptr`.
+  explicit ConnectJobFactory(
+      std::unique_ptr<HttpProxyConnectJob::Factory>
+          http_proxy_connect_job_factory = nullptr,
+      std::unique_ptr<SOCKSConnectJob::Factory> socks_connect_job_factory =
+          nullptr,
+      std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory = nullptr,
+      std::unique_ptr<TransportConnectJob::Factory>
+          transport_connect_job_factory = nullptr,
+      std::unique_ptr<WebSocketTransportConnectJob::Factory>
+          websocket_transport_connect_job_factory = nullptr);
+
+  // Not copyable/movable. Intended for polymorphic use via pointer.
+  ConnectJobFactory(const ConnectJobFactory&) = delete;
+  ConnectJobFactory& operator=(const ConnectJobFactory&) = delete;
+
+  virtual ~ConnectJobFactory();
+
+  // `common_connect_job_params` and `delegate` must outlive the returned
+  // ConnectJob.
+  virtual std::unique_ptr<ConnectJob> CreateConnectJob(
+      bool using_ssl,
+      const HostPortPair& endpoint,
+      const ProxyServer& proxy_server,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const SSLConfig* ssl_config_for_origin,
+      const SSLConfig* ssl_config_for_proxy,
+      bool force_tunnel,
+      PrivacyMode privacy_mode,
+      const OnHostResolutionCallback& resolution_callback,
+      RequestPriority request_priority,
+      SocketTag socket_tag,
+      const NetworkIsolationKey& network_isolation_key,
+      SecureDnsPolicy secure_dns_policy,
+      const CommonConnectJobParams* common_connect_job_params,
+      ConnectJob::Delegate* delegate) const;
+
+ private:
+  std::unique_ptr<HttpProxyConnectJob::Factory> http_proxy_connect_job_factory_;
+  std::unique_ptr<SOCKSConnectJob::Factory> socks_connect_job_factory_;
+  std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory_;
+  std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory_;
+  std::unique_ptr<WebSocketTransportConnectJob::Factory>
+      websocket_transport_connect_job_factory_;
+};
+
+}  // namespace net
+
+#endif  // NET_SOCKET_CONNECT_JOB_FACTORY_H_

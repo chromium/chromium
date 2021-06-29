@@ -60,6 +60,18 @@ TransportSocketParams::TransportSocketParams(
 
 TransportSocketParams::~TransportSocketParams() = default;
 
+std::unique_ptr<TransportConnectJob> TransportConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    const scoped_refptr<TransportSocketParams>& params,
+    Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<TransportConnectJob>(priority, socket_tag,
+                                               common_connect_job_params,
+                                               params, delegate, net_log);
+}
+
 // TODO(eroman): The use of this constant needs to be re-evaluated. The time
 // needed for TCPClientSocketXXX::Connect() can be arbitrarily long, since
 // the address list may contain many alternatives, and most of those may

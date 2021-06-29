@@ -200,7 +200,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   bool DeleteStalledRequest(ClientSocketHandle* handle);
 
   const ProxyServer proxy_server_;
-  const CommonConnectJobParams* const common_connect_job_params_;
   std::set<const ClientSocketHandle*> pending_callbacks_;
   PendingConnectsMap pending_connects_;
   StalledRequestQueue stalled_request_queue_;

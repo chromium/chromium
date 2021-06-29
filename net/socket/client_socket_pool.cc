@@ -4,6 +4,7 @@
 
 #include "net/socket/client_socket_pool.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,11 +12,13 @@
 #include "base/feature_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/connect_job_factory.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/stream_socket.h"
@@ -139,7 +142,13 @@ void ClientSocketPool::set_used_idle_socket_timeout(base::TimeDelta timeout) {
   g_used_idle_socket_timeout_s = timeout.InSeconds();
 }
 
-ClientSocketPool::ClientSocketPool() = default;
+ClientSocketPool::ClientSocketPool(
+    bool is_for_websockets,
+    const CommonConnectJobParams* common_connect_job_params,
+    std::unique_ptr<ConnectJobFactory> connect_job_factory)
+    : is_for_websockets_(is_for_websockets),
+      common_connect_job_params_(common_connect_job_params),
+      connect_job_factory_(std::move(connect_job_factory)) {}
 
 void ClientSocketPool::NetLogTcpClientSocketPoolRequestedSocket(
     const NetLogWithSource& net_log,
@@ -162,8 +171,6 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     scoped_refptr<SocketParams> socket_params,
     const ProxyServer& proxy_server,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-    bool is_for_websockets,
-    const CommonConnectJobParams* common_connect_job_params,
     RequestPriority request_priority,
     SocketTag socket_tag,
     ConnectJob::Delegate* delegate) {
@@ -174,34 +181,34 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   OnHostResolutionCallback resolution_callback;
   if (using_ssl && proxy_server.is_direct()) {
     resolution_callback = base::BindRepeating(
-        &OnHostResolution, common_connect_job_params->spdy_session_pool,
+        &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
                        proxy_server, group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
                        group_id.network_isolation_key(),
                        group_id.secure_dns_policy()),
-        is_for_websockets);
+        is_for_websockets_);
   } else if (proxy_server.is_https()) {
     resolution_callback = base::BindRepeating(
-        &OnHostResolution, common_connect_job_params->spdy_session_pool,
+        &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
                        group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kTrue, socket_tag,
                        group_id.network_isolation_key(),
                        group_id.secure_dns_policy()),
-        is_for_websockets);
+        is_for_websockets_);
   }
 
   // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
-  return ConnectJob::CreateConnectJob(
+  return connect_job_factory_->CreateConnectJob(
       using_ssl, HostPortPair::FromSchemeHostPort(group_id.destination()),
       proxy_server, proxy_annotation_tag,
       socket_params->ssl_config_for_origin(),
-      socket_params->ssl_config_for_proxy(), is_for_websockets,
+      socket_params->ssl_config_for_proxy(), is_for_websockets_,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_isolation_key(),
-      group_id.secure_dns_policy(), common_connect_job_params, delegate);
+      group_id.secure_dns_policy(), common_connect_job_params_, delegate);
 }
 
 }  // namespace net

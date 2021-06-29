@@ -5,6 +5,7 @@
 #include "net/socket/ssl_connect_job.h"
 
 #include <cstdlib>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -100,6 +101,18 @@ const scoped_refptr<HttpProxySocketParams>&
 SSLSocketParams::GetHttpProxyConnectionParams() const {
   DCHECK_EQ(GetConnectionType(), HTTP_PROXY);
   return http_proxy_params_;
+}
+
+std::unique_ptr<SSLConnectJob> SSLConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<SSLSocketParams> params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<SSLConnectJob>(priority, socket_tag,
+                                         common_connect_job_params,
+                                         std::move(params), delegate, net_log);
 }
 
 SSLConnectJob::SSLConnectJob(

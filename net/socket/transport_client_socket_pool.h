@@ -50,6 +50,7 @@ class ProcessMemoryDump;
 namespace net {
 
 struct CommonConnectJobParams;
+class ConnectJobFactory;
 struct NetLogSource;
 struct NetworkTrafficAnnotationTag;
 
@@ -150,23 +151,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
-  class ConnectJobFactory {
-   public:
-    ConnectJobFactory() {}
-    virtual ~ConnectJobFactory() {}
-
-    virtual std::unique_ptr<ConnectJob> NewConnectJob(
-        ClientSocketPool::GroupId group_id,
-        scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-        const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-        RequestPriority request_priority,
-        SocketTag socket_tag,
-        ConnectJob::Delegate* delegate) const = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConnectJobFactory);
-  };
-
   TransportClientSocketPool(
       int max_sockets,
       int max_sockets_per_group,
@@ -186,6 +170,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
       const ProxyServer& proxy_server,
+      bool is_for_websockets,
+      const CommonConnectJobParams* common_connect_job_params,
       std::unique_ptr<ConnectJobFactory> connect_job_factory,
       SSLClientContext* ssl_client_context,
       bool connect_backup_jobs_enabled);
@@ -281,8 +267,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   void OnSSLConfigForServerChanged(const HostPortPair& server) override;
 
  private:
-  class ConnectJobFactoryImpl;
-
   // Entry for a persistent socket which became idle at time |start_time|.
   struct IdleSocket {
     IdleSocket() : socket(nullptr) {}
@@ -614,6 +598,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
       const ProxyServer& proxy_server,
+      bool is_for_websockets,
+      const CommonConnectJobParams* common_connect_job_params,
       std::unique_ptr<ConnectJobFactory> connect_job_factory,
       SSLClientContext* ssl_client_context,
       bool connect_backup_jobs_enabled);
@@ -804,8 +790,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   const base::TimeDelta used_idle_socket_timeout_;
 
   const ProxyServer proxy_server_;
-
-  const std::unique_ptr<ConnectJobFactory> connect_job_factory_;
 
   // TODO(vandebo) Remove when backup jobs move to TransportClientSocketPool
   bool connect_backup_jobs_enabled_;

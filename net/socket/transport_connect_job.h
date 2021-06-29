@@ -81,6 +81,20 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
     RACE_IPV6_SOLO,
   };
 
+  class NET_EXPORT_PRIVATE Factory {
+   public:
+    Factory() = default;
+    virtual ~Factory() = default;
+
+    virtual std::unique_ptr<TransportConnectJob> Create(
+        RequestPriority priority,
+        const SocketTag& socket_tag,
+        const CommonConnectJobParams* common_connect_job_params,
+        const scoped_refptr<TransportSocketParams>& params,
+        Delegate* delegate,
+        const NetLogWithSource* net_log);
+  };
+
   // TransportConnectJobs will time out after this many seconds.  Note this is
   // the total time, including both host resolution and TCP connect() times.
   static const int kTimeoutInSeconds;
