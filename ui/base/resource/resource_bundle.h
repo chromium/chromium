@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                                     std::u16string* value) const = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
@@ -208,9 +208,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // safe! You should call it immediately after calling InitSharedInstance.
   void AddDataPackFromPath(const base::FilePath& path,
                            ScaleFactor scale_factor);
-
-  // Same as above but using an already open file.
-  void AddDataPackFromFile(base::File file, ScaleFactor scale_factor);
 
   // Same as above but using only a region (offset + size) of the file.
   void AddDataPackFromFileRegion(base::File file,
@@ -450,10 +447,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                   ScaleFactor* scale_factor,
                   SkBitmap* bitmap,
                   bool* fell_back_to_1x) const;
-
-  // Returns true if missing scaled resources should be visually indicated when
-  // drawing the fallback (e.g., by tinting the image).
-  static bool ShouldHighlightMissingScaledResources();
 
   // Returns true if the data in |buf| is a PNG that has the special marker
   // added by GRIT that indicates that the image is actually 1x data.
