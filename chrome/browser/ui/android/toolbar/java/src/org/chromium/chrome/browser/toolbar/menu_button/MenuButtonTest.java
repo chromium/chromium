@@ -34,7 +34,7 @@ import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.toolbar.R;
 
 /**
  * Unit tests for MenuButton.

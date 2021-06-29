@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.toolbar.top;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,9 +30,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -231,9 +231,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             if (entry.getFavicon() != null) continue;
             final GURL pageUrl = entry.getUrl();
             if (!requestedUrls.contains(pageUrl)) {
-                FaviconImageCallback imageCallback =
-                        (bitmap, iconUrl) -> NavigationPopup.this.onFaviconAvailable(pageUrl,
-                                bitmap);
+                FaviconImageCallback imageCallback = (bitmap,
+                        iconUrl) -> NavigationPopup.this.onFaviconAvailable(pageUrl, bitmap);
                 mFaviconHelper.getLocalFaviconImageForURL(
                         mProfile, pageUrl, mFaviconSize, imageCallback);
                 requestedUrls.add(pageUrl);
@@ -356,6 +355,4 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         ImageView mImageView;
         TextView mTextView;
     }
-
-
 }

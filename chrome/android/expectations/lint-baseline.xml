@@ -656,7 +656,7 @@
         errorLine1="                            .setAnchorView(mToolbarLayout.getOptionalButtonView())"
         errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonController.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonController.java"
             line="114"
             column="59"/>
     </issue>
@@ -920,7 +920,7 @@
         errorLine1="                                != mTabSwitcherAnimationTabStackDrawable.getTabCount();"
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
             line="1548"
             column="74"/>
     </issue>
@@ -931,7 +931,7 @@
         errorLine1="        return mToolbarLayout.getLocationBar();"
         errorLine2="                              ~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
             line="610"
             column="31"/>
     </issue>
@@ -1723,7 +1723,7 @@
         errorLine1="        mMenuImageButton.setOnTouchListener(mAppMenuButtonHelper);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
             line="77"
             column="9"/>
     </issue>
@@ -1822,7 +1822,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
             line="261"
             column="20"/>
     </issue>
@@ -1833,7 +1833,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent ev) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
             line="503"
             column="20"/>
     </issue>
@@ -1932,7 +1932,7 @@
         errorLine1="    android:clickable=&quot;true&quot;"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/start_top_toolbar.xml"
+            file="../../chrome/browser/ui/android/toolbar/java/res/layout/start_top_toolbar.xml"
             line="13"
             column="5"/>
     </issue>

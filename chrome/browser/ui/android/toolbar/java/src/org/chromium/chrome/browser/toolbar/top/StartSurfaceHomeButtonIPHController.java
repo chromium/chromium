@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -33,8 +34,7 @@ public class StartSurfaceHomeButtonIPHController {
         mUserEducationHelper = userEducationHelper;
         mIPHCommand = new IPHCommandBuilder(homeButtonView.getResources(),
                 FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE,
-                org.chromium.chrome.R.string.iph_ntp_with_feed_text,
-                org.chromium.chrome.R.string.iph_ntp_with_feed_accessibility_text)
+                R.string.iph_ntp_with_feed_text, R.string.iph_ntp_with_feed_accessibility_text)
                               .setAnchorView(homeButtonView)
                               .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
                               .setDismissOnTouch(true)

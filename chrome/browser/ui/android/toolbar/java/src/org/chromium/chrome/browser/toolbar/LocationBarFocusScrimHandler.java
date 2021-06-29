@@ -55,10 +55,9 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mContext = context;
 
         Resources resources = context.getResources();
-        int topMargin =
-                resources.getDimensionPixelSize(org.chromium.chrome.R.dimen.tab_strip_height);
-        mLightScrimColor = ApiCompatibilityUtils.getColor(resources,
-                org.chromium.chrome.R.color.omnibox_focused_fading_background_color_light);
+        int topMargin = resources.getDimensionPixelSize(R.dimen.tab_strip_height);
+        mLightScrimColor = ApiCompatibilityUtils.getColor(
+                resources, R.color.omnibox_focused_fading_background_color_light);
         mScrimModel = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                               .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
                               .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)

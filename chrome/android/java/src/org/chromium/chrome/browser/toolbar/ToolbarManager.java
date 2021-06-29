@@ -521,8 +521,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator,
                 mCompositorViewHolder.getInvalidator(), identityDiscController,
-                startSurfaceSupplier, isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                isStartSurfaceEnabled, isTabGroupsAndroidContinuationEnabled);
+                isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
+                isTabGroupsAndroidContinuationEnabled);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -938,8 +938,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
-            IdentityDiscController identityDiscController,
-            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean isGridTabSwitcherEnabled,
+            IdentityDiscController identityDiscController, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
             boolean isTabGroupsAndroidContinuationEnabled) {
         // clang-format off
@@ -958,7 +957,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         client.run();
                     }
                 }, () -> identityDiscController.getForStartSurface(mStartSurfaceState),
-                startSurfaceSupplier, mCompositorViewHolder::getResourceManager,
+                mCompositorViewHolder::getResourceManager,
                 VrModuleProvider.getDelegate()::isInVr, IncognitoUtils::isIncognitoModeEnabled,
                 isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
                 isTabGroupsAndroidContinuationEnabled, HistoryManagerUtils::showHistoryManager,

@@ -19,8 +19,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -34,16 +32,17 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -115,7 +114,6 @@ public class TopToolbarCoordinator implements Toolbar {
      *        invalidate the drawing surface.  This will give the object that registers as the host
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
-     * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param isInVrSupplier A supplier of the state of VR mode.
      * @param isInconitoModeEnabledSupplier A supplier of the incognito mode being enabled or not.
@@ -141,7 +139,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
             Supplier<ResourceManager> resourceManagerSupplier, BooleanSupplier isInVrSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,

@@ -47,7 +47,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -62,6 +61,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -111,12 +111,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
+    // clang-format off
     @ViewDebug.ExportedProperty(category = "chrome", mapping = {
             @ViewDebug.IntToString(from = STATIC_TAB, to = "STATIC_TAB"),
             @ViewDebug.IntToString(from = TAB_SWITCHER, to = "TAB_SWITCHER"),
             @ViewDebug.IntToString(from = ENTERING_TAB_SWITCHER, to = "ENTERING_TAB_SWITCHER"),
             @ViewDebug.IntToString(from = EXITING_TAB_SWITCHER, to = "EXITING_TAB_SWITCHER")
             })
+    // clang-format on
 
     static final int LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 51;
 
@@ -702,7 +704,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private void updateToolbarBackgroundFromState(@VisualState int visualState) {
         updateToolbarBackground(getToolbarColorForVisualState(visualState));
     }
-
 
     private int getToolbarColorForVisualState(final @VisualState int visualState) {
         Resources res = getResources();

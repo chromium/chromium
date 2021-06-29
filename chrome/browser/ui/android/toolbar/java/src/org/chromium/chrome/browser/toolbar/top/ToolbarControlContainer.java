@@ -16,10 +16,10 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;

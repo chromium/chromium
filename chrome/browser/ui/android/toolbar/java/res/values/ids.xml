@@ -13,5 +13,10 @@
     <item type="id" name="share_tab_group" />
     <item type="id" name="edit_group_name" />
 
+    <!-- Menu IDs -->
     <item type="id" name="customize_adaptive_button_menu_id" />
+    <item type="id" name="icon_row_menu_id" />
+    <item type="id" name="incognito_tab_menu_id" />
+    <item type="id" name="new_tab_menu_id" />
+    <item type="id" name="new_incognito_tab_menu_id" />
 </resources>

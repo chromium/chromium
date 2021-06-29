@@ -10,7 +10,6 @@ include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
   "+base/android/java/src/org/chromium/base",
   "+chrome/android/java/src/org/chromium/chrome/browser/toolbar",
-  "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
   "+components/browser_ui/widget/android/java",
   "+ui/android/java/src/org/chromium/ui",
   "+url/android",
@@ -30,8 +29,5 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-  ],
-  'LocationBarModel.java': [
-    "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
   ],
 }

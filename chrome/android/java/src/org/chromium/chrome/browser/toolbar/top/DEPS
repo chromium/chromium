@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/android/java/src/org/chromium/chrome/browser/incognito",
-  "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
-]

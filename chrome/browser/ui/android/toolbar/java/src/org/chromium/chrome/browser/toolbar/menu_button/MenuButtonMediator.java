@@ -20,10 +20,10 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.SetFocusFunction;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
@@ -186,7 +186,7 @@ class MenuButtonMediator implements AppMenuObserver {
             return;
         }
         mAppMenuPropertiesDelegate.loadingStateChanged(isLoading);
-        mAppMenuHandler.menuItemContentChanged(org.chromium.chrome.R.id.icon_row_menu_id);
+        mAppMenuHandler.menuItemContentChanged(R.id.icon_row_menu_id);
     }
 
     ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
@@ -248,8 +248,7 @@ class MenuButtonMediator implements AppMenuObserver {
                     mResources.getString(badgeContentDescription));
         } else {
             mPropertyModel.set(MenuButtonProperties.CONTENT_DESCRIPTION,
-                    mResources.getString(
-                            org.chromium.chrome.R.string.accessibility_toolbar_btn_menu));
+                    mResources.getString(R.string.accessibility_toolbar_btn_menu));
         }
     }
 

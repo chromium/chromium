@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.toolbar.top;
 
 import android.graphics.Bitmap;
 import android.view.View;
@@ -155,5 +155,4 @@ public class NavigationPopupTest {
             return popup.getPopupForTesting();
         });
     }
-
 }

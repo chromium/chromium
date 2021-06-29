@@ -25,10 +25,6 @@
     <!-- Compositor Tab Title Text -->
     <bool name="compositor_tab_title_fake_bold_text">true</bool>
 
-    <!-- Toolbar/AppMenu - Drawable level on reload image button -->
-    <integer name="reload_button_level_reload">0</integer>
-    <integer name="reload_button_level_stop">1</integer>
-
     <!-- Download InfoBar animation. -->
     <integer name="download_infobar_sweep_up_delay">500</integer>
     <integer name="download_infobar_sweep_down_delay">800</integer>

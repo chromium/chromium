@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/android/toolbar/location_bar_model_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/LocationBarModel_jni.h"
+#include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
