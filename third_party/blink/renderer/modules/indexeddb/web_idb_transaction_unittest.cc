@@ -15,7 +15,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_web_idb_callbacks.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 
 using testing::_;
 using testing::Invoke;
@@ -24,9 +24,9 @@ using testing::WithArgs;
 
 namespace blink {
 
-class WebIDBTransactionImplTest : public testing::Test {};
+class WebIDBTransactionTest : public testing::Test {};
 
-TEST_F(WebIDBTransactionImplTest, ValueSizeTest) {
+TEST_F(WebIDBTransactionTest, ValueSizeTest) {
   // For testing use a much smaller maximum size to prevent allocating >100 MB
   // of memory, which crashes on memory-constrained systems.
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
@@ -46,15 +46,15 @@ TEST_F(WebIDBTransactionImplTest, ValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_CALL(*callbacks, Error(_, _)).Times(1);
 
-  WebIDBTransactionImpl transaction_impl(
+  WebIDBTransaction transaction(
       blink::scheduler::GetSingleThreadTaskRunnerForTesting(), transaction_id);
-  transaction_impl.max_put_value_size_ = kMaxValueSizeForTesting;
-  transaction_impl.Put(object_store_id, std::move(value), std::move(key),
-                       mojom::IDBPutMode::AddOrUpdate, std::move(callbacks),
-                       Vector<IDBIndexKeys>());
+  transaction.max_put_value_size_ = kMaxValueSizeForTesting;
+  transaction.Put(object_store_id, std::move(value), std::move(key),
+                  mojom::IDBPutMode::AddOrUpdate, std::move(callbacks),
+                  Vector<IDBIndexKeys>());
 }
 
-TEST_F(WebIDBTransactionImplTest, KeyAndValueSizeTest) {
+TEST_F(WebIDBTransactionTest, KeyAndValueSizeTest) {
   // For testing use a much smaller maximum size to prevent allocating >100 MB
   // of memory, which crashes on memory-constrained systems.
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
@@ -89,12 +89,12 @@ TEST_F(WebIDBTransactionImplTest, KeyAndValueSizeTest) {
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_CALL(*callbacks, Error(_, _)).Times(1);
 
-  WebIDBTransactionImpl transaction_impl(
+  WebIDBTransaction transaction(
       blink::scheduler::GetSingleThreadTaskRunnerForTesting(), transaction_id);
-  transaction_impl.max_put_value_size_ = kMaxValueSizeForTesting;
-  transaction_impl.Put(object_store_id, std::move(value), std::move(key),
-                       mojom::IDBPutMode::AddOrUpdate, std::move(callbacks),
-                       Vector<IDBIndexKeys>());
+  transaction.max_put_value_size_ = kMaxValueSizeForTesting;
+  transaction.Put(object_store_id, std::move(value), std::move(key),
+                  mojom::IDBPutMode::AddOrUpdate, std::move(callbacks),
+                  Vector<IDBIndexKeys>());
 }
 
 }  // namespace blink

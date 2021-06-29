@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 
 #include <cstddef>
 #include <memory>
@@ -21,36 +21,36 @@
 
 namespace blink {
 
-WebIDBTransactionImpl::WebIDBTransactionImpl(
+WebIDBTransaction::WebIDBTransaction(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int64_t transaction_id)
     : task_runner_(task_runner), transaction_id_(transaction_id) {}
 
-WebIDBTransactionImpl::~WebIDBTransactionImpl() = default;
+WebIDBTransaction::~WebIDBTransaction() = default;
 
 mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
-WebIDBTransactionImpl::CreateReceiver() {
+WebIDBTransaction::CreateReceiver() {
   return transaction_.BindNewEndpointAndPassReceiver(task_runner_);
 }
 
-void WebIDBTransactionImpl::CreateObjectStore(int64_t object_store_id,
-                                              const String& name,
-                                              const IDBKeyPath& key_path,
-                                              bool auto_increment) {
+void WebIDBTransaction::CreateObjectStore(int64_t object_store_id,
+                                          const String& name,
+                                          const IDBKeyPath& key_path,
+                                          bool auto_increment) {
   transaction_->CreateObjectStore(object_store_id, name, key_path,
                                   auto_increment);
 }
 
-void WebIDBTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
+void WebIDBTransaction::DeleteObjectStore(int64_t object_store_id) {
   transaction_->DeleteObjectStore(object_store_id);
 }
 
-void WebIDBTransactionImpl::Put(int64_t object_store_id,
-                                std::unique_ptr<IDBValue> value,
-                                std::unique_ptr<IDBKey> primary_key,
-                                mojom::IDBPutMode put_mode,
-                                std::unique_ptr<WebIDBCallbacks> callbacks,
-                                Vector<IDBIndexKeys> index_keys) {
+void WebIDBTransaction::Put(int64_t object_store_id,
+                            std::unique_ptr<IDBValue> value,
+                            std::unique_ptr<IDBKey> primary_key,
+                            mojom::blink::IDBPutMode put_mode,
+                            std::unique_ptr<WebIDBCallbacks> callbacks,
+                            Vector<IDBIndexKeys> index_keys) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, nullptr);
 
   size_t index_keys_size = 0;
@@ -77,11 +77,11 @@ void WebIDBTransactionImpl::Put(int64_t object_store_id,
   callbacks->SetState(nullptr, transaction_id_);
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
                     put_mode, std::move(index_keys),
-                    WTF::Bind(&WebIDBTransactionImpl::PutCallback,
+                    WTF::Bind(&WebIDBTransaction::PutCallback,
                               WTF::Unretained(this), std::move(callbacks)));
 }
 
-void WebIDBTransactionImpl::PutCallback(
+void WebIDBTransaction::PutCallback(
     std::unique_ptr<WebIDBCallbacks> callbacks,
     mojom::blink::IDBTransactionPutResultPtr result) {
   if (result->is_error_result()) {
@@ -98,9 +98,9 @@ void WebIDBTransactionImpl::PutCallback(
   }
 }
 
-void WebIDBTransactionImpl::PutAll(int64_t object_store_id,
-                                   Vector<mojom::blink::IDBPutParamsPtr> puts,
-                                   std::unique_ptr<WebIDBCallbacks> callbacks) {
+void WebIDBTransaction::PutAll(int64_t object_store_id,
+                               Vector<mojom::blink::IDBPutParamsPtr> puts,
+                               std::unique_ptr<WebIDBCallbacks> callbacks) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, nullptr);
   base::CheckedNumeric<size_t> index_keys_size = 0;
   for (auto& put : puts) {
@@ -130,11 +130,11 @@ void WebIDBTransactionImpl::PutAll(int64_t object_store_id,
 
   callbacks->SetState(nullptr, transaction_id_);
   transaction_->PutAll(object_store_id, std::move(puts),
-                       WTF::Bind(&WebIDBTransactionImpl::PutAllCallback,
+                       WTF::Bind(&WebIDBTransaction::PutAllCallback,
                                  WTF::Unretained(this), std::move(callbacks)));
 }
 
-void WebIDBTransactionImpl::PutAllCallback(
+void WebIDBTransaction::PutAllCallback(
     std::unique_ptr<WebIDBCallbacks> callbacks,
     mojom::blink::IDBTransactionPutAllResultPtr result) {
   if (result->is_error_result()) {
@@ -151,8 +151,12 @@ void WebIDBTransactionImpl::PutAllCallback(
   }
 }
 
-void WebIDBTransactionImpl::Commit(int64_t num_errors_handled) {
+void WebIDBTransaction::Commit(int64_t num_errors_handled) {
   transaction_->Commit(num_errors_handled);
+}
+
+void WebIDBTransaction::FlushForTesting() {
+  transaction_.FlushForTesting();
 }
 
 }  // namespace blink

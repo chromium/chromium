@@ -66,9 +66,8 @@ blink_modules_sources("indexeddb") {
     "web_idb_database.h",
     "web_idb_database_impl.cc",
     "web_idb_database_impl.h",
+    "web_idb_transaction.cc",
     "web_idb_transaction.h",
-    "web_idb_transaction_impl.cc",
-    "web_idb_transaction_impl.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
@@ -85,14 +84,14 @@ source_set("unit_tests") {
     "idb_transaction_test.cc",
     "idb_value_wrapping_test.cc",
     "indexed_db_blink_mojom_traits_test.cc",
+    "mock_idb_transaction.cc",
+    "mock_idb_transaction.h",
     "mock_web_idb_callbacks.cc",
     "mock_web_idb_callbacks.h",
     "mock_web_idb_database.cc",
     "mock_web_idb_database.h",
-    "mock_web_idb_transaction.cc",
-    "mock_web_idb_transaction.h",
     "web_idb_cursor_unittest.cc",
-    "web_idb_transaction_impl_unittest.cc",
+    "web_idb_transaction_unittest.cc",
   ]
 
   configs += [
