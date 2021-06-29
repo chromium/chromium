@@ -2595,19 +2595,29 @@
       'dawn_end2end_skip_validation_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
-          '--enable-toggles=skip_validation',
+          '--enable-toggles=skip_validation,use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+      },
+      'dawn_end2end_spirv_cross_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'linux_args': [ '--no-xvfb' ],
+        'args': [ '--disable-toggles=use_tint_generator' ],
         'test': 'dawn_end2end_tests',
       },
       'dawn_end2end_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'linux_args': [ '--no-xvfb' ],
+        'args': [
+          '--enable-toggles=use_tint_generator',
+        ],
       },
       'dawn_end2end_wire_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--use-wire',
+          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2617,10 +2627,20 @@
     # For Windows. Use the D3D12 backend validation layers but without GPU-based
     # validation and shader patching. This avoids hangs on less powerful systems.
     'gpu_dawn_gtests_with_partial_validation': {
+      'dawn_end2end_validation_layers_spirv_cross_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--enable-backend-validation=partial',
+          '--disable-toggles=use_tint_generator',
+        ],
+        'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+      },
       'dawn_end2end_validation_layers_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--enable-backend-validation=partial',
+          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2629,10 +2649,20 @@
 
     # GPU gtests that test only Dawn with backend validation layers
     'gpu_dawn_gtests_with_validation': {
+      'dawn_end2end_validation_layers_spirv_cross_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--enable-backend-validation',
+          '--disable-toggles=use_tint_generator',
+        ],
+        'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests',
+      },
       'dawn_end2end_validation_layers_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
           '--enable-backend-validation',
+          '--enable-toggles=use_tint_generator',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
@@ -2642,6 +2672,7 @@
     'gpu_dawn_perf_smoke_isolated_scripts': {
       'dawn_perf_tests': {
         'args': [
+          '--enable-toggles=use_tint_generator',
           # Tell the tests to only run one step for faster iteration.
           '--override-steps=1',
           '--gtest-benchmark-name=dawn_perf_tests',

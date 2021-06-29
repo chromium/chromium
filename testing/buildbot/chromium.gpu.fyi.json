@@ -8462,6 +8462,7 @@
       },
       {
         "args": [
+          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -8489,7 +8490,7 @@
       },
       {
         "args": [
-          "--enable-toggles=skip_validation",
+          "--enable-toggles=skip_validation,use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
@@ -8518,7 +8519,37 @@
       },
       {
         "args": [
+          "--disable-toggles=use_tint_generator",
+          "--no-xvfb",
+          "--use-gpu-in-tests",
+          "--test-launcher-retry-limit=0",
+          "--exclusive-device-type-preference=discrete,integrated"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dawn_end2end_spirv_cross_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "gpu": "10de:2184",
+              "os": "Ubuntu",
+              "pool": "chromium.tests.gpu.experimental"
+            }
+          ],
+          "expiration": 21600,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "dawn_end2end_tests",
+        "test_id_prefix": "ninja://third_party/dawn/src/tests:dawn_end2end_tests/"
+      },
+      {
+        "args": [
           "--use-wire",
+          "--enable-toggles=use_tint_generator",
           "--no-xvfb",
           "--use-gpu-in-tests",
           "--test-launcher-retry-limit=0",
