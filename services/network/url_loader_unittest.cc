@@ -926,8 +926,6 @@ class URLLoaderTest : public testing::Test {
       body.append(static_cast<const char*>(buffer), num_bytes);
       MojoEndReadData(consumer, num_bytes, nullptr);
     }
-
-    return body;
   }
 
   std::string ReadAvailableBody() {
