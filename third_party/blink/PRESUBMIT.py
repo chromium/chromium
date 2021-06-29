@@ -41,9 +41,10 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         return input_api.FilterSourceFile(
             path,
             files_to_skip=[
-                r'third_party/blink/common/',
-                r'third_party/blink/public/common',
-                r'third_party/blink/renderer/platform/loader/fetch/url_loader',
+                r'.*_test\.(cc|h)$',
+                r'third_party[\\/]blink[\\/]common[\\/]',
+                r'third_party[\\/]blink[\\/]public[\\/]common[\\/]',
+                r'third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]loader[\\/]fetch[\\/]url_loader[\\/]',
             ])
 
     pattern = input_api.re.compile(r'#include\s+[<"](.+)\.mojom(.*)\.h[>"]')
