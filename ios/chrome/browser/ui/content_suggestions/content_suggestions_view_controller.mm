@@ -158,6 +158,11 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
     return;
   }
 
+  if ([self.collectionUpdater isReturnToRecentTabSection:indexPath.section]) {
+    [self.suggestionCommandHandler hideMostRecentTab];
+    return;
+  }
+
   [self.metricsRecorder
       onSuggestionDismissed:[self.collectionViewModel itemAtIndexPath:indexPath]
                 atIndexPath:indexPath

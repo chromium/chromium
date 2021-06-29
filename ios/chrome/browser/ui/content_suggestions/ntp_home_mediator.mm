@@ -450,6 +450,10 @@ const char kNTPHelpURL[] =
   web_state_list->ActivateWebStateAt(index);
 }
 
+- (void)hideMostRecentTab {
+  [self.suggestionsMediator hideRecentTabTile];
+}
+
 #pragma mark - ContentSuggestionsGestureCommands
 
 - (void)openNewTabWithSuggestionsItem:(ContentSuggestionsItem*)item

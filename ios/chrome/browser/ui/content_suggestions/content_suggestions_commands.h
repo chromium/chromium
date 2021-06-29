@@ -21,6 +21,8 @@
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab:(CollectionViewItem*)item;
+// Handles the action that dismisses the "Return to Recent Tab" item.
+- (void)hideMostRecentTab;
 // Displays a context menu for the |suggestionItem|.
 - (void)displayContextMenuForSuggestion:(CollectionViewItem*)suggestionItem
                                 atPoint:(CGPoint)touchLocation
