@@ -366,6 +366,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_a11y_page/switch_access_action_assignment_pane.m.js",
     "chromeos/os_a11y_page/switch_access_constants.m.js",
     "chromeos/os_a11y_page/switch_access_setup_guide_dialog.m.js",
+    "chromeos/os_a11y_page/switch_access_setup_guide_warning_dialog.m.js",
     "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.m.js",
     "chromeos/os_a11y_page/switch_access_subpage.m.js",
     "chromeos/os_a11y_page/manage_a11y_page_browser_proxy.m.js",

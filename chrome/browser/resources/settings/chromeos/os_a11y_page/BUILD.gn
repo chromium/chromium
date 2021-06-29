@@ -21,6 +21,7 @@ js_type_check("closure_compile_module") {
     ":switch_access_action_assignment_pane.m",
     ":switch_access_constants.m",
     ":switch_access_setup_guide_dialog.m",
+    ":switch_access_setup_guide_warning_dialog.m",
     ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
     ":tts_subpage.m",
@@ -137,6 +138,17 @@ js_library("switch_access_setup_guide_dialog.m") {
   extra_deps = [ ":switch_access_setup_guide_dialog_module" ]
 }
 
+js_library("switch_access_setup_guide_warning_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_setup_guide_warning_dialog.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":switch_access_setup_guide_warning_dialog_module" ]
+}
+
 js_library("switch_access_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage.m.js" ]
   deps = [
@@ -195,6 +207,7 @@ group("polymer3_elements") {
     ":switch_access_action_assignment_dialog_module",
     ":switch_access_action_assignment_pane_module",
     ":switch_access_setup_guide_dialog_module",
+    ":switch_access_setup_guide_warning_dialog_module",
     ":switch_access_subpage_module",
     ":tts_subpage_module",
   ]
@@ -238,6 +251,15 @@ polymer_modulizer("switch_access_action_assignment_pane") {
 polymer_modulizer("switch_access_setup_guide_dialog") {
   js_file = "switch_access_setup_guide_dialog.js"
   html_file = "switch_access_setup_guide_dialog.html"
+  html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+}
+
+polymer_modulizer("switch_access_setup_guide_warning_dialog") {
+  js_file = "switch_access_setup_guide_warning_dialog.js"
+  html_file = "switch_access_setup_guide_warning_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
   migrated_imports = os_settings_migrated_imports

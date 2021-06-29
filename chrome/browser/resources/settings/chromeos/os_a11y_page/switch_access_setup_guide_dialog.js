@@ -211,6 +211,20 @@ Polymer({
         this.ticksWithLabelsInSec_(AUTO_SCAN_SPEED_RANGE_MS);
   },
 
+  /** @override */
+  attached() {
+    SwitchAccessSubpageBrowserProxyImpl.getInstance()
+        .notifySwitchAccessSetupGuideAttached();
+  },
+
+  /** @override */
+  ready() {
+    // Reset all switch assignments.
+    for (const pref of Object.values(actionToPref)) {
+      chrome.settingsPrivate.setPref(pref, {});
+    }
+  },
+
   /**
    * @param {SASetupPageId} id
    * @private

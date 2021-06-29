@@ -24,6 +24,11 @@
    * Notifies SwitchAccessHandler an assignment dialog is closing.
    */
   notifySwitchAccessActionAssignmentPaneInactive() {}
+
+  /**
+   * Notifies when the setup guide dialog is ready.
+   */
+  notifySwitchAccessSetupGuideAttached() {}
 }
 
 /**
@@ -43,6 +48,11 @@
   /** @override */
   notifySwitchAccessActionAssignmentPaneInactive() {
     chrome.send('notifySwitchAccessActionAssignmentPaneInactive');
+  }
+
+  /** @override */
+  notifySwitchAccessSetupGuideAttached() {
+    // Currently only used in testing, so no event is fired.
   }
 }
 

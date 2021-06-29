@@ -23,6 +23,7 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
       'refreshAssignmentsFromPrefs',
       'notifySwitchAccessActionAssignmentPaneActive',
       'notifySwitchAccessActionAssignmentPaneInactive',
+      'notifySwitchAccessSetupGuideAttached',
     ]);
   }
 
@@ -39,6 +40,11 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
   /** @override */
   notifySwitchAccessActionAssignmentPaneInactive() {
     this.methodCalled('notifySwitchAccessActionAssignmentPaneInactive');
+  }
+
+  /** @override */
+  notifySwitchAccessSetupGuideAttached() {
+    this.methodCalled('notifySwitchAccessSetupGuideAttached');
   }
 }
 
@@ -59,26 +65,26 @@ suite('ManageAccessibilityPageTests', function() {
               }
             },
             next: {
-              setting: {
-                key: 'settings.a11y.switch_access.next.setting',
-                type: chrome.settingsPrivate.PrefType.NUMBER,
-                value: 0
+              device_key_codes: {
+                key: 'settings.a11y.switch_access.next.device_key_codes',
+                type: chrome.settingsPrivate.PrefType.DICTIONARY,
+                value: {}
               }
             },
             previous: {
-              setting: {
-                key: 'settings.a11y.switch_access.previous.setting',
-                type: chrome.settingsPrivate.PrefType.NUMBER,
-                value: 0
+              device_key_codes: {
+                key: 'settings.a11y.switch_access.previous.device_key_codes',
+                type: chrome.settingsPrivate.PrefType.DICTIONARY,
+                value: {}
               }
             },
             select: {
-              setting: {
-                key: 'settings.a11y.switch_access.select.setting',
-                type: chrome.settingsPrivate.PrefType.NUMBER,
-                value: 0
+              device_key_codes: {
+                key: 'settings.a11y.switch_access.select.device_key_codes',
+                type: chrome.settingsPrivate.PrefType.DICTIONARY,
+                value: {}
               }
-            },
+            }
           }
         }
       }
@@ -179,7 +185,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Simulate a click on the select link row.
     page.$.selectLinkRow.click();
 
-    await browserProxy.methodCalled(
+    await browserProxy.whenCalled(
         'notifySwitchAccessActionAssignmentPaneActive');
 
     // Make sure we populate the initial |keyCodes_| state on the
@@ -197,7 +203,7 @@ suite('ManageAccessibilityPageTests', function() {
         {key: 'a', keyCode: 65, device: 'usb'});
 
     // This should cause the dialog to close.
-    await browserProxy.methodCalled(
+    await browserProxy.whenCalled(
         'notifySwitchAccessActionAssignmentPaneInactive');
   });
 
@@ -207,7 +213,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Simulate a click on the select link row.
     page.$.selectLinkRow.click();
 
-    await browserProxy.methodCalled(
+    await browserProxy.whenCalled(
         'notifySwitchAccessActionAssignmentPaneActive');
 
     // Simulate pressing 'a', and then 'b'.
@@ -251,5 +257,80 @@ suite('ManageAccessibilityPageTests', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Auto-scan keyboard toggle should be focused for settingId=1525.');
+  });
+
+  test('Warning dialog before clearing all switch assignments', async () => {
+    loadTimeData.overrideValues({
+      showSwitchAccessSetupGuide: true,
+    });
+    const prefs = getDefaultPrefs();
+    prefs.settings.a11y.switch_access.select.device_key_codes.value = {
+      25: 'usb'
+    };
+    initPage(prefs);
+
+    // Mock this API to confirm it's getting called with the right values.
+    const setPrefData = [];
+    chrome.settingsPrivate.setPref = function(key, value) {
+      setPrefData.push({key, value});
+    };
+
+    // Open the setup guide warning dialog.
+    page.$.setupGuideLink.click();
+    Polymer.dom.flush();
+
+    // Check that the dialog is open.
+    let warningDialog =
+        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    assertTrue(!!warningDialog);
+
+    // Press "cancel" to exit the dialog.
+    const cancelButton = warningDialog.$.cancel;
+    assertTrue(!!cancelButton);
+    cancelButton.click();
+    Polymer.dom.flush();
+
+    // Check that the dialog is closed, and the setup guide is not open.
+    warningDialog =
+        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    assertFalse(!!warningDialog);
+    let setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+
+    assertFalse(!!setupDialog);
+
+    // Re-open the warning dialog.
+    page.$.setupGuideLink.click();
+    Polymer.dom.flush();
+    warningDialog =
+        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    assertTrue(!!warningDialog);
+
+    // Press "continue" to open the setup guide.
+    const continueButton = warningDialog.$.continue;
+    assertTrue(!!continueButton);
+    continueButton.click();
+    Polymer.dom.flush();
+    await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
+
+    // Check that the setup guide has opened.
+    setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+    assertTrue(!!setupDialog);
+
+    // Check that the switch assignments have been cleared.
+    const setSelectData =
+        setPrefData.find(entry => entry.key.includes('select'));
+    assertTrue(!!setSelectData);
+    // Two empty objects will not be equal, so check the number of keys to
+    // confirm the assignments have been cleared.
+    assertEquals(0, Object.keys(setSelectData.value).length);
+
+    const setNextData = setPrefData.find(entry => entry.key.includes('next'));
+    assertTrue(!!setNextData);
+    assertEquals(0, Object.keys(setNextData.value).length);
+
+    const setPreviousData =
+        setPrefData.find(entry => entry.key.includes('previous'));
+    assertTrue(!!setPreviousData);
+    assertEquals(0, Object.keys(setPreviousData.value).length);
   });
 });

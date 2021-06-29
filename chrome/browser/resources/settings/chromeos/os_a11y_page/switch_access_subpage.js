@@ -165,6 +165,12 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    showSwitchAccessSetupGuideWarningDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private {?SwitchAccessCommand} */
     action_: {
       type: String,
@@ -204,7 +210,30 @@ Polymer({
   },
 
   /** @private */
-  onSetupGuideClick_() {
+  onSetupGuideRerunClick_() {
+    if (this.showSetupGuide_()) {
+      this.showSwitchAccessSetupGuideWarningDialog_ = true;
+    }
+  },
+
+  /** @private */
+  onSetupGuideWarningDialogCancel_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
+  },
+
+  /** @private */
+  onSetupGuideWarningDialogClose_() {
+    // The on_cancel is followed by on_close, so check cancel didn't happen
+    // first.
+    if (this.showSwitchAccessSetupGuideWarningDialog_) {
+      this.openSetupGuide_();
+      this.showSwitchAccessSetupGuideWarningDialog_ = false;
+    }
+  },
+
+  /** @private */
+  openSetupGuide_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
     if (this.showSetupGuide_()) {
       this.showSwitchAccessSetupGuideDialog_ = true;
     }
