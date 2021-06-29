@@ -32,6 +32,7 @@ class UserInfo {
           bool is_obfuscated,
           bool selectable);
     Field(std::u16string display_text,
+          std::u16string text_to_fill,
           std::u16string a11y_description,
           std::string id,
           bool is_obfuscated,
@@ -45,6 +46,8 @@ class UserInfo {
     Field& operator=(Field&& field);
 
     const std::u16string& display_text() const { return display_text_; }
+
+    const std::u16string& text_to_fill() const { return text_to_fill_; }
 
     const std::u16string& a11y_description() const { return a11y_description_; }
 
@@ -64,6 +67,11 @@ class UserInfo {
     // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
     // to the memory estimation member!
     std::u16string display_text_;
+    // The string that would be used to fill in the form, for cases when it is
+    // different from |display_text_|. For example: For unmasked credit cards,
+    // the `display_text` contains spaces where as the `text_to_fill_` would
+    // contain the card number without any spaces.
+    std::u16string text_to_fill_;
     std::u16string a11y_description_;
     std::string id_;  // Optional, if needed to complete filling.
     bool is_obfuscated_;
@@ -298,16 +306,19 @@ class AccessorySheetData::Builder {
                         bool is_obfuscated,
                         bool selectable) &&;
   Builder& AppendField(std::u16string display_text,
+                       std::u16string text_to_fill,
                        std::u16string a11y_description,
                        bool is_obfuscated,
                        bool selectable) &;
 
   Builder&& AppendField(std::u16string display_text,
+                        std::u16string text_to_fill,
                         std::u16string a11y_description,
                         std::string id,
                         bool is_obfuscated,
                         bool selectable) &&;
   Builder& AppendField(std::u16string display_text,
+                       std::u16string text_to_fill,
                        std::u16string a11y_description,
                        std::string id,
                        bool is_obfuscated,

@@ -201,6 +201,7 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
       CreditCardAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
           .AppendField(card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
                        card.ObfuscatedLastFourDigits(), card.guid(),
                        /*is_obfuscated=*/false,
                        /*selectable=*/true)
@@ -230,6 +231,7 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
                     IDS_AUTOFILL_WARNING_INSECURE_CONNECTION))
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedLastFourDigits(),
+                             /*text_to_fill=*/std::u16string(),
                              card.ObfuscatedLastFourDigits(), card.guid(),
                              /*is_obfuscated=*/false,
                              /*selectable=*/false)
@@ -266,6 +268,7 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   controller()->RefreshSuggestions();
 
   UserInfo::Field field(card.ObfuscatedLastFourDigits(),
+                        /*text_to_fill=*/std::u16string(),
                         card.ObfuscatedLastFourDigits(), card.guid(),
                         /*is_obfuscated=*/false,
                         /*selectable=*/true);
@@ -355,6 +358,7 @@ TEST_F(CreditCardAccessoryControllerTest, UnmaskedCacheCardsReorderedToTheTop) {
           .AppendSimpleField(cvc)
           .AddUserInfo(kMasterCard)
           .AppendField(masked_card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
                        masked_card.ObfuscatedLastFourDigits(),
                        masked_card.guid(),
                        /*is_obfuscated=*/false,
@@ -392,6 +396,7 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
       CreditCardAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
           .AppendField(card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
                        card.ObfuscatedLastFourDigits(), card.guid(),
                        /*is_obfuscated=*/false,
                        /*selectable=*/true)
@@ -437,6 +442,7 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
           .AppendSimpleField(cvc)
           .AddUserInfo(kVisaCard)
           .AppendField(unmasked_card.ObfuscatedLastFourDigits(),
+                       /*text_to_fill=*/std::u16string(),
                        unmasked_card.ObfuscatedLastFourDigits(),
                        unmasked_card.guid(),
                        /*is_obfuscated=*/false,

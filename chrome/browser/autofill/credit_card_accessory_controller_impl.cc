@@ -38,8 +38,10 @@ std::u16string GetTitle(bool has_suggestions) {
 void AddSimpleField(const std::u16string& data,
                     UserInfo* user_info,
                     bool enabled) {
-  user_info->add_field(UserInfo::Field(data, data,
-                                       /*is_password=*/false, enabled));
+  user_info->add_field(UserInfo::Field(
+      /*display_text=*/data, /*text_to_fill=*/data, /*a11y_description=*/data,
+      /*id=*/std::string(),
+      /*is_password=*/false, enabled));
 }
 
 void AddCardDetailsToUserInfo(const CreditCard& card,
@@ -69,9 +71,12 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   UserInfo user_info(data->network());
 
   std::u16string obfuscated_number = data->ObfuscatedLastFourDigits();
-  user_info.add_field(UserInfo::Field(obfuscated_number, obfuscated_number,
-                                      data->guid(), /*is_password=*/false,
-                                      enabled));
+  // The `text_to_fill` field is set to an empty string as we're populating the
+  // `id` of the `UserInfoField` which would be used to determine the type of
+  // the card and fill the form accordingly.
+  user_info.add_field(UserInfo::Field(
+      obfuscated_number, /*text_to_fill=*/std::u16string(), obfuscated_number,
+      data->guid(), /*is_password=*/false, enabled));
   AddCardDetailsToUserInfo(*data, &user_info, std::u16string(), enabled);
 
   return user_info;
@@ -82,7 +87,8 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 
   const CreditCard& card = data->card;
   UserInfo user_info(card.network());
-
+  // TODO(crbug.com/1196021): Set the display text to be the formatted card
+  // number with spaces.
   AddSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NUMBER), &user_info,
                  enabled);
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
@@ -159,7 +165,7 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   // before filling.
   if (selection.id().empty()) {
     GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
-                                                  selection.display_text());
+                                                  selection.text_to_fill());
     return;
   }
 
