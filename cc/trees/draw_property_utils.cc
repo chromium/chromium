@@ -1278,7 +1278,6 @@ bool NodeMayContainBackdropBlurFilter(const EffectNode& node) {
     default:
       return false;
   }
-  return false;
 }
 #endif
 

@@ -714,8 +714,6 @@ PictureLayerTilingSet::CoverageIterator::operator++() {
     tiling_iter_ = PictureLayerTiling::CoverageIterator(
         set_->tilings_[current_tiling_].get(), coverage_scale_, last_rect);
   }
-
-  return *this;
 }
 
 PictureLayerTilingSet::CoverageIterator::operator bool() const {

@@ -147,7 +147,6 @@ constexpr const char* GetEventLatencyDispatchToCompositorBreakdownName(
           NOTREACHED();
           return nullptr;
       }
-      break;
     case EventMetrics::DispatchStage::kRendererMainFinished:
       switch (compositor_stage) {
         case CompositorFrameReporter::StageType::
@@ -171,7 +170,6 @@ constexpr const char* GetEventLatencyDispatchToCompositorBreakdownName(
           NOTREACHED();
           return nullptr;
       }
-      break;
     default:
       NOTREACHED();
       return nullptr;

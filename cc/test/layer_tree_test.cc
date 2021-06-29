@@ -1110,7 +1110,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   client_ = nullptr;
   if (timed_out_) {
     FAIL() << "Test timed out";
-    return;
   }
   AfterTest();
 }
