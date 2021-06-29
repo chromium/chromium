@@ -271,17 +271,17 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(picture_in_picture_page));
   EXPECT_TRUE(content::NavigateToURL(web_contents(), test_page_url));
+  content::RenderFrameHostWrapper rfh(current_frame_host());
 
   // Execute picture-in-picture on the page.
   ASSERT_EQ(true, content::EvalJs(web_contents(), "enterPictureInPicture();"));
 
-  content::RenderFrameDeletedObserver deleted(current_frame_host());
-
   // Navigate away.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
 
-  // The page uses Picture-in-Picture so it should be deleted.
-  deleted.WaitUntilDeleted();
+  // The page uses Picture-in-Picture so it must be evicted from the cache and
+  // deleted.
+  rfh.WaitUntilRenderFrameDeleted();
 }
 
 #if defined(OS_ANDROID)
@@ -298,6 +298,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Use the WebShare feature on the empty page.
   EXPECT_EQ("success", content::EvalJs(current_frame_host(), R"(
@@ -308,13 +309,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
     });
   )"));
 
-  content::RenderFrameDeletedObserver deleted(current_frame_host());
-
   // 2) Navigate away.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
-  // The page uses WebShare so it should be deleted.
-  deleted.WaitUntilDeleted();
+  // The page uses WebShare so it must be evicted from the cache and deleted.
+  rfh_a.WaitUntilRenderFrameDeleted();
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
@@ -334,6 +333,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Use the WebNfc feature on the empty page.
   EXPECT_EQ("success", content::EvalJs(current_frame_host(), R"(
@@ -348,13 +348,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
     });
   )"));
 
-  content::RenderFrameDeletedObserver deleted(current_frame_host());
-
   // 2) Navigate away.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
-  // The page uses WebShare so it should be deleted.
-  deleted.WaitUntilDeleted();
+  // The page uses WebNfc so it must be evicted from the cache and deleted.
+  rfh_a.WaitUntilRenderFrameDeleted();
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
@@ -451,16 +449,15 @@ IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
 
   // 1) Navigate to url1.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url1));
-  content::RenderFrameHost* rfh_a = current_frame_host();
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  content::RenderFrameHostWrapper rfh_url1(current_frame_host());
 
   // Simulate mouse click. FirstInputDelay won't get updated immediately.
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(100, 100));
-  // Run arbitrary script and run tasks in the brwoser to ensure the input is
+  // Run arbitrary script and run tasks in the browser to ensure the input is
   // processed in the renderer.
-  EXPECT_TRUE(content::ExecJs(rfh_a, "var foo = 42;"));
+  EXPECT_TRUE(content::ExecJs(rfh_url1.get(), "var foo = 42;"));
   base::RunLoop().RunUntilIdle();
   content::FetchHistogramsFromChildProcesses();
   histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
@@ -471,11 +468,14 @@ IN_PROC_BROWSER_TEST_P(MetricsChromeBackForwardCacheBrowserTest,
   } else {
     EXPECT_TRUE(content::NavigateToURL(web_contents(), url2));
   }
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+
+  // Ensure |rfh_url1| is cached.
+  EXPECT_EQ(rfh_url1->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   content::FetchHistogramsFromChildProcesses();
   if (GetParam() != "CrossSiteBrowserInitiated" ||
-      rfh_a->GetProcess() == current_frame_host()->GetProcess()) {
+      rfh_url1.get()->GetProcess() == current_frame_host()->GetProcess()) {
     // - For "SameSite" case, since the old and new RenderFrame share a process,
     // the metrics update will be sent to the browser during commit and won't
     // get ignored, successfully updating the FirstInputDelay histogram.
@@ -498,6 +498,11 @@ std::vector<std::string> MetricsChromeBackForwardCacheBrowserTestValues() {
   return {"SameSite", "CrossSiteRendererInitiated",
           "CrossSiteBrowserInitiated"};
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MetricsChromeBackForwardCacheBrowserTest,
+    testing::ValuesIn(MetricsChromeBackForwardCacheBrowserTestValues()));
 
 namespace {
 
@@ -667,8 +672,3 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
               ::testing::ElementsAre(expected_url_b_active_title,
                                      expected_url_a_cached_title));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MetricsChromeBackForwardCacheBrowserTest,
-    testing::ValuesIn(MetricsChromeBackForwardCacheBrowserTestValues()));
