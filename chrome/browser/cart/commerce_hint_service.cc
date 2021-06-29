@@ -212,7 +212,7 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
 }
 
 void CommerceHintService::OnRemoveCart(const GURL& url) {
-  service_->DeleteCart(GetDomain(url));
+  service_->DeleteCart(GetDomain(url), false);
 }
 
 void CommerceHintService::OnCartUpdated(

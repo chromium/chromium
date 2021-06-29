@@ -179,9 +179,16 @@ void CartService::AddCart(const std::string& domain,
                                             domain, cart_url, proto));
 }
 
-void CartService::DeleteCart(const std::string& domain) {
-  cart_db_->DeleteCart(domain, base::BindOnce(&CartService::OnOperationFinished,
-                                              weak_ptr_factory_.GetWeakPtr()));
+void CartService::DeleteCart(const std::string& domain,
+                             bool ignore_remove_status) {
+  if (ignore_remove_status) {
+    cart_db_->DeleteCart(domain,
+                         base::BindOnce(&CartService::OnOperationFinished,
+                                        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  cart_db_->LoadCart(domain, base::BindOnce(&CartService::OnDeleteCart,
+                                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CartService::HideCart(const GURL& cart_url,
@@ -562,7 +569,7 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
         ShouldSkip(GURL(kv.second.merchant_cart_url()))) {
       // Removed carts should remain removed.
       if (!kv.second.is_removed()) {
-        DeleteCart(kv.second.key());
+        DeleteCart(kv.second.key(), true);
       }
       merchants_to_erase.emplace(kv.second.key());
     }
@@ -786,6 +793,18 @@ void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   cart_db_->AddCart(eTLDPlusOne(GURL(proto.merchant_cart_url())), proto,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::OnDeleteCart(bool success,
+                               std::vector<CartDB::KeyAndValue> proto_pairs) {
+  if (proto_pairs.empty())
+    return;
+  DCHECK_EQ(1U, proto_pairs.size());
+  if (proto_pairs[0].second.is_removed())
+    return;
+  cart_db_->DeleteCart(proto_pairs[0].first,
+                       base::BindOnce(&CartService::OnOperationFinished,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CartService::SetCartDiscountLinkFetcherForTesting(
