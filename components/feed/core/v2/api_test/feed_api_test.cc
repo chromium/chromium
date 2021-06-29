@@ -292,38 +292,43 @@ void TestReliabilityLoggingBridge::LogCacheReadEnd(
                     feedwire::DiscoverCardReadCacheResult_Name(result)}));
 }
 
-int TestReliabilityLoggingBridge::LogFeedRequestStart(
+void TestReliabilityLoggingBridge::LogFeedRequestStart(
+    NetworkRequestId id,
     base::TimeTicks timestamp) {
-  events_.push_back("LogFeedRequestStart");
-  return 0;
+  events_.push_back(base::StrCat(
+      {"LogFeedRequestStart id=", base::NumberToString(id.GetUnsafeValue())}));
 }
 
-int TestReliabilityLoggingBridge::LogActionsUploadRequestStart(
+void TestReliabilityLoggingBridge::LogActionsUploadRequestStart(
+    NetworkRequestId id,
     base::TimeTicks timestamp) {
-  events_.push_back("LogActionsUploadRequestStart");
-  return 0;
+  events_.push_back(base::StrCat({"LogActionsUploadRequestStart id=",
+                                  base::NumberToString(id.GetUnsafeValue())}));
 }
 
-void TestReliabilityLoggingBridge::LogRequestSent(int request_id,
+void TestReliabilityLoggingBridge::LogRequestSent(NetworkRequestId id,
                                                   base::TimeTicks timestamp) {
-  events_.push_back("LogRequestSent");
+  events_.push_back(base::StrCat(
+      {"LogRequestSent id=", base::NumberToString(id.GetUnsafeValue())}));
 }
 
 void TestReliabilityLoggingBridge::LogResponseReceived(
-    int request_id,
-    base::TimeTicks server_receive_timestamp,
-    base::TimeTicks server_send_timestamp,
+    NetworkRequestId id,
+    int64_t server_receive_timestamp_ns,
+    int64_t server_send_timestamp_ns,
     base::TimeTicks client_receive_timestamp) {
-  events_.push_back("LogResponseReceived");
+  events_.push_back(base::StrCat(
+      {"LogResponseReceived id=", base::NumberToString(id.GetUnsafeValue())}));
 }
 
 void TestReliabilityLoggingBridge::LogRequestFinished(
-    int request_id,
+    NetworkRequestId id,
     base::TimeTicks timestamp,
     int combined_network_status_code) {
   events_.push_back(
       base::StrCat({"LogRequestFinished result=",
-                    base::NumberToString(combined_network_status_code)}));
+                    base::NumberToString(combined_network_status_code),
+                    " id=", base::NumberToString(id.GetUnsafeValue())}));
 }
 
 void TestReliabilityLoggingBridge::LogAtfRenderStart(
@@ -375,7 +380,12 @@ void TestFeedNetwork::SendQueryRequest(
   // time we want to inject a translated response for ease of test-writing.
   query_request_sent = request;
   QueryRequestResult result;
-  result.response_info.status_code = http_status_code;
+
+  if (error != net::Error::OK)
+    result.response_info.status_code = error;
+  else
+    result.response_info.status_code = http_status_code;
+
   result.response_info.response_body_bytes = 100;
   result.response_info.fetch_duration = base::TimeDelta::FromMilliseconds(42);
   result.response_info.was_signed_in = true;

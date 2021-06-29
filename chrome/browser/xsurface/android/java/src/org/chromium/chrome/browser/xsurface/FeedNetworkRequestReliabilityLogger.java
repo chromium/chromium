@@ -8,10 +8,21 @@ package org.chromium.chrome.browser.xsurface;
  * Interface for logging latency and availability signals for feed network requests. All timestamps
  * are in terms of nanoseconds since system boot.
  *
- * See {@link FeedLaunchReliabilityLogger} for the network request start event methods: they start
- * the network request flow and return FeedNetworkRequestReliabilityLogger instances.
+ * Obtain instances from FeedLaunchReliabilityLogger.getNetworkRequestReliabilityLogger().
  */
 public interface FeedNetworkRequestReliabilityLogger {
+    /**
+     * Log when making a feed query request.
+     * @param timestamp Event time.
+     */
+    default void logFeedQueryRequestStart(long timestamp) {}
+
+    /**
+     * Log just before making a feed actions upload request.
+     * @param timestamp Event time.
+     */
+    default void logActionsUploadRequestStart(long timestamp) {}
+
     /**
      * Log after the request has been sent.
      * @param timestamp Event time.

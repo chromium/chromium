@@ -6,8 +6,11 @@
 #define COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
+#include "components/feed/core/v2/public/types.h"
 
 namespace feed {
 
@@ -18,13 +21,28 @@ class LaunchReliabilityLogger {
   ~LaunchReliabilityLogger();
 
   void LogFeedLaunchOtherStart();
-  void LogLaunchFinished(feedwire::DiscoverLaunchResult result);
 
   void LogCacheReadStart();
   void LogCacheReadEnd(feedwire::DiscoverCardReadCacheResult result);
 
+  // TODO(iwells): Move the network events to their own logger class when
+  // implementing logging for the next page flow.
+
+  NetworkRequestId LogFeedRequestStart();
+  NetworkRequestId LogActionsUploadRequestStart();
+  void LogRequestSent(NetworkRequestId id, base::TimeTicks timestamp);
+  void LogResponseReceived(NetworkRequestId id,
+                           int64_t server_receive_timestamp_ns,
+                           int64_t server_send_timestamp_ns,
+                           base::TimeTicks client_receive_timestamp);
+  void LogRequestFinished(NetworkRequestId id,
+                          int combined_network_status_code);
+
+  void LogLaunchFinished(feedwire::DiscoverLaunchResult result);
+
  private:
   base::ObserverList<FeedStreamSurface>* surfaces_;
+  NetworkRequestId::Generator request_id_gen_;
 };
 
 }  // namespace feed

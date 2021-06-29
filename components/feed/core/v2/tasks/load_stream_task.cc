@@ -151,7 +151,7 @@ void LoadStreamTask::LoadFromStoreComplete(
 
   // If making a request, first try to upload pending actions.
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
-      std::move(result.pending_actions), &stream_,
+      std::move(result.pending_actions), &stream_, &launch_reliability_logger_,
       base::BindOnce(&LoadStreamTask::UploadActionsComplete, GetWeakPtr()));
   upload_actions_task_->Execute(base::DoNothing());
 }
@@ -162,6 +162,8 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
+
+  network_request_id_ = launch_reliability_logger_.LogFeedRequestStart();
 
   feedwire::Request request = CreateFeedQueryRefreshRequest(
       options_.stream_type,
@@ -224,26 +226,28 @@ void LoadStreamTask::ProcessNetworkResponse(
     std::unique_ptr<feedwire::Response> response_body,
     NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
+  launch_reliability_logger_.LogRequestSent(
+      network_request_id_, response_info.loader_start_time_ticks);
 
   DCHECK(!stream_.GetModel(options_.stream_type));
 
   network_response_info_ = response_info;
 
   if (response_info.status_code != 200) {
-    return Done(
+    return RequestFinished(
         {LoadStreamStatus::kNetworkFetchFailed,
          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200});
   }
 
   if (!response_body) {
     if (response_info.response_body_bytes > 0) {
-      return Done(
+      return RequestFinished(
           {LoadStreamStatus::kCannotParseNetworkResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
     } else {
-      return Done(
+      return RequestFinished(
           {LoadStreamStatus::kNoResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
     }
   }
 
@@ -251,9 +255,15 @@ void LoadStreamTask::ProcessNetworkResponse(
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
           response_info.was_signed_in, base::Time::Now());
+  server_send_timestamp_ns_ =
+      response_data.server_request_received_timestamp_ns;
+  server_receive_timestamp_ns_ =
+      response_data.server_request_received_timestamp_ns;
+
   if (!response_data.model_update_request) {
-    return Done({LoadStreamStatus::kProtoTranslationFailed,
-                 feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+    return RequestFinished(
+        {LoadStreamStatus::kProtoTranslationFailed,
+         feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
   }
 
   loaded_new_content_from_network_ = true;
@@ -285,8 +295,20 @@ void LoadStreamTask::ProcessNetworkResponse(
   }
 
   request_schedule_ = std::move(response_data.request_schedule);
-  Done({LoadStreamStatus::kLoadedFromNetwork,
-        feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
+  RequestFinished({LoadStreamStatus::kLoadedFromNetwork,
+                   feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED});
+}
+
+void LoadStreamTask::RequestFinished(LaunchResult result) {
+  if (network_response_info_->status_code > 0) {
+    launch_reliability_logger_.LogResponseReceived(
+        network_request_id_, server_receive_timestamp_ns_,
+        server_send_timestamp_ns_, network_response_info_->fetch_time_ticks);
+  }
+
+  launch_reliability_logger_.LogRequestFinished(
+      network_request_id_, network_response_info_->status_code);
+  Done(result);
 }
 
 void LoadStreamTask::Done(LaunchResult launch_result) {

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
+#include "components/feed/core/v2/public/types.h"
 
 namespace feed {
 namespace android {
@@ -36,14 +37,16 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
   void LogCacheReadStart(base::TimeTicks timestamp) override;
   void LogCacheReadEnd(base::TimeTicks timestamp,
                        feedwire::DiscoverCardReadCacheResult result) override;
-  int LogFeedRequestStart(base::TimeTicks timestamp) override;
-  int LogActionsUploadRequestStart(base::TimeTicks timestamp) override;
-  void LogRequestSent(int request_id, base::TimeTicks timestamp) override;
-  void LogResponseReceived(int request_id,
-                           base::TimeTicks server_receive_timestamp,
-                           base::TimeTicks server_send_timestamp,
+  void LogFeedRequestStart(NetworkRequestId id,
+                           base::TimeTicks timestamp) override;
+  void LogActionsUploadRequestStart(NetworkRequestId id,
+                                    base::TimeTicks timestamp) override;
+  void LogRequestSent(NetworkRequestId id, base::TimeTicks timestamp) override;
+  void LogResponseReceived(NetworkRequestId id,
+                           int64_t server_receive_timestamp_ns,
+                           int64_t server_send_timestamp_ns,
                            base::TimeTicks client_receive_timestamp) override;
-  void LogRequestFinished(int request_id,
+  void LogRequestFinished(NetworkRequestId id,
                           base::TimeTicks timestamp,
                           int combined_network_status_code) override;
   void LogAtfRenderStart(base::TimeTicks timestamp) override;

@@ -62,6 +62,8 @@ struct NetworkResponseInfo {
   GURL base_request_url;
   size_t response_body_bytes = 0;
   bool was_signed_in = false;
+  base::TimeTicks fetch_time_ticks;
+  base::TimeTicks loader_start_time_ticks;
 };
 
 std::ostream& operator<<(std::ostream& os, const NetworkResponseInfo& o);
@@ -164,6 +166,8 @@ enum class WebFeedSubscriptionRequestStatus {
 };
 std::ostream& operator<<(std::ostream& out,
                          WebFeedSubscriptionRequestStatus value);
+
+using NetworkRequestId = util::IdTypeU32<class NetworkRequestIdClass>;
 
 }  // namespace feed
 

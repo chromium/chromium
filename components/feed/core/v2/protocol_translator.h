@@ -71,6 +71,11 @@ struct RefreshResponseData {
 
   // List of experiments from the server, if provided.
   absl::optional<Experiments> experiments;
+
+  // Server-reported network timestamps (nanoseconds). They can be compared to
+  // each other but not to client timestamps.
+  int64_t server_request_received_timestamp_ns;
+  int64_t server_response_sent_timestamp_ns;
 };
 
 absl::optional<feedstore::DataOperation> TranslateDataOperation(

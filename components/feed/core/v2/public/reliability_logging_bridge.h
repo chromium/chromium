@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/types.h"
 
 namespace feed {
 
@@ -32,27 +33,23 @@ class ReliabilityLoggingBridge {
   // Methods for logging various events.
   virtual void LogFeedLaunchOtherStart(base::TimeTicks timestamp) = 0;
 
-  // TODO(iwells): use
   virtual void LogCacheReadStart(base::TimeTicks timestamp) = 0;
-  // TODO(iwells): use
   virtual void LogCacheReadEnd(
       base::TimeTicks timestamp,
       feedwire::DiscoverCardReadCacheResult result) = 0;
 
-  // TODO(iwells): use
-  virtual int LogFeedRequestStart(base::TimeTicks timestamp) = 0;
-  // TODO(iwells): use
-  virtual int LogActionsUploadRequestStart(base::TimeTicks timestamp) = 0;
-  // TODO(iwells): use
-  virtual void LogRequestSent(int request_id, base::TimeTicks timestamp) = 0;
-  // TODO(iwells): use
+  virtual void LogFeedRequestStart(NetworkRequestId id,
+                                   base::TimeTicks timestamp) = 0;
+  virtual void LogActionsUploadRequestStart(NetworkRequestId id,
+                                            base::TimeTicks timestamp) = 0;
+  virtual void LogRequestSent(NetworkRequestId id,
+                              base::TimeTicks timestamp) = 0;
   virtual void LogResponseReceived(
-      int request_id,
-      base::TimeTicks server_receive_timestamp,
-      base::TimeTicks server_send_timestamp,
+      NetworkRequestId id,
+      int64_t server_receive_timestamp_ns,
+      int64_t server_send_timestamp_ns,
       base::TimeTicks client_receive_timestamp) = 0;
-  // TODO(iwells): use
-  virtual void LogRequestFinished(int request_id,
+  virtual void LogRequestFinished(NetworkRequestId id,
                                   base::TimeTicks timestamp,
                                   int combined_network_status_code) = 0;
 

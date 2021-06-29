@@ -8,7 +8,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedNetworkRequestReliabilityLogger;
 
 /** JNI bridge making reliability logging methods available to native code. */
 @JNINamespace("feed::android")
@@ -65,42 +64,32 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
-    public int logFeedRequestStart(long timestamp) {
-        return mLogger.logFeedQueryRequestStart(timestamp);
+    public void logFeedRequestStart(int requestId, long timestamp) {
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logFeedQueryRequestStart(timestamp);
     }
 
     @CalledByNative
-    public int logActionsUploadRequestStart(long timestamp) {
-        return mLogger.logActionsUploadRequestStart(timestamp);
+    public void logActionsUploadRequestStart(int requestId, long timestamp) {
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logActionsUploadRequestStart(
+                timestamp);
     }
 
     @CalledByNative
     public void logRequestSent(int requestId, long timestamp) {
-        FeedNetworkRequestReliabilityLogger requestLogger =
-                mLogger.getNetworkRequestReliabilityLogger(requestId);
-        if (requestLogger != null) {
-            requestLogger.logRequestSent(timestamp);
-        }
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logRequestSent(timestamp);
     }
 
     @CalledByNative
     public void logResponseReceived(int requestId, long serverRecvTimestamp,
             long serverSendTimestamp, long clientRecvTimestamp) {
-        FeedNetworkRequestReliabilityLogger requestLogger =
-                mLogger.getNetworkRequestReliabilityLogger(requestId);
-        if (requestLogger != null) {
-            requestLogger.logResponseReceived(
-                    serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
-        }
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logResponseReceived(
+                serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
     }
 
     @CalledByNative
     public void logRequestFinished(int requestId, long timestamp, int canonicalStatus) {
-        FeedNetworkRequestReliabilityLogger requestLogger =
-                mLogger.getNetworkRequestReliabilityLogger(requestId);
-        if (requestLogger != null) {
-            requestLogger.logRequestFinished(timestamp, canonicalStatus);
-        }
+        mLogger.getNetworkRequestReliabilityLogger(requestId).logRequestFinished(
+                timestamp, canonicalStatus);
     }
 
     @CalledByNative

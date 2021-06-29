@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.xsurface;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -110,31 +109,13 @@ public interface FeedLaunchReliabilityLogger {
     default void logAtfRenderEnd(long timestamp, int result) {}
 
     /**
-     * Log when making a feed query request.
-     * @param timestamp Event time.
-     * @return A request ID that can be passed to getNetworkRequestReliabilityLogger().
-     */
-    default int logFeedQueryRequestStart(long timestamp) {
-        return 0;
-    }
-
-    /**
-     * Log just before making a feed actions upload request.
-     * @param timestamp Event time.
-     * @return A request ID that can be passed to getNetworkRequestReliabilityLogger().
-     */
-    default int logActionsUploadRequestStart(long timestamp) {
-        return 0;
-    }
-
-    /**
      * Get the network request logger for a request by its ID.
-     * @param requestId A request ID returned by one of the network request start methods.
-     * @return A logger for the request.
+     * @param requestId A unique ID for the request.
+     * @return A logger for the request: an existing logger if one matches `requestId`, or a new one
+     *         otherwise.
      */
-    @Nullable
     default FeedNetworkRequestReliabilityLogger getNetworkRequestReliabilityLogger(int requestId) {
-        return null;
+        return new FeedNetworkRequestReliabilityLogger() {};
     }
 
     /**

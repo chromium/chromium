@@ -14,6 +14,7 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
+#include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
@@ -109,6 +110,7 @@ class LoadStreamTask : public offline_pages::Task {
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
   void ProcessNetworkResponse(std::unique_ptr<feedwire::Response> response,
                               NetworkResponseInfo response_info);
+  void RequestFinished(LaunchResult result);
   void Done(LaunchResult result);
 
   Options options_;
@@ -125,6 +127,8 @@ class LoadStreamTask : public offline_pages::Task {
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   absl::optional<RequestSchedule> request_schedule_;
+  NetworkRequestId network_request_id_;
+  base::TimeTicks response_received_timestamp_;
 
   std::unique_ptr<LoadLatencyTimes> latencies_;
   base::TimeTicks task_creation_time_;
@@ -134,6 +138,8 @@ class LoadStreamTask : public offline_pages::Task {
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
   absl::optional<bool> fetched_content_has_notice_card_;
   LaunchReliabilityLogger& launch_reliability_logger_;
+  int64_t server_receive_timestamp_ns_ = 0l;
+  int64_t server_send_timestamp_ns_ = 0l;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
 

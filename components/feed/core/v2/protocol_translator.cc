@@ -343,6 +343,10 @@ RefreshResponseData TranslateWireResponse(
   response_data.request_schedule = std::move(global_data.request_schedule);
   response_data.session_id = std::move(session_id);
   response_data.experiments = std::move(experiments);
+  response_data.server_request_received_timestamp_ns =
+      feed_response->feed_response_metadata().event_id().time_usec() * 1'000;
+  response_data.server_response_sent_timestamp_ns =
+      feed_response->feed_response_metadata().response_time_ms() * 1'000'000;
 
   return response_data;
 }

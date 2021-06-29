@@ -6,6 +6,7 @@
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
 #include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"
+#include "components/feed/core/v2/public/types.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -129,41 +130,42 @@ void FeedReliabilityLoggingBridge::LogCacheReadEnd(
       ConvertTimestamp(timestamp), result);
 }
 
-int FeedReliabilityLoggingBridge::LogFeedRequestStart(
+void FeedReliabilityLoggingBridge::LogFeedRequestStart(
+    NetworkRequestId id,
     base::TimeTicks timestamp) {
-  return Java_FeedReliabilityLoggingBridge_logFeedRequestStart(
-      base::android::AttachCurrentThread(), java_ref_,
+  Java_FeedReliabilityLoggingBridge_logFeedRequestStart(
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
       ConvertTimestamp(timestamp));
 }
 
-int FeedReliabilityLoggingBridge::LogActionsUploadRequestStart(
+void FeedReliabilityLoggingBridge::LogActionsUploadRequestStart(
+    NetworkRequestId id,
     base::TimeTicks timestamp) {
-  return Java_FeedReliabilityLoggingBridge_logActionsUploadRequestStart(
-      base::android::AttachCurrentThread(), java_ref_,
+  Java_FeedReliabilityLoggingBridge_logActionsUploadRequestStart(
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
       ConvertTimestamp(timestamp));
 }
 
-void FeedReliabilityLoggingBridge::LogRequestSent(int request_id,
+void FeedReliabilityLoggingBridge::LogRequestSent(NetworkRequestId id,
                                                   base::TimeTicks timestamp) {
   Java_FeedReliabilityLoggingBridge_logRequestSent(
-      base::android::AttachCurrentThread(), java_ref_, request_id,
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
       ConvertTimestamp(timestamp));
 }
 
 void FeedReliabilityLoggingBridge::LogResponseReceived(
-    int request_id,
-    base::TimeTicks server_receive_timestamp,
-    base::TimeTicks server_send_timestamp,
+    NetworkRequestId id,
+    int64_t server_receive_timestamp_ns,
+    int64_t server_send_timestamp_ns,
     base::TimeTicks client_receive_timestamp) {
   Java_FeedReliabilityLoggingBridge_logResponseReceived(
-      base::android::AttachCurrentThread(), java_ref_, request_id,
-      ConvertTimestamp(server_receive_timestamp),
-      ConvertTimestamp(server_send_timestamp),
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
+      server_receive_timestamp_ns, server_send_timestamp_ns,
       ConvertTimestamp(client_receive_timestamp));
 }
 
 void FeedReliabilityLoggingBridge::LogRequestFinished(
-    int request_id,
+    NetworkRequestId id,
     base::TimeTicks timestamp,
     int combined_network_status_code) {
   absl::StatusCode canonical_code;
@@ -174,7 +176,7 @@ void FeedReliabilityLoggingBridge::LogRequestFinished(
         static_cast<net::Error>(combined_network_status_code));
   }
   Java_FeedReliabilityLoggingBridge_logRequestFinished(
-      base::android::AttachCurrentThread(), java_ref_, request_id,
+      base::android::AttachCurrentThread(), java_ref_, id.GetUnsafeValue(),
       ConvertTimestamp(timestamp), static_cast<int>(canonical_code));
 }
 

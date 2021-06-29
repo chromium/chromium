@@ -78,6 +78,10 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ClearAllInProgress) {
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n"
       "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -97,6 +101,10 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DataInStoreForAnotherUser) {
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n"
       "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -111,14 +119,21 @@ TEST_F(FeedApiReliabilityLoggingTest, MultipleSurfaces_SimultaneousLoad) {
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=EMPTY_SESSION\n",
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n",
       surface2.reliability_logging_bridge.GetEventsString());
-  // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=EMPTY_SESSION\n",
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -135,7 +150,11 @@ TEST_F(FeedApiReliabilityLoggingTest,
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=EMPTY_SESSION\n",
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n",
       surface.reliability_logging_bridge.GetEventsString());
 
   // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
@@ -154,7 +173,11 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=EMPTY_SESSION\n",
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -168,6 +191,10 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n"
       "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_ZERO_CARDS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -186,7 +213,26 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NetworkOffline) {
       surface.reliability_logging_bridge.GetEventsString());
 }
 
-TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Non200) {
+TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NoResponseReceived) {
+  network_.error = net::Error::ERR_TIMED_OUT;
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      // Should not call LogResponseReceived.
+      "LogRequestFinished result=-7 id=1\n"
+      "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_NON_200\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest,
+       LoadStreamComplete_ResponseReceivedWithHttpError) {
   network_.http_status_code = net::HttpStatusCode::HTTP_FORBIDDEN;
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -196,6 +242,10 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Non200) {
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=403 id=1\n"
       "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_NON_200\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -220,7 +270,11 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=STALE\n",
+      "LogCacheReadEnd result=STALE\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -245,7 +299,11 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=STALE\n",
+      "LogCacheReadEnd result=STALE\n"
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=403 id=1\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -254,8 +312,6 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
                           MakeTypicalInitialModelState(
                               /*first_cluster_id=*/0),
                           base::DoNothing());
-
-  // Store is stale, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
   TestForYouSurface surface(stream_.get());
@@ -266,6 +322,32 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
       "LogFeedLaunchOtherStart\n"
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=CACHE_READ_OK\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, UploadActions) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  stream_->UploadAction(MakeFeedAction(1ul), /*upload_now=*/false,
+                        base::DoNothing());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+
+      "LogActionsUploadRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      "LogResponseReceived id=1\n"
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogFeedRequestStart id=2\n"
+      "LogRequestSent id=2\n"
+      "LogResponseReceived id=2\n"
+      "LogRequestFinished result=200 id=2\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
