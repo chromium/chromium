@@ -212,6 +212,18 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chrome_branded &&
+      (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash))) {
+    sources += [ "base/scoped_channel_override.h" ]
+    if (is_mac) {
+      sources += [ "base/scoped_channel_override_mac.cc" ]
+    } else if (is_win) {
+      sources += [ "base/scoped_channel_override_win.cc" ]
+    } else if (is_posix && !is_android && !is_chromeos_ash) {
+      sources += [ "base/scoped_channel_override_posix.cc" ]
+    }
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
@@ -7145,6 +7157,7 @@ test("unit_tests") {
       "../browser/ui/webui/signin/signin_error_handler_unittest.cc",
       "../browser/upgrade_detector/installed_version_poller_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_impl_unittest.cc",
+      "../common/channel_info_unittest.cc",
     ]
 
     deps += [ "//components/enterprise:test_support" ]

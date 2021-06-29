@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/check.h"
 #include "base/mac/bundle_locations.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -22,6 +23,57 @@ struct ChannelState {
   bool is_extended_stable;
 };
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns a ChannelState given a KSChannelID value.
+ChannelState ParseChannelId(NSString* channel) {
+  // KSChannelID values:
+  //
+  //                     Intel       Arm              Universal
+  //                   ┌───────────┬────────────────┬────────────────────┐
+  //  Stable           │ (not set) │ arm64          │ universal          │
+  //  Extended Stable  │ extended  │ arm64-extended │ universal-extended │
+  //  Beta             │ beta      │ arm64-beta     │ universal-beta     │
+  //  Dev              │ dev       │ arm64-dev      │ universal-dev      │
+  //  Canary           │ canary    │ arm64-canary   │ universal-canary   │
+  //                   └───────────┴────────────────┴────────────────────┘
+
+  if (!channel || [channel isEqual:@"arm64"] ||
+      [channel isEqual:@"universal"]) {
+    return ChannelState{"", false};  // "" means stable channel.
+  }
+
+  if ([channel hasPrefix:@"arm64-"])
+    channel = [channel substringFromIndex:[@"arm64-" length]];
+  else if ([channel hasPrefix:@"universal-"])
+    channel = [channel substringFromIndex:[@"universal-" length]];
+
+  if ([channel isEqual:@"extended"])
+    return ChannelState{"", true};  // "" means stable channel.
+
+  if ([channel isEqual:@"beta"] || [channel isEqual:@"dev"] ||
+      [channel isEqual:@"canary"]) {
+    return ChannelState{base::SysNSStringToUTF8(channel), false};
+  }
+
+  return ChannelState{"unknown", false};
+}
+
+// Returns the ChannelState for this browser based on how it is registered with
+// Keystone.
+ChannelState DetermineChannelState() {
+  // Use the main Chrome application bundle and not the framework bundle.
+  // Keystone keys don't live in the framework.
+  NSBundle* bundle = base::mac::OuterBundle();
+
+  if (![bundle objectForInfoDictionaryKey:@"KSProductID"]) {
+    // This build is not Keystone-enabled; it can't have a channel.
+    return ChannelState{"unknown", false};
+  }
+
+  return ParseChannelId([bundle objectForInfoDictionaryKey:@"KSChannelID"]);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // For a branded build, returns its ChannelState: `name` of "" (for stable or
 // extended), "beta", "dev", "canary", or "unknown" (in the case where the
 // channel could not be determined or is otherwise inapplicable), and an
@@ -30,49 +82,10 @@ struct ChannelState {
 //
 // For an unbranded build, always returns a ChannelState with `name` of "" and
 // `is_extended_stable` of false.
-const ChannelState& GetChannelState() {
-  static const base::NoDestructor<ChannelState> channel([] {
+ChannelState& GetChannelState() {
+  static base::NoDestructor<ChannelState> channel([] {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // Use the main Chrome application bundle and not the framework bundle.
-    // Keystone keys don't live in the framework.
-    NSBundle* bundle = base::mac::OuterBundle();
-
-    if (![bundle objectForInfoDictionaryKey:@"KSProductID"]) {
-      // This build is not Keystone-enabled; it can't have a channel.
-      return ChannelState{"unknown", false};
-    }
-
-    // KSChannelID values:
-    //
-    //                     Intel       Arm              Universal
-    //                   ┌───────────┬────────────────┬────────────────────┐
-    //  Stable           │ (not set) │ arm64          │ universal          │
-    //  Extended Stable  │ extended  │ arm64-extended │ universal-extended │
-    //  Beta             │ beta      │ arm64-beta     │ universal-beta     │
-    //  Dev              │ dev       │ arm64-dev      │ universal-dev      │
-    //  Canary           │ canary    │ arm64-canary   │ universal-canary   │
-    //                   └───────────┴────────────────┴────────────────────┘
-    NSString* channel = [bundle objectForInfoDictionaryKey:@"KSChannelID"];
-
-    if (!channel || [channel isEqual:@"arm64"] ||
-        [channel isEqual:@"universal"]) {
-      return ChannelState{"", false};  // "" means stable channel.
-    }
-
-    if ([channel hasPrefix:@"arm64-"])
-      channel = [channel substringFromIndex:[@"arm64-" length]];
-    else if ([channel hasPrefix:@"universal-"])
-      channel = [channel substringFromIndex:[@"universal-" length]];
-
-    if ([channel isEqual:@"extended"])
-      return ChannelState{"", true};  // "" means stable channel.
-
-    if ([channel isEqual:@"beta"] || [channel isEqual:@"dev"] ||
-        [channel isEqual:@"canary"]) {
-      return ChannelState{base::SysNSStringToUTF8(channel), false};
-    }
-
-    return ChannelState{"unknown", false};
+    return DetermineChannelState();
 #else
     return ChannelState{"", false};
 #endif
@@ -152,5 +165,29 @@ version_info::Channel GetChannel() {
 bool IsExtendedStableChannel() {
   return GetChannelState().is_extended_stable;
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+namespace {
+
+// True following a call to SetChannelIdForTesting.
+bool channel_id_is_overidden_ = false;
+
+}  // namespace
+
+void SetChannelIdForTesting(const std::string& channel_id) {
+  DCHECK(!channel_id_is_overidden_);
+  GetChannelState() = ParseChannelId(
+      channel_id.empty() ? nullptr : base::SysUTF8ToNSString(channel_id));
+  channel_id_is_overidden_ = true;
+}
+
+void ClearChannelIdForTesting() {
+  DCHECK(channel_id_is_overidden_);
+  channel_id_is_overidden_ = false;
+  GetChannelState() = DetermineChannelState();
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace chrome
