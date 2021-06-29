@@ -21,6 +21,7 @@ lucicfg.enable_experiment("crbug.com/1085650")
 lucicfg.config(
     config_dir = "generated",
     tracked_files = [
+        "builders/*/*/*",
         "commit-queue.cfg",
         "cq-builders.md",
         "cq-usage/default.cfg",

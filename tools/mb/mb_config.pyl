@@ -711,6 +711,7 @@
     },
 
     'infra': {
+      'linux-bootstrap': 'release_bot',
       'linux-control-rel': 'release_bot',
       'linux-component-rel': 'shared_release_bot',
       'linux-local-ssd-nvme-rel': 'release_bot',

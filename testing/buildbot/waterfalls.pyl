@@ -6307,6 +6307,12 @@
     'name': 'infra',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'linux-bootstrap-tests': {
+        'mixins': ['linux-bionic'],
+        'test_suites': {
+          'gtest_tests': 'bootstrap_tests',
+        }
+      },
       'linux-component-rel': {
         'additional_compile_targets': [
           'all',

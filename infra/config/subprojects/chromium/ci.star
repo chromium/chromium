@@ -5591,6 +5591,27 @@ ci.infra_builder(
 )
 
 ci.infra_builder(
+    name = "linux-bootstrap",
+    bootstrap = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "bootstrap",
+        short_name = "bld",
+    ),
+    triggered_by = [],
+    schedule = "triggered",
+)
+
+ci.infra_builder(
+    name = "linux-bootstrap-tests",
+    bootstrap = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "bootstrap",
+        short_name = "tst",
+    ),
+    triggered_by = ["linux-bootstrap"],
+)
+
+ci.infra_builder(
     name = "linux-local-ssd-nvme-rel",
     console_view_entry = consoles.console_view_entry(
         category = "local|ssd",
