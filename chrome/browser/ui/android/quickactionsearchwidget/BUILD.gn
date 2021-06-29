@@ -4,6 +4,36 @@
 
 import("//build/config/android/rules.gni")
 
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java" ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
+}
+
+android_library("javatests") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegateTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/junit:junit",
+  ]
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/quick_action_search_widget_background.xml",
