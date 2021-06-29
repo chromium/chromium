@@ -137,7 +137,7 @@ bool VariationsSeedStore::LoadSeed(VariationsSeed* seed,
   LoadSeedResult result =
       LoadSeedImpl(SeedType::LATEST, seed, seed_data, base64_seed_signature);
   RecordLoadSeedResult(result);
-  if (result != LoadSeedResult::SUCCESS)
+  if (result != LoadSeedResult::kSuccess)
     return false;
 
   latest_serial_number_ = seed->serial_number();
@@ -190,7 +190,7 @@ bool VariationsSeedStore::StoreSeedData(
   std::string updated_seed_data;
   LoadSeedResult read_result =
       ReadSeedData(SeedType::LATEST, &existing_seed_data);
-  if (read_result != LoadSeedResult::SUCCESS) {
+  if (read_result != LoadSeedResult::kSuccess) {
     RecordStoreSeedResult(StoreSeedResult::FAILED_DELTA_READ_SEED);
     return false;
   }
@@ -217,7 +217,7 @@ LoadSeedResult VariationsSeedStore::LoadSafeSeed(
   LoadSeedResult result = LoadSeedImpl(SeedType::SAFE, seed, &unused_seed_data,
                                        &unused_base64_seed_signature);
   RecordLoadSafeSeedResult(result);
-  if (result != LoadSeedResult::SUCCESS)
+  if (result != LoadSeedResult::kSuccess)
     return result;
 
   client_state->reference_date =
@@ -349,7 +349,8 @@ const std::string& VariationsSeedStore::GetLatestSerialNumber() {
     // when running in safe mode.
     std::string seed_data;
     VariationsSeed seed;
-    if (ReadSeedData(SeedType::LATEST, &seed_data) == LoadSeedResult::SUCCESS &&
+    if (ReadSeedData(SeedType::LATEST, &seed_data) ==
+            LoadSeedResult::kSuccess &&
         seed.ParseFromString(seed_data)) {
       latest_serial_number_ = seed.serial_number();
     }
@@ -443,7 +444,7 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     std::string* seed_data,
     std::string* base64_seed_signature) {
   LoadSeedResult read_result = ReadSeedData(seed_type, seed_data);
-  if (read_result != LoadSeedResult::SUCCESS)
+  if (read_result != LoadSeedResult::kSuccess)
     return read_result;
 
   *base64_seed_signature = local_state_->GetString(
@@ -462,16 +463,16 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     }
     if (result != VerifySignatureResult::VALID_SIGNATURE) {
       ClearPrefs(seed_type);
-      return LoadSeedResult::INVALID_SIGNATURE;
+      return LoadSeedResult::kInvalidSignature;
     }
   }
 
   if (!seed->ParseFromString(*seed_data)) {
     ClearPrefs(seed_type);
-    return LoadSeedResult::CORRUPT_PROTOBUF;
+    return LoadSeedResult::kCorruptProtobuf;
   }
 
-  return LoadSeedResult::SUCCESS;
+  return LoadSeedResult::kSuccess;
 }
 
 LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
@@ -480,7 +481,7 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
       seed_type == SeedType::LATEST ? prefs::kVariationsCompressedSeed
                                     : prefs::kVariationsSafeCompressedSeed);
   if (base64_seed_data.empty())
-    return LoadSeedResult::EMPTY;
+    return LoadSeedResult::kEmpty;
 
   // As a space optimization, the latest seed might not be stored directly, but
   // rather aliased to the safe seed.
@@ -493,15 +494,15 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
   std::string decoded_data;
   if (!base::Base64Decode(base64_seed_data, &decoded_data)) {
     ClearPrefs(seed_type);
-    return LoadSeedResult::CORRUPT_BASE64;
+    return LoadSeedResult::kCorruptBase64;
   }
 
   if (!compression::GzipUncompress(decoded_data, seed_data)) {
     ClearPrefs(seed_type);
-    return LoadSeedResult::CORRUPT_GZIP;
+    return LoadSeedResult::kCorruptGzip;
   }
 
-  return LoadSeedResult::SUCCESS;
+  return LoadSeedResult::kSuccess;
 }
 
 bool VariationsSeedStore::StoreSeedDataNoDelta(

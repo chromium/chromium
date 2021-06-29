@@ -522,12 +522,13 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
   if (run_in_safe_mode) {
     LoadSeedResult result = LoadSafeSeed(&seed, client_filterable_state.get());
-    if (result != LoadSeedResult::SUCCESS && result != LoadSeedResult::EMPTY) {
+    if (result != LoadSeedResult::kSuccess &&
+        result != LoadSeedResult::kEmpty) {
       // If Chrome should run in safe mode, but the safe seed is corrupted or
       // has an invalid signature, fall back to the client-side defaults.
       return false;
     }
-    if (result == LoadSeedResult::EMPTY) {
+    if (result == LoadSeedResult::kEmpty) {
       // If the safe seed is empty, attempt to run with the most recent seed
       // instead of falling back to client-side defaults.
       run_in_safe_mode = false;

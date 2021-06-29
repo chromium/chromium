@@ -435,7 +435,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_ValidSeed) {
   std::unique_ptr<ClientFilterableState> client_state =
       CreateTestClientFilterableState();
   base::Time loaded_fetch_time;
-  EXPECT_EQ(LoadSeedResult::SUCCESS,
+  EXPECT_EQ(LoadSeedResult::kSuccess,
             seed_store.LoadSafeSeed(&loaded_seed, client_state.get(),
                                     &loaded_fetch_time));
 
@@ -478,7 +478,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_CorruptSeed) {
       CreateTestClientFilterableState();
   base::Time fetch_time;
   EXPECT_EQ(
-      LoadSeedResult::CORRUPT_BASE64,
+      LoadSeedResult::kCorruptBase64,
       seed_store.LoadSafeSeed(&loaded_seed, client_state.get(), &fetch_time));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
@@ -527,7 +527,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_InvalidSignature) {
       CreateTestClientFilterableState();
   base::Time fetch_time;
   EXPECT_EQ(
-      LoadSeedResult::INVALID_SIGNATURE,
+      LoadSeedResult::kInvalidSignature,
       seed_store.LoadSafeSeed(&loaded_seed, client_state.get(), &fetch_time));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
@@ -565,7 +565,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_EmptySeed) {
   VariationsSeed loaded_seed;
   ClientFilterableState client_state({});
   base::Time fetch_time;
-  EXPECT_EQ(LoadSeedResult::EMPTY,
+  EXPECT_EQ(LoadSeedResult::kEmpty,
             seed_store.LoadSafeSeed(&loaded_seed, &client_state, &fetch_time));
 }
 
@@ -835,7 +835,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
   EXPECT_EQ(base64_seed, prefs.GetString(prefs::kVariationsSafeCompressedSeed));
   VariationsSeed loaded_safe_seed;
   base::Time loaded_fetch_time;
-  EXPECT_EQ(LoadSeedResult::SUCCESS,
+  EXPECT_EQ(LoadSeedResult::kSuccess,
             seed_store.LoadSafeSeed(&loaded_safe_seed, &unused_client_state,
                                     &loaded_fetch_time));
   EXPECT_EQ(SerializeSeed(seed), SerializeSeed(loaded_safe_seed));
@@ -894,7 +894,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
             prefs.GetString(prefs::kVariationsSafeCompressedSeed));
   VariationsSeed loaded_safe_seed;
   base::Time loaded_fetch_time;
-  EXPECT_EQ(LoadSeedResult::SUCCESS,
+  EXPECT_EQ(LoadSeedResult::kSuccess,
             seed_store.LoadSafeSeed(&loaded_safe_seed, &unused_client_state,
                                     &loaded_fetch_time));
   EXPECT_EQ(SerializeSeed(new_seed), SerializeSeed(loaded_safe_seed));

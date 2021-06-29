@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // test setup.
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.LoadSafeSeed.Result",
-      variations::LoadSeedResult::SUCCESS, 1);
+      variations::LoadSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.FellBackToSafeMode2", true, 1);
 }
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // test setup.
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.LoadSafeSeed.Result",
-      variations::LoadSeedResult::SUCCESS, 1);
+      variations::LoadSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.FellBackToSafeMode2", true, 1);
 }
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, DoNotTriggerSafeMode) {
 
   // Verify that Chrome applied the latest seed.
   histogram_tester_.ExpectUniqueSample("Variations.SeedLoadResult",
-                                       variations::LoadSeedResult::SUCCESS, 1);
+                                       variations::LoadSeedResult::kSuccess, 1);
 
   // Verify that Chrome did not fall back to a safe seed.
   histogram_tester_.ExpectUniqueSample(

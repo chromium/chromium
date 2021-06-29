@@ -247,15 +247,15 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                               ClientFilterableState* client_state,
                               base::Time* seed_fetch_time) override {
     if (has_corrupted_safe_seed_)
-      return LoadSeedResult::CORRUPT_BASE64;
+      return LoadSeedResult::kCorruptBase64;
 
     if (has_empty_safe_seed_)
-      return LoadSeedResult::EMPTY;
+      return LoadSeedResult::kEmpty;
 
     *seed = CreateTestSafeSeed();
     *seed_fetch_time =
         local_state_->GetTime(prefs::kVariationsSafeSeedFetchTime);
-    return LoadSeedResult::SUCCESS;
+    return LoadSeedResult::kSuccess;
   }
 
   void set_has_corrupted_safe_seed(bool is_corrupted) {

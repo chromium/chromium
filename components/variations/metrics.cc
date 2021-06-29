@@ -4,6 +4,7 @@
 
 #include "components/variations/metrics.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace variations {
@@ -16,13 +17,12 @@ void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
 #endif  // OS_ANDROID
 
 void RecordLoadSeedResult(LoadSeedResult state) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedLoadResult", state,
-                            LoadSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);
 }
 
 void RecordLoadSafeSeedResult(LoadSeedResult state) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SafeMode.LoadSafeSeed.Result", state,
-                            LoadSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SafeMode.LoadSafeSeed.Result",
+                                state);
 }
 
 void RecordStoreSeedResult(StoreSeedResult result) {

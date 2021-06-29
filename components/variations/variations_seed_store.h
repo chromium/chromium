@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Loads the safe variations seed data from local state into |seed|, updates
   // any relevant fields in |client_state| and sets the |seed_fetch_time|.
-  // Returns LoadSeedResult::SUCCESS iff the safe seed was read successfully
+  // Returns LoadSeedResult::kSuccess iff the safe seed was read successfully
   // from prefs. If the safe seed could not be loaded, it is guaranteed that no
   // fields in |client_state| are modified and that |seed_fetch_time| is not
   // set.
