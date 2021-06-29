@@ -16,8 +16,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
-#include "components/safe_browsing/core/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
 
 class HostContentSettingsMap;

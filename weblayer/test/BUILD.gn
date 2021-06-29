@@ -248,7 +248,7 @@ test("weblayer_browsertests") {
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/common",
-      "//components/safe_browsing/core/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/viz/service:service_java",
       "//content/public/test/android:android_test_message_pump_support_java",
       "//content/test:android_test_message_pump_support",

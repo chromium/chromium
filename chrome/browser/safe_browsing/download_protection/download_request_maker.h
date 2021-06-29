@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/file_system_access_write_item.h"
 
 namespace safe_browsing {

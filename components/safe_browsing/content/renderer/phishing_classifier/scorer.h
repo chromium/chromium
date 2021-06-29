@@ -28,8 +28,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
-#include "components/safe_browsing/core/proto/client_model.pb.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/client_model.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace safe_browsing {

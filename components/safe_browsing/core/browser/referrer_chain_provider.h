@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REFERRER_CHAIN_PROVIDER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REFERRER_CHAIN_PROVIDER_H_
 
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 

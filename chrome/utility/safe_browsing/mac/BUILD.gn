@@ -17,7 +17,7 @@ source_set("mac") {
     "//base",
     "//chrome/common/safe_browsing:archive_analyzer_results",
     "//chrome/common/safe_browsing:binary_feature_extractor",
-    "//components/safe_browsing/core/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
   ]
 }
 

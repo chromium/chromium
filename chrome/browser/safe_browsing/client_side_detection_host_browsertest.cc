@@ -14,7 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
-#include "components/safe_browsing/core/proto/client_model.pb.h"
+#include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/prerender_test_util.h"

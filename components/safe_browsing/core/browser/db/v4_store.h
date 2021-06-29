@@ -16,7 +16,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 namespace safe_browsing {
 

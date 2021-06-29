@@ -16,7 +16,7 @@ source_set("password_protection") {
     "//components/password_manager/core/browser",
     "//components/safe_browsing/core/browser/password_protection",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-    "//components/safe_browsing/core/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//ios/web/public",
     "//url",
   ]

@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 // Command-line switch for the executable to extract a signature from.
 static const char kExecutable[] = "executable";

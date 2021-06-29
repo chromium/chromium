@@ -19,7 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 

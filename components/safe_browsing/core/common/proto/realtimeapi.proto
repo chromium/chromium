@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
-import "components/safe_browsing/core/proto/csd.proto";
+import "components/safe_browsing/core/common/proto/csd.proto";
 
 message RTLookupRequest {
   // If applicable, URL submitted from Chrome.

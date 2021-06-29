@@ -29,7 +29,7 @@
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 class GURL;
 

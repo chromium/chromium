@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package enterprise_connectors;
 
 // For ClientDownloadRequest.
-import "components/safe_browsing/core/proto/csd.proto";
+import "components/safe_browsing/core/common/proto/csd.proto";
 
 // Which connector is calling BinaryUploadService so that the proper rules can
 // be triggered.  BinaryUploadService also uses this value to find the URL that

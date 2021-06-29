@@ -12,7 +12,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_schedule.h"
-#include "components/safe_browsing/core/proto/download_file_types.pb.h"
+#include "components/safe_browsing/core/common/proto/download_file_types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct DownloadTargetInfo {

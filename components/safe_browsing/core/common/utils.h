@@ -8,8 +8,8 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 

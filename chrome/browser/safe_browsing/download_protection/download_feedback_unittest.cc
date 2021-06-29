@@ -15,7 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"

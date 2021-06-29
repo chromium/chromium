@@ -40,8 +40,8 @@ source_set("phishing_classifier") {
       "//components/safe_browsing/content/renderer",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/fbs:client_model",
-      "//components/safe_browsing/core/proto:client_model_proto",
-      "//components/safe_browsing/core/proto:csd_proto",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
       "//content/public/renderer",
       "//crypto",
       "//skia",
@@ -74,8 +74,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/safe_browsing/core/common/fbs:client_model",
-    "//components/safe_browsing/core/proto:client_model_proto",
-    "//components/safe_browsing/core/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//crypto",
     "//skia",
     "//testing/gmock",
@@ -112,6 +112,6 @@ if (use_libfuzzer) {
   fuzzable_proto_library("client_side_phishing_fuzzer_proto") {
     proto_in_dir = "//"
     sources = [ "client_side_phishing_fuzzer.proto" ]
-    deps = [ "//components/safe_browsing/core/proto:csd_proto" ]
+    deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
   }
 }

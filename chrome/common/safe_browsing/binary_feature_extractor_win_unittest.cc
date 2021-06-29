@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"

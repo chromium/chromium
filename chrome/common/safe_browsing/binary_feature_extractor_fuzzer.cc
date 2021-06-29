@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static safe_browsing::BinaryFeatureExtractor* extractor =

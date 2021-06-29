@@ -19,7 +19,7 @@
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 

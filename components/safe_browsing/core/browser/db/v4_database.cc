@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 using base::TimeTicks;
 

@@ -18,7 +18,7 @@
 #include "chrome/browser/safe_browsing/incident_reporting/incident_receiver.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 

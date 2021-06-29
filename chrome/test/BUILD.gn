@@ -728,7 +728,7 @@ if (is_android) {
       "//components/policy/core/browser:test_support",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core/common/fbs:client_model",
-      "//components/safe_browsing/core/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/spellcheck:buildflags",
       "//components/spellcheck/renderer:renderer",
     ]
@@ -1113,7 +1113,7 @@ if (!is_android) {
       "//components/safe_browsing/core/browser/db:v4_database",
       "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-      "//components/safe_browsing/core/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/search",
       "//components/security_interstitials/content:proto",
       "//components/security_interstitials/content:security_interstitial_page",
@@ -2020,8 +2020,7 @@ if (!is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps +=
-          [ "//components/safe_browsing/core/proto:download_file_types_proto" ]
+      deps += [ "//components/safe_browsing/core/common/proto:download_file_types_proto" ]
     }
 
     if (is_mac) {
@@ -5090,7 +5089,7 @@ test("unit_tests") {
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_search_api:test_support",
     "//components/schema_org/common:improved_mojom",
     "//components/search",
@@ -8855,7 +8854,7 @@ if (is_win) {
     deps = [
       "//base",
       "//chrome/common/safe_browsing:binary_feature_extractor",
-      "//components/safe_browsing/core/proto:csd_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
       "//crypto",
     ]
     libs = [ "wintrust.lib" ]

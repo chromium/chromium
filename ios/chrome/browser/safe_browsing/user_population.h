@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_USER_POPULATION_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_USER_POPULATION_H_
 
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 class ChromeBrowserState;
 

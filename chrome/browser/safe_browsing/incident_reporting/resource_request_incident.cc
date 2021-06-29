@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_handler_util.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 

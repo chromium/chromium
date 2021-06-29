@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

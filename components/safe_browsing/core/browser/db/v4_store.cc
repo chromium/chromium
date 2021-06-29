@@ -20,7 +20,7 @@
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/browser/db/v4_rice.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 

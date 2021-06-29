@@ -506,7 +506,7 @@ static_library("ui") {
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/schema_org/common:improved_mojom",
     "//components/search",
     "//components/search_engines",
@@ -4939,7 +4939,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/reset_password:mojo_bindings",
       "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-      "//components/safe_browsing/core/proto:csd_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }
 

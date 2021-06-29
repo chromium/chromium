@@ -29,9 +29,9 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "components/enterprise/common/proto/connectors.pb.h"

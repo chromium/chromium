@@ -83,7 +83,7 @@ namespace safeBrowsingPrivate {
     DOMString? url;
   };
 
-  // From ReferrerChainEntry in //src/components/safe_browsing/core/proto/csd.proto
+  // From ReferrerChainEntry in //src/components/safe_browsing/core/common/proto/csd.proto
   dictionary ReferrerChainEntry {
     // URL of this entry.
     DOMString url;

@@ -18,7 +18,7 @@ action("make_file_types_protobuf") {
   output_basename = "download_file_types.pb"
   python_path_root = "$root_out_dir/pyproto"
   python_path_safe_browsing =
-      "$python_path_root/components/safe_browsing/core/proto"
+      "$python_path_root/components/safe_browsing/core/common/proto"
 
   # Pick an architecture to generate for. These string match those
   # in the python script.
@@ -40,7 +40,7 @@ action("make_file_types_protobuf") {
   inputs = [ input_filename ]
 
   deps = [
-    "//components/safe_browsing/core/proto:download_file_types_proto",
+    "//components/safe_browsing/core/common/proto:download_file_types_proto",
     "//third_party/protobuf:py_proto",
   ]
 
@@ -73,12 +73,12 @@ action("make_all_file_types_protobuf") {
   output_basename = "download_file_types.pb"
   python_path_root = "$root_build_dir/pyproto"
   python_path_safe_browsing =
-      "$python_path_root/components/safe_browsing/core/proto"
+      "$python_path_root/components/safe_browsing/core/common/proto"
 
   inputs = [ input_filename ]
 
   deps = [
-    "//components/safe_browsing/core/proto:download_file_types_proto",
+    "//components/safe_browsing/core/common/proto:download_file_types_proto",
     "//third_party/protobuf:py_proto",
   ]
 

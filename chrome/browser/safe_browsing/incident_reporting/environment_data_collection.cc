@@ -11,7 +11,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace safe_browsing {

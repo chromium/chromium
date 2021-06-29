@@ -9,8 +9,8 @@ def CheckChangeOnUpload(input_api, output_api):
 
   # Warn if the proto file is not modified without also modifying
   # the WebUI and extension API idl file.
-  proto_path = 'components/safe_browsing/core/proto/csd.proto'
-  realtime_proto_path = 'components/safe_browsing/core/proto/realtimeapi.proto'
+  proto_path = 'components/safe_browsing/core/common/proto/csd.proto'
+  realtime_proto_path = 'components/safe_browsing/core/common/proto/realtimeapi.proto'
   web_ui_path = 'components/safe_browsing/content/browser/web_ui/safe_browsing_ui.cc'
   idl_path = 'chrome/common/extensions/api/safe_browsing_private.idl'
 

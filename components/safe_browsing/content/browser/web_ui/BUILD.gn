@@ -24,8 +24,8 @@ static_library("web_ui") {
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/proto:csd_proto",
-    "//components/safe_browsing/core/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/strings:components_strings_grit",
     "//components/sync/protocol:protocol",
     "//components/user_prefs:user_prefs",
@@ -34,7 +34,7 @@ static_library("web_ui") {
     "//url",
   ]
 
-  public_deps = [ "//components/safe_browsing/core/proto:webui_proto" ]
+  public_deps = [ "//components/safe_browsing/core/common/proto:webui_proto" ]
 }
 
 source_set("unit_tests") {

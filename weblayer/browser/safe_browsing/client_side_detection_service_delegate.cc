@@ -5,8 +5,8 @@
 #include "weblayer/browser/safe_browsing/client_side_detection_service_delegate.h"
 
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/storage_partition.h"
 #include "weblayer/browser/browser_context_impl.h"

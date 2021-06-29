@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner.h"
 #include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/safe_browsing/core/proto/client_model.pb.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/client_model.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

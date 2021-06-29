@@ -19,7 +19,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"

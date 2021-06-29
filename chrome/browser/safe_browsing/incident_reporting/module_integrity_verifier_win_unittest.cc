@@ -22,7 +22,7 @@
 #include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_unittest_util_win.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

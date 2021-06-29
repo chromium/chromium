@@ -9,7 +9,7 @@
 
 #include "base/callback_list.h"
 #include "components/download/public/common/download_item.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {

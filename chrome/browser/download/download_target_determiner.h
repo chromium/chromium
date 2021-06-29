@@ -19,7 +19,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
-#include "components/safe_browsing/core/proto/download_file_types.pb.h"
+#include "components/safe_browsing/core/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
 

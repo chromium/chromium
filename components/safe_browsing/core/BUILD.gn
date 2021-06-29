@@ -73,8 +73,8 @@ source_set("verdict_cache_manager") {
     "//components/password_manager/core/browser:browser",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/proto:csd_proto",
-    "//components/safe_browsing/core/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//url",
   ]
 }
@@ -88,8 +88,8 @@ source_set("verdict_cache_manager_unittest") {
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
-    "//components/safe_browsing/core/proto:csd_proto",
-    "//components/safe_browsing/core/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
@@ -107,7 +107,7 @@ if (safe_browsing_mode != 0 && !is_ios && !is_fuchsia) {
 
     public_deps = [
       "//base",
-      "//components/safe_browsing/core/proto:download_file_types_proto",
+      "//components/safe_browsing/core/common/proto:download_file_types_proto",
     ]
 
     deps = [

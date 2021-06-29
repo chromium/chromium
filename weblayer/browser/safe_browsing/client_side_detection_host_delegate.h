@@ -6,7 +6,7 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
 
 namespace weblayer {

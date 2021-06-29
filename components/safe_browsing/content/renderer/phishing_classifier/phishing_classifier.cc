@@ -29,7 +29,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"

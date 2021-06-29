@@ -10,8 +10,8 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
-#include "components/safe_browsing/core/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

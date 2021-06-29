@@ -19,7 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
-#include "components/safe_browsing/core/proto/webui.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 class SafeBrowsingServiceTest;
 class TestSafeBrowsingDatabaseHelper;

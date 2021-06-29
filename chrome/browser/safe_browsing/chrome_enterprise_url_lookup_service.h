@@ -10,7 +10,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
 
 namespace net {
