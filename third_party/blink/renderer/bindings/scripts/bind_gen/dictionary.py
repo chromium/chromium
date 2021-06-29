@@ -333,7 +333,7 @@ def make_factory_methods(cg_context):
     body.extend([
         T("dictionary->FillMembersFromV8Object("
           "${isolate}, ${v8_value}.As<v8::Object>(), ${exception_state});"),
-        CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+        CxxUnlikelyIfNode(cond="UNLIKELY(${exception_state}.HadException())",
                           body=T("return nullptr;")),
         T("return dictionary;"),
     ])
@@ -843,8 +843,9 @@ def make_v8_to_blink_function(cg_context):
         body.extend([
             T("${base_class_name}::FillMembersFromV8Object"
               "(${isolate}, ${v8_dictionary}, ${exception_state});"),
-            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
-                              body=T("return;")),
+            CxxUnlikelyIfNode(
+                cond="UNLIKELY(${exception_state}.HadException())",
+                body=T("return;")),
             EmptyNode(),
         ])
 

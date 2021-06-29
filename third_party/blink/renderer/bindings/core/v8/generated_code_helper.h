@@ -47,7 +47,7 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
                                 ExceptionState& exception_state)
       : info_(info), exception_state_(exception_state) {}
   ~ExceptionToRejectPromiseScope() {
-    if (!exception_state_.HadException())
+    if (LIKELY(!exception_state_.HadException()))
       return;
 
     // As exceptions must always be created in the current realm, reject
@@ -146,7 +146,7 @@ typename IDLSequence<T>::ImplType VariadicArgumentsToNativeValues(
   for (int i = start_index; i < length; ++i) {
     result.UncheckedAppend(NativeValueTraits<T>::ArgumentValue(
         isolate, i, info[i], exception_state, extra_args...));
-    if (exception_state.HadException())
+    if (UNLIKELY(exception_state.HadException()))
       return VectorType();
   }
   return std::move(result);
@@ -238,7 +238,7 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
 
   value = NativeValueTraits<IDLType>::NativeValue(isolate, v8_value,
                                                   exception_state);
-  if (exception_state.HadException()) {
+  if (UNLIKELY(exception_state.HadException())) {
     return false;
   }
   presence = true;

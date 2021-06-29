@@ -250,7 +250,7 @@ def bind_blink_api_arguments(code_node, cg_context):
 const auto&& arg1_value_string =
     NativeValueTraits<IDLStringV2>::NativeValue(
         ${isolate}, ${v8_property_value}, ${exception_state});
-if (${exception_state}.HadException())
+if (UNLIKELY(${exception_state}.HadException()))
   return;
 // step 4.6.2. If S is not one of the enumeration's values, then return
 //   undefined.
@@ -817,7 +817,7 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
         if cg_context.may_throw_exception:
             nodes.append(
                 CxxUnlikelyIfNode(
-                    cond="${exception_state}.HadException()",
+                    cond="UNLIKELY(${exception_state}.HadException())",
                     body=T("return;")))
 
         if "ReflectOnly" in cg_context.member_like.extended_attributes:
@@ -1204,8 +1204,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
                     "bindings::IsEsIterableObject"
                     "(${isolate}, {value}, ${exception_state})")
         dispatcher_nodes.append(
-            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
-                              body=TextNode("return;")))
+            CxxUnlikelyIfNode(
+                cond="UNLIKELY(${exception_state}.HadException())",
+                body=TextNode("return;")))
 
     # 12.10. if Type(V) is Object and ...
     func_like = find(lambda t, u: u.is_callback_interface or u.is_dictionary or
@@ -3188,7 +3189,7 @@ ExceptionState exception_state(${info}.GetIsolate(),
                                "${interface.identifier}");
 bool does_exist = ${blink_receiver}->NamedPropertyQuery(
     ${blink_property_name}, exception_state);
-if (exception_state.HadException())
+if (UNLIKELY(exception_state.HadException()))
   return;
 if (does_exist) {
   bindings::V8SetReturnValue(${info}, false);
@@ -3473,7 +3474,7 @@ ExceptionState exception_state(${info}.GetIsolate(),
                                "${interface.identifier}");
 ${blink_receiver}->NamedPropertyEnumerator(
     blink_property_names, exception_state);
-if (exception_state.HadException())
+if (UNLIKELY(exception_state.HadException()))
   return;
 bindings::V8SetReturnValue(
     ${info},

@@ -780,7 +780,7 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         return SymbolDefinitionNode(symbol_node, [
             TextNode(text),
             CxxUnlikelyIfNode(
-                cond="${exception_state}.HadException()",
+                cond="UNLIKELY(${exception_state}.HadException())",
                 body=TextNode("return;")),
         ])
 
