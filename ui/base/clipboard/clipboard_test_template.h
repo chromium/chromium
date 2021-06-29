@@ -158,7 +158,13 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 #endif
 }
 
-TYPED_TEST(ClipboardTest, TextTest) {
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TextTest DISABLED_TextTest
+#else
+#define MAYBE_TextTest TextTest
+#endif
+TYPED_TEST(ClipboardTest, MAYBE_TextTest) {
   std::u16string text(u"This is a std::u16string!#$"), text_result;
   std::string ascii_text;
 
@@ -362,9 +368,15 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
 #endif  // defined(OS_WIN)
 }
 
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_UnicodeHTMLTest DISABLED_UnicodeHTMLTest
+#else
+#define MAYBE_UnicodeHTMLTest UnicodeHTMLTest
+#endif
 // Some platforms store HTML as UTF-8 internally. Make sure fragment indices are
 // adjusted appropriately when converting back to UTF-16.
-TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
+TYPED_TEST(ClipboardTest, MAYBE_UnicodeHTMLTest) {
   std::u16string markup(u"<div>A ø 水</div>"), markup_result;
   std::string url, url_result;
 
@@ -417,8 +429,14 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 #endif  // !defined(OS_POSIX) || defined(OS_APPLE)
 
 #if !defined(OS_ANDROID)
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_FilenamesTest DISABLED_FilenamesTest
+#else
+#define MAYBE_FilenamesTest FilenamesTest
+#endif
 // Filenames is not implemented in ClipboardAndroid.
-TYPED_TEST(ClipboardTest, FilenamesTest) {
+TYPED_TEST(ClipboardTest, MAYBE_FilenamesTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -449,7 +467,13 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
 }
 #endif  // !defined(OS_ANDROID)
 
-TYPED_TEST(ClipboardTest, MultiFormatTest) {
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_MultiFormatTest DISABLED_MultiFormatTest
+#else
+#define MAYBE_MultiFormatTest MultiFormatTest
+#endif
+TYPED_TEST(ClipboardTest, MAYBE_MultiFormatTest) {
   std::u16string text(u"Hi!"), text_result;
   std::u16string markup(u"<strong>Hi!</string>"), markup_result;
   std::string url("http://www.example.com/"), url_result;
@@ -621,7 +645,13 @@ TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
 }
 #endif  // !defined(OS_ANDROID)
 
-TYPED_TEST(ClipboardTest, Bitmap_N32_Premul) {
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_Bitmap_N32_Premul DISABLED_Bitmap_N32_Premul
+#else
+#define MAYBE_Bitmap_N32_Premul Bitmap_N32_Premul
+#endif
+TYPED_TEST(ClipboardTest, MAYBE_Bitmap_N32_Premul) {
   constexpr U8x4 b[4 * 3] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
       {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
@@ -803,9 +833,10 @@ TYPED_TEST(ClipboardTest, DataTest) {
 // TODO(https://crbug.com/1032161): Implement multiple raw types for
 // ClipboardInternal. This test currently doesn't run on ClipboardInternal
 // because ClipboardInternal only supports one raw type.
+// crbug.com/1224904: Flaky on Mac.
 #if (!defined(USE_AURA) || defined(OS_WIN) || defined(USE_OZONE) || \
      defined(USE_X11)) &&                                           \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
 TYPED_TEST(ClipboardTest, MultipleDataTest) {
   const std::string kFormatString1 = "chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
@@ -854,7 +885,15 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
 }
 #endif
 
-TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
+// crbug.com/1224904: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ReadAvailablePlatformSpecificFormatNamesTest \
+  DISABLED_ReadAvailablePlatformSpecificFormatNamesTest
+#else
+#define MAYBE_ReadAvailablePlatformSpecificFormatNamesTest \
+  ReadAvailablePlatformSpecificFormatNamesTest
+#endif
+TYPED_TEST(ClipboardTest, MAYBE_ReadAvailablePlatformSpecificFormatNamesTest) {
   std::u16string text = u"Test String";
   std::string ascii_text;
   {
