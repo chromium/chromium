@@ -15,6 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request.h"
@@ -207,7 +208,13 @@ class IceTransportTest : public testing::Test {
   ErrorCode error_ = OK;
 };
 
-TEST_F(IceTransportTest, DataStream) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_DataStream DISABLED_DataStream
+#else
+#define MAYBE_DataStream DataStream
+#endif
+TEST_F(IceTransportTest, MAYBE_DataStream) {
   InitializeConnection();
 
   client_transport_->GetChannelFactory()->CreateChannel(
@@ -225,7 +232,13 @@ TEST_F(IceTransportTest, DataStream) {
   tester.RunAndCheckResults();
 }
 
-TEST_F(IceTransportTest, MuxDataStream) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_MuxDataStream DISABLED_MuxDataStream
+#else
+#define MAYBE_MuxDataStream MuxDataStream
+#endif
+TEST_F(IceTransportTest, MAYBE_MuxDataStream) {
   InitializeConnection();
 
   client_transport_->GetMultiplexedChannelFactory()->CreateChannel(
@@ -243,7 +256,13 @@ TEST_F(IceTransportTest, MuxDataStream) {
   tester.RunAndCheckResults();
 }
 
-TEST_F(IceTransportTest, FailedChannelAuth) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_FailedChannelAuth DISABLED_FailedChannelAuth
+#else
+#define MAYBE_FailedChannelAuth FailedChannelAuth
+#endif
+TEST_F(IceTransportTest, MAYBE_FailedChannelAuth) {
   // Use host authenticator with one that rejects channel authentication.
   host_authenticator_ =
       std::make_unique<FakeAuthenticator>(FakeAuthenticator::REJECT_CHANNEL);
@@ -317,9 +336,15 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
   EXPECT_TRUE(!client_message_pipe_.get());
 }
 
+// crbug.com/1224862: Tests are flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TestDelayedSignaling DISABLED_TestDelayedSignaling
+#else
+#define MAYBE_TestDelayedSignaling TestDelayedSignaling
+#endif
 // Verify that we can still connect even when there is a delay in signaling
 // messages delivery.
-TEST_F(IceTransportTest, TestDelayedSignaling) {
+TEST_F(IceTransportTest, MAYBE_TestDelayedSignaling) {
   transport_info_delay_ = base::TimeDelta::FromMilliseconds(100);
 
   InitializeConnection();
@@ -338,7 +363,6 @@ TEST_F(IceTransportTest, TestDelayedSignaling) {
                                      kMessages);
   tester.RunAndCheckResults();
 }
-
 
 }  // namespace protocol
 }  // namespace remoting
