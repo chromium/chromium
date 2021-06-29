@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/core/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/common/chrome_paths.h"

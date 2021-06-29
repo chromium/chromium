@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/chromeos/policy/login/wildcard_login_checker.h"
 #include "chrome/browser/chromeos/policy/remote_commands/user_commands_factory_chromeos.h"

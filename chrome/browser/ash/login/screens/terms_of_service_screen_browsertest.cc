@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/core/device_local_account.h"
-#include "chrome/browser/chromeos/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ui/browser.h"

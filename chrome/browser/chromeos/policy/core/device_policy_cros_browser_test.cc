@@ -16,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/core/device_policy_builder.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

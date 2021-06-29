@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/core/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/core/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
