@@ -11,7 +11,7 @@
       "skipFiles": ["<node_internals>/**"],
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal",
-      "program": "${workspaceFolder}/src/.build/server.js",
+      "program": "${workspaceFolder}/src/.build/index.js",
       "outFiles": ["${workspaceFolder}/src/.build/**/*.js"],
       "env": {
         "DEBUG": "*",
