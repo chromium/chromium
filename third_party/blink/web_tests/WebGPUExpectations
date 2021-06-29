@@ -278,9 +278,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth:depth_compar
 crbug.com/dawn/721 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_offset:format="depth24plus-stencil8";* [ Failure Crash ]
 crbug.com/dawn/721 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:format="depth24plus-stencil8";* [ Failure Crash ]
 
-# Zero-sized query set is not implemented.
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,query_set,create:count:* [ Failure Crash ]
-
 # Unimplemented validation in Tint. Skipped because it causes test timeouts
 crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:* [ Skip ]
 crbug.com/tint/481 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:* [ Skip ]
