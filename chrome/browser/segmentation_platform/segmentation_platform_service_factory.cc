@@ -9,9 +9,11 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
@@ -20,6 +22,11 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace segmentation_platform {
+namespace {
+const char kSegmentationPlatformProfileObserverKey[] =
+    "segmentation_platform_profile_observer";
+
+}  // namespace
 
 // static
 SegmentationPlatformServiceFactory*
@@ -59,9 +66,15 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   base::DefaultClock* clock = base::DefaultClock::GetInstance();
 
-  return new SegmentationPlatformServiceImpl(optimization_guide, db_provider,
-                                             storage_dir, profile->GetPrefs(),
-                                             task_runner, clock);
+  auto* service = new SegmentationPlatformServiceImpl(
+      optimization_guide, db_provider, storage_dir, profile->GetPrefs(),
+      task_runner, clock);
+
+  service->SetUserData(kSegmentationPlatformProfileObserverKey,
+                       std::make_unique<SegmentationPlatformProfileObserver>(
+                           service, g_browser_process->profile_manager()));
+
+  return service;
 }
 
 }  // namespace segmentation_platform
