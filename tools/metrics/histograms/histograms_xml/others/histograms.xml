@@ -18832,7 +18832,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Launcher.LaunchResult"
-    enum="WebAppLauncherLaunchResult" expires_after="2021-10-31">
+    enum="WebAppLauncherLaunchResult" expires_after="2022-07-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -18842,7 +18842,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Launcher.UpdateResult"
-    enum="WebAppLauncherUpdateResult" expires_after="2021-08-09">
+    enum="WebAppLauncherUpdateResult" expires_after="2022-07-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
