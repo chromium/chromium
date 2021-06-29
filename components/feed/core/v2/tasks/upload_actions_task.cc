@@ -17,6 +17,7 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/request_throttler.h"
 
 namespace feed {
@@ -270,7 +271,7 @@ void UploadActionsTask::OnUpdateActionsFinished(
 
   std::unique_ptr<feedwire::UploadActionsRequest> request =
       batch->disown_feed_action_request();
-  request->mutable_consistency_token()->set_token(consistency_token_);
+  SetConsistencyToken(*request, consistency_token_);
 
   stream_.GetNetwork().SendApiRequest<UploadActionsDiscoverApi>(
       *request, gaia_,

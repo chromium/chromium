@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/web_feed_subscriptions/wire_to_store.h"
 
@@ -43,6 +45,7 @@ void SubscribeToWebFeedTask::Run() {
       return;
     }
     feedwire::webfeed::FollowWebFeedRequest request;
+    SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_name(request_.web_feed_id);
     stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
         request, stream_.GetSyncSignedInGaia(),
@@ -62,6 +65,7 @@ void SubscribeToWebFeedTask::Run() {
       return;
     }
     feedwire::webfeed::FollowWebFeedRequest request;
+    SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_web_page_uri(request_.page_info.url().spec());
     for (const GURL& rss_url : request_.page_info.GetRssUrls()) {
       request.add_page_rss_uris(rss_url.spec());
@@ -76,6 +80,8 @@ void SubscribeToWebFeedTask::Run() {
 void SubscribeToWebFeedTask::RequestComplete(
     FeedNetwork::ApiResult<feedwire::webfeed::FollowWebFeedResponse> result) {
   if (result.response_body) {
+    stream_.SetMetadata(feedstore::MaybeUpdateConsistencyToken(
+        stream_.GetMetadata(), result.response_body->consistency_token()));
     subscribed_web_feed_info_ =
         ConvertToStore(*result.response_body->mutable_web_feed());
     Done(WebFeedSubscriptionRequestStatus::kSuccess);

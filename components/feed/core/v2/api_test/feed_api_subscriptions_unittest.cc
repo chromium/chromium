@@ -129,6 +129,12 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
+  {
+    auto metadata = stream_->GetMetadata();
+    metadata.set_consistency_token("token");
+    stream_->SetMetadata(metadata);
+  }
+
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
@@ -140,14 +146,16 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
 
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
+  auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
+  ASSERT_THAT(sent_request->page_rss_uris(),
+              testing::ElementsAre("http://rss1/", "http://rss2/"));
+  EXPECT_EQ("token", sent_request->consistency_token().token());
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
+  EXPECT_EQ("follow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
-  ASSERT_THAT(
-      network_.GetApiRequestSent<FollowWebFeedDiscoverApi>()->page_rss_uris(),
-      testing::ElementsAre("http://rss1/", "http://rss2/"));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
@@ -278,8 +286,13 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(1, network_.GetUnfollowRequestCount());
+  EXPECT_EQ("follow-ct",
+            network_.GetApiRequestSent<UnfollowWebFeedDiscoverApi>()
+                ->consistency_token()
+                .token());
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             unfollow_callback.GetResult()->request_status);
+  EXPECT_EQ("unfollow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 }
@@ -884,14 +897,23 @@ TEST_F(FeedApiSubscriptionsTest,
 }
 
 TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsSuccess) {
+  {
+    auto metadata = stream_->GetMetadata();
+    metadata.set_consistency_token("token");
+    stream_->SetMetadata(metadata);
+  }
+
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> result;
   InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+
   subscriptions().RefreshSubscriptions(result.Bind());
 
   WaitForIdleTaskQueue();
 
   EXPECT_TRUE(result.RunAndGetResult().success);
-
+  EXPECT_EQ("token", network_.GetApiRequestSent<ListWebFeedsDiscoverApi>()
+                         ->consistency_token()
+                         .token());
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",

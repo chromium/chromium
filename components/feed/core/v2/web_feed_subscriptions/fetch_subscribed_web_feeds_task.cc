@@ -7,6 +7,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/web_feed_subscriptions/wire_to_store.h"
 
 namespace feed {
@@ -36,8 +37,10 @@ void FetchSubscribedWebFeedsTask::Run() {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
+  feedwire::webfeed::ListWebFeedsRequest request;
+  SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   stream_.GetNetwork().SendApiRequest<ListWebFeedsDiscoverApi>(
-      {}, stream_.GetSyncSignedInGaia(),
+      request, stream_.GetSyncSignedInGaia(),
       base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

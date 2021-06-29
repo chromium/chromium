@@ -60,6 +60,13 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
     const std::string& consistency_token,
     const std::string& next_page_token);
 
+template <typename MESSAGE>
+void SetConsistencyToken(MESSAGE& msg, const std::string& consistency_token) {
+  if (!consistency_token.empty()) {
+    msg.mutable_consistency_token()->set_token(consistency_token);
+  }
+}
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PROTO_UTIL_H_

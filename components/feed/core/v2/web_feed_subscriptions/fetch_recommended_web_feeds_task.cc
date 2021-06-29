@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/web_feed_subscriptions/wire_to_store.h"
@@ -34,8 +35,10 @@ void FetchRecommendedWebFeedsTask::Run() {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
+  feedwire::webfeed::ListRecommendedWebFeedsRequest request;
+  SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
   stream_.GetNetwork().SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
-      {}, stream_.GetSyncSignedInGaia(),
+      request, stream_.GetSyncSignedInGaia(),
       base::BindOnce(&FetchRecommendedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

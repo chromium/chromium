@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -70,6 +71,17 @@ absl::optional<Metadata> MaybeUpdateSessionId(
     auto new_metadata = metadata;
     SetSessionId(new_metadata, *token, expiry_time);
     return new_metadata;
+  }
+  return absl::nullopt;
+}
+
+absl::optional<Metadata> MaybeUpdateConsistencyToken(
+    const feedstore::Metadata& metadata,
+    const feedwire::ConsistencyToken& token) {
+  if (token.has_token() && metadata.consistency_token() != token.token()) {
+    auto metadata_copy = metadata;
+    metadata_copy.set_consistency_token(token.token());
+    return metadata_copy;
   }
   return absl::nullopt;
 }

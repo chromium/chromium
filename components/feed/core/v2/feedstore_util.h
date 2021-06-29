@@ -13,6 +13,10 @@
 #include "components/feed/core/v2/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace feedwire {
+class ConsistencyToken;
+}
+
 namespace feedstore {
 class Metadata;
 
@@ -45,6 +49,9 @@ void SetSessionId(feedstore::Metadata& metadata,
 absl::optional<Metadata> MaybeUpdateSessionId(
     const feedstore::Metadata& metadata,
     absl::optional<std::string> token);
+absl::optional<Metadata> MaybeUpdateConsistencyToken(
+    const feedstore::Metadata& metadata,
+    const feedwire::ConsistencyToken& token);
 feed::LocalActionId GetNextActionId(feedstore::Metadata& metadata);
 const Metadata::StreamMetadata* FindMetadataForStream(
     const Metadata& metadata,

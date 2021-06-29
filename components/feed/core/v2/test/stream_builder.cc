@@ -336,11 +336,14 @@ feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
     const std::string& follow_name) {
   feedwire::webfeed::FollowWebFeedResponse response;
   *response.mutable_web_feed() = MakeWireWebFeed(follow_name);
+  SetConsistencyToken(response, "follow-ct");
   return response;
 }
 
 feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse() {
-  return {};
+  feedwire::webfeed::UnfollowWebFeedResponse response;
+  SetConsistencyToken(response, "unfollow-ct");
+  return response;
 }
 
 WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {

@@ -301,6 +301,7 @@ class TestFeedNetwork : public FeedNetwork {
   // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
   std::string last_gaia;
+  // The consistency token to use when constructing default network responses.
   std::string consistency_token;
   bool forced_signed_out_request = false;
   net::HttpStatusCode http_status_code = net::HttpStatusCode::HTTP_OK;
