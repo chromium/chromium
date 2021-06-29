@@ -44,22 +44,25 @@ FeatureAggregatorImpl::~FeatureAggregatorImpl() = default;
 std::vector<float> FeatureAggregatorImpl::Process(
     proto::SignalType signal_type,
     proto::Aggregation aggregation,
-    uint64_t length,
+    uint64_t bucket_count,
     const base::Time& end_time,
     const base::TimeDelta& bucket_duration,
     const std::vector<SignalDatabase::Sample>& samples) const {
   switch (aggregation) {
-    case proto::Aggregation::SUM_COUNT:
+    case proto::Aggregation::COUNT:
       return SumCountAggregation(samples);
-    case proto::Aggregation::SUM_VALUES:
+    case proto::Aggregation::SUM:
       return SumValuesAggregation(signal_type, samples);
+    case proto::Aggregation::COUNT_BOOLEAN:
     case proto::Aggregation::BUCKETED_COUNT:
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN:
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT:
     case proto::Aggregation::BUCKETED_CUMULATIVE_COUNT:
-    case proto::Aggregation::SUM_VALUES_BOOLEAN:
-    case proto::Aggregation::BUCKETED_CUMULATIVE_SUM_VALUES:
-    case proto::Aggregation::BUCKETED_SUM_VALUES:
+    case proto::Aggregation::SUM_BOOLEAN:
+    case proto::Aggregation::BUCKETED_SUM:
+    case proto::Aggregation::BUCKETED_SUM_BOOLEAN:
+    case proto::Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT:
+    case proto::Aggregation::BUCKETED_CUMULATIVE_SUM:
     case proto::Aggregation::UNKNOWN:
       // TODO(nyquist): Implement the rest of the aggregations.
       NOTREACHED();

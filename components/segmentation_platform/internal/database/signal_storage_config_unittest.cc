@@ -74,9 +74,11 @@ TEST_F(SignalStorageConfigTest,
   // Add a user action feature to the both models.
   proto::Feature* feature = metadata.add_features();
   uint64_t name_hash = 234;
-  feature->mutable_user_action()->set_user_action_hash(name_hash);
+  feature->set_type(proto::SignalType::USER_ACTION);
+  feature->set_name_hash(name_hash);
   proto::Feature* feature2 = metadata2.add_features();
-  feature2->mutable_user_action()->set_user_action_hash(name_hash);
+  feature2->set_type(proto::SignalType::USER_ACTION);
+  feature2->set_name_hash(name_hash);
 
   // The DB should be empty before the model is added.
   EXPECT_EQ(0u, db_entries_.size());

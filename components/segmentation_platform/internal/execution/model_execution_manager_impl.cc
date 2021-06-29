@@ -65,7 +65,8 @@ struct ModelExecutionManagerImpl::FeatureState {
   proto::SignalType signal_type;
   proto::Aggregation aggregation;
   absl::optional<std::vector<int32_t>> accepted_enum_ids;
-  uint64_t length;
+  uint64_t bucket_count;
+  uint64_t tensor_length;
 };
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
@@ -121,7 +122,7 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetched(
   // The total bucket duration is defined by product of the bucket_duration
   // value and the length of related time_unit field, e.g. 28 * length(DAY).
   const auto& model_metadata = segment_info->model_metadata();
-  int64_t bucket_duration = model_metadata.bucket_duration();
+  uint64_t bucket_duration = model_metadata.bucket_duration();
   base::TimeDelta time_unit_len = metadata_utils::GetTimeUnit(model_metadata);
   state->bucket_duration = bucket_duration * time_unit_len;
 
@@ -147,24 +148,28 @@ void ModelExecutionManagerImpl::ProcessFeatures(
     return;
   }
 
-  // Copy and pop the next feature.
-  proto::Feature feature = state->features.front();
-  state->features.pop_front();
+  proto::Feature feature;
+  do {
+    // Copy and pop the next feature.
+    feature = state->features.front();
+    state->features.pop_front();
 
-  // Validate the proto::Feature metadata.
-  if (metadata_utils::ValidateMetadataFeature(feature) !=
-      metadata_utils::VALIDATION_SUCCESS) {
-    RunModelExecutionCallback(std::move(state->callback), 0,
-                              ModelExecutionStatus::INVALID_METADATA);
-    return;
-  }
+    // Validate the proto::Feature metadata.
+    if (metadata_utils::ValidateMetadataFeature(feature) !=
+        metadata_utils::VALIDATION_SUCCESS) {
+      RunModelExecutionCallback(std::move(state->callback), 0,
+                                ModelExecutionStatus::INVALID_METADATA);
+      return;
+    }
+  } while (feature.bucket_count() == 0);  // Skip collection-only features.
 
   // Capture all relevant metadata for the current proto::Feature into the
   // FeatureState.
   auto feature_state = std::make_unique<FeatureState>();
   feature_state->signal_type = metadata_utils::GetSignalTypeForFeature(feature);
   feature_state->aggregation = feature.aggregation();
-  feature_state->length = feature.length();
+  feature_state->bucket_count = feature.bucket_count();
+  feature_state->tensor_length = feature.tensor_length();
 
   absl::optional<int64_t> name_hash =
       metadata_utils::GetNameHashForFeature(feature);
@@ -175,15 +180,16 @@ void ModelExecutionManagerImpl::ProcessFeatures(
   // accepted).
   if (feature_state->signal_type == proto::SignalType::HISTOGRAM_ENUM) {
     std::vector<int32_t> accepted_enum_ids{};
-    for (int i = 0; i < feature.histogram_enum().enum_ids_size(); ++i)
-      accepted_enum_ids.emplace_back(feature.histogram_enum().enum_ids(i));
+    for (int i = 0; i < feature.enum_ids_size(); ++i)
+      accepted_enum_ids.emplace_back(feature.enum_ids(i));
 
     feature_state->accepted_enum_ids = absl::make_optional(accepted_enum_ids);
   }
 
   // Only fetch data that is relevant for the current proto::Feature, since
   // the FeatureAggregator assumes that only relevant data is given to it.
-  base::TimeDelta duration = state->bucket_duration * feature.length();
+  base::TimeDelta duration =
+      state->bucket_duration * feature_state->bucket_count;
   base::Time start_time = state->end_time - duration;
 
   // Fetch the relevant samples for the current proto::Feature. Once the result
@@ -224,7 +230,9 @@ void ModelExecutionManagerImpl::OnGetSamplesForFeature(
   // executor.
   std::vector<float> feature_data = feature_aggregator_->Process(
       feature_state->signal_type, feature_state->aggregation,
-      feature_state->length, state->end_time, state->bucket_duration, samples);
+      feature_state->bucket_count, state->end_time, state->bucket_duration,
+      samples);
+  DCHECK_EQ(feature_state->tensor_length, feature_data.size());
   state->input_tensor.insert(state->input_tensor.end(), feature_data.begin(),
                              feature_data.end());
 

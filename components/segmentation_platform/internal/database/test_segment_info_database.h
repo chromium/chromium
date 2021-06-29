@@ -38,15 +38,18 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   // Test helper methods.
   void AddUserActionFeature(OptimizationTarget segment_id,
                             const std::string& user_action,
-                            int64_t length,
+                            uint64_t bucket_count,
+                            uint64_t tensor_length,
                             proto::Aggregation aggregation);
   void AddHistogramValueFeature(OptimizationTarget segment_id,
                                 const std::string& histogram,
-                                int64_t length,
+                                uint64_t bucket_count,
+                                uint64_t tensor_length,
                                 proto::Aggregation aggregation);
   void AddHistogramEnumFeature(OptimizationTarget segment_id,
                                const std::string& histogram_name,
-                               int64_t length,
+                               uint64_t bucket_count,
+                               uint64_t tensor_length,
                                proto::Aggregation aggregation,
                                const std::vector<int32_t>& accepted_enum_ids);
   void AddPredictionResult(OptimizationTarget segment_id,
@@ -57,7 +60,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                           int num_pairs,
                           const std::string& discrete_mapping_key);
   void SetBucketDuration(OptimizationTarget segment_id,
-                         int64_t bucket_duration,
+                         uint64_t bucket_duration,
                          proto::TimeUnit time_unit);
 
   // Finds a segment with given |segment_id|. Creates one if it doesn't exist.

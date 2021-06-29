@@ -32,7 +32,7 @@ class FeatureAggregatorImpl : public FeatureAggregator {
   std::vector<float> Process(
       proto::SignalType signal_type,
       proto::Aggregation aggregation,
-      uint64_t length,
+      uint64_t bucket_count,
       const base::Time& end_time,
       const base::TimeDelta& bucket_duration,
       const std::vector<SignalDatabase::Sample>& samples) const override;

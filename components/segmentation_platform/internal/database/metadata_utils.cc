@@ -5,10 +5,40 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
 #include "base/notreached.h"
+#include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/segmentation_platform_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace metadata_utils {
+
+namespace {
+uint64_t GetExpectedTensorLength(const proto::Feature& feature) {
+  switch (feature.aggregation()) {
+    case proto::Aggregation::COUNT:
+    case proto::Aggregation::COUNT_BOOLEAN:
+    case proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT:
+    case proto::Aggregation::SUM:
+    case proto::Aggregation::SUM_BOOLEAN:
+    case proto::Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT:
+      return feature.bucket_count() == 0 ? 0 : 1;
+    case proto::Aggregation::BUCKETED_COUNT:
+    case proto::Aggregation::BUCKETED_COUNT_BOOLEAN:
+    case proto::Aggregation::BUCKETED_CUMULATIVE_COUNT:
+    case proto::Aggregation::BUCKETED_SUM:
+    case proto::Aggregation::BUCKETED_SUM_BOOLEAN:
+    case proto::Aggregation::BUCKETED_CUMULATIVE_SUM:
+      return feature.bucket_count();
+    case proto::Aggregation::UNKNOWN:
+      NOTREACHED();
+      return 0;
+  }
+}
+}  // namespace
 
 ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_segment_id())
@@ -29,19 +59,31 @@ ValidationResult ValidateMetadata(
 }
 
 ValidationResult ValidateMetadataFeature(const proto::Feature& feature) {
-  if (GetSignalTypeForFeature(feature) ==
-      proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
+  auto signal_type = GetSignalTypeForFeature(feature);
+  if (signal_type == proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
     return ValidationResult::SIGNAL_TYPE_INVALID;
   }
 
+  if ((signal_type == proto::SignalType::HISTOGRAM_ENUM ||
+       signal_type == proto::SignalType::HISTOGRAM_VALUE) &&
+      !feature.has_name()) {
+    return ValidationResult::FEATURE_NAME_NOT_FOUND;
+  }
+
   if (!GetNameHashForFeature(feature).has_value())
-    return ValidationResult::NAME_HASH_NOT_FOUND;
+    return ValidationResult::FEATURE_NAME_HASH_NOT_FOUND;
 
   if (!feature.has_aggregation())
-    return ValidationResult::AGGREGATION_NOT_FOUND;
+    return ValidationResult::FEATURE_AGGREGATION_NOT_FOUND;
 
-  if (!feature.has_length())
-    return ValidationResult::LENGTH_NOT_FOUND;
+  if (!feature.has_bucket_count())
+    return ValidationResult::FEATURE_BUCKET_COUNT_NOT_FOUND;
+
+  if (!feature.has_tensor_length())
+    return ValidationResult::FEATURE_TENSOR_LENGTH_NOT_FOUND;
+
+  if (GetExpectedTensorLength(feature) != feature.tensor_length())
+    return ValidationResult::FEATURE_TENSOR_LENGTH_INVALID;
 
   return ValidationResult::VALIDATION_SUCCESS;
 }
@@ -102,28 +144,17 @@ base::TimeDelta GetTimeUnit(
 }
 
 absl::optional<uint64_t> GetNameHashForFeature(const proto::Feature& feature) {
-  if (feature.has_user_action() &&
-      feature.user_action().has_user_action_hash()) {
-    return feature.user_action().user_action_hash();
-  } else if (feature.has_histogram_enum() &&
-             feature.histogram_enum().has_name_hash()) {
-    return feature.histogram_enum().name_hash();
-  } else if (feature.has_histogram_value() &&
-             feature.histogram_value().has_name_hash()) {
-    return feature.histogram_value().name_hash();
-  }
-  return absl::nullopt;
+  if (!feature.has_name_hash())
+    return absl::nullopt;
+
+  return feature.name_hash();
 }
 
 proto::SignalType GetSignalTypeForFeature(const proto::Feature& feature) {
-  if (feature.has_user_action()) {
-    return proto::SignalType::USER_ACTION;
-  } else if (feature.has_histogram_enum()) {
-    return proto::SignalType::HISTOGRAM_ENUM;
-  } else if (feature.has_histogram_value()) {
-    return proto::SignalType::HISTOGRAM_VALUE;
-  }
-  return proto::SignalType::UNKNOWN_SIGNAL_TYPE;
+  if (!feature.has_type())
+    return proto::SignalType::UNKNOWN_SIGNAL_TYPE;
+
+  return feature.type();
 }
 
 SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {

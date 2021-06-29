@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 package segmentation_platform.proto;
 
 import "components/segmentation_platform/internal/proto/aggregation.proto";
+import "components/segmentation_platform/internal/proto/types.proto";
 
 // Used as time unit for rest of this proto.
 enum TimeUnit {
@@ -21,39 +22,33 @@ enum TimeUnit {
   SECOND = 7;
 }
 
-message HistogramValueFeature {
-  optional string name = 1;
-  optional fixed64 name_hash = 2;
-}
-
-message HistogramEnumFeature {
-  optional string name = 1;
-  optional fixed64 name_hash = 2;
-
-  // Matches are only valid when the enum ID matches any of these.
-  // Works like an OR condition, e.g.: [url, search, …] or just [url].
-  repeated int32 enum_ids = 3;
-}
-
-message UserActionFeature {
-  optional fixed64 user_action_hash = 1;
-}
-
 message Feature {
-  // Number of buckets to include in the result which will equal the tensor
-  // length, unless the tensor length is defined to be 1. If set to 0, no data
-  // will be counted. This can be used to start storing data before it should be
-  // used. See documentation for Aggregation for details.
-  optional int64 length = 1;
+  // The type of signal this feature refers to.
+  optional SignalType type = 1;
+
+  // The human readable name of the histogram or user action.
+  optional string name = 2;
+
+  // The hash of the histogram name or user action. Must match the result of
+  // base::HashMetricName.
+  optional fixed64 name_hash = 3;
+
+  // Number of buckets to include in the result. If set to 0, no data will be
+  // collected. This can be used to start storing data before it should be used.
+  // See documentation for Aggregation for details.
+  optional uint64 bucket_count = 4;
+
+  // The required length of the calculated result. See documentation for
+  // Aggregation for details.
+  optional uint64 tensor_length = 5;
 
   // The type of aggregation to use for this particular feature.
-  optional Aggregation aggregation = 2;
+  optional Aggregation aggregation = 6;
 
-  oneof value {
-    UserActionFeature user_action = 3;
-    HistogramValueFeature histogram_value = 4;
-    HistogramEnumFeature histogram_enum = 5;
-  }
+  // Only set if type == HISTOGRAM_ENUM.
+  // Matches are only valid when the enum ID matches any of these.
+  // Works like an OR condition, e.g.: [url, search, …] or just [url].
+  repeated int32 enum_ids = 7;
 }
 
 // Metadata about a segmentation model for a given segment. Contains information
@@ -67,15 +62,15 @@ message SegmentationModelMetadata {
 
   // The size of each interval the data should be aggregated over.
   // This defaults to 1 day.
-  optional int64 bucket_duration = 3 [default = 1];
+  optional uint64 bucket_duration = 3 [default = 1];
 
   // For how long should data be stored for this model. Default is 28 days.
   optional int64 signal_storage_length = 4 [default = 28];
 
   // For how long do we have to have captured data for this model. If the
   // relevant signals have been captured for a shorter amount of time than this,
-  // this model can never be selected. Default is 28 days.
-  optional int64 min_signal_collection_length = 5 [default = 28];
+  // this model can never be selected. Default is 14 days.
+  optional int64 min_signal_collection_length = 5 [default = 14];
 
   // Describes how long after a valid result has been calculated for this model
   // it is OK to cache the result without recalculating with updated data.
