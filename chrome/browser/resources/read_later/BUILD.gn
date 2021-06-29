@@ -140,6 +140,7 @@ ts_library("build_ts") {
     "side_panel/bookmark_folder.ts",
     "side_panel/bookmarks_list.ts",
     "side_panel/bookmarks_api_proxy.ts",
+    "side_panel/bookmarks.mojom-webui.js",
   ]
   definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
@@ -153,5 +154,6 @@ ts_library("build_ts") {
     ":preprocess",
     "side_panel:preprocess",
     "side_panel:preprocess_generated",
+    "side_panel:preprocess_mojo",
   ]
 }

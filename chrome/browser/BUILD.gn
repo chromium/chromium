@@ -1954,6 +1954,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/read_later:mojo_bindings",
+    "//chrome/browser/ui/webui/read_later/side_panel:mojo_bindings",
     "//chrome/browser/ui/webui/realbox:mojo_bindings",
     "//chrome/browser/ui/webui/reset_password:mojo_bindings",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings",

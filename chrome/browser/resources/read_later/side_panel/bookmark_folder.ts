@@ -10,6 +10,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
+import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
   model: {
@@ -67,12 +69,11 @@ export class BookmarkFolderElement extends PolymerElement {
   folder: chrome.bookmarks.BookmarkTreeNode;
   private open_: boolean;
   openFolders: string[];
-  private readLaterApi_: ReadLaterApiProxy =
-      ReadLaterApiProxyImpl.getInstance();
+  private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
 
   private onBookmarkClick_(event: RepeaterEvent) {
     event.preventDefault();
-    this.readLaterApi_.openURL({url: event.model.item.url!}, false);
+    this.bookmarksApi_.openBookmark(event.model.item.url!);
   }
 
   private getBookmarkIcon_(url: string): string {

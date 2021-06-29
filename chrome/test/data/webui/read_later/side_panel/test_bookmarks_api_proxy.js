@@ -32,6 +32,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getFolders',
+      'openBookmark',
     ]);
 
     this.callbackRouter = {
@@ -49,6 +50,11 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
   getFolders() {
     this.methodCalled('getFolders');
     return Promise.resolve(this.folders_);
+  }
+
+  /** @param {string} url */
+  openBookmark(url) {
+    this.methodCalled('openBookmark', url);
   }
 
   /** @param {!Array<!chrome.bookmarks.BookmarkTreeNode>} folders */

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,4 +96,17 @@ void ReadLaterUI::CreatePageHandler(
   DCHECK(page);
   page_handler_ = std::make_unique<ReadLaterPageHandler>(
       std::move(receiver), std::move(page), this, web_ui());
+}
+
+void ReadLaterUI::BindInterface(
+    mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
+        receiver) {
+  bookmarks_page_factory_receiver_.reset();
+  bookmarks_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReadLaterUI::CreateBookmarksPageHandler(
+    mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
+  bookmarks_page_handler_ =
+      std::make_unique<BookmarksPageHandler>(std::move(receiver));
 }

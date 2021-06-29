@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+
+import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
 export class BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+  handler: BookmarksPageHandlerRemote;
 
   constructor() {
     this.callbackRouter = {
@@ -17,6 +23,12 @@ export class BookmarksApiProxy {
       onMoved: chrome.bookmarks.onMoved,
       onRemoved: chrome.bookmarks.onRemoved,
     };
+
+    this.handler = new BookmarksPageHandlerRemote();
+
+    const factory = BookmarksPageHandlerFactory.getRemote();
+    factory.createBookmarksPageHandler(
+        this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
@@ -27,6 +39,10 @@ export class BookmarksApiProxy {
       }
       resolve([]);
     }));
+  }
+
+  openBookmark(url: string) {
+    this.handler.openBookmark({url});
   }
 
   static getInstance() {

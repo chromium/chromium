@@ -706,6 +706,11 @@ void PopulateChromeWebUIFrameBinders(
         read_later::mojom::PageHandlerFactory, ReadLaterUI>(map);
   }
 
+  if (base::FeatureList::IsEnabled(features::kSidePanel)) {
+    RegisterWebUIControllerInterfaceBinder<
+        side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
+  }
+
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
 

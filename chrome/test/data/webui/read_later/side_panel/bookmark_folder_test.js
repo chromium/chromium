@@ -6,20 +6,21 @@
 // finish running its tests.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
+import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.m.js';
-import {TestReadLaterApiProxy} from '../test_read_later_api_proxy.js';
+
+import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarkFolderTest', () => {
   /** @type {!BookmarkFolderElement} */
   let bookmarkFolder;
 
-  /** @type {!TestReadLaterApiProxy} */
-  let readLaterApi;
+  /** @type {!TestBookmarksApiProxy} */
+  let bookmarksApi;
 
   /** @type {!chrome.bookmarks.BookmarkTreeNode} */
   const folder = {
@@ -54,8 +55,8 @@ suite('SidePanelBookmarkFolderTest', () => {
   setup(async () => {
     document.body.innerHTML = '';
 
-    readLaterApi = new TestReadLaterApiProxy();
-    ReadLaterApiProxyImpl.setInstance(readLaterApi);
+    bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxy.setInstance(bookmarksApi);
 
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));
@@ -120,8 +121,7 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('OpensBookmark', async () => {
     getChildElements()[1].click();
-    const [url, updateReadStatus] = await readLaterApi.whenCalled('openURL');
-    assertEquals(folder.children[1].url, url.url);
-    assertFalse(updateReadStatus);
+    const url = await bookmarksApi.whenCalled('openBookmark');
+    assertEquals(folder.children[1].url, url);
   });
 });
