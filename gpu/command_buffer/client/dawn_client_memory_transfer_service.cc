@@ -34,12 +34,18 @@ class DawnClientMemoryTransferService::ReadHandleImpl
     *reinterpret_cast<MemoryTransferHandle*>(serialize_pointer) = handle_;
   }
 
-  // Load initial data and open the handle for reading.
-  // This function takes in the serialized result of
-  // ReadHandle::SerializeInitialData.
-  // It writes to |data| and |data_length| the pointer and size
-  // of the mapped data for reading.
-  // The allocation must live at least until the ReadHandle is destructed.
+  const void* GetData() override { return ptr_; }
+
+  bool DeserializeDataUpdate(const void* deserialize_pointer,
+                             size_t deserialize_size,
+                             size_t offset,
+                             size_t size) override {
+    // No data is deserialized because we're using shared memory.
+    DCHECK_EQ(deserialize_size, 0u);
+    return true;
+  }
+
+  // TODO(dawn:773): remove after main update on dawn side.
   bool DeserializeInitialData(const void* deserialize_pointer,
                               size_t deserialize_size,
                               const void** data,
@@ -86,17 +92,31 @@ class DawnClientMemoryTransferService::WriteHandleImpl
     *reinterpret_cast<MemoryTransferHandle*>(serialize_pointer) = handle_;
   }
 
-  // Open the handle for writing.
-  // The data returned must live at least until the WriteHandle is destructed.
+  void* GetData() override { return ptr_; }
+
+  size_t SizeOfSerializeDataUpdate(size_t offset, size_t size) override {
+    // No data is serialized because we're using shared memory.
+    return 0;
+  }
+
+  void SerializeDataUpdate(void* serialize_pointer,
+                           size_t offset,
+                           size_t size) override {
+    // No data is serialized because we're using shared memory.
+  }
+
+  // TODO(dawn:773): remove after main update on dawn side.
   std::pair<void*, size_t> Open() override {
     return std::make_pair(ptr_, handle_.size);
   }
 
+  // TODO(dawn:773): remove after main update on dawn side.
   size_t SerializeFlushSize() override {
     // No data is serialized because we're using shared memory.
     return 0;
   }
 
+  // TODO(dawn:773): remove after main update on dawn side.
   void SerializeFlush(void* serialize_pointer) override {
     // No data is serialized because we're using shared memory.
   }

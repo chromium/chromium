@@ -199,7 +199,8 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(
   // This could eventually be upgrade to the max ArrayBuffer size instead of the
   // max TypedArray size. See crbug.com/951196
   if (range_size > v8::TypedArray::kMaxLength) {
-    exception_state.ThrowRangeError(
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
         "getMappedRange failed, size is too large for the implementation");
     return nullptr;
   }
