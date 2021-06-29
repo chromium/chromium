@@ -639,7 +639,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
 
   // Confirm that axtree id is set to the surface.
   auto treeKey =
-      ArcAccessibilityHelperBridge::KeyForNotification(kNotificationKey);
+      ArcAccessibilityTreeTracker::KeyForNotification(kNotificationKey);
   auto it = key_to_tree_.find(treeKey);
   EXPECT_NE(key_to_tree_.end(), it);
   AXTreeSourceArc* tree = it->second.get();

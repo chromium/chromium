@@ -14,6 +14,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -124,18 +125,9 @@ class ArcAccessibilityHelperBridge
 
   void InvokeUpdateEnabledFeatureForTesting();
 
-  enum class TreeKeyType {
-    kTaskId,
-    kNotificationKey,
-    kInputMethod,
-  };
-
-  using TreeKey = std::tuple<TreeKeyType, int32_t, std::string>;
-  using TreeMap = std::map<TreeKey, std::unique_ptr<AXTreeSourceArc>>;
-
-  static TreeKey KeyForNotification(std::string notification_key);
-
-  const TreeMap& trees_for_test() const { return trees_; }
+  const ArcAccessibilityTreeTracker::TreeMap& trees_for_test() const {
+    return tree_tracker_.trees_for_test();
+  }
 
  private:
   // virtual for testing.
@@ -171,18 +163,15 @@ class ArcAccessibilityHelperBridge
       mojom::AccessibilityEventData* event_data) const;
   void DispatchCustomSpokenFeedbackToggled(bool enabled) const;
 
-  AXTreeSourceArc* CreateFromKey(TreeKey);
-  AXTreeSourceArc* GetFromKey(const TreeKey&);
-  AXTreeSourceArc* GetFromTreeId(ui::AXTreeID tree_id) const;
-
   bool focus_observer_added_ = false;
   bool is_focus_event_enabled_ = false;
   bool use_full_focus_mode_ = false;
   Profile* const profile_;
   ArcBridgeService* const arc_bridge_service_;
-  TreeMap trees_;
 
   const AccessibilityHelperInstanceRemoteProxy accessibility_helper_instance_;
+
+  ArcAccessibilityTreeTracker tree_tracker_;
 
   std::map<int32_t, int32_t> window_id_to_task_id_;
 

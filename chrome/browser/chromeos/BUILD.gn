@@ -615,6 +615,8 @@ source_set("chromeos") {
     "../ash/arc/accessibility/accessibility_window_info_data_wrapper.h",
     "../ash/arc/accessibility/arc_accessibility_helper_bridge.cc",
     "../ash/arc/accessibility/arc_accessibility_helper_bridge.h",
+    "../ash/arc/accessibility/arc_accessibility_tree_tracker.cc",
+    "../ash/arc/accessibility/arc_accessibility_tree_tracker.h",
     "../ash/arc/accessibility/arc_accessibility_util.cc",
     "../ash/arc/accessibility/arc_accessibility_util.h",
     "../ash/arc/accessibility/auto_complete_handler.cc",

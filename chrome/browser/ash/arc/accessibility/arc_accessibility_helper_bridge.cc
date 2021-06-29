@@ -181,19 +181,6 @@ std::string GetARGBFromPrefs(PrefService* prefs,
                             base::NumberToString(opacity / 100.0).c_str());
 }
 
-ArcAccessibilityHelperBridge::TreeKey KeyForTaskId(int32_t value) {
-  return {ArcAccessibilityHelperBridge::TreeKeyType::kTaskId, value, {}};
-}
-
-ArcAccessibilityHelperBridge::TreeKey KeyForNotification(std::string value) {
-  return {ArcAccessibilityHelperBridge::TreeKeyType::kNotificationKey, 0,
-          std::move(value)};
-}
-
-ArcAccessibilityHelperBridge::TreeKey KeyForInputMethod() {
-  return {ArcAccessibilityHelperBridge::TreeKeyType::kInputMethod, 0, {}};
-}
-
 }  // namespace
 
 arc::mojom::CaptionStylePtr GetCaptionStyleFromPrefs(PrefService* prefs) {
@@ -237,12 +224,6 @@ ArcAccessibilityHelperBridge*
 ArcAccessibilityHelperBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcAccessibilityHelperBridgeFactory::GetForBrowserContext(context);
-}
-
-// static
-ArcAccessibilityHelperBridge::TreeKey
-ArcAccessibilityHelperBridge::KeyForNotification(std::string notification_key) {
-  return arc::KeyForNotification(std::move(notification_key));
 }
 
 // The list of prefs we want to observe.
@@ -322,7 +303,7 @@ void ArcAccessibilityHelperBridge::OnSetNativeChromeVoxArcSupportProcessed(
   if (enabled) {
     talkback_enabled_task_ids_.erase(*task_id);
   } else {
-    trees_.erase(KeyForTaskId(*task_id));
+    tree_tracker_.Erase(ArcAccessibilityTreeTracker::KeyForTaskId(*task_id));
     talkback_enabled_task_ids_.insert(*task_id);
   }
 
@@ -340,7 +321,8 @@ bool ArcAccessibilityHelperBridge::RefreshTreeIfInActiveWindow(
   if (!task_id.has_value())
     return false;
 
-  AXTreeSourceArc* tree_source = GetFromKey(KeyForTaskId(*task_id));
+  AXTreeSourceArc* tree_source = tree_tracker_.GetFromKey(
+      ArcAccessibilityTreeTracker::KeyForTaskId(*task_id));
   if (!tree_source || tree_source->ax_tree_id() != tree_id)
     return false;
 
@@ -421,20 +403,20 @@ void ArcAccessibilityHelperBridge::OnAccessibilityEvent(
 void ArcAccessibilityHelperBridge::OnNotificationStateChanged(
     const std::string& notification_key,
     arc::mojom::AccessibilityNotificationStateType state) {
-  auto key = KeyForNotification(notification_key);
+  auto key = ArcAccessibilityTreeTracker::KeyForNotification(notification_key);
   switch (state) {
     case arc::mojom::AccessibilityNotificationStateType::SURFACE_CREATED: {
-      AXTreeSourceArc* tree_source = GetFromKey(key);
+      AXTreeSourceArc* tree_source = tree_tracker_.GetFromKey(key);
       if (tree_source)
         return;
 
-      tree_source = CreateFromKey(std::move(key));
+      tree_source = tree_tracker_.CreateFromKey(std::move(key), this);
       UpdateTreeIdOfNotificationSurface(notification_key,
                                         tree_source->ax_tree_id());
       break;
     }
     case arc::mojom::AccessibilityNotificationStateType::SURFACE_REMOVED:
-      trees_.erase(key);
+      tree_tracker_.Erase(key);
       UpdateTreeIdOfNotificationSurface(notification_key,
                                         ui::AXTreeIDUnknown());
       break;
@@ -451,7 +433,8 @@ void ArcAccessibilityHelperBridge::OnAction(
     const ui::AXActionData& data) const {
   DCHECK(data.target_node_id);
 
-  AXTreeSourceArc* tree_source = GetFromTreeId(data.target_tree_id);
+  AXTreeSourceArc* tree_source =
+      tree_tracker_.GetFromTreeId(data.target_tree_id);
   if (!tree_source)
     return;
 
@@ -505,7 +488,7 @@ bool ArcAccessibilityHelperBridge::UseFullFocusMode() const {
 }
 
 void ArcAccessibilityHelperBridge::OnTaskDestroyed(int32_t task_id) {
-  trees_.erase(KeyForTaskId(task_id));
+  tree_tracker_.Erase(ArcAccessibilityTreeTracker::KeyForTaskId(task_id));
   base::EraseIf(window_id_to_task_id_,
                 [task_id](auto it) { return it.second == task_id; });
 }
@@ -513,14 +496,15 @@ void ArcAccessibilityHelperBridge::OnTaskDestroyed(int32_t task_id) {
 void ArcAccessibilityHelperBridge::OnAndroidVirtualKeyboardVisibilityChanged(
     bool visible) {
   if (!visible)
-    trees_.erase(KeyForInputMethod());
+    tree_tracker_.Erase(ArcAccessibilityTreeTracker::KeyForInputMethod());
 }
 
 void ArcAccessibilityHelperBridge::OnNotificationSurfaceAdded(
     ArcNotificationSurface* surface) {
   const std::string& notification_key = surface->GetNotificationKey();
 
-  auto* const tree = GetFromKey(KeyForNotification(notification_key));
+  auto* const tree = tree_tracker_.GetFromKey(
+      ArcAccessibilityTreeTracker::KeyForNotification(notification_key));
   if (!tree)
     return;
 
@@ -631,7 +615,8 @@ void ArcAccessibilityHelperBridge::UpdateCaptionSettings() const {
 
 void ArcAccessibilityHelperBridge::OnActionResult(const ui::AXActionData& data,
                                                   bool result) const {
-  AXTreeSourceArc* tree_source = GetFromTreeId(data.target_tree_id);
+  AXTreeSourceArc* tree_source =
+      tree_tracker_.GetFromTreeId(data.target_tree_id);
 
   if (!tree_source)
     return;
@@ -642,7 +627,8 @@ void ArcAccessibilityHelperBridge::OnActionResult(const ui::AXActionData& data,
 void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
     const ui::AXActionData& data,
     const absl::optional<gfx::Rect>& result_rect) const {
-  AXTreeSourceArc* tree_source = GetFromTreeId(data.target_tree_id);
+  AXTreeSourceArc* tree_source =
+      tree_tracker_.GetFromTreeId(data.target_tree_id);
 
   if (!tree_source)
     return;
@@ -701,7 +687,7 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
 
   if (filter_type_ != new_filter_type &&
       new_filter_type != arc::mojom::AccessibilityFilterType::ALL) {
-    trees_.clear();
+    tree_tracker_.Clear();
   }
   filter_type_ = new_filter_type;
 
@@ -767,10 +753,10 @@ void ArcAccessibilityHelperBridge::UpdateWindowProperties(
     SetChildAxTreeIDForWindow(window, ui::AXTreeIDUnknown());
   } else if (GetFilterTypeForProfile(profile_) ==
              arc::mojom::AccessibilityFilterType::ALL) {
-    TreeKey key = KeyForTaskId(*task_id);
-    AXTreeSourceArc* tree = GetFromKey(key);
+    auto key = ArcAccessibilityTreeTracker::KeyForTaskId(*task_id);
+    AXTreeSourceArc* tree = tree_tracker_.GetFromKey(key);
     if (!tree)
-      tree = CreateFromKey(std::move(key));
+      tree = tree_tracker_.CreateFromKey(std::move(key), this);
 
     // Just after the creation of window, widget has not been set yet and this
     // is not dispatched to ShellSurfaceBase. Thus, call this every time.
@@ -825,7 +811,8 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
 
     // This bridge must receive OnNotificationStateChanged call for the
     // notification_key before this receives an accessibility event for it.
-    tree_source = GetFromKey(KeyForNotification(notification_key));
+    tree_source = tree_tracker_.GetFromKey(
+        ArcAccessibilityTreeTracker::KeyForNotification(notification_key));
     DCHECK(tree_source);
   } else if (event_data->is_input_method_window) {
     exo::InputMethodSurface* input_method_surface =
@@ -834,12 +821,13 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     if (!input_method_surface)
       return;
 
-    if (!trees_.count(KeyForInputMethod())) {
-      auto* tree = CreateFromKey(KeyForInputMethod());
+    auto key = ArcAccessibilityTreeTracker::KeyForInputMethod();
+    if (tree_tracker_.GetFromKey(key) == nullptr) {
+      auto* tree = tree_tracker_.CreateFromKey(key, this);
       input_method_surface->SetChildAxTreeId(tree->ax_tree_id());
     }
 
-    tree_source = GetFromKey(KeyForInputMethod());
+    tree_source = tree_tracker_.GetFromKey(key);
   } else {
     aura::Window* focused_window = GetFocusedArcWindow();
     // TODO(b/173658482): Support non-active windows.
@@ -860,11 +848,11 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
       }
     }
 
-    auto key = KeyForTaskId(*task_id);
-    tree_source = GetFromKey(key);
+    auto key = ArcAccessibilityTreeTracker::KeyForTaskId(*task_id);
+    tree_source = tree_tracker_.GetFromKey(key);
 
     if (!tree_source) {
-      tree_source = CreateFromKey(key);
+      tree_source = tree_tracker_.CreateFromKey(key, this);
       SetChildAxTreeIDForWindow(focused_window, tree_source->ax_tree_id());
       if (AccessibilityManager::Get() &&
           AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
@@ -965,32 +953,6 @@ void ArcAccessibilityHelperBridge::DispatchCustomSpokenFeedbackToggled(
           kEventName,
       std::move(event_args)));
   GetEventRouter()->BroadcastEvent(std::move(event));
-}
-
-AXTreeSourceArc* ArcAccessibilityHelperBridge::CreateFromKey(TreeKey key) {
-  auto tree = std::make_unique<AXTreeSourceArc>(this);
-  auto* tree_ptr = tree.get();
-  trees_.insert(std::make_pair(std::move(key), std::move(tree)));
-  return tree_ptr;
-}
-
-AXTreeSourceArc* ArcAccessibilityHelperBridge::GetFromKey(const TreeKey& key) {
-  auto tree_it = trees_.find(key);
-  if (tree_it == trees_.end())
-    return nullptr;
-
-  return tree_it->second.get();
-}
-
-AXTreeSourceArc* ArcAccessibilityHelperBridge::GetFromTreeId(
-    ui::AXTreeID tree_id) const {
-  for (auto it = trees_.begin(); it != trees_.end(); ++it) {
-    ui::AXTreeData tree_data;
-    it->second->GetTreeData(&tree_data);
-    if (tree_data.tree_id == tree_id)
-      return it->second.get();
-  }
-  return nullptr;
 }
 
 }  // namespace arc
