@@ -715,9 +715,9 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
   const gfx::FontList* GetLabelFontListForCommandId(int command_id) const {
     ui::MenuModel* model = model_;
-    int index;
+    int index = -1;
     AppMenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
-    DCHECK(index);
+    DCHECK_GT(index, -1);
     return model->GetLabelFontListAt(index);
   }
 
