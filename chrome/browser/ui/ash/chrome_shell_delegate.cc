@@ -110,8 +110,12 @@ bool IsWindowSupportedForDeskTemplate(aura::Window* window) {
   const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
   if (!app_id)
     return false;
+  // Exclude incognito browser window.
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  if (browser_view && browser_view->GetIncognito())
+    return false;
 
-  // TODO: Exclude incognito browser windows.
   return true;
 }
 

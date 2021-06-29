@@ -120,6 +120,36 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   EXPECT_EQ(data->urls.value(), urls);
 }
 
+// Tests that incognito browser windows will NOT be captured in the desk
+// template.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  chrome::AddTabAt(incognito_browser, GURL(kExampleUrl1), /*index=*/-1,
+                   /*foreground=*/true);
+  chrome::AddTabAt(incognito_browser, GURL(kExampleUrl2), /*index=*/-1,
+                   /*foreground=*/true);
+  incognito_browser->window()->Show();
+  aura::Window* window = incognito_browser->window()->GetNativeWindow();
+
+  const int32_t incognito_browser_window_id =
+      window->GetProperty(::full_restore::kWindowIdKey);
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      DesksClient::Get()->CaptureActiveDeskAsTemplate();
+
+  ASSERT_TRUE(desk_template);
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+
+  // Find |browser| window's app restore data.
+  auto iter = app_id_to_launch_list.find(extension_misc::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(incognito_browser_window_id);
+  // Created incognito window is NOT in restore list
+  ASSERT_TRUE(app_restore_data_iter == iter->second.end());
+}
+
 // Tests that browsers and chrome apps can be captured correctly in the desk
 // template.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
