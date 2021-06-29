@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 
 namespace blink {
 // static
@@ -20,14 +20,14 @@ IndexedDBDispatcher* IndexedDBDispatcher::GetInstanceForCurrentThread() {
 IndexedDBDispatcher::IndexedDBDispatcher() = default;
 
 // static
-void IndexedDBDispatcher::RegisterCursor(WebIDBCursorImpl* cursor) {
+void IndexedDBDispatcher::RegisterCursor(WebIDBCursor* cursor) {
   IndexedDBDispatcher* this_ptr = GetInstanceForCurrentThread();
   DCHECK(!this_ptr->cursors_.Contains(cursor));
   this_ptr->cursors_.insert(cursor);
 }
 
 // static
-void IndexedDBDispatcher::UnregisterCursor(WebIDBCursorImpl* cursor) {
+void IndexedDBDispatcher::UnregisterCursor(WebIDBCursor* cursor) {
   IndexedDBDispatcher* this_ptr = GetInstanceForCurrentThread();
   DCHECK(this_ptr->cursors_.Contains(cursor));
   this_ptr->cursors_.erase(cursor);
@@ -36,9 +36,9 @@ void IndexedDBDispatcher::UnregisterCursor(WebIDBCursorImpl* cursor) {
 // static
 void IndexedDBDispatcher::ResetCursorPrefetchCaches(
     int64_t transaction_id,
-    WebIDBCursorImpl* except_cursor) {
+    WebIDBCursor* except_cursor) {
   IndexedDBDispatcher* this_ptr = GetInstanceForCurrentThread();
-  for (WebIDBCursorImpl* cursor : this_ptr->cursors_) {
+  for (WebIDBCursor* cursor : this_ptr->cursors_) {
     if (cursor != except_cursor && cursor->transaction_id() == transaction_id)
       cursor->ResetPrefetchCache();
   }

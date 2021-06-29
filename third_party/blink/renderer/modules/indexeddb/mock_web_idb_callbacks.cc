@@ -13,7 +13,7 @@ MockWebIDBCallbacks::MockWebIDBCallbacks() {}
 
 MockWebIDBCallbacks::~MockWebIDBCallbacks() {}
 
-void MockWebIDBCallbacks::SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
+void MockWebIDBCallbacks::SetState(base::WeakPtr<WebIDBCursor> cursor,
                                    int64_t transaction_id) {}
 
 void MockWebIDBCallbacks::SuccessCursorContinue(

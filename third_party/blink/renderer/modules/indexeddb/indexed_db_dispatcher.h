@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
-class WebIDBCursorImpl;
+class WebIDBCursor;
 
 // Handle the indexed db related communication for this context thread - the
 // main thread and each worker thread have their own copies.
@@ -25,18 +25,18 @@ class MODULES_EXPORT IndexedDBDispatcher {
   DISALLOW_NEW();
 
  public:
-  static void RegisterCursor(WebIDBCursorImpl* cursor);
-  static void UnregisterCursor(WebIDBCursorImpl* cursor);
+  static void RegisterCursor(WebIDBCursor* cursor);
+  static void UnregisterCursor(WebIDBCursor* cursor);
 
   // Reset cursor prefetch caches for all cursors except |except_cursor|.
   // In most callers, |except_cursor| is passed as nullptr, causing all cursors
-  // to have their prefetch cache to be reset.  In 2 WebIDBCursorImpl callers,
+  // to have their prefetch cache to be reset.  In 2 WebIDBCursor callers,
   // specifically from |Advance| and |CursorContinue|, these want to reset all
   // cursor prefetch caches except the cursor the calls are running from.  They
   // get that behavior by passing |this| to |ResetCursorPrefetchCaches| which
   // skips calling |ResetPrefetchCache| on them.
   static void ResetCursorPrefetchCaches(int64_t transaction_id,
-                                        WebIDBCursorImpl* except_cursor);
+                                        WebIDBCursor* except_cursor);
 
  private:
   friend class WTF::ThreadSpecific<IndexedDBDispatcher>;
@@ -45,10 +45,7 @@ class MODULES_EXPORT IndexedDBDispatcher {
 
   IndexedDBDispatcher();
 
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBDispatcherTest, CursorReset);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBDispatcherTest, CursorTransactionId);
-
-  WTF::HashSet<WebIDBCursorImpl*> cursors_;
+  WTF::HashSet<WebIDBCursor*> cursors_;
 };
 
 }  // namespace blink

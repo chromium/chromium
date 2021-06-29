@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -91,7 +91,7 @@ class MockContinueCallbacks : public testing::StrictMock<MockWebIDBCallbacks> {
                         Vector<WebBlobInfo>* blobs = nullptr)
       : key_(key), blobs_(blobs) {}
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
+  void SetState(base::WeakPtr<WebIDBCursor> cursor,
                 int64_t transaction_id) override {}
   void SuccessValue(mojom::blink::IDBReturnValuePtr return_value) override {}
 
@@ -112,35 +112,35 @@ class MockContinueCallbacks : public testing::StrictMock<MockWebIDBCallbacks> {
 
 }  // namespace
 
-class WebIDBCursorImplTest : public testing::Test {
+class WebIDBCursorTest : public testing::Test {
  public:
-  WebIDBCursorImplTest() : null_key_(IDBKey::CreateNone()) {
+  WebIDBCursorTest() : null_key_(IDBKey::CreateNone()) {
     mojo::AssociatedRemote<mojom::blink::IDBCursor> remote;
     mock_cursor_ = std::make_unique<MockCursorImpl>(
         remote.BindNewEndpointAndPassDedicatedReceiver());
-    cursor_ = std::make_unique<WebIDBCursorImpl>(
+    cursor_ = std::make_unique<WebIDBCursor>(
         remote.Unbind(), 1,
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   // Disallow copy and assign.
-  WebIDBCursorImplTest(const WebIDBCursorImplTest&) = delete;
-  WebIDBCursorImplTest& operator=(const WebIDBCursorImplTest&) = delete;
+  WebIDBCursorTest(const WebIDBCursorTest&) = delete;
+  WebIDBCursorTest& operator=(const WebIDBCursorTest&) = delete;
 
  protected:
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<IDBKey> null_key_;
-  std::unique_ptr<WebIDBCursorImpl> cursor_;
+  std::unique_ptr<WebIDBCursor> cursor_;
   std::unique_ptr<MockCursorImpl> mock_cursor_;
 };
 
-TEST_F(WebIDBCursorImplTest, PrefetchTest) {
+TEST_F(WebIDBCursorTest, PrefetchTest) {
   // Call continue() until prefetching should kick in.
   int continue_calls = 0;
   EXPECT_EQ(mock_cursor_->continue_calls(), 0);
-  for (int i = 0; i < WebIDBCursorImpl::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                            new MockContinueCallbacks());
+                            std::make_unique<MockContinueCallbacks>());
     platform_->RunUntilIdle();
     EXPECT_EQ(++continue_calls, mock_cursor_->continue_calls());
     EXPECT_EQ(0, mock_cursor_->prefetch_calls());
@@ -155,7 +155,7 @@ TEST_F(WebIDBCursorImplTest, PrefetchTest) {
   for (int repetitions = 0; repetitions < kPrefetchRepetitions; ++repetitions) {
     // Initiate the prefetch
     cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                            new MockContinueCallbacks());
+                            std::make_unique<MockContinueCallbacks>());
     platform_->RunUntilIdle();
     EXPECT_EQ(continue_calls, mock_cursor_->continue_calls());
     EXPECT_EQ(repetitions + 1, mock_cursor_->prefetch_calls());
@@ -197,8 +197,9 @@ TEST_F(WebIDBCursorImplTest, PrefetchTest) {
     for (int i = 0; i < prefetch_count; ++i) {
       std::unique_ptr<IDBKey> key;
       Vector<WebBlobInfo> blobs;
-      cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                              new MockContinueCallbacks(&key, &blobs));
+      cursor_->CursorContinue(
+          null_key_.get(), null_key_.get(),
+          std::make_unique<MockContinueCallbacks>(&key, &blobs));
       platform_->RunUntilIdle();
       EXPECT_EQ(continue_calls, mock_cursor_->continue_calls());
       EXPECT_EQ(repetitions + 1, mock_cursor_->prefetch_calls());
@@ -214,23 +215,23 @@ TEST_F(WebIDBCursorImplTest, PrefetchTest) {
   EXPECT_TRUE(mock_cursor_->destroyed());
 }
 
-TEST_F(WebIDBCursorImplTest, AdvancePrefetchTest) {
+TEST_F(WebIDBCursorTest, AdvancePrefetchTest) {
   // Call continue() until prefetching should kick in.
   EXPECT_EQ(0, mock_cursor_->continue_calls());
-  for (int i = 0; i < WebIDBCursorImpl::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                            new MockContinueCallbacks());
+                            std::make_unique<MockContinueCallbacks>());
   }
   platform_->RunUntilIdle();
   EXPECT_EQ(0, mock_cursor_->prefetch_calls());
 
   // Initiate the prefetch
   cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                          new MockContinueCallbacks());
+                          std::make_unique<MockContinueCallbacks>());
 
   platform_->RunUntilIdle();
   EXPECT_EQ(1, mock_cursor_->prefetch_calls());
-  EXPECT_EQ(static_cast<int>(WebIDBCursorImpl::kPrefetchContinueThreshold),
+  EXPECT_EQ(static_cast<int>(WebIDBCursor::kPrefetchContinueThreshold),
             mock_cursor_->continue_calls());
   EXPECT_EQ(0, mock_cursor_->advance_calls());
 
@@ -271,35 +272,35 @@ TEST_F(WebIDBCursorImplTest, AdvancePrefetchTest) {
   // IDBCursor.continue()
   std::unique_ptr<IDBKey> key;
   cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                          new MockContinueCallbacks(&key));
+                          std::make_unique<MockContinueCallbacks>(&key));
   platform_->RunUntilIdle();
   EXPECT_EQ(0, key->Number());
 
   // IDBCursor.advance(1)
-  cursor_->Advance(1, new MockContinueCallbacks(&key));
+  cursor_->Advance(1, std::make_unique<MockContinueCallbacks>(&key));
   platform_->RunUntilIdle();
   EXPECT_EQ(1, key->Number());
 
   // IDBCursor.continue()
   cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                          new MockContinueCallbacks(&key));
+                          std::make_unique<MockContinueCallbacks>(&key));
   platform_->RunUntilIdle();
   EXPECT_EQ(2, key->Number());
 
   // IDBCursor.advance(2)
-  cursor_->Advance(2, new MockContinueCallbacks(&key));
+  cursor_->Advance(2, std::make_unique<MockContinueCallbacks>(&key));
   platform_->RunUntilIdle();
   EXPECT_EQ(4, key->Number());
 
   EXPECT_EQ(0, mock_cursor_->advance_calls());
 
   // IDBCursor.advance(lots) - beyond the fetched amount
-  cursor_->Advance(WebIDBCursorImpl::kMaxPrefetchAmount,
-                   new MockContinueCallbacks(&key));
+  cursor_->Advance(WebIDBCursor::kMaxPrefetchAmount,
+                   std::make_unique<MockContinueCallbacks>(&key));
   platform_->RunUntilIdle();
   EXPECT_EQ(1, mock_cursor_->advance_calls());
   EXPECT_EQ(1, mock_cursor_->prefetch_calls());
-  EXPECT_EQ(static_cast<int>(WebIDBCursorImpl::kPrefetchContinueThreshold),
+  EXPECT_EQ(static_cast<int>(WebIDBCursor::kPrefetchContinueThreshold),
             mock_cursor_->continue_calls());
 
   cursor_.reset();
@@ -307,13 +308,13 @@ TEST_F(WebIDBCursorImplTest, AdvancePrefetchTest) {
   EXPECT_TRUE(mock_cursor_->destroyed());
 }
 
-TEST_F(WebIDBCursorImplTest, PrefetchReset) {
+TEST_F(WebIDBCursorTest, PrefetchReset) {
   // Call continue() until prefetching should kick in.
   int continue_calls = 0;
   EXPECT_EQ(mock_cursor_->continue_calls(), 0);
-  for (int i = 0; i < WebIDBCursorImpl::kPrefetchContinueThreshold; ++i) {
+  for (int i = 0; i < WebIDBCursor::kPrefetchContinueThreshold; ++i) {
     cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                            new MockContinueCallbacks());
+                            std::make_unique<MockContinueCallbacks>());
     platform_->RunUntilIdle();
     EXPECT_EQ(++continue_calls, mock_cursor_->continue_calls());
     EXPECT_EQ(0, mock_cursor_->prefetch_calls());
@@ -321,7 +322,7 @@ TEST_F(WebIDBCursorImplTest, PrefetchReset) {
 
   // Initiate the prefetch
   cursor_->CursorContinue(null_key_.get(), null_key_.get(),
-                          new MockContinueCallbacks());
+                          std::make_unique<MockContinueCallbacks>());
   platform_->RunUntilIdle();
   EXPECT_EQ(continue_calls, mock_cursor_->continue_calls());
   EXPECT_EQ(1, mock_cursor_->prefetch_calls());

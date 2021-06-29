@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_impl.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -83,7 +82,7 @@ void WebIDBCallbacksImpl::DetachRequestFromCallback() {
   request_.Clear();
 }
 
-void WebIDBCallbacksImpl::SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
+void WebIDBCallbacksImpl::SetState(base::WeakPtr<WebIDBCursor> cursor,
                                    int64_t transaction_id) {
   cursor_ = cursor;
   transaction_id_ = transaction_id;
@@ -125,7 +124,7 @@ void WebIDBCallbacksImpl::SuccessCursor(
   if (!request_)
     return;
 
-  std::unique_ptr<WebIDBCursorImpl> cursor = std::make_unique<WebIDBCursorImpl>(
+  std::unique_ptr<WebIDBCursor> cursor = std::make_unique<WebIDBCursor>(
       std::move(cursor_info), transaction_id_, task_runner_);
   std::unique_ptr<IDBValue> value;
   if (optional_value.has_value()) {

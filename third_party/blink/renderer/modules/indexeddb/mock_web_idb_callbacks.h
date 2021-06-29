@@ -29,7 +29,7 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MockWebIDBCallbacks(const MockWebIDBCallbacks&) = delete;
   MockWebIDBCallbacks& operator=(const MockWebIDBCallbacks&) = delete;
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t) override;
+  void SetState(base::WeakPtr<WebIDBCursor>, int64_t) override;
 
   MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
 

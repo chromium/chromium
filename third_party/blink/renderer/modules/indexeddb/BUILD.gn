@@ -61,9 +61,8 @@ blink_modules_sources("indexeddb") {
     "web_idb_callbacks.h",
     "web_idb_callbacks_impl.cc",
     "web_idb_callbacks_impl.h",
+    "web_idb_cursor.cc",
     "web_idb_cursor.h",
-    "web_idb_cursor_impl.cc",
-    "web_idb_cursor_impl.h",
     "web_idb_database.h",
     "web_idb_database_impl.cc",
     "web_idb_database_impl.h",
@@ -92,7 +91,7 @@ source_set("unit_tests") {
     "mock_web_idb_database.h",
     "mock_web_idb_transaction.cc",
     "mock_web_idb_transaction.h",
-    "web_idb_cursor_impl_unittest.cc",
+    "web_idb_cursor_unittest.cc",
     "web_idb_transaction_impl_unittest.cc",
   ]
 

@@ -94,7 +94,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
         "databases() promise could be resolved"));
   }
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
+  void SetState(base::WeakPtr<WebIDBCursor> cursor,
                 int64_t transaction_id) override {}
 
   void Error(mojom::blink::IDBException code, const String& message) override {
