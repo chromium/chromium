@@ -139,7 +139,7 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 }  // namespace
 
 GLImplementationParts GetSoftwareGLForTestsImplementation() {
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_FUCHSIA))
+#if defined(OS_WIN) || defined(OS_LINUX)
 #if defined(USE_OZONE)
   if (!features::IsUsingOzonePlatform() ||
       ui::OzonePlatform::GetPlatformNameForTest() == "x11")
