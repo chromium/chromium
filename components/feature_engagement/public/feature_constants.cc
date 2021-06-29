@@ -30,6 +30,8 @@ const base::Feature kIPHReadingListEntryPointFeature{
     "IPH_ReadingListEntryPoint", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHTabSearchFeature{"IPH_TabSearch",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebUITabStripFeature{"IPH_WebUITabStrip",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopSnoozeFeature{"IPH_DesktopSnoozeFeature",

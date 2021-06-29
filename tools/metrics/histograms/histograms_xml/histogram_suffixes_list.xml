@@ -8318,6 +8318,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_TabGroupsYourTabsTogether"
       label="In product help for tab switcher cards with multiple tab
              thumbnails."/>
+  <suffix name="IPH_TabSearch"
+      label="In product help for tab search discovery."/>
   <suffix name="IPH_TabSwitcherButton"
       label="In product help for tab swticher button."/>
   <suffix name="IPH_TranslateMenuButton"
