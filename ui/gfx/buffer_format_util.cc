@@ -8,6 +8,7 @@
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "ui/gfx/switches.h"
 
 namespace gfx {
 namespace {
@@ -170,15 +171,15 @@ bool RowSizeForBufferFormatChecked(size_t width,
       *size_in_bytes = checked_size.ValueOrDie();
       return true;
     case BufferFormat::YVU_420:
-      DCHECK_EQ(0u, width % 2);
+      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
       *size_in_bytes = width / SubsamplingFactorForBufferFormat(format, plane);
       return true;
     case BufferFormat::YUV_420_BIPLANAR:
-      DCHECK_EQ(width % 2, 0u);
+      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
       *size_in_bytes = width;
       return true;
     case BufferFormat::P010:
-      DCHECK_EQ(width % 2, 0u);
+      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
       *size_in_bytes = 2 * width;
       return true;
   }
@@ -312,6 +313,11 @@ const char* BufferPlaneToString(BufferPlane format) {
                << static_cast<typename std::underlying_type<BufferPlane>::type>(
                       format);
   return "Invalid Plane";
+}
+
+bool MultiPlanarBufferFormatsAllowOddSizes() {
+  return base::FeatureList::IsEnabled(
+      features::kEnableOddSizeMultiplanarBuffers);
 }
 
 }  // namespace gfx

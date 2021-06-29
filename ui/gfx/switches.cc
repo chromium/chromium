@@ -27,3 +27,16 @@ const char kForcePrefersReducedMotion[] = "force-prefers-reduced-motion";
 const char kHeadless[] = "headless";
 
 }  // namespace switches
+
+namespace features {
+
+const base::Feature kEnableOddSizeMultiplanarBuffers {
+  "EnableOddSizeMultiplanarBuffers",
+#if defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
+}  // namespace features

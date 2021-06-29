@@ -5,6 +5,7 @@
 #ifndef UI_GFX_SWITCHES_H_
 #define UI_GFX_SWITCHES_H_
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "ui/gfx/switches_export.h"
 
@@ -16,5 +17,9 @@ GFX_SWITCHES_EXPORT extern const char kEnableNativeGpuMemoryBuffers[];
 GFX_SWITCHES_EXPORT extern const char kForcePrefersReducedMotion[];
 GFX_SWITCHES_EXPORT extern const char kHeadless[];
 }  // namespace switches
+
+namespace features {
+GFX_SWITCHES_EXPORT extern const base::Feature kEnableOddSizeMultiplanarBuffers;
+}  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_
