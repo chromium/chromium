@@ -39,8 +39,10 @@ void CreditCardCVCAuthenticator::Authenticate(
       form_parsed_timestamp);
 
   absl::optional<GURL> last_committed_url_origin;
-  if (card->record_type() == CreditCard::VIRTUAL_CARD)
-    last_committed_url_origin = client_->GetLastCommittedURL();
+  if (card->record_type() == CreditCard::VIRTUAL_CARD &&
+      client_->GetLastCommittedURL().is_valid()) {
+    last_committed_url_origin = client_->GetLastCommittedURL().GetOrigin();
+  }
 
   full_card_request_->GetFullCard(*card, AutofillClient::UNMASK_FOR_AUTOFILL,
                                   weak_ptr_factory_.GetWeakPtr(),

@@ -422,8 +422,11 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
         autofill_client_->GetPersonalDataManager(), form_parsed_timestamp_);
 
     absl::optional<GURL> last_committed_url_origin;
-    if (card_->record_type() == CreditCard::VIRTUAL_CARD)
-      last_committed_url_origin = autofill_client_->GetLastCommittedURL();
+    if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
+        autofill_client_->GetLastCommittedURL().is_valid()) {
+      last_committed_url_origin =
+          autofill_client_->GetLastCommittedURL().GetOrigin();
+    }
 
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UNMASK_FOR_AUTOFILL,
