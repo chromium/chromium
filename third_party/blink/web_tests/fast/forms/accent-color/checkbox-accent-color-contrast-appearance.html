@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+.row {
+  height: 13px;
+}
+</style>
+
+<h2>color-scheme: light</h2>
+<div id=light style="color-scheme:light"></div>
+
+<script>
+function draw(container) {
+  const numRows = 40;
+  const numColumns = 40;
+  for (let i = 0; i < numRows; i++) {
+    const row = document.createElement('div');
+    row.classList.add('row');
+    container.appendChild(row);
+    const hue = (i / (numRows - 1)) * 360;
+    for (let j = 0; j < numColumns; j++) {
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = true;
+      row.appendChild(input);
+
+      const saturation = (j / (numColumns - 1)) * 100;
+      let luminance = 50;
+      if (!saturation)
+        luminance = (i / (numRows - 1)) * 100;
+      input.style = `accent-color: hsl(${hue}, ${saturation}%, ${luminance}%)`;
+    }
+  }
+}
+draw(light);
+</script>

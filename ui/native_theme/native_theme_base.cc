@@ -980,10 +980,13 @@ void NativeThemeBase::PaintSliderThumb(
   // |accent_color|. This and PaintSliderTrack are used together to paint
   // <input type=range>, so the logic must be the same in order to make sure one
   // color scheme is used to paint the entire control.
+  // We use kNormal here because the user hovering or clicking on the slider
+  // will change the state to something else, and we don't want the color-scheme
+  // to flicker back and forth when the user interacts with it.
   color_scheme = ColorSchemeForAccentColor(
       accent_color, color_scheme,
-      ControlsFillColorForState(state, ColorScheme::kLight),
-      ControlsFillColorForState(state, ColorScheme::kDark));
+      ControlsFillColorForState(kNormal, ColorScheme::kLight),
+      ControlsFillColorForState(kNormal, ColorScheme::kDark));
 
   const float radius =
       GetBorderRadiusForPart(kSliderThumb, rect.width(), rect.height());
