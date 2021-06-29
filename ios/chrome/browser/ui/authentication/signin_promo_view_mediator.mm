@@ -17,6 +17,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -407,12 +409,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
     _accessPoint = accessPoint;
     _browserState = browserState;
     _presenter = presenter;
-    NSArray* identities = ios::GetChromeBrowserProvider()
-                              ->GetChromeIdentityService()
-                              ->GetAllIdentities(browserState->GetPrefs());
-    if (identities.count != 0) {
-      [self selectIdentity:identities[0]];
+
+    ChromeIdentity* defaultIdentity = [self defaultIdentity];
+    if (defaultIdentity) {
+      [self selectIdentity:defaultIdentity];
     }
+
     _identityServiceObserver =
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
@@ -516,6 +518,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 #pragma mark - Private
 
+// Returns the first ChromeIdentity object.
+- (ChromeIdentity*)defaultIdentity {
+  DCHECK(self.browserState);
+  return ChromeAccountManagerServiceFactory::GetForBrowserState(
+             self.browserState)
+      ->GetDefaultIdentity();
+}
+
 // Sets the Chrome identity to display in the sign-in promo.
 - (void)selectIdentity:(ChromeIdentity*)identity {
   _defaultIdentity = identity;
@@ -606,13 +616,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
-  ChromeIdentity* newIdentity = nil;
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentities(self.browserState->GetPrefs());
-  if (identities.count != 0) {
-    newIdentity = identities[0];
-  }
+  ChromeIdentity* newIdentity = [self defaultIdentity];
   if (![_defaultIdentity isEqual:newIdentity]) {
     [self selectIdentity:newIdentity];
     [self sendConsumerNotificationWithIdentityChanged:YES];
