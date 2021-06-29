@@ -153,8 +153,9 @@ class APIKeyCache {
         nullptr, std::string(), environment.get(), command_line, gaia_config);
 
     api_key_read_aloud_ = CalculateKeyValue(
-        GOOGLE_API_KEY_SODA, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD),
-        nullptr, std::string(), environment.get(), command_line, gaia_config);
+        GOOGLE_API_KEY_READ_ALOUD,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), nullptr,
+        std::string(), environment.get(), command_line, gaia_config);
 
     metrics_key_ = CalculateKeyValue(
         GOOGLE_METRICS_SIGNING_KEY,
