@@ -543,26 +543,30 @@ public class SafeBrowsingTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingAllowlistedUnsafePagesDontShowInterstitial() throws Throwable {
+        int onSafeBrowsingCount = mContentsClient.getOnSafeBrowsingHitCount();
         loadGreenPage();
         final String responseUrl = mTestServer.getURL(MALWARE_HTML_PATH);
         verifyAllowlistRule(Uri.parse(responseUrl).getHost(), true);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
         assertTargetPageHasLoaded(MALWARE_PAGE_BACKGROUND_COLOR);
+        Assert.assertEquals("onSafeBrowsingHit count should not be changed by allowed URLs",
+                onSafeBrowsingCount, mContentsClient.getOnSafeBrowsingHitCount());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingAllowlistHardcodedWebUiPages() throws Throwable {
+        int onSafeBrowsingCount = mContentsClient.getOnSafeBrowsingHitCount();
         loadGreenPage();
         verifyAllowlistRule(WEB_UI_HOST, true);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), WEB_UI_MALWARE_URL);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), WEB_UI_PHISHING_URL);
-
-        // Assume the pages are allowed, since we successfully loaded them.
+        Assert.assertEquals("onSafeBrowsingHit count should not be changed by allowed URLs",
+                onSafeBrowsingCount, mContentsClient.getOnSafeBrowsingHitCount());
     }
 
     @Test
