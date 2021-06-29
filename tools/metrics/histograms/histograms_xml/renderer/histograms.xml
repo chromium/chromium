@@ -21,6 +21,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ProcessLifetimeResolution">
+  <variant name="HighResolution" summary="Tops out at 5 minutes."/>
+  <variant name="LowResolution" summary="Tops out at 24 hours"/>
+</variants>
+
+<variants name="RendererLifetime">
+  <variant name="" summary="Applies to all lifetimes."/>
+  <variant name=".LongLived"
+      summary="Renderer process was alive for more than a minute."/>
+  <variant name=".ShortLived"
+      summary="Renderer process was alive for up to one minute."/>
+</variants>
+
 <histogram name="Renderer.CompositedScrolling" enum="CompositedScrolling"
     expires_after="M85">
   <obsolete>
@@ -297,19 +310,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer.ProcessLifetime.{Resolution}" units="ms"
     expires_after="2021-08-29">
+  <obsolete>
+    Replaced by Renderer.ProcessLifetime2* in 06/2021 because the metric was not
+    specific to renderer processes.
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The total time for which a renderer process was live. Recorded when the
     browser identifies the process as having gone away.
   </summary>
-  <token key="Resolution">
-    <variant name="HighResolution" summary="Tops out at 5 minutes."/>
-    <variant name="LowResolution" summary="Tops out at 24 hours"/>
-  </token>
+  <token key="Resolution" variants="ProcessLifetimeResolution"/>
 </histogram>
 
-<histogram name="Renderer.TotalCPUUse{Lifetime}" units="ms"
+<histogram name="Renderer.ProcessLifetime2.{Resolution}" units="ms"
+    expires_after="2021-08-29">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The total time for which a renderer process was live. Recorded when the
+    browser identifies the process as having gone away.
+  </summary>
+  <token key="Resolution" variants="ProcessLifetimeResolution"/>
+</histogram>
+
+<histogram name="Renderer.TotalCPUUse2{Lifetime}" units="ms"
     expires_after="2022-05-06">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -320,13 +345,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Renderer having 4 threads active for a period of 1 minute in parallel will
     use 4 minutes of CPU time. Not recorded on Android.
   </summary>
-  <token key="Lifetime">
-    <variant name="" summary="Applies to all lifetimes."/>
-    <variant name=".LongLived"
-        summary="Renderer process was alive for more than a minute."/>
-    <variant name=".ShortLived"
-        summary="Renderer process was alive for up to one minute."/>
-  </token>
+  <token key="Lifetime" variants="RendererLifetime"/>
+</histogram>
+
+<histogram name="Renderer.TotalCPUUse{Lifetime}" units="ms"
+    expires_after="2022-05-06">
+  <obsolete>
+    Replaced by Renderer.TotalCPUUse2* in 06/2021 because the metric was not
+    specific to renderer processes.
+  </obsolete>
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Total CPU utilization of a renderer, read just before the process is about
+    to go away. Total CPU time can exceed the total process lifetime. This is
+    because CPU use of N seconds can be spread out over M threads. Example: A
+    Renderer having 4 threads active for a period of 1 minute in parallel will
+    use 4 minutes of CPU time. Not recorded on Android.
+  </summary>
+  <token key="Lifetime" variants="RendererLifetime"/>
 </histogram>
 
 <histogram name="Renderer.ViewportZoomBugCount" enum="BooleanHit"

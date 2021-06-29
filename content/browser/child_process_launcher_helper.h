@@ -192,6 +192,8 @@ class ChildProcessLauncherHelper :
   void DumpProcessStack(const base::Process& process);
 #endif  // OS_ANDROID
 
+  std::string GetProcessType();
+
  private:
   friend class base::RefCountedThreadSafe<ChildProcessLauncherHelper>;
 
@@ -201,8 +203,6 @@ class ChildProcessLauncherHelper :
 
   base::CommandLine* command_line() { return command_line_.get(); }
   int child_process_id() const { return child_process_id_; }
-
-  std::string GetProcessType();
 
   static void ForceNormalProcessTerminationSync(
       ChildProcessLauncherHelper::Process process);
