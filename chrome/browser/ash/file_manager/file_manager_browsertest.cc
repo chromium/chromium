@@ -1026,6 +1026,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("breadcrumbsNavigate"),
                       TestCase("breadcrumbsDownloadsTranslation"),
+                      TestCase("breadcrumbsDownloadsTranslation").FilesSwa(),
                       TestCase("breadcrumbsRenderShortPath"),
                       TestCase("breadcrumbsEliderButtonHidden"),
                       TestCase("breadcrumbsRenderLongPath"),
