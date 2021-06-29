@@ -63,7 +63,7 @@
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
-<translation id="1407069428457324124">ダークテーマ</translation>
+<translation id="1407069428457324124">ダークモード</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">はい</translation>
@@ -301,7 +301,7 @@
 <translation id="3378442621503952303">プロファイルに接続しています。数分お待ちください。</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3400357268283240774">その他の設定</translation>
-<translation id="3410336247007142655">ダークテーマの設定を表示</translation>
+<translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
@@ -394,7 +394,7 @@
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
-<translation id="4157822100366708405">ダークテーマの設定</translation>
+<translation id="4157822100366708405">ダークモードの設定</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
 <translation id="4197790712631116042">オフ</translation>
@@ -463,7 +463,7 @@
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4586483766170476230">自撮りカメラを停止</translation>
 <translation id="4587299710837179226">マイクをオフにしました</translation>
-<translation id="4596144739579517758">ダークテーマはオフになっています</translation>
+<translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="4614295562446151104">マーカーツールを展開</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
@@ -549,7 +549,7 @@
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
-<translation id="5352250171825660495">ダークテーマはオンになっています</translation>
+<translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
 <translation id="5397578532367286026">このユーザーの利用状況や履歴は、chrome.com で管理者（<ph name="MANAGER_EMAIL" />）によって確認されます。</translation>
 <translation id="5400461572260843123">クイック設定: 検索+左方向キーを押して、通知センターを開きます。</translation>
@@ -978,7 +978,7 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
-<translation id="8871580645200179206">ダークテーマを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">ダークモードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>

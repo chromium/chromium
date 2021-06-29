@@ -495,7 +495,7 @@
 <translation id="152629053603783244">Перазапусціць Linux</translation>
 <translation id="1526335046150927198">Уключыць паскарэнне прагорткі сэнсарнай панэллю</translation>
 <translation id="1526560967942511387">Дакумент без назвы</translation>
-<translation id="1527336312600375509">Хуткасць абнаўлення манітора</translation>
+<translation id="1527336312600375509">Частата абнаўлення манітора</translation>
 <translation id="152913213824448541">Абагульванне паблізу: кантакты</translation>
 <translation id="1529891865407786369">Крыніца сілкавання</translation>
 <translation id="1530838837447122178">Адкрыць налады мышы і сэнсарнай панэлі</translation>
@@ -1198,7 +1198,7 @@
 <translation id="2262477216570151239">Затрымка перад паўторам</translation>
 <translation id="2262888617381992508">Не дазволена прайграваць абароненае змесціва</translation>
 <translation id="2263189956353037928">Выйсці і зноў увайсці</translation>
-<translation id="2263371730707937087">Хуткасць абнаўлення экрана</translation>
+<translation id="2263371730707937087">Частата абнаўлення экрана</translation>
 <translation id="2263679799334060788">Ваш водгук дапаможа палепшыць Google Cast, і мы цэнім гэта. Каб атрымаць дапамогу па пошуку і выпраўленні непаладак з Cast, наведайце<ph name="BEGIN_LINK" />даведачны цэнтр<ph name="END_LINK" />.</translation>
 <translation id="22665427234727190">Пытацца, калі сайт запытвае доступ да прылад Bluetooth (рэкамендуецца)</translation>
 <translation id="2266957463645820432">IPP-over-USB (IPPUSB)</translation>
@@ -6039,7 +6039,7 @@
 <translation id="7622903810087708234">Падрабязныя звесткі аб паролі</translation>
 <translation id="7624337243375417909">Caps Lock выключаны</translation>
 <translation id="7625568159987162309">Праглядзець дазволы і захаваныя з сайтаў даныя</translation>
-<translation id="7628201176665550262">Хуткасць абнаўлення</translation>
+<translation id="7628201176665550262">Частата абнаўлення</translation>
 <translation id="7629827748548208700">Укладка: <ph name="TAB_NAME" /></translation>
 <translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
 <translation id="7631205654593498032">Пры падключэнні прылад вы згаджаецеся, што <ph name="DEVICE_TYPE" /> можа:</translation>
@@ -6532,7 +6532,7 @@
 <translation id="8117752106453549166">Адміністратар наладжвае Linux. Гэта зойме некалькі хвілін.</translation>
 <translation id="8118362518458010043">Выключана браўзерам Chrome. Гэта пашырэнне можа быць небяспечным.</translation>
 <translation id="8118488170956489476">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> арганізацыя</translation>
-<translation id="8118515372935001629">Хуткасць абнаўлення дысплэя</translation>
+<translation id="8118515372935001629">Частата абнаўлення дысплэя</translation>
 <translation id="8118860139461251237">Кіраванне спампоўкамі</translation>
 <translation id="8119438628456698432">Ідзе стварэнне файлаў журналаў...</translation>
 <translation id="811994229154425014">Устаўляць кропку пры двайным націсканні прабелу</translation>

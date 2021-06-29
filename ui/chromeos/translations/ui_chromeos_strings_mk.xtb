@@ -252,7 +252,7 @@
 <translation id="3644896802912593514">Ширина</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени.</translation>
 <translation id="3645531960514756307">Откачете ја папката</translation>
-<translation id="3685122418104378273">Кога се користат мобилни податоци, синхронизацијата со Google Drive стандардно е оневозможена.</translation>
+<translation id="3685122418104378273">Кога се користи мобилен интернет, синхронизацијата со Google Drive стандардно е оневозможена.</translation>
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3691184985318546178">синхалски</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
@@ -571,7 +571,7 @@
     Најдени се <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6949408524333579394">транслитерација на српски</translation>
-<translation id="696203921837389374">Овозможи синхронизација преку мобилни податоци</translation>
+<translation id="696203921837389374">Овозможи синхронизација преку мобилен интернет</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6970230597523682626">бугарски</translation>
 <translation id="6973630695168034713">Папки</translation>
@@ -676,7 +676,7 @@
 <translation id="7881969471599061635">Оневозможи титлови</translation>
 <translation id="78946041517601018">Споделени простори</translation>
 <translation id="7908793776359722643">Форматирањето на партицијата ќе ги избрише сите податоци што се зачувани на неа. Дејството не може да се врати.</translation>
-<translation id="7925686952655276919">Не користете мобилни податоци за синхронизација</translation>
+<translation id="7925686952655276919">Не користи мобилен интернет за синхронизација</translation>
 <translation id="7928710562641958568">Извади уред</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Уредов не може да се отвори зашто не се препозна системот на датотеки.</translation>
