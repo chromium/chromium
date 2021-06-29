@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -198,6 +199,11 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
   EXPECT_CALL(*pending_script5, ExecuteScriptBlock(_))
       .WillOnce(InvokeWithoutArgs([this] { order_.push_back(5); }));
 
+  platform_->RunSingleTask();
+  document_->domWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kPaused);
+  document_->domWindow()->SetLifecycleState(
+      mojom::FrameLifecycleState::kRunning);
   platform_->RunUntilIdle();
 
   // Async tasks are expected to run first.
@@ -382,10 +388,9 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_InOrder) {
   NotifyScriptReady(pending_script2);
   NotifyScriptReady(pending_script3);
 
-  platform_->RunSingleTask();
-  script_runner_->ContextLifecycleStateChanged(
+  document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kPaused);
-  script_runner_->ContextLifecycleStateChanged(
+  document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   platform_->RunUntilIdle();
 
@@ -413,10 +418,9 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_Async) {
   EXPECT_CALL(*pending_script3, ExecuteScriptBlock(_))
       .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
 
-  platform_->RunSingleTask();
-  script_runner_->ContextLifecycleStateChanged(
+  document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kPaused);
-  script_runner_->ContextLifecycleStateChanged(
+  document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   platform_->RunUntilIdle();
 

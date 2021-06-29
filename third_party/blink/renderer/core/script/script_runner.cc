@@ -46,11 +46,9 @@
 namespace blink {
 
 ScriptRunner::ScriptRunner(Document* document)
-    : ExecutionContextLifecycleStateObserver(document->GetExecutionContext()),
-      document_(document),
+    : document_(document),
       task_runner_(document->GetTaskRunner(TaskType::kNetworking)) {
   DCHECK(document);
-  UpdateStateIfNeeded();
 }
 
 void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script) {
@@ -76,28 +74,6 @@ void ScriptRunner::PostTask(const base::Location& web_trace_location) {
   task_runner_->PostTask(
       web_trace_location,
       WTF::Bind(&ScriptRunner::ExecuteTask, WrapWeakPersistent(this)));
-}
-
-void ScriptRunner::ContextLifecycleStateChanged(
-    mojom::FrameLifecycleState state) {
-  if (!IsExecutionSuspended())
-    PostTasksForReadyScripts(FROM_HERE);
-}
-
-bool ScriptRunner::IsExecutionSuspended() {
-  return !GetExecutionContext() || GetExecutionContext()->IsContextPaused();
-}
-
-void ScriptRunner::PostTasksForReadyScripts(
-    const base::Location& web_trace_location) {
-  DCHECK(!IsExecutionSuspended());
-
-  for (size_t i = 0; i < async_scripts_to_execute_soon_.size(); ++i) {
-    PostTask(web_trace_location);
-  }
-  for (size_t i = 0; i < in_order_scripts_to_execute_soon_.size(); ++i) {
-    PostTask(web_trace_location);
-  }
 }
 
 void ScriptRunner::ScheduleReadyInOrderScripts() {
@@ -315,13 +291,12 @@ bool ScriptRunner::ExecuteAsyncTask() {
 }
 
 void ScriptRunner::ExecuteTask() {
+  DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
+
   // This method is triggered by ScriptRunner::PostTask, and runs directly from
   // the scheduler. So, the call stack is safe to reenter.
   scheduler::CooperativeSchedulingManager::AllowedStackScope
       allowed_stack_scope(scheduler::CooperativeSchedulingManager::Instance());
-
-  if (IsExecutionSuspended())
-    return;
 
   if (ExecuteAsyncTask())
     return;
@@ -349,7 +324,6 @@ void ScriptRunner::ResumeAsyncScriptExecution() {
 }
 
 void ScriptRunner::Trace(Visitor* visitor) const {
-  ExecutionContextLifecycleStateObserver::Trace(visitor);
   visitor->Trace(document_);
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
