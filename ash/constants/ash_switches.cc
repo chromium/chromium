@@ -17,11 +17,6 @@ namespace switches {
 
 namespace {
 
-// The memory pressure thresholds selection which is used to decide whether and
-// when a memory pressure event needs to get fired.
-const char kMemoryPressureExperimentName[] = "ChromeOSMemoryPressureHandling";
-const char kMemoryPressureHandlingOff[] = "memory-pressure-off";
-
 // Controls CrOS GaiaId migration for tests ("" is default).
 const char kTestCrosGaiaIdMigration[] = "test-cros-gaia-id-migration";
 
@@ -795,14 +790,6 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 // uses of this flag.
 const char kWaitForInitialPolicyFetchForTest[] =
     "wait-for-initial-policy-fetch-for-test";
-
-bool MemoryPressureHandlingEnabled() {
-  if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==
-      kMemoryPressureHandlingOff) {
-    return false;
-  }
-  return true;
-}
 
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

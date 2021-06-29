@@ -23,10 +23,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();
 
-  base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
+  util::MultiSourceMemoryPressureMonitor* monitor =
+      static_cast<util::MultiSourceMemoryPressureMonitor*>(
+          base::MemoryPressureMonitor::Get());
   if (monitor) {
-    pressure_evaluator_ = std::make_unique<LacrosMemoryPressureEvaluator>(
-        static_cast<util::MultiSourceMemoryPressureMonitor*>(monitor)
-            ->CreateVoter());
+    monitor->SetSystemEvaluator(std::make_unique<LacrosMemoryPressureEvaluator>(
+        monitor->CreateVoter()));
   }
 }

@@ -11,7 +11,6 @@
 
 class AutomationManagerLacros;
 class DownloadControllerClientLacros;
-class LacrosMemoryPressureEvaluator;
 
 namespace crosapi {
 class TaskManagerLacros;
@@ -42,9 +41,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles tab property requests from ash.
   std::unique_ptr<crosapi::WebPageInfoProviderLacros> web_page_info_provider_;
-
-  // Evaluates memory pressure level.
-  std::unique_ptr<LacrosMemoryPressureEvaluator> pressure_evaluator_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

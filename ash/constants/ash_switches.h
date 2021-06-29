@@ -251,9 +251,6 @@ extern const char kWaitForInitialPolicyFetchForTest[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Returns true if memory pressure handling is enabled.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool MemoryPressureHandlingEnabled();
-
 // Returns true if flags are set indicating that stored user keys are being
 // converted to GAIA IDs.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaIdMigrationStarted();

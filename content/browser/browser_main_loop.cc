@@ -362,11 +362,8 @@ std::unique_ptr<base::MemoryPressureMonitor> CreateMemoryPressureMonitor(
 
   std::unique_ptr<util::MultiSourceMemoryPressureMonitor> monitor;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::switches::MemoryPressureHandlingEnabled())
-    monitor = std::make_unique<util::MultiSourceMemoryPressureMonitor>();
-#elif defined(OS_MAC) || defined(OS_WIN) || defined(OS_FUCHSIA) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_FUCHSIA) || \
+    defined(OS_CHROMEOS)
   monitor = std::make_unique<util::MultiSourceMemoryPressureMonitor>();
 #endif
   // No memory monitor on other platforms...
