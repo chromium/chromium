@@ -31,7 +31,6 @@ constexpr const char* kStartupMetrics[] = {
     "Startup.LoadTime.ProcessCreateToApplicationStart",
 
 #if defined(OS_WIN)
-    "Startup.BrowserMessageLoopStartHardFaultCount",
     "Startup.Temperature",
 #endif
 };
