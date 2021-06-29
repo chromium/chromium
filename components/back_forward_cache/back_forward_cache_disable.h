@@ -31,6 +31,7 @@ enum class DisabledReasonId : content::BackForwardCache::DisabledReasonType {
   kModalDialog = 11,
   kExtensions = 12,
   kExtensionMessaging = 13,
+  kExtensionMessagingForOpenPort = 14,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.
