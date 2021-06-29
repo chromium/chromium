@@ -44,10 +44,9 @@ class ModuleDatabaseTest : public testing::Test {
         scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
         module_database_(std::make_unique<ModuleDatabase>(
             /* third_party_blocking_policy_enabled = */ false)) {
-    mojo::PendingRemote<chrome::mojom::UtilWin> remote;
-    util_win_impl_.emplace(remote.InitWithNewPipeAndPassReceiver());
-    module_database_->module_inspector_.SetRemoteUtilWinForTesting(
-        std::move(remote));
+    module_database_->module_inspector_.SetUtilWinFactoryCallbackForTesting(
+        base::BindRepeating(&ModuleDatabaseTest::CreateUtilWinService,
+                            base::Unretained(this)));
   }
 
   ~ModuleDatabaseTest() override {
@@ -75,6 +74,12 @@ class ModuleDatabaseTest : public testing::Test {
   const base::FilePath dll2_;
 
  private:
+  mojo::Remote<chrome::mojom::UtilWin> CreateUtilWinService() {
+    mojo::Remote<chrome::mojom::UtilWin> remote;
+    util_win_impl_.emplace(remote.BindNewPipeAndPassReceiver());
+    return remote;
+  }
+
   // Must be before |module_database_|.
   content::BrowserTaskEnvironment task_environment_;
 

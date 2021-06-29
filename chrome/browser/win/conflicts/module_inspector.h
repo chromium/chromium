@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_INSPECTOR_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INSPECTOR_H_
 
-#include <map>
-#include <memory>
-
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
@@ -78,9 +75,14 @@ class ModuleInspector : public ModuleDatabaseObserver {
 
   static base::FilePath GetInspectionResultsCachePath();
 
-  void SetRemoteUtilWinForTesting(
-      mojo::PendingRemote<chrome::mojom::UtilWin> remote) {
-    test_remote_util_win_.Bind(std::move(remote));
+  // Sets a test factory function to create the UtilWin instance.
+  using UtilWinFactoryCallback =
+      base::RepeatingCallback<mojo::Remote<chrome::mojom::UtilWin>()>;
+  void SetUtilWinFactoryCallbackForTesting(
+      UtilWinFactoryCallback util_win_factory_callback);
+
+  int get_connection_error_retry_count_for_testing() const {
+    return connection_error_retry_count_;
   }
 
  private:
@@ -126,14 +128,13 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // inspection tasks in order to not negatively impact startup performance.
   bool is_after_startup_;
 
+  // A callback used to initialize |remote_util_win_|.
+  UtilWinFactoryCallback util_win_factory_callback_;
+
   // A remote interface to the UtilWin service. Only used if the
   // WinOOPInspectModule feature is enabled. It is created when inspection is
   // ongoing, and freed when no longer needed.
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
-
-  // The test remote interface for the UtilWin service. This is kept alive for
-  // the duration of this instance's lifetime.
-  mojo::Remote<chrome::mojom::UtilWin> test_remote_util_win_;
 
   // The task runner where module inspections takes place. It originally starts
   // at BEST_EFFORT priority, but is changed to USER_VISIBLE when
