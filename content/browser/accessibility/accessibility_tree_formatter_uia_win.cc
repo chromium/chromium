@@ -953,7 +953,6 @@ void AccessibilityTreeFormatterUia::WriteProperty(
     case VT_UI4:
       dict->SetInteger(GetPropertyName(propertyId), var.ptr()->ulVal);
       break;
-      break;
     case VT_BSTR:
       dict->SetString(GetPropertyName(propertyId),
                       BstrToUTF8(var.ptr()->bstrVal));

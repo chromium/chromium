@@ -726,7 +726,6 @@ int32_t PepperTCPSocketMessageFilter::OnMsgSetOption(
       return PP_ERROR_BADARGUMENT;
     }
   }
-  return PP_OK;
 }
 
 void PepperTCPSocketMessageFilter::TryRead() {

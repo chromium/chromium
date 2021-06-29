@@ -58,8 +58,9 @@ std::string GetUnifiedPlatform() {
   return frozen_user_agent_strings::kUnifiedPlatformMacOS;
 #elif defined(OS_WIN)
   return frozen_user_agent_strings::kUnifiedPlatformWindows;
-#endif
+#else
   return frozen_user_agent_strings::kUnifiedPlatformLinux;
+#endif
 }
 
 // Inaccurately named for historical reasons

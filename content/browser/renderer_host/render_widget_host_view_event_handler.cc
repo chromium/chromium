@@ -91,8 +91,9 @@ bool IsFractionalScaleFactor(float scale_factor) {
 bool ShouldGenerateAppCommand(const ui::MouseEvent* event) {
 #if defined(OS_WIN)
   return (event->native_event().message == WM_NCXBUTTONUP);
-#endif
+#else
   return false;
+#endif
 }
 
 // Reset unchanged touch points to StateStationary for touchmove and

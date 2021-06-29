@@ -672,7 +672,6 @@ class ServiceWithPrompt : public Service {
   void ConfirmPrompt() {
     if (on_complete_callback_.is_null()) {
       FAIL() << "User prompt is not available";
-      return;
     }
     std::move(on_complete_callback_).Run(UserConsentResult::kApproved);
     on_complete_callback_.Reset();
@@ -681,7 +680,6 @@ class ServiceWithPrompt : public Service {
   void DismissPrompt() {
     if (on_complete_callback_.is_null()) {
       FAIL() << "User prompt is not available";
-      return;
     }
     std::move(on_complete_callback_).Run(UserConsentResult::kDenied);
     ActivateTimer();

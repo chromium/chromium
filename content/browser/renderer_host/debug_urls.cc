@@ -154,7 +154,6 @@ bool HandleDebugURL(const GURL& url,
   if (url == blink::kChromeUIBrowserHeapCorruptionURL) {
     // Induce an intentional heap corruption in the browser process.
     base::debug::win::TerminateWithHeapCorruption();
-    return true;
   }
 #endif
 

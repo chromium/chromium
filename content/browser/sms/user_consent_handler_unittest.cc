@@ -67,7 +67,6 @@ class PromptBasedUserConsentHandlerTest : public RenderViewHostTestHarness {
   void DismissPrompt() {
     if (dismiss_callback_.is_null()) {
       FAIL() << "SmsInfobar not available";
-      return;
     }
     std::move(dismiss_callback_).Run();
     confirm_callback_.Reset();

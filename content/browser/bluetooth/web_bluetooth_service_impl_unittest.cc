@@ -46,7 +46,6 @@ class FakeBluetoothScanningPrompt : public BluetoothScanningPrompt {
   void RunPromptEventCallback(Event event) {
     if (prompt_event_callback_.is_null()) {
       FAIL() << "prompt_event_callback_ is not set";
-      return;
     }
     std::move(prompt_event_callback_).Run(event);
   }
@@ -148,7 +147,6 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     if (!prompt_) {
       FAIL() << "ShowBluetoothScanningPrompt must be called before "
              << __func__;
-      return;
     }
     prompt_->RunPromptEventCallback(event);
   }
