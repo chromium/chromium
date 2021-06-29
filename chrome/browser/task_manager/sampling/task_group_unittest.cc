@@ -16,7 +16,6 @@
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,12 +168,10 @@ TEST_F(TaskGroupTest, NaclRefreshWithTask) {
   task_group_->Refresh(gpu::VideoMemoryUsageStats(), base::TimeDelta(),
                        REFRESH_TYPE_NACL);
 #if BUILDFLAG(ENABLE_NACL)
-  if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    EXPECT_FALSE(task_group_->AreBackgroundCalculationsDone());
+  EXPECT_FALSE(task_group_->AreBackgroundCalculationsDone());
 
-    ASSERT_FALSE(background_refresh_complete_);
-    run_loop_->Run();
-  }
+  ASSERT_FALSE(background_refresh_complete_);
+  run_loop_->Run();
 
   EXPECT_TRUE(background_refresh_complete_);
 #endif  // BUILDFLAG(ENABLE_NACL)
