@@ -703,11 +703,11 @@
   <message desc="Accessibility role description for a single comment" name="IDS_CHROMEVOX_ROLE_COMMENT">
     Comment
   </message>
-  <message desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review" name="IDS_CHROMEVOX_ROLE_CONTENT_DELETION">
-    Deletion
+  <message desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review" name="IDS_CHROMEVOX_ROLE_CONTENT_DELETION" is_accessibility_with_no_ui="true">
+    Delete
   </message>
-  <message desc="Accessibility role description for content insertion, meaning content that is has been or is suggested to be inserted into a document, such as in a revision review" name="IDS_CHROMEVOX_ROLE_CONTENT_INSERTION">
-    Insertion
+  <message desc="Accessibility role description for content insertion, meaning content that is has been or is suggested to be inserted into a document, such as in a revision review" name="IDS_CHROMEVOX_ROLE_CONTENT_INSERTION" is_accessibility_with_no_ui="true">
+    Insert
   </message>
   <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'combo box' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_COMBOBOX_BRL">
     cbo
@@ -973,8 +973,8 @@
   <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'status' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_STATUS_BRL">
     sts
   </message>
-  <message desc="Accessibility role description for suggestion, meaning a suggested change to some content" name="IDS_CHROMEVOX_ROLE_SUGGESTION">
-    Suggestion
+  <message desc="Accessibility role description for suggestion, meaning a suggested change to some content" name="IDS_CHROMEVOX_ROLE_SUGGESTION" is_accessibility_with_no_ui="true">
+    Suggest
   </message>
   <message desc="Describes an element with the ARIA role tab." meaning="UI element" name="IDS_CHROMEVOX_ROLE_TAB">
     Tab

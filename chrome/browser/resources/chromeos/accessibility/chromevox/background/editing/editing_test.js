@@ -1610,12 +1610,12 @@ TEST_F('ChromeVoxEditingTest', 'MarkedContent', function() {
               'This is ', 'your', 'Comment', ' text.', 'Exited Comment.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech(
-              'This is ', 'Suggestion', 'Insertion', 'their', ' text.',
-              'Exited Insertion.', 'Exited Suggestion.')
+              'This is ', 'Suggest', 'Insert', 'their', ' text.',
+              'Exited Insert.', 'Exited Suggest.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech(
-              'This is ', 'Suggestion', 'Deletion', `everyone's`, ' text.',
-              'Exited Deletion.', 'Exited Suggestion.')
+              'This is ', 'Suggest', 'Delete', `everyone's`, ' text.',
+              'Exited Delete.', 'Exited Suggest.')
           .replay();
     });
     input.focus();
@@ -1639,9 +1639,8 @@ TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', function() {
     this.listenOnce(input, 'focus', function() {
       mockFeedback.call(this.press(KeyCode.DOWN))
           .expectSpeech(
-              'I ', 'Suggestion', 'Username', 'Insertion', 'was',
-              'Exited Insertion.', 'Deletion', 'am', ' typing',
-              'Exited Deletion.', 'Exited Suggestion.')
+              'I ', 'Suggest', 'Username', 'Insert', 'was', 'Exited Insert.',
+              'Delete', 'am', ' typing', 'Exited Delete.', 'Exited Suggest.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech('End')
           .replay();
@@ -1671,34 +1670,34 @@ TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', function() {
           .call(this.press(KeyCode.RIGHT))
           .expectSpeech(' ')
           .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('Suggestion', 'Username', 'Insertion', 'w')
+          .expectSpeech('Suggest', 'Username', 'Insert', 'w')
           .call(this.press(KeyCode.RIGHT))
           .expectSpeech('a')
           .call(this.press(KeyCode.RIGHT))
           .expectSpeech('s')
           .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('Exited Insertion.')
+          .expectSpeech('Exited Insert.')
           .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('Deletion', 'a')
+          .expectSpeech('Delete', 'a')
           .call(this.press(KeyCode.RIGHT))
           .expectSpeech('m')
           .call(this.press(KeyCode.RIGHT))
-          .expectSpeech('Exited Deletion.', 'Exited Suggestion.')
+          .expectSpeech('Exited Delete.', 'Exited Suggest.')
           // Move backward through the same line.
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('Suggestion', 'Username', 'Deletion', 'm')
+          .expectSpeech('Suggest', 'Username', 'Delete', 'm')
           .call(this.press(KeyCode.LEFT))
           .expectSpeech('a')
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('Exited Deletion.')
+          .expectSpeech('Exited Delete.')
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('Insertion', 's')
+          .expectSpeech('Insert', 's')
           .call(this.press(KeyCode.LEFT))
           .expectSpeech('a')
           .call(this.press(KeyCode.LEFT))
           .expectSpeech('w')
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('Exited Insertion.', 'Exited Suggestion.')
+          .expectSpeech('Exited Insert.', 'Exited Suggest.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech('End')
           .replay();
@@ -1729,19 +1728,19 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
           .expectSpeech('I ')
           .call(this.press(KeyCode.RIGHT, {ctrl: true}))
           .expectSpeech(
-              'Suggestion', 'Username', 'Insertion', 'was', 'Exited Insertion.',
-              'Deletion', 'am')
+              'Suggest', 'Username', 'Insert', 'was', 'Exited Insert.',
+              'Delete', 'am')
           .call(this.press(KeyCode.RIGHT, {ctrl: true}))
           .expectSpeech(
-              'Exited Insertion.', 'Deletion', 'am', 'Exited Deletion.',
-              'Exited Suggestion.', ' typing')
+              'Exited Insert.', 'Delete', 'am', 'Exited Delete.',
+              'Exited Suggest.', ' typing')
           // Move backward through line.
           .call(this.press(KeyCode.LEFT, {ctrl: true}))
-          .expectSpeech('Suggestion', 'Username', 'Deletion', 'am')
+          .expectSpeech('Suggest', 'Username', 'Delete', 'am')
           .call(this.press(KeyCode.LEFT, {ctrl: true}))
-          .expectSpeech('Exited Deletion.', 'Insertion', 'was')
+          .expectSpeech('Exited Delete.', 'Insert', 'was')
           .call(this.press(KeyCode.LEFT, {ctrl: true}))
-          .expectSpeech('Exited Insertion.', 'Exited Suggestion.', 'I')
+          .expectSpeech('Exited Insert.', 'Exited Suggest.', 'I')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech('End')
           .replay();
