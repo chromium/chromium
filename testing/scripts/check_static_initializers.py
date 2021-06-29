@@ -212,8 +212,10 @@ def main_run(args):
     sys.stderr.write('Unsupported platform %s.\n' % repr(sys.platform))
     return 2
 
-  common.record_local_script_results(
-      'check_static_initializers', args.output, [], rc == 0)
+  json.dump({
+      'valid': rc == 0,
+      'failures': [],
+  }, args.output)
 
   return rc
 

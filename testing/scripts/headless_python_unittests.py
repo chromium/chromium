@@ -33,10 +33,11 @@ def main_run(args):
   parsed_results = common.parse_common_test_results(results, test_separator='.')
   failures = parsed_results['unexpected_failures']
 
-  valid = bool(rc <= common.MAX_FAILURES_EXIT_STATUS and
-               ((rc == 0) or failures))
-  common.record_local_script_results(
-      'headless_python_unittests', args.output, failures.keys(), valid)
+  json.dump({
+      'valid': bool(rc <= common.MAX_FAILURES_EXIT_STATUS and
+                   ((rc == 0) or failures)),
+      'failures': failures.keys(),
+  }, args.output)
 
   return rc
 

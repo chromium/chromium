@@ -43,10 +43,3 @@ action("chrome_version_json") {
     rebase_path(_output_file, root_build_dir),
   ]
 }
-
-group("test_results") {
-  data = [
-    "//build/util/lib/__init__.py",
-    "//build/util/lib/results/",
-  ]
-}

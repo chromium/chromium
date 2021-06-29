@@ -23,8 +23,10 @@ def main_run(args):
     with open(tempfile_path) as f:
       failures = json.load(f)
 
-  common.record_local_script_results(
-      'blink_lint_expectations', args.output, failures, True)
+  json.dump({
+      'valid': True,
+      'failures': failures,
+  }, args.output)
 
   return rc
 

@@ -28,11 +28,11 @@ def main_run(args):
   results = common.parse_common_test_results(isolated_results,
                                              test_separator='.')
 
-  failures = [
-      '%s: %s' % (k, v) for k, v in results['unexpected_failures'].items()
-  ]
-  common.record_local_script_results(
-      'metrics_python_tests', args.output, failures, True)
+  json.dump({
+      'valid': True,
+      'failures': ['%s: %s' % (k, v)
+                   for k, v in results['unexpected_failures'].items()]
+  }, args.output)
 
   return rc
 

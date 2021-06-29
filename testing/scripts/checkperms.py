@@ -26,9 +26,10 @@ def main_run(args):
   for result in checkperms_results:
     result_set.add((result['rel_path'], result['error']))
 
-  failures = ['%s: %s' % (r[0], r[1]) for r in result_set]
-  common.record_local_script_results(
-      'checkperms', args.output, failures, True)
+  json.dump({
+      'valid': True,
+      'failures': ['%s: %s' % (r[0], r[1]) for r in result_set],
+  }, args.output)
 
   return rc
 

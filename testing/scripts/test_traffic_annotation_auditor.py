@@ -76,9 +76,10 @@ def main_run(args):
   except OSError:
     pass
 
-  failures = ['Please refer to stdout for errors.'] if rc else []
-  common.record_local_script_results(
-      'test_traffic_annotation_auditor', args.output, failures, True)
+  json.dump({
+      'valid': True,
+      'failures': ['Please refer to stdout for errors.'] if rc else [],
+  }, args.output)
 
   return rc
 
