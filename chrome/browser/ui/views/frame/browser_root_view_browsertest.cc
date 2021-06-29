@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -41,6 +42,12 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 }
 
 // Make sure plain string is droppable. http://crbug.com/838794
+// crbug.com/1224945: Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_PlainString DISABLED_PlainString
+#else
+#define MAYBE_PlainString PlainString
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
   ui::OSExchangeData data;
   data.SetString(u"Plain string");
