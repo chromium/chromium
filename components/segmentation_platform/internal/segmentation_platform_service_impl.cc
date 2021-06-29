@@ -4,14 +4,176 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
+#include <string>
+
+#include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/sequenced_task_runner.h"
+#include "base/time/clock.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_database_impl.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/proto/signal.pb.h"
+#include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
+#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
+#include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
+#include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
+#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+
+using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+namespace {
+const base::FilePath::CharType kSegmentInfoDBName[] =
+    FILE_PATH_LITERAL("SegmentInfoDB");
+const base::FilePath::CharType kSignalDBName[] = FILE_PATH_LITERAL("SignalDB");
+const base::FilePath::CharType kSignalStorageConfigDBName[] =
+    FILE_PATH_LITERAL("SignalStorageConfigDB");
+}  // namespace
 
-SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl() = default;
+SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    leveldb_proto::ProtoDatabaseProvider* db_provider,
+    const base::FilePath& storage_dir,
+    PrefService* pref_service,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    base::Clock* clock)
+    : SegmentationPlatformServiceImpl(
+          db_provider->GetDB<proto::SegmentInfo>(
+              leveldb_proto::ProtoDbType::SEGMENT_INFO_DATABASE,
+              storage_dir.Append(kSegmentInfoDBName),
+              task_runner),
+          db_provider->GetDB<proto::SignalData>(
+              leveldb_proto::ProtoDbType::SIGNAL_DATABASE,
+              storage_dir.Append(kSignalDBName),
+              task_runner),
+          db_provider->GetDB<proto::SignalStorageConfigs>(
+              leveldb_proto::ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE,
+              storage_dir.Append(kSignalStorageConfigDBName),
+              task_runner),
+          model_provider,
+          pref_service,
+          task_runner,
+          clock) {}
+
+SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
+    std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
+        segment_db,
+    std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalData>> signal_db,
+    std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
+        signal_storage_config_db,
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    PrefService* pref_service,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    base::Clock* clock) {
+  // Construct databases.
+  segment_info_database_ =
+      std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
+  signal_database_ = std::make_unique<SignalDatabaseImpl>(std::move(signal_db));
+  signal_storage_config_ = std::make_unique<SignalStorageConfig>(
+      std::move(signal_storage_config_db), clock);
+  segmentation_result_prefs_ =
+      std::make_unique<SegmentationResultPrefs>(pref_service);
+
+  // Construct signal processors.
+  user_action_signal_handler_ =
+      std::make_unique<UserActionSignalHandler>(signal_database_.get(), clock);
+  histogram_signal_handler_ =
+      std::make_unique<HistogramSignalHandler>(signal_database_.get(), clock);
+  signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
+      segment_info_database_.get(), user_action_signal_handler_.get(),
+      histogram_signal_handler_.get());
+
+  segment_selector_ = std::make_unique<SegmentSelectorImpl>(
+      segment_info_database_.get(), segmentation_result_prefs_.get(),
+      kAdaptiveToolbarSegmentationKey);
+
+  // A hardcoded list of segment IDs known to the segmentation platform.
+  std::vector<optimization_guide::proto::OptimizationTarget> segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+  };
+  model_execution_manager_ = CreateModelExecutionManager(
+      model_provider, task_runner, segment_ids, clock,
+      segment_info_database_.get(), signal_database_.get(),
+      std::make_unique<FeatureAggregatorImpl>());
+  model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
+      segment_selector_.get(), segment_info_database_.get(),
+      signal_storage_config_.get(), model_execution_manager_.get());
+  // |model_execution_scheduler_| and |segment_selector_| have circular
+  // dependency. Maybe in future we could flip the dependency.
+  segment_selector_->set_model_execution_scheduler(
+      model_execution_scheduler_.get());
+
+  // Kick off initialization of all databases. Internal operations will be
+  // delayed until they are all complete.
+  segment_info_database_->Initialize(base::BindOnce(
+      &SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized,
+      weak_ptr_factory_.GetWeakPtr()));
+  signal_database_->Initialize(base::BindOnce(
+      &SegmentationPlatformServiceImpl::OnSignalDatabaseInitialized,
+      weak_ptr_factory_.GetWeakPtr()));
+  signal_storage_config_->InitAndLoad(base::BindOnce(
+      &SegmentationPlatformServiceImpl::OnSignalStorageConfigInitialized,
+      weak_ptr_factory_.GetWeakPtr()));
+}
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() = default;
+
+void SegmentationPlatformServiceImpl::GetSelectedSegment(
+    const std::string& segmentation_key,
+    SegmentSelectionCallback callback) {
+  segment_selector_->GetSelectedSegment(std::move(callback));
+}
+
+void SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized(
+    bool success) {
+  segment_info_database_initialized_ = success;
+  MaybeRunPostInitializationRoutines();
+}
+
+void SegmentationPlatformServiceImpl::OnSignalDatabaseInitialized(
+    bool success) {
+  signal_database_initialized_ = success;
+  MaybeRunPostInitializationRoutines();
+}
+
+void SegmentationPlatformServiceImpl::OnSignalStorageConfigInitialized(
+    bool success) {
+  signal_storage_config_initialized_ = success;
+  MaybeRunPostInitializationRoutines();
+}
+
+bool SegmentationPlatformServiceImpl::IsInitializationFinished() const {
+  return segment_info_database_initialized_.has_value() &&
+         signal_database_initialized_.has_value() &&
+         signal_storage_config_initialized_.has_value();
+}
+
+void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
+  if (!IsInitializationFinished())
+    return;
+
+  bool init_success = segment_info_database_initialized_ &&
+                      signal_database_initialized_ &&
+                      signal_storage_config_initialized_;
+  if (!init_success)
+    return;
+
+  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
+      true /*expired_only*/);
+}
 
 // static
 void SegmentationPlatformService::RegisterProfilePrefs(

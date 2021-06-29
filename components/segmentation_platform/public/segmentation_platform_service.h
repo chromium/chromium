@@ -5,11 +5,21 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENTATION_PLATFORM_SERVICE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENTATION_PLATFORM_SERVICE_H_
 
+#include <string>
+
+#include "base/callback.h"
+#include "base/feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
 namespace segmentation_platform {
+namespace features {
+extern const base::Feature kSegmentationPlatformFeature;
+}  // namespace features
+
+struct SegmentSelectionResult;
 
 // The core class of segmentation platform that integrates all the required
 // pieces on the client side.
@@ -18,6 +28,7 @@ class SegmentationPlatformService : public KeyedService {
   SegmentationPlatformService() = default;
   ~SegmentationPlatformService() override = default;
 
+  // Disallow copy/assign.
   SegmentationPlatformService(const SegmentationPlatformService&) = delete;
   SegmentationPlatformService& operator=(const SegmentationPlatformService&) =
       delete;
@@ -25,6 +36,13 @@ class SegmentationPlatformService : public KeyedService {
   // Registers preferences used by this class in the provided |registry|.  This
   // should be called for the Profile registry.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  using SegmentSelectionCallback =
+      base::OnceCallback<void(const SegmentSelectionResult&)>;
+
+  // Called to get the selected segment. If none, returns empty result.
+  virtual void GetSelectedSegment(const std::string& segmentation_key,
+                                  SegmentSelectionCallback callback) = 0;
 };
 
 }  // namespace segmentation_platform

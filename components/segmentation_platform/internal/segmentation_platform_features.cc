@@ -4,6 +4,9 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_features.h"
 
+#include "base/feature_list.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+
 namespace segmentation_platform {
 namespace features {
 namespace {
@@ -16,10 +19,6 @@ constexpr int kDefaultMinDelayForModelRerunSeconds = 43200;
 constexpr int kDefaultSegmentSelectionTTLDays = 28;
 
 }  // namespace
-
-// Core feature flag for segmentation platform.
-const base::Feature kSegmentationPlatformFeature{
-    "SegmentationPlatform", base::FEATURE_ENABLED_BY_DEFAULT};
 
 base::TimeDelta GetMinDelayForModelRerun() {
   int min_delay_seconds = base::GetFieldTrialParamByFeatureAsInt(

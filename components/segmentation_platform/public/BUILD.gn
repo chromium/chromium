@@ -8,11 +8,17 @@ if (is_android) {
 }
 
 source_set("public") {
-  sources = [ "segmentation_platform_service.h" ]
+  sources = [
+    "segment_selection_result.cc",
+    "segment_selection_result.h",
+    "segmentation_platform_service.cc",
+    "segmentation_platform_service.h",
+  ]
 
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 

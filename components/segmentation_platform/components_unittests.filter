@@ -1,4 +1,5 @@
 DummyModelExecutionManagerTest.*
+DummySegmentationPlatformServiceTest.*
 FeatureAggregatorImplTest.*
 HistogramSignalHandlerTest.*
 MetadataUtilsTest.*

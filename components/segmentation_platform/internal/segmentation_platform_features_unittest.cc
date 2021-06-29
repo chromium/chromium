@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/segmentation_platform_features.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -8643,9 +8643,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Database for NonCriticalPersistedTabData"/>
   <suffix name="PreviewsHintCacheStore" label="Databases for Previews Hints"/>
   <suffix name="PrintJobDatabase" label="Database for print job metadata."/>
+  <suffix name="SegmentInfoDatabase"
+      label="Segmentation platform metadata database."/>
   <suffix name="SharedDb" label="Shared database"/>
   <suffix name="ShareHistoryDatabase"
       label="Database for third-party share history."/>
+  <suffix name="SignalDatabase" label="Segmentation platform signal database."/>
+  <suffix name="SignalStorageConfigDatabase"
+      label="Segmentation platform signal storage config."/>
   <suffix name="StrikeService" label="Database for strike service."/>
   <suffix name="TabStateDatabase"
       label="Database for NonCriticalPersistedTabData">

@@ -62,9 +62,10 @@ extern const base::FilePath::CharType kOfflinePageRequestQueueDirname[];
 extern const base::FilePath::CharType kPreferencesFilename[];
 extern const base::FilePath::CharType kPreviewsOptOutDBFilename[];
 extern const base::FilePath::CharType kQueryTileStorageDirname[];
-extern const base::FilePath::CharType kVideoTutorialsStorageDirname[];
 extern const base::FilePath::CharType kReadmeFilename[];
+extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
 extern const base::FilePath::CharType kSecurePreferencesFilename[];
+extern const base::FilePath::CharType kSegmentationPlatformStorageDirName[];
 extern const base::FilePath::CharType kServiceStateFileName[];
 extern const base::FilePath::CharType kSingletonCookieFilename[];
 extern const base::FilePath::CharType kSingletonLockFilename[];
@@ -72,8 +73,8 @@ extern const base::FilePath::CharType kSingletonSocketFilename[];
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 extern const base::FilePath::CharType kThemePackFilename[];
 extern const base::FilePath::CharType kTrustTokenFilename[];
+extern const base::FilePath::CharType kVideoTutorialsStorageDirname[];
 extern const base::FilePath::CharType kWebAppDirname[];
-extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
 
 #if defined(OS_WIN)
 extern const base::FilePath::CharType kJumpListIconDirname[];

@@ -95,6 +95,12 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "MerchantTrustSignalEventDatabase";
     case ProtoDbType::SHARE_HISTORY_DATABASE:
       return "ShareHistoryDatabase";
+    case ProtoDbType::SEGMENT_INFO_DATABASE:
+      return "SegmentInfoDatabase";
+    case ProtoDbType::SIGNAL_DATABASE:
+      return "SignalDatabase";
+    case ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE:
+      return "SignalStorageConfigDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
