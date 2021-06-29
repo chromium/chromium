@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
@@ -46,6 +47,7 @@ NSString* const kURLAndDistillationDateFormat = @"%s • %@";
 @synthesize distillationState = _distillationState;
 @synthesize distillationSizeText = _distillationSizeText;
 @synthesize distillationDateText = _distillationDateText;
+@synthesize estimatedReadTimeText = _estimatedReadTimeText;
 @synthesize customActionFactory = _customActionFactory;
 @synthesize attributes = _attributes;
 @synthesize distillationBadgeImage = _distillationBadgeImage;
@@ -87,7 +89,11 @@ NSString* const kURLAndDistillationDateFormat = @"%s • %@";
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  URLCell.metadataLabel.text = self.distillationSizeText;
+  if (IsReadingListMessagesEnabled()) {
+    URLCell.metadataLabel.text = self.estimatedReadTimeText;
+  } else {
+    URLCell.metadataLabel.text = self.distillationSizeText;
+  }
   URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
 

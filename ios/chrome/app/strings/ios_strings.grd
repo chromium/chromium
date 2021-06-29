@@ -1742,9 +1742,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_JUST_NOW" desc="String indicating that an event (adding item, distillation) happened less than one minute ago. [Length: 25em]">
         Just now
       </message>
-      <message name="IDS_IOS_READING_LIST_MINUTES_SUFFIX" desc="Trailing label to number describing the time to read the reading list entry in minutes. [Length: 20em]">
-          <ph name="TIME">$1</ph> min
-      </message>
       <message name="IDS_IOS_READING_LIST_MARK_ALL_BUTTON" desc="Label of the button to suggest options to mark all reading list entries read or unread [Length: 25em]" meaning="Display options letting the user mark all the entries as read or as unread. [Length: 25em]">
         Mark All…
       </message>
