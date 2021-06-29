@@ -96,7 +96,9 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
     case RequestMode::kMediated:
       // Skip permissions for Mediated mode since they are combined with
       // account selection UX.
-      OnSigninApproved(UserApproval::kApproved);
+      network_manager_->FetchIdpWellKnown(
+          base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     case RequestMode::kPermission:
       request_dialog_controller_->ShowInitialPermissionDialog(
@@ -386,6 +388,13 @@ void FederatedAuthRequestImpl::OnAccountSelected(
   if (account_id.empty()) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
+  }
+
+  // Account selection is considered sufficient for logout permission
+  // user consent.
+  if (GetRequestPermissionContext()) {
+    GetRequestPermissionContext()->GrantRequestPermission(
+        origin(), url::Origin::Create(provider_));
   }
 
   network_manager_->SendTokenRequest(
