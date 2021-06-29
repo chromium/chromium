@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_GRPC_IMPL_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_GRPC_IMPL_H_
+
+#include "third_party/grpc/src/include/grpcpp/completion_queue.h"
+#include "third_party/grpc/src/include/grpcpp/server_context.h"
+#include "third_party/openscreen/src/cast/cast_core/api/v2/runtime_application_service.grpc.pb.h"
+
+namespace chromecast {
+
+class GrpcMethod;
+
+class RuntimeApplicationServiceDelegate {
+ public:
+  virtual ~RuntimeApplicationServiceDelegate() = 0;
+
+  virtual void SetUrlRewriteRules(
+      const cast::v2::SetUrlRewriteRulesRequest& request,
+      cast::v2::SetUrlRewriteRulesResponse* response,
+      GrpcMethod* callback) = 0;
+};
+
+void StartRuntimeApplicationServiceMethods(
+    cast::v2::RuntimeApplicationService::AsyncService* service,
+    RuntimeApplicationServiceDelegate* delegate,
+    ::grpc::ServerCompletionQueue* cq);
+
+}  // namespace chromecast
+
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_GRPC_IMPL_H_

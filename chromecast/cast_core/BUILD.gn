@@ -4,6 +4,41 @@
 
 import("//chromecast/chromecast.gni")
 
+cast_source_set("grpc_support") {
+  sources = [
+    "grpc_method.cc",
+    "grpc_method.h",
+    "grpc_server.cc",
+    "grpc_server.h",
+    "simple_async_grpc.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+cast_source_set("grpc_impl") {
+  sources = [
+    "runtime_application_service_grpc_impl.cc",
+    "runtime_application_service_grpc_impl.h",
+    "runtime_message_port_application_service_grpc_impl.cc",
+    "runtime_message_port_application_service_grpc_impl.h",
+    "runtime_service_grpc_impl.cc",
+    "runtime_service_grpc_impl.h",
+  ]
+
+  public_deps = [
+    ":grpc_support",
+    "//base",
+    "//third_party/grpc:grpc++",
+    "//third_party/openscreen/src/cast/cast_core/api:runtime_application_service_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:runtime_message_port_application_service_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:runtime_service_proto",
+  ]
+}
+
 cast_source_set("renderer") {
   sources = [
     "cast_runtime_content_renderer_client.cc",

@@ -5,8 +5,10 @@ include_rules = [
   "+chromecast/common",
   "+chromecast/media",
   "+chromecast/renderer",
-  '+chromecast/service',
-  '+components/cast_streaming',
+  "+chromecast/service",
+  "+components/cast_streaming",
   "+content/public",
   "+media/base",
+  "+third_party/grpc",
+  "+third_party/openscreen/src/cast/cast_core/api",
 ]
