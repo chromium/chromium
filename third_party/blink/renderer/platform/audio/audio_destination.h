@@ -43,6 +43,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
+namespace absl {
+template <typename>
+class optional;
+}
+
 namespace blink {
 
 class PushPullFIFO;
