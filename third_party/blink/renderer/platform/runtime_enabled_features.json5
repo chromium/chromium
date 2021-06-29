@@ -863,7 +863,7 @@
     },
     {
       name: "ExceptionMetaDataForDevTools",
-      status: "test",
+      status: "stable",
     },
     {
       name: "ExecCommandInJavaScript",
