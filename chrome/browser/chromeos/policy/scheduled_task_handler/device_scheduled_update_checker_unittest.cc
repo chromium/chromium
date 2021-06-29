@@ -144,21 +144,21 @@ base::TimeDelta CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
     const icu::TimeZone& new_tz) {
   DCHECK(!delay.is_zero());
 
-  auto cur_time_utc_cal = update_checker_internal::ConvertUtcToTzIcuTime(
+  auto cur_time_utc_cal = scheduled_task_internal::ConvertUtcToTzIcuTime(
       cur_time, *icu::TimeZone::getGMT());
 
   auto old_tz_timer_expiration_cal =
-      update_checker_internal::ConvertUtcToTzIcuTime(cur_time + delay, old_tz);
+      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time + delay, old_tz);
 
   auto new_tz_timer_expiration_cal =
-      update_checker_internal::ConvertUtcToTzIcuTime(cur_time, new_tz);
+      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time, new_tz);
   SetTimeOfDay(*old_tz_timer_expiration_cal, new_tz_timer_expiration_cal.get());
 
-  base::TimeDelta result = update_checker_internal::GetDiff(
+  base::TimeDelta result = scheduled_task_internal::GetDiff(
       *new_tz_timer_expiration_cal, *cur_time_utc_cal);
   // If the update check time in the new time zone has already passed then it
   // will happen on the next day.
-  if (result <= update_checker_internal::kInvalidDelay)
+  if (result <= scheduled_task_internal::kInvalidDelay)
     result += base::TimeDelta::FromDays(1);
   return result;
 }
@@ -261,7 +261,7 @@ class DeviceScheduledUpdateCheckerForTest
   base::TimeDelta CalculateNextUpdateCheckTimerDelay(
       base::Time cur_time) override {
     if (simulate_calculate_next_update_check_failure_)
-      return update_checker_internal::kInvalidDelay;
+      return scheduled_task_internal::kInvalidDelay;
     return DeviceScheduledUpdateChecker::CalculateNextUpdateCheckTimerDelay(
         cur_time);
   }
@@ -465,7 +465,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     // happen daily at that time.
     base::Time update_check_time =
         device_scheduled_update_checker_->GetCurrentTime() + delay;
-    auto update_check_icu_time = update_checker_internal::ConvertUtcToTzIcuTime(
+    auto update_check_icu_time = scheduled_task_internal::ConvertUtcToTzIcuTime(
         update_check_time, device_scheduled_update_checker_->GetTimeZone());
 
     // Extracting fields from valid ICU time should always succeed.
@@ -534,7 +534,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
         CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
             cur_time, delay_from_now, cur_tz, *new_tz);
     EXPECT_GT(new_tz_timer_expiration_delay,
-              update_checker_internal::kInvalidDelay);
+              scheduled_task_internal::kInvalidDelay);
 
     // Set daily policy to start update check one hour from now.
     int expected_update_checks = 0;
@@ -699,7 +699,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfMonthlyUpdateCheckIsScheduled) {
   base::TimeDelta second_update_check_delay =
       second_update_check_time -
       device_scheduled_update_checker_->GetCurrentTime();
-  EXPECT_GT(second_update_check_delay, update_checker_internal::kInvalidDelay);
+  EXPECT_GT(second_update_check_delay, scheduled_task_internal::kInvalidDelay);
   task_environment_.FastForwardBy(second_update_check_delay);
   // Simulate update check succeeding.
   NotifyUpdateCheckStatus(update_engine::Operation::UPDATED_NEED_REBOOT);
@@ -752,7 +752,7 @@ TEST_F(DeviceScheduledUpdateCheckerTest, CheckMonthlyRolloverLogic) {
         device_scheduled_update_checker_->GetCurrentTime();
     // This should be always set in a virtual time environment.
     EXPECT_GT(expected_next_update_check_delay,
-              update_checker_internal::kInvalidDelay);
+              scheduled_task_internal::kInvalidDelay);
     const base::TimeDelta small_delay = base::TimeDelta::FromMilliseconds(1);
     task_environment_.FastForwardBy(expected_next_update_check_delay -
                                     small_delay);

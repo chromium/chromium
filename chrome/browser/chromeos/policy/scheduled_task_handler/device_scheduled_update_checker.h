@@ -128,9 +128,6 @@ constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime =
     base::TimeDelta::FromMinutes(1);
 
-// Used as canonical value for timer delay calculations.
-constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
-
 // Parses |value| into a |ScheduledUpdateCheckData|. Returns nullopt if there
 // is any error while parsing |value|.
 absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledUpdate(
@@ -138,14 +135,6 @@ absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledUpdate(
 
 // Converts an icu::Calendar to base::Time. Assumes |time| is valid.
 base::Time IcuToBaseTime(const icu::Calendar& time);
-
-// Calculates the difference in milliseconds of |a| - |b|. Caller has to ensure
-// |a| >= |b|.
-base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b);
-
-// Converts |cur_time| to ICU time in the time zone |tz|.
-std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
-                                                     const icu::TimeZone& tz);
 
 }  // namespace update_checker_internal
 

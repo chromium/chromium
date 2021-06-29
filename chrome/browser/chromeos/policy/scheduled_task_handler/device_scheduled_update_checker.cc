@@ -222,38 +222,6 @@ base::Time IcuToBaseTime(const icu::Calendar& time) {
   return result;
 }
 
-base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b) {
-  UErrorCode status = U_ZERO_ERROR;
-  UDate a_ms = a.getTime(status);
-  DCHECK(U_SUCCESS(status));
-  UDate b_ms = b.getTime(status);
-  DCHECK(U_SUCCESS(status));
-  DCHECK(a_ms >= b_ms);
-  return base::TimeDelta::FromMilliseconds(a_ms - b_ms);
-}
-
-std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
-                                                     const icu::TimeZone& tz) {
-  // Get ms from epoch for |cur_time| and use it to get the new time in |tz|.
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::Calendar> cal_tz =
-      std::make_unique<icu::GregorianCalendar>(tz, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Couldn't create calendar";
-    return nullptr;
-  }
-  // Erase current time from the calendar.
-  cal_tz->clear();
-  time_t ms_from_epoch = cur_time.ToTimeT() * 1000;
-  cal_tz->setTime(ms_from_epoch, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Couldn't create calendar";
-    return nullptr;
-  }
-
-  return cal_tz;
-}
-
 }  // namespace update_checker_internal
 
 // |cros_settings_subscription_| will be destroyed as part of this object
@@ -366,10 +334,10 @@ DeviceScheduledUpdateChecker::CalculateNextUpdateCheckTimerDelay(
   DCHECK(scheduled_update_check_data_);
 
   const auto cur_cal =
-      update_checker_internal::ConvertUtcToTzIcuTime(cur_time, GetTimeZone());
+      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time, GetTimeZone());
   if (!cur_cal) {
     LOG(ERROR) << "Failed to get current ICU time";
-    return update_checker_internal::kInvalidDelay;
+    return scheduled_task_internal::kInvalidDelay;
   }
 
   auto update_check_time = base::WrapUnique(cur_cal->clone());
@@ -380,7 +348,7 @@ DeviceScheduledUpdateChecker::CalculateNextUpdateCheckTimerDelay(
   if (!SetTimeBasedOnPolicy(scheduled_update_check_data_.value(),
                             update_check_time.get())) {
     LOG(ERROR) << "Failed to set time based on policy";
-    return update_checker_internal::kInvalidDelay;
+    return scheduled_task_internal::kInvalidDelay;
   }
 
   // If the time has already passed it means that the update check needs to be
@@ -398,18 +366,18 @@ DeviceScheduledUpdateChecker::CalculateNextUpdateCheckTimerDelay(
     if (!AdvanceTimeBasedOnPolicy(scheduled_update_check_data_.value(),
                                   update_check_time.get())) {
       LOG(ERROR) << "Failed to advance time";
-      return update_checker_internal::kInvalidDelay;
+      return scheduled_task_internal::kInvalidDelay;
     }
 
     if (!SetTimeBasedOnPolicy(scheduled_update_check_data_.value(),
                               update_check_time.get())) {
       LOG(ERROR) << "Failed to set time based on policy";
-      return update_checker_internal::kInvalidDelay;
+      return scheduled_task_internal::kInvalidDelay;
     }
   }
   DCHECK(!IsCalGreaterThanEqual(*cur_cal, *update_check_time));
 
-  return update_checker_internal::GetDiff(*update_check_time, *cur_cal);
+  return scheduled_task_internal::GetDiff(*update_check_time, *cur_cal);
 }
 
 void DeviceScheduledUpdateChecker::StartUpdateCheckTimer(
@@ -441,7 +409,7 @@ void DeviceScheduledUpdateChecker::StartUpdateCheckTimer(
     // only be one outstanding task to start the timer. If there is a failure
     // the wake lock is released and acquired again when this task runs.
     base::TimeDelta delay = CalculateNextUpdateCheckTimerDelay(cur_time);
-    if (delay <= update_checker_internal::kInvalidDelay) {
+    if (delay <= scheduled_task_internal::kInvalidDelay) {
       LOG(ERROR) << "Failed to calculate next update check time";
       MaybeStartUpdateCheckTimer(std::move(scoped_wake_lock),
                                  true /* is_retry */);
