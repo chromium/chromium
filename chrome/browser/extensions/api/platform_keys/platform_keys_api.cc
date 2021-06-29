@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -53,6 +54,15 @@ const char kErrorInteractiveCallFromBackground[] =
 
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
+
+const struct NameValuePair {
+  const char* const name;
+  const int value;
+} kCertStatusErrors[] = {
+#define CERT_STATUS_FLAG(name, value) {#name, value},
+#include "net/cert/cert_status_flags_list.h"
+#undef CERT_STATUS_FLAG
+};
 
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
@@ -449,6 +459,57 @@ void PlatformKeysInternalSignFunction::OnSigned(
     Respond(
         Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));
   }
+}
+
+//------------------------------------------------------------------------------
+
+PlatformKeysVerifyTLSServerCertificateFunction::
+    ~PlatformKeysVerifyTLSServerCertificateFunction() {}
+
+ExtensionFunction::ResponseAction
+PlatformKeysVerifyTLSServerCertificateFunction::Run() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<api_pk::VerifyTLSServerCertificate::Params> params(
+      api_pk::VerifyTLSServerCertificate::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  VerifyTrustAPI::GetFactoryInstance()
+      ->Get(browser_context())
+      ->Verify(std::move(params), extension_id(),
+               base::BindOnce(&PlatformKeysVerifyTLSServerCertificateFunction::
+                                  FinishedVerification,
+                              this));
+
+  return RespondLater();
+}
+
+void PlatformKeysVerifyTLSServerCertificateFunction::FinishedVerification(
+    const std::string& error,
+    int verify_result,
+    int cert_status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!error.empty()) {
+    Respond(Error(error));
+    return;
+  }
+
+  api_pk::VerificationResult result;
+  result.trusted = verify_result == net::OK;
+  if (net::IsCertificateError(verify_result)) {
+    // Only report errors, not internal informational statuses.
+    const int masked_cert_status = cert_status & net::CERT_STATUS_ALL_ERRORS;
+    for (size_t i = 0; i < base::size(kCertStatusErrors); ++i) {
+      if ((masked_cert_status & kCertStatusErrors[i].value) ==
+          kCertStatusErrors[i].value) {
+        result.debug_errors.push_back(kCertStatusErrors[i].name);
+      }
+    }
+  }
+
+  Respond(ArgumentList(
+      api_pk::VerifyTLSServerCertificate::Results::Create(result)));
 }
 
 }  // namespace extensions

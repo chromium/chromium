@@ -8,18 +8,6 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 
-namespace extensions {
-
-class PlatformKeysVerifyTLSServerCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~PlatformKeysVerifyTLSServerCertificateFunction() override;
-  ResponseAction Run() override;
-
-  DECLARE_EXTENSION_FUNCTION("platformKeys.verifyTLSServerCertificate",
-                             PLATFORMKEYS_VERIFYTLSSERVERCERTIFICATE)
-};
-
-}  // namespace extensions
+namespace extensions {}  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_LACROS_H_

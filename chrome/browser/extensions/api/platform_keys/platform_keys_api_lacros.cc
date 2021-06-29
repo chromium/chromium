@@ -23,12 +23,4 @@ using KeystoreService = crosapi::mojom::KeystoreService;
 
 //------------------------------------------------------------------------------
 
-PlatformKeysVerifyTLSServerCertificateFunction::
-    ~PlatformKeysVerifyTLSServerCertificateFunction() {}
-
-ExtensionFunction::ResponseAction
-PlatformKeysVerifyTLSServerCertificateFunction::Run() {
-  return RespondNow(Error("Not implemented."));
-}
-
 }  // namespace extensions

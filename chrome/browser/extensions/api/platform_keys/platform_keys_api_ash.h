@@ -28,20 +28,6 @@ std::string PlatformKeysTokenIdToApiId(
 
 }  // namespace platform_keys
 
-class PlatformKeysVerifyTLSServerCertificateFunction
-    : public ExtensionFunction {
- private:
-  ~PlatformKeysVerifyTLSServerCertificateFunction() override;
-  ResponseAction Run() override;
-
-  void FinishedVerification(const std::string& error,
-                            int verify_result,
-                            int cert_status);
-
-  DECLARE_EXTENSION_FUNCTION("platformKeys.verifyTLSServerCertificate",
-                             PLATFORMKEYS_VERIFYTLSSERVERCERTIFICATE)
-};
-
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_ASH_H_
