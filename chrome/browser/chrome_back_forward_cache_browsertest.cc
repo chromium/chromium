@@ -360,14 +360,8 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 }
 #endif
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_RestoresMixedContentSettings DISABLED_RestoresMixedContentSettings
-#else
-#define MAYBE_RestoresMixedContentSettings RestoresMixedContentSettings
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
-                       MAYBE_RestoresMixedContentSettings) {
+                       RestoresMixedContentSettings) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
@@ -379,6 +373,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 1) Load page A that has mixed content.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
   // Mixed content should be blocked at first.
   EXPECT_FALSE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
                    ->IsRunningInsecureContentAllowed());
@@ -408,7 +403,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_FALSE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
                    ->IsRunningInsecureContentAllowed());
 
-  // 5) Go back to page A.
+  // 5) A is stored in BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 6) Go back to page A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   // Mixed content settings is restored, so it's no longer blocked.
