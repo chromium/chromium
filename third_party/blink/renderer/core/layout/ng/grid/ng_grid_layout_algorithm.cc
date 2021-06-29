@@ -993,6 +993,7 @@ LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
+    SizingConstraint sizing_constraint,
     const GridGeometry& grid_geometry,
     const GridItemData& grid_item,
     GridTrackSizingDirection track_direction,
@@ -1049,9 +1050,14 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     if (is_for_columns && !is_parallel && has_block_size_dependent_item)
       *has_block_size_dependent_item = true;
 
+    // Disable side effects during MinMax computation to avoid potential
+    // "MinMax after layout" crashes. This is not necessary during layout, and
+    // will have a negative impact on performance if used there.
     absl::optional<NGDisableSideEffectsScope> disable_side_effects;
-    if (!node.GetLayoutBox()->NeedsLayout())
+    if ((sizing_constraint != SizingConstraint::kLayout) &&
+        !node.GetLayoutBox()->NeedsLayout()) {
       disable_side_effects.emplace();
+    }
 
     scoped_refptr<const NGLayoutResult> result;
     if (!is_parallel && space.AvailableSize().inline_size == kIndefiniteSize) {
@@ -1910,8 +1916,8 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
   DCHECK(track_collection && grid_items && needs_additional_pass);
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
-  ResolveIntrinsicTrackSizes(grid_geometry, track_collection, grid_items,
-                             needs_additional_pass,
+  ResolveIntrinsicTrackSizes(sizing_constraint, grid_geometry, track_collection,
+                             grid_items, needs_additional_pass,
                              has_block_size_dependent_item);
 
   // 3. If the free space is positive, distribute it equally to the base sizes
@@ -2363,6 +2369,7 @@ void DistributeExtraSpaceToWeightedSets(
 }  // namespace
 
 void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
+    SizingConstraint sizing_constraint,
     const GridGeometry& grid_geometry,
     GridItems::Iterator group_begin,
     GridItems::Iterator group_end,
@@ -2435,8 +2442,9 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     // remaining size contribution. For infinite growth limits, substitute with
     // the track's base size. This is the space to distribute, floor it at zero.
     LayoutUnit extra_space = ContributionSizeForGridItem(
-        grid_geometry, *grid_item, track_direction, contribution_type,
-        needs_additional_pass, has_block_size_dependent_item);
+        sizing_constraint, grid_geometry, *grid_item, track_direction,
+        contribution_type, needs_additional_pass,
+        has_block_size_dependent_item);
     extra_space = (extra_space - spanned_tracks_size).ClampNegativeToZero();
 
     if (!extra_space)
@@ -2480,6 +2488,7 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
 
 // https://drafts.csswg.org/css-grid-2/#algo-content
 void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
+    SizingConstraint sizing_constraint,
     const GridGeometry& grid_geometry,
     NGGridLayoutAlgorithmTrackCollection* track_collection,
     GridItems* grid_items,
@@ -2527,27 +2536,32 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
                  current_group_span_size);
 
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, current_group_end,
+        sizing_constraint, grid_geometry, current_group_begin,
+        current_group_end,
         /* is_group_spanning_flex_track */ false,
         GridItemContributionType::kForIntrinsicMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, current_group_end,
+        sizing_constraint, grid_geometry, current_group_begin,
+        current_group_end,
         /* is_group_spanning_flex_track */ false,
         GridItemContributionType::kForContentBasedMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, current_group_end,
+        sizing_constraint, grid_geometry, current_group_begin,
+        current_group_end,
         /* is_group_spanning_flex_track */ false,
         GridItemContributionType::kForMaxContentMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, current_group_end,
+        sizing_constraint, grid_geometry, current_group_begin,
+        current_group_end,
         /* is_group_spanning_flex_track */ false,
         GridItemContributionType::kForIntrinsicMaximums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, current_group_end,
+        sizing_constraint, grid_geometry, current_group_begin,
+        current_group_end,
         /* is_group_spanning_flex_track */ false,
         GridItemContributionType::kForMaxContentMaximums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
@@ -2572,17 +2586,20 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     // We can safely skip contributions for maximums since a <flex> definition
     // does not have an intrinsic max track sizing function.
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, grid_items->end(),
+        sizing_constraint, grid_geometry, current_group_begin,
+        grid_items->end(),
         /* is_group_spanning_flex_track */ true,
         GridItemContributionType::kForIntrinsicMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, grid_items->end(),
+        sizing_constraint, grid_geometry, current_group_begin,
+        grid_items->end(),
         /* is_group_spanning_flex_track */ true,
         GridItemContributionType::kForContentBasedMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
     IncreaseTrackSizesToAccommodateGridItems(
-        grid_geometry, current_group_begin, grid_items->end(),
+        sizing_constraint, grid_geometry, current_group_begin,
+        grid_items->end(),
         /* is_group_spanning_flex_track */ true,
         GridItemContributionType::kForMaxContentMinimums, track_collection,
         needs_additional_pass, has_block_size_dependent_item);
@@ -2843,7 +2860,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
         base::ClampedNumeric<double> grid_item_fr_size = FindFrSize(
             GetSetIteratorForItem(grid_item, *track_collection),
             ContributionSizeForGridItem(
-                grid_geometry, grid_item, track_direction,
+                sizing_constraint, grid_geometry, grid_item, track_direction,
                 GridItemContributionType::kForMaxContentMaximums,
                 needs_additional_pass, has_block_size_dependent_item));
         fr_size = std::max(grid_item_fr_size, fr_size);

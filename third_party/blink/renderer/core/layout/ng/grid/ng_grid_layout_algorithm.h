@@ -320,6 +320,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
   LayoutUnit ContributionSizeForGridItem(
+      SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       const GridItemData& grid_item,
       GridTrackSizingDirection track_direction,
@@ -384,6 +385,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
   void ResolveIntrinsicTrackSizes(
+      SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       GridItems* grid_items,
@@ -391,6 +393,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       bool* has_block_size_dependent_item) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
+      SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       GridItems::Iterator group_begin,
       GridItems::Iterator group_end,
