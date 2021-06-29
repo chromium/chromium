@@ -6,12 +6,15 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+// TODO(crbug.com/1224878): Add browser tests for communication between this
+// and the caller from content/.
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const std::vector<url::Origin>& origin_list,
@@ -25,6 +28,14 @@ base::OnceClosure FetchRemoteSms(
     std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     // kWebOTPCrossDevice will be disabled for a large number of users. There's
     // no need to call any cancel callback in such case.
+    return base::NullCallback();
+  }
+
+  // TODO(crbug.com/1015645): We should have a new failure type when sharing
+  // service is unavailable. e.g. API is called from an incognito window.
+  if (!SharingServiceFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())) {
+    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     return base::NullCallback();
   }
 
