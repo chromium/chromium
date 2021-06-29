@@ -482,4 +482,23 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 }
 
+// Tests that shadow gets updated when the window's state changed.
+TEST_F(ResizeShadowAndCursorTest, WindowStateChange) {
+  ASSERT_FALSE(GetShadow());
+  auto* const window_state = WindowState::Get(window());
+  ASSERT_TRUE(window_state->IsNormalStateType());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(true);
+  window_state->Maximize();
+  VerifyResizeShadow(false);
+  window_state->Restore();
+  VerifyResizeShadow(true);
+  window_state->Minimize();
+  VerifyResizeShadow(false);
+  window_state->Unminimize();
+  VerifyResizeShadow(true);
+}
+
 }  // namespace ash

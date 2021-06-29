@@ -107,6 +107,14 @@ void ResizeShadowController::OnWindowDestroying(aura::Window* window) {
   window_shadows_.erase(window);
 }
 
+void ResizeShadowController::OnWindowPropertyChanged(aura::Window* window,
+                                                     const void* key,
+                                                     intptr_t old) {
+  if (key != aura::client::kShowStateKey)
+    return;
+  UpdateShadowVisibility(window, window->IsVisible());
+}
+
 ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(
     aura::Window* window) {
   return GetShadowForWindow(window);
@@ -161,11 +169,12 @@ void ResizeShadowController::UpdateShadowVisibility(aura::Window* window,
 
 bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
-  // Hide the shadow if it's a maximized/fullscreen window.
+  // Hide the shadow if it's a maximized/fullscreen/minimized window.
   ui::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
   return show_state != ui::SHOW_STATE_FULLSCREEN &&
-         show_state != ui::SHOW_STATE_MAXIMIZED;
+         show_state != ui::SHOW_STATE_MAXIMIZED &&
+         show_state != ui::SHOW_STATE_MINIMIZED;
 }
 
 }  // namespace ash

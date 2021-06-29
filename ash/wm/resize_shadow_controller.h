@@ -48,6 +48,9 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
                              ui::PropertyChangeReason reason) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   ResizeShadow* GetShadowForWindowForTest(aura::Window* window);
 
