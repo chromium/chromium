@@ -192,7 +192,8 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };
 
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
+// Flaky. See https://crbug.com/1224705.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, DISABLED_Login) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   LockscreenAndShowDialog();
