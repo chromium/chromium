@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -29,6 +30,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
   return std::make_unique<AuthenticationService>(
       browser_state->GetPrefs(),
       SyncSetupServiceFactory::GetForBrowserState(browser_state),
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state),
       IdentityManagerFactory::GetForBrowserState(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state));
 }
@@ -70,6 +72,7 @@ AuthenticationServiceFactory::AuthenticationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AuthenticationService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncSetupServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());

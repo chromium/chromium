@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -67,10 +68,12 @@ CoreAccountId ChromeIdentityToAccountID(
 AuthenticationService::AuthenticationService(
     PrefService* pref_service,
     SyncSetupService* sync_setup_service,
+    ChromeAccountManagerService* account_manager_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       sync_setup_service_(sync_setup_service),
+      account_manager_service_(account_manager_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       user_approved_account_list_manager_(pref_service),
@@ -146,10 +149,9 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
                               loginMethodAndSyncState,
                               LOGIN_METHOD_AND_SYNC_STATE_COUNT);
   }
-  UMA_HISTOGRAM_COUNTS_100("Signin.IOSNumberOfDeviceAccounts",
-                           [ios::GetChromeBrowserProvider()
-                                   ->GetChromeIdentityService()
-                                   ->GetAllIdentities(pref_service_) count]);
+  UMA_HISTOGRAM_COUNTS_100(
+      "Signin.IOSNumberOfDeviceAccounts",
+      [account_manager_service_->GetAllIdentities() count]);
 
   // Clear signin errors on the accounts that had a specific MDM device status.
   // This will trigger services to fetch data for these accounts again.
@@ -245,16 +247,12 @@ ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
   if (authenticated_gaia_id.empty())
     return nil;
 
-  return ios::GetChromeBrowserProvider()
-      ->GetChromeIdentityService()
-      ->GetIdentityWithGaiaID(authenticated_gaia_id);
+  return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
   CHECK(signin::IsSigninAllowed(pref_service_));
-  DCHECK(ios::GetChromeBrowserProvider()
-             ->GetChromeIdentityService()
-             ->IsValidIdentity(identity));
+  DCHECK(account_manager_service_->IsValidIdentity(identity));
 
   ResetReauthPromptForSignInAndSync();
 
@@ -296,9 +294,7 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
 }
 
 void AuthenticationService::GrantSyncConsent(ChromeIdentity* identity) {
-  DCHECK(ios::GetChromeBrowserProvider()
-             ->GetChromeIdentityService()
-             ->IsValidIdentity(identity));
+  DCHECK(account_manager_service_->IsValidIdentity(identity));
   DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(

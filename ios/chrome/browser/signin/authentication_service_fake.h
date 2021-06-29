@@ -42,10 +42,12 @@ class AuthenticationServiceFake : public AuthenticationService {
   bool IsAuthenticatedIdentityManaged() const override;
 
  private:
-  AuthenticationServiceFake(PrefService* pref_service,
-                            SyncSetupService* sync_setup_service,
-                            signin::IdentityManager* identity_manager,
-                            syncer::SyncService* sync_service);
+  AuthenticationServiceFake(
+      PrefService* pref_service,
+      SyncSetupService* sync_setup_service,
+      ChromeAccountManagerService* account_manager_service,
+      signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service);
 
   // Internal method effectively signing out the user.
   void SignOutInternal(ProceduralBlock completion);

@@ -24,6 +24,7 @@ class SyncService;
 
 class AuthenticationServiceDelegate;
 class AuthenticationServiceFake;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 class PrefService;
 class SyncSetupService;
@@ -36,6 +37,7 @@ class AuthenticationService : public KeyedService,
  public:
   AuthenticationService(PrefService* pref_service,
                         SyncSetupService* sync_setup_service,
+                        ChromeAccountManagerService* account_manager_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service);
   ~AuthenticationService() override;
@@ -191,6 +193,7 @@ class AuthenticationService : public KeyedService,
   // Pointer to the KeyedServices used by AuthenticationService.
   PrefService* pref_service_ = nullptr;
   SyncSetupService* sync_setup_service_ = nullptr;
+  ChromeAccountManagerService* account_manager_service_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
   syncer::SyncService* sync_service_ = nullptr;
 
