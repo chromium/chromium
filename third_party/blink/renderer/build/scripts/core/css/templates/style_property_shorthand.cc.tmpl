@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
-#include "base/stl_util.h"  // for base::size()
+#include "base/cxx17_backports.h"  // for base::size()
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 {% macro define_shorthand(property, expansion) -%}

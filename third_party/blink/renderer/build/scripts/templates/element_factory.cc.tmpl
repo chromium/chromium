@@ -5,7 +5,7 @@
 
 #include "third_party/blink/renderer/core/{{namespace|lower}}_element_factory.h"
 
-#include "base/stl_util.h"  // for base::size()
+#include "base/cxx17_backports.h"  // for base::size()
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 {% for header in tags|groupby('interface_header') %}
 #include "{{header[0]}}"
