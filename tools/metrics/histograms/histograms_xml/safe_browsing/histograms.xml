@@ -1639,7 +1639,7 @@ Safe Browsing lookup mechanism is working as expected -->
 
 <histogram
     name="SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse"
-    units="ms" expires_after="2021-08-09">
+    units="ms" expires_after="2022-08-09">
   <owner>ajuma@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
