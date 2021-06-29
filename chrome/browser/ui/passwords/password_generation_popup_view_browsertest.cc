@@ -149,7 +149,7 @@ class PasswordGenerationPopupViewPrerenderingTest
 #endif
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
-                       PasswordGenerationPopupControllerInPrerendering) {
+                       MAYBE_PasswordGenerationPopupControllerInPrerendering) {
   GURL url =
       embedded_test_server()->GetURL("/password/nonplaceholder_username.html");
   ui_test_utils::NavigateToURL(browser(), url);
