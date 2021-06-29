@@ -25,7 +25,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
@@ -308,14 +308,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   /** @private */
   onClearBrowsingDataTap_() {
-    this.tryShowHatsSurvey_();
+    this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
   }
 
   /** @private */
   onCookiesClick_() {
-    this.tryShowHatsSurvey_();
+    this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.COOKIES);
   }
@@ -333,14 +333,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   /** @private */
   onPermissionsPageClick_() {
-    this.tryShowHatsSurvey_();
+    this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
   }
 
   /** @private */
   onSecurityPageClick_() {
-    this.tryShowHatsSurvey_();
+    this.interactedWithPage_();
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromParentSettings');
     Router.getInstance().navigateTo(routes.SECURITY);
@@ -366,8 +366,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   /** @private */
-  tryShowHatsSurvey_() {
-    HatsBrowserProxyImpl.getInstance().tryShowSurvey();
+  interactedWithPage_() {
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.USED_PRIVACY_CARD);
   }
 
   /**

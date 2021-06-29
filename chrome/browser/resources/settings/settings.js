@@ -18,7 +18,7 @@ export {PasswordManagerImpl, PasswordManagerProxy} from './autofill_page/passwor
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 // </if>
 export {ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.js';
-export {HatsBrowserProxy, HatsBrowserProxyImpl} from './hats_browser_proxy.js';
+export {HatsBrowserProxy, HatsBrowserProxyImpl, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from './metrics_browser_proxy.js';

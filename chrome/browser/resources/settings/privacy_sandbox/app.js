@@ -12,7 +12,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior, PrefsBehaviorInterface} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior, PrefsBehaviorInterface, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
@@ -96,7 +96,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       this.setPrefValue('privacy_sandbox.page_viewed', true);
     });
 
-    HatsBrowserProxyImpl.getInstance().tryShowPrivacySandboxSurvey();
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
   }
 
   /** @private */

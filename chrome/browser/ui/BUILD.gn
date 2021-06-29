@@ -5102,6 +5102,8 @@ static_library("test_support") {
       "global_media_controls/test_helper.h",
       "hats/mock_hats_service.cc",
       "hats/mock_hats_service.h",
+      "hats/mock_trust_safety_sentiment_service.cc",
+      "hats/mock_trust_safety_sentiment_service.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
       "passwords/credential_manager_dialog_controller_mock.h",
       "passwords/manage_passwords_ui_controller_mock.cc",

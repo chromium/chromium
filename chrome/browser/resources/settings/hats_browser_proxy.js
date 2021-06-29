@@ -8,35 +8,34 @@
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format off
 
-  /** @interface */
-  export class HatsBrowserProxy {
-    /**
-     * Helper function that initiates the launching of HaTS (Happiness Tracking
-     * Surveys) through sending a request to HatsService, which is the entity
-     * that decides whether it's appropriate to show a survey.
-     */
-    tryShowSurvey() {}
+/**
+ * All Trust & Safety based interactions which may result in a HaTS survey.
+ *
+ * Must be kept in sync with the enum of the same name in hats_handler.h.
+ * @enum {number}
+ */
+export const TrustSafetyInteraction = {
+  RAN_SAFETY_CHECK: 0,
+  USED_PRIVACY_CARD: 1,
+  OPENED_PRIVACY_SANDBOX: 2,
+};
 
-    /**
-     * Helper which initiates launching of the HaTS survey for the Privacy
-     * Sandbox page. A survey is only shown if the HaTS service determines it
-     * is appropriate to show.
-     */
-    tryShowPrivacySandboxSurvey() {}
+/** @interface */
+export class HatsBrowserProxy {
+  /**
+   * Inform HaTS that the user performed a Trust & Safety interaction.
+   * @param {TrustSafetyInteraction} interaction The type of interaction
+   *    performed by the user.
+   */
+  trustSafetyInteractionOccurred(interaction) {}
+}
+
+/** @implements {HatsBrowserProxy} */
+export class HatsBrowserProxyImpl {
+  /** @override*/
+  trustSafetyInteractionOccurred(interaction) {
+    chrome.send('trustSafetyInteractionOccurred', [interaction]);
   }
+}
 
-  /** @implements {HatsBrowserProxy} */
-  export class HatsBrowserProxyImpl {
-    /** @override*/
-    tryShowSurvey() {
-      chrome.send('tryShowHatsSurvey');
-    }
-
-    /** @override*/
-    tryShowPrivacySandboxSurvey() {
-      chrome.send('tryShowPrivacySandboxSurvey');
-    }
-  }
-
-  addSingletonGetter(HatsBrowserProxyImpl);
-
+addSingletonGetter(HatsBrowserProxyImpl);

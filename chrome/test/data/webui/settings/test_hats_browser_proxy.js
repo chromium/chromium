@@ -10,18 +10,12 @@ import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 export class TestHatsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'tryShowSurvey',
-      'tryShowPrivacySandboxSurvey',
+      'trustSafetyInteractionOccurred',
     ]);
   }
 
   /** @override*/
-  tryShowSurvey() {
-    this.methodCalled('tryShowSurvey');
-  }
-
-  /** @override*/
-  tryShowPrivacySandboxSurvey() {
-    this.methodCalled('tryShowPrivacySandboxSurvey');
+  trustSafetyInteractionOccurred(interaction) {
+    this.methodCalled('trustSafetyInteractionOccurred', interaction);
   }
 }

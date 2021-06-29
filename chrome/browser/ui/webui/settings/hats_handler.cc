@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -56,36 +58,62 @@ HatsHandler::~HatsHandler() = default;
 
 void HatsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "tryShowHatsSurvey",
-      base::BindRepeating(&HatsHandler::HandleTryShowHatsSurvey,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "tryShowPrivacySandboxSurvey",
-      base::BindRepeating(&HatsHandler::HandleTryShowPrivacySandboxHatsSurvey,
+      "trustSafetyInteractionOccurred",
+      base::BindRepeating(&HatsHandler::HandleTrustSafetyInteractionOccurred,
                           base::Unretained(this)));
 }
 
-void HatsHandler::HandleTryShowHatsSurvey(const base::ListValue* args) {
-  // If the privacy settings survey is explicitly targeting users who have not
-  // viewed the Privacy Sandbox page, and this user has viewed the page, do
-  // not attempt to show the privacy settings survey.
-  if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
-          .Get() &&
-      Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-          prefs::kPrivacySandboxPageViewed)) {
-    return;
-  }
-
-  LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
-                                          web_ui()->GetWebContents(),
-                                          kHatsSurveyTriggerSettingsPrivacy);
-}
-
-void HatsHandler::HandleTryShowPrivacySandboxHatsSurvey(
+void HatsHandler::HandleTrustSafetyInteractionOccurred(
     const base::ListValue* args) {
-  LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
-                                          web_ui()->GetWebContents(),
-                                          kHatsSurveyTriggerPrivacySandbox);
+  AllowJavascript();
+
+  CHECK_EQ(1U, args->GetSize());
+  auto interaction =
+      static_cast<TrustSafetyInteraction>(args->GetList()[0].GetInt());
+
+  // Both the HaTS service, and the T&S sentiment service (which is another
+  // wrapper on the HaTS service), may decide to launch surveys based on this
+  // user interaction. The HaTS service is responsible for ensuring that users
+  // are not over-surveyed, and that other potential issues such as simultaneous
+  // surveys are avoided.
+  RequestHatsSurvey(interaction);
+  InformSentimentService(interaction);
+}
+
+void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
+  if (interaction == TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX) {
+    LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
+                                            web_ui()->GetWebContents(),
+                                            kHatsSurveyTriggerPrivacySandbox);
+  } else if (interaction == TrustSafetyInteraction::RAN_SAFETY_CHECK ||
+             interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
+    // If the privacy settings survey is explicitly targeting users who have not
+    // viewed the Privacy Sandbox page, and this user has viewed the page, do
+    // not attempt to show the privacy settings survey.
+    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
+            .Get() &&
+        Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+            prefs::kPrivacySandboxPageViewed)) {
+      return;
+    }
+    LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
+                                            web_ui()->GetWebContents(),
+                                            kHatsSurveyTriggerSettingsPrivacy);
+  }
+}
+
+void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {
+  auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
+  if (!sentiment_service)
+    return;
+
+  if (interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
+    sentiment_service->InteractedWithPrivacySettings(
+        web_ui()->GetWebContents());
+  } else if (interaction == TrustSafetyInteraction::RAN_SAFETY_CHECK) {
+    sentiment_service->RanSafetyCheck();
+  }
 }
 
 }  // namespace settings

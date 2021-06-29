@@ -6,7 +6,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
@@ -100,9 +100,11 @@ suite('PrivacySandbox_PrivacySandboxSettings2Disabled', function() {
     assertTrue(!!page.getPref('privacy_sandbox.page_viewed').value);
   });
 
-  test('hatsSurvey', function() {
+  test('hatsSurvey', async function() {
     // Confirm that the page called out to the HaTS proxy.
-    return testHatsBrowserProxy.whenCalled('tryShowPrivacySandboxSurvey');
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX, interaction);
   });
 
   test('phase2Visibility', function() {

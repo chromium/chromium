@@ -23,13 +23,28 @@ class HatsHandler : public SettingsPageUIHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  void HandleTryShowHatsSurvey(const base::ListValue* args);
-
-  void HandleTryShowPrivacySandboxHatsSurvey(const base::ListValue* args);
+  void HandleTrustSafetyInteractionOccurred(const base::ListValue* args);
 
  private:
   friend class HatsHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, HandleTryShowHatsSurvey);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
+  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
+
+  // All Trust & Safety based interactions which may result in a HaTS survey.
+  // Must be kept in sync with the enum of the same name in
+  // hats_browser_proxy.js
+  enum class TrustSafetyInteraction {
+    RAN_SAFETY_CHECK = 0,
+    USED_PRIVACY_CARD = 1,
+    OPENED_PRIVACY_SANDBOX = 2,
+  };
+
+  // Requests the appropriate HaTS survey, which may be none, for |interaction|.
+  void RequestHatsSurvey(TrustSafetyInteraction interaction);
+
+  // Informs the sentiment service, if appropriate, that |interaction| occurred.
+  void InformSentimentService(TrustSafetyInteraction interaction);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override {}

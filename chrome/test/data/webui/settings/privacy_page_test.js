@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks, isChildVisible, isVisible} from '../test_util.m.js';
@@ -481,23 +481,31 @@ suite('HappinessTrackingSurveys', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('ClearBrowsingDataTrigger', function() {
+  test('ClearBrowsingDataTrigger', async function() {
     page.shadowRoot.querySelector('#clearBrowsingData').click();
-    return testHatsBrowserProxy.whenCalled('tryShowSurvey');
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
-  test('CookiesTrigger', function() {
+  test('CookiesTrigger', async function() {
     page.shadowRoot.querySelector('#cookiesLinkRow').click();
-    return testHatsBrowserProxy.whenCalled('tryShowSurvey');
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
-  test('SecurityTrigger', function() {
+  test('SecurityTrigger', async function() {
     page.shadowRoot.querySelector('#securityLinkRow').click();
-    return testHatsBrowserProxy.whenCalled('tryShowSurvey');
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
-  test('PermissionsTrigger', function() {
+  test('PermissionsTrigger', async function() {
     page.shadowRoot.querySelector('#permissionsLinkRow').click();
-    return testHatsBrowserProxy.whenCalled('tryShowSurvey');
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 });

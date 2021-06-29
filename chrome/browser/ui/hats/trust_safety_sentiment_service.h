@@ -27,12 +27,15 @@ class TrustSafetySentimentService : public KeyedService {
   // privacy settings on chrome://settings in |web_contents|. Interaction in
   // this context could be using a link row on the privacy settings card.
   // Calling this allows the service to monitor |web_contents| to determine
-  // if the user stays on settings for the required time.
-  void InteractedWithPrivacySettings(content::WebContents* web_contents);
+  // if the user stays on settings for the required time. Virtual to allow
+  // mocking in tests.
+  virtual void InteractedWithPrivacySettings(
+      content::WebContents* web_contents);
 
   // Called to indicate to the service that the user has run safety check. This
-  // is immediately considered as a trigger action.
-  void RanSafetyCheck();
+  // is immediately considered as a trigger action. Virtual to allow mocking in
+  // tests.
+  virtual void RanSafetyCheck();
 
   // The feature areas that the service delivers HaTS surveys for. Each feature
   // area is associated with a different Listnr survey, and has a different set
