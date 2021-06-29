@@ -1672,8 +1672,85 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
   });
 }
 
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+// For M92 kImprovedKeyboardShortcuts is enabled but kDeprecateAltBasedSixPack
+// is disabled.
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsM92) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  TestNonAppleKeyboardVariants({
+      // Alt+Backspace -> Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_NONE, ui::DomKey::DEL}},
+      // Control+Alt+Backspace -> Control+Delete
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_DELETE, ui::DomCode::DEL, ui::EF_CONTROL_DOWN,
+        ui::DomKey::DEL}},
+      // Search+Alt+Backspace -> Alt+Backspace
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
+        ui::DomKey::BACKSPACE}},
+      // Search+Control+Alt+Backspace -> Control+Alt+Backspace
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::BACKSPACE},
+       {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::BACKSPACE}},
+      // Alt+Up -> Prior
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_PRIOR, ui::DomCode::PAGE_UP, ui::EF_NONE,
+        ui::DomKey::PAGE_UP}},
+      // Alt+Down -> Next
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN, ui::EF_NONE,
+        ui::DomKey::PAGE_DOWN}},
+      // Ctrl+Alt+Up -> Home
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_UP},
+       {ui::VKEY_HOME, ui::DomCode::HOME, ui::EF_NONE, ui::DomKey::HOME}},
+      // Ctrl+Alt+Down -> End
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_END, ui::DomCode::END, ui::EF_NONE, ui::DomKey::END}},
+
+      // NOTE: The following are workarounds to avoid rewriting the
+      // Alt variants by additionally pressing Search.
+      // Search+Ctrl+Alt+Up -> Ctrl+Alt+Up
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::ARROW_UP},
+       {ui::VKEY_UP, ui::DomCode::ARROW_UP,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_UP}},
+      // Search+Ctrl+Alt+Down -> Ctrl+Alt+Down
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
+        ui::DomKey::ARROW_DOWN},
+       {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
+        ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, ui::DomKey::ARROW_DOWN}},
+  });
+}
+
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+// This is the intended final state with both kImprovedKeyboardShortcuts and
+// kDeprecateAltBasedSixPack enabled.
 TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kDeprecateAltBasedSixPack);
   // All the previously supported Alt based rewrites no longer have any
   // effect. The Search workarounds no longer take effect and the Search+Key
   // portion is rewritten as expected.

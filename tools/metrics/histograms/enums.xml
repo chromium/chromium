@@ -48366,6 +48366,7 @@ from previous Chrome versions.
   <int value="1053743655" label="NewOverviewAnimations:enabled"/>
   <int value="1054910800" label="enable-timezone-tracking-option"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
+  <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057741107"
       label="OmniboxTrendingZeroPrefixSuggestionsOnNTP:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
@@ -49489,6 +49490,7 @@ from previous Chrome versions.
   <int value="1995322219" label="EmojiHandwritingVoiceInput:enabled"/>
   <int value="1995377612"
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:disabled"/>
+  <int value="1996051411" label="DeprecateAltBasedSixPack:enabled"/>
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>

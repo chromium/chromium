@@ -561,6 +561,9 @@ extern const char kCrossOriginIsolatedDescription[];
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 
+extern const char kDeprecateAltBasedSixPackName[];
+extern const char kDeprecateAltBasedSixPackDescription[];
+
 extern const char kDiagnosticsAppName[];
 extern const char kDiagnosticsAppDescription[];
 

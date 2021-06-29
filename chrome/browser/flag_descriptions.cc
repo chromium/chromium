@@ -995,6 +995,12 @@ const char kDeprecateAltClickDescription[] =
     "Start providing notifications about Alt+Click deprecation and enable "
     "Search+Click as an alternative.";
 
+const char kDeprecateAltBasedSixPackName[] =
+    "Deprecate Alt based six-pack (PgUp, PgDn, Home, End, Delete, Insert)";
+const char kDeprecateAltBasedSixPackDescription[] =
+    "Show deprecation notifications and disable functionality for Alt based "
+    "six pack deprecations. The Search based versions continue to work.";
+
 const char kDiagnosticsAppName[] = "Diagnostics app";
 const char kDiagnosticsAppDescription[] =
     "Enables the Diagnostics app that allows Chrome OS users to be able to "
