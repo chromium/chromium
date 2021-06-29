@@ -214,6 +214,12 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "HasContainerRelativeUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
     // that uses font metrics in its calculation.
     {

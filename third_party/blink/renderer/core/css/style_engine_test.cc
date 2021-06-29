@@ -3696,6 +3696,36 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_EQ(2, a->ComputedStyleRef().ZIndex());
 }
 
+TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
+  String css = R"CSS(
+    top: 1qw;
+    left: 1qh;
+    bottom: 1qi;
+    right: 1qb;
+    padding-top: 1qmin;
+    padding-right: 1qmax;
+    padding-bottom: calc(1qw);
+    margin-left: 1px;
+  )CSS";
+
+  {
+    ScopedCSSContainerRelativeUnitsForTest feature(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(1u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kMarginLeft));
+  }
+
+  {
+    ScopedCSSContainerRelativeUnitsForTest feature(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(8u, set->PropertyCount());
+  }
+}
+
 TEST_F(StyleEngineTest, VideoControlsReject) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <video controls></video>

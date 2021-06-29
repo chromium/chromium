@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<title>Container Relative Units: Advanced Container Selection</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  * { writing-mode: initial; }
+  .inline { container-type: inline-size; }
+  .block { container-type: block-size; }
+  .size { container-type: inline-size block-size; }
+  .vertical { writing-mode: vertical-rl; }
+  .w500 { width: 500px; }
+  .h400 { height: 400px; }
+  .w300 { width: 300px; }
+  .h200 { height: 200px; }
+  .w100 { width: 100px; }
+</style>
+<div id=ref></div>
+<div id=c1>
+  <div id=c2>
+    <div id=c3>
+      <div id=c4>
+        <div id=child>Test</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  function assert_unit_equals(element, actual, expected) {
+    try {
+      element.style.padding = actual;
+      ref.style.padding = expected;
+      assert_equals(getComputedStyle(element).paddingLeft,
+                    getComputedStyle(ref).paddingLeft);
+    } finally {
+      element.style = '';
+      ref.style = '';
+    }
+  }
+
+  test(() => {
+    try {
+      c1.className = 'inline w500';
+      c2.className = 'size w300 h400'; // Selected by qw, qi.
+      c3.className = 'block h200'; // Selected by qh, qb.
+      assert_unit_equals(child, '10qw', '30px');
+      assert_unit_equals(child, '10qi', '30px');
+      assert_unit_equals(child, '10qh', '20px');
+      assert_unit_equals(child, '10qb', '20px');
+      assert_unit_equals(child, '10qmin', '20px');
+      assert_unit_equals(child, '10qmax', '30px');
+
+      c1.className = 'block h400';
+      c2.className = 'size w300 h200'; // Selected by qh, qb.
+      c3.className = 'inline w100'; // Selected by qw, qi.
+      assert_unit_equals(child, '10qh', '20px');
+      assert_unit_equals(child, '10qb', '20px');
+      assert_unit_equals(child, '10qw', '10px');
+      assert_unit_equals(child, '10qi', '10px');
+      assert_unit_equals(child, '10qmin', '10px');
+      assert_unit_equals(child, '10qmax', '20px');
+    } finally {
+      for (let c of [c1, c2, c3, c4, child])
+        c.className = '';
+    }
+  }, 'Containers that have both inline/block type are selected for all units');
+
+  test(() => {
+    try {
+      c1.className = 'size w500 h400';
+      c2.className = 'inline w300';
+      c3.className = 'inline w100 h200 vertical';
+
+      // Should select c2, and resolve against w300.
+      assert_unit_equals(child, '10qw', '30px');
+
+      // Should select c3, and resolve against h200.
+      assert_unit_equals(child, '10qi', '20px');
+
+      // Should select c3, and resolve against h200.
+      assert_unit_equals(child, '10qh', '20px');
+
+      // Should select c1, and resolve against h400.
+      assert_unit_equals(child, '10qb', '40px');
+
+      c3.classList.remove('vertical');
+
+      // Should select c3, and resolve against w100.
+      assert_unit_equals(child, '10qw', '10px');
+
+      // Should select c3, and resolve against w100.
+      assert_unit_equals(child, '10qi', '10px');
+
+      // Should select c1, and resolve against h400.
+      assert_unit_equals(child, '10qh', '40px');
+
+      // Should select c1, and resolve against h400.
+      assert_unit_equals(child, '10qb', '40px');
+
+    } finally {
+      for (let c of [c1, c2, c3, c4, child])
+        c.className = '';
+    }
+  }, 'Container with vertical writing mode');
+
+  test(() => {
+    try {
+      c1.className = 'size w500 h400';
+      c2.className = 'inline w300';
+      c3.className = 'block h200';
+
+      assert_unit_equals(child, '10qw', '30px');
+      assert_unit_equals(child, '10qi', '30px');
+      assert_unit_equals(child, '10qh', '20px');
+      assert_unit_equals(child, '10qb', '20px');
+
+      child.className = 'vertical';
+
+      assert_unit_equals(child, '10qw', '30px');
+      assert_unit_equals(child, '10qi', '30px');
+      assert_unit_equals(child, '10qh', '20px');
+      assert_unit_equals(child, '10qb', '20px');
+
+    } finally {
+      for (let c of [c1, c2, c3, c4, child])
+        c.className = '';
+    }
+  }, 'Units are not affected by the writing-mode of the current element');
+</script>

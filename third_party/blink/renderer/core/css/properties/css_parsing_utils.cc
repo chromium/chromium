@@ -810,6 +810,15 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kViewportMin:
       case CSSPrimitiveValue::UnitType::kViewportMax:
         break;
+      case CSSPrimitiveValue::UnitType::kContainerWidth:
+      case CSSPrimitiveValue::UnitType::kContainerHeight:
+      case CSSPrimitiveValue::UnitType::kContainerInlineSize:
+      case CSSPrimitiveValue::UnitType::kContainerBlockSize:
+      case CSSPrimitiveValue::UnitType::kContainerMin:
+      case CSSPrimitiveValue::UnitType::kContainerMax:
+        if (!RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled())
+          return nullptr;
+        break;
       default:
         return nullptr;
     }

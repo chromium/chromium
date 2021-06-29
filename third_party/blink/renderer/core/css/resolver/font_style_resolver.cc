@@ -21,7 +21,9 @@ FontDescription FontStyleResolver::ComputeFont(
   Font font(fontDescription, font_selector);
   CSSToLengthConversionData::FontSizes fontSizes(10, 10, &font, 1);
   CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
-  CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize, 1);
+  CSSToLengthConversionData::ContainerSizes container_sizes;
+  CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
+                                           container_sizes, 1);
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {

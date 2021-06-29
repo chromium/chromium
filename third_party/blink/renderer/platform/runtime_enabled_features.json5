@@ -515,7 +515,13 @@
       status: "test",
     },
     {
+      // https://drafts.csswg.org/css-contain-3/#container-queries
       name: "CSSContainerQueries",
+    },
+    {
+      // https://drafts.csswg.org/css-contain-3/#container-lengths
+      name: "CSSContainerRelativeUnits",
+      implied_by: ["CSSContainerQueries"]
     },
     {
       // Support for contain:inline-size and contain:block-size

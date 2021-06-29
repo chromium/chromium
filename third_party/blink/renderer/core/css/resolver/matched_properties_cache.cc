@@ -205,6 +205,8 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
   // based on the used value of color-scheme.
   if (style.HasNonInheritedLightDarkValue())
     return false;
+  if (style.HasContainerRelativeUnits())
+    return false;
   return true;
 }
 

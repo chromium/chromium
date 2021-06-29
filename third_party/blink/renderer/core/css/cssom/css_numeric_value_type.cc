@@ -31,6 +31,12 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
     case UnitType::kViewportHeight:
     case UnitType::kViewportMin:
     case UnitType::kViewportMax:
+    case UnitType::kContainerWidth:
+    case UnitType::kContainerHeight:
+    case UnitType::kContainerInlineSize:
+    case UnitType::kContainerBlockSize:
+    case UnitType::kContainerMin:
+    case UnitType::kContainerMax:
     case UnitType::kRems:
     case UnitType::kChs:
       return BaseType::kLength;

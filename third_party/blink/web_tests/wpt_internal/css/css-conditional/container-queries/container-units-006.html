@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<title>Container Relative Units: Invalidation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #inline { container-type: inline-size; }
+  #block { container-type: block-size; }
+  #size { container-type: inline-size block-size; }
+  .w500 { width: 500px; }
+  .h400 { height: 400px; }
+  .w300 { width: 300px; }
+  .h200 { height: 200px; }
+  #child {
+    padding-left: 10qi;
+    padding-right: 10qb;
+  }
+</style>
+<div id=ref></div>
+<div id=size class="w500 h400">
+  <div id=inline class="w300">
+    <div id=block class="h200">
+      <div id=child>Test</div>
+    </div>
+  </div>
+</div>
+<script>
+
+  function assert_qi_equals(element, expected) {
+    assert_equals(getComputedStyle(element).paddingLeft, expected);
+  }
+
+  function assert_qb_equals(element, expected) {
+    assert_equals(getComputedStyle(element).paddingRight, expected);
+  }
+
+  for (let type of ['none', 'block-size']) {
+    test(function() {
+      assert_qi_equals(child, '30px');
+
+      try {
+        inline.style.containerType = type;
+        assert_qi_equals(child, '50px');
+      } finally {
+        inline.style = '';
+      }
+
+      assert_qi_equals(child, '30px');
+    }, `Container relative units respond when selected container changes type (inline-size -> ${type})`);
+  }
+
+  for (let type of ['none', 'inline-size']) {
+    test(function() {
+      assert_qb_equals(child, '20px');
+
+      try {
+        block.style.containerType = type;
+        assert_qb_equals(child, '40px');
+      } finally {
+        block.style = '';
+      }
+
+      assert_qb_equals(child, '20px');
+    }, `Container relative units respond when selected container changes type (block-size -> ${type})`);
+  }
+
+  test(function() {
+    assert_qi_equals(child, '30px');
+
+    try {
+      inline.style.width = '50px';
+      assert_qi_equals(child, '5px');
+    } finally {
+      inline.style = '';
+    }
+
+    assert_qi_equals(child, '30px');
+  }, 'Container relative units respond when selected container changes inline-size');
+
+  test(function() {
+    assert_qb_equals(child, '20px');
+
+    try {
+      block.style.height = '40px';
+      assert_qb_equals(child, '4px');
+    } finally {
+      block.style = '';
+    }
+
+    assert_qb_equals(child, '20px');
+  }, 'Container relative units respond when selected container changes block-size');
+</script>

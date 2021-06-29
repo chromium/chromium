@@ -220,7 +220,13 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
     case UnitType::kViewportMin:
-    case UnitType::kViewportMax: {
+    case UnitType::kViewportMax:
+    case UnitType::kContainerWidth:
+    case UnitType::kContainerHeight:
+    case UnitType::kContainerInlineSize:
+    case UnitType::kContainerBlockSize:
+    case UnitType::kContainerMin:
+    case UnitType::kContainerMax: {
       // The following integers are minimal and maximum integers which can
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;

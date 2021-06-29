@@ -484,8 +484,10 @@ float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
   if (!root_style)
     return 0;
 
+  // TOOD(crbug.com/1223030): Handle container relative units.
   CSSToLengthConversionData conversion_data = CSSToLengthConversionData(
-      style, root_style, context_->GetDocument().GetLayoutView(), 1.0f);
+      style, root_style, context_->GetDocument().GetLayoutView(),
+      /* nearest_container */ nullptr, 1.0f);
   Length length = primitive_value.ConvertToLength(conversion_data);
   return ValueForLength(length, 1.0f, mode);
 }

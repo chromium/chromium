@@ -754,7 +754,8 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  StyleResolverState state(GetDocument(), *element, style_request);
+  StyleResolverState state(GetDocument(), *element, style_recalc_context,
+                           style_request);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -787,6 +788,11 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   if (state.Style()->HasViewportUnits())
     GetDocument().SetHasViewportUnits();
+
+  if (state.Style()->HasContainerRelativeUnits()) {
+    state.Style()->SetDependsOnContainerQueries(true);
+    GetDocument().GetStyleEngine().SetUsesContainerRelativeUnits();
+  }
 
   if (state.Style()->HasRemUnits())
     GetDocument().GetStyleEngine().SetUsesRemUnit(true);
@@ -1002,7 +1008,9 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     double offset) {
   // TODO(alancutter): Avoid creating a StyleResolverState just to apply a
   // single value on a ComputedStyle.
-  StyleResolverState state(element.GetDocument(), element,
+  // TOOD(crbug.com/1223030): Propagate a real StyleRecalcContext to handle
+  // container relative units.
+  StyleResolverState state(element.GetDocument(), element, StyleRecalcContext(),
                            StyleRequest(parent_style));
   state.SetStyle(ComputedStyle::Clone(base_style));
   if (value) {
@@ -1029,6 +1037,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     return initial_style;
 
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+                           StyleRecalcContext(),
                            StyleRequest(initial_style.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
@@ -1508,12 +1517,13 @@ const CSSValue* StyleResolver::ComputeValue(
 scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
-  StyleRequest style_request;
-  StyleResolverState state(GetDocument(), element, style_request);
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
+  StyleRequest style_request;
+  StyleResolverState state(GetDocument(), element, style_recalc_context,
+                           style_request);
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+
   ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade);
   ApplyInterpolations(state, cascade, interpolations);
 
@@ -1621,7 +1631,8 @@ void StyleResolver::ComputeFont(Element& element,
   };
 
   // TODO(timloh): This is weird, the style is being used as its own parent
-  StyleResolverState state(GetDocument(), element, StyleRequest(style));
+  StyleResolverState state(GetDocument(), element, StyleRecalcContext(),
+                           StyleRequest(style));
   state.SetStyle(style);
 
   for (const CSSProperty* property : properties) {

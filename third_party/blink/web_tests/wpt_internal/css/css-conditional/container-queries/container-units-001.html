@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<title>Container Relative Units: qi, qb, etc</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  .inline { container-type: inline-size; }
+  .block { container-type: block-size; }
+  .inline.outer { width: 500px; }
+  .block.outer { height: 400px; }
+  .inline.inner { width: 300px; }
+  .block.inner { height: 200px; }
+</style>
+<div id=ref></div>
+<div class="inline outer">
+  <div class="block outer">
+    <div class="inline inner">
+      <div class="block inner">
+        <div id=child>Test</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  function assert_unit_equals(element, actual, expected) {
+    try {
+      element.style.padding = actual;
+      ref.style.padding = expected;
+      assert_equals(getComputedStyle(element).paddingLeft,
+                    getComputedStyle(ref).paddingLeft);
+    } finally {
+      element.style = '';
+      ref.style = '';
+    }
+  }
+
+  test(function() {
+    assert_unit_equals(child, '0qi', '0px');
+    assert_unit_equals(child, '1qi', '3px');
+    assert_unit_equals(child, '10qi', '30px');
+    assert_unit_equals(child, '10qw', '30px');
+    assert_unit_equals(child, '10qb', '20px');
+    assert_unit_equals(child, '10qh', '20px');
+    assert_unit_equals(child, '10qmin', '20px');
+    assert_unit_equals(child, '10qmax', '30px');
+  }, 'Container relative units');
+
+  test(function() {
+    assert_unit_equals(child, '10qi', '30px');
+    assert_unit_equals(child, '10qb', '20px');
+    assert_unit_equals(child, 'calc(10qi + 10qb)', '50px');
+    assert_unit_equals(child, 'max(10qi, 10qb)', '30px');
+  }, 'Container relative units in math functions');
+</script>

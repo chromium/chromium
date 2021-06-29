@@ -45,6 +45,14 @@ bool IsSufficientlyContained(PhysicalAxes contained_axes,
 
 }  // namespace
 
+double ContainerQueryEvaluator::Width() const {
+  return size_.width.ToDouble();
+}
+
+double ContainerQueryEvaluator::Height() const {
+  return size_.height.ToDouble();
+}
+
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
   if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
@@ -74,7 +82,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
   // something other than kNone from this function, so the results will always
   // be repopulated.
   if (change != Change::kNone)
-    results_.clear();
+    ClearResults();
 
   return change;
 }
@@ -95,14 +103,22 @@ void ContainerQueryEvaluator::SetData(PhysicalSize size,
       MakeGarbageCollected<MediaQueryEvaluator>(*cached_values);
 }
 
+void ContainerQueryEvaluator::ClearResults() {
+  results_.clear();
+  referenced_by_unit_ = false;
+}
+
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   Change change = Change::kNone;
 
+  if (referenced_by_unit_)
+    return Change::kDescendantContainers;
+
   for (const auto& result : results_) {
     if (Eval(*result.key) != result.value) {
-      change =
-          std::max(change, result.key->Name() == g_null_atom ? Change::kUnnamed
-                                                             : Change::kNamed);
+      change = std::max(change, result.key->Name() == g_null_atom
+                                    ? Change::kNearestContainer
+                                    : Change::kDescendantContainers);
     }
   }
 

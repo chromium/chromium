@@ -250,9 +250,10 @@ Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
                                                   initial_style_.get());
   CSSToLengthConversionData::ViewportSize viewport_size(
       view->InitialViewportWidth(), view->InitialViewportHeight());
+  CSSToLengthConversionData::ContainerSizes container_sizes;
 
   Length result = primitive_value->ConvertToLength(CSSToLengthConversionData(
-      initial_style_.get(), font_sizes, viewport_size, 1.0f));
+      initial_style_.get(), font_sizes, viewport_size, container_sizes, 1.0f));
 
   if (result.IsFixed() && document_->GetPage()) {
     float scaled_value =

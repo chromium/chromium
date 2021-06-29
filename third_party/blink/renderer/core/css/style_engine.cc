@@ -2032,10 +2032,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   switch (evaluator->ContainerChanged(physical_size, physical_axes)) {
     case ContainerQueryEvaluator::Change::kNone:
       return;
-    case ContainerQueryEvaluator::Change::kUnnamed:
+    case ContainerQueryEvaluator::Change::kNearestContainer:
       change = change.ForceRecalcContainer();
       break;
-    case ContainerQueryEvaluator::Change::kNamed:
+    case ContainerQueryEvaluator::Change::kDescendantContainers:
       change = change.ForceRecalcDescendantContainers();
       break;
   }

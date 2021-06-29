@@ -125,9 +125,10 @@ absl::optional<double> ScrollTimelineOffset::ResolveOffset(
             ? document.documentElement()->GetComputedStyle()
             : document.GetComputedStyle();
 
+    // TOOD(crbug.com/1223030): Handle container relative units.
     CSSToLengthConversionData conversion_data = CSSToLengthConversionData(
         &computed_style, root_style, document.GetLayoutView(),
-        computed_style.EffectiveZoom());
+        /* nearest_container */ nullptr, computed_style.EffectiveZoom());
     double resolved = FloatValueForLength(
         length_based_offset_->ConvertToLength(conversion_data), max_offset);
 

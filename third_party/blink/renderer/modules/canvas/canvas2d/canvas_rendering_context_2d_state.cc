@@ -444,9 +444,9 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
         return nullptr;
       }
     }
-    StyleResolverState resolver_state(style_resolution_host->GetDocument(),
-                                      *style_resolution_host,
-                                      StyleRequest(filter_style.get()));
+    StyleResolverState resolver_state(
+        style_resolution_host->GetDocument(), *style_resolution_host,
+        StyleRecalcContext(), StyleRequest(filter_style.get()));
     resolver_state.SetStyle(filter_style);
 
     StyleBuilder::ApplyProperty(

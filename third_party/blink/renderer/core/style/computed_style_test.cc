@@ -665,7 +665,7 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -698,7 +698,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -740,7 +740,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -779,7 +779,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(1.5);
@@ -963,7 +963,7 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(2);
@@ -1011,7 +1011,7 @@ TEST_F(ComputedStyleTest,
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
@@ -1051,7 +1051,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
@@ -1159,7 +1159,7 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRequest(initial.get()));
+                           StyleRecalcContext(), StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);

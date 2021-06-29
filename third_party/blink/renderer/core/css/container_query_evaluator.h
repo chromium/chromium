@@ -27,6 +27,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // against it will fail.
   ContainerQueryEvaluator() = default;
 
+  // Used by container relative units (qi, qb, etc).
+  double Width() const;
+  double Height() const;
+  void SetReferencedByUnit() { referenced_by_unit_ = true; }
+
   bool Eval(const ContainerQuery&) const;
 
   // Add a dependent query to this evaluator. During calls to ContainerChanged,
@@ -45,14 +50,13 @@ class CORE_EXPORT ContainerQueryEvaluator final
     // this evaluator, and therefore we do not need to perform style recalc of
     // any elements which depend on this evaluator.
     kNone,
-    // The update changed unnamed queries only. We must therefore perform style
-    // recalc on dependent elements within the container, but we can skip nested
-    // container.
-    kUnnamed,
-    // The update changed at least one named query. We must therefore perform
-    // style
-    // recalc on dependent elements, including those in nested containers.
-    kNamed,
+    // The update can only affect elements for which this container is the
+    // nearest container. In other words, we do not need to recalculate style
+    // for elements in nested containers.
+    kNearestContainer,
+    // The update can affect elements within this container, and also in
+    // descendant containers.
+    kDescendantContainers,
   };
 
   // Update the size/axis information of the evaluator.
@@ -65,6 +69,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
  private:
   void SetData(PhysicalSize, PhysicalAxes contained_axes);
+  void ClearResults();
   Change ComputeChange() const;
 
   // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
@@ -72,6 +77,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   PhysicalSize size_;
   PhysicalAxes contained_axes_;
   HeapHashMap<Member<const ContainerQuery>, bool> results_;
+  bool referenced_by_unit_ = false;
 };
 
 }  // namespace blink

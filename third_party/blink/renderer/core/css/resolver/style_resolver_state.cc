@@ -44,9 +44,11 @@ bool CanCacheBaseStyle(const StyleRequest& style_request) {
 
 }  // namespace
 
-StyleResolverState::StyleResolverState(Document& document,
-                                       Element& element,
-                                       const StyleRequest& style_request)
+StyleResolverState::StyleResolverState(
+    Document& document,
+    Element& element,
+    const StyleRecalcContext& style_recalc_context,
+    const StyleRequest& style_request)
     : element_context_(element),
       document_(&document),
       parent_style_(style_request.parent_override),
@@ -60,6 +62,7 @@ StyleResolverState::StyleResolverState(Document& document,
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
+      nearest_container_(style_recalc_context.container),
       can_cache_base_style_(blink::CanCacheBaseStyle(style_request)) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
@@ -87,7 +90,7 @@ void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
   style_ = std::move(style);
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       style_.get(), RootElementStyle(), GetDocument().GetLayoutView(),
-      style_->EffectiveZoom());
+      nearest_container_, style_->EffectiveZoom());
 }
 
 scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
@@ -106,8 +109,10 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
       em, rem, &font_style->GetFont(), font_style->EffectiveZoom());
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
+  CSSToLengthConversionData::ContainerSizes container_sizes(nearest_container_);
 
-  return CSSToLengthConversionData(Style(), font_sizes, viewport_size, 1);
+  return CSSToLengthConversionData(Style(), font_sizes, viewport_size,
+                                   container_sizes, 1);
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() const {

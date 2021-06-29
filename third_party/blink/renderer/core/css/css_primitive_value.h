@@ -83,6 +83,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kViewportHeight,
     kViewportMin,
     kViewportMax,
+    kContainerWidth,
+    kContainerHeight,
+    kContainerInlineSize,
+    kContainerBlockSize,
+    kContainerMin,
+    kContainerMax,
     kRems,
     kChs,
     kUserUnits,  // The SVG term for unitless lengths
@@ -124,6 +130,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeViewportHeight,
     kUnitTypeViewportMin,
     kUnitTypeViewportMax,
+    kUnitTypeContainerWidth,
+    kUnitTypeContainerHeight,
+    kUnitTypeContainerInlineSize,
+    kUnitTypeContainerBlockSize,
+    kUnitTypeContainerMin,
+    kUnitTypeContainerMax,
 
     // This value must come after the last length unit type to enable iteration
     // over the length unit types.
@@ -167,6 +179,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static bool IsViewportPercentageLength(UnitType type) {
     return type >= UnitType::kViewportWidth && type <= UnitType::kViewportMax;
   }
+  static bool IsContainerPercentageLength(UnitType type) {
+    return type >= UnitType::kContainerWidth && type <= UnitType::kContainerMax;
+  }
   static bool IsLength(UnitType type) {
     return (type >= UnitType::kEms && type <= UnitType::kUserUnits) ||
            type == UnitType::kQuirkyEms;
@@ -174,7 +189,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static inline bool IsRelativeUnit(UnitType type) {
     return type == UnitType::kPercentage || type == UnitType::kEms ||
            type == UnitType::kExs || type == UnitType::kRems ||
-           type == UnitType::kChs || IsViewportPercentageLength(type);
+           type == UnitType::kChs || IsViewportPercentageLength(type) ||
+           IsContainerPercentageLength(type);
   }
   bool IsLength() const;
   bool IsNumber() const;

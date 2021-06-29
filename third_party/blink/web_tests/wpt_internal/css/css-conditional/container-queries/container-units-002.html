@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Container Relative Units: Computationally independent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  const units = ['qw', 'qh', 'qi', 'qb', 'qmin', 'qmax'];
+
+  for (let unit of units) {
+    test(function() {
+      assert_throws_dom('SyntaxError', () => {
+        CSS.registerProperty({ name: '--x', inherits: false, syntax: '<length>', initialValue: `1${unit}` });
+      });
+    }, `Container relative unit ${unit} is not computationally independent`);
+  }
+</script>

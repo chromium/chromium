@@ -67,6 +67,15 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kViewportMin:
     case CSSPrimitiveValue::UnitType::kViewportMax:
       return kCalcLength;
+    case CSSPrimitiveValue::UnitType::kContainerWidth:
+    case CSSPrimitiveValue::UnitType::kContainerHeight:
+    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
+    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
+    case CSSPrimitiveValue::UnitType::kContainerMin:
+    case CSSPrimitiveValue::UnitType::kContainerMax:
+      return RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled()
+                 ? kCalcLength
+                 : kCalcOther;
     case CSSPrimitiveValue::UnitType::kDegrees:
     case CSSPrimitiveValue::UnitType::kGradians:
     case CSSPrimitiveValue::UnitType::kRadians:
@@ -111,6 +120,12 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kViewportHeight:
     case CSSPrimitiveValue::UnitType::kViewportMin:
     case CSSPrimitiveValue::UnitType::kViewportMax:
+    case CSSPrimitiveValue::UnitType::kContainerWidth:
+    case CSSPrimitiveValue::UnitType::kContainerHeight:
+    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
+    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
+    case CSSPrimitiveValue::UnitType::kContainerMin:
+    case CSSPrimitiveValue::UnitType::kContainerMax:
     case CSSPrimitiveValue::UnitType::kDotsPerPixel:
     case CSSPrimitiveValue::UnitType::kDotsPerInch:
     case CSSPrimitiveValue::UnitType::kDotsPerCentimeter:
