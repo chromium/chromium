@@ -837,8 +837,10 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_EQ(10, last_impression.priority);
 }
 
-IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       WindowOpenAttributionSourceFeatures_FeaturesHandled) {
+// TODO(crbug.com/1215063): Flaky timeout on serveral builders.
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    DISABLED_WindowOpenAttributionSourceFeatures_FeaturesHandled) {
   struct {
     std::string features;
     bool expected;
