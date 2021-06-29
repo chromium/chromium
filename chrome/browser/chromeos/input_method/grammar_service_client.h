@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-shared.h"
+#include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/grammar_fragment.h"
 
@@ -61,22 +62,31 @@ class GrammarServiceClient {
 
  private:
   void OnLoadGrammarCheckerDone(
-      chromeos::machine_learning::mojom::LoadModelResult result);
+      machine_learning::mojom::LoadModelResult result);
+
+  void OnLoadTextClassifierDone(
+      machine_learning::mojom::LoadModelResult result);
+
+  void OnLanguageDetectionDone(
+      const std::string& query_text,
+      TextCheckCompleteCallback callback,
+      std::vector<machine_learning::mojom::TextLanguagePtr> languages) const;
 
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const;
+      machine_learning::mojom::GrammarCheckerResultPtr result) const;
 
   // Returns whether the grammar service is enabled by user settings and the
   // service is ready to use.
   bool IsAvailable(Profile* profile) const;
 
   base::WeakPtr<GrammarServiceClient> weak_this_;
-  mojo::Remote<chromeos::machine_learning::mojom::GrammarChecker>
-      grammar_checker_;
+  mojo::Remote<machine_learning::mojom::GrammarChecker> grammar_checker_;
   bool grammar_checker_loaded_ = false;
+  mojo::Remote<machine_learning::mojom::TextClassifier> text_classifier_;
+  bool text_classifier_loaded_ = false;
   base::WeakPtrFactory<GrammarServiceClient> weak_factory_{this};
 };
 

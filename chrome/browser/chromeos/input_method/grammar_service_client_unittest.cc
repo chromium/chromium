@@ -83,6 +83,11 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   result->candidates.emplace_back(std::move(candidate));
   fake_service_connection.SetOutputGrammarCheckerResult(result);
 
+  std::vector<machine_learning::mojom::TextLanguagePtr> languages;
+  languages.push_back(
+      machine_learning::mojom::TextLanguage::New("en", /*confidence=*/1));
+  fake_service_connection.SetOutputLanguages(languages);
+
   GrammarServiceClient client;
   base::RunLoop().RunUntilIdle();
 
@@ -99,7 +104,37 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(GrammarServiceClientTest, RejectLongQueries) {
+TEST_F(GrammarServiceClientTest, RejectsNonEnglishQuery) {
+  machine_learning::FakeServiceConnectionImpl fake_service_connection;
+  machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+  auto profile = std::make_unique<TestingProfile>();
+  profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
+  profile->GetPrefs()->SetBoolean(
+      spellcheck::prefs::kSpellCheckUseSpellingService, true);
+
+  // Construct fake output
+  std::vector<machine_learning::mojom::TextLanguagePtr> languages;
+  languages.push_back(
+      machine_learning::mojom::TextLanguage::New("jp", /* confidence */ 1));
+  fake_service_connection.SetOutputLanguages(languages);
+
+  GrammarServiceClient client;
+  base::RunLoop().RunUntilIdle();
+
+  client.RequestTextCheck(
+      profile.get(), u"fake input",
+      base::BindOnce(
+          [](bool success, const std::vector<ui::GrammarFragment>& results) {
+            EXPECT_FALSE(success);
+          }));
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(GrammarServiceClientTest, RejectsLongQueries) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);

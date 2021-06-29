@@ -16,23 +16,31 @@
 namespace chromeos {
 namespace {
 
-using chromeos::machine_learning::mojom::GrammarCheckerQuery;
-using chromeos::machine_learning::mojom::GrammarCheckerResult;
-using chromeos::machine_learning::mojom::GrammarCheckerResultPtr;
-using chromeos::machine_learning::mojom::LoadModelResult;
+using machine_learning::mojom::GrammarCheckerQuery;
+using machine_learning::mojom::GrammarCheckerResult;
+using machine_learning::mojom::GrammarCheckerResultPtr;
+using machine_learning::mojom::LoadModelResult;
 
 const uint32_t kMaxQueryLength = 200;
 const uint32_t kMinQueryLength = 5;
+const double kLanguageConfidenceThreshold = 0.9;
+const char kEnglishLocale[] = "en";
 
 }  // namespace
 
 GrammarServiceClient::GrammarServiceClient() {
   weak_this_ = weak_factory_.GetWeakPtr();
-  chromeos::machine_learning::ServiceConnection::GetInstance()
+  machine_learning::ServiceConnection::GetInstance()
       ->GetMachineLearningService()
       .LoadGrammarChecker(
           grammar_checker_.BindNewPipeAndPassReceiver(),
           base::BindOnce(&GrammarServiceClient::OnLoadGrammarCheckerDone,
+                         weak_this_));
+  machine_learning::ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadTextClassifier(
+          text_classifier_.BindNewPipeAndPassReceiver(),
+          base::BindOnce(&GrammarServiceClient::OnLoadTextClassifierDone,
                          weak_this_));
 }
 
@@ -40,6 +48,10 @@ GrammarServiceClient::~GrammarServiceClient() = default;
 
 void GrammarServiceClient::OnLoadGrammarCheckerDone(LoadModelResult result) {
   grammar_checker_loaded_ = result == LoadModelResult::OK;
+}
+
+void GrammarServiceClient::OnLoadTextClassifierDone(LoadModelResult result) {
+  text_classifier_loaded_ = result == LoadModelResult::OK;
 }
 
 bool GrammarServiceClient::RequestTextCheck(
@@ -52,23 +64,38 @@ bool GrammarServiceClient::RequestTextCheck(
     return false;
   }
 
+  text_classifier_->FindLanguages(
+      base::UTF16ToUTF8(text),
+      base::BindOnce(&GrammarServiceClient::OnLanguageDetectionDone, weak_this_,
+                     base::UTF16ToUTF8(text), std::move(callback)));
+  return true;
+}
+
+void GrammarServiceClient::OnLanguageDetectionDone(
+    const std::string& query_text,
+    TextCheckCompleteCallback callback,
+    std::vector<machine_learning::mojom::TextLanguagePtr> languages) const {
+  if (languages.empty() ||
+      languages[0]->confidence < kLanguageConfidenceThreshold ||
+      languages[0]->locale != kEnglishLocale) {
+    std::move(callback).Run(false, {});
+    return;
+  }
+
   auto query = GrammarCheckerQuery::New();
-  query->text = base::UTF16ToUTF8(text);
-  query->language = "en-US";
+  query->text = query_text;
+  query->language = languages[0]->locale;
 
   grammar_checker_->Check(
       std::move(query),
       base::BindOnce(&GrammarServiceClient::ParseGrammarCheckerResult,
-                     base::Unretained(this), base::UTF16ToUTF8(text),
-                     std::move(callback)));
-
-  return true;
+                     weak_this_, query_text, std::move(callback)));
 }
 
 void GrammarServiceClient::ParseGrammarCheckerResult(
     const std::string& query_text,
     TextCheckCompleteCallback callback,
-    chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const {
+    machine_learning::mojom::GrammarCheckerResultPtr result) const {
   if (result->status == GrammarCheckerResult::Status::OK &&
       !result->candidates.empty()) {
     const auto& top_candidate = result->candidates.front();
@@ -109,7 +136,8 @@ bool GrammarServiceClient::IsAvailable(Profile* profile) const {
       profile->IsOffTheRecord())
     return false;
 
-  return grammar_checker_loaded_ && grammar_checker_.is_bound();
+  return text_classifier_loaded_ && text_classifier_.is_bound() &&
+         grammar_checker_loaded_ && grammar_checker_.is_bound();
 }
 
 }  // namespace chromeos
