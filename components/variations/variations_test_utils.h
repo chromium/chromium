@@ -8,10 +8,21 @@
 #include <set>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/variations_associated_data.h"
 
 namespace variations {
+
+// The below seed and signature pair were generated using the server's private
+// key.
+// TODO(crbug/1220163): Describe the contents of the test seed.
+extern const char kUncompressedBase64TestSeedData[];
+extern const char kBase64TestSeedSignature[];
+
+// Disables the use of the field trial testing config to exercise
+// VariationsFieldTrialCreator::CreateTrialsFromSeed().
+void DisableTestingConfig();
 
 // Decodes the variations header and extracts the variation ids.
 bool ExtractVariationIds(const std::string& variations,

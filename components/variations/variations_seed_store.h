@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Cached serial number from the most recently fetched variations seed.
   std::string latest_serial_number_;
 
-  // Whether to validate signatures on the seed. Always on except in tests.
+  // Whether to validate signatures on the seed. Always on except in unit tests.
   const bool signature_verification_enabled_;
 
   // Whether this may read or write to Java "first run" SharedPreferences.

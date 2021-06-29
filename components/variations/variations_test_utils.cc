@@ -4,15 +4,30 @@
 
 #include "components/variations/variations_test_utils.h"
 
-#include <string>
-
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
+
+const char kUncompressedBase64TestSeedData[] =
+    "CigxZDI5NDY0ZmIzZDc4ZmYxNTU2ZTViNTUxYzY0NDdjYmM3NGU1ZmQwEr0BCh9VTUEtVW5p"
+    "Zm9ybWl0eS1UcmlhbC0xMC1QZXJjZW50GICckqUFOAFCB2RlZmF1bHRKCwoHZGVmYXVsdBAB"
+    "SgwKCGdyb3VwXzAxEAFKDAoIZ3JvdXBfMDIQAUoMCghncm91cF8wMxABSgwKCGdyb3VwXzA0"
+    "EAFKDAoIZ3JvdXBfMDUQAUoMCghncm91cF8wNhABSgwKCGdyb3VwXzA3EAFKDAoIZ3JvdXBf"
+    "MDgQAUoMCghncm91cF8wORAB";
+
+const char kBase64TestSeedSignature[] =
+    "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy"
+    "96JkMYgzTkHPwbv7K/CmgA==";
+
+void DisableTestingConfig() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableFieldTrialTestingConfig);
+}
 
 bool ExtractVariationIds(const std::string& variations,
                          std::set<VariationID>* variation_ids,

@@ -53,6 +53,12 @@ class CleanExitBeacon {
   // CHECKs that Chrome exited cleanly.
   static void EnsureCleanShutdown(PrefService* local_state);
 
+  // Prevents a test browser from performing two clean shutdown steps. First, it
+  // prevents the beacon value from being updated after this function is called.
+  // This prevents the the test browser from signaling that Chrome is shutting
+  // down cleanly. Second, it makes EnsureCleanShutdown() a no-op.
+  static void SkipCleanShutdownStepsForTesting();
+
  private:
   PrefService* const local_state_;
   const bool did_previous_session_exit_cleanly_;

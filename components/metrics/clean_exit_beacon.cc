@@ -24,6 +24,11 @@
 namespace metrics {
 namespace {
 
+// Denotes whether Chrome should perform clean shutdown steps: signaling that
+// Chrome is exiting cleanly and then CHECKing that is has shutdown cleanly.
+// This may be modified by SkipCleanShutdownStepsForTesting().
+bool g_skip_clean_shutdown_steps = false;
+
 // Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
 // false. Also, emits the crash streak to a histogram.
 void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
@@ -108,6 +113,9 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
 CleanExitBeacon::~CleanExitBeacon() = default;
 
 void CleanExitBeacon::WriteBeaconValue(bool value) {
+  if (g_skip_clean_shutdown_steps)
+    return;
+
   UpdateLastLiveTimestamp();
   local_state_->SetBoolean(prefs::kStabilityExitedCleanly, value);
 
@@ -142,7 +150,13 @@ void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
 
 // static
 void CleanExitBeacon::EnsureCleanShutdown(PrefService* local_state) {
-  CHECK(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+  if (!g_skip_clean_shutdown_steps)
+    CHECK(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+}
+
+// static
+void CleanExitBeacon::SkipCleanShutdownStepsForTesting() {
+  g_skip_clean_shutdown_steps = true;
 }
 
 }  // namespace metrics
