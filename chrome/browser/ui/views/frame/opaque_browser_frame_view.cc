@@ -334,7 +334,11 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   // In the window corners, the resize areas don't actually expand bigger, but
   // the 16 px at the end of each edge triggers diagonal resizing.
   constexpr int kResizeAreaCornerSize = 16;
-  gfx::Insets resize_border(FrameBorderThickness(false));
+  auto resize_border = FrameBorderInsets(false);
+  if (base::i18n::IsRTL()) {
+    resize_border = gfx::Insets(resize_border.top(), resize_border.right(),
+                                resize_border.bottom(), resize_border.left());
+  }
   // The top resize border has extra thickness.
   resize_border.set_top(FrameTopBorderThickness(false));
   int window_component =
@@ -693,8 +697,8 @@ OpaqueBrowserFrameView::GetProcessedBackgroundImageForCaptionButon(
   return gfx::ImageSkia(std::move(source), desired_size);
 }
 
-int OpaqueBrowserFrameView::FrameBorderThickness(bool restored) const {
-  return layout_->FrameBorderThickness(restored);
+gfx::Insets OpaqueBrowserFrameView::FrameBorderInsets(bool restored) const {
+  return layout_->FrameBorderInsets(restored);
 }
 
 int OpaqueBrowserFrameView::FrameTopBorderThickness(bool restored) const {

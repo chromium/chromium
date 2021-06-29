@@ -60,10 +60,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const;
 
-  // Returns the thickness of the border that makes up the window frame edges.
+  // Returns the insets from the native window edge to the client view.
   // This does not include any client edge.  If |restored| is true, acts as if
   // the window is restored regardless of the real mode.
-  int FrameBorderThickness(bool restored) const;
+  gfx::Insets FrameBorderInsets(bool restored) const;
 
   // Returns the thickness of the border that makes up the window frame edge
   // along the top of the frame. If |restored| is true, this acts as if the
@@ -86,15 +86,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // acts as if the window is restored regardless of the real mode.
   virtual int CaptionButtonY(views::FrameButton button_id, bool restored) const;
 
-  // Returns the thickness of the top 3D edge of the window frame.  If
-  // |restored| is true, acts as if the window is restored regardless of the
-  // real mode.
-  int FrameTopThickness(bool restored) const;
-
-  // Returns the thickness of the left and right 3D edges of the window frame.
-  // If |restored| is true, acts as if the window is restored regardless of the
-  // real mode.
-  int FrameSideThickness(bool restored) const;
+  // Returns the insets from the native window edge to the flat portion of the
+  // window border.  That is, this function returns the "3D portion" of the
+  // border.  If |restored| is true, acts as if the window is restored
+  // regardless of the real mode.
+  gfx::Insets FrameEdgeInsets(bool restored) const;
 
   // Returns the bounds of the titlebar icon (or where the icon would be if
   // there was one).
@@ -149,6 +145,21 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // frame buttons.
   virtual TopAreaPadding GetTopAreaPadding(bool has_leading_buttons,
                                            bool has_trailing_buttons) const;
+
+  // The insets from the native window edge to the client view when the window
+  // is restored.  This goes all the way to the web contents on the left, right,
+  // and bottom edges.
+  virtual gfx::Insets RestoredFrameBorderInsets() const;
+
+  // The insets from the native window edge to the flat portion of the
+  // window border.  That is, this function returns the "3D portion" of the
+  // border when the window is restored.  The returned insets will not be larger
+  // than RestoredFrameBorderInsets().
+  virtual gfx::Insets RestoredFrameEdgeInsets() const;
+
+  // Additional vertical padding between tabs and the top edge of the window
+  // when the window is restored.
+  virtual int NonClientExtraTopThickness() const;
 
   OpaqueBrowserFrameViewLayoutDelegate* delegate_;
 

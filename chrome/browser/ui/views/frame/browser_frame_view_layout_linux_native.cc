@@ -18,21 +18,19 @@ int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
     bool restored) const {
   auto button_type = GetButtonDisplayType(button_id);
   gfx::Insets insets = nav_button_provider_->GetNavButtonMargin(button_type);
-  return insets.top() + FrameTopThickness(!delegate_->IsMaximized());
+  return insets.top() + FrameEdgeInsets(false).top();
 }
 
 OpaqueBrowserFrameViewLayout::TopAreaPadding
 BrowserFrameViewLayoutLinuxNative::GetTopAreaPadding(
     bool has_leading_buttons,
     bool has_trailing_buttons) const {
-  gfx::Insets insets =
-      nav_button_provider_->GetTopAreaSpacing() +
-      gfx::Insets(0, FrameSideThickness(!delegate_->IsMaximized()));
-  const int leading = base::i18n::IsRTL() ? insets.right() : insets.left();
-  const int trailing = base::i18n::IsRTL() ? insets.left() : insets.right();
-  const int padding = FrameBorderThickness(false);
-  return {has_leading_buttons ? leading : padding,
-          has_trailing_buttons ? trailing : padding};
+  gfx::Insets spacing = nav_button_provider_->GetTopAreaSpacing();
+  gfx::Insets insets = spacing + FrameEdgeInsets(false);
+  const auto padding = FrameBorderInsets(false);
+  const auto leading = has_leading_buttons ? insets : padding;
+  const auto trailing = has_trailing_buttons ? insets : padding;
+  return TopAreaPadding{leading.left(), trailing.right()};
 }
 
 int BrowserFrameViewLayoutLinuxNative::GetWindowCaptionSpacing(

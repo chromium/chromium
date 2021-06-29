@@ -360,7 +360,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
   }
 
   int GetFrameTopBorder() {
-    return opaque_browser_frame_view_->layout()->FrameBorderThickness(false);
+    return opaque_browser_frame_view_->layout()->FrameBorderInsets(false).top();
   }
 
   BrowserView* browser_view_ = nullptr;

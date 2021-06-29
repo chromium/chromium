@@ -183,14 +183,9 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
     }
   }
 
-  int FrameTopThickness() const {
+  gfx::Insets FrameInsets() const {
     return static_cast<OpaqueBrowserFrameViewLayout*>(layout_manager_)
-        ->FrameTopThickness(false);
-  }
-
-  int FrameSideThickness() const {
-    return static_cast<OpaqueBrowserFrameViewLayout*>(layout_manager_)
-        ->FrameSideThickness(false);
+        ->FrameEdgeInsets(false);
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -218,9 +213,9 @@ TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
 
   root_view_->Layout();
 
-  const int frame_top_thickness = FrameTopThickness();
+  const int frame_top_thickness = FrameInsets().top();
 
-  int x = FrameSideThickness();
+  int x = FrameInsets().left();
 
   // Close button.
   EXPECT_EQ(kCloseButtonSize, close_button_->size());

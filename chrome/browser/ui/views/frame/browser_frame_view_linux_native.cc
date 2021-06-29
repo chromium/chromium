@@ -40,7 +40,7 @@ BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
   DrawFrameButtonParams params{
-      GetTopAreaHeight() - layout()->FrameTopThickness(!IsMaximized()),
+      GetTopAreaHeight() - layout()->FrameEdgeInsets(!IsMaximized()).top(),
       IsMaximized(), ShouldPaintAsActive()};
   if (cache_ == params)
     return;

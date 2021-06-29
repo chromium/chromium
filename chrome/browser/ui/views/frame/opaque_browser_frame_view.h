@@ -163,11 +163,11 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
       ViewID view_id,
       const gfx::Size& desired_size);
 
-  // Returns the thickness of the border that makes up the window frame edges.
+  // Returns the insets from the native window edge to the client view.
   // This does not include any client edge.  If |restored| is true, this is
   // calculated as if the window was restored, regardless of its current
   // node_data.
-  int FrameBorderThickness(bool restored) const;
+  gfx::Insets FrameBorderInsets(bool restored) const;
 
   // Returns the thickness of the border that makes up the window frame edge
   // along the top of the frame. If |restored| is true, this acts as if the
