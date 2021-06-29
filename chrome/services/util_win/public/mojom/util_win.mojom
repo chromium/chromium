@@ -139,7 +139,11 @@ interface UtilWin {
   // is included in the list, in order to preserve privacy.
   GetAntiVirusProducts(bool report_full_names) =>
       (array<AntiVirusProduct> av_products);
+};
 
+// Hosted by a utility service in kNoSandbox (with CET allowed). Called on
+// startup by the browser to record metrics. Uses COM to make WMI calls.
+interface ProcessorMetrics {
   // Records various metrics about the processor.
   // Note: The service process can terminate as soon as it observes that the
   // Remote has been destroyed, hence the callback exists so the caller can

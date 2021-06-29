@@ -15,3 +15,11 @@ mojo::Remote<chrome::mojom::UtilWin> LaunchUtilWinServiceInstance() {
           .WithDisplayName(IDS_UTILITY_PROCESS_UTILITY_WIN_NAME)
           .Pass());
 }
+
+mojo::Remote<chrome::mojom::ProcessorMetrics> LaunchProcessorMetricsService() {
+  // Runs with kNoSandbox from |service_sandbox_type.h|.
+  return content::ServiceProcessHost::Launch<chrome::mojom::ProcessorMetrics>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_UTILITY_WIN_NAME)
+          .Pass());
+}

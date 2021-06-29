@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/services/speech/speech_recognition_service_impl.h",
   "+chrome/services/util_win/util_read_icon.h",
   "+chrome/services/util_win/util_win_impl.h",
+  "+chrome/services/util_win/processor_metrics.h",
   "+chrome/services/util_win/public/mojom",
   "+chromeos/assistant/buildflags.h",
   "+chromeos/components/local_search_service/local_search_service.h",

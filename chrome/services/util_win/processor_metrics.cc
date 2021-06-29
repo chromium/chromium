@@ -14,9 +14,13 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
+#include "chrome/services/util_win/public/mojom/util_win.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 using base::win::ScopedBstr;
 using base::win::ScopedVariant;
@@ -124,8 +128,6 @@ void RecordCetAvailability() {
   }
 }
 
-}  // namespace
-
 void RecordProcessorMetrics() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -135,4 +137,25 @@ void RecordProcessorMetrics() {
   RecordProcessorMetricsFromWMI(wmi_services);
   RecordHypervStatusFromWMI(wmi_services);
   RecordCetAvailability();
+}
+
+}  // namespace
+
+void RecordProcessorMetricsForTesting() {
+  RecordProcessorMetrics();
+}
+
+ProcessorMetricsImpl::ProcessorMetricsImpl(
+    mojo::PendingReceiver<chrome::mojom::ProcessorMetrics> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+ProcessorMetricsImpl::~ProcessorMetricsImpl() = default;
+
+void ProcessorMetricsImpl::RecordProcessorMetrics(
+    RecordProcessorMetricsCallback callback) {
+  // TODO(sebmarchand): Check if we should move the ScopedCOMInitializer to the
+  // ProcessorMetrics class.
+  base::win::ScopedCOMInitializer scoped_com_initializer;
+  ::RecordProcessorMetrics();
+  std::move(callback).Run();
 }
