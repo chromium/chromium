@@ -38,13 +38,15 @@ message StreamUpdate {
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.
 message Slice {
+  // Deprecated slice metadata
+  reserved 5;
+
   oneof SliceData {
     XSurfaceSlice xsurface_slice = 1;
     ZeroStateSlice zero_state_slice = 3;
     LoadingSpinnerSlice loading_spinner_slice = 4;
   }
   string slice_id = 2;
-  SliceMetadata slice_metadata = 5;
 }
 
 // This slice is sent when no feed data can be loaded.
@@ -74,9 +76,4 @@ message XSurfaceSlice {
 message SharedState {
   string id = 1;
   bytes xsurface_shared_state = 2;
-}
-
-message SliceMetadata {
-  string uri = 1;
-  string title = 2;
 }

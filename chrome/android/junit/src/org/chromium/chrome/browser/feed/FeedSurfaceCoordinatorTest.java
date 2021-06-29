@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
@@ -140,8 +139,6 @@ public class FeedSurfaceCoordinatorTest {
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private SectionHeaderView mSectionHeaderView;
-    @Mock
-    private TabModelSelector mTabModelSelector;
 
     // Mocked JNI.
     @Mock
@@ -352,7 +349,7 @@ public class FeedSurfaceCoordinatorTest {
         return new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid, mSnapHelper,
                 null, mSectionHeaderView, false, new TestSurfaceDelegate(), mPageNavigationDelegate,
                 mProfileMock, false, mBottomSheetController, mShareDelegateSupplier, null,
-                mTabModelSelector, NewTabPageLaunchOrigin.UNKNOWN, mPrivacyPreferencesManager,
+                NewTabPageLaunchOrigin.UNKNOWN, mPrivacyPreferencesManager,
                 new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS));
     }
 }

@@ -385,7 +385,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                bottomSheetController, shareDelegateSupplier, tabModelSelector, url);
+                bottomSheetController, shareDelegateSupplier, url);
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -438,8 +438,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             BottomSheetController bottomSheetController,
-            Supplier<ShareDelegate> shareDelegateSupplier, TabModelSelector tabModelSelector,
-            String url) {
+            Supplier<ShareDelegate> shareDelegateSupplier, String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -460,7 +459,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 profile,
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
-                tabModelSelector, NewTabPageUtils.decodeOriginFromNtpUrl(url),
+                NewTabPageUtils.decodeOriginFromNtpUrl(url),
                 PrivacyPreferencesManagerImpl.getInstance(),
                 new FeedLaunchReliabilityLoggingState(
                         SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs));

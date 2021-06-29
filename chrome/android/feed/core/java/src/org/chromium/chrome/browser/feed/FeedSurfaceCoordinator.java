@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.continuous_search.ContinuousFeedNavigationHelper;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -99,7 +97,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final BottomSheetController mBottomSheetController;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
-    private final TabModelSelector mTabModelSelector;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -253,7 +250,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
-            TabModelSelector tabModelSelector, @NewTabPageLaunchOrigin int launchOrigin,
+            @NewTabPageLaunchOrigin int launchOrigin,
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
@@ -269,7 +266,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mWindowAndroid = windowAndroid;
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
-        mTabModelSelector = tabModelSelector;
         mLaunchReliabilityLoggingState = launchReliabilityLoggingState;
         mPrivacyPreferencesManager = privacyPreferencesManager;
 
@@ -545,11 +541,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             headerList.add(mSectionHeaderView);
         }
         setHeaders(headerList);
-
-        ContinuousFeedNavigationHelper feedNavigationHelper =
-                new ContinuousFeedNavigationHelper(mTabModelSelector);
-        mStream.addOnContentChangedListener(feedNavigationHelper);
-        mStream.addInteractionListener(feedNavigationHelper);
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
         // toggling dark mode.

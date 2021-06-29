@@ -175,7 +175,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 mSnackbarManager, mWindowAndroid, null, null, sectionHeaderView, isInNightMode,
                 this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
                 bottomSheetController, mShareDelegateSupplier, scrollableContainerDelegate,
-                mTabModelSelector, launchOrigin, PrivacyPreferencesManagerImpl.getInstance(),
+                launchOrigin, PrivacyPreferencesManagerImpl.getInstance(),
                 feedLaunchReliabilityLoggingState);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;

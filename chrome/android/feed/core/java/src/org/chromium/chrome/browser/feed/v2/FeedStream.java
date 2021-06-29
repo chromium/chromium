@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
-import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContentMetadata;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -223,14 +222,6 @@ public class FeedStream implements Stream {
                 NavigationRecorder.record(tab,
                         visitData -> FeedServiceBridge.reportOpenVisitComplete(visitData.duration));
             }
-
-            notifyNavigationOccurred(url);
-        }
-
-        private void notifyNavigationOccurred(String url) {
-            for (InteractionsListener listener : mInteractionListeners) {
-                listener.onNavigate(url);
-            }
         }
     }
 
@@ -380,17 +371,6 @@ public class FeedStream implements Stream {
         }
     }
 
-    /**
-     * Interface users can implement to be notified when an interaction has happened with the
-     * interest feed.
-     */
-    public interface InteractionsListener {
-        /**
-         * Called when navigation is initiated by the feed. This happens when a card is clicked.
-         */
-        void onNavigate(String url);
-    }
-
     // How far the user has to scroll down in DP before attempting to load more content.
     private final int mLoadMoreTriggerScrollDistanceDp;
 
@@ -398,7 +378,6 @@ public class FeedStream implements Stream {
     private final long mNativeFeedStream;
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
-    private final ObserverList<InteractionsListener> mInteractionListeners = new ObserverList<>();
     private final NativePageNavigationDelegate mNavigationDelegate;
     private final boolean mIsInterestFeed;
     // Various helpers/controllers.
@@ -603,10 +582,6 @@ public class FeedStream implements Stream {
         mContentChangedListeners.removeObserver(listener);
     }
 
-    public void addInteractionListener(InteractionsListener listener) {
-        mInteractionListeners.addObserver(listener);
-    }
-
     // TODO(chili): extract these uma-record methods to somewhere else - FeedLogger.java?
     @Override
     public void toggledArticlesListVisible(boolean visible) {
@@ -793,10 +768,8 @@ public class FeedStream implements Stream {
     private NtpListContentManager.FeedContent createContentFromSlice(FeedUiProto.Slice slice) {
         String sliceId = slice.getSliceId();
         if (slice.hasXsurfaceSlice()) {
-            FeedContentMetadata contentMetadata = new FeedContentMetadata(
-                    slice.getSliceMetadata().getUri(), slice.getSliceMetadata().getTitle());
-            return new NtpListContentManager.ExternalViewContent(sliceId,
-                    slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(), contentMetadata);
+            return new NtpListContentManager.ExternalViewContent(
+                    sliceId, slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray());
         } else if (slice.hasLoadingSpinnerSlice()) {
             // If the placeholder is shown, spinner is not needed.
             if (mIsPlaceholderShown) {
