@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
+<translation id="2021670401941426298">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="2022352537516230970">Dibuat untuk iPhone Anda</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
 <translation id="2074131957428911366">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja.</translation>
@@ -207,6 +208,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3131206671572504478">Blokir Semua</translation>
 <translation id="313283613037595347">Buat tab Samaran baru.</translation>
+<translation id="3134493362339304186">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan. Anda tidak akan logout dari Akun Google Anda. Untuk menghapus bentuk histori lainnya, buka <ph name="BEGIN_LINK" />Aktivitas Google Saya<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Simpan Kartu</translation>
 <translation id="3157387275655328056">Tambahkan ke Daftar Bacaan</translation>
 <translation id="3157684681743766797">Tandai Semua...</translation>
@@ -229,6 +231,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="3285962946108803577">Bagikan Halaman ...</translation>
 <translation id="3290875554372353449">Pilih Akun</translation>
 <translation id="3311748811247479259">Nonaktif</translation>
+<translation id="3317580614754548493">Anda tidak akan logout dari Akun Google Anda. Untuk menghapus <ph name="BEGIN_LINK" />penelusuran<ph name="END_LINK" /> atau bentuk histori lainnya, buka <ph name="BEGIN_LINK" />Akun Google Saya<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="3329904751041170572">Tidak dapat tersambung ke server.</translation>
@@ -557,6 +560,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="651505212789431520">Batalkan Sinkronisasi? Anda dapat mengaktifkan sinkronisasi kapan saja di Setelan.</translation>
 <translation id="6524918542306337007">Mode Samaran Tidak Tersedia</translation>
+<translation id="6560725150890787329">Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan. Anda tidak akan logout dari Akun Google Anda. Untuk menghapus bentuk histori lainnya, buka <ph name="BEGIN_LINK" />Aktivitas Google Saya<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Perbesar</translation>
 <translation id="6585618849026997638">Anda dapat kembali ke halaman yang penting bagi Anda dengan menambahkan bookmark</translation>
 <translation id="6603393121510733479">Organisasi Anda menonaktifkan penjelajahan rahasia.
@@ -801,6 +805,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
 <translation id="8985320356172329008">Login ke Google sebagai</translation>
+<translation id="9000089900434778519">Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

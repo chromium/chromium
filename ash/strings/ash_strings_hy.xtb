@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">Հպեք ձեր պրոֆիլի նկարին</translation>
 <translation id="255671100581129685">Google Օգնականը հասանելի չէ հանրային աշխատաշրջանում։</translation>
 <translation id="256712445991462162">Ամրացված խոշորացույց</translation>
+<translation id="2573588302192866788">Չհաջողվեց զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="2575685495496069081">Բազմակի մուտքն անջատվել է</translation>
 <translation id="2582112259361606227">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="2595239820337756193">5 հազար մղոն</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
 <translation id="3771549900096082774">Բարձր կոնտրաստով ռեժիմ</translation>
 <translation id="3773700760453577392">Ադմինիստրատորն արգելել է բազմակի մուտքը <ph name="USER_EMAIL" />-ի հաշվի համար: Շարունակելու համար բոլոր օգտատերերը պետք է դուրս գրվեն:</translation>
+<translation id="3779139509281456663"><ph name="NAME" /> սարքը զուգակցվում է</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Կողպել</translation>
 <translation id="3796746699333205839">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
 <translation id="6627638273713273709">Որոնում+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
+<translation id="6630773993843701741">Բացեք Bluetooth-ի կարգավորումները՝ սարքը ձեռքով զուգակցելու համար</translation>
 <translation id="6637729079642709226">Փոխել ժամանակը</translation>
 <translation id="6641720045729354415">Միացնել/անջատել Կենդանի ենթագրերը։ <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
 <translation id="7360036564632145207">Եթե արտաքին սարքերի կարգավորումներում փոխեք տվյալների հասանելիության պաշտպանության պարամետրերը, աշխատանքի արդյունավետությունը կարող է բարձրանալ</translation>
+<translation id="7366890467478514168">Զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="7371404428569700291">Տեսագրել պատուհանը</translation>
 <translation id="7377169924702866686">Caps Lock-ը միացված է:</translation>
 <translation id="7378203170292176219">Քաշեք՝ տեսագրման հատվածն ընտրելու համար</translation>
@@ -1039,6 +1043,7 @@
 <translation id="9193626018745640770">Հեռարձակվում է անհայտ ստացողի</translation>
 <translation id="9194617393863864469">Մուտք գործել այլ հաշիվ...</translation>
 <translation id="9198992156681343238">Լուծաչափը (<ph name="DISPLAY_NAME" />) փոխվել է <ph name="RESOLUTION" />-ի։ Հպեք «Հաստատել»՝ փոփոխությունները պահպանելու համար։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> հետո։</translation>
+<translation id="9201044636667689546">Զուգակցել <ph name="NAME" /> սարքն այս Chromebook-ի հետ</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="9210037371811586452">Ելք միասնական աշխատասեղանի ռեժիմից</translation>
 <translation id="9211490828691860325">Բոլոր աշխատասեղանները</translation>

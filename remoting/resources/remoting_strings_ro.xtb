@@ -24,6 +24,7 @@ Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME"
 Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debifeaz-o și bifeaz-o din nou.</translation>
 <translation id="225614027745146050">Bun venit</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
+<translation id="2329392777730037872">Nu s-a putut deschide <ph name="URL" /> pe client.</translation>
 <translation id="2333212046079545895">Drept de autor 2021 Google LLC. Toate drepturile rezervate.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2366718077645204424">Gazda nu poate fi accesată. Acest lucru este cauzat, probabil, de configurația rețelei pe care o utilizați.</translation>
@@ -88,6 +89,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4867841927763172006">Trimite PrtScn</translation>
 <translation id="4974476491460646149">Conexiunea a fost închisă pentru <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Mai întâi, trebuie să configurezi computerul pentru accesul la distanță</translation>
+<translation id="4987330545941822761">Desktopul la distanță Chrome nu poate alege browserul pentru deschiderea locală a adreselor URL. Alege-l din lista de mai jos.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Sigur dorești să dezactivezi conexiunile la distanță la <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID de gazdă nevalid.</translation>
@@ -135,6 +137,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="7312846573060934304">Gazda este offline.</translation>
 <translation id="7319983568955948908">Opriți permiterea accesului</translation>
+<translation id="7359298090707901886">Browserul selectat nu poate fi folosit pentru a deschide adrese URL pe dispozitivul local.</translation>
 <translation id="7401733114166276557">Desktop la distanță Chrome</translation>
 <translation id="7434397035092923453">Acces interzis pentru clientul: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client conectat: <ph name="CLIENT_USERNAME" />.</translation>

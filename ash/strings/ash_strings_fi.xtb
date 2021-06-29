@@ -204,6 +204,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2542089167727451762">Napauta profiilikuvaasi</translation>
 <translation id="255671100581129685">Google Assistantia ei voi käyttää julkisella käyttökerralla.</translation>
 <translation id="256712445991462162">kiinnitetty näytön suurentaja</translation>
+<translation id="2573588302192866788"><ph name="NAME" /> ei ole yhdistettävissä</translation>
 <translation id="2575685495496069081">Useille tileille kirjautuminen on poistettu käytöstä</translation>
 <translation id="2582112259361606227">Päivitä käynnistämällä uudelleen</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
@@ -350,6 +351,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3771549900096082774">Suuri kontrasti ‑tila</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
+<translation id="3779139509281456663">Yhdistetään <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="3796746699333205839">Sovellus käyttää kameraasi ja mikrofoniasi</translation>
@@ -704,6 +706,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6614169507485700968">Näytönsuoja on päällä</translation>
 <translation id="6627638273713273709">Haku+Vaihto+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> haluaa käyttää mikrofonia</translation>
+<translation id="6630773993843701741">Avaa Bluetooth-asetukset ja muodosta laitepari manuaalisesti</translation>
 <translation id="6637729079642709226">Muuta aikaa</translation>
 <translation id="6641720045729354415">Livetekstitys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> haluaa varmistaa henkilöllisyytesi</translation>
@@ -789,6 +792,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7348093485538360975">Näyttönäppäimistö</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
+<translation id="7366890467478514168">Yhdistä <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
@@ -1039,6 +1043,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9193626018745640770">Suoratoistetaan tuntemattomaan vastaanottimeen</translation>
 <translation id="9194617393863864469">Kirjaa sisään toinen käyttäjä…</translation>
 <translation id="9198992156681343238">Näytön <ph name="DISPLAY_NAME" /> resoluutioksi vaihdettiin <ph name="RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
+<translation id="9201044636667689546">Yhdistä <ph name="NAME" /> tähän Chromebookiin</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="9210037371811586452">Poistutaan yhtenäisen työpöydän tilasta</translation>
 <translation id="9211490828691860325">Kaikki työpöydät</translation>

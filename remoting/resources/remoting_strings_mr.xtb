@@ -24,6 +24,7 @@
 '<ph name="SERVICE_SCRIPT_NAME" />' वर आधीच खूण केली असल्यास, ती काढा आणि त्यावर पुन्हा खूण करा.</translation>
 <translation id="225614027745146050">सुस्वागतम</translation>
 <translation id="2320166752086256636">कीबोर्ड लपवा</translation>
+<translation id="2329392777730037872">क्लायंट वर <ph name="URL" /> उघडता आली नाही.</translation>
 <translation id="2333212046079545895">कॉपीराइट २०२१ Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2366718077645204424">होस्‍टवर पोहोचण्‍यात अक्षम. हे बहुदा तुम्ही वापरत असलेल्या नेटवर्कच्या कॉन्फिगरेशनमुळे झाले आहे.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScn पाठवा</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> चे कनेक्शन बंद झाले</translation>
 <translation id="4985296110227979402">रिमोट ॲक्सेस करण्यासाठी तुम्हाला प्रथम तुमचा कॉंप्युटर सेट करणे आवश्यक आहे</translation>
+<translation id="4987330545941822761">Chrome रिमोट डेस्कटॉपवर स्थानिकरीत्या URL उघडण्यासाठी ब्राउझर निश्चित करू शकत नाही. कृपया खालील सूचीमधून निवडा.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ऑफलाइन)</translation>
 <translation id="507204348399810022">तुम्हाला खात्री आहे की तुम्ही <ph name="HOSTNAME" /> शी असलेले रिमोट कनेक्शन अक्षम करू इच्छिता?</translation>
 <translation id="5170982930780719864">चुकीचे होस्ट आयडी .</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7312846573060934304">होस्ट ऑफलाइन आहे.</translation>
 <translation id="7319983568955948908">सामायिकरण थांबवा</translation>
+<translation id="7359298090707901886">निवडलेला ब्राउझर स्थानिक मशीनवर URL उघडण्यासाठी वापरला जाऊ शकत नाही.</translation>
 <translation id="7401733114166276557">Chrome रिमोट डेस्कटॉप</translation>
 <translation id="7434397035092923453">क्लायंटसाठी ॲक्सेस नाकारला: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">कनेक्ट केलेला क्लायंट: <ph name="CLIENT_USERNAME" />.</translation>

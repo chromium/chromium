@@ -76,6 +76,7 @@
 <translation id="1076882167394279216">Չհաջողվեց ներբեռնել ուղղագրիչի բառարանը <ph name="LANGUAGE" /> լեզվի համար։ Նորից փորձեք։</translation>
 <translation id="1079766198702302550">Միշտ արգելափակել տեսախցիկի մուտքը</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 ներդիր}one{<ph name="GROUP_TITLE" /> – # ներդիր}other{<ph name="GROUP_TITLE" /> – # ներդիր}}</translation>
+<translation id="1082214733466244292">Ձեր ադմինիստրատորն արգելափակել է այս սարքի որոշ գործառույթներ</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />-ը ցանկանում է վերականգնել ձեր Chrome-ի կարգավորումները իրենց բնօրինակ կանխադրվածների: Այս գործողության հետևանքով կվերակայվի ձեր գլխավոր էջը, նոր ներդիրի էջը և որոնման համակարգը, կանջատվեն ընդլայնումները, և բոլոր ներդիրները կապաամրացվեն: Կջնջվեն նաև այլ ժամանակավոր և քեշավորված տվյալներ, ինչպես օրինակ՝ քուքիները, բովանդակության և կայքի տվյալները:</translation>
 <translation id="1084096383128641877">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="DOMAIN" /> կայքից։ Անվտանգության նկատառումներով փոխեք գաղտնաբառը կամ ջնջեք հաշիվը <ph name="DOMAIN_LINK" /> կայքում։</translation>
 <translation id="1084824384139382525">Պատճենել հղումների հաս&amp;ցեները</translation>
@@ -583,6 +584,7 @@
 <translation id="1627408615528139100">Ֆայլն արդեն ներբեռնվել է</translation>
 <translation id="1628948239858170093">Բացելուց առաջ ստուգե՞լ ֆայլը</translation>
 <translation id="1629314197035607094">Գաղտնաբառի ժամկետը լրացել է</translation>
+<translation id="1630300831289687074">Դուք շուտով կկարողանաք օգտագործել ձեր Chromebook-ը։</translation>
 <translation id="163072119192489970">Թույլատրվում է ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="1630768113285622200">Վերագործարկել և շարունակել</translation>
 <translation id="1632082166874334883">Գաղտնաբառերը պահվում են ձեր Google հաշվում</translation>
@@ -963,6 +965,7 @@
 <translation id="202918510990975568">Անվտանգությունն ու հաշվի մուտքը կարգավորելու համար մուտքագրեք ձեր գաղտնաբառը</translation>
 <translation id="2030455719695904263">Հպահարթակ</translation>
 <translation id="2031639749079821948">Ձեր գաղտնաբառը պահվել է ձեր Google հաշվում</translation>
+<translation id="2031914984822377766">Ավելացրեք <ph name="LINK_BEGIN" />կայքերի ձեր նախընտրած լեզուները<ph name="LINK_END" />։ Թարգմանությունների համար կօգտագործվի ցանկի սկզբում գտնվող լեզուն։</translation>
 <translation id="2034346955588403444">Ավելացնել այլ Wi-Fi ցանց</translation>
 <translation id="203574396658008164">Միացնել կողպէկրանից նշումների ստեղծման գործառույթը</translation>
 <translation id="2037445849770872822">Այս Google հաշվի համար կարգավորված է ծնողական վերահսկողություն: Ավելի շատ պարամետրեր կարգավորելու համար ընտրեք «Շարունակել»:
@@ -2433,7 +2436,6 @@
 <translation id="3629631988386925734">Smart Lock-ը միացնելու համար մուտքագրեք ձեր գաղտնաբառը։ Դրանից հետո ձեր հեռախոսով կարող եք ապակողպել <ph name="DEVICE_TYPE" /> սարքը։ Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
 <translation id="3630132874740063857">Հեռախոս</translation>
 <translation id="3630995161997703415">Ավելացրեք այս կայքը ձեր դարակում՝ այն ցանկացած ժամանակ օգտագործելու համար</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />, <ph name="OPTION_POSITION" />/<ph name="NUM_OPTIONS" /></translation>
 <translation id="3634652306074934350">Թույլտվության հարցման ժամկետը սպառվել է</translation>
 <translation id="3635353578505343390">Հետադարձ կապ Google-ի հետ</translation>
 <translation id="3635960017746711110">USB-ի կարգավորումներ Crostini-ում</translation>
@@ -2516,6 +2518,7 @@
 <translation id="3713047097299026954">Անվտանգության այս բանալին մուտքի տվյալներ չունի</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
 <translation id="3714633008798122362">վեբ օրացույց</translation>
+<translation id="3716758537211256894">Ստուգել իմ ցանցը</translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
@@ -2610,6 +2613,7 @@
 <translation id="381202950560906753">Նոր մատնահետք</translation>
 <translation id="3812525830114410218">Սխալ վկայական</translation>
 <translation id="3813296892522778813">Եթե չեք գտնում ձեր ուզածը, այցելեք <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-ի օգնության էջ<ph name="END_LINK_CHROMIUM" /></translation>
+<translation id="3813358687923336574">Էջերի թարգմանության և արագ պատասխանների համար օգտագործվող լեզուն</translation>
 <translation id="3814529970604306954">Ուսումնական հաշիվ</translation>
 <translation id="3816118180265633665">Chrome-ի գույներ</translation>
 <translation id="3817524650114746564">Ձեր համակարգչում բացեք միջնորդ սերվերի կարգավորումները</translation>
@@ -4585,6 +4589,7 @@
 <translation id="6051354611314852653">Չհաջողվեց API-ին մուտք շնորհել այս սարքում:</translation>
 <translation id="6052976518993719690">SSL հավաստագրման կենտրոն</translation>
 <translation id="6053401458108962351">&amp;Մաքրել դիտարկումների տվյալները…</translation>
+<translation id="6054284857788651331">Վերջերս փակված ներդիրների խումբը</translation>
 <translation id="6054961935262556546">Փոխել տեսանելիության կարգավորումները</translation>
 <translation id="6055171183283175969">Ձեր մուտքագրած գաղտնաբառը սխալ է:</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256՝ RSA գաղտնագրումով</translation>
@@ -5436,6 +5441,7 @@
 <translation id="6991665348624301627">Ընտրեք վերջնակետը</translation>
 <translation id="6992554835374084304">Միացվեց ուղղագրության ընդլայնված ստուգումը</translation>
 <translation id="6993000214273684335">Ներդիրը հեռացվեց անանուն խմբից – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome դիտարկիչը թարմացվում է</translation>
 <translation id="6994069045767983299">Շրջված գույներ</translation>
 <translation id="6995899638241819463">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Գործողությունների մատյան</translation>
@@ -5809,6 +5815,7 @@
 <translation id="7415454883318062233">Կարգավորումն ավարտվեց</translation>
 <translation id="7416362041876611053">Ցանցի անհայտ սխալ:</translation>
 <translation id="741906494724992817">Այս հավելվածի համար հատուկ թույլտվություններ պետք չեն:</translation>
+<translation id="7421067045979951561">հաղորդակարգերի մշակիչներ</translation>
 <translation id="742130257665691897">Էջանիշները հեռացվեցին</translation>
 <translation id="7421925624202799674">&amp;Դիտել էջի կոդը</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -6007,6 +6014,7 @@
 <translation id="7634566076839829401">Ինչ-որ սխալ առաջացավ: Նորից փորձեք:</translation>
 <translation id="7635048370253485243">Ամրացվել է ադմինիստրատորի կողմից</translation>
 <translation id="763632859238619983">Արգելել կայքերին տեղադրել վճարումների մշակիչներ</translation>
+<translation id="7636422033092045734">Հիմա, երբ նավիգացիայի համար ավելի շատ փոխանջատիչներ ունեք, ավտոմատ սկանավորումն անջատված է։ Ուղեցույցը փակելու համար սեղմեք «Պատրաստ է» կոճակը, այնուհետև «Ընտրել» փոխանջատիչը։</translation>
 <translation id="7636919061354591437">Տեղադրել այս սարքում</translation>
 <translation id="7637593984496473097">Սկավառակում բավարար տարածք չկա</translation>
 <translation id="7638605456503525968">Հաջորդական միացքներ</translation>
@@ -6103,6 +6111,7 @@
 <translation id="7719588063158526969">Սարքի անունը չափազանց երկար է</translation>
 <translation id="7721179060400456005">Թույլատրել պատուհանի ցուցադրումը տարբեր սարքերում</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">Կազմակերպության կանոնների համաձայն՝ դուք պետք է պրոֆիլ ունենաք</translation>
 <translation id="7722040605881499779">Թարմացման համար հարկավոր է <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7728465250249629478">Փոխել սարքի լեզուն</translation>
@@ -6852,6 +6861,7 @@
 <translation id="8553342806078037065">Կառավարել այլ օգտատերերի</translation>
 <translation id="8554899698005018844">Լեզու նշված չէ</translation>
 <translation id="8557022314818157177">Հպեք անվտանգության բանալուն և պահեք, մինչև ձեր մատնահետքն ավելացվի:</translation>
+<translation id="8557180006508471423">Միացրեք «Google Chrome»-ը ձեր Mac համակարգչի տեղորոշման ծառայություններում</translation>
 <translation id="8557930019681227453">Մանիֆեստ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="8561206103590473338">Փիղ</translation>

@@ -204,6 +204,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2542089167727451762">Puudutage oma profiilipilti</translation>
 <translation id="255671100581129685">Google'i assistent ei ole avalikus seansis saadaval.</translation>
 <translation id="256712445991462162">dokitud luup</translation>
+<translation id="2573588302192866788">Seadmega <ph name="NAME" /> ühendamine ebaõnnestus</translation>
 <translation id="2575685495496069081">Mitmele kontole sisselogimine on keelatud</translation>
 <translation id="2582112259361606227">Taaskäivitage värskendamiseks</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
@@ -351,6 +352,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
 Jätkamiseks peavad kõik kasutajad välja logima.</translation>
+<translation id="3779139509281456663">Seadme <ph name="NAME" /> ühendamine</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="3796746699333205839">Rakendus kasutab teie kaamerat ja mikrofoni</translation>
@@ -705,6 +707,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6614169507485700968">Privaatsuskuva on sees</translation>
 <translation id="6627638273713273709">Otsing + Tõstuklahv + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> soovib mikrofoni kasutada</translation>
+<translation id="6630773993843701741">Avage Bluetoothi seaded, et seade käsitsi siduda</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
@@ -790,6 +793,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
 <translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
+<translation id="7366890467478514168">Ühendage seade <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Akna salvestamine</translation>
 <translation id="7377169924702866686">Suurtähelukk on sisse lülitatud.</translation>
 <translation id="7378203170292176219">Lohistage salvestatava piirkonna valimiseks</translation>
@@ -1040,6 +1044,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9193626018745640770">Ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="9194617393863864469">Logi sisse teine kasutaja ...</translation>
 <translation id="9198992156681343238">Seadme <ph name="DISPLAY_NAME" /> eraldusvõimeks määrati <ph name="RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
+<translation id="9201044636667689546">Ühendage seade <ph name="NAME" /> selle Chromebookiga</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, võrku haldab teie administraator</translation>
 <translation id="9210037371811586452">Ühendatud töölaua režiimist väljumine</translation>
 <translation id="9211490828691860325">Kõik töölauad</translation>

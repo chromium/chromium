@@ -56,6 +56,7 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
+<translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
@@ -107,6 +108,7 @@
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
+<translation id="2021670401941426298">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din.</translation>
 <translation id="2022352537516230970">Laget for iPhonen din</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
@@ -206,6 +208,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3131206671572504478">Blokkér alle</translation>
 <translation id="313283613037595347">Åpne ny inkognitofane.</translation>
+<translation id="3134493362339304186">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din. Du blir ikke logget av Google-kontoen din. For å slette andre former for logg, besøk <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Lagre kortet</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
@@ -228,6 +231,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="3285962946108803577">Del siden</translation>
 <translation id="3290875554372353449">Velg konto</translation>
 <translation id="3311748811247479259">Av</translation>
+<translation id="3317580614754548493">Du blir ikke logget av Google-kontoen din. For å tømme <ph name="BEGIN_LINK" />søkeloggen<ph name="END_LINK" /> eller andre logger, besøk <ph name="BEGIN_LINK" />Min Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
 <translation id="3329904751041170572">Kunne ikke koble til tjeneren.</translation>
@@ -268,6 +272,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="3607167657931203000">Autofylldata</translation>
 <translation id="3609785682760573515">Synkroniserer …</translation>
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
+<translation id="3661160521073045932">En konfigurasjonsprofil er tilgjengelig</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Satt som bokmerke i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Merk som ulest</translation>
@@ -555,6 +560,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="651505212789431520">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i Innstillinger.</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
+<translation id="6560725150890787329">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din. Du blir ikke logget av Google-kontoen din. For å slette andre former for logg, besøk <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
@@ -799,6 +805,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8976382372951310360">Hjelp</translation>
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
 <translation id="8985320356172329008">Logget på Google som</translation>
+<translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="9034759925968272072">Du blir ikke logget av Google-kontoen din, og det kan hende den har andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis original</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

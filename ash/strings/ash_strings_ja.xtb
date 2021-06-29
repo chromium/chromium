@@ -66,7 +66,7 @@
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
-<translation id="1407069428457324124">ダークテーマ</translation>
+<translation id="1407069428457324124">ダークモード</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">はい</translation>
@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
+<translation id="2573588302192866788"><ph name="NAME" /> を接続できませんでした</translation>
 <translation id="2575685495496069081">マルチログインは無効にされています</translation>
 <translation id="2582112259361606227">再起動して更新</translation>
 <translation id="2595239820337756193">5 km は何マイル</translation>
@@ -302,7 +303,7 @@
 <translation id="3378442621503952303">プロファイルに接続しています。数分お待ちください。</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3400357268283240774">その他の設定</translation>
-<translation id="3410336247007142655">ダークテーマの設定を表示</translation>
+<translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> との接続を解除します</translation>
 <translation id="3430396595145920809">右側からスワイプすると前の画面に戻ります</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
+<translation id="3779139509281456663"><ph name="NAME" /> を接続中</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ロック</translation>
 <translation id="3796746699333205839">アプリケーションがカメラとマイクを使用しています</translation>
@@ -397,7 +399,7 @@
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
-<translation id="4157822100366708405">ダークテーマの設定</translation>
+<translation id="4157822100366708405">ダークモードの設定</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
 <translation id="4197790712631116042">オフ</translation>
@@ -469,7 +471,7 @@
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4586483766170476230">自撮りカメラを停止</translation>
 <translation id="4587299710837179226">マイクをオフにしました</translation>
-<translation id="4596144739579517758">ダークテーマはオフになっています</translation>
+<translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="4614295562446151104">マーカーツールを展開</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
@@ -557,7 +559,7 @@
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
-<translation id="5352250171825660495">ダークテーマはオンになっています</translation>
+<translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
 <translation id="5397578532367286026">このユーザーの利用状況や履歴は、chrome.com で管理者（<ph name="MANAGER_EMAIL" />）によって確認されます。</translation>
 <translation id="5400461572260843123">クイック設定: 検索+左方向キーを押して、通知センターを開きます。</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> がマイクの使用を求めています</translation>
+<translation id="6630773993843701741">デバイスを手動でペア設定するには、Bluetooth 設定を開いてください</translation>
 <translation id="6637729079642709226">時間を変更</translation>
 <translation id="6641720045729354415">自動字幕起こしを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
+<translation id="7366890467478514168"><ph name="NAME" /> を接続</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
@@ -991,7 +995,7 @@
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
-<translation id="8871580645200179206">ダークテーマを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">ダークモードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
@@ -1040,6 +1044,7 @@
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>
 <translation id="9194617393863864469">別のユーザーとしてログイン...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> の解像度を <ph name="RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
+<translation id="9201044636667689546">この Chromebook に <ph name="NAME" /> を接続してください</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />、管理者によって管理</translation>
 <translation id="9210037371811586452">デスクトップ統合モードの終了中</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>

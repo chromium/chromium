@@ -24,6 +24,7 @@ Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah untuk 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
 <translation id="225614027745146050">Selamat datang</translation>
 <translation id="2320166752086256636">Sembunyikan papan kekunci</translation>
+<translation id="2329392777730037872">Gagal membuka <ph name="URL" /> pada klien.</translation>
 <translation id="2333212046079545895">Hak Cipta 2021 Google LLC. Hak Cipta Terpelihara.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2366718077645204424">Tidak dapat mencapai hos. Hal ini mungkin disebabkan oleh konfigurasi rangkaian yang anda gunakan.</translation>
@@ -88,6 +89,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4867841927763172006">Hantar PrtScn</translation>
 <translation id="4974476491460646149">Sambungan ditutup untuk <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Anda perlu menyediakan komputer untuk akses jauh terlebih dahulu</translation>
+<translation id="4987330545941822761">Desktop Jauh Chrome tidak dapat menentukan penyemak imbas untuk membuka URL secara setempat. Sila pilih penyemak imbas daripada senarai di bawah.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (luar talian)</translation>
 <translation id="507204348399810022">Adakah anda pasti mahu melumpuhkan sambungan jauh ke <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Id hos tidak sah.</translation>
@@ -135,6 +137,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7312846573060934304">Hos di luar talian.</translation>
 <translation id="7319983568955948908">Hentikan Perkongsian</translation>
+<translation id="7359298090707901886">Penyemak imbas yang dipilih tidak dapat digunakan untuk membuka URL pada mesin setempat.</translation>
 <translation id="7401733114166276557">Desktop Jauh Chrome</translation>
 <translation id="7434397035092923453">Akses ditolak untuk klien: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klien disambungkan: <ph name="CLIENT_USERNAME" />.</translation>

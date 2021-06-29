@@ -76,6 +76,7 @@
 <translation id="1076882167394279216">下載唔到<ph name="LANGUAGE" />嘅拼字檢查字典。請再試一次。</translation>
 <translation id="1079766198702302550">永遠封鎖存取相機</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
+<translation id="1082214733466244292">系統管理員已封鎖這部裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求還原您的 Chrome 設定為原始預設值，並會重設您的首頁、新分頁和搜尋引擎、停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 亦會一併清除。</translation>
 <translation id="1084096383128641877">移除此密碼不會刪除您在 <ph name="DOMAIN" /> 的帳戶。請變更密碼或刪除您在 <ph name="DOMAIN_LINK" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="1084824384139382525">複製連結網址(&amp;E)</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">已下載</translation>
 <translation id="1628948239858170093">要先掃瞄檔案再開啟嗎？</translation>
 <translation id="1629314197035607094">密碼已過期</translation>
+<translation id="1630300831289687074">你很快就能使用 Chromebook 了。</translation>
 <translation id="163072119192489970">已允許完成傳送和接收資料</translation>
 <translation id="1630768113285622200">重新啟動及繼續</translation>
 <translation id="1632082166874334883">儲存在 Google 帳戶中的密碼</translation>
@@ -972,6 +974,7 @@
 <translation id="202918510990975568">請輸入您的密碼以進行安全性和登入設定</translation>
 <translation id="2030455719695904263">觸控板</translation>
 <translation id="2031639749079821948">您的密碼已儲存在 Google 帳戶中</translation>
+<translation id="2031914984822377766">新增偏好的<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />。系統會將文字翻譯成清單頂端的語言。</translation>
 <translation id="2034346955588403444">新增其他 Wi-Fi 網絡</translation>
 <translation id="203574396658008164">從上鎖畫面啟用筆記功能</translation>
 <translation id="2037445849770872822">您已設定此 Google 帳戶的監控功能。如要設定更多家長監控設定，請選取 [繼續]。
@@ -2446,7 +2449,6 @@
 <translation id="3629631988386925734">輸入密碼即可啟用 Smart Lock。下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />，<ph name="NUM_OPTIONS" /> 個入面嘅第 <ph name="OPTION_POSITION" /> 個</translation>
 <translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
 <translation id="3635960017746711110">Crostini 的 USB 偏好設定</translation>
@@ -2529,6 +2531,7 @@
 <translation id="3713047097299026954">此安全密鑰沒有任何登入資料</translation>
 <translation id="3714195043138862580">此示範裝置已設為取消權限狀態。</translation>
 <translation id="3714633008798122362">網絡日曆</translation>
+<translation id="3716758537211256894">檢查網路</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您和 Google</translation>
@@ -2623,6 +2626,7 @@
 <translation id="381202950560906753">新增其他指紋</translation>
 <translation id="3812525830114410218">錯誤的憑證</translation>
 <translation id="3813296892522778813">如果您找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
+<translation id="3813358687923336574">網頁譯文和快速解答功能所用語言</translation>
 <translation id="3814529970604306954">學校帳戶</translation>
 <translation id="3816118180265633665">Chrome 顏色</translation>
 <translation id="3817524650114746564">開啟電腦的 Proxy 設定</translation>
@@ -4596,6 +4600,7 @@
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽數據(&amp;C)…</translation>
+<translation id="6054284857788651331">最近關閉的分頁群組</translation>
 <translation id="6054961935262556546">變更分享設定</translation>
 <translation id="6055171183283175969">您輸入的密碼不正確。</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 (使用 RSA 加密)</translation>
@@ -5447,6 +5452,7 @@
 <translation id="6991665348624301627">選取目的地</translation>
 <translation id="6992554835374084304">開啟進階拼字檢查功能</translation>
 <translation id="6993000214273684335">已經將分頁由包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組度移除</translation>
+<translation id="6993050154661569036">正在更新 Chrome 瀏覽器</translation>
 <translation id="6994069045767983299">反轉色彩</translation>
 <translation id="6995899638241819463">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
@@ -5820,6 +5826,7 @@
 <translation id="7415454883318062233">設定完成</translation>
 <translation id="7416362041876611053">不明的網絡錯誤</translation>
 <translation id="741906494724992817">這個應用程式不需要任何特殊權限。</translation>
+<translation id="7421067045979951561">通訊協定處理常式</translation>
 <translation id="742130257665691897">移除咗書籤</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定…</translation>
@@ -6018,6 +6025,7 @@
 <translation id="7634566076839829401">發生錯誤，請再試一次。</translation>
 <translation id="7635048370253485243">已由管理員固定</translation>
 <translation id="763632859238619983">不允許任何網站安裝付款處理常式</translation>
+<translation id="7636422033092045734">現在已有更多開關可用，因此系統已關閉自動掃描功能。移動至 [完成] 按鈕並按下 [選取] 開關即可關閉指南。</translation>
 <translation id="7636919061354591437">在此裝置上安裝</translation>
 <translation id="7637593984496473097">磁碟空間不足</translation>
 <translation id="7638605456503525968">序列連接埠</translation>
@@ -6114,6 +6122,7 @@
 <translation id="7719588063158526969">裝置名稱過長</translation>
 <translation id="7721179060400456005">允許視窗在多個螢幕上延伸顯示</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">貴機構規定必須設定個人檔案</translation>
 <translation id="7722040605881499779">更新所需的空間：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7728465250249629478">變更裝置語言</translation>
@@ -6866,6 +6875,7 @@
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未選取語言</translation>
 <translation id="8557022314818157177">請持續輕觸安全密鑰，直至指紋擷取完成</translation>
+<translation id="8557180006508471423">請在 Mac 的「定位服務」中開啟「Google Chrome」</translation>
 <translation id="8557930019681227453">資訊清單</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有書籤(&amp;N)}=1{在新視窗中開啟書籤(&amp;N)}other{在新視窗中開啟全部 {COUNT} 個書籤(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>

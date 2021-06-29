@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">Додирните слику профила</translation>
 <translation id="255671100581129685">Google помоћник није доступан у јавној сесији.</translation>
 <translation id="256712445991462162">монтирана лупа екрана</translation>
+<translation id="2573588302192866788">Нисмо успели да повежемо <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Онемогућено је вишеструко пријављивање</translation>
 <translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
+<translation id="3779139509281456663">Повезује се са уређајем <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="3796746699333205839">Апликација користи камеру и микрофон</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>
 <translation id="6627638273713273709">Тастер за претрагу+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> жели да користи микрофон</translation>
+<translation id="6630773993843701741">Отворите подешавања Bluetooth-а да бисте ручно упарили уређај</translation>
 <translation id="6637729079642709226">Промените време</translation>
 <translation id="6641720045729354415">Укључите или искључите титл уживо. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">Тастатура на екрану</translation>
 <translation id="735745346212279324">Веза са VPN-ом је прекинута</translation>
 <translation id="7360036564632145207">Ако промените подешавање заштите приступа подацима за периферне уређаје, можете да оптимизујете учинак</translation>
+<translation id="7366890467478514168">Повежите <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Сними прозор</translation>
 <translation id="7377169924702866686">Caps Lock је укључен.</translation>
 <translation id="7378203170292176219">Превуците да бисте изабрали област за снимање</translation>
@@ -1039,6 +1043,7 @@
 <translation id="9193626018745640770">Пребацује се на непознати пријемник</translation>
 <translation id="9194617393863864469">Пријавите још једног корисника...</translation>
 <translation id="9198992156681343238">Резолуција екрана <ph name="DISPLAY_NAME" /> је промењена у <ph name="RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Повежите <ph name="NAME" /> са овим Chromebook-ом</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управља администратор</translation>
 <translation id="9210037371811586452">Излазак из режима спојених радних површина</translation>
 <translation id="9211490828691860325">Све радне површине</translation>

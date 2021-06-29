@@ -24,6 +24,7 @@
 Ако „<ph name="SERVICE_SCRIPT_NAME" />“ е веќе избрано, поништете го изборот и повторно изберете го.</translation>
 <translation id="225614027745146050">Добре дојдовте</translation>
 <translation id="2320166752086256636">Сoкриј ја тастатурата</translation>
+<translation id="2329392777730037872">Не успеа да отвори <ph name="URL" /> на клиентот.</translation>
 <translation id="2333212046079545895">Авторски права за 2021 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2366718077645204424">Не може да се добие домаќинот. Тоа е веројатно поради конфигурацијата на мрежата што ја користите.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">Испрати PrtScn</translation>
 <translation id="4974476491460646149">Врската е затворена за <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Прво треба да го поставите компјутерот за далечински пристап</translation>
+<translation id="4987330545941822761">„Пристап оддалеку за Chrome“ не може да го одреди прелистувачот за отворање на URL-адресите локално. Изберете го од списокот подолу.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (локално)</translation>
 <translation id="507204348399810022">Дали сте сигурни дека сакате да ги оневозможите далечинските врски со <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Неважечки ИД на домаќинот.</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7312846573060934304">Домаќинот е исклучен.</translation>
 <translation id="7319983568955948908">Запри споделување</translation>
+<translation id="7359298090707901886">Избраниот прелистувач не може да се користи за отворање URL-адреси на локален компјутер.</translation>
 <translation id="7401733114166276557">Далечинска работна површина на Chrome</translation>
 <translation id="7434397035092923453">Одбиен е пристапот за клиентот: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Клиентот е поврзан: <ph name="CLIENT_USERNAME" />.</translation>

@@ -24,6 +24,7 @@ Om hierdie toestemming te verleen, moet jy "<ph name="BUTTON_NAME" />" hieronder
 As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en dit dan weer merk.</translation>
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
+<translation id="2329392777730037872">Kon nie <ph name="URL" /> op die kliënt se toestel oopmaak nie.</translation>
 <translation id="2333212046079545895">Kopierieg 2021 Google LLC. Alle regte voorbehou.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2366718077645204424">Kan nie die gasheer bereik nie. Dit is waarskynlik weens die opstelling van die netwerk wat jy gebruik.</translation>
@@ -88,6 +89,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4867841927763172006">Stuur PrtScn</translation>
 <translation id="4974476491460646149">Verbinding is gesluit vir <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Jy moet jou rekenaar eers vir afstandtoegang opstel</translation>
+<translation id="4987330545941822761">Chrome-afstandskerm kan nie die blaaier bepaal om URL'e plaaslik oop te maak nie. Kies dit asseblief uit die lys hieronder.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (vanlyn)</translation>
 <translation id="507204348399810022">Is jy seker jy wil afgeleë verbindings met <ph name="HOSTNAME" /> deaktiveer?</translation>
 <translation id="5170982930780719864">Ongeldige gasheer-ID.</translation>
@@ -135,6 +137,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7312846573060934304">Gasheer is vanlyn.</translation>
 <translation id="7319983568955948908">Hou op deel</translation>
+<translation id="7359298090707901886">Die gekose blaaier kan nie gebruik word om URL'e op die plaaslike masjien oop te maak nie.</translation>
 <translation id="7401733114166276557">Chrome-afstandwerkskerm</translation>
 <translation id="7434397035092923453">Toegang geweier vir kliënt: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Kliënt gekoppel: <ph name="CLIENT_USERNAME" />.</translation>

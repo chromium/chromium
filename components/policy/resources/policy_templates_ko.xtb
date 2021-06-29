@@ -885,6 +885,13 @@
       정책이 설정되면 브라우저가 메모리 절약을 위해 제한 초과 시 탭을 삭제하기 시작합니다. 하지만 브라우저가 항상 제한 하에서 실행된다고 보장하지 않습니다. 1,024 미만의 값은 1,024로 반올림됩니다.
 
       이 정책이 설정되지 않으면 컴퓨터의 물리적 메모리양이 부족하다고 감지된 후에만 브라우저에서 메모리 절약을 시도하기 시작합니다.</translation>
+<translation id="2165567959657265531">다음 패턴과 일치하는 도메인에 설정된 쿠키는 기존 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 동작으로 되돌아갑니다. 기존 동작으로 되돌리면 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 속성이 지정되지 않은 쿠키가 "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"인 것처럼 처리되고, "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" 쿠키가 "<ph name="ATTRIBUTE_SECURE_NAME" />" 속성을 전달하지 않아도 되며, 두 사이트가 동일한 사이트인지 평가할 때 스킴 비교를 건너뜁니다. https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies에서 전체 설명을 확인하세요.
+
+          여기 명시된 패턴에 해당하지 않는 도메인의 쿠키 또는 이 정책을 설정하지 않은 경우의 모든 쿠키에 대해서는 전체 기본값이 사용자 개인 설정이 됩니다.
+
+          유효한 패턴에 관해 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요.
+
+          여기에 명시한 패턴은 URL이 아닌 도메인으로 취급되므로 스킴 또는 포트를 지정해서는 안 됩니다.</translation>
 <translation id="2166155400701622446"><ph name="PRODUCT_NAME" />에는 제한된 포트 목록이 내장되어 있습니다. 이 포트에는 연결이 되지 않습니다. 이 설정은 제한된 포트 목록을 우회하는 것을 허용합니다. 값은 쉼표로 구분된 목록으로, 발신 연결이 허용될 0개 이상의 포트가 나열됩니다.
 
       <ph name="PRODUCT_NAME" />이 여러 가지 네트워크 취약점을 오남용하기 위한 수단으로 이용되는 것을 방지하기 위해 포트 사용이 제한됩니다. 정책을 설정하면 네트워크가 공격에 노출될 수도 있습니다. 이 정책은 차단된 포트에서 실행되는 서비스를 일반 포트(포트 80 또는 443)로 이전하는 동안 발생하는 'ERR_UNSAFE_PORT' 코드 오류를 해결하기 위한 일시적인 방법으로 사용됩니다.

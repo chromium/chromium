@@ -204,6 +204,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2542089167727451762">Toque na imagem do perfil.</translation>
 <translation id="255671100581129685">O Assistente Google não está disponível para sessões públicas.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
+<translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
 <translation id="2582112259361606227">Reiniciar para atualizar</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
@@ -350,6 +351,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
+<translation id="3779139509281456663">A ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="3796746699333205839">Uma aplicação está a utilizar a sua câmara e microfone.</translation>
@@ -704,6 +706,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> pretende utilizar o microfone</translation>
+<translation id="6630773993843701741">Abra as Definições de Bluetooth para sincronizar o dispositivo manualmente</translation>
 <translation id="6637729079642709226">Altere a hora</translation>
 <translation id="6641720045729354415">Ative/desative as Legendas instantâneas. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> pretende confirmar a sua identidade</translation>
@@ -789,6 +792,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
+<translation id="7366890467478514168">Ligue ao dispositivo <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7377169924702866686">Caps Lock ativado.</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área a gravar.</translation>
@@ -1039,6 +1043,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9193626018745640770">A transmitir para um recetor desconhecido…</translation>
 <translation id="9194617393863864469">Iniciar sessão com outro utilizador...</translation>
 <translation id="9198992156681343238">Resolução de <ph name="DISPLAY_NAME" /> alterada para <ph name="RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Ligue o dispositivo <ph name="NAME" /> a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerida pelo administrador</translation>
 <translation id="9210037371811586452">A sair do Modo de ambiente de trabalho unificado</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>

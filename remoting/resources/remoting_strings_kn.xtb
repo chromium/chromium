@@ -24,6 +24,7 @@
 ಒಂದು ವೇಳೆ '<ph name="SERVICE_SCRIPT_NAME" />' ಅನ್ನು ಈಗಾಗಲೇ ಚೆಕ್ ಗುರುತು ಮಾಡಲಾಗಿದ್ದರೆ, ಚೆಕ್ ಗುರುತು ತೆಗೆದು, ಮತ್ತೊಮ್ಮೆ ಚೆಕ್ ಗುರುತು ಮಾಡಿ.</translation>
 <translation id="225614027745146050">ಸ್ವಾಗತ</translation>
 <translation id="2320166752086256636">ಕೀಬೋರ್ಡ್ ಮರೆಮಾಡಿ</translation>
+<translation id="2329392777730037872">ಕ್ಲೈಂಟ್‌ನಲ್ಲಿ <ph name="URL" /> ತೆರೆಯಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2333212046079545895">ಕೃತಿಸ್ವಾಮ್ಯ 2021 Google LLC. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2366718077645204424">ಹೋಸ್ಟ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇದಕ್ಕೆ ಬಹುಶಃ ನೀವು ಬಳಸುತ್ತಿರುವ ಕಾನ್ಫಿಗರೇಶನ್ ನೆಟ್‌ವರ್ಕ್ ಕಾರಣವಾಗಿರಬಹುದು.</translation>
@@ -87,6 +88,7 @@
 <translation id="4867841927763172006">PrtScn ಕಳುಹಿಸು</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ಗಾಗಿ ಸಂಪರ್ಕವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="4985296110227979402">ರಿಮೋಟ್ ಪ್ರವೇಶಕ್ಕಾಗಿ ನೀವು ಮೊದಲು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ</translation>
+<translation id="4987330545941822761">ಸ್ಥಳೀಯವಾಗಿ URL ಗಳನ್ನು ತೆರೆಯಲು Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಬ್ರೌಸರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಿಲ್ಲ. ಕೆಳಗಿರುವ ಪಟ್ಟಿಯಿಂದ ಅದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ಆಫ್‌ಲೈನ್)</translation>
 <translation id="507204348399810022">ನೀವು <ph name="HOSTNAME" /> ಗೆ ರಿಮೋಟ್ ಸಂಪರ್ಕವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="5170982930780719864">ಅಮಾನ್ಯ ಹೋಸ್ಟ್ ಐಡಿ.</translation>
@@ -133,6 +135,7 @@
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7312846573060934304">ಹೋಸ್ಟ್‌ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="7319983568955948908">ಹಂಚಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="7359298090707901886">ಆಯ್ಕೆ ಮಾಡಿದ ಬ್ರೌಸರ್ ಅನ್ನು ಸ್ಥಳೀಯ ಯಂತ್ರದಲ್ಲಿ URL ಗಳನ್ನು ತೆರೆಯಲು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7401733114166276557">Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
 <translation id="7434397035092923453">ಕ್ಲೈಂಟ್‌ಗೆ ಪ್ರವೇಶ ನಿರಾಕರಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ಕ್ಲೈಂಟ್ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>

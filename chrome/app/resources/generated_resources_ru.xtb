@@ -76,6 +76,7 @@
 <translation id="1076882167394279216">Не удалось скачать словарь для проверки правописания (язык: <ph name="LANGUAGE" />). Повторите попытку.</translation>
 <translation id="1079766198702302550">Всегда блокировать доступ к камере</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 вкладка}one{<ph name="GROUP_TITLE" /> – # вкладка}few{<ph name="GROUP_TITLE" /> – # вкладки}many{<ph name="GROUP_TITLE" /> – # вкладок}other{<ph name="GROUP_TITLE" /> – # вкладки}}</translation>
+<translation id="1082214733466244292">Некоторые функции этого устройства заблокированы администратором</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает восстановить настройки Chrome по умолчанию. В результате произойдет сброс настроек стартовой страницы, страницы быстрого доступа и поисковой системы, а также отключение расширений и открепление всех вкладок. Кроме того, все временные и кешированные данные (такие как файлы cookie, контент и данные сайтов) будут удалены.</translation>
 <translation id="1084096383128641877">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="DOMAIN" />. Чтобы защитить от злоумышленников свои данные на сайте <ph name="DOMAIN_LINK" />, удалите аккаунт или измените пароль.</translation>
 <translation id="1084824384139382525">Копировать ад&amp;рес ссылки</translation>
@@ -583,6 +584,7 @@
 <translation id="1627408615528139100">Файл уже скачан</translation>
 <translation id="1628948239858170093">Проверить файл перед открытием?</translation>
 <translation id="1629314197035607094">Срок действия пароля истек.</translation>
+<translation id="1630300831289687074">Скоро вы сможете использовать устройство Chromebook.</translation>
 <translation id="163072119192489970">Разрешить сайтам завершать отправку и получение данных</translation>
 <translation id="1630768113285622200">Перезапустить и продолжить</translation>
 <translation id="1632082166874334883">Пароль, сохраненный в вашем аккаунте Google</translation>
@@ -963,6 +965,7 @@
 <translation id="202918510990975568">Чтобы настроить параметры безопасности и входа, введите пароль.</translation>
 <translation id="2030455719695904263">Сенсорная панель</translation>
 <translation id="2031639749079821948">Пароль сохранен в вашем аккаунте Google.</translation>
+<translation id="2031914984822377766">Добавьте <ph name="LINK_BEGIN" />языки для сайтов<ph name="LINK_END" />. Для перевода будет использоваться первый язык в списке.</translation>
 <translation id="2034346955588403444">Добавить сеть Wi-Fi</translation>
 <translation id="203574396658008164">Делать заметки, когда экран заблокирован</translation>
 <translation id="2037445849770872822">Для этого аккаунта Google настроен родительский контроль. Чтобы изменить некоторые параметры, нажмите "Продолжить".
@@ -2433,7 +2436,6 @@
 <translation id="3629631988386925734">Чтобы включить Smart Lock, введите пароль. После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Добавьте этот сайт на панель запуска, чтобы он всегда был у вас под рукой.</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />, <ph name="OPTION_POSITION" /> из <ph name="NUM_OPTIONS" /></translation>
 <translation id="3634652306074934350">Срок действия запроса на разрешение истек</translation>
 <translation id="3635353578505343390">Отправка отзыва в Google</translation>
 <translation id="3635960017746711110">Настройки USB в Crostini</translation>
@@ -2516,6 +2518,7 @@
 <translation id="3713047097299026954">На электронном ключе нет учетных данных.</translation>
 <translation id="3714195043138862580">Демонстрационное устройство было деинициализировано.</translation>
 <translation id="3714633008798122362">веб-календарь</translation>
+<translation id="3716758537211256894">Проверить сеть</translation>
 <translation id="3719826155360621982">Главная страница</translation>
 <translation id="372062398998492895">Принтеры CUPS</translation>
 <translation id="3721119614952978349">Я и Google</translation>
@@ -2610,6 +2613,7 @@
 <translation id="381202950560906753">Добавить ещё</translation>
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="3813358687923336574">Язык, на который переводятся страницы и быстрые ответы</translation>
 <translation id="3814529970604306954">Учебный аккаунт</translation>
 <translation id="3816118180265633665">Цвета Chrome</translation>
 <translation id="3817524650114746564">Открыть настройки прокси-сервера для компьютера</translation>
@@ -4582,6 +4586,7 @@
 <translation id="6051354611314852653">Не удалось предоставить доступ API на этом устройстве.</translation>
 <translation id="6052976518993719690">Центр сертификации SSL</translation>
 <translation id="6053401458108962351">&amp;Удаление данных о просмотренных страницах...</translation>
+<translation id="6054284857788651331">Недавно закрытая группа вкладок</translation>
 <translation id="6054961935262556546">Изменить настройки</translation>
 <translation id="6055171183283175969">Введен неверный пароль.</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 с шифрованием RSA</translation>
@@ -5236,7 +5241,7 @@
 <translation id="6787839852456839824">Быстрые клавиши</translation>
 <translation id="6788210894632713004">Распакованное расширение</translation>
 <translation id="6789592661892473991">Разделить по горизонтали</translation>
-<translation id="678982761784843853">ID защищенного контента</translation>
+<translation id="678982761784843853">Идентификаторы защищенного контента</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6790497603648687708">Расширение "<ph name="EXTENSION_NAME" />" было добавлено удаленно</translation>
 <translation id="6790820461102226165">Добавить пользователя</translation>
@@ -5433,6 +5438,7 @@
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Обновление браузера Chrome</translation>
 <translation id="6994069045767983299">Инвертированные цвета</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
@@ -5806,6 +5812,7 @@
 <translation id="7415454883318062233">Настройка завершена</translation>
 <translation id="7416362041876611053">Неизвестная сетевая ошибка.</translation>
 <translation id="741906494724992817">Приложению не требуются особые разрешения.</translation>
+<translation id="7421067045979951561">обработчики протоколов</translation>
 <translation id="742130257665691897">Закладки удалены</translation>
 <translation id="7421925624202799674">Просмотр кода страницы</translation>
 <translation id="7422192691352527311">Настройки...</translation>
@@ -6004,6 +6011,7 @@
 <translation id="7634566076839829401">Произошла ошибка. Повторите попытку.</translation>
 <translation id="7635048370253485243">Закреплено администратором</translation>
 <translation id="763632859238619983">Запретить сайтам устанавливать обработчики платежей</translation>
+<translation id="7636422033092045734">Переключателей для работы стало больше, поэтому автосканирование отключено. Чтобы закрыть мастер, перейдите к кнопке "Готово" и нажмите переключатель "Выбрать".</translation>
 <translation id="7636919061354591437">Установить на этом устройстве</translation>
 <translation id="7637593984496473097">Недостаточно свободного места на диске.</translation>
 <translation id="7638605456503525968">Последовательные порты</translation>
@@ -6100,6 +6108,7 @@
 <translation id="7719588063158526969">Слишком длинное имя устройства.</translation>
 <translation id="7721179060400456005">Разрешить показывать окно на нескольких устройствах</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">В вашей организации обязательно использовать профиль</translation>
 <translation id="7722040605881499779">Для обновления необходимо <ph name="NECESSARY_SPACE" />.</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7728465250249629478">Изменить язык устройства</translation>
@@ -6851,6 +6860,7 @@
 <translation id="8553342806078037065">Другие пользователи</translation>
 <translation id="8554899698005018844">Язык не указан</translation>
 <translation id="8557022314818157177">Продолжайте прикасаться к сканеру отпечатков пальцев на электронном ключе, пока отпечаток не будет сохранен.</translation>
+<translation id="8557180006508471423">Включите Google Chrome в службах геолокации на устройстве Mac</translation>
 <translation id="8557930019681227453">Манифест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
 <translation id="8561206103590473338">Слон</translation>

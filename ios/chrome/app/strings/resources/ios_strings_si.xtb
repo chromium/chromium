@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">උසස් කළ</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
 <translation id="2015722694326466240">මුරපද බැලීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
+<translation id="2021670401941426298">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න.</translation>
 <translation id="2022352537516230970">ඔබගේ iPhone සඳහා තනා ඇත</translation>
 <translation id="2073572773299281212">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">ලකුණු කරන්න…</translation>
 <translation id="3131206671572504478">සියල්ල අවහිර කරන්න</translation>
 <translation id="313283613037595347">නව අප්‍රකට ටැබයක් තනන්න.</translation>
+<translation id="3134493362339304186">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න. ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. වෙනත් ආකාරයේ ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK" />මගේ Google ක්‍රියාකාරකම්<ph name="END_LINK" /> වෙත පිවිසෙන්න.</translation>
 <translation id="3153862085237805241">කාඩ්පත සුරකින්න</translation>
 <translation id="3157387275655328056">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
 <translation id="3157684681743766797">සියල්ල ලකුණු කරන්න…</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">පිටුව බෙදා ගන්න...</translation>
 <translation id="3290875554372353449">ගිණුමක් තෝරා ගන්න</translation>
 <translation id="3311748811247479259">අක්‍රිය</translation>
+<translation id="3317580614754548493">ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />සෙවීම්<ph name="END_LINK" /> හෝ වෙනත් ආකාරවල ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK" />මගේ Google ගිණුම<ph name="END_LINK" /> වෙත පිවිසෙන්න</translation>
 <translation id="3324193307694657476">ලිපිනය 2</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="3329904751041170572">සේවාදායකය වෙත සම්බන්ධ විය නොහැකි විය.</translation>
@@ -557,6 +560,7 @@
 සෑම අඩවියකටම අනන්‍ය මුරපදයක් භාවිත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="651505212789431520">සමමුහූර්තය අවලංගු කරන්නේද? ඔබට ඕනෑම වේලාවක සැකසීම් තුළ සමමුහූර්තය සක්‍රීය කළ හැක.</translation>
 <translation id="6524918542306337007">අප්‍රසිද්ධ ප්‍රකාරය ලබා ගත නොහැකිය</translation>
+<translation id="6560725150890787329">ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න. ඔබව ඔබගේ Google ගිණුමෙන් නොවරනු ඇත. වෙනත් ආකාරයේ ඉතිහාසය හිස් කිරීමට, <ph name="BEGIN_LINK" />මගේ Google ක්‍රියාකාරකම්<ph name="END_LINK" /> වෙත පිවිසෙන්න.</translation>
 <translation id="6561262006871132942">විශාලන කරන්න</translation>
 <translation id="6585618849026997638">පිටුසනක් එක් කිරීමෙන් ඔබට වැදගත් වන පිටුවකට ආපසු පැමිණීමට ඔබට හැකිය</translation>
 <translation id="6603393121510733479">ඔබගේ සංවිධානය රහසිගත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කර දැමීය.
@@ -801,6 +805,7 @@
 <translation id="8976382372951310360">උදවු</translation>
 <translation id="8981454092730389528">Google ක්‍රියාකාරකම් පාලනය</translation>
 <translation id="8985320356172329008">Google වෙත පුරනය වූයේ</translation>
+<translation id="9000089900434778519">ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="9034759925968272072">ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත. ඔබගේ Google ගිණුමට <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> දී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබිය හැකිය.</translation>
 <translation id="9037965129289936994">මුල් පිටපත පෙන්වන්න</translation>
 <translation id="9039373489628511875">කලාප පළල</translation>

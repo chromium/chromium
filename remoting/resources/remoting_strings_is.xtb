@@ -24,6 +24,7 @@ Veittu þessa heimild með því að smella á „<ph name="BUTTON_NAME" />“ h
 Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja hakið og haka svo aftur við.</translation>
 <translation id="225614027745146050">Velkomin(n)</translation>
 <translation id="2320166752086256636">Fela lyklaborð</translation>
+<translation id="2329392777730037872">Ekki tókst að opna <ph name="URL" /> í biðlaranum.</translation>
 <translation id="2333212046079545895">Höfundarréttur 2021 Google LLC. Öll réttindi áskilin.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2366718077645204424">Ekki næst í hýsilinn. Þetta er líklega vegna grunnstillingar á netkerfinu sem þú notar.</translation>
@@ -88,6 +89,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="4867841927763172006">Senda Print Screen</translation>
 <translation id="4974476491460646149">Tenging lokuð fyrir <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Fyrst verðurðu að setja upp tölvu með fjaraðgangi</translation>
+<translation id="4987330545941822761">Fjarstjórnun tölvu í Chrome getur ekki auðkennt vafrann til að opna vefslóðir í tækinu. Veldu hann af listanum hér að neðan.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ekki á netinu)</translation>
 <translation id="507204348399810022">Viltu örugglega slökkva á fjartengingum við <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Ógilt auðkenni hýsils.</translation>
@@ -135,6 +137,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7312846573060934304">Hýsillinn er ekki tengdur.</translation>
 <translation id="7319983568955948908">Hætta að deila</translation>
+<translation id="7359298090707901886">Ekki er hægt að nota valinn vafra til að opna vefslóðir í staðbundna tækinu.</translation>
 <translation id="7401733114166276557">Fjarstjórnun tölvu í Chrome</translation>
 <translation id="7434397035092923453">Aðgangi hafnað fyrir biðlara: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Biðlari tengdur: <ph name="CLIENT_USERNAME" />.</translation>

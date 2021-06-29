@@ -204,6 +204,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2542089167727451762">Nhấn vào ảnh hồ sơ của bạn</translation>
 <translation id="255671100581129685">Bạn không thể sử dụng Trợ lý Google trong phiên công khai.</translation>
 <translation id="256712445991462162">tính năng phóng to ở vị trí cố định</translation>
+<translation id="2573588302192866788">Không thể kết nối với <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Đã tắt tính năng đăng nhập nhiều tài khoản</translation>
 <translation id="2582112259361606227">Khởi động lại để cập nhật</translation>
 <translation id="2595239820337756193">5.000 dặm</translation>
@@ -350,6 +351,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
 <translation id="3771549900096082774">Chế độ tương phản cao</translation>
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
+<translation id="3779139509281456663">Đang kết nối với <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Khóa</translation>
 <translation id="3796746699333205839">Một ứng dụng đang sử dụng máy ảnh và micrô của bạn</translation>
@@ -704,6 +706,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
 <translation id="6627638273713273709">Tìm kiếm+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> muốn sử dụng micrô</translation>
+<translation id="6630773993843701741">Hãy mở chế độ cài đặt Bluetooth để ghép nối thiết bị theo cách thủ công</translation>
 <translation id="6637729079642709226">Thay đổi thời gian</translation>
 <translation id="6641720045729354415">Bật/tắt tính năng Phụ đề trực tiếp. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
@@ -789,6 +792,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
 <translation id="7360036564632145207">Để tối ưu hóa hiệu suất, hãy tắt chế độ ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
+<translation id="7366890467478514168">Kết nối với <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
 <translation id="7377169924702866686">Caps Lock đang bật.</translation>
 <translation id="7378203170292176219">Kéo để chọn một vùng sẽ quay</translation>
@@ -1039,6 +1043,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9193626018745640770">Đang truyền trên bộ thu không xác định</translation>
 <translation id="9194617393863864469">Đăng nhập tài khoản khác...</translation>
 <translation id="9198992156681343238">Độ phân giải của <ph name="DISPLAY_NAME" /> đã được thay đổi thành <ph name="RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
+<translation id="9201044636667689546">Kết nối <ph name="NAME" /> với Chromebook này</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="9210037371811586452">Đang thoát chế độ màn hình hợp nhất</translation>
 <translation id="9211490828691860325">Tất cả các không gian làm việc</translation>

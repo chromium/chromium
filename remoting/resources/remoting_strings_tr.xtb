@@ -24,6 +24,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 "<ph name="SERVICE_SCRIPT_NAME" />" zaten işaretliyse işaretini kaldırıp yeniden işaretleyin.</translation>
 <translation id="225614027745146050">Hoş Geldiniz</translation>
 <translation id="2320166752086256636">Klavyeyi gizle</translation>
+<translation id="2329392777730037872"><ph name="URL" /> adresi istemcide açılamadı.</translation>
 <translation id="2333212046079545895">Telif hakkı 2021 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2366718077645204424">Ana bilgisayara erişilemiyor. Bu sorun, kullandığınız ağın yapılandırmasından kaynaklanıyor olabilir.</translation>
@@ -88,6 +89,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4867841927763172006">PrtScn Gönder</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> adlı ana makinenin bağlantısı kapandı</translation>
 <translation id="4985296110227979402">İlk olarak bilgisayarınızı uzaktan erişim için ayarlamanız gerekir</translation>
+<translation id="4987330545941822761">Chrome Uzaktan Masaüstü, URL'leri yerel olarak açacak tarayıcıyı belirleyemiyor. Lütfen aşağıdaki listeden seçin.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (çevrimdışı)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> adlı ana bilgisayara uzaktan bağlantıları devre dışı bırakmak istediğinizden emin misiniz?</translation>
 <translation id="5170982930780719864">Ana makine kimliği geçersiz.</translation>
@@ -135,6 +137,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="7312846573060934304">Ana makine çevrimdışı.</translation>
 <translation id="7319983568955948908">Paylaşmayı Durdur</translation>
+<translation id="7359298090707901886">Seçilen tarayıcı, yerel makinedeki URL'leri açmak için kullanılamaz.</translation>
 <translation id="7401733114166276557">Chrome Uzaktan Masaüstü</translation>
 <translation id="7434397035092923453">Şu istemci için erişim reddedildi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">İstemci bağlandı: <ph name="CLIENT_USERNAME" />.</translation>

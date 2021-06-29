@@ -790,6 +790,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3799805948399000906">Tipo de letra solicitado</translation>
 <translation id="3807366285948165054">Turno X da imagem</translation>
 <translation id="3807873520724684969">Conteúdo prejudicial bloqueado.</translation>
+<translation id="3810973564298564668">Gerir</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
 <translation id="382518646247711829">Se utilizar um servidor de proxy...</translation>
 <translation id="3827112369919217609">Absoluto</translation>
@@ -1798,6 +1799,7 @@ Detalhes adicionais:
 <translation id="7552846755917812628">Experimente as sugestões seguintes:</translation>
 <translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Novo separador</translation>
+<translation id="7559278538486662777">Não é possível redimensionar esta app.</translation>
 <translation id="7564049878696755256">Pode perder o acesso à sua conta do serviço <ph name="ORG_NAME" /> ou ser vítima de roubo de identidade. O Chrome recomenda a alteração da palavra-passe agora.</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ter sido emitido de forma fraudulenta. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="7569952961197462199">Remover o cartão de crédito do Chrome?</translation>

@@ -24,6 +24,7 @@
 ប្រសិនបើបានធីក '<ph name="SERVICE_SCRIPT_NAME" />' រួចហើយ សូមដោះធីក រួចធីកវាម្ដងទៀត។</translation>
 <translation id="225614027745146050">ស្វាគមន៍</translation>
 <translation id="2320166752086256636">លាក់ក្តារចុច</translation>
+<translation id="2329392777730037872">មិនអាចបើក <ph name="URL" /> នៅលើ​កម្មវិធីភ្ញៀវបានទេ។</translation>
 <translation id="2333212046079545895">រក្សាសិទ្ធិគ្រប់យ៉ាងដោយ Google LLC ឆ្នាំ 2021។</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2366718077645204424">មិនអាចទៅកាន់ឧបករណ៍ចែករំលែកបណ្តាញ។ វាអាចមកពីការតំឡើងបណ្តាញដែលអ្នកកំពុងប្រើប្រាស់។</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">ផ្ញើ PrtScn</translation>
 <translation id="4974476491460646149">បានបិទការតភ្ជាប់សម្រាប់ <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">អ្នកត្រូវតែដំឡើងកុំព្យូទ័ររបស់អ្នកជាមុនសិនសម្រាប់ការចូលប្រើពីចម្ងាយ</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop មិនអាចកំណត់​កម្មវិធីរុករកតាម​អ៊ីនធឺណិត ដើម្បីបើក URL ក្នុងឧបករណ៍​បានទេ។ សូមជ្រើសរើសកម្មវិធីរុករក​តាមអ៊ីនធឺណិតពីបញ្ជីខាងក្រោម។</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ក្រៅបណ្តាញ)</translation>
 <translation id="507204348399810022">តើអ្នកប្រាកដថាចង់បិទដំណើរការការតភ្ជាប់ពីចម្ងាយទៅកាន់ <ph name="HOSTNAME" /> ឬទេ?</translation>
 <translation id="5170982930780719864">លេខសម្គាល់ម៉ាស៊ីនចែករំលែកគ្មានសុពលភាព។</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="7312846573060934304">ម៉ាស៊ីនចែករំលែកបណ្តាញនៅក្នុងក្រៅបណ្តាញ។</translation>
 <translation id="7319983568955948908">ឈប់ចែករំលែក</translation>
+<translation id="7359298090707901886">មិនអាចប្រើ​កម្មវិធីរុករកតាមអ៊ីនធឺណិតដែលបានជ្រើសរើស ដើម្បីបើក URL នៅលើម៉ាស៊ីនក្នុង​ឧបករណ៍បានទេ។</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">ការចូលប្រើត្រូវបានបដិសេធសម្រាប់អតិថិជន៖ <ph name="CLIENT_USERNAME" />។</translation>
 <translation id="7444276978508498879">អតិថិជនបានភ្ជាប់៖ <ph name="CLIENT_USERNAME" />។</translation>

@@ -889,6 +889,13 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn đặt chính sách này, thì trình duyệt sẽ bắt đầu đóng các thẻ để tiết kiệm bộ nhớ sau khi vượt quá giới hạn. Tuy nhiên, không thể đảm bảo rằng trình duyệt sẽ luôn chạy trong mức giới hạn. Mọi giá trị xấp xỉ 1024 sẽ được làm tròn thành 1024.
 
       Nếu bạn không đặt chính sách này, thì trình duyệt sẽ chỉ bắt đầu tìm cách tiết kiệm bộ nhớ sau khi phát hiện thấy rằng dung lượng bộ nhớ thực trên máy ở mức thấp.</translation>
+<translation id="2165567959657265531">Những cookie đã đặt cho những miền khớp với các mẫu này sẽ quay lại về hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ. Khi quay lại về hành vi cũ, cookie sẽ không chỉ định việc xử lý thuộc tính <ph name="ATTRIBUTE_SAMESITE_NAME" /> như thể là "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" và cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" không cần phải mang thuộc tính "<ph name="ATTRIBUTE_SECURE_NAME" />", đồng thời hệ thống sẽ bỏ qua quy trình so sánh lược đồ khi đánh giá liệu 2 trang web có phải là một hay không. Hãy truy cập https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies để xem bản mô tả đầy đủ.
+
+          Đối với những cookie trên những miền không khớp với các mẫu nêu ở đây hoặc đối với tất cả cookie, nếu bạn không đặt chính sách này, thì giá trị mặc định chung sẽ là cấu hình cá nhân của người dùng.
+
+          Hãy truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns để nắm được thông tin chi tiết về các mẫu hợp lệ.
+
+          Hãy lưu ý rằng các mẫu bạn liệt kê ở đây được xử lý như các miền, chứ không phải như các URL. Vì vậy, bạn không nên chỉ định lược đồ hoặc cổng.</translation>
 <translation id="2166155400701622446">Có một danh sách các cổng bị hạn chế được tích hợp sẵn trong <ph name="PRODUCT_NAME" />. Kết nối với các cổng này sẽ không thực hiện được. Chế độ cài đặt này cho phép bỏ qua danh sách đó. Giá trị này là một danh sách được phân tách bằng dấu phẩy, có thể trống hoặc gồm một hay nhiều cổng cho phép thực hiện các kết nối đi.
 
       Các cổng bị hạn chế nhằm ngăn chặn hành vi lợi dụng <ph name="PRODUCT_NAME" /> để khai thác các lỗ hổng bảo mật của mạng. Việc thiết lập chính sách này có thể khiến mạng của bạn có nguy cơ bị tấn công. Chính sách này dùng để xử lý tạm thời các lỗi có mã "ERR_UNSAFE_PORT" khi di chuyển một dịch vụ đang chạy trên cổng bị chặn sang một cổng thông thường (ví dụ: cổng 80 hoặc 443).

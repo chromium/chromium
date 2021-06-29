@@ -24,6 +24,7 @@ Toto povolenie udelíte tak, že kliknutím na <ph name="BUTTON_NAME" /> nižši
 Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknutie zrušte a potom ho znova začiarknite.</translation>
 <translation id="225614027745146050">Vitajte</translation>
 <translation id="2320166752086256636">Skryť klávesnicu</translation>
+<translation id="2329392777730037872"><ph name="URL" /> sa nepodarilo v klientovi otvoriť.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Všetky práva vyhradené.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2366718077645204424">Hostiteľa sa nepodarilo nájsť. Pravdepodobne je to spôsobené konfiguráciou siete, ktorú používate.</translation>
@@ -88,6 +89,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="4867841927763172006">Odoslať akciu PrtScn</translation>
 <translation id="4974476491460646149">Pripojenie k zariadeniu <ph name="HOSTNAME" /> bolo ukončené</translation>
 <translation id="4985296110227979402">Najprv musíte v počítači nastaviť vzdialený prístup</translation>
+<translation id="4987330545941822761">Vzdialená plocha Chrome nedokáže určiť prehliadač, v ktorom sa majú miestne otvárať webové adresy. Vyberte ho v zozname nižšie.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Naozaj chcete zakázať vzdialené pripojenia k zariadeniu <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Neplatný identifikátor hostiteľa</translation>
@@ -135,6 +137,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="7312846573060934304">Hostiteľ je v režime offline.</translation>
 <translation id="7319983568955948908">Prestať zdieľať</translation>
+<translation id="7359298090707901886">Vo vybranom prehliadači sa nedajú otvárať webové adresy v miestnom zariadení.</translation>
 <translation id="7401733114166276557">Vzdialená plocha Chrome</translation>
 <translation id="7434397035092923453">Prístup bol odmietnutý klientskemu programu: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klient je pripojený: <ph name="CLIENT_USERNAME" />.</translation>

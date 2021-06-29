@@ -24,6 +24,7 @@
 ‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
 <translation id="225614027745146050">환영합니다.</translation>
 <translation id="2320166752086256636">키보드 숨기기</translation>
+<translation id="2329392777730037872">클라이언트 기기에서 <ph name="URL" /> 페이지를 열지 못했습니다.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. All Rights Reserved.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScn 전송</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> 연결이 종료되었습니다</translation>
 <translation id="4985296110227979402">먼저 컴퓨터를 원격으로 액세스할 수 있도록 설정해야 합니다.</translation>
+<translation id="4987330545941822761">Chrome 원격 데스크톱은 로컬에서 URL을 여는 데 사용할 브라우저를 결정할 수 없습니다. 아래 목록에서 브라우저를 선택하세요.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" />(오프라인)</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> 원격 연결을 사용 중지하시겠습니까?</translation>
 <translation id="5170982930780719864">호스트 ID가 잘못되었습니다.</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7312846573060934304">호스트가 오프라인 상태입니다.</translation>
 <translation id="7319983568955948908">공유 중지</translation>
+<translation id="7359298090707901886">선택한 브라우저는 로컬 컴퓨터에서 URL을 열 때 사용할 수 없습니다.</translation>
 <translation id="7401733114166276557">Chrome 원격 데스크톱</translation>
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 클라이언트의 액세스가 거부되었습니다.</translation>
 <translation id="7444276978508498879">연결된 클라이언트: <ph name="CLIENT_USERNAME" /></translation>

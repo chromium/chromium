@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
+<translation id="2021670401941426298">ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="2022352537516230970">‏מותאם ל-iPhone שלך</translation>
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">סימון…</translation>
 <translation id="3131206671572504478">‏חסימת כל קובצי ה-cookie</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
+<translation id="3134493362339304186">‏ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי. לא תתבצע יציאה מחשבון Google שלך. בדף <ph name="BEGIN_LINK" />הפעילות שלי ב-Google<ph name="END_LINK" /> ניתן למחוק היסטוריה מסוגים אחרים.</translation>
 <translation id="3153862085237805241">שמירת כרטיס</translation>
 <translation id="3157387275655328056">הוסף לרשימת הקריאה</translation>
 <translation id="3157684681743766797">סימון הכול…</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">שיתוף הדף…</translation>
 <translation id="3290875554372353449">בחירת חשבון</translation>
 <translation id="3311748811247479259">כבוי</translation>
+<translation id="3317580614754548493">‏לא תתבצע יציאה מחשבון Google שלך. כדי לנקות את <ph name="BEGIN_LINK" />החיפוש<ph name="END_LINK" /> או היסטוריה מסוגים אחרים, יש לעבור אל <ph name="BEGIN_LINK" />חשבון Google שלי<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3329904751041170572">לא ניתן להתחבר לשרת.</translation>
@@ -557,6 +560,7 @@
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
 <translation id="651505212789431520">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך 'הגדרות'.</translation>
 <translation id="6524918542306337007">מצב אנונימי אינו זמין</translation>
+<translation id="6560725150890787329">‏מנוע החיפוש שלך הוא <ph name="DSE_NAME" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי. לא תתבצע יציאה מחשבון Google שלך. בדף <ph name="BEGIN_LINK" />הפעילות שלי ב-Google<ph name="END_LINK" /> ניתן למחוק היסטוריה מסוגים אחרים.</translation>
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="6603393121510733479">הארגון שלך כיבה את אפשרות הגלישה הפרטית.
@@ -801,6 +805,7 @@
 <translation id="8976382372951310360">עזרה</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>
 <translation id="8985320356172329008">‏התחברת ל-Google בשם</translation>
+<translation id="9000089900434778519">מנוע החיפוש שלך הוא <ph name="DSE_NAME" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שיהיה באפשרותך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">הצגת מקור</translation>
 <translation id="9039373489628511875">רוחב פס</translation>

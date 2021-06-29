@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
+<translation id="2021670401941426298">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу.</translation>
 <translation id="2022352537516230970">Таны iPhone-д зориулан бүтээсэн</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3131206671572504478">Бүх күүкийг блоклосон</translation>
 <translation id="313283613037595347">Шинэ Нууцлалтай таб үүсгэх</translation>
+<translation id="3134493362339304186">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу. Та Google Бүртгэлээсээ гарахгүй. Түүхийн бусад хэлбэрийг арилгахын тулд <ph name="BEGIN_LINK" />Миний Google-н үйл ажиллагаанд<ph name="END_LINK" /> зочилно уу.</translation>
 <translation id="3153862085237805241">Картыг хадгалах</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157684681743766797">Бүгдийг тэмдэглэх...</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">Хуудас хуваалцах...</translation>
 <translation id="3290875554372353449">Бүртгэл сонгох</translation>
 <translation id="3311748811247479259">Унтраалттай байна</translation>
+<translation id="3317580614754548493">Та Google Бүртгэлээсээ гарахгүй. <ph name="BEGIN_LINK" />Хайлт<ph name="END_LINK" /> эсвэл түүхийн бусад хэлбэрийг арилгахын тулд <ph name="BEGIN_LINK" />Миний Google Бүртгэлд<ph name="END_LINK" /> зочилно уу</translation>
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
 <translation id="3329904751041170572">Сервертэй холбогдож чадсангүй.</translation>
@@ -556,6 +559,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 Сайт бүрд өвөрмөц нууц үг ашиглахыг хичээгээрэй.</translation>
 <translation id="651505212789431520">Синк хийхийг цуцлах уу? Та синкийг хүссэн үедээ Тохиргоонд асааж болно.</translation>
 <translation id="6524918542306337007">Нууцлалын горим боломжгүй байна</translation>
+<translation id="6560725150890787329">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу. Та Google Бүртгэлээсээ гарахгүй. Түүхийн бусад хэлбэрийг арилгахын тулд <ph name="BEGIN_LINK" />Миний Google-н үйл ажиллагаанд<ph name="END_LINK" /> зочилно уу.</translation>
 <translation id="6561262006871132942">Томруулах</translation>
 <translation id="6585618849026997638">Та хавчуурга нэмснээр чухал хуудас руугаа буцан очих боломжтой</translation>
 <translation id="6603393121510733479">Танай байгууллага хувийн хөтчийг унтраасан.
@@ -800,6 +804,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8976382372951310360">Тусламж</translation>
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
+<translation id="9000089900434778519">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9039373489628511875">Мессежийн өргөн</translation>

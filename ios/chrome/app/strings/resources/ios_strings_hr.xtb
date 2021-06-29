@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="2015722694326466240">Da biste vidjeli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
+<translation id="2021670401941426298">Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo.</translation>
 <translation id="2022352537516230970">Razvijeno za vaš iPhone</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">Uvijek možete odabrati u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> što će se sinkronizirati.</translation>
@@ -207,6 +208,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="3112556859945124369">Označi...</translation>
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="313283613037595347">Izradite novu anonimnu karticu.</translation>
+<translation id="3134493362339304186">Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo. Nećete se odjaviti s Google računa. Da biste izbrisali druge oblike povijesti, posjetite stranicu <ph name="BEGIN_LINK" />Moje aktivnosti na Googleu<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Spremi karticu</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve...</translation>
@@ -229,6 +231,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="3285962946108803577">Dijeli stranicu...</translation>
 <translation id="3290875554372353449">Odabir računa</translation>
 <translation id="3311748811247479259">Isključeno</translation>
+<translation id="3317580614754548493">Nećete se odjaviti s Google računa. Da biste izbrisali <ph name="BEGIN_LINK" />pretraživanja<ph name="END_LINK" /> ili neku drugu povijest, posjetite stranicu <ph name="BEGIN_LINK" />Moj Google račun<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="3329904751041170572">Povezivanje s poslužiteljem nije moguće.</translation>
@@ -557,6 +560,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="651505212789431520">Otkazati sinkronizaciju? Sinkronizaciju možete uvijek uključiti u Postavkama.</translation>
 <translation id="6524918542306337007">Anonimni način nije dostupan</translation>
+<translation id="6560725150890787329">Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo. Nećete se odjaviti s Google računa. Da biste izbrisali druge oblike povijesti, posjetite stranicu <ph name="BEGIN_LINK" />Moje aktivnosti na Googleu<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Povećaj</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Vaša organizacija isključila je anonimno pregledavanje.
@@ -801,6 +805,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
+<translation id="9000089900434778519">Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo.</translation>
 <translation id="9034759925968272072">Nećete se odjaviti s Google računa. Na Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Prikaži izvornik</translation>
 <translation id="9039373489628511875">Propusnost</translation>

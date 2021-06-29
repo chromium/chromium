@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
 <translation id="256712445991462162">停駐放大鏡</translation>
+<translation id="2573588302192866788">無法連結 <ph name="NAME" /></translation>
 <translation id="2575685495496069081">多重登入功能已停用</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
 <translation id="2595239820337756193">5 公里等於多少英里</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">已拍攝螢幕截圖</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
+<translation id="3779139509281456663">正在連結 <ph name="NAME" /></translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3796746699333205839">某個應用程式正在使用攝影機和麥克風</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
 <translation id="6629480180092995136">「<ph name="APP_NAME" />」要求使用麥克風</translation>
+<translation id="6630773993843701741">請開啟藍牙設定以手動配對裝置</translation>
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換即時字幕。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
+<translation id="7366890467478514168">連結 <ph name="NAME" /></translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
 <translation id="7378203170292176219">拖曳選取要錄影的區域</translation>
@@ -1039,6 +1043,7 @@
 <translation id="9193626018745640770">正在透過不明接收器投放</translation>
 <translation id="9194617393863864469">登入其他使用者帳戶...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解析度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
+<translation id="9201044636667689546">請將 <ph name="NAME" /> 連結到 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由系統管理員管理</translation>
 <translation id="9210037371811586452">退出整合桌面模式</translation>
 <translation id="9211490828691860325">所有桌面</translation>

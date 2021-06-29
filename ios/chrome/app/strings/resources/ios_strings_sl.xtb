@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
+<translation id="2021670401941426298">Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="2022352537516230970">Ustvarjeno za vaš iPhone</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
@@ -207,6 +208,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3131206671572504478">Blokiraj vse</translation>
 <translation id="313283613037595347">Ustvarjanje novega anonimnega zavihka</translation>
+<translation id="3134493362339304186">Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo. Iz računa Google ne boste odjavljeni. Če želite izbrisati druge oblike zgodovine, obiščite <ph name="BEGIN_LINK" />mojo dejavnost v Googlu<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Shranjevanje kartice</translation>
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
 <translation id="3157684681743766797">Označi vse …</translation>
@@ -229,6 +231,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3285962946108803577">Deljenje strani …</translation>
 <translation id="3290875554372353449">Izberite račun</translation>
 <translation id="3311748811247479259">Izklopljeno</translation>
+<translation id="3317580614754548493">Iz računa Google ne boste odjavljeni. Če želite izbrisati zgodovino <ph name="BEGIN_LINK" />iskanja<ph name="END_LINK" /> ali druge oblike zgodovine, odprite <ph name="BEGIN_LINK" />Moj račun Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Naslov 2</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="3329904751041170572">Povezave s strežnikom ni mogoče vzpostaviti.</translation>
@@ -557,6 +560,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="651505212789431520">Želite preklicati sinhronizacijo? Sinhronizacijo lahko kadarkoli vklopite v nastavitvah.</translation>
 <translation id="6524918542306337007">Anonimni način ni na voljo</translation>
+<translation id="6560725150890787329">Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo. Iz računa Google ne boste odjavljeni. Če želite izbrisati druge oblike zgodovine, obiščite <ph name="BEGIN_LINK" />mojo dejavnost v Googlu<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
 <translation id="6603393121510733479">Vaša organizacija je izklopila zasebno brskanje.
@@ -801,6 +805,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8976382372951310360">Pomoč</translation>
 <translation id="8981454092730389528">Googlovi kontrolniki za dejavnost</translation>
 <translation id="8985320356172329008">V Google ste prijavljeni kot</translation>
+<translation id="9000089900434778519">Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="9034759925968272072">Iz Google Računa ne boste odjavljeni. V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Pokaži izvirno besedilo</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>

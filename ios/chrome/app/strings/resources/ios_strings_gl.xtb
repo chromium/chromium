@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
+<translation id="2021670401941426298">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
 <translation id="2022352537516230970">Deseñado para iPhones</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
@@ -207,6 +208,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
+<translation id="3134493362339304186">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca. Non se pechará sesión na túa Conta de Google. Para borrar outros historiais, visita <ph name="BEGIN_LINK" />A miña actividade de Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Gardar tarxeta</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todo como...</translation>
@@ -229,6 +231,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="3285962946108803577">Compartir páxina…</translation>
 <translation id="3290875554372353449">Escolle unha conta</translation>
 <translation id="3311748811247479259">Non</translation>
+<translation id="3317580614754548493">Non se pechará sesión na túa Conta de Google. Para borrar o historial de <ph name="BEGIN_LINK" />busca<ph name="END_LINK" /> ou doutros tipos, visita <ph name="BEGIN_LINK" />A miña Conta de Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="3329904751041170572">Non se puido conectar ao servidor.</translation>
@@ -557,6 +560,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="651505212789431520">Queres cancelar a sincronización? Podes activala en calquera momento en Configuración.</translation>
 <translation id="6524918542306337007">O modo de incógnito non está dispoñible</translation>
+<translation id="6560725150890787329">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca. Non se pechará sesión na túa Conta de Google. Para borrar outros historiais, visita <ph name="BEGIN_LINK" />A miña actividade de Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Achegar</translation>
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
 <translation id="6603393121510733479">A túa organización desactivou a navegación privada.
@@ -801,6 +805,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8976382372951310360">Axuda</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8985320356172329008">Iniciaches sesión en Google como</translation>
+<translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar orixinal</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

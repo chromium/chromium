@@ -338,6 +338,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
+<translation id="8214184102975786227">Аб'яднаць некалькі старонак у адзін PDF-файл</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8246209727385807362">Невядомы аператар</translation>
 <translation id="8291967909914612644">Родная краіна аператара</translation>
@@ -382,6 +383,7 @@
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Частата</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9073281213608662541">PAP</translation>

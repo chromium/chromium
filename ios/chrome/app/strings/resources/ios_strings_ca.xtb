@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
+<translation id="2021670401941426298">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau.</translation>
 <translation id="2022352537516230970">Creat per a l'iPhone</translation>
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
@@ -207,6 +208,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3112556859945124369">Marca com a…</translation>
 <translation id="3131206671572504478">Bloqueja-ho tot</translation>
 <translation id="313283613037595347">Crea una pestanya d'incògnit.</translation>
+<translation id="3134493362339304186">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau. No se't tancarà la sessió del Compte de Google. Per suprimir altres formes de l'historial, visita <ph name="BEGIN_LINK" />La meva activitat a Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Desa la targeta</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
@@ -229,6 +231,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="3285962946108803577">Comparteix la pàgina...</translation>
 <translation id="3290875554372353449">Tria un compte</translation>
 <translation id="3311748811247479259">Desactivat</translation>
+<translation id="3317580614754548493">No se't tancarà la sessió del Compte de Google. Per esborrar la <ph name="BEGIN_LINK" />cerca<ph name="END_LINK" /> o altres formes de l'historial, visita <ph name="BEGIN_LINK" />El meu Compte de Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adreça 2</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="3329904751041170572">No s'ha pogut connectar amb el servidor.</translation>
@@ -557,6 +560,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="651505212789431520">Vols cancel·lar la sincronització? Pots activar la sincronització en qualsevol moment des de la configuració.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
+<translation id="6560725150890787329">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau. No se't tancarà la sessió del Compte de Google. Per suprimir altres formes de l'historial, visita <ph name="BEGIN_LINK" />La meva activitat a Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.
@@ -801,6 +805,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
 <translation id="8985320356172329008">Has iniciat la sessió a Google com a</translation>
+<translation id="9000089900434778519">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>

@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
+<translation id="2021670401941426298">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="2022352537516230970">Створено для iPhone</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">Позначити…</translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
+<translation id="3134493362339304186">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є). Ви не вийдете з облікового запису Google. Щоб очистити історію, перейдіть на сторінку <ph name="BEGIN_LINK" />Мої дії в Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157684681743766797">Позначити всі…</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">Поділитися сторінкою…</translation>
 <translation id="3290875554372353449">Виберіть обліковий запис</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
+<translation id="3317580614754548493">Ви не вийдете з облікового запису Google. Щоб очистити історію, наприклад <ph name="BEGIN_LINK" />пошуку<ph name="END_LINK" />, перейдіть на сторінку <ph name="BEGIN_LINK" />Мій обліковий запис Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3329904751041170572">Не вдалось під’єднатися до сервера.</translation>
@@ -557,6 +560,7 @@
 Намагайтеся використовувати для кожного сайту унікальний пароль.</translation>
 <translation id="651505212789431520">Скасувати синхронізацію? Ви можете будь-коли ввімкнути синхронізацію в налаштуваннях.</translation>
 <translation id="6524918542306337007">Режим анонімного перегляду недоступний</translation>
+<translation id="6560725150890787329">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є). Ви не вийдете з облікового запису Google. Щоб очистити історію, перейдіть на сторінку <ph name="BEGIN_LINK" />Мої дії в Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Наблизити</translation>
 <translation id="6585618849026997638">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
@@ -801,6 +805,7 @@
 <translation id="8976382372951310360">Довідка</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
 <translation id="8985320356172329008">Ви ввійшли в обліковий запис Google як</translation>
+<translation id="9000089900434778519">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>
 <translation id="9039373489628511875">Трафік</translation>

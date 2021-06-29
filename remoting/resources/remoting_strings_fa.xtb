@@ -24,6 +24,7 @@
 اگر «<ph name="SERVICE_SCRIPT_NAME" />» قبلاً علامت زده شده است، علامت آن را بردارید و دوباره علامت بزنید.</translation>
 <translation id="225614027745146050">خوش آمدید</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
+<translation id="2329392777730037872"><ph name="URL" /> در کارخواه باز نشد.</translation>
 <translation id="2333212046079545895">‏حق نشر ۲۰۲۱ Google LLC. کلیه حقوق محفوظ است.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2366718077645204424">دسترسی به میزبان امکان‌پذیر نیست. این احتمالاً به دلیل پیکربندی شبکه‌ای است که استفاده می‌کنید.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">‏ارسال PrtScn</translation>
 <translation id="4974476491460646149">اتصال به <ph name="HOSTNAME" /> بسته شد</translation>
 <translation id="4985296110227979402">ابتدا باید رایانه‌تان را برای دسترسی ازراه‌دور تنظیم کنید</translation>
+<translation id="4987330545941822761">‏«رایانه ازدور Chrome» نمی‌تواند مرورگر را برای باز کردن محل نشانی‌های وب تعیین کند. لطفاً آن را از فهرست زیر انتخاب کنید.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (آفلاین)</translation>
 <translation id="507204348399810022">مطمئنید می‌خواهید اتصالات راه دور به <ph name="HOSTNAME" /> را غیرفعال کنید؟</translation>
 <translation id="5170982930780719864">شناسه میزبان نامعتبر است.</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="7312846573060934304">میزبان آفلاین است.</translation>
 <translation id="7319983568955948908">توقف اشتراک‌گذاری</translation>
+<translation id="7359298090707901886">نمی‌توان از مرورگر انتخاب‌شده برای باز کردن نشانی‌های وب در ماشین محلی استفاده کرد.</translation>
 <translation id="7401733114166276557">‏کنترل رایانه ازراه‌دور Chrome</translation>
 <translation id="7434397035092923453">دسترسی برای کلاینت ممنوع شده است: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">کلاینت وصل شد: <ph name="CLIENT_USERNAME" />.</translation>

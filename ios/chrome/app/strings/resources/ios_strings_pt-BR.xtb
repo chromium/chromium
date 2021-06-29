@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
+<translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="2022352537516230970">Criado para o iPhone</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
@@ -207,6 +208,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
+<translation id="3134493362339304186">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável. Sua Conta do Google não será desconectada. Para limpar outros tipos de histórico, acesse a página <ph name="BEGIN_LINK" />Minha atividade no Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salvar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo...</translation>
@@ -229,6 +231,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3285962946108803577">Compartilhar página…</translation>
 <translation id="3290875554372353449">Escolher uma conta</translation>
 <translation id="3311748811247479259">Desativada</translation>
+<translation id="3317580614754548493">Sua Conta do Google não será desconectada. Para limpar a <ph name="BEGIN_LINK" />pesquisa<ph name="END_LINK" /> ou outras formas de histórico, acesse a página <ph name="BEGIN_LINK" />Minha Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3329904751041170572">Não foi possível se conectar ao servidor.</translation>
@@ -557,6 +560,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="651505212789431520">Cancelar sincronização? É possível ativar esse recurso a qualquer momento nas configurações.</translation>
 <translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
+<translation id="6560725150890787329">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável. Sua Conta do Google não será desconectada. Para limpar outros tipos de histórico, acesse a página <ph name="BEGIN_LINK" />Minha atividade no Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
@@ -801,6 +805,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
 <translation id="8985320356172329008">Conectado(a) ao Google como</translation>
+<translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

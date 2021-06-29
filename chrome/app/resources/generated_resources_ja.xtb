@@ -76,6 +76,7 @@
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> のスペルチェック辞書をダウンロードできませんでした。もう一度お試しください。</translation>
 <translation id="1079766198702302550">カメラへのアクセスを常にブロックする</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
+<translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> が Chrome 設定を元のデフォルトに戻すことを求めています。これにより、ホームページ、新しいタブの画面、検索エンジンがリセットされ、拡張機能が無効となり、すべてのタブの固定が解除されます。また、その他の一時的なキャッシュ データ（Cookie、コンテンツ データ、サイトデータなど）も消去されます。</translation>
 <translation id="1084096383128641877">このパスワードを削除しても、<ph name="DOMAIN" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="DOMAIN_LINK" /> のアカウントを削除してください。</translation>
 <translation id="1084824384139382525">リンクのアドレスをコピー(&amp;E)</translation>
@@ -357,7 +358,7 @@
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
 <translation id="1406500794671479665">確認中...</translation>
-<translation id="1407069428457324124">ダークテーマ</translation>
+<translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="140723521119632973">モバイル有効化</translation>
 <translation id="1407489512183974736">中央トリミング</translation>
@@ -581,6 +582,7 @@
 <translation id="1627408615528139100">ダウンロード済み</translation>
 <translation id="1628948239858170093">ファイルを開く前にスキャンしますか？</translation>
 <translation id="1629314197035607094">パスワードの有効期限が切れています</translation>
+<translation id="1630300831289687074">まもなく Chromebook を使用できるようになります。</translation>
 <translation id="163072119192489970">データの送受信の完了を許可するサイト</translation>
 <translation id="1630768113285622200">再起動して続行</translation>
 <translation id="1632082166874334883">パスワードは Google アカウントに保存されています</translation>
@@ -961,6 +963,7 @@
 <translation id="202918510990975568">セキュリティとログインを設定するには、パスワードを入力してください</translation>
 <translation id="2030455719695904263">トラックパッド</translation>
 <translation id="2031639749079821948">パスワードは Google アカウントに保存されています</translation>
+<translation id="2031914984822377766">翻訳する<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />を追加してください。リストの一番上の言語が翻訳に使用されます。</translation>
 <translation id="2034346955588403444">他の Wi-Fi ネットワークを追加</translation>
 <translation id="203574396658008164">ロック画面からメモを取れるようにする</translation>
 <translation id="2037445849770872822">管理機能がこの Google アカウントに設定されました。保護者による使用制限をさらに設定するには、[続行] を選択してください。
@@ -1541,6 +1544,7 @@
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="266079277508604648">プリンタに接続できません。プリンタの電源が入っていて、Wi-Fi または USB 経由で Chromebook に接続されていることを確認してください。</translation>
+<translation id="2661315027005813059">バックフォワード キャッシュのページ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">ライトモードを使えば高速ブラウジングでデータ使用量も抑えることができます。クリックして詳細を見る。</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">言語</translation>
@@ -1903,6 +1907,7 @@
 <translation id="3021678814754966447">フレームのソースを表示(&amp;V)</translation>
 <translation id="3022978424994383087">聞き取れませんでした。</translation>
 <translation id="3023464535986383522">選択して読み上げ</translation>
+<translation id="3023517118372899130">スイッチの割り当て: 選択</translation>
 <translation id="3024374909719388945">24 時間形式を使用する</translation>
 <translation id="3027296729579831126">ニアバイシェアをオンにする</translation>
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
@@ -2432,7 +2437,6 @@
 <translation id="3629631988386925734">パスワードを入力すると Smart Lock が有効になり、次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="3630132874740063857">スマートフォン</translation>
 <translation id="3630995161997703415">このサイトをシェルフに追加するといつでも使えるようになります</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />、<ph name="NUM_OPTIONS" /> 個中 <ph name="OPTION_POSITION" /> 番目</translation>
 <translation id="3634652306074934350">権限のリクエストの有効期限が切れています</translation>
 <translation id="3635353578505343390">Google にフィードバックを送信</translation>
 <translation id="3635960017746711110">Crostini の USB 設定</translation>
@@ -2515,12 +2519,14 @@
 <translation id="3713047097299026954">このセキュリティ キーにはログインデータが保存されていません</translation>
 <translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
 <translation id="3714633008798122362">ウェブ カレンダー</translation>
+<translation id="3716758537211256894">ネットワークを確認</translation>
 <translation id="3719826155360621982">トップページ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google の設定</translation>
 <translation id="3722108462506185496">仮想マシンサービスの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="3727187387656390258">ポップアップを検証</translation>
 <translation id="372722114124766626">今回のみ</translation>
+<translation id="3727473233247516571">バックフォワード キャッシュのサブフレーム: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">スマートフォンから通知をミラーリング</translation>
 <translation id="3728681439294129328">ネットワーク アドレスの設定</translation>
 <translation id="3729303374699765035">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する</translation>
@@ -2609,6 +2615,7 @@
 <translation id="381202950560906753">別の指紋を登録</translation>
 <translation id="3812525830114410218">不適切な証明書</translation>
 <translation id="3813296892522778813">探しているものが見つからない場合は、<ph name="BEGIN_LINK_CHROMIUM" />Google Chrome のヘルプ<ph name="END_LINK_CHROMIUM" />をご覧ください。</translation>
+<translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
 <translation id="3814529970604306954">学校用アカウント</translation>
 <translation id="3816118180265633665">Chrome の色</translation>
 <translation id="3817524650114746564">パソコンのプロキシ設定を開く</translation>
@@ -3740,6 +3747,7 @@
 <translation id="5087748406101774740"><ph name="APP_NAME" />（<ph name="PROFILE_NAME" />）</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
+<translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">連携するネイティブ アプリケーションと通信</translation>
 <translation id="5097002363526479830">ネットワーク「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">ツール: <ph name="PRINT_NAME" /></translation>
@@ -4581,6 +4589,7 @@
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="6052976518993719690">SSL 認証局</translation>
 <translation id="6053401458108962351">閲覧履歴を消去(&amp;C)...</translation>
+<translation id="6054284857788651331">最近閉じたタブグループ</translation>
 <translation id="6054961935262556546">公開設定を変更</translation>
 <translation id="6055171183283175969">入力したパスワードが正しくありません。</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 with RSA 暗号化</translation>
@@ -5432,6 +5441,7 @@
 <translation id="6991665348624301627">送信先の選択</translation>
 <translation id="6992554835374084304">拡張スペルチェックの有効化</translation>
 <translation id="6993000214273684335">タブを名前のないグループから移動しました - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome ブラウザを更新しています</translation>
 <translation id="6994069045767983299">反転色</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - アクティビティ ログ</translation>
@@ -5805,6 +5815,7 @@
 <translation id="7415454883318062233">設定完了</translation>
 <translation id="7416362041876611053">不明なネットワーク エラーが発生しました。</translation>
 <translation id="741906494724992817">このアプリの使用に特別な権限は必要ありません。</translation>
+<translation id="7421067045979951561">プロトコル ハンドラ</translation>
 <translation id="742130257665691897">ブックマークを削除しました</translation>
 <translation id="7421925624202799674">ページのソースを表示(&amp;V)</translation>
 <translation id="7422192691352527311">環境設定...</translation>
@@ -6003,6 +6014,7 @@
 <translation id="7634566076839829401">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7635048370253485243">管理者によって固定されています</translation>
 <translation id="763632859238619983">すべてのサイトに支払いハンドラのインストールを許可しない</translation>
+<translation id="7636422033092045734">追加の操作スイッチの設定が完了し、自動スキャンがオフになりました。ガイドを閉じるには、完了ボタンに移動して選択スイッチを押してください。</translation>
 <translation id="7636919061354591437">このデバイスにインストール</translation>
 <translation id="7637593984496473097">ディスクの空き容量が不足しています</translation>
 <translation id="7638605456503525968">シリアルポート</translation>
@@ -6099,6 +6111,7 @@
 <translation id="7719588063158526969">デバイス名が長すぎます</translation>
 <translation id="7721179060400456005">ウィンドウを複数のディスプレイで表示できるようにする</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" />（<ph name="DEVICE_TYPE" />）</translation>
+<translation id="7721258531237831532">組織がプロフィールの作成を求めています</translation>
 <translation id="7722040605881499779">更新に必要な空き容量: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7728465250249629478">デバイスの言語を変更</translation>
@@ -6398,6 +6411,7 @@
 <translation id="8032244173881942855">タブをキャストできません。</translation>
 <translation id="8033827949643255796">選択しました</translation>
 <translation id="8033958968890501070">タイムアウト</translation>
+<translation id="8035059678007243127">バックフォワード キャッシュのシークレット ページ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
@@ -6527,6 +6541,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />（<ph name="TIME_REMAINING" />）</translation>
 <translation id="81610453212785426">Chrome では、<ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />という取り組みを通じて、クロスサイト トラッキングからユーザーを保護しつつ、オープンウェブの理念を支える新しい技術を開発しています。</translation>
 <translation id="8161293209665121583">ウェブページのリーダーモード</translation>
+<translation id="8162307956032783161">スイッチの割り当て: 次へ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
 <translation id="8165997195302308593">Crostini のポート転送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
@@ -6668,6 +6683,7 @@
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="8321476692217554900">通知</translation>
+<translation id="8321492415476219409">スイッチの割り当て: 前へ</translation>
 <translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>
 <translation id="8322814362483282060">このページはマイクへのアクセスを禁止されています。</translation>
 <translation id="8323167517179506834">URL を入力してください</translation>
@@ -6850,6 +6866,7 @@
 <translation id="8553342806078037065">他のユーザーを管理</translation>
 <translation id="8554899698005018844">言語設定なし</translation>
 <translation id="8557022314818157177">指紋の登録が完了するまで、セキュリティ キーをタッチし続けてください</translation>
+<translation id="8557180006508471423">Mac の位置情報サービスで「Google Chrome」をオンにしてください</translation>
 <translation id="8557930019681227453">マニフェスト</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="8561206103590473338">ゾウ</translation>

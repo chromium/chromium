@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
+<translation id="2021670401941426298">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="2022352537516230970">Diseñado para tu iPhone</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
@@ -207,6 +208,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear una pestaña de incógnito nueva.</translation>
+<translation id="3134493362339304186">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde). No saldrás de tu Cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi actividad de Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
@@ -229,6 +231,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="3285962946108803577">Compartir página…</translation>
 <translation id="3290875554372353449">Elegir una cuenta</translation>
 <translation id="3311748811247479259">No</translation>
+<translation id="3317580614754548493">No saldrás de tu Cuenta de Google. Para borrar la <ph name="BEGIN_LINK" />búsqueda<ph name="END_LINK" /> o algún otro tipo de historial, visita <ph name="BEGIN_LINK" />Mi Cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="3329904751041170572">No se pudo establecer conexión con el servidor.</translation>
@@ -557,6 +560,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="651505212789431520">¿Quieres cancelar la sincronización? Puedes activarla en la Configuración en cualquier momento.</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
+<translation id="6560725150890787329">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde). No saldrás de tu Cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi actividad de Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
 <translation id="6603393121510733479">Tu organización desactivó la navegación privada.
@@ -801,6 +805,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
+<translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>

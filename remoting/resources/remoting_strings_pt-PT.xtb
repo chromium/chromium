@@ -24,6 +24,7 @@ Para conceder esta autorização, clique no botão "<ph name="BUTTON_NAME" />" a
 Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e volte a selecioná-lo.</translation>
 <translation id="225614027745146050">Bem-vindo</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
+<translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível contactar o anfitrião. Provavelmente, isso deve-se à configuração da rede que está a utilizar.</translation>
@@ -88,6 +89,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4867841927763172006">Enviar PrtScn</translation>
 <translation id="4974476491460646149">Ligação a <ph name="HOSTNAME" /> fechada</translation>
 <translation id="4985296110227979402">Primeiro, tem de configurar o computador para acesso remoto</translation>
+<translation id="4987330545941822761">O Ambiente de Trabalho Remoto do Chrome não consegue determinar o navegador para abrir URLs localmente. Escolha-o na lista abaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Tem a certeza de que pretende desativar as ligações remotas a <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID de anfitrião inválido.</translation>
@@ -135,6 +137,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7312846573060934304">O anfitrião está offline.</translation>
 <translation id="7319983568955948908">Terminar Partilha</translation>
+<translation id="7359298090707901886">Não é possível utilizar o navegador escolhido para abrir URLs na máquina local.</translation>
 <translation id="7401733114166276557">Ambiente de Trabalho Remoto do Chrome</translation>
 <translation id="7434397035092923453">Acesso negado ao cliente: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Cliente ligado: <ph name="CLIENT_USERNAME" />.</translation>

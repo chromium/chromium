@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
+<translation id="2021670401941426298">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="2022352537516230970">Sérhannað fyrir iPhone</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3112556859945124369">Merkja…</translation>
 <translation id="3131206671572504478">Útiloka öll</translation>
 <translation id="313283613037595347">Búa til nýjan huliðsflipa.</translation>
+<translation id="3134493362339304186">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við. Þú verður ekki skráð(ur) út af Google reikningnum þínum. Farðu í <ph name="BEGIN_LINK" />Google virkni mín<ph name="END_LINK" /> til að hreinsa aðra ferla.</translation>
 <translation id="3153862085237805241">Vista kort</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
@@ -229,6 +231,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="3285962946108803577">Deila síðu...</translation>
 <translation id="3290875554372353449">Veldu reikning</translation>
 <translation id="3311748811247479259">Slökkt</translation>
+<translation id="3317580614754548493">Þú verður ekki skráð(ur) út af Google reikningnum þínum. Til að hreinsa <ph name="BEGIN_LINK" />leit<ph name="END_LINK" /> eða aðra ferla skaltu fara í <ph name="BEGIN_LINK" />Google reikningurinn minn<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Heimilisfang 2</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>
 <translation id="3329904751041170572">Ekki var hægt að tengjast þjóninum.</translation>
@@ -557,6 +560,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="651505212789431520">Hætta við samstillingu? Hægt er að kveikja á samstillingu hvenær sem er í stillingunum.</translation>
 <translation id="6524918542306337007">Huliðsstilling er ekki tiltæk</translation>
+<translation id="6560725150890787329">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við. Þú verður ekki skráð(ur) út af Google reikningnum þínum. Farðu í <ph name="BEGIN_LINK" />Google virkni mín<ph name="END_LINK" /> til að hreinsa aðra ferla.</translation>
 <translation id="6561262006871132942">Auka aðdrátt</translation>
 <translation id="6585618849026997638">Þú getur komist aftur á mikilvæga síðu á einfaldan hátt með því að setja inn bókamerki</translation>
 <translation id="6603393121510733479">Fyrirtækið þitt slökkti á óskráðri vefnotkun.
@@ -801,6 +805,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8976382372951310360">Hjálp</translation>
 <translation id="8981454092730389528">Virknistýringar Google</translation>
 <translation id="8985320356172329008">Innskráð(ur) á Google sem</translation>
+<translation id="9000089900434778519">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="9034759925968272072">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Sýna frumtexta</translation>
 <translation id="9039373489628511875">Bandvídd</translation>

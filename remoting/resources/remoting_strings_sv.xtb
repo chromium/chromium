@@ -24,6 +24,7 @@ Du beviljar behörigheten genom att klicka på <ph name="BUTTON_NAME" /> nedan o
 Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och markerar den på nytt.</translation>
 <translation id="225614027745146050">Välkommen</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
+<translation id="2329392777730037872">Det gick inte att öppna <ph name="URL" /> på klientenheten.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Med ensamrätt.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2366718077645204424">Det går inte att nå värden. Detta beror troligen på konfigurationen av nätverket som du använder.</translation>
@@ -88,6 +89,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4867841927763172006">Skicka PrtScn</translation>
 <translation id="4974476491460646149">Anslutningen till <ph name="HOSTNAME" /> kopplades från</translation>
 <translation id="4985296110227979402">Du måste först konfigurera datorn för fjärråtkomst</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop kan inte avgöra vilken webbläsare som ska användas för att öppna webbadresser lokalt. Välj webbläsare i listan nedan.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Är du säker på att du vill inaktivera fjärranslutningar till <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Ogiltigt värd-id.</translation>
@@ -135,6 +137,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="7312846573060934304">Värden är offline.</translation>
 <translation id="7319983568955948908">Sluta dela</translation>
+<translation id="7359298090707901886">Den valda webbläsaren kan inte användas för att öppna webbadresser på den lokala datorn.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Åtkomst nekad för klient: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klient ansluten: <ph name="CLIENT_USERNAME" />.</translation>

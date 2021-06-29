@@ -24,6 +24,7 @@ Als je rechten wilt verlenen, ga je hieronder naar <ph name="BUTTON_NAME" /> om 
 Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en daarna weer opnieuw aan.</translation>
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
+<translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
@@ -88,6 +89,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4867841927763172006">PrtScn verzenden</translation>
 <translation id="4974476491460646149">Verbinding verbroken voor <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Je moet eerst je computer instellen voor externe toegang</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop kan niet vaststellen met welke browser URL's lokaal moeten worden geopend. Maak een keuze in de onderstaande lijst.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitzetten?</translation>
 <translation id="5170982930780719864">Ongeldige host-ID.</translation>
@@ -135,6 +137,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
+<translation id="7359298090707901886">De gekozen browser kan niet worden gebruikt om URL's op de lokale machine te openen.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Toegang geweigerd voor client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client verbonden: <ph name="CLIENT_USERNAME" />.</translation>

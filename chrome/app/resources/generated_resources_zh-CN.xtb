@@ -2428,7 +2428,6 @@
 <translation id="3629631988386925734">请输入您的密码，以启用 Smart Lock。下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="3630132874740063857">您的手机</translation>
 <translation id="3630995161997703415">请将此网站添加到您的任务栏中，以便随时使用</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />，第 <ph name="OPTION_POSITION" /> 个（共 <ph name="NUM_OPTIONS" /> 个）</translation>
 <translation id="3634652306074934350">权限请求已过期</translation>
 <translation id="3635353578505343390">向 Google 发送反馈</translation>
 <translation id="3635960017746711110">Crostini USB 偏好设置</translation>

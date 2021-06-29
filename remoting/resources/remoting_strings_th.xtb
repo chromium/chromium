@@ -24,6 +24,7 @@
 หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
 <translation id="225614027745146050">ยินดีต้อนรับ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
+<translation id="2329392777730037872">เปิด <ph name="URL" /> ในไคลเอ็นต์ไม่สำเร็จ</translation>
 <translation id="2333212046079545895">ลิขสิทธิ์ 2021 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2366718077645204424">ไม่สามารถเข้าถึงโฮสต์ อาจเป็นเพราะการกำหนดค่าของเครือข่ายที่คุณกำลังใช้อยู่</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">ส่ง PrtScn</translation>
 <translation id="4974476491460646149">ปิดการเชื่อมต่อของ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="4985296110227979402">คุณต้องตั้งค่าคอมพิวเตอร์สำหรับการเข้าถึงระยะไกลก่อน</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop ไม่สามารถระบุเบราว์เซอร์ที่จะเปิด URL ในอุปกรณ์ โปรดเลือกจากรายการด้านล่าง</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ออฟไลน์)</translation>
 <translation id="507204348399810022">คุณแน่ใจไหมว่าต้องการปิดใช้การเชื่อมต่อระยะไกลกับ <ph name="HOSTNAME" /></translation>
 <translation id="5170982930780719864">รหัสโฮสต์ไม่ถูกต้อง</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7312846573060934304">โฮสต์ออฟไลน์</translation>
 <translation id="7319983568955948908">หยุดการแชร์</translation>
+<translation id="7359298090707901886">เบราว์เซอร์ที่เลือกไม่สามารถใช้เปิด URL ในคอมพิวเตอร์ในพื้นที่</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">การเข้าถึงถูกปฏิเสธสำหรับไคลเอ็นต์: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">ไคลเอ็นต์ที่เชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>

@@ -204,6 +204,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2542089167727451762">Dodirnite sliku profila</translation>
 <translation id="255671100581129685">Google pomoćnik nije dostupan u javnoj sesiji.</translation>
 <translation id="256712445991462162">montirana lupa ekrana</translation>
+<translation id="2573588302192866788">Nismo uspeli da povežemo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Onemogućeno je višestruko prijavljivanje</translation>
 <translation id="2582112259361606227">Restartujte da biste ažurirali</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
@@ -350,6 +351,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3771549900096082774">Režim visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
+<translation id="3779139509281456663">Povezuje se sa uređajem <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zaključaj</translation>
 <translation id="3796746699333205839">Aplikacija koristi kameru i mikrofon</translation>
@@ -704,6 +706,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
 <translation id="6627638273713273709">Taster za pretragu+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> želi da koristi mikrofon</translation>
+<translation id="6630773993843701741">Otvorite podešavanja Bluetooth-a da biste ručno uparili uređaj</translation>
 <translation id="6637729079642709226">Promenite vreme</translation>
 <translation id="6641720045729354415">Uključite ili isključite titl uživo. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
@@ -789,6 +792,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
 <translation id="7360036564632145207">Ako promenite podešavanje zaštite pristupa podacima za periferne uređaje, možete da optimizujete učinak</translation>
+<translation id="7366890467478514168">Povežite <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Snimi prozor</translation>
 <translation id="7377169924702866686">Caps Lock je uključen.</translation>
 <translation id="7378203170292176219">Prevucite da biste izabrali oblast za snimanje</translation>
@@ -1039,6 +1043,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="9193626018745640770">Prebacuje se na nepoznati prijemnik</translation>
 <translation id="9194617393863864469">Prijavite još jednog korisnika...</translation>
 <translation id="9198992156681343238">Rezolucija ekrana <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Povežite <ph name="NAME" /> sa ovim Chromebook-om</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, upravlja administrator</translation>
 <translation id="9210037371811586452">Izlazak iz režima spojenih radnih površina</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>

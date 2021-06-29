@@ -24,6 +24,7 @@ Selle loa andmiseks klõpsake alloleval nupul „<ph name="BUTTON_NAME" />”, e
 Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitud, eemaldage märge ja märkige see siis uuesti.</translation>
 <translation id="225614027745146050">Tere tulemast</translation>
 <translation id="2320166752086256636">Peida klaviatuur</translation>
+<translation id="2329392777730037872">URL-i <ph name="URL" /> avamine kliendis ei õnnestunud.</translation>
 <translation id="2333212046079545895">Autoriõigus 2021 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2366718077645204424">Hostiga ei saa ühendust. Seda põhjustab ilmselt kasutatava võrgu konfiguratsioon.</translation>
@@ -88,6 +89,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4867841927763172006">Saada klahvi PrtScn vajutamine</translation>
 <translation id="4974476491460646149">Ühendus hostiga <ph name="HOSTNAME" /> on suletud</translation>
 <translation id="4985296110227979402">Esmalt tuleb arvutis seadistada kaugjuurdepääs</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop ei suuda tuvastada brauserit, mis on mõeldud URL-ide kohalikult avamiseks. Valige see allolevast loendist.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (võrguühenduseta)</translation>
 <translation id="507204348399810022">Kas soovite kindlasti keelata kaugühendused hostiga <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Sobimatu hosti ID.</translation>
@@ -135,6 +137,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7312846573060934304">Host pole võrgus.</translation>
 <translation id="7319983568955948908">Lõpeta jagamine</translation>
+<translation id="7359298090707901886">Valitud brauserit ei saa kasutada kohalikus seadmes URL-ide avamiseks.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Järgmisele kliendile on juurdepääs keelatud: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Ühendatud klient: <ph name="CLIENT_USERNAME" />.</translation>

@@ -338,6 +338,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
+<translation id="8214184102975786227">Több oldal szkennelése egyetlen PDF-fájlba</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
@@ -382,6 +383,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>
 <translation id="8968751544471797276">Töltési sebesség</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Keresés}=1{Keresés {NUMBER_OF_PAGES} oldalon}other{Keresés {NUMBER_OF_PAGES} oldalon}}</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9073281213608662541">PAP</translation>

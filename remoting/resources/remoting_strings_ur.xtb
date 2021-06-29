@@ -24,6 +24,7 @@
 اگر '<ph name="SERVICE_SCRIPT_NAME" />' پہلے ہی سے نشان زد ہے تو اسے غیر نشان زد کریں اور پھر اسے دوبارہ چیک کریں۔</translation>
 <translation id="225614027745146050">خوش آمدید</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
+<translation id="2329392777730037872">کلائنٹ پر <ph name="URL" /> کو کھولنے سے قاصر۔</translation>
 <translation id="2333212046079545895">‏Copyright 2021 Google LLC.‎ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2366718077645204424">میزبان تک پہنچنے سے قاصر۔ یہ شاید نیٹ ورک کے اس کنفیگریشن کی وجہ سے ہے جو آپ استعمال کر رہے ہیں۔</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">‏PrtScn بھیجیں</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> سے کنکشن منقطع ہو گیا</translation>
 <translation id="4985296110227979402">آپ کو سب سے پہلے ریموٹ رسائی کیلئے اپنے کمپیوٹر کو ترتیب دینے کی ضرورت ہے</translation>
+<translation id="4987330545941822761">‏Chrome ریموٹ ڈیسک ٹاپ مقامی طور پر URLs کھولنے کے لیے براؤزر کا تعین نہیں کر سکتا۔ براہ کرم اسے نیچے کی فہرست سے منتخب کریں۔</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (آف لائن)</translation>
 <translation id="507204348399810022">کیا آپ واقعی <ph name="HOSTNAME" /> سے ریموٹ کنکشنز غیر فعال کرنا چاہتے ہیں؟</translation>
 <translation id="5170982930780719864">‏غلط میزبان id۔</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7312846573060934304">میزبان آف لائن ہے۔</translation>
 <translation id="7319983568955948908">اشتراک بند کریں</translation>
+<translation id="7359298090707901886">‏منتخب کردہ براؤزر کو مقامی مشین پر URLs کھولنے کے لیے استعمال نہیں کیا جا سکتا۔</translation>
 <translation id="7401733114166276557">‏Chrome ریموٹ ڈیسک ٹاپ</translation>
 <translation id="7434397035092923453">کلائنٹ کیلئے رسائی مسترد کر دی گئی: <ph name="CLIENT_USERNAME" />۔</translation>
 <translation id="7444276978508498879">کلائنٹ منسلک ہوگیا: <ph name="CLIENT_USERNAME" />۔</translation>

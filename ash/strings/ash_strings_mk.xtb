@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
+<translation id="2573588302192866788">Не можеше да се поврзе <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
 <translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
@@ -351,6 +352,7 @@
 <translation id="3771549900096082774">Режим на голем контраст</translation>
 <translation id="3773700760453577392">Администраторот оневозможил повеќекратно најавување за <ph name="USER_EMAIL" />.
 За продолжување, сите корисници треба да се одјават.</translation>
+<translation id="3779139509281456663">Се поврзува <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Катанец</translation>
 <translation id="3796746699333205839">Една апликација ги користи камерата и микрофонот</translation>
@@ -705,6 +707,7 @@
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> сака да го користи микрофонот</translation>
+<translation id="6630773993843701741">Отворете ги поставките за Bluetooth за да го спарите уредот рачно</translation>
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
@@ -790,6 +793,7 @@
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>
 <translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
+<translation id="7366890467478514168">Поврзи <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
 <translation id="7378203170292176219">Повлечете за да изберете област за снимање</translation>
@@ -1040,6 +1044,7 @@
 <translation id="9193626018745640770">Се емитува на непознат приемник</translation>
 <translation id="9194617393863864469">Пријави друг корисник...</translation>
 <translation id="9198992156681343238">Резолуцијата на <ph name="DISPLAY_NAME" /> е сменета во <ph name="RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Поврзи <ph name="NAME" /> со овој Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управувана од администраторот</translation>
 <translation id="9210037371811586452">Се излегува од режим на единствена работна површина</translation>
 <translation id="9211490828691860325">Сите работни површини</translation>

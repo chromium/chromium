@@ -204,6 +204,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
+<translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
 <translation id="2582112259361606227">Riavvia per aggiornare</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
@@ -351,6 +352,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
  Per continuare, devono disconnettersi tutti gli utenti.</translation>
+<translation id="3779139509281456663">Connessione di <ph name="NAME" /> in corso…</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="3796746699333205839">Un'applicazione sta utilizzando la fotocamera e il microfono</translation>
@@ -705,6 +707,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6614169507485700968">Schermata sulla privacy attiva</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vuole usare il microfono</translation>
+<translation id="6630773993843701741">Apri le impostazioni del Bluetooth per accoppiare il dispositivo manualmente</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vorrebbe verificare la tua identità</translation>
@@ -790,6 +793,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
 <translation id="7360036564632145207">La modifica della protezione dell'accesso ai dati per l'impostazione delle periferiche può ottimizzare le prestazioni</translation>
+<translation id="7366890467478514168">Connetti <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Finestra di registrazione</translation>
 <translation id="7377169924702866686">La funzione Bloc maiusc è attiva.</translation>
 <translation id="7378203170292176219">Trascina per selezionare l'area da registrare</translation>
@@ -1040,6 +1044,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="9194617393863864469">Accedi con un altro account utente...</translation>
 <translation id="9198992156681343238">La risoluzione di <ph name="DISPLAY_NAME" /> è stata cambiata in <ph name="RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Connetti <ph name="NAME" /> a questo Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestita dall'amministratore</translation>
 <translation id="9210037371811586452">Uscita dalla modalità Desktop unificato</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>

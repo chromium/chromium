@@ -790,6 +790,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807873520724684969">Contenu malveillant bloqué.</translation>
+<translation id="3810973564298564668">Gérer</translation>
 <translation id="3816482573645936981">Valeur (remplacée)</translation>
 <translation id="382518646247711829">Si vous utilisez un serveur proxy…</translation>
 <translation id="3827112369919217609">Valeur absolue</translation>
@@ -1399,7 +1400,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6032524144326295339">Boîte aux lettres 2</translation>
 <translation id="6032955021262906325">Reliure à gauche</translation>
 <translation id="6034000775414344507">Gris clair</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> peut ne pas être bien redimensionné. Pour que l'appli fonctionne correctement, utilisez des tailles de fenêtre prédéfinies.</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" /> aura peut-être des problèmes de redimension. Pour que l'appli fonctionne correctement, utilisez des tailles de fenêtre prédéfinies.</translation>
 <translation id="6034283069659657473">10x14 (enveloppe)</translation>
 <translation id="6034514109191629503">Pli en accordéon</translation>
 <translation id="6039846035001940113">Si le problème persiste, contactez le propriétaire du site.</translation>

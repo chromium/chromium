@@ -888,6 +888,13 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se define esta política, el navegador empezará a descartar pestañas para ahorrar memoria cuando se supere el límite de memoria. Sin embargo, no se garantiza que el navegador se ejecute siempre por debajo de ese límite. Cualquier valor que sea inferior a 1024 se establecerá como 1024.
 
       Si no se define esta política, el navegador solo intentará ahorrar memoria cuando detecte que la cantidad de memoria física del equipo es baja.</translation>
+<translation id="2165567959657265531">Las cookies establecidas para los dominios que coincidan con estos patrones recuperarán la antigua configuración de comportamiento de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si se restablece la configuración de comportamiento antigua, las cookies que no especifiquen ningún atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si tuvieran "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" y las cookies "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" no necesitarán tener el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />". Además, se omitirá la comparación de esquemas cuando se evalúe si dos sitios web son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Para las cookies de dominios que no coincidan con los patrones indicados, o para todas las cookies si no se define esta política, se usará el valor predeterminado global de la configuración personal del usuario.
+
+          Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+          Nota: Los patrones que indiques aquí se tratarán como dominios, no como URLs, así que no especifiques esquemas ni puertos.</translation>
 <translation id="2166155400701622446">Hay una lista de puertos restringidos integrada en <ph name="PRODUCT_NAME" />. No se pueden establecer conexiones con estos puertos. Este ajuste permite eludir dicha lista. El valor es una lista separada por comas de cero o más puertos en los que se permitirán las conexiones salientes.
 
       Los puertos están restringidos para evitar que <ph name="PRODUCT_NAME" /> se use como vector explotador de vulnerabilidades de la red. Si se establece esta política, tu red podría verse expuesta a ataques. El objetivo de esta política es ofrecer una solución temporal para los errores con el código "ERR_UNSAFE_PORT" cuando se migra un servicio que se está ejecutando en un puerto bloqueado a un puerto estándar (por ejemplo, el puerto 80 o el 443).

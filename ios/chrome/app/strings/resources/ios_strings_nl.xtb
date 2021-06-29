@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
+<translation id="2021670401941426298">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="2022352537516230970">Gebouwd voor je iPhone</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dagen geleden actief</translation>
 <translation id="2074131957428911366">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren.</translation>
@@ -207,6 +208,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="3112556859945124369">Markeren…</translation>
 <translation id="3131206671572504478">Alles blokkeren</translation>
 <translation id="313283613037595347">Nieuw incognitotabblad maken</translation>
+<translation id="3134493362339304186">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing). Je wordt niet uitgelogd van je Google-account. Als je andere soorten geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK" />Mijn Google-activiteit<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Pas opslaan</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157684681743766797">Alles markeren…</translation>
@@ -229,6 +231,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="3285962946108803577">Pagina delen...</translation>
 <translation id="3290875554372353449">Een account selecteren</translation>
 <translation id="3311748811247479259">Uit</translation>
+<translation id="3317580614754548493">Je wordt niet uitgelogd van je Google-account. Als je je <ph name="BEGIN_LINK" />zoekgeschiedenis<ph name="END_LINK" /> of andere geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK" />Mijn Google-account<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
 <translation id="3329904751041170572">Kan geen verbinding maken met de server.</translation>
@@ -557,6 +560,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="651505212789431520">Synchronisatie annuleren? Je kunt de synchronisatie op elk moment aanzetten via Instellingen.</translation>
 <translation id="6524918542306337007">Incognitomodus is niet beschikbaar</translation>
+<translation id="6560725150890787329">Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing). Je wordt niet uitgelogd van je Google-account. Als je andere soorten geschiedenis wilt wissen, ga je naar <ph name="BEGIN_LINK" />Mijn Google-activiteit<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Inzoomen</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
 <translation id="6603393121510733479">Je organisatie heeft privé browsen uitgezet.
@@ -801,6 +805,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
 <translation id="8985320356172329008">Ingelogd bij Google als</translation>
+<translation id="9000089900434778519">Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Origineel tonen</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>

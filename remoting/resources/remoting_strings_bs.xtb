@@ -24,6 +24,7 @@ Za davanje odobrenja, kliknite '<ph name="BUTTON_NAME" />' ispod da otvorite okn
 Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite oznaku i ponovo je označite.</translation>
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
+<translation id="2329392777730037872">Otvaranje URL-a <ph name="URL" /> na uređaju klijenta nije uspjelo.</translation>
 <translation id="2333212046079545895">Autorska prava 2021. Google LLC. Sva prava su zadržana.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće povezati se s host računarom. Uzrok je vjerovatno konfiguracija mreže koju koristite.</translation>
@@ -88,6 +89,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="4867841927763172006">Pošalji PrtScn</translation>
 <translation id="4974476491460646149">Zatvorena je veza s računalom <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Prvo morate postaviti svoj računar za daljinski pristup</translation>
+<translation id="4987330545941822761">Chrome udaljeni računar ne može odrediti preglednik za lokalno otvaranje URL-ova. Odaberite ga s liste u nastavku.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (van mreže)</translation>
 <translation id="507204348399810022">Jeste li sigurni da želite onemogućiti daljinsko povezivanje s host računarom <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">Nevažeći id host računara.</translation>
@@ -135,6 +137,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
 <translation id="7312846573060934304">Host računar je van mreže.</translation>
 <translation id="7319983568955948908">Prestani dijeliti</translation>
+<translation id="7359298090707901886">Nije moguće koristiti odabrani preglednik za otvaranje URL-ova na lokalnom uređaju.</translation>
 <translation id="7401733114166276557">Chrome udaljeni računar</translation>
 <translation id="7434397035092923453">Pristup je odbijen za klijenta: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klijent je povezan: <ph name="CLIENT_USERNAME" />.</translation>

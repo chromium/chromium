@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
+<translation id="2021670401941426298">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="2022352537516230970">Napravljeno za iPhone</translation>
 <translation id="2073572773299281212">Poslednja aktivnost: pre <ph name="DAYS" /> dan/a</translation>
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3131206671572504478">Sve je blokirano</translation>
 <translation id="313283613037595347">Napravi novu karticu bez arhiviranja.</translation>
+<translation id="3134493362339304186">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo. Nećemo vas odjaviti sa Google naloga. Da biste obrisali druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moje aktivnosti na Google-u<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Sačuvaj karticu</translation>
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
@@ -229,6 +231,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="3285962946108803577">Deli stranicu…</translation>
 <translation id="3290875554372353449">Izaberite nalog</translation>
 <translation id="3311748811247479259">Isključeno</translation>
+<translation id="3317580614754548493">Nećemo vas odjaviti sa Google naloga. Da biste obrisali <ph name="BEGIN_LINK" />pretragu<ph name="END_LINK" /> ili druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moj Google nalog<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
 <translation id="3329904751041170572">Povezivanje sa serverom nije moguće.</translation>
@@ -557,6 +560,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="651505212789431520">Želite li da otkažete sinhronizaciju? Možete da uključite sinhronizaciju u Podešavanjima u bilo kom trenutku.</translation>
 <translation id="6524918542306337007">Režim bez arhiviranja nije dostupan</translation>
+<translation id="6560725150890787329">Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo. Nećemo vas odjaviti sa Google naloga. Da biste obrisali druge oblike istorije, posetite <ph name="BEGIN_LINK" />Moje aktivnosti na Google-u<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Uvećajte</translation>
 <translation id="6585618849026997638">Ako dodate obeleživač, možete da se vratite na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Organizacija je isključila privatno pregledanje.
@@ -801,6 +805,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
+<translation id="9000089900434778519">Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="9034759925968272072">Nećemo vas odjaviti sa Google naloga. Google nalog možda ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Prikaži original</translation>
 <translation id="9039373489628511875">Propusni opseg</translation>

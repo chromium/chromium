@@ -204,6 +204,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2542089167727451762">Tik op je profielafbeelding</translation>
 <translation id="255671100581129685">De Google Assistent is niet beschikbaar in een openbare sessie.</translation>
 <translation id="256712445991462162">het vastgezette vergrootglas</translation>
+<translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
 <translation id="2575685495496069081">Toegang tot meerdere accounts staat uit</translation>
 <translation id="2582112259361606227">Opnieuw starten om updates uit te voeren</translation>
 <translation id="2595239820337756193">5 km in mijl</translation>
@@ -350,6 +351,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
+<translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="3796746699333205839">Een app gebruikt je camera en microfoon</translation>
@@ -704,6 +706,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wil de microfoon gebruiken</translation>
+<translation id="6630773993843701741">Open de bluetooth-instellingen om het apparaat handmatig te koppelen</translation>
 <translation id="6637729079642709226">Tijd wijzigen</translation>
 <translation id="6641720045729354415">Live ondertiteling aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
@@ -789,6 +792,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
+<translation id="7366890467478514168"><ph name="NAME" /> koppelen</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
@@ -1039,6 +1043,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
 <translation id="9194617393863864469">Als andere gebruiker inloggen...</translation>
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
+<translation id="9201044636667689546"><ph name="NAME" /> koppelen aan deze Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, beheerd door je beheerder</translation>
 <translation id="9210037371811586452">Samengestelde desktopmodus wordt gesloten</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>

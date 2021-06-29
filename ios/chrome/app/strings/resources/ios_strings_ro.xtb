@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
+<translation id="2021670401941426298">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="2022352537516230970">Creat pentru iPhone</translation>
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
 <translation id="313283613037595347">Creează o nouă filă incognito.</translation>
+<translation id="3134493362339304186">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul. Nu te vei deconecta de la Contul Google. Pentru a șterge alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Activitatea mea de pe Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
@@ -229,6 +231,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="3285962946108803577">Trimite pagina…</translation>
 <translation id="3290875554372353449">Alege un cont</translation>
 <translation id="3311748811247479259">Dezactivat</translation>
+<translation id="3317580614754548493">Nu te vei deconecta de la Contul Google. Pentru a șterge istoricul <ph name="BEGIN_LINK" />căutărilor<ph name="END_LINK" /> sau alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Contul meu Google<ph name="END_LINK" />.</translation>
 <translation id="3324193307694657476">Adresă 2</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
 <translation id="3329904751041170572">Nu s-a putut realiza conexiunea la server.</translation>
@@ -557,6 +560,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="651505212789431520">Anulezi sincronizarea? Poți să activezi sincronizarea oricând în Setări.</translation>
 <translation id="6524918542306337007">Modul incognito nu este disponibil</translation>
+<translation id="6560725150890787329">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul. Nu te vei deconecta de la Contul Google. Pentru a șterge alte tipuri de istoric, accesează <ph name="BEGIN_LINK" />Activitatea mea de pe Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Mărește</translation>
 <translation id="6585618849026997638">Poți să revii la o pagină importantă adăugând un marcaj</translation>
 <translation id="6603393121510733479">Organizația ta a dezactivat navigarea privată.
@@ -801,6 +805,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8976382372951310360">Ajutor</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>
 <translation id="8985320356172329008">Conectat(ă) la Google ca</translation>
+<translation id="9000089900434778519">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="9034759925968272072">Nu vei fi deconectat(ă) de la Contul Google. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afișează versiunea originală</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>

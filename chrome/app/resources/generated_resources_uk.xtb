@@ -76,6 +76,7 @@
 <translation id="1076882167394279216">Не вдалося завантажити словник для перевірки орфографії для такої мови: <ph name="LANGUAGE" />. Повторіть спробу.</translation>
 <translation id="1079766198702302550">Завжди блокувати доступ до камери</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{"<ph name="GROUP_TITLE" />" – 1 вкладка}one{"<ph name="GROUP_TITLE" />" – # вкладка}few{"<ph name="GROUP_TITLE" />" – # вкладки}many{"<ph name="GROUP_TITLE" />" – # вкладок}other{"<ph name="GROUP_TITLE" />" – # вкладки}}</translation>
+<translation id="1082214733466244292">Адміністратор заблокував деякі функції на цьому пристрої</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> хоче скинути ваші налаштування Chrome. Буде скинуто домашню сторінку, сторінку нової вкладки та пошукову систему. Буде вимкнено розширення та відкріплено всі закладки. Також буде видалено інші тимчасові й кешовані дані, як-от файли cookie, вміст і дані із сайтів.</translation>
 <translation id="1084096383128641877">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="DOMAIN" /> залишиться. Змініть пароль або видаліть обліковий запис на сайті <ph name="DOMAIN_LINK" />, щоб захистити його.</translation>
 <translation id="1084824384139382525">Копіювати адр&amp;есу посилання</translation>
@@ -587,6 +588,7 @@
 <translation id="1627408615528139100">Уже завантажено</translation>
 <translation id="1628948239858170093">Cканувати файл, перш ніж відкрити?</translation>
 <translation id="1629314197035607094">Термін дії пароля закінчився</translation>
+<translation id="1630300831289687074">Незабаром ви зможете користуватися Chromebook.</translation>
 <translation id="163072119192489970">Дозволено завершувати надсилання й отримання даних</translation>
 <translation id="1630768113285622200">Перезапустити й продовжити</translation>
 <translation id="1632082166874334883">Пароль збережено у вашому обліковому записі Google</translation>
@@ -976,6 +978,7 @@
 <translation id="202918510990975568">Введіть пароль, щоб налаштувати параметри безпеки та входу</translation>
 <translation id="2030455719695904263">Сенсорна панель</translation>
 <translation id="2031639749079821948">Ваш пароль збережено в обліковому записі Google</translation>
+<translation id="2031914984822377766">Додайте <ph name="LINK_BEGIN" />мови для веб-сайту<ph name="LINK_END" />. Текст перекладатиметься на першу мову зі списку.</translation>
 <translation id="2034346955588403444">Додати іншу мережу Wi-Fi</translation>
 <translation id="203574396658008164">Увімкнути створення нотаток на заблокованому екрані</translation>
 <translation id="2037445849770872822">Для цього облікового запису Google налаштовано Батьківський контроль. Щоб налаштувати більше його параметрів, виберіть опцію "Продовжити".
@@ -2450,7 +2453,6 @@
 <translation id="3629631988386925734">Щоб увімкнути Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
 <translation id="3630132874740063857">Ваш номер телефону</translation>
 <translation id="3630995161997703415">Додайте цей сайт на полицю, щоб завжди мати його під рукою</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />, <ph name="OPTION_POSITION" /> з <ph name="NUM_OPTIONS" /></translation>
 <translation id="3634652306074934350">Термін дії запиту на дозвіл закінчився</translation>
 <translation id="3635353578505343390">Надіслати відгук у Google</translation>
 <translation id="3635960017746711110">Налаштування USB в Crostini</translation>
@@ -2533,6 +2535,7 @@
 <translation id="3713047097299026954">На цьому ключі безпеки немає даних для входу</translation>
 <translation id="3714195043138862580">Цей демо-пристрій деініціалізовано.</translation>
 <translation id="3714633008798122362">веб-календар</translation>
+<translation id="3716758537211256894">Перевірити мережу</translation>
 <translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
@@ -2627,6 +2630,7 @@
 <translation id="381202950560906753">Додати ще</translation>
 <translation id="3812525830114410218">Недійсний сертифікат</translation>
 <translation id="3813296892522778813">Якщо не вдається знайти потрібний вміст, перейдіть на сторінку <ph name="BEGIN_LINK_CHROMIUM" />довідки Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
+<translation id="3813358687923336574">Мова для перекладу сторінок і швидких відповідей</translation>
 <translation id="3814529970604306954">Обліковий запис закладу освіти</translation>
 <translation id="3816118180265633665">Кольори Chrome</translation>
 <translation id="3817524650114746564">Відкрити налаштування проксі-сервера комп'ютера</translation>
@@ -4600,6 +4604,7 @@
 <translation id="6051354611314852653">Помилка. Системі на вдалося надати API доступ до цього пристрою.</translation>
 <translation id="6052976518993719690">Центр сертифікації SSL</translation>
 <translation id="6053401458108962351">&amp;Очистити дані веб-перегляду...</translation>
+<translation id="6054284857788651331">Нещодавно закрита група вкладок</translation>
 <translation id="6054961935262556546">Змінити налаштування видимості</translation>
 <translation id="6055171183283175969">Введений пароль неправильний.</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 із шифруванням RSA</translation>
@@ -5451,6 +5456,7 @@
 <translation id="6991665348624301627">Вибрати місце призначення</translation>
 <translation id="6992554835374084304">Увімкнути покращену перевірку орфографії</translation>
 <translation id="6993000214273684335">Вкладку вилучено з групи без назви — <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Триває оновлення веб-переглядача Chrome</translation>
 <translation id="6994069045767983299">Інверсія кольорів</translation>
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал активності</translation>
@@ -5824,6 +5830,7 @@
 <translation id="7415454883318062233">Налаштовано</translation>
 <translation id="7416362041876611053">Невідома помилка мережі.</translation>
 <translation id="741906494724992817">Цьому додатку не потрібні спеціальні дозволи.</translation>
+<translation id="7421067045979951561">обробники протоколів</translation>
 <translation id="742130257665691897">Закладки видалено</translation>
 <translation id="7421925624202799674">&amp;Переглянути джерело сторінки</translation>
 <translation id="7422192691352527311">Налаштування...</translation>
@@ -6022,6 +6029,7 @@
 <translation id="7634566076839829401">Сталася помилка. Повторіть спробу.</translation>
 <translation id="7635048370253485243">Закріплено адміністратором</translation>
 <translation id="763632859238619983">Заборонити всім сайтам встановлювати обробники платежів</translation>
+<translation id="7636422033092045734">Тепер є більше доступних перемикачів, тож автоматичне сканування вимкнено. Перейдіть до кнопки "Готово" й натисніть перемикач "Вибрати", щоб закрити цей посібник.</translation>
 <translation id="7636919061354591437">Установити на цьому пристрої</translation>
 <translation id="7637593984496473097">Недостатньо місця на диску</translation>
 <translation id="7638605456503525968">Послідовні порти</translation>
@@ -6118,6 +6126,7 @@
 <translation id="7719588063158526969">Назва пристрою задовга</translation>
 <translation id="7721179060400456005">Дозволити вікнам відображатися на екранах</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">У вашій організації обов’язково використовувати профіль</translation>
 <translation id="7722040605881499779">Потрібно для оновлення: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7728465250249629478">Змінити мову пристрою</translation>
@@ -6870,6 +6879,7 @@
 <translation id="8553342806078037065">Керувати іншими користувачами</translation>
 <translation id="8554899698005018844">Мову не вибрано</translation>
 <translation id="8557022314818157177">Торкайтеся ключа безпеки, поки відбиток пальця не відсканується</translation>
+<translation id="8557180006508471423">Увімкніть параметр "Google Chrome" у Службах локації на пристрої Mac</translation>
 <translation id="8557930019681227453">Маніфест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>
 <translation id="8561206103590473338">Слон</translation>

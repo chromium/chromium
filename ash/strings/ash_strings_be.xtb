@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">Націсніце відарыс профілю</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
+<translation id="2573588302192866788">Не ўдалося падключыць прыладу "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Уваход у некалькі ўліковых запісаў забаронены</translation>
 <translation id="2582112259361606227">Перазапусціць і абнавіць</translation>
 <translation id="2595239820337756193">5 кіламетраў у мілях</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
 <translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
+<translation id="3779139509281456663">Ідзе падключэнне прылады "<ph name="NAME" />"</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
 <translation id="3796746699333205839">Камера і мікрафон выкарыстоўваюцца адной з праграм</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
 <translation id="6627638273713273709">Пошук+Shift+K</translation>
 <translation id="6629480180092995136">Праграма "<ph name="APP_NAME" />" запытвае дазвол на выкарыстанне мікрафона</translation>
+<translation id="6630773993843701741">Каб спалучыць прыладу ўручную, адкрыйце налады Bluetooth</translation>
 <translation id="6637729079642709226">Змена часу</translation>
 <translation id="6641720045729354415">Уключыць або выключыць Імгненныя субцітры. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">Экранная клавіятура</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
 <translation id="7360036564632145207">Вы можаце аптымізаваць прадукцыйнасць, змяняючы налады абмежавання доступу да даных для перыферыйных прылад</translation>
+<translation id="7366890467478514168">Падключыце прыладу "<ph name="NAME" />"</translation>
 <translation id="7371404428569700291">Запіс акна</translation>
 <translation id="7377169924702866686">Уключаны Caps Lock.</translation>
 <translation id="7378203170292176219">Выберыце вобласць запісу з дапамогай перацягвання</translation>
@@ -1039,6 +1043,7 @@
 <translation id="9193626018745640770">Трансляцыя невядомаму атрымальніку</translation>
 <translation id="9194617393863864469">Выканаць уваход для іншага карыстальніка...</translation>
 <translation id="9198992156681343238">Раздзяляльнасць экрана "<ph name="DISPLAY_NAME" />" зменена на <ph name="RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Падключыце прыладу "<ph name="NAME" />" да Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="9210037371811586452">Выконваецца выхад з рэжыму адзінага працоўнага стала</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>

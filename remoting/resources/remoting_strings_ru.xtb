@@ -24,6 +24,7 @@
 Если флажок рядом с параметром "<ph name="SERVICE_SCRIPT_NAME" />" уже есть, снимите его и установите снова.</translation>
 <translation id="225614027745146050">Добро пожаловать!</translation>
 <translation id="2320166752086256636">Скрыть клавиатуру</translation>
+<translation id="2329392777730037872">Не удалось открыть <ph name="URL" /> в клиенте.</translation>
 <translation id="2333212046079545895">© Google LLC, 2021. Все права защищены.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2366718077645204424">Не удалось связаться с хостом. Вероятная причина – используемые вами настройки сети.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">Послать PrtScn</translation>
 <translation id="4974476491460646149">Подключение к устройству "<ph name="HOSTNAME" />" прервано</translation>
 <translation id="4985296110227979402">Сначала настройте удаленный доступ на компьютере.</translation>
+<translation id="4987330545941822761">Удаленному рабочему столу Chrome не удается найти браузер для открытия URL в локальном режиме. Выберите приложение в списке ниже.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (не в сети)</translation>
 <translation id="507204348399810022">Заблокировать удаленные подключения к "<ph name="HOSTNAME" />"?</translation>
 <translation id="5170982930780719864">Недопустимый идентификатор хоста</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7312846573060934304">Хост не подключен к сети</translation>
 <translation id="7319983568955948908">Закрыть доступ</translation>
+<translation id="7359298090707901886">Открывать URL на локальном компьютере с помощью выбранного браузера нельзя.</translation>
 <translation id="7401733114166276557">Удаленный рабочий стол Chrome</translation>
 <translation id="7434397035092923453">Запрещен доступ для клиента: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Подключен клиент: <ph name="CLIENT_USERNAME" />.</translation>

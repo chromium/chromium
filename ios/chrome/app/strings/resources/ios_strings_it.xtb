@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
+<translation id="2021670401941426298">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="2022352537516230970">Realizzato per il tuo iPhone</translation>
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3131206671572504478">Blocca tutti</translation>
 <translation id="313283613037595347">Crea nuova scheda di navigazione in incognito.</translation>
+<translation id="3134493362339304186">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile. Non verrà eseguita la disconnessione dal tuo Account Google. Per cancellare altri tipi di cronologia, visita <ph name="BEGIN_LINK" />Le mie attività Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Salva carta</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157684681743766797">Segna tutti come...</translation>
@@ -229,6 +231,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="3285962946108803577">Condividi pagina…</translation>
 <translation id="3290875554372353449">Scegli un account</translation>
 <translation id="3311748811247479259">Off</translation>
+<translation id="3317580614754548493">Non verrà eseguita la disconnessione dal tuo Account Google. Per cancellare la cronologia delle <ph name="BEGIN_LINK" />ricerche<ph name="END_LINK" /> o altri tipi di cronologia, visita la pagina <ph name="BEGIN_LINK" />Il mio Account Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="3329904751041170572">Connessione al server non riuscita.</translation>
@@ -557,6 +560,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="651505212789431520">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
+<translation id="6560725150890787329">Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile. Non verrà eseguita la disconnessione dal tuo Account Google. Per cancellare altri tipi di cronologia, visita <ph name="BEGIN_LINK" />Le mie attività Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
 <translation id="6603393121510733479">La tua organizzazione ha disattivato la navigazione privata.
@@ -801,6 +805,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8976382372951310360">Guida</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
 <translation id="8985320356172329008">Accesso effettuato a Google come</translation>
+<translation id="9000089900434778519">Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra originale</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>

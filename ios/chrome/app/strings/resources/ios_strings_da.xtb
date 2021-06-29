@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Avanceret</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
+<translation id="2021670401941426298">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="2022352537516230970">Udviklet til din iPhone</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
+<translation id="3134493362339304186">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant. Du bliver ikke logget ud af din Google-konto. Du kan rydde andre typer historik ved at gå til <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
@@ -229,6 +231,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3285962946108803577">Del side…</translation>
 <translation id="3290875554372353449">Vælg en konto</translation>
 <translation id="3311748811247479259">Fra</translation>
+<translation id="3317580614754548493">Du bliver ikke logget ud af din Google-konto. Du kan rydde dine <ph name="BEGIN_LINK" />søgninger<ph name="END_LINK" /> eller andre former for historik ved at gå til <ph name="BEGIN_LINK" />Min Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="3329904751041170572">Der kunne ikke oprettes forbindelse til serveren.</translation>
@@ -557,6 +560,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="651505212789431520">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
+<translation id="6560725150890787329">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant. Du bliver ikke logget ud af din Google-konto. Du kan rydde andre typer historik ved at gå til <ph name="BEGIN_LINK" />Min Google-aktivitet<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom ind</translation>
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>
 <translation id="6603393121510733479">Din organisation har deaktiveret privat browsing.
@@ -801,6 +805,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8976382372951310360">Hjælp</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
+<translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
+<translation id="2573588302192866788">Не удалось подключить устройство "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
 <translation id="2582112259361606227">Перезагрузить и обновить</translation>
 <translation id="2595239820337756193">5 миль в км</translation>
@@ -350,6 +351,7 @@
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
+<translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="3796746699333205839">Приложение использует вашу камеру и микрофон</translation>
@@ -704,6 +706,7 @@
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
 <translation id="6627638273713273709">Поиск + Shift + K</translation>
 <translation id="6629480180092995136">Приложение "<ph name="APP_NAME" />" запрашивает доступ к микрофону</translation>
+<translation id="6630773993843701741">Откройте настройки Bluetooth, чтобы подключить устройство вручную</translation>
 <translation id="6637729079642709226">Изменение времени</translation>
 <translation id="6641720045729354415">Переключатель автоматических субтитров. <ph name="STATE_TEXT" />.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
@@ -789,6 +792,7 @@
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
+<translation id="7366890467478514168">Подключите устройство "<ph name="NAME" />"</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
 <translation id="7378203170292176219">Выделите область для записи с помощью перетаскивания</translation>
@@ -1039,6 +1043,7 @@
 <translation id="9193626018745640770">Трансляция на неизвестное устройство</translation>
 <translation id="9194617393863864469">Войти в другой аккаунт...</translation>
 <translation id="9198992156681343238">У экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Подключите устройство "<ph name="NAME" />" к Chromebook</translation>
 <translation id="9201374708878217446">Статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора</translation>
 <translation id="9210037371811586452">Выход из режима единого рабочего стола…</translation>
 <translation id="9211490828691860325">Все рабочие столы</translation>

@@ -76,6 +76,7 @@
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> 맞춤법 검사 사전을 다운로드할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="1079766198702302550">카메라 액세스 항상 차단</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 탭 1개}other{<ph name="GROUP_TITLE" /> - 탭 #개}}</translation>
+<translation id="1082214733466244292">관리자가 이 기기에서 일부 기능을 차단했습니다.</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />에서 Chrome 설정을 기본값으로 복원하려 합니다. 홈페이지, 새 탭 페이지, 검색엔진이 초기화되고, 확장 프로그램이 사용 중지되며, 모든 탭이 고정 해제됩니다. 쿠키, 콘텐츠 데이터, 사이트 데이터 등 기타 임시 데이터와 캐시된 데이터도 삭제됩니다.</translation>
 <translation id="1084096383128641877">비밀번호를 삭제해도 <ph name="DOMAIN" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="DOMAIN_LINK" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="1084824384139382525">링크 주소 복사(&amp;E)</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">이미 다운로드됨</translation>
 <translation id="1628948239858170093">열기 전에 파일을 검사하시겠습니까?</translation>
 <translation id="1629314197035607094">비밀번호가 만료되었습니다.</translation>
+<translation id="1630300831289687074">곧 Chromebook을 사용할 수 있습니다.</translation>
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
 <translation id="1632082166874334883">Google 계정에 비밀번호가 저장됨</translation>
@@ -973,6 +975,7 @@
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
 <translation id="2031639749079821948">비밀번호가 Google 계정에 저장되었습니다.</translation>
+<translation id="2031914984822377766">선호하는 <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />를 추가하세요. 번역 시 목록의 가장 위에 있는 언어가 사용됩니다.</translation>
 <translation id="2034346955588403444">다른 Wi-Fi 네트워크 추가</translation>
 <translation id="203574396658008164">잠금 화면에서 메모 작성 사용</translation>
 <translation id="2037445849770872822">이 Google 계정에 감독 기능이 설정되었습니다. 더 많은 자녀 보호 기능을 설정하려면 계속을 선택하세요.
@@ -2447,7 +2450,6 @@
 <translation id="3629631988386925734">비밀번호를 입력하여 Smart Lock을 사용 설정하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 실행기에 추가합니다</translation>
-<translation id="3633562016179430689"><ph name="BUTTON_ACCESSIBLE_TEXT" />, <ph name="OPTION_POSITION" />/<ph name="NUM_OPTIONS" /></translation>
 <translation id="3634652306074934350">권한 요청 만료됨</translation>
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
 <translation id="3635960017746711110">Crostini USB 환경설정</translation>
@@ -2530,6 +2532,7 @@
 <translation id="3713047097299026954">보안 키에 로그인 데이터가 없습니다.</translation>
 <translation id="3714195043138862580">이 데모 기기는 프로비저닝 해제 상태로 설정되었습니다.</translation>
 <translation id="3714633008798122362">웹 캘린더</translation>
+<translation id="3716758537211256894">내 네트워크 확인</translation>
 <translation id="3719826155360621982">홈페이지</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">나와 Google의 관계</translation>
@@ -2624,6 +2627,7 @@
 <translation id="381202950560906753">다른 지문 추가</translation>
 <translation id="3812525830114410218">잘못된 인증서</translation>
 <translation id="3813296892522778813">원하는 자료를 찾지 못했다면 <ph name="BEGIN_LINK_CHROMIUM" />Chrome 도움말<ph name="END_LINK_CHROMIUM" />을 참조하세요.</translation>
+<translation id="3813358687923336574">페이지 번역 및 빠른 답변에 사용되는 언어</translation>
 <translation id="3814529970604306954">학교 계정</translation>
 <translation id="3816118180265633665">Chrome 색상</translation>
 <translation id="3817524650114746564">컴퓨터 프록시 설정 열기</translation>
@@ -4594,6 +4598,7 @@
 <translation id="6051354611314852653">시스템에서 이 기기에 대한 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="6052976518993719690">SSL 인증 기관</translation>
 <translation id="6053401458108962351">인터넷 사용 기록 삭제(&amp;C)...</translation>
+<translation id="6054284857788651331">최근에 닫은 탭 그룹</translation>
 <translation id="6054961935262556546">공개 상태 변경</translation>
 <translation id="6055171183283175969">입력한 비밀번호가 올바르지 않습니다.</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256(RSA 암호화 사용)</translation>
@@ -5445,6 +5450,7 @@
 <translation id="6991665348624301627">대상 선택</translation>
 <translation id="6992554835374084304">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="6993000214273684335">이름이 지정되지 않은 그룹에서 탭이 제거됨 - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6993050154661569036">Chrome 브라우저 업데이트 중</translation>
 <translation id="6994069045767983299">반전</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
@@ -5818,6 +5824,7 @@
 <translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416362041876611053">알려지지 않은 네트워크 오류입니다.</translation>
 <translation id="741906494724992817">이 앱에는 특별한 권한이 필요하지 않습니다.</translation>
+<translation id="7421067045979951561">프로토콜 핸들러</translation>
 <translation id="742130257665691897">북마크 삭제됨</translation>
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
 <translation id="7422192691352527311">환경설정...</translation>
@@ -6016,6 +6023,7 @@
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7635048370253485243">관리자가 고정함</translation>
 <translation id="763632859238619983">모든 사이트에서 결제 핸들러 설치 허용 안함</translation>
+<translation id="7636422033092045734">사용할 스위치가 늘어났기 때문에 자동 스캔이 사용 중지되었습니다. 완료 버튼으로 이동한 다음 스위치 선택을 눌러 가이드를 종료하세요.</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7637593984496473097">디스크 공간이 충분하지 않음</translation>
 <translation id="7638605456503525968">직렬 포트</translation>
@@ -6112,6 +6120,7 @@
 <translation id="7719588063158526969">기기 이름이 너무 깁니다.</translation>
 <translation id="7721179060400456005">창으로 디스플레이 채우기 허용</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" />(<ph name="DEVICE_TYPE" />)</translation>
+<translation id="7721258531237831532">조직 프로필이 필요합니다</translation>
 <translation id="7722040605881499779">업데이트에 필요한 저장용량: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7728465250249629478">기기 언어 변경</translation>
@@ -6864,6 +6873,7 @@
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
+<translation id="8557180006508471423">Mac의 Location Services(위치 서비스)에서 'Chrome'을 사용 설정하세요</translation>
 <translation id="8557930019681227453">매니페스트</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
 <translation id="8561206103590473338">코끼리</translation>

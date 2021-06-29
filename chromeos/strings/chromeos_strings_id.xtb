@@ -338,6 +338,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
+<translation id="8214184102975786227">Pindai beberapa halaman ke satu PDF</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
 <translation id="8291967909914612644">Negara penyedia rumah</translation>
@@ -382,6 +383,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Pindai}=1{Pindai halaman {NUMBER_OF_PAGES}}other{Pindai halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9073281213608662541">PAP</translation>

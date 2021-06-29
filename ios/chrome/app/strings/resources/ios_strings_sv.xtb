@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
+<translation id="2021670401941426298">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="2022352537516230970">Byggd för iPhone</translation>
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3131206671572504478">Blockera alla</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
+<translation id="3134493362339304186">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt. Du loggas inte ut från Google-kontot. Du kan rensa annan historik på <ph name="BEGIN_LINK" />Min aktivitet på Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Spara kortet</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
@@ -229,6 +231,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="3285962946108803577">Dela sidan …</translation>
 <translation id="3290875554372353449">Välj ett konto</translation>
 <translation id="3311748811247479259">Av</translation>
+<translation id="3317580614754548493">Du loggas inte ut från Google-kontot. Du kan rensa <ph name="BEGIN_LINK" />sökhistoriken<ph name="END_LINK" /> och annan historik på <ph name="BEGIN_LINK" />Mitt Google-konto<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3329904751041170572">Det gick inte att ansluta till servern.</translation>
@@ -557,6 +560,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
+<translation id="6560725150890787329">Din sökmotor är <ph name="DSE_NAME" />. Läs anvisningarna för att radera sökhistoriken om tillämpligt. Du loggas inte ut från Google-kontot. Du kan rensa annan historik på <ph name="BEGIN_LINK" />Min aktivitet på Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
@@ -801,6 +805,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8976382372951310360">Hjälp</translation>
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
 <translation id="8985320356172329008">Inloggad på Google som</translation>
+<translation id="9000089900434778519">Din sökmotor är <ph name="DSE_NAME" />. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="9034759925968272072">Du loggas inte ut från Google-kontot. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Visa original</translation>
 <translation id="9039373489628511875">Bandbredd</translation>

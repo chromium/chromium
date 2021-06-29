@@ -24,6 +24,7 @@
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት ከተደረገበት ምልክቱን ያንሱትና እንደገና ምልክት ያድርጉበት።</translation>
 <translation id="225614027745146050">እንኳን ደህና መጡ</translation>
 <translation id="2320166752086256636">የቁልፍ ሰሌዳን ደብቅ</translation>
+<translation id="2329392777730037872">በደንበኛው ላይ <ph name="URL" />ን መክፈት አልተሳካም።</translation>
 <translation id="2333212046079545895">የቅጂ መብት 2021 Google LLC.። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2366718077645204424">አስተናጋጁን መድረስ አልተቻለም። ይሄ በሚጠቀሙት አውታረ መረብ ላይ ባለ ውቅር ምክንያት ሳይሆን አይቀርም።</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScn ላክ</translation>
 <translation id="4974476491460646149">የ<ph name="HOSTNAME" /> ግንኙነት ተዘግቷል</translation>
 <translation id="4985296110227979402">በመጀመሪያ ኮምፒውተርዎን ለርቀት መዳረሻ ማዋቀር አለብዎት</translation>
+<translation id="4987330545941822761">Chrome የርቀት ዴስክቶፕ ዩአርኤሎችን በአካባቢው ለመክፈት አሳሹን መወሰን አይችልም። እባክዎን ከዚህ በታች ካለው ዝርዝር ውስጥ ይምረጡ።</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ከመስመር ውጪ)</translation>
 <translation id="507204348399810022">ከ<ph name="HOSTNAME" /> ጋር ያሉ የርቀት ግንኙነቶችን ማሰናከል ይፈልጋሉ?</translation>
 <translation id="5170982930780719864">ልክ ያልሆነ የአስተናጋጅ መታወቂያ።</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጪ ነው።</translation>
 <translation id="7319983568955948908">ማጋራት አቁም</translation>
+<translation id="7359298090707901886">የተመረጠው አሳሽ በአካባቢያዊ ማሽን ላይ ዩአርኤልዎችን ለመክፈት ጥቅም ላይ ሊውል አይችልም።</translation>
 <translation id="7401733114166276557">Chrome የርቀት ዴስክቶፕ</translation>
 <translation id="7434397035092923453">ለደንበኛ መዳረሻ ተከልክሏል፦ <ph name="CLIENT_USERNAME" />።</translation>
 <translation id="7444276978508498879">የተገናኘው ደንበኛ፦ <ph name="CLIENT_USERNAME" />።</translation>
