@@ -30,18 +30,6 @@ class PlatformKeysInternalGetPublicKeyBySpkiFunction
                              PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI)
 };
 
-class PlatformKeysInternalSignFunction : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalSignFunction() override;
-  ResponseAction Run() override;
-
-  using ResultPtr = crosapi::mojom::ExtensionKeystoreBinaryResultPtr;
-  void OnSign(ResultPtr result_ptr);
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
-                             PLATFORMKEYSINTERNAL_SIGN)
-};
-
 class PlatformKeysVerifyTLSServerCertificateFunction
     : public ExtensionFunction {
  private:

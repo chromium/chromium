@@ -56,20 +56,6 @@ class PlatformKeysInternalGetPublicKeyBySpkiFunction
                              PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI)
 };
 
-class PlatformKeysInternalSignFunction : public ExtensionFunction {
- private:
-  ~PlatformKeysInternalSignFunction() override;
-  ResponseAction Run() override;
-
-  // Called when the signature was generated. If an error occurred,
-  // |signature| will be empty.
-  void OnSigned(const std::string& signature,
-                absl::optional<crosapi::mojom::KeystoreError> error);
-
-  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
-                             PLATFORMKEYSINTERNAL_SIGN)
-};
-
 class PlatformKeysVerifyTLSServerCertificateFunction
     : public ExtensionFunction {
  private:

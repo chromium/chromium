@@ -47,6 +47,20 @@ class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
                              PLATFORMKEYSINTERNAL_GETPUBLICKEY)
 };
 
+class PlatformKeysInternalSignFunction : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalSignFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the signature was generated. If an error occurred,
+  // |signature| will be empty.
+  void OnSigned(const std::string& signature,
+                absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
+                             PLATFORMKEYSINTERNAL_SIGN)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_

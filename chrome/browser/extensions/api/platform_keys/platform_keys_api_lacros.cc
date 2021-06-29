@@ -23,57 +23,6 @@ using KeystoreService = crosapi::mojom::KeystoreService;
 
 namespace {
 const char kUnsupportedByAsh[] = "Not implemented.";
-const char kUnsupportedProfile[] = "Not available.";
-const char kErrorAlgorithmNotSupported[] = "Algorithm not supported.";
-const char kErrorInvalidToken[] = "The token is not valid.";
-
-using crosapi::keystore_service_util::kWebCryptoEcdsa;
-using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
-
-absl::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
-    const std::string& input) {
-  if (input == "user")
-    return crosapi::mojom::KeystoreType::kUser;
-  if (input == "system")
-    return crosapi::mojom::KeystoreType::kDevice;
-  return absl::nullopt;
-}
-
-absl::optional<SigningScheme> SigningSchemeFromStrings(
-    const std::string& hashing,
-    const std::string& signing) {
-  if (hashing == "none") {
-    if (signing == kWebCryptoRsassaPkcs1v15)
-      return SigningScheme::kRsassaPkcs1V15None;
-    return absl::nullopt;
-  }
-  if (hashing == "SHA-1") {
-    if (signing == kWebCryptoRsassaPkcs1v15)
-      return SigningScheme::kRsassaPkcs1V15Sha1;
-    if (signing == kWebCryptoEcdsa)
-      return SigningScheme::kEcdsaSha1;
-  }
-  if (hashing == "SHA-256") {
-    if (signing == kWebCryptoRsassaPkcs1v15)
-      return SigningScheme::kRsassaPkcs1V15Sha256;
-    if (signing == kWebCryptoEcdsa)
-      return SigningScheme::kEcdsaSha256;
-  }
-  if (hashing == "SHA-384") {
-    if (signing == kWebCryptoRsassaPkcs1v15)
-      return SigningScheme::kRsassaPkcs1V15Sha384;
-    if (signing == kWebCryptoEcdsa)
-      return SigningScheme::kEcdsaSha384;
-  }
-  if (hashing == "SHA-512") {
-    if (signing == kWebCryptoRsassaPkcs1v15)
-      return SigningScheme::kRsassaPkcs1V15Sha512;
-    if (signing == kWebCryptoEcdsa)
-      return SigningScheme::kEcdsaSha512;
-  }
-  return absl::nullopt;
-}
-
 }  // namespace
 
 PlatformKeysInternalSelectClientCertificatesFunction::
@@ -92,60 +41,6 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   return RespondNow(Error("Not implemented."));
-}
-
-//------------------------------------------------------------------------------
-
-PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
-
-ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
-  std::unique_ptr<api_pki::Sign::Params> params(
-      api_pki::Sign::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          KeystoreService::Uuid_) <
-      static_cast<int>(KeystoreService::kExtensionSignMinVersion)) {
-    return RespondNow(Error(kUnsupportedByAsh));
-  }
-
-  // These APIs are used in security-sensitive contexts. We need to ensure that
-  // the user for ash is the same as the user for lacros. We do this by
-  // restricting the API to the default profile, which is guaranteed to be the
-  // same user.
-  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
-    return RespondNow(Error(kUnsupportedProfile));
-
-  absl::optional<crosapi::mojom::KeystoreType> keystore_type =
-      KeystoreTypeFromString(params->token_id);
-  if (!keystore_type) {
-    return RespondNow(Error(kErrorInvalidToken));
-  }
-
-  absl::optional<SigningScheme> scheme = SigningSchemeFromStrings(
-      params->hash_algorithm_name, params->algorithm_name);
-  if (!scheme) {
-    return RespondNow(Error(kErrorAlgorithmNotSupported));
-  }
-
-  auto cb = base::BindOnce(&PlatformKeysInternalSignFunction::OnSign, this);
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->ExtensionSign(keystore_type.value(), params->public_key, scheme.value(),
-                      params->data, extension_id(), std::move(cb));
-  return RespondLater();
-}
-
-void PlatformKeysInternalSignFunction::OnSign(ResultPtr result) {
-  using Result = crosapi::mojom::ExtensionKeystoreBinaryResult;
-  switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::BLOB:
-      Respond(ArgumentList(api_pki::Sign::Results::Create(result->get_blob())));
-      return;
-  }
 }
 
 //------------------------------------------------------------------------------
