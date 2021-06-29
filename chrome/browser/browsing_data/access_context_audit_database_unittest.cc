@@ -738,9 +738,9 @@ TEST_F(AccessContextAuditDatabaseThirdPartyDataClearingTest,
 
   std::vector<AccessContextAuditDatabase::AccessRecord> test_records = {
       // Same-site and cross-site cookie records must be removed.
-      AccessContextAuditDatabase::AccessRecord(kTopLevelOrigin1, "samesite",
-                                               "toplevel.com", "/", kAccessTime,
-                                               /* is_persistent */ true),
+      AccessContextAuditDatabase::AccessRecord(
+          kTopLevelOrigin1, "samesite", "toplevel1.com", "/", kAccessTime,
+          /* is_persistent */ true),
       AccessContextAuditDatabase::AccessRecord(kTopLevelOrigin1, "xsite",
                                                "xsite.com", "/", kAccessTime,
                                                /* is_persistent */ true),
