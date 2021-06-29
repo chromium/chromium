@@ -9,7 +9,9 @@
 <div id="resultListContainer" hidden$="[[hidden]]">
   <dom-repeat id="resultList" items="[[results_]]">
     <template>
-      <routine-result-entry item="[[item]]"></routine-result-entry>
+      <routine-result-entry item="[[item]]"
+        hide-vertical-lines="[[shouldHideVerticalLines_(item)]]">
+      </routine-result-entry>
     </template>
   </dom-repeat>
 </div>

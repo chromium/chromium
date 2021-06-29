@@ -31,7 +31,13 @@ Polymer({
     hidden: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /** @type {boolean} */
+    hideVerticalLines: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -87,6 +93,16 @@ Polymer({
         return;
       }
     });
+  },
+
+  /**
+   * @protected
+   * @param {!ResultStatusItem} item
+   * @return {boolean}
+   */
+  shouldHideVerticalLines_(item) {
+    return this.hideVerticalLines ||
+        item === this.results_[this.results_.length - 1];
   },
 
   /** @override */

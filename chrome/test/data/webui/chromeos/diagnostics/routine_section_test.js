@@ -470,7 +470,7 @@ export function routineSectionTestSuite() {
           // Badge is visible with success.
           assertFalse(getStatusBadge().hidden);
           assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
-          assertEquals(getStatusBadge().value, 'SUCCESS');
+          assertEquals(getStatusBadge().value, 'PASSED');
 
           // Text is visible saying test succeeded.
           assertFalse(getStatusTextElement().hidden);

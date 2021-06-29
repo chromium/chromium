@@ -828,7 +828,7 @@ Try tapping the mic to ask me anything.
         FAILED
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed.">
-        SUCCESS
+        PASSED
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT" desc="The text displayed to indicate that a test is currently queued.">
         QUEUED

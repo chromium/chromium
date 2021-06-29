@@ -164,7 +164,7 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
-      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().value, 'PASSED');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
   });
@@ -225,7 +225,7 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('batteryChargeRoutineText')));
 
       // Status should show the passed result.
-      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().value, 'PASSED');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
   });

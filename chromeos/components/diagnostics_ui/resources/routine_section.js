@@ -194,6 +194,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    hideVerticalLines: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers: [

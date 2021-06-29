@@ -1,10 +1,56 @@
 <style include="diagnostics-shared">
+  .animation-1 {
+    animation: 1s fadeInLine1;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+  }
+
+  .animation-2 {
+    animation: 1s fadeInLine2;
+    animation-delay: 100ms;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+  }
+
+  .animation-3 {
+    animation: 1s fadeInLine3;
+    animation-delay: 200ms;
+    animation-fill-mode: forwards;
+    visibility: hidden;
+  }
+
+  .badge-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
   .entryRow {
     align-items: center;
     column-gap: 16px;
     display: grid;
     grid-template-columns: auto 1fr;
     height: 40px;
+  }
+
+  .green {
+    border-left: 1px dashed var(--google-green-600);
+  }
+
+  .line {
+    height: 5px;
+    margin: 2px 0;
+  }
+
+  .line-container {
+    margin-top: 17px;
+    position: absolute;
+  }
+
+  .red {
+    border-left: 1px dashed var(--google-red-600);
+    position: relative;
+    right: 4px;
   }
 
   #routine {
@@ -22,12 +68,59 @@
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
   }
+
+  #status {
+    z-index: 1;
+  }
+
+  @keyframes fadeInLine1 {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+@keyframes fadeInLine2 {
+  0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+@keyframes fadeInLine3 {
+  0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
 </style>
 
 <div class="entryRow">
-  <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
+  <div class="badge-container">
+    <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
       aria-labelledby="routine">
-  </text-badge>
+    </text-badge>
+  <template is="dom-if" if="[[!shouldHideLines_(testCompleted_)]]">
+    <div class="line-container" id="lineContainer"
+        hidden$="[[hideVerticalLines]]">
+      <div class$="[[getLineClassName_(1, badgeType_)]]"></div>
+      <div class$="[[getLineClassName_(2, badgeType_)]]"></div>
+      <div class$="[[getLineClassName_(3, badgeType_)]]"></div>
+    </div>
+  </template>
+ </div>
   <div id="routine" aria-hidden="true">
     <span>[[routineType_]]</span>
     <span class="routineLinkContainer" hidden$="[[!routineLink_]]">
@@ -35,5 +128,5 @@
         <iron-icon icon="cr:open-in-new"></iron-icon>
       </a>
     </span>
-    </div>
+  </div>
 </div>

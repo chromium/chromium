@@ -107,7 +107,9 @@
   </div>
   <iron-collapse id="collapse" opened="{{opened}}">
     <div class="result-list">
-      <routine-result-list id="resultList"></routine-result-list>
+      <routine-result-list id="resultList"
+          hide-vertical-lines="[[hideVerticalLines]]">
+      </routine-result-list>
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"
         on-click="onLearnMoreClicked_"

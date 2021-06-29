@@ -155,6 +155,18 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @protected {boolean} */
+    testCompleted_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @type {boolean} */
+    hideVerticalLines: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers: ['entryStatusChanged_(item.progress, item.result)'],
@@ -203,6 +215,7 @@ Polymer({
         this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kCompleted:
+        this.testCompleted_ = true;
         const testPassed = this.item.result &&
             getSimpleResult(this.item.result) ===
                 StandardRoutineResult.kTestPassed;
@@ -233,5 +246,38 @@ Polymer({
   announceRoutineStatus_() {
     this.fire(
         'iron-announce', {text: this.routineType_ + ' - ' + this.badgeText_});
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  getLineClassName_(num) {
+    if (!this.badgeType_) {
+      return '';
+    }
+
+    let lineColor = '';
+    switch (this.badgeType_) {
+      case BadgeType.RUNNING:
+      case BadgeType.SUCCESS:
+        lineColor = 'green';
+        break;
+      case BadgeType.ERROR:
+        lineColor = 'red';
+        break;
+      case BadgeType.STOPPED:
+      case BadgeType.QUEUED:
+        return '';
+    }
+    return `line animation-${num} ${lineColor}`;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  shouldHideLines_() {
+    return this.hideVerticalLines || !this.testCompleted_;
   },
 });
