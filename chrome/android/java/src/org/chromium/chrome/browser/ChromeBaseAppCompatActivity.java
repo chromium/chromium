@@ -19,10 +19,13 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -59,6 +62,9 @@ public class ChromeBaseAppCompatActivity
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
         setTheme(R.style.ColorOverlay);
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
+            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
+        }
         super.onCreate(savedInstanceState);
 
         // Activity level locale overrides must be done in onCreate.
