@@ -103,7 +103,8 @@ ModuleInspector::ModuleInspector(
       has_new_inspection_results_(false),
       connection_error_retry_count_(kConnectionErrorRetryCount),
       background_inspection_disabled_(
-          base::FeatureList::IsEnabled(kDisableBackgroundModuleInspection)) {
+          base::FeatureList::IsEnabled(kDisableBackgroundModuleInspection)),
+      is_waiting_on_util_win_service_(false) {
   // Use BEST_EFFORT as those will only run after startup is finished.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
@@ -227,11 +228,14 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
   // If the retry limit was reached, give up.
   if (connection_error_retry_count_ == 0)
     return;
-
   --connection_error_retry_count_;
 
-  // Restart the inspection if there is still work to do.
-  if (!queue_.empty())
+  bool was_waiting_on_util_win_service = is_waiting_on_util_win_service_;
+  is_waiting_on_util_win_service_ = false;
+
+  // If this connection error happened while the ModuleInspector was waiting on
+  // the service, restart the inspection process.
+  if (was_waiting_on_util_win_service)
     StartInspectingModule();
 }
 
@@ -259,6 +263,7 @@ void ModuleInspector::StartInspectingModule() {
   if (base::FeatureList::IsEnabled(kWinOOPInspectModuleFeature)) {
     EnsureUtilWinServiceBound();
 
+    is_waiting_on_util_win_service_ = true;
     remote_util_win_->InspectModule(
         module_key.module_path,
         base::BindOnce(&ModuleInspector::OnModuleNewlyInspected,
@@ -287,6 +292,8 @@ void ModuleInspector::OnModuleNewlyInspected(
     const ModuleInfoKey& module_key,
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  is_waiting_on_util_win_service_ = false;
 
   // Convert the prefix of known Windows directories to their environment
   // variable mappings (ie, %systemroot$). This makes i18n localized paths

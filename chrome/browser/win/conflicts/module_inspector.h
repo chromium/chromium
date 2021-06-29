@@ -174,6 +174,10 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // unconditionally to false if IncreaseInspectionPriority() is called.
   bool background_inspection_disabled_;
 
+  // Indicates if a module is currently being inspected asynchronously by the
+  // UtilWin service.
+  bool is_waiting_on_util_win_service_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointers are used to safely post the inspection result back to the
