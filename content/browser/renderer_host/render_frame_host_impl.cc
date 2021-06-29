@@ -250,6 +250,7 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
@@ -3418,6 +3419,7 @@ void RenderFrameHostImpl::DidNavigate(
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
   last_committed_origin_ = origin;
+  SetStorageKey(blink::StorageKey(origin));
 }
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
@@ -3441,6 +3443,10 @@ const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
     host = host->parent_;
   }
   return host->GetLastCommittedOrigin();
+}
+
+void RenderFrameHostImpl::SetStorageKey(const blink::StorageKey& storage_key) {
+  storage_key_ = storage_key;
 }
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(

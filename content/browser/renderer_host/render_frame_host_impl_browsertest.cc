@@ -83,6 +83,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
@@ -2802,8 +2803,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
   ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
-  RenderFrameHost* subframe = web_contents()->GetAllFrames()[1];
+  RenderFrameHostImpl* subframe =
+      web_contents()->GetMainFrame()->child_at(0)->current_frame_host();
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
+  EXPECT_EQ(blink::StorageKey(main_origin), subframe->storage_key());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -2870,8 +2873,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Wait for the new subframe to be created - this will be still before the
   // commit of about:blank.
-  RenderFrameHost* subframe = subframe_observer.Wait();
+  RenderFrameHostImpl* subframe =
+      static_cast<RenderFrameHostImpl*>(subframe_observer.Wait());
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
+  EXPECT_EQ(blink::StorageKey(main_origin), subframe->storage_key());
 
   // Wait for the about:blank navigation to finish.
   load_observer.Wait();
@@ -2883,9 +2888,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
   ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
-  RenderFrameHost* subframe2 = web_contents()->GetAllFrames()[1];
+  RenderFrameHostImpl* subframe2 =
+      web_contents()->GetMainFrame()->child_at(0)->current_frame_host();
   EXPECT_EQ(subframe, subframe2);  // No swaps are expected.
   EXPECT_EQ(main_origin, subframe2->GetLastCommittedOrigin());
+  EXPECT_EQ(blink::StorageKey(main_origin), subframe2->storage_key());
   EXPECT_EQ(main_origin.Serialize(), EvalJs(subframe2, "window.origin"));
 }
 
@@ -2917,6 +2924,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // See also https://crbug.com/932067.
   WebContents* popup = popup_observer.GetWebContents();
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      blink::StorageKey(main_origin),
+      static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
   // The popup navigation should be cancelled and therefore shouldn't
   // contribute an extra history entry.
@@ -2949,6 +2959,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // the initial about:blank page).
   WebContents* popup = popup_observer.GetWebContents();
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      blink::StorageKey(main_origin),
+      static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
   // A round-trip to the renderer process is an indirect way to wait for
   // DidCommitProvisionalLoad IPC for the initial about:blank page.
@@ -2956,6 +2969,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // NOTIFICATION_LOAD_STOP.
   EXPECT_EQ(123, EvalJs(popup, "123"));
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      blink::StorageKey(main_origin),
+      static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
   // The about:blank navigation shouldn't contribute an extra history entry.
   EXPECT_EQ(0, popup->GetController().GetEntryCount());

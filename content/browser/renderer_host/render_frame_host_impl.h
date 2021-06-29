@@ -91,6 +91,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom-forward.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom-forward.h"
@@ -590,6 +591,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the caller wants to know the current state of the URL in the renderer (e.g.
   // when predicting whether a navigation will do a replacement or not).
   const GURL& last_url_in_renderer() const { return last_url_in_renderer_; }
+
+  // Returns the storage key for the last committed document in this
+  // RenderFrameHostImpl. It is used for partitioning storage by the various
+  // storage APIs.
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // Returns the http method of the last committed navigation.
   const std::string& last_http_method() { return last_http_method_; }
@@ -2954,6 +2960,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Increases by one `commit_navigation_sent_counter_`.
   void IncreaseCommitNavigationCounter();
 
+  // Sets the storage key for the last committed document in this
+  // RenderFrameHostImpl.
+  void SetStorageKey(const blink::StorageKey& storage_key);
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3019,6 +3029,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(https://crbug.com/888079): Remove the above.
   url::Origin last_committed_origin_;
+
+  // The storage key for the last committed document in this
+  // RenderFrameHostImpl.
+  blink::StorageKey storage_key_;
 
   // The base URL of the last committed navigation.
   GURL last_base_url_;
