@@ -34,7 +34,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
-#include "components/permissions/permission_util.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"

@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
@@ -129,8 +128,9 @@ ShellPermissionManager::GetPermissionStatusForFrame(
     const GURL& requesting_origin) {
   return GetPermissionStatus(
       permission, requesting_origin,
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          content::WebContents::FromRenderFrameHost(render_frame_host)));
+      content::WebContents::FromRenderFrameHost(render_frame_host)
+          ->GetLastCommittedURL()
+          .GetOrigin());
 }
 
 ShellPermissionManager::SubscriptionId

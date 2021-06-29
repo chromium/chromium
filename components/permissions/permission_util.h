@@ -15,10 +15,7 @@
 
 namespace content {
 enum class PermissionType;
-class WebContents;
 }  // namespace content
-
-class GURL;
 
 namespace permissions {
 
@@ -57,13 +54,6 @@ class PermissionUtil {
   // to determine whether a specific ContentSettingsType is supported by the
   // PermissionManager.
   static bool IsPermission(ContentSettingsType type);
-
-  // Returns the authoritative `embedding origin`, as a GURL, to be used for
-  // permission decisions in `web_contents`.
-  // TODO(crbug.com/698985): This method should only be used temporarily, and
-  // ultimately all call sites should be migrated to determine the authoritative
-  // security origin based on the requesting RenderFrameHost.
-  static GURL GetLastCommittedOriginAsURL(content::WebContents* web_contents);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUtil);

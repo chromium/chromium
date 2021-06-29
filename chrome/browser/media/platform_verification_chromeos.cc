@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -49,8 +48,7 @@ GURL GetURL(content::WebContents* web_contents) {
 bool IsPermittedByContentSettings(content::WebContents* web_contents) {
   const GURL& requesting_origin = GetURL(web_contents).GetOrigin();
 
-  GURL embedding_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
   ContentSetting content_setting =
       PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))

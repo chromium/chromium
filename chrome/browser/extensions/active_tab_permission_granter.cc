@@ -162,7 +162,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
 
   const PermissionsData* permissions_data = extension->permissions_data();
 
-  // TODO(crbug.com/698985): This should be GetLastCommittedURL().
+  // TODO(devlin): This should be GetLastCommittedURL().
   GURL url = web_contents()->GetVisibleURL();
 
   // If the extension requested the host permission to |url| but had it
@@ -244,8 +244,8 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
   }
 
   // Only clear the granted permissions for cross-origin navigations.
-  // TODO(crbug.com/698985),  TODO(devlin): We likely shouldn't be using the
-  // visible entry. Instead, we should use WebContents::GetLastCommittedURL().
+  // TODO(devlin): We likely shouldn't be using the visible entry. Instead,
+  // we should use WebContents::GetLastCommittedURL().
   content::NavigationEntry* navigation_entry =
       web_contents()->GetController().GetVisibleEntry();
   if (navigation_entry &&

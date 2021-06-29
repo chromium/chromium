@@ -34,7 +34,6 @@ include_rules = [
   "+components/download",
   "+components/keyed_service/core",
   "+components/performance_manager",
-  "+components/permissions",
   "+components/url_formatter",
   "+components/network_session_configurator/browser",
   "+components/viz/common/resources",

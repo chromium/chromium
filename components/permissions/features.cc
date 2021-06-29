@@ -55,9 +55,6 @@ const base::Feature kPermissionPredictionServiceUseUrlOverride{
     "kPermissionPredictionServiceUseUrlOverride",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kRevisedOriginHandling{"PermissionsRevisedOriginHandling",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace features
 namespace feature_params {
 

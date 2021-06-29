@@ -1621,7 +1621,6 @@ if (!is_android) {
       "../browser/permissions/permission_request_manager_browsertest.cc",
       "../browser/permissions/permissions_browsertest.cc",
       "../browser/permissions/permissions_browsertest.h",
-      "../browser/permissions/permissions_security_model_browsertest.cc",
       "../browser/picture_in_picture/picture_in_picture_window_controller_browsertest.cc",
       "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",

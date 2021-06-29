@@ -40,7 +40,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -522,8 +521,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    url::Origin embedding_origin = url::Origin::Create(
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents));
+    url::Origin embedding_origin =
+        url::Origin::Create(web_contents->GetLastCommittedURL());
     if (embedding_origin != origin_) {
       // Third party iframes are not allowed to request more permissions.
       RunCallbackAndRecordPermissionRequestOutcome(
@@ -1423,9 +1422,8 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
     TabStripModel* tabs = browser->tab_strip_model();
     for (int i = 0; i < tabs->count(); ++i) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
-      url::Origin tab_origin = url::Origin::Create(
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents));
+      url::Origin tab_origin =
+          url::Origin::Create(web_contents->GetLastCommittedURL());
       // Found a tab for this origin, so early exit and don't revoke grants.
       if (tab_origin == origin)
         return;

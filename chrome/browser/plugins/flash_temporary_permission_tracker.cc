@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/plugins/flash_temporary_permission_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/plugin_service.h"
@@ -58,8 +57,7 @@ bool FlashTemporaryPermissionTracker::IsFlashEnabled(const GURL& url) {
 void FlashTemporaryPermissionTracker::FlashEnabledForWebContents(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GURL origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL origin = web_contents->GetLastCommittedURL().GetOrigin();
   {
     base::AutoLock lock(granted_origins_lock_);
     granted_origins_.insert(std::make_pair(

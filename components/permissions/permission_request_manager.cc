@@ -163,10 +163,9 @@ void PermissionRequestManager::AddRequest(
   // correct behavior on interstitials -- we probably want to basically queue
   // any request for which GetVisibleURL != GetLastCommittedURL.
   CHECK_EQ(source_frame->GetMainFrame(), web_contents()->GetMainFrame());
-  const GURL& main_frame_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
+  const GURL& main_frame_url = web_contents()->GetLastCommittedURL();
   bool is_main_frame =
-      url::Origin::Create(main_frame_origin)
+      url::Origin::Create(main_frame_url)
           .IsSameOriginWith(url::Origin::Create(request->GetOrigin()));
 
   absl::optional<url::Origin> auto_approval_origin =
@@ -378,7 +377,7 @@ GURL PermissionRequestManager::GetRequestingOrigin() const {
 }
 
 GURL PermissionRequestManager::GetEmbeddingOrigin() const {
-  return PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
+  return web_contents()->GetLastCommittedURL().GetOrigin();
 }
 
 void PermissionRequestManager::Accept() {

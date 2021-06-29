@@ -21,7 +21,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
-#include "components/permissions/permission_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webrtc/media_stream_devices_controller.h"
@@ -113,8 +112,7 @@ void UpdatePageSpecificContentSettings(
   content_settings->OnMediaStreamPermissionSet(
       PermissionManagerFactory::GetForProfile(profile)->GetCanonicalOrigin(
           ContentSettingsType::MEDIASTREAM_CAMERA, request.security_origin,
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents)),
+          web_contents->GetLastCommittedURL()),
       microphone_camera_state, selected_audio_device, selected_video_device,
       requested_audio_device, requested_video_device);
 }
@@ -169,8 +167,7 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
           : ContentSettingsType::MEDIASTREAM_CAMERA;
 
   DCHECK(!security_origin.is_empty());
-  GURL embedding_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
   permissions::PermissionManager* permission_manager =
       PermissionManagerFactory::GetForProfile(profile);
   return permission_manager

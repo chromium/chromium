@@ -122,8 +122,7 @@ void PermissionContextBase::RequestPermission(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GURL requesting_origin = requesting_frame.GetOrigin();
-  GURL embedding_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
 
   if (!requesting_origin.is_valid() || !embedding_origin.is_valid()) {
     std::string type_name =

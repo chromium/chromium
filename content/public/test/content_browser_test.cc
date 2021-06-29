@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_process_host.h"
@@ -83,7 +82,7 @@ void ContentBrowserTest::SetUp() {
                                  subprocess_path);
 #endif
 
-#if defined(USE_AURA) && defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMECAST)
+#if defined(USE_AURA) && defined(TOOLKIT_VIEWS)
   // https://crbug.com/695054: Ignore window activation/deactivation to make
   // the Chrome-internal focus unaffected by OS events caused by running tests
   // in parallel.
