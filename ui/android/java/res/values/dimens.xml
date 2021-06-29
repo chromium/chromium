@@ -96,7 +96,12 @@
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
 
     <!-- Elevation levels -->
+    <dimen name="default_elevation_0">0dp</dimen>
+    <dimen name="default_elevation_1">1dp</dimen>
     <dimen name="default_elevation_2">3dp</dimen>
+    <dimen name="default_elevation_3">6dp</dimen>
+    <dimen name="default_elevation_4">8dp</dimen>
+    <dimen name="default_elevation_5">12dp</dimen>
 
     <!-- Arbitrary shadow length for elevation levels -->
     <dimen name="default_shadow_length_elev_2">6dp</dimen>
