@@ -34,6 +34,10 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   FloatRect VisualRectInLocalSVGCoordinates() const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
+  bool NodeAtPoint(HitTestResult& result,
+                   const HitTestLocation& hit_test_location,
+                   const PhysicalOffset& accumulated_offset,
+                   HitTestAction action) override;
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;

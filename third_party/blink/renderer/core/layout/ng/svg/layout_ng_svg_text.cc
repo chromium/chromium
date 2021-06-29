@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 
 namespace blink {
@@ -166,6 +167,17 @@ FloatRect LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   if (box.IsEmpty())
     return FloatRect();
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
+}
+
+bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
+                                  const HitTestLocation& hit_test_location,
+                                  const PhysicalOffset& accumulated_offset,
+                                  HitTestAction action) {
+  TransformedHitTestLocation local_location(hit_test_location,
+                                            LocalToSVGParentTransform());
+  return local_location &&
+         LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
+             result, *local_location, accumulated_offset, action);
 }
 
 void LayoutNGSVGText::SetNeedsPositioningValuesUpdate() {

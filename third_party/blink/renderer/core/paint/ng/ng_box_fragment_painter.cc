@@ -1814,13 +1814,19 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                              physical_offset))
     return false;
 
+  bool pointer_events_bounding_box = false;
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
   if (hit_test_self) {
     // Table row and table section are never a hit target.
     // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
     if (PhysicalFragment().IsTableNGRow() ||
-        PhysicalFragment().IsTableNGSection() || PhysicalFragment().IsSvgText())
+        PhysicalFragment().IsTableNGSection()) {
       hit_test_self = false;
+    } else if (fragment.IsSvgText()) {
+      pointer_events_bounding_box =
+          fragment.Style().PointerEvents() == EPointerEvents::kBoundingBox;
+      hit_test_self = pointer_events_bounding_box;
+    }
   }
 
   if (hit_test_self && box_fragment_.IsScrollContainer() &&
@@ -1883,6 +1889,10 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // PhysicalVisualOverflowRectIncludingFilters().
       bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
+    }
+    if (UNLIKELY(pointer_events_bounding_box)) {
+      bounds_rect = PhysicalRect::EnclosingRect(
+          PhysicalFragment().GetLayoutObject()->ObjectBoundingBox());
     }
     // TODO(kojii): Don't have good explanation why only inline box needs to
     // snap, but matches to legacy and fixes crbug.com/976606.
