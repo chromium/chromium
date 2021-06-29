@@ -15,9 +15,17 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "crypto/openssl_util.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace {
 
@@ -198,6 +206,146 @@ std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {
   }
   // Handle platform_keys errors.
   return StatusToString(StatusFromKeystoreError(error));
+}
+
+std::string GetSubjectPublicKeyInfo(
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  base::StringPiece spki_bytes;
+  if (!net::asn1::ExtractSPKIFromDERCert(
+          net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
+          &spki_bytes))
+    return {};
+  return std::string(spki_bytes);
+}
+
+// Extracts the public exponent out of an EVP_PKEY and verifies if it is equal
+// to 65537 (Fermat number with n=4). This values is enforced by
+// platform_keys::GetPublicKey() and platform_keys::GetPublicKeyBySpki().
+// The caller of this function needs to have an OpenSSLErrStackTracer or
+// otherwise clean up the error stack on failure.
+bool VerifyRSAPublicExponent(EVP_PKEY* pkey) {
+  RSA* rsa = EVP_PKEY_get0_RSA(pkey);
+  if (!rsa) {
+    LOG(WARNING) << "Could not get RSA from PKEY.";
+    return false;
+  }
+
+  const BIGNUM* public_exponent = nullptr;
+  RSA_get0_key(rsa, nullptr /* out_n */, &public_exponent, nullptr /* out_d */);
+  if (BN_get_word(public_exponent) != 65537L) {
+    LOG(ERROR) << "Rejecting RSA public exponent that is unequal 65537.";
+    return false;
+  }
+
+  return true;
+}
+
+bool GetPublicKey(const scoped_refptr<net::X509Certificate>& certificate,
+                  net::X509Certificate::PublicKeyType* key_type,
+                  size_t* key_size_bits) {
+  net::X509Certificate::PublicKeyType key_type_tmp =
+      net::X509Certificate::kPublicKeyTypeUnknown;
+  size_t key_size_bits_tmp = 0;
+  net::X509Certificate::GetPublicKeyInfo(certificate->cert_buffer(),
+                                         &key_size_bits_tmp, &key_type_tmp);
+
+  if (key_type_tmp == net::X509Certificate::kPublicKeyTypeUnknown) {
+    LOG(WARNING) << "Could not extract public key of certificate.";
+    return false;
+  }
+  if (key_type_tmp != net::X509Certificate::kPublicKeyTypeRSA &&
+      key_type_tmp != net::X509Certificate::kPublicKeyTypeECDSA) {
+    LOG(WARNING) << "Keys of other types than RSA and EC are not supported.";
+    return false;
+  }
+
+  std::string spki = GetSubjectPublicKeyInfo(certificate);
+  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  CBS cbs;
+  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
+  if (!pkey) {
+    LOG(WARNING) << "Could not extract public key of certificate.";
+    return false;
+  }
+
+  switch (EVP_PKEY_type(pkey->type)) {
+    case EVP_PKEY_RSA: {
+      if (!VerifyRSAPublicExponent(pkey.get())) {
+        return false;
+      }
+      break;
+    }
+    case EVP_PKEY_EC: {
+      EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey.get());
+      if (!ec) {
+        LOG(WARNING) << "Could not get EC from PKEY.";
+        return false;
+      }
+
+      if (EC_GROUP_get_curve_name(EC_KEY_get0_group(ec)) !=
+          NID_X9_62_prime256v1) {
+        LOG(WARNING) << "Only P-256 named curve is supported.";
+        return false;
+      }
+      break;
+    }
+    default: {
+      LOG(WARNING) << "Only RSA and EC keys are supported.";
+      return false;
+    }
+  }
+
+  *key_type = key_type_tmp;
+  *key_size_bits = key_size_bits_tmp;
+  return true;
+}
+
+bool GetPublicKeyBySpki(const std::string& spki,
+                        net::X509Certificate::PublicKeyType* key_type,
+                        size_t* key_size_bits) {
+  net::X509Certificate::PublicKeyType key_type_tmp =
+      net::X509Certificate::kPublicKeyTypeUnknown;
+
+  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  CBS cbs;
+  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
+  if (!pkey) {
+    LOG(WARNING) << "Could not extract public key from SPKI.";
+    return false;
+  }
+  switch (EVP_PKEY_type(pkey->type)) {
+    case EVP_PKEY_RSA: {
+      if (!VerifyRSAPublicExponent(pkey.get())) {
+        return false;
+      }
+      key_type_tmp = net::X509Certificate::kPublicKeyTypeRSA;
+      break;
+    }
+    case EVP_PKEY_EC: {
+      EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey.get());
+      if (!ec) {
+        LOG(WARNING) << "Could not get EC from PKEY.";
+        return false;
+      }
+      if (EC_GROUP_get_curve_name(EC_KEY_get0_group(ec)) !=
+          NID_X9_62_prime256v1) {
+        LOG(WARNING) << "Only P-256 named curve is supported.";
+        return false;
+      }
+      key_type_tmp = net::X509Certificate::kPublicKeyTypeECDSA;
+      break;
+    }
+    default: {
+      LOG(WARNING) << "Only RSA and EC keys are supported.";
+      return false;
+    }
+  }
+
+  *key_type = key_type_tmp;
+  *key_size_bits = base::saturated_cast<size_t>(EVP_PKEY_bits(pkey.get()));
+  return true;
 }
 
 void IntersectCertificates(
