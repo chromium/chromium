@@ -1802,7 +1802,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
     Events logged when the given PhoneHub interstitial screen is shown.
@@ -1840,7 +1840,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
     The number of PhoneHub notifications, logged each time a notification is
@@ -1854,7 +1854,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Events for the given notification opt-in prompt.</summary>
 </histogram>
@@ -1865,7 +1865,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
 </histogram>
@@ -1876,7 +1876,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
     Logs the current screen when the settings button is clicked in the tray
@@ -1890,7 +1890,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
     Logs the current screen for the PhoneHub tray given bubble event (i.e. on
@@ -1908,7 +1908,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Moved to tools/metrics/histograms/histograms_xml/phonehub/histograms.xml.
     Removed 11/2020 in M89.
   </obsolete>
-  <owner>tengs@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>
     After a tab continuation chip is clicked, the index of the tab is logged.
@@ -2100,8 +2100,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.CircledPercentage" units="%"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The percentage of the screen area circled by the Assistant pen. Recorded
@@ -2110,8 +2111,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GestureDuration" units="ms"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The duration of an Assistant pen gesture. Recorded at the end of every
@@ -2120,8 +2122,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GestureInterval" units="ms"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The interval between subsequent Assistant pen gestures within a session.
@@ -2132,8 +2135,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession" units="units"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The number of Assistant pen gestures per session. Session is defined as the
@@ -2143,8 +2147,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession.Recognized"
-    units="units" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    units="units" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The number of recognized Assistant pen gestures per session. Session is
@@ -2154,8 +2159,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GestureType"
-    enum="AssistantGestureType" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    enum="AssistantGestureType" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The type of the Assistant pen gesture. Recorded at the end of each gesture.
@@ -2163,8 +2169,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.HighlighterLength" units="dp"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The length of a recognized &quot;horizontal stroke&quot; Assistant pen
@@ -2173,8 +2180,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.InAssistantMode" units="ms"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The amount of time spent in Palette Assistant mode. Recorded when the
@@ -2183,8 +2191,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.InLaserPointerMode" units="ms"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The amount of time spend in Palette Laser pointer mode. Recorded when the
@@ -2193,8 +2202,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.InMagnifyMode" units="ms"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The amount of time spend in Palette Magnify mode. Recorded when the Magnify
@@ -2203,8 +2213,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.ModeCancellation"
-    enum="PaletteModeCancelType" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    enum="PaletteModeCancelType" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     Tracks the number of times a palette mode is explicitly cancelled or
@@ -2213,8 +2224,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Usage" enum="PaletteTrayOptions"
-    expires_after="2021-12-05">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     Recorded every time that the palette option has been selected from the
@@ -2223,8 +2235,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Usage.AutoOpened" enum="PaletteTrayOptions"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     Recorded every time that the palette option has been selected from the
@@ -2233,8 +2246,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Usage.Shortcut" enum="PaletteTrayOptions"
-    expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     Recorded every time that the palette option has been selected by means other
@@ -2441,8 +2455,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SystemMenu.DefaultView.VisibleRows"
-    enum="SystemMenuDefaultViewRows" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    enum="SystemMenuDefaultViewRows" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The visible rows displayed in the system menu's default view. Recorded each
@@ -2451,8 +2466,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.SystemMenu.PercentageOfWorkAreaHeightCoveredByMenu"
-    units="%" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+    units="%" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The height of the system menu divided by the height of the Ash desktop work
@@ -2461,8 +2477,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Ash.SystemMenu.Rows" units="rows" expires_after="2021-07-27">
-  <owner>tengs@chromium.org</owner>
+<histogram name="Ash.SystemMenu.Rows" units="rows" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
     The number of user-visible rows in the system menu's default view. Recorded
