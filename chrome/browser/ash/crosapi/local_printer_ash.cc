@@ -38,6 +38,7 @@
 #include "components/printing/browser/prefs_util.h"
 #include "components/user_manager/user.h"
 #include "printing/backend/print_backend.h"
+#include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
@@ -355,6 +356,46 @@ void LocalPrinterAsh::GetUsernamePerPolicy(
                               prefs::kPrintingSendUsernameAndFilenameEnabled)
                               ? absl::make_optional(username)
                               : absl::nullopt);
+}
+
+void LocalPrinterAsh::GetPrinterTypeDenyList(
+    GetPrinterTypeDenyListCallback callback) {
+  Profile* profile = GetActiveUserProfile();
+  PrefService* prefs = profile->GetPrefs();
+
+  std::vector<printing::PrinterType> deny_list;
+  if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList)) {
+    std::move(callback).Run(deny_list);
+    return;
+  }
+
+  const base::Value* deny_list_from_prefs =
+      prefs->Get(prefs::kPrinterTypeDenyList);
+  if (!deny_list_from_prefs) {
+    std::move(callback).Run(deny_list);
+    return;
+  }
+
+  deny_list.reserve(deny_list_from_prefs->GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+    const std::string& deny_list_str = deny_list_value.GetString();
+    printing::PrinterType printer_type;
+    if (deny_list_str == "privet")
+      printer_type = printing::PrinterType::kPrivet;
+    else if (deny_list_str == "extension")
+      printer_type = printing::PrinterType::kExtension;
+    else if (deny_list_str == "pdf")
+      printer_type = printing::PrinterType::kPdf;
+    else if (deny_list_str == "local")
+      printer_type = printing::PrinterType::kLocal;
+    else if (deny_list_str == "cloud")
+      printer_type = printing::PrinterType::kCloud;
+    else
+      continue;
+
+    deny_list.push_back(printer_type);
+  }
+  std::move(callback).Run(deny_list);
 }
 
 Profile* LocalPrinterAsh::GetActiveUserProfile() {

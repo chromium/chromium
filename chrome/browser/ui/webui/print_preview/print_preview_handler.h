@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -155,6 +156,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Checks policy preferences for a deny list of printer types and initializes
   // the set that stores them.
   void ReadPrinterTypeDenyListFromPrefs();
+
+  void OnPrinterTypeDenyListReady(
+      const std::vector<PrinterType>& deny_list_types);
 
   // Whether the the handler should be receiving messages from the renderer to
   // forward to the Print Preview JS in response to preview request with id
@@ -332,6 +336,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
   crosapi::mojom::DriveIntegrationService* drive_integration_service_ = nullptr;
+
+  // Version number of the LocalPrinter mojo service.
+  int local_printer_version_ = 0;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

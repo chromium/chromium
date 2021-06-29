@@ -281,4 +281,8 @@ interface LocalPrinter {
   // enabled.
   [MinVersion=1]
   GetUsernamePerPolicy@10() => (string? username);
+
+  // Gets list of printers types included in the deny list policy.
+  [MinVersion=2]
+  GetPrinterTypeDenyList@11() => (array<printing.mojom.PrinterType> deny_list);
 };

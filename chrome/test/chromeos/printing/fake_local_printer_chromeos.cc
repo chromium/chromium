@@ -60,3 +60,8 @@ void FakeLocalPrinter::GetUsernamePerPolicy(
     GetUsernamePerPolicyCallback callback) {
   FAIL();
 }
+
+void FakeLocalPrinter::GetPrinterTypeDenyList(
+    GetPrinterTypeDenyListCallback callback) {
+  FAIL();
+}

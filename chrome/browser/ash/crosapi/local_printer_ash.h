@@ -70,6 +70,7 @@ class LocalPrinterAsh : public mojom::LocalPrinter {
                    AddObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
   void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
+  void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
 
  private:
   // Exposed so that unit tests can override them.

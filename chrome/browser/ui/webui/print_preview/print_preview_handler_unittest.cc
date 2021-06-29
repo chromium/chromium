@@ -304,18 +304,24 @@ class TestLocalPrinter : public FakeLocalPrinter {
     policies_ = policies;
   }
 
+  void add_to_deny_list(const printing::PrinterType& printer_type) {
+    deny_list_.push_back(printer_type);
+  }
+
   // crosapi::mojom::LocalPrinter:
   void GetPolicies(GetPoliciesCallback callback) override {
     ASSERT_TRUE(policies_);
     std::move(callback).Run(policies_->Clone());
     policies_.reset();
   }
-  void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override {
-    FAIL();
+  void GetPrinterTypeDenyList(
+      GetPrinterTypeDenyListCallback callback) override {
+    std::move(callback).Run(deny_list_);
   }
 
  private:
   absl::optional<crosapi::mojom::Policies> policies_;
+  std::vector<printing::PrinterType> deny_list_;
 };
 #endif
 
@@ -372,6 +378,10 @@ class PrintPreviewHandlerTest : public testing::Test {
   void SetPolicies(const crosapi::mojom::Policies& policies) {
     local_printer_.set_policies(policies);
   }
+
+  void AddToDenyList(const printing::PrinterType& printer_type) {
+    local_printer_.add_to_deny_list(printer_type);
+  }
 #endif
 
   void SetUp() override {
@@ -401,6 +411,7 @@ class PrintPreviewHandlerTest : public testing::Test {
         std::make_unique<TestLocalPrinterAsh>(profile_.get(), nullptr);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     handler_->local_printer_ = &local_printer_;
+    handler_->local_printer_version_ = crosapi::mojom::LocalPrinter::Version_;
 #endif
 
     auto preview_ui = std::make_unique<FakePrintPreviewUI>(
@@ -986,10 +997,15 @@ TEST_F(PrintPreviewHandlerTest, GetPrinters) {
 // then called for all three fetchable printer types; only local printers should
 // be successfully fetched.
 TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinters) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddToDenyList(PrinterType::kExtension);
+  AddToDenyList(PrinterType::kPrivet);
+#else
   base::Value::ListStorage deny_list;
   deny_list.push_back(base::Value("extension"));
   deny_list.push_back(base::Value("privet"));
   prefs()->Set(prefs::kPrinterTypeDenyList, base::Value(std::move(deny_list)));
+#endif
   Initialize();
 
   size_t expected_callbacks = 1;
@@ -1070,10 +1086,15 @@ TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilities) {
 // is then called for all supported printer types; only privet and extension
 // printer capabilties should be successfully fetched.
 TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddToDenyList(PrinterType::kLocal);
+  AddToDenyList(PrinterType::kPdf);
+#else
   base::Value::ListStorage deny_list;
   deny_list.push_back(base::Value("local"));
   deny_list.push_back(base::Value("pdf"));
   prefs()->Set(prefs::kPrinterTypeDenyList, base::Value(std::move(deny_list)));
+#endif
   Initialize();
 
   // Check all four printer types that implement

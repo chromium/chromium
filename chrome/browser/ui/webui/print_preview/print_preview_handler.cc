@@ -368,6 +368,8 @@ PrintPreviewHandler::PrintPreviewHandler() {
       chromeos::LacrosChromeServiceImpl::Get();
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
+    local_printer_version_ =
+        service->GetInterfaceVersion(crosapi::mojom::LocalPrinter::Uuid_);
   } else {
     LOG(ERROR) << "Local printer not available";
   }
@@ -460,32 +462,58 @@ PrefService* PrintPreviewHandler::GetPrefs() {
 }
 
 void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
+#if defined(OS_CHROMEOS)
+  if (!local_printer_)
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (local_printer_version_ <
+      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+              kGetPrinterTypeDenyListMinVersion}) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  local_printer_->GetPrinterTypeDenyList(
+      base::BindOnce(&PrintPreviewHandler::OnPrinterTypeDenyListReady,
+                     weak_factory_.GetWeakPtr()));
+  return;
+#else
   PrefService* prefs = GetPrefs();
   if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList))
     return;
 
-  const base::Value* deny_list_types = prefs->Get(prefs::kPrinterTypeDenyList);
-  if (!deny_list_types || !deny_list_types->is_list())
+  const base::Value* deny_list_from_prefs =
+      prefs->Get(prefs::kPrinterTypeDenyList);
+  if (!deny_list_from_prefs)
     return;
 
-  for (const base::Value& deny_list_type : deny_list_types->GetList()) {
-    if (!deny_list_type.is_string())
+  std::vector<PrinterType> deny_list;
+  deny_list.reserve(deny_list_from_prefs->GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+    const std::string& deny_list_str = deny_list_value.GetString();
+    printing::PrinterType printer_type;
+    if (deny_list_str == "privet")
+      printer_type = printing::PrinterType::kPrivet;
+    else if (deny_list_str == "extension")
+      printer_type = printing::PrinterType::kExtension;
+    else if (deny_list_str == "pdf")
+      printer_type = printing::PrinterType::kPdf;
+    else if (deny_list_str == "local")
+      printer_type = printing::PrinterType::kLocal;
+    else if (deny_list_str == "cloud")
+      printer_type = printing::PrinterType::kCloud;
+    else
       continue;
 
-    // The expected printer type strings are enumerated in
-    // components/policy/resources/policy_templates.json
-    const std::string& deny_list_str = deny_list_type.GetString();
-    if (deny_list_str == "privet")
-      printer_type_deny_list_.insert(PrinterType::kPrivet);
-    else if (deny_list_str == "extension")
-      printer_type_deny_list_.insert(PrinterType::kExtension);
-    else if (deny_list_str == "pdf")
-      printer_type_deny_list_.insert(PrinterType::kPdf);
-    else if (deny_list_str == "local")
-      printer_type_deny_list_.insert(PrinterType::kLocal);
-    else if (deny_list_str == "cloud")
-      printer_type_deny_list_.insert(PrinterType::kCloud);
+    deny_list.push_back(printer_type);
   }
+  OnPrinterTypeDenyListReady(deny_list);
+#endif  // defined(OS_CHROMEOS)
+}
+
+void PrintPreviewHandler::OnPrinterTypeDenyListReady(
+    const std::vector<PrinterType>& deny_list_types) {
+  printer_type_deny_list_ = deny_list_types;
 }
 
 PrintPreviewUI* PrintPreviewHandler::print_preview_ui() {
