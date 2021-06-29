@@ -42,6 +42,8 @@ import "mojo/public/mojom/base/string16.mojom";
 // `oneof state`) in //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // TODO(crbug.com/1218175): Remove Rma prefix from name.
 enum RmaState {
+  // Used as a safety fallback default, and therefore should always trigger safe
+  // fallback behavior when present.
   kUnknown,
   kWelcomeScreen,
   kConfigureNetwork,
@@ -143,6 +145,8 @@ enum RmadErrorCode {
 // This must remain in sync with ComponentRepairState::Component in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 enum ComponentType {
+  // Used as a safety fallback default, and therefore should always trigger safe
+  // fallback behavior when present.
   kComponentUnknown = 0,
   // NOTE: This is a special case for mainboards that will be restocked after
   // repair. The board will stay in RMA until it is used in another device.
@@ -158,6 +162,8 @@ enum ComponentType {
 // This must remain in sync with ComponentRepairState::RepairState in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 enum ComponentRepairState {
+  // Used as a safety fallback default, and therefore should always trigger safe
+  // fallback behavior when present.
   kRepairUnknown = 0,
   kOriginal = 1,
   kReplaced = 2,

@@ -74,8 +74,6 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     default:
       return MojomRmaState::kUnknown;
   }
-  NOTREACHED();
-  return MojomRmaState::kUnknown;
 }
 
 // static
