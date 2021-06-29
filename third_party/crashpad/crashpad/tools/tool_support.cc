@@ -93,7 +93,7 @@ int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
 base::FilePath::StringType ToolSupport::CommandLineArgumentToFilePathStringType(
     const base::StringPiece& path) {
 #if defined(OS_POSIX)
-  return std::string(path);
+  return std::string(path.data(), path.size());
 #elif defined(OS_WIN)
   return base::UTF8ToWide(path);
 #endif  // OS_POSIX

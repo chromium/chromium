@@ -617,7 +617,10 @@ crashpad_static_library("util") {
     "../third_party/zlib",
   ]
 
-  deps += [ "../third_party/mini_chromium:base" ]
+  deps += [
+    "../third_party/mini_chromium:base",
+    "../third_party/mini_chromium:chromeos_buildflags",
+  ]
 
   if (crashpad_is_mac || crashpad_is_ios) {
     include_dirs += [ "$root_build_dir/gen" ]

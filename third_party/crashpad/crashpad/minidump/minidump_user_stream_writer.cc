@@ -14,6 +14,7 @@
 
 #include "minidump/minidump_user_stream_writer.h"
 
+#include "base/check_op.h"
 #include "util/file/file_writer.h"
 
 namespace crashpad {

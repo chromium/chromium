@@ -16,6 +16,7 @@
 
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "client/annotation_list.h"
 
 namespace crashpad {
