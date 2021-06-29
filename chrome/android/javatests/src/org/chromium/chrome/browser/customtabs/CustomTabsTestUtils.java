@@ -126,6 +126,29 @@ public class CustomTabsTestUtils {
         return intent;
     }
 
+    /**
+     * Creates the simplest intent that is sufficient to let {@link ChromeLauncherActivity} launch
+     * the {@link CustomTabActivity}. Allows specification of a theme.
+     * @param context The instrumentation context to use.
+     * @param url The URL to load in the incognito CCT.
+     * @param inNightMode Whether the CCT should be launched in night mode.
+     * @return Returns the intent to launch the incognito CCT.
+     */
+    public static Intent createMinimalCustomTabIntentWithTheme(
+            Context context, String url, boolean inNightMode) {
+        CustomTabsIntent.Builder builder =
+                new CustomTabsIntent.Builder(CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(context, ChromeLauncherActivity.class)));
+        builder.setColorScheme(inNightMode ? CustomTabsIntent.COLOR_SCHEME_DARK
+                                           : CustomTabsIntent.COLOR_SCHEME_LIGHT);
+        CustomTabsIntent customTabsIntent = builder.build();
+        Intent intent = customTabsIntent.intent;
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
     public static CustomTabsConnection setUpConnection() {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         connection.resetThrottling(Process.myUid());

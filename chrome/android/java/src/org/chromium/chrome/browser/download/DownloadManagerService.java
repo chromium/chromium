@@ -813,8 +813,8 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (isSupportedMimeType) {
             // Redirect the user to an internal media viewer.  The file path is necessary to show
             // the real file path to the user instead of a content:// download ID.
-            return MediaViewerUtils.getMediaViewerIntent(
-                    fileUri, contentUri, mimeType, true /* allowExternalAppHandlers */);
+            return MediaViewerUtils.getMediaViewerIntent(fileUri, contentUri, mimeType,
+                    true /* allowExternalAppHandlers */, ContextUtils.getApplicationContext());
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);
     }
@@ -1572,15 +1572,15 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void openDownloadItem(DownloadItem downloadItem, @DownloadOpenSource int source) {
+    private void openDownloadItem(
+            DownloadItem downloadItem, @DownloadOpenSource int source, Context context) {
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
         boolean canOpen =
                 DownloadUtils.openFile(downloadInfo.getFilePath(), downloadInfo.getMimeType(),
                         downloadInfo.getDownloadGuid(), downloadInfo.getOTRProfileId(),
-                        downloadInfo.getOriginalUrl(), downloadInfo.getReferrer(), source);
+                        downloadInfo.getOriginalUrl(), downloadInfo.getReferrer(), source, context);
         if (!canOpen) {
-            openDownloadsPage(
-                    ContextUtils.getApplicationContext(), downloadInfo.getOTRProfileId(), source);
+            openDownloadsPage(context, downloadInfo.getOTRProfileId(), source);
         }
     }
 
@@ -1591,11 +1591,11 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param source The source where the user opened this download.
      */
     // Deprecated after new download backend.
-    public void openDownload(
-            ContentId id, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+    public void openDownload(ContentId id, OTRProfileID otrProfileID,
+            @DownloadOpenSource int source, Context context) {
         DownloadManagerServiceJni.get().openDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, id.id,
-                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), source);
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), source, context);
     }
 
     /**
@@ -1831,7 +1831,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         int getAutoResumptionLimit();
         long init(DownloadManagerService caller, boolean isProfileAdded);
         void openDownload(long nativeDownloadManagerService, DownloadManagerService caller,
-                String downloadGuid, ProfileKey profileKey, int source);
+                String downloadGuid, ProfileKey profileKey, int source, Context context);
         void resumeDownload(long nativeDownloadManagerService, DownloadManagerService caller,
                 String downloadGuid, ProfileKey profileKey, boolean hasUserGesture);
         void retryDownload(long nativeDownloadManagerService, DownloadManagerService caller,

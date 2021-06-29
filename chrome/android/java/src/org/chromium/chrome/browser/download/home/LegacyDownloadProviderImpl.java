@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.home;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.download.DownloadInfo;
@@ -130,7 +131,8 @@ class LegacyDownloadProviderImpl
     public void openItem(OfflineItem item) {
         // TODO(shaktisahu): May be pass metrics as a param.
         DownloadManagerService.getDownloadManagerService().openDownload(item.id,
-                OTRProfileID.deserialize(item.otrProfileId), DownloadOpenSource.DOWNLOAD_HOME);
+                OTRProfileID.deserialize(item.otrProfileId), DownloadOpenSource.DOWNLOAD_HOME,
+                ContextUtils.getApplicationContext());
     }
 
     @Override

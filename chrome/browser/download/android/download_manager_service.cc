@@ -248,8 +248,10 @@ void DownloadManagerService::OnOffTheRecordProfileCreated(
   InitializeForProfile(off_the_record->GetProfileKey());
 }
 
-void DownloadManagerService::OpenDownload(download::DownloadItem* download,
-                                          int source) {
+void DownloadManagerService::OpenDownload(
+    download::DownloadItem* download,
+    int source,
+    const JavaParamRef<jobject>& j_context) {
   if (java_ref_.is_null())
     return;
 
@@ -257,7 +259,8 @@ void DownloadManagerService::OpenDownload(download::DownloadItem* download,
   ScopedJavaLocalRef<jobject> j_item =
       JNI_DownloadManagerService_CreateJavaDownloadItem(env, download);
 
-  Java_DownloadManagerService_openDownloadItem(env, java_ref_, j_item, source);
+  Java_DownloadManagerService_openDownloadItem(env, java_ref_, j_item, source,
+                                               j_context);
 }
 
 void DownloadManagerService::HandleOMADownload(download::DownloadItem* download,
@@ -278,7 +281,8 @@ void DownloadManagerService::OpenDownload(
     jobject obj,
     const JavaParamRef<jstring>& jdownload_guid,
     const JavaParamRef<jobject>& j_profile_key,
-    jint source) {
+    jint source,
+    const JavaParamRef<jobject>& j_context) {
   if (!is_manager_initialized_)
     return;
 
@@ -288,7 +292,7 @@ void DownloadManagerService::OpenDownload(
   if (!item)
     return;
 
-  OpenDownload(item, source);
+  OpenDownload(item, source, j_context);
 }
 
 void DownloadManagerService::ResumeDownload(

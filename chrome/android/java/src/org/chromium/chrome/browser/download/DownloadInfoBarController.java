@@ -1053,15 +1053,16 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
             mTrackedItems.remove(itemId);
             removeNotification(itemId);
 
+            Context context = getActivity() == null ? getContext() : getActivity();
             if (itemId != null && schedule != null) {
                 onChangeScheduleClicked(itemId, schedule);
             } else if (itemId != null) {
-                DownloadUtils.openItem(
-                        itemId, mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
+                DownloadUtils.openItem(itemId, mOtrProfileID,
+                        DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR, context);
                 recordLinkClicked(true /*openItem*/);
             } else {
                 DownloadManagerService.openDownloadsPage(
-                        getContext(), mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
+                        context, mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
                 recordLinkClicked(false /*openItem*/);
             }
             closePreviousInfoBar();

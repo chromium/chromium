@@ -70,14 +70,17 @@ class DownloadManagerService
                          int64_t system_download_id);
 
   // Called to open a given download item.
-  void OpenDownload(download::DownloadItem* download, int source);
+  void OpenDownload(download::DownloadItem* download,
+                    int source,
+                    const JavaParamRef<jobject>& j_context);
 
   // Called to open a download item whose GUID is equal to |jdownload_guid|.
   void OpenDownload(JNIEnv* env,
                     jobject obj,
                     const JavaParamRef<jstring>& jdownload_guid,
                     const JavaParamRef<jobject>& j_profile_key,
-                    jint source);
+                    jint source,
+                    const JavaParamRef<jobject>& j_context);
 
   // Called to resume downloading the item that has GUID equal to
   // |jdownload_guid|..

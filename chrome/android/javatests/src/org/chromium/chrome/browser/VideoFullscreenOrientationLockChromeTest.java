@@ -124,8 +124,8 @@ public class VideoFullscreenOrientationLockChromeTest {
         // Orientation lock should be disabled when download viewer activity is started.
         Uri fileUri = Uri.parse(UrlUtils.getIsolatedTestFileUrl(VIDEO_URL));
         String mimeType = "video/mp4";
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                fileUri, fileUri, mimeType, true /* allowExternalAppHandlers */);
+        Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri, fileUri, mimeType,
+                true /* allowExternalAppHandlers */, mActivityTestRule.getActivity());
         IntentHandler.startActivityForTrustedIntent(intent);
         waitUntilUnlocked();
 
