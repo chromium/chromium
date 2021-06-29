@@ -521,6 +521,11 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // an editable text field, which views::Combobox does not have. Use
   // ax::mojom::Role::kPopUpButton to match an HTML <select> element.
   node_data->role = ax::mojom::Role::kPopUpButton;
+  if (menu_runner_) {
+    node_data->AddState(ax::mojom::State::kExpanded);
+  } else {
+    node_data->AddState(ax::mojom::State::kCollapsed);
+  }
 
   node_data->SetName(accessible_name_);
   node_data->SetValue(model_->GetItemAt(selected_index_));
@@ -669,12 +674,14 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
   }
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
 void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
   menu_runner_.reset();
   arrow_button_->SetState(original_button_state);
   closed_time_ = base::TimeTicks::Now();
+  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
 void Combobox::OnPerformAction() {
