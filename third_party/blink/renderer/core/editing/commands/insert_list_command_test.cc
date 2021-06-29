@@ -197,4 +197,26 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell) {
       "ruby>",
       GetSelectionTextFromBody());
 }
+
+TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement(
+      "rb { display: table-cell; }"
+      "input { float: left; }");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable='true'><ol><li>^<br></li>"
+                             "<li><ruby><rb><input></input></rb></ruby></li>"
+                             "<li>XXX</li></ol><div>|</div>"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kOrderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><br></li>"
+      "<li><ruby><rb><input></rb></ruby></li><li><br></li><li><br></li></ol>"
+      "</rb></ruby></li></ol>|XXX<br><div></div></div>",
+      GetSelectionTextFromBody());
+}
 }

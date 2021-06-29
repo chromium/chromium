@@ -1106,6 +1106,13 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
   return next;
 }
 
+VisiblePosition NextPositionOf(const Position& position,
+                               EditingBoundaryCrossingRule rule) {
+  DCHECK(position.IsValidFor(*position.GetDocument())) << position;
+  return NextPositionOfAlgorithm<EditingStrategy>(
+      PositionWithAffinityTemplate<EditingStrategy>(position), rule);
+}
+
 VisiblePosition NextPositionOf(const VisiblePosition& visible_position,
                                EditingBoundaryCrossingRule rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
