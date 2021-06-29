@@ -22,9 +22,7 @@
 class TestPictureInPictureWindowController
     : public content::PictureInPictureWindowController {
  public:
-  explicit TestPictureInPictureWindowController(
-      content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
+  TestPictureInPictureWindowController() = default;
 
   // PictureInPictureWindowController:
   void Show() override {}
@@ -35,6 +33,9 @@ class TestPictureInPictureWindowController
   content::OverlayWindow* GetWindowForTesting() override { return nullptr; }
   void UpdateLayerBounds() override {}
   bool IsPlayerActive() override { return false; }
+  void set_web_contents(content::WebContents* web_contents) {
+    web_contents_ = web_contents;
+  }
   content::WebContents* GetWebContents() override { return web_contents_; }
   bool TogglePlayPause() override { return false; }
   void SkipAd() override {}
@@ -45,16 +46,22 @@ class TestPictureInPictureWindowController
   void HangUp() override {}
 
  private:
-  content::WebContents* const web_contents_;
+  content::WebContents* web_contents_;
 };
 
 class OverlayWindowViewsTest : public ChromeViewsTestBase {
  public:
+  OverlayWindowViewsTest() = default;
   // ChromeViewsTestBase:
   void SetUp() override {
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
     // on ChromeOS, which we don't want.
     ViewsTestBase::SetUp();
+    // web_contents_ needs to be created after the constructor, so that
+    // |feature_list_| can be initialized before other threads check if a
+    // feature is enabled.
+    web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
+    pip_window_controller_.set_web_contents(web_contents_);
 
 #if defined(OS_CHROMEOS)
     test_views_delegate()->set_context(GetContext());
@@ -87,9 +94,8 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
  private:
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* const web_contents_ =
-      web_contents_factory_.CreateWebContents(&profile_);
-  TestPictureInPictureWindowController pip_window_controller_{web_contents_};
+  content::WebContents* web_contents_;
+  TestPictureInPictureWindowController pip_window_controller_;
 
   display::test::TestScreen test_screen_;
   display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
