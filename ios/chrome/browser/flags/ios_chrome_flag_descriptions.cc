@@ -159,10 +159,10 @@ const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
 const char kRestoreSessionFromCacheName[] =
-    "Use iOS_TBA native WKWebView sesion restoration.";
+    "Use native WKWebView sesion restoration (iOS15 only).";
 const char kRestoreSessionFromCacheDescription[] =
-    "Enable iOS_TBA instant session restoration for faster and more "
-    "web session restoration.";
+    "Enable instant session restoration for faster web session restoration "
+    "(iOS15 only).";
 
 const char kEnableAutofillAccountWalletStorageName[] =
     "Enable the account data storage for autofill";
