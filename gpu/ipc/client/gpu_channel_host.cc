@@ -17,6 +17,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
+#include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "url/gurl.h"
 
@@ -35,9 +36,8 @@ GpuChannelHost::GpuChannelHost(
       channel_id_(channel_id),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
+      listener_(new Listener(), base::OnTaskRunnerDeleter(io_thread_)),
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
-      gpu_channel_(mojo::PendingRemote<mojom::GpuChannel>(std::move(handle), 0),
-                   io_thread_),
       shared_image_interface_(
           this,
           static_cast<int32_t>(
@@ -46,13 +46,16 @@ GpuChannelHost::GpuChannelHost(
           this,
           static_cast<int32_t>(
               GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
-  // Test callers may pass an invalid handle, leaving `gpu_channel_` unbound.
-  if (gpu_channel_) {
-    gpu_channel_.set_disconnect_handler(
-        base::BindOnce(&ConnectionTracker::OnDisconnectedFromGpuProcess,
-                       connection_tracker_),
-        io_thread_);
-  }
+  mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
+  listener_->Initialize(std::move(handle),
+                        channel.InitWithNewEndpointAndPassReceiver(),
+                        io_thread_);
+  gpu_channel_ = mojo::SharedAssociatedRemote<mojom::GpuChannel>(
+      std::move(channel), io_thread_);
+  gpu_channel_.set_disconnect_handler(
+      base::BindOnce(&ConnectionTracker::OnDisconnectedFromGpuProcess,
+                     connection_tracker_),
+      io_thread_);
 
   next_image_id_.GetNext();
   for (int32_t i = 0;
@@ -156,8 +159,11 @@ void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
 }
 
 void GpuChannelHost::DestroyChannel() {
-  connection_tracker_->OnDisconnectedFromGpuProcess();
   gpu_channel_.Disconnect();
+  connection_tracker_->OnDisconnectedFromGpuProcess();
+  io_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
 }
 
 int32_t GpuChannelHost::ReserveImageId() {
@@ -200,5 +206,37 @@ GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo(
 
 GpuChannelHost::OrderingBarrierInfo& GpuChannelHost::OrderingBarrierInfo::
 operator=(OrderingBarrierInfo&&) = default;
+
+GpuChannelHost::Listener::Listener() = default;
+
+void GpuChannelHost::Listener::Initialize(
+    mojo::ScopedMessagePipeHandle handle,
+    mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  base::AutoLock lock(lock_);
+  channel_ = IPC::ChannelMojo::Create(
+      std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
+      io_task_runner, mojo::internal::MessageQuotaChecker::MaybeCreate());
+  DCHECK(channel_);
+  bool result = channel_->Connect();
+  DCHECK(result);
+  channel_->GetAssociatedInterfaceSupport()->GetRemoteAssociatedInterface(
+      std::move(receiver));
+}
+
+GpuChannelHost::Listener::~Listener() = default;
+
+void GpuChannelHost::Listener::Close() {
+  OnChannelError();
+}
+
+bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
+  return false;
+}
+
+void GpuChannelHost::Listener::OnChannelError() {
+  AutoLock lock(lock_);
+  channel_ = nullptr;
+}
 
 }  // namespace gpu

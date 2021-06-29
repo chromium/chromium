@@ -61,6 +61,7 @@ component("service") {
     "//components/viz/common",
     "//gpu/config",
     "//gpu/ipc/common",
+    "//ipc",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",
