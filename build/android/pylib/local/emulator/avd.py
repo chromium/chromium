@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import absolute_import
+
 import contextlib
 import json
 import logging
@@ -376,7 +376,7 @@ class AvdConfig(object):
         pkgs_by_dir[pkg.dest_path] = []
       pkgs_by_dir[pkg.dest_path].append(pkg)
 
-    for pkg_dir, pkgs in pkgs_by_dir.items():
+    for pkg_dir, pkgs in list(pkgs_by_dir.items()):
       logging.info('Installing packages in %s', pkg_dir)
       cipd_root = os.path.join(constants.DIR_SOURCE_ROOT, pkg_dir)
       if not os.path.exists(cipd_root):

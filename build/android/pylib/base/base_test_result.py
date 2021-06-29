@@ -4,7 +4,7 @@
 
 """Module containing base test results classes."""
 
-from __future__ import absolute_import
+
 import threading
 import six
 

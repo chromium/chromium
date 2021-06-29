@@ -4,7 +4,7 @@
 
 """Unittests for TestRunResults."""
 
-from __future__ import absolute_import
+
 import unittest
 
 from pylib.base.base_test_result import BaseTestResult

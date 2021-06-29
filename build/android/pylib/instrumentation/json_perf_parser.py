@@ -5,7 +5,7 @@
 
 """A helper module for parsing JSON objects from perf tests results."""
 
-from __future__ import absolute_import
+
 import json
 
 

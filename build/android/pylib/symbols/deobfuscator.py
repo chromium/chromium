@@ -139,7 +139,7 @@ class DeobfuscatorPool(object):
   #     out/Release/apks/ChromePublic.apk.mapping
   def __init__(self, mapping_path, pool_size=4):
     self._mapping_path = mapping_path
-    self._pool = [Deobfuscator(mapping_path) for _ in xrange(pool_size)]
+    self._pool = [Deobfuscator(mapping_path) for _ in range(pool_size)]
     # Allow only one thread to select from the pool at a time.
     self._lock = threading.Lock()
     self._num_restarts = 0

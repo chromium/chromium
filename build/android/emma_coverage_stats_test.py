@@ -1,10 +1,11 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # pylint: disable=protected-access
 
+import sys
 import unittest
 from xml.etree import ElementTree
 
@@ -182,7 +183,7 @@ class _EmmaHtmlParserTest(unittest.TestCase):
     read_values = ['<div>' + multiple_trs + '</div>']
     found, _ = MockOpenForFunction(self.parser._FindElements, read_values,
                                    file_path='fake', xpath_selector='.//TR')
-    self.assertEquals(2, len(found))
+    self.assertEqual(2, len(found))
 
   def testFindElements_noMatch(self):
     read_values = [self.simple_html]
@@ -196,22 +197,40 @@ class _EmmaHtmlParserTest(unittest.TestCase):
         self.parser._FindElements('fake', xpath_selector='//tr')
 
   def testGetPackageNameToEmmaFileDict_basic(self):
-    expected_dict = {
-      'org.chromium.chrome.browser.AccessibilityUtil.java':
-      'fake/dir/_files/23.html',
-      'org.chromium.chrome.browser.ContextualMenuBar.java':
-      'fake/dir/_files/22.html',
-      'org.chromium.chrome.browser.tabmodel.IntentHelper.java':
-      'fake/dir/_files/1e.html',
-      'org.chromium.chrome.browser.ContentSetting.java':
-      'fake/dir/_files/1f.html',
-      'org.chromium.chrome.browser.DevToolsServer.java':
-      'fake/dir/_files/20.html',
-      'org.chromium.chrome.browser.NavigationPopup.java':
-      'fake/dir/_files/24.html',
-      'org.chromium.chrome.browser.FileProviderHelper.java':
-      'fake/dir/_files/21.html'}
-
+    if sys.version_info.major < 3:
+      expected_dict = {
+          'org.chromium.chrome.browser.AccessibilityUtil.java':
+          'fake/dir/_files/23.html',
+          'org.chromium.chrome.browser.ContextualMenuBar.java':
+          'fake/dir/_files/22.html',
+          'org.chromium.chrome.browser.tabmodel.IntentHelper.java':
+          'fake/dir/_files/1e.html',
+          'org.chromium.chrome.browser.ContentSetting.java':
+          'fake/dir/_files/1f.html',
+          'org.chromium.chrome.browser.DevToolsServer.java':
+          'fake/dir/_files/20.html',
+          'org.chromium.chrome.browser.NavigationPopup.java':
+          'fake/dir/_files/24.html',
+          'org.chromium.chrome.browser.FileProviderHelper.java':
+          'fake/dir/_files/21.html'
+      }
+    else:
+      expected_dict = {
+          'org.chromium.chrome.browser.IntentHelper.java':
+          'fake/dir/_files/1e.html',
+          'org.chromium.chrome.browser.tabmodel.AccessibilityUtil.java':
+          'fake/dir/_files/23.html',
+          'org.chromium.chrome.browser.tabmodel.ContextualMenuBar.java':
+          'fake/dir/_files/22.html',
+          'org.chromium.chrome.browser.tabmodel.ContentSetting.java':
+          'fake/dir/_files/1f.html',
+          'org.chromium.chrome.browser.tabmodel.DevToolsServer.java':
+          'fake/dir/_files/20.html',
+          'org.chromium.chrome.browser.tabmodel.NavigationPopup.java':
+          'fake/dir/_files/24.html',
+          'org.chromium.chrome.browser.tabmodel.FileProviderHelper.java':
+          'fake/dir/_files/21.html'
+      }
     read_values = [self.index_html, self.package_1_class_list_html,
                    self.package_2_class_list_html]
     return_dict, mock_open = MockOpenForFunction(
@@ -219,9 +238,18 @@ class _EmmaHtmlParserTest(unittest.TestCase):
 
     self.assertDictEqual(return_dict, expected_dict)
     self.assertEqual(mock_open.call_count, 3)
-    calls = [mock.call('fake/dir/index.html'),
-             mock.call('fake/dir/_files/1.html'),
-             mock.call('fake/dir/_files/0.html')]
+    if sys.version_info.major < 3:
+      calls = [
+          mock.call('fake/dir/index.html'),
+          mock.call('fake/dir/_files/1.html'),
+          mock.call('fake/dir/_files/0.html')
+      ]
+    else:
+      calls = [
+          mock.call('fake/dir/index.html'),
+          mock.call('fake/dir/_files/0.html'),
+          mock.call('fake/dir/_files/1.html')
+      ]
     mock_open.assert_has_calls(calls)
 
   def testGetPackageNameToEmmaFileDict_noPackageElements(self):
@@ -377,7 +405,7 @@ class _EmmaCoverageStatsTest(unittest.TestCase):
           return_value=package_to_emma)
       coverage_stats.GetPackageNameFromFile = lambda x: package_names[x]
       result_dict = coverage_stats._GetSourceFileToEmmaFileDict(
-          package_names.keys())
+          list(package_names.keys()))
     self.assertDictEqual(result_dict, self.good_source_to_emma)
 
   def testGetCoverageDictForFile(self):
@@ -552,7 +580,11 @@ def MockOpenForFunction(func, side_effects, **kwargs):
   mock_open = mock.mock_open()
   mock_open.side_effect = [mock.mock_open(read_data=side_effect).return_value
                            for side_effect in side_effects]
-  with mock.patch('__builtin__.open', mock_open):
+  if sys.version_info.major < 3:
+    open_builtin_path = '__builtin__.open'
+  else:
+    open_builtin_path = 'builtins.open'
+  with mock.patch(open_builtin_path, mock_open):
     return func(**kwargs), mock_open
 
 

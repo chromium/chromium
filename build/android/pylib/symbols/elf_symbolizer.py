@@ -8,7 +8,10 @@ import logging
 import multiprocessing
 import os
 import posixpath
-import Queue
+try:
+  from queue import Empty, Queue
+except ImportError:
+  from Queue import Empty, Queue
 import re
 import subprocess
 import sys
@@ -254,7 +257,7 @@ class ELFSymbolizer(object):
       # Objects required to handle the addr2line subprocess.
       self._proc = None  # Subprocess.Popen(...) instance.
       self._thread = None  # Threading.thread instance.
-      self._out_queue = None  # Queue.Queue instance (for buffering a2l stdout).
+      self._out_queue = None  # Queue instance (for buffering a2l stdout).
       self._RestartAddr2LineProcess()
 
     def EnqueueRequest(self, addr, callback_arg):
@@ -293,7 +296,7 @@ class ELFSymbolizer(object):
 
           try:
             lines = self._out_queue.get(block=True, timeout=0.25)
-          except Queue.Empty:
+          except Empty:
             # On timeout (1/4 s.) repeat the inner loop and check if either the
             # addr2line process did crash or we waited its output for too long.
             continue
@@ -314,7 +317,7 @@ class ELFSymbolizer(object):
       while True:
         try:
           lines = self._out_queue.get_nowait()
-        except Queue.Empty:
+        except Empty:
           break
         self._ProcessSymbolOutput(lines)
 
@@ -405,7 +408,7 @@ class ELFSymbolizer(object):
       # The only reason of existence of this Queue (and the corresponding
       # Thread below) is the lack of a subprocess.stdout.poll_avail_lines().
       # Essentially this is a pipe able to extract a couple of lines atomically.
-      self._out_queue = Queue.Queue()
+      self._out_queue = Queue()
 
       # Start the underlying addr2line process in line buffered mode.
 
@@ -413,8 +416,13 @@ class ELFSymbolizer(object):
           '--exe=' + self._symbolizer.elf_file_path]
       if self._symbolizer.inlines:
         cmd += ['--inlines']
-      self._proc = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE,
-          stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True)
+      self._proc = subprocess.Popen(cmd,
+                                    bufsize=1,
+                                    universal_newlines=True,
+                                    stdout=subprocess.PIPE,
+                                    stdin=subprocess.PIPE,
+                                    stderr=sys.stderr,
+                                    close_fds=True)
 
       # Start the poller thread, which simply moves atomically the lines read
       # from the addr2line's stdout to the |_out_queue|.
@@ -432,7 +440,7 @@ class ELFSymbolizer(object):
         self._WriteToA2lStdin(addr)
 
     @staticmethod
-    def StdoutReaderThread(process_pipe, queue, inlines):
+    def StdoutReaderThread(process_pipe, my_queue, inlines):
       """The poller thread fn, which moves the addr2line stdout to the |queue|.
 
       This is the only piece of code not running on the main thread. It merely
@@ -444,8 +452,10 @@ class ELFSymbolizer(object):
         lines_for_one_symbol = []
         while True:
           line1 = process_pipe.readline().rstrip('\r\n')
+          if not line1:
+            break
           line2 = process_pipe.readline().rstrip('\r\n')
-          if not line1 or not line2:
+          if not line2:
             break
           inline_has_more_lines = inlines and (len(lines_for_one_symbol) == 0 or
                                   (line1 != '??' and line2 != '??:0'))
@@ -453,7 +463,7 @@ class ELFSymbolizer(object):
             lines_for_one_symbol += [(line1, line2)]
           if inline_has_more_lines:
             continue
-          queue.put(lines_for_one_symbol)
+          my_queue.put(lines_for_one_symbol)
           lines_for_one_symbol = []
         process_pipe.close()
 

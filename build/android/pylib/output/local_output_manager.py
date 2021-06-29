@@ -5,7 +5,11 @@
 import time
 import os
 import shutil
-import urllib
+
+try:
+  from urllib.parse import quote
+except ImportError:
+  from urllib import quote
 
 from pylib.base import output_manager
 
@@ -37,7 +41,7 @@ class LocalArchivedFile(output_manager.ArchivedFile):
     self._output_path = os.path.join(out_root, out_subdir, out_filename)
 
   def _Link(self):
-    return 'file://%s' % urllib.quote(self._output_path)
+    return 'file://%s' % quote(self._output_path)
 
   def _Archive(self):
     if not os.path.exists(os.path.dirname(self._output_path)):

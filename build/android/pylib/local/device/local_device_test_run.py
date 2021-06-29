@@ -6,7 +6,10 @@ import fnmatch
 import logging
 import posixpath
 import signal
-import thread
+try:
+  import _thread as thread
+except ImportError:
+  import thread
 import threading
 
 from devil import base_error
@@ -228,17 +231,15 @@ class LocalDeviceTestRun(test_run.TestRun):
     tests_and_results = {}
     for test, name in tests_and_names:
       if name.endswith('*'):
-        tests_and_results[name] = (
-            test,
-            [r for n, r in all_test_results.iteritems()
-             if fnmatch.fnmatch(n, name)])
+        tests_and_results[name] = (test, [
+            r for n, r in all_test_results.items() if fnmatch.fnmatch(n, name)
+        ])
       else:
         tests_and_results[name] = (test, all_test_results.get(name))
 
-    failed_tests_and_results = (
-        (test, result) for test, result in tests_and_results.itervalues()
-        if is_failure_result(result)
-    )
+    failed_tests_and_results = ((test, result)
+                                for test, result in tests_and_results.values()
+                                if is_failure_result(result))
 
     return [t for t, r in failed_tests_and_results if self._ShouldRetry(t, r)]
 

@@ -10,7 +10,7 @@ A DexFile class that exposes access to several memory items in the dex format
 is provided, but it does not include error handling or validation.
 """
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -91,7 +91,7 @@ class _MemoryItemList(object):
     self.offset = offset
     self.size = size
     reader.Seek(first_item_offset or offset)
-    self._items = [factory(reader) for _ in xrange(size)]
+    self._items = [factory(reader) for _ in range(size)]
 
     if alignment:
       reader.AlignUpTo(alignment)
@@ -141,7 +141,7 @@ class _StringItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     reader.Seek(offset)
-    string_item_offsets = iter([reader.ReadUInt() for _ in xrange(size)])
+    string_item_offsets = iter([reader.ReadUInt() for _ in range(size)])
 
     def factory(x):
       data_offset = next(string_item_offsets)
@@ -182,7 +182,7 @@ class _ClassDefItemList(_MemoryItemList):
 
     def factory(x):
       return _ClassDefItem(*(x.ReadUInt()
-                             for _ in xrange(len(_ClassDefItem._fields))))
+                             for _ in range(len(_ClassDefItem._fields))))
 
     super(_ClassDefItemList, self).__init__(reader, offset, size, factory)
 
@@ -209,7 +209,7 @@ class _DexMapList(object):
     self._map = {}
     reader.Seek(offset)
     self._size = reader.ReadUInt()
-    for _ in xrange(self._size):
+    for _ in range(self._size):
       item = _DexMapItem(reader)
       self._map[item.type] = item
 
@@ -299,7 +299,7 @@ class _DexReader(object):
     self.Seek(offset)
     ret = ''
 
-    for _ in xrange(string_length):
+    for _ in range(string_length):
       a = self.ReadUByte()
       if a == 0:
         raise _MUTf8DecodeError('Early string termination encountered',
@@ -320,7 +320,10 @@ class _DexReader(object):
       else:
         raise _MUTf8DecodeError('Bad byte', string_length, offset)
 
-      ret += unichr(code)
+      try:
+        ret += unichr(code)
+      except NameError:
+        ret += chr(code)
 
     if self.ReadUByte() != 0x00:
       raise _MUTf8DecodeError('Expected string termination', string_length,
@@ -417,10 +420,9 @@ class DexFile(object):
 
   @staticmethod
   def ResolveClassAccessFlags(access_flags):
-    return tuple(
-        flag_string
-        for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.iteritems()
-        if flag & access_flags)
+    return tuple(flag_string
+                 for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.items()
+                 if flag & access_flags)
 
   def IterMethodSignatureParts(self):
     """Yields the string components of dex methods in a dex file.

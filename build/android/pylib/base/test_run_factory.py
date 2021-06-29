@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import absolute_import
+
 from pylib.gtest import gtest_test_instance
 from pylib.instrumentation import instrumentation_test_instance
 from pylib.junit import junit_test_instance

@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -91,7 +91,7 @@ class ChromeProxySessionTest(unittest.TestCase):
     wpr_mock.assert_called_once_with()
     ts_proxy_mock.assert_called_once_with()
     self.assertFalse(chrome_proxy.wpr_replay_mode)
-    self.assertEquals(chrome_proxy.wpr_archive_path, os.path.abspath(__file__))
+    self.assertEqual(chrome_proxy.wpr_archive_path, os.path.abspath(__file__))
 
   def test_SetWPRRecordMode(self):
     chrome_proxy = chrome_proxy_utils.ChromeProxySession(4)
@@ -108,7 +108,7 @@ class ChromeProxySessionTest(unittest.TestCase):
   def test_SetWPRArchivePath(self):
     chrome_proxy = chrome_proxy_utils.ChromeProxySession(4)
     chrome_proxy._wpr_server._archive_path = 'abc'
-    self.assertEquals(chrome_proxy.wpr_archive_path, 'abc')
+    self.assertEqual(chrome_proxy.wpr_archive_path, 'abc')
 
   def test_UseDefaultDeviceProxyPort(self):
     chrome_proxy = chrome_proxy_utils.ChromeProxySession()
@@ -117,7 +117,7 @@ class ChromeProxySessionTest(unittest.TestCase):
         'PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=',
         '--proxy-server=socks5://localhost:1080'
     ]
-    self.assertEquals(chrome_proxy.device_proxy_port, 1080)
+    self.assertEqual(chrome_proxy.device_proxy_port, 1080)
     self.assertListEqual(chrome_proxy.GetFlags(), expected_flags)
 
   def test_UseNewDeviceProxyPort(self):
@@ -127,7 +127,7 @@ class ChromeProxySessionTest(unittest.TestCase):
         'PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=',
         '--proxy-server=socks5://localhost:1'
     ]
-    self.assertEquals(chrome_proxy.device_proxy_port, 1)
+    self.assertEqual(chrome_proxy.device_proxy_port, 1)
     self.assertListEqual(chrome_proxy.GetFlags(), expected_flags)
 
 

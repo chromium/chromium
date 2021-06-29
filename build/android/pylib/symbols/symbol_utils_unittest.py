@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -626,8 +627,7 @@ class MockApkTranslator(object):
       self._AddLibEntries(test_apk_libs)
 
   def _AddLibEntries(self, entries):
-    self._apk_libs = sorted(self._apk_libs + entries,
-                            lambda x, y: cmp(x[0], y[0]))
+    self._apk_libs = sorted(self._apk_libs + entries, key=lambda x: x[0])
 
   def ReadMapFile(self, file_path):
     """Read an .apk.native-libs file that was produced with apk_lib_dump.py.
@@ -660,7 +660,7 @@ class MockApkTranslator(object):
     min_pos = 0
     max_pos = len(self._apk_libs)
     while min_pos < max_pos:
-      mid_pos = (min_pos + max_pos) / 2
+      mid_pos = (min_pos + max_pos) // 2
       mid_entry = self._apk_libs[mid_pos]
       mid_offset = mid_entry[0]
       mid_size = mid_entry[2]
@@ -772,7 +772,7 @@ class ElfSymbolResolverTest(unittest.TestCase):
         addr2line_path_for_tests=_MOCK_A2L_PATH)
     resolver.SetAndroidAbi('ignored-abi')
 
-    for addr, expected_sym in _TEST_SYMBOL_DATA.iteritems():
+    for addr, expected_sym in _TEST_SYMBOL_DATA.items():
       self.assertEqual(resolver.FindSymbolInfo('/some/path/libmock1.so', addr),
                        expected_sym)
 
@@ -781,11 +781,11 @@ class ElfSymbolResolverTest(unittest.TestCase):
         addr2line_path_for_tests=_MOCK_A2L_PATH)
     resolver.SetAndroidAbi('ignored-abi')
     resolver.AddLibraryOffsets('/some/path/libmock1.so',
-                               _TEST_SYMBOL_DATA.keys())
+                               list(_TEST_SYMBOL_DATA.keys()))
 
     resolver.DisallowSymbolizerForTesting()
 
-    for addr, expected_sym in _TEST_SYMBOL_DATA.iteritems():
+    for addr, expected_sym in _TEST_SYMBOL_DATA.items():
       sym_info = resolver.FindSymbolInfo('/some/path/libmock1.so', addr)
       self.assertIsNotNone(sym_info, 'None symbol info for addr %x' % addr)
       self.assertEqual(
@@ -915,7 +915,7 @@ class BacktraceTranslatorTest(unittest.TestCase):
     input_backtrace = _EXPECTED_BACKTRACE.splitlines()
     expected_lib_offsets_map = _EXPECTED_BACKTRACE_OFFSETS_MAP
     offset_map = backtrace_translator.FindLibraryOffsets(input_backtrace)
-    for lib_path, offsets in offset_map.iteritems():
+    for lib_path, offsets in offset_map.items():
       self.assertTrue(lib_path in expected_lib_offsets_map,
                       '%s is not in expected library-offsets map!' % lib_path)
       sorted_offsets = sorted(offsets)

@@ -234,7 +234,7 @@ class ApkNativeLibraries(object):
       lib_path, file_start, file_end = entry
       result.append((lib_path, file_start, file_end - file_start))
 
-    return sorted(result, lambda x, y: cmp(x[1], y[1]))
+    return sorted(result, key=lambda x: x[1])
 
   def FindLibraryByOffset(self, file_offset):
     """Find the native library at a given file offset.

@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -130,12 +131,12 @@ class MockApkReaderTest(unittest.TestCase):
         'foo.txt': (1024, 1024, 'FooFooFoo'),
         'lib/bar/libcode.so': (16000, 3240, 1024, '\x7fELFFFFFFFFFFFF'),
       }
-      for path, props in _ENTRIES.iteritems():
+      for path, props in _ENTRIES.items():
         reader.AddTestEntry(path, props[0], props[1], props[2])
 
       entries = reader.ListEntries()
       self.assertEqual(len(entries), len(_ENTRIES))
-      for path, props in _ENTRIES.iteritems():
+      for path, props in _ENTRIES.items():
         entry = reader.FindEntry(path)
         self.assertEqual(entry.filename, path)
         self.assertEqual(entry.file_size, props[0])

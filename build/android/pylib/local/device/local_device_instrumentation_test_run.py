@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import absolute_import
+
 import collections
 import contextlib
 import copy
@@ -527,7 +527,7 @@ class LocalDeviceInstrumentationTestRun(
         other_tests.append(test)
 
     all_tests = []
-    for _, tests in batched_tests.items():
+    for _, tests in list(batched_tests.items()):
       tests.sort()  # Ensure a consistent ordering across external shards.
       all_tests.extend([
           tests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]

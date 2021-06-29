@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
+
 
 import bisect
 import collections
@@ -346,7 +346,7 @@ class DeviceSymbolResolver(SymbolResolver):
                                                           offset)
       libraries_map[lib_path].add(lib_offset)
 
-    for lib_path, lib_offsets in libraries_map.iteritems():
+    for lib_path, lib_offsets in libraries_map.items():
       self.AddLibraryOffsets(lib_path, lib_offsets)
 
   def FindSymbolInfo(self, device_path, offset):
@@ -477,8 +477,7 @@ class MemoryMap(object):
 
       addr_list.append(t)
 
-    self._addr_map = sorted(addr_list,
-                            lambda x, y: cmp(x.addr_start, y.addr_start))
+    self._addr_map = sorted(addr_list, key=lambda x: x.addr_start)
     self._sorted_addresses = [e.addr_start for e in self._addr_map]
     return bool(self._addr_map)
 

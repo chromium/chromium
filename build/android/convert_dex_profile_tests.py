@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -41,36 +42,36 @@ Class descriptor  : 'La;'
         positions     :
                 0x0001 line=310
                 0x0057 line=313
-        locals        : 
+        locals        :
       #1              : (in La;)
         name          : '<init>'
         type          : '()V'
         positions     :
-        locals        : 
+        locals        :
   Virtual methods   -
       #0              : (in La;)
         name          : 'a'
         type          : '(Ljava/lang/String;)I'
-        positions     : 
+        positions     :
           0x0000 line=2
           0x0003 line=3
           0x001b line=8
-        locals        : 
-          0x0000 - 0x0021 reg=3 this La; 
+        locals        :
+          0x0000 - 0x0021 reg=3 this La;
       #1              : (in La;)
         name          : 'a'
         type          : '(Ljava/lang/Object;)I'
-        positions     : 
+        positions     :
           0x0000 line=8
           0x0003 line=9
-        locals        : 
-          0x0000 - 0x0021 reg=3 this La; 
+        locals        :
+          0x0000 - 0x0021 reg=3 this La;
       #2              : (in La;)
         name          : 'b'
         type          : '()La;'
-        positions     : 
+        positions     :
           0x0000 line=1
-        locals        : 
+        locals        :
 """
 
 # pylint: disable=line-too-long
@@ -109,36 +110,36 @@ Class descriptor  : 'La;'
         positions     :
                 0x0001 line=310
                 0x0057 line=313
-        locals        : 
+        locals        :
       #1              : (in La;)
         name          : '<init>'
         type          : '()V'
         positions     :
-        locals        : 
+        locals        :
   Virtual methods   -
       #0              : (in La;)
         name          : 'a'
         type          : '(Ljava/lang/String;)I'
-        positions     : 
+        positions     :
           0x0000 line=2
           0x0003 line=3
           0x001b line=8
-        locals        : 
-          0x0000 - 0x0021 reg=3 this La; 
+        locals        :
+          0x0000 - 0x0021 reg=3 this La;
       #1              : (in La;)
         name          : 'c'
         type          : '(Ljava/lang/Object;)I'
-        positions     : 
+        positions     :
           0x0000 line=8
           0x0003 line=9
-        locals        : 
-          0x0000 - 0x0021 reg=3 this La; 
+        locals        :
+          0x0000 - 0x0021 reg=3 this La;
       #2              : (in La;)
         name          : 'b'
         type          : '()La;'
-        positions     : 
+        positions     :
           0x0000 line=1
-        locals        : 
+        locals        :
 """
 
 # pylint: disable=line-too-long
@@ -167,14 +168,14 @@ class GenerateProfileTests(unittest.TestCase):
     dex = cp.ProcessDex(DEX_DUMP.splitlines())
     self.assertIsNotNone(dex['a'])
 
-    self.assertEquals(len(dex['a'].FindMethodsAtLine('<clinit>', 311, 313)), 1)
-    self.assertEquals(len(dex['a'].FindMethodsAtLine('<clinit>', 309, 315)), 1)
+    self.assertEqual(len(dex['a'].FindMethodsAtLine('<clinit>', 311, 313)), 1)
+    self.assertEqual(len(dex['a'].FindMethodsAtLine('<clinit>', 309, 315)), 1)
     clinit = dex['a'].FindMethodsAtLine('<clinit>', 311, 313)[0]
-    self.assertEquals(clinit.name, '<clinit>')
-    self.assertEquals(clinit.return_type, 'V')
-    self.assertEquals(clinit.param_types, 'Ljava/lang/String;')
+    self.assertEqual(clinit.name, '<clinit>')
+    self.assertEqual(clinit.return_type, 'V')
+    self.assertEqual(clinit.param_types, 'Ljava/lang/String;')
 
-    self.assertEquals(len(dex['a'].FindMethodsAtLine('a', 8, None)), 2)
+    self.assertEqual(len(dex['a'].FindMethodsAtLine('a', 8, None)), 2)
     self.assertIsNone(dex['a'].FindMethodsAtLine('a', 100, None))
 
 # pylint: disable=protected-access
@@ -183,7 +184,7 @@ class GenerateProfileTests(unittest.TestCase):
     mapping, reverse = cp.ProcessProguardMapping(
         PROGUARD_MAPPING.splitlines(), dex)
 
-    self.assertEquals('La;', reverse.GetClassMapping('Lorg/chromium/Original;'))
+    self.assertEqual('La;', reverse.GetClassMapping('Lorg/chromium/Original;'))
 
     getInstance = cp.Method(
         'getInstance', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;')
@@ -196,7 +197,7 @@ class GenerateProfileTests(unittest.TestCase):
 
     mapped = mapping.GetMethodMapping(
         cp.Method('a', 'La;', 'Ljava/lang/String;', 'I'))
-    self.assertEquals(len(mapped), 2)
+    self.assertEqual(len(mapped), 2)
     self.assertIn(getInstance, mapped)
     self.assertNotIn(subclassInit, mapped)
     self.assertNotIn(
@@ -205,18 +206,18 @@ class GenerateProfileTests(unittest.TestCase):
 
     mapped = mapping.GetMethodMapping(
         cp.Method('a', 'La;', 'Ljava/lang/Object;', 'I'))
-    self.assertEquals(len(mapped), 1)
+    self.assertEqual(len(mapped), 1)
     self.assertIn(getInstance, mapped)
 
     mapped = mapping.GetMethodMapping(cp.Method('b', 'La;', '', 'La;'))
-    self.assertEquals(len(mapped), 1)
+    self.assertEqual(len(mapped), 1)
     self.assertIn(another, mapped)
 
-    for from_method, to_methods in mapping._method_mapping.iteritems():
+    for from_method, to_methods in mapping._method_mapping.items():
       for to_method in to_methods:
         self.assertIn(from_method, reverse.GetMethodMapping(to_method))
-    for from_class, to_class in mapping._class_mapping.iteritems():
-      self.assertEquals(from_class, reverse.GetClassMapping(to_class))
+    for from_class, to_class in mapping._class_mapping.items():
+      self.assertEqual(from_class, reverse.GetClassMapping(to_class))
 
   def testProcessProfile(self):
     dex = cp.ProcessDex(DEX_DUMP.splitlines())
@@ -234,9 +235,9 @@ class GenerateProfileTests(unittest.TestCase):
     self.assertIn(initialize, profile._methods)
     self.assertIn(another, profile._methods)
 
-    self.assertEquals(profile._methods[getInstance], set(['H', 'S', 'P']))
-    self.assertEquals(profile._methods[initialize], set(['H', 'P']))
-    self.assertEquals(profile._methods[another], set(['P']))
+    self.assertEqual(profile._methods[getInstance], set(['H', 'S', 'P']))
+    self.assertEqual(profile._methods[initialize], set(['H', 'P']))
+    self.assertEqual(profile._methods[another], set(['P']))
 
   def testEndToEnd(self):
     dex = cp.ProcessDex(DEX_DUMP.splitlines())
@@ -247,7 +248,7 @@ class GenerateProfileTests(unittest.TestCase):
       profile.WriteToFile(temp.name)
       with open(temp.name, 'r') as f:
         for a, b in zip(sorted(f), sorted(UNOBFUSCATED_PROFILE.splitlines())):
-          self.assertEquals(a.strip(), b.strip())
+          self.assertEqual(a.strip(), b.strip())
 
   def testObfuscateProfile(self):
     with build_utils.TempDir() as temp_dir:
@@ -269,7 +270,7 @@ class GenerateProfileTests(unittest.TestCase):
         obfuscated_profile = sorted(obfuscated_file.readlines())
       for a, b in zip(
           sorted(OBFUSCATED_PROFILE_2.splitlines()), obfuscated_profile):
-        self.assertEquals(a.strip(), b.strip())
+        self.assertEqual(a.strip(), b.strip())
 
 
 if __name__ == '__main__':
