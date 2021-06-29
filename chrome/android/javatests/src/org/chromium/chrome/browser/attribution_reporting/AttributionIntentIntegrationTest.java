@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.KeyEvent;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -32,13 +33,15 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
@@ -58,7 +61,11 @@ import org.chromium.content_public.browser.NavigationHandle;
 @Batch.SplitByFeature
 public class AttributionIntentIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -91,9 +98,9 @@ public class AttributionIntentIntegrationTest {
         ContextUtils.getApplicationContext().registerReceiver(mReceiver, filter);
 
         mActivityStateListener = (activity, newState) -> {
-            if (newState == ActivityState.CREATED && activity instanceof ChromeTabbedActivity) {
+            if (newState == ActivityState.CREATED && activity instanceof ChromeActivity) {
                 mActiveTabObserver = new ActivityTabTabObserver(
-                        ((ChromeTabbedActivity) activity).getActivityTabProvider()) {
+                        ((ChromeActivity) activity).getActivityTabProvider()) {
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         tab.addObserver(mTabObserver);
@@ -133,12 +140,13 @@ public class AttributionIntentIntegrationTest {
         return outerIntent;
     }
 
-    private void doTestConversionIntentEnabledInner(boolean disableStartupTabPreloader) {
+    private void doTestConversionIntentEnabledInner(
+            boolean disableStartupTabPreloader, Callback<Intent> startActivityCallback) {
         Intent outerIntent = makeValidAttributionIntent(
                 "1234", "https://example.com", "https://example2.com", 5678);
         outerIntent.putExtra(StartupTabPreloader.EXTRA_DISABLE_STARTUP_TAB_PRELOADER,
                 disableStartupTabPreloader);
-        mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
+        startActivityCallback.onResult(outerIntent);
         Assert.assertNotNull(mAttributionIntentReceived);
         Assert.assertEquals("1234",
                 mAttributionIntentReceived.getStringExtra(
@@ -172,7 +180,9 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testConversionIntentEnabled() {
-        doTestConversionIntentEnabledInner(false);
+        doTestConversionIntentEnabledInner(false, (Intent intent) -> {
+            mTabbedActivityTestRule.startMainActivityFromIntent(intent, "about:blank");
+        });
     }
 
     @Test
@@ -180,7 +190,21 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testConversionIntentEnabled_noStartupTabPreloader() {
-        doTestConversionIntentEnabledInner(true);
+        doTestConversionIntentEnabledInner(true, (Intent intent) -> {
+            mTabbedActivityTestRule.startMainActivityFromIntent(intent, "about:blank");
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"ConversionMeasurement"})
+    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    public void testConversionIntentEnabled_CCT() {
+        doTestConversionIntentEnabledInner(true, (Intent intent) -> {
+            mCustomTabActivityTestRule.prepareUrlIntent(intent, "about:blank");
+            IntentUtils.safePutBinderExtra(intent, CustomTabsIntent.EXTRA_SESSION, null);
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        });
     }
 
     @Test
@@ -189,7 +213,7 @@ public class AttributionIntentIntegrationTest {
     @Features.DisableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     public void testConversionIntentDisabled() {
         Intent outerIntent = makeValidAttributionIntent("1234", "about:blank", "reportTo", 0);
-        mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
+        mTabbedActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
         Assert.assertNull(mAttributionIntentReceived);
     }
 
@@ -200,7 +224,19 @@ public class AttributionIntentIntegrationTest {
     public void testInvalidConversionIntent() {
         Intent outerIntent = makeValidAttributionIntent(null, null, null, 0);
         // Tests that even an invalid Attribution intent processes the original VIEW intent.
-        mActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
+        mTabbedActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
+        Assert.assertNotNull(mAttributionIntentReceived);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"ConversionMeasurement"})
+    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    public void testInvalidConversionIntent_noStartupTabPreloader() {
+        Intent outerIntent = makeValidAttributionIntent(null, null, null, 0);
+        outerIntent.putExtra(StartupTabPreloader.EXTRA_DISABLE_STARTUP_TAB_PRELOADER, true);
+        // Tests that even an invalid Attribution intent processes the original VIEW intent.
+        mTabbedActivityTestRule.startMainActivityFromIntent(outerIntent, "about:blank");
         Assert.assertNotNull(mAttributionIntentReceived);
     }
 }

@@ -1549,6 +1549,14 @@ public class IntentHandler {
                 metadata == null ? false : metadata.isRendererInitiated());
         loadUrlParams.setInitiatorOrigin(metadata == null ? null : metadata.getInitiatorOrigin());
 
+        setAttributionParamsFromIntent(loadUrlParams, intent);
+        return loadUrlParams;
+    }
+
+    /**
+     * Fills out the AttributionParameters for a LoadUrlParams from the provided Intent.
+     */
+    public static void setAttributionParamsFromIntent(LoadUrlParams loadUrlParams, Intent intent) {
         AttributionParameters attributionParams =
                 AttributionIntentHandlerFactory.getInstance()
                         .getAndClearPendingAttributionParameters(intent);
@@ -1557,7 +1565,6 @@ public class IntentHandler {
                     attributionParams.getSourceEventId(), attributionParams.getDestination(),
                     attributionParams.getReportTo(), attributionParams.getExpiry());
         }
-        return loadUrlParams;
     }
 
     @NativeMethods

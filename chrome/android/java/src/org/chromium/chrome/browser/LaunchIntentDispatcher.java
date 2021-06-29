@@ -80,8 +80,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
     private final Activity mActivity;
     private Intent mIntent;
-    private final boolean mIsCustomTabIntent;
-    private final boolean mIsVrIntent;
 
     @IntDef({Action.CONTINUE, Action.FINISH_ACTIVITY, Action.FINISH_ACTIVITY_REMOVE_TASK})
     @Retention(RetentionPolicy.SOURCE)
@@ -124,7 +122,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
      */
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
-        if (!dispatcher.mIsCustomTabIntent) return Action.CONTINUE;
+        if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
         dispatcher.launchCustomTabActivity();
         return Action.FINISH_ACTIVITY;
     }
@@ -140,9 +138,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         recordIntentMetrics();
-
-        mIsVrIntent = VrModuleProvider.getIntentDelegate().isVrIntent(mIntent);
-        mIsCustomTabIntent = isCustomTabIntent(mIntent);
     }
 
     /**
@@ -160,6 +155,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // Must come before processing other intents, as we may un-wrap |mIntent| to another type of
         // Intent.
         if (handleAppAttributionIntent()) return Action.FINISH_ACTIVITY;
+
+        boolean isCustomTabIntent = isCustomTabIntent(mIntent);
 
         int tabId = IntentHandler.getBringTabToFrontId(mIntent);
         boolean incognito =
@@ -196,7 +193,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Check if we should launch an Instant App to handle the intent.
         if (InstantAppsHandler.getInstance().handleIncomingIntent(
-                    mActivity, mIntent, mIsCustomTabIntent, false)) {
+                    mActivity, mIntent, isCustomTabIntent, false)) {
             return Action.FINISH_ACTIVITY;
         }
 
@@ -207,7 +204,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         // Check if we should launch a Custom Tab.
-        if (mIsCustomTabIntent) {
+        if (isCustomTabIntent) {
             launchCustomTabActivity();
             return Action.FINISH_ACTIVITY;
         }
@@ -401,7 +398,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     @SuppressLint("InlinedApi")
     @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/847921#c17.
     private @Action int dispatchToTabbedActivity() {
-        if (mIsVrIntent) {
+        boolean isVrIntent = VrModuleProvider.getIntentDelegate().isVrIntent(mIntent);
+        if (isVrIntent) {
             for (Activity activity : ApplicationStatus.getRunningActivities()) {
                 if (activity instanceof ChromeTabbedActivity) {
                     if (VrModuleProvider.getDelegate().willChangeDensityInVr(
@@ -464,7 +462,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // This system call is often modified by OEMs and not actionable. http://crbug.com/619646.
         try {
-            Bundle options = mIsVrIntent
+            Bundle options = isVrIntent
                     ? VrModuleProvider.getIntentDelegate().getVrIntentOptions(mActivity)
                     : null;
             mActivity.startActivity(newIntent, options);
