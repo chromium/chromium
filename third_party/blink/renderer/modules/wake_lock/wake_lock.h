@@ -70,9 +70,6 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   void PageVisibilityChanged() override;
 
   // Permission handling
-  void ObtainPermission(
-      WakeLockType,
-      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
   mojom::blink::PermissionService* GetPermissionService();
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

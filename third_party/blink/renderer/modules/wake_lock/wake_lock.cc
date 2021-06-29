@@ -154,11 +154,25 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
 
 void WakeLock::DoRequest(WakeLockType type, ScriptPromiseResolver* resolver) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
-  // 8.1. Let state be the result of invoking obtain permission with
+  // 8.1. Let state be the result of requesting permission to use
   //      "screen-wake-lock".
-  ObtainPermission(
-      type, WTF::Bind(&WakeLock::DidReceivePermissionResponse,
-                      WrapPersistent(this), type, WrapPersistent(resolver)));
+  mojom::blink::PermissionName permission_name;
+  switch (type) {
+    case WakeLockType::kScreen:
+      permission_name = mojom::blink::PermissionName::SCREEN_WAKE_LOCK;
+      break;
+    case WakeLockType::kSystem:
+      permission_name = mojom::blink::PermissionName::SYSTEM_WAKE_LOCK;
+      break;
+  }
+
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  auto* local_frame = window ? window->GetFrame() : nullptr;
+  GetPermissionService()->RequestPermission(
+      CreatePermissionDescriptor(permission_name),
+      LocalFrame::HasTransientUserActivation(local_frame),
+      WTF::Bind(&WakeLock::DidReceivePermissionResponse, WrapPersistent(this),
+                type, WrapPersistent(resolver)));
 }
 
 void WakeLock::DidReceivePermissionResponse(WakeLockType type,
@@ -223,34 +237,6 @@ void WakeLock::PageVisibilityChanged() {
       managers_[static_cast<size_t>(WakeLockType::kScreen)];
   if (manager)
     manager->ClearWakeLocks();
-}
-
-void WakeLock::ObtainPermission(
-    WakeLockType type,
-    base::OnceCallback<void(PermissionStatus)> callback) {
-  // https://w3c.github.io/screen-wake-lock/#dfn-obtain-permission
-  // Note we actually implement a simplified version of the "obtain permission"
-  // algorithm that essentially just calls the "request permission to use"
-  // algorithm from the Permissions spec (i.e. we do not take user activation
-  // into account, nor do we consider "prompt" is a valid permission state).
-  // Right now, we can do that because there is no way for Chromium's
-  // permission system to get to the "prompt" state given how
-  // WakeLockPermissionContext is currently implemented.
-  mojom::blink::PermissionName permission_name;
-  switch (type) {
-    case WakeLockType::kScreen:
-      permission_name = mojom::blink::PermissionName::SCREEN_WAKE_LOCK;
-      break;
-    case WakeLockType::kSystem:
-      permission_name = mojom::blink::PermissionName::SYSTEM_WAKE_LOCK;
-      break;
-  }
-
-  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
-  auto* local_frame = window ? window->GetFrame() : nullptr;
-  GetPermissionService()->RequestPermission(
-      CreatePermissionDescriptor(permission_name),
-      LocalFrame::HasTransientUserActivation(local_frame), std::move(callback));
 }
 
 PermissionService* WakeLock::GetPermissionService() {
