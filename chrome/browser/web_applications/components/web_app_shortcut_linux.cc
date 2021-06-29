@@ -48,14 +48,6 @@ web_app::LaunchXdgUtilityForTesting& GetInstalledLaunchXdgUtilityForTesting() {
   return *instance;
 }
 
-base::FilePath GetDesktopPath() {
-  base::FilePath desktop_path;
-  if (web_app::GetShortcutOverrideForTesting())
-    return web_app::GetShortcutOverrideForTesting()->desktop;
-  base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
-  return desktop_path;
-}
-
 // Result of creating app shortcut icon.
 // Success is recorded for each icon image, but the first two errors
 // are per app, so the success/error ratio might not be very meaningful.
@@ -209,8 +201,8 @@ bool CreateShortcutAtLocation(const base::FilePath location_path,
 
 bool CreateShortcutOnDesktop(const base::FilePath& shortcut_filename,
                              const std::string& contents) {
-  base::FilePath desktop_path = GetDesktopPath();
-  if (desktop_path.empty()) {
+  base::FilePath desktop_path;
+  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetDesktopPath);
     return false;
   }
@@ -221,7 +213,6 @@ bool CreateShortcutOnDesktop(const base::FilePath& shortcut_filename,
 bool CreateShortcutInAutoStart(base::Environment* env,
                                const base::FilePath& shortcut_filename,
                                const std::string& contents) {
-  DCHECK(!web_app::GetShortcutOverrideForTesting());
   base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
   if (!base::DirectoryExists(autostart_path) &&
       !base::CreateDirectory(autostart_path)) {
@@ -240,7 +231,6 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
                                       const std::string& contents,
                                       const base::FilePath& directory_filename,
                                       const std::string& directory_contents) {
-  DCHECK(!web_app::GetShortcutOverrideForTesting());
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToCreateTempDir);
@@ -331,9 +321,9 @@ base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
 }
 
 bool DeleteShortcutOnDesktop(const base::FilePath& shortcut_filename) {
-  base::FilePath desktop_path = GetDesktopPath();
+  base::FilePath desktop_path;
   bool result = false;
-  if (!desktop_path.empty())
+  if (base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path))
     result = base::DeleteFile(desktop_path.Append(shortcut_filename));
   return result;
 }
@@ -372,21 +362,6 @@ bool CreateDesktopShortcut(base::Environment* env,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  bool create_shortcut_in_startup = creation_locations.in_startup;
-  // Do not create the shortcuts in startup directory when testing because
-  // xdg-utility (which creates this shortcut) doesn't work well with temp
-  // directories.
-  if (web_app::GetShortcutOverrideForTesting())
-    create_shortcut_in_startup = false;
-
-  ApplicationsMenuLocation applications_menu_location =
-      creation_locations.applications_menu_location;
-  // Do not create the shortcuts in startup directory when testing because
-  // xdg-utility (which creates this shortcut) doesn't work well with temp
-  // directories.
-  if (web_app::GetShortcutOverrideForTesting())
-    applications_menu_location = APP_MENU_LOCATION_NONE;
-
   base::FilePath shortcut_filename;
   if (!shortcut_info.extension_id.empty()) {
     shortcut_filename = GetAppShortcutFilename(shortcut_info.profile_path,
@@ -396,11 +371,11 @@ bool CreateDesktopShortcut(base::Environment* env,
     if (creation_locations.on_desktop)
       DeleteShortcutOnDesktop(shortcut_filename);
 
-    if (create_shortcut_in_startup)
-      // if (creation_locations.in_startup)
+    if (creation_locations.in_startup)
       DeleteShortcutInAutoStart(env, shortcut_filename);
 
-    if (applications_menu_location != APP_MENU_LOCATION_NONE) {
+    if (creation_locations.applications_menu_location !=
+        APP_MENU_LOCATION_NONE) {
       DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
     }
   } else {
@@ -435,8 +410,7 @@ bool CreateDesktopShortcut(base::Environment* env,
     success = CreateShortcutOnDesktop(shortcut_filename, contents);
   }
 
-  if (create_shortcut_in_startup) {
-    // if (creation_locations.in_startup) {
+  if (creation_locations.in_startup) {
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
@@ -445,7 +419,7 @@ bool CreateDesktopShortcut(base::Environment* env,
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
 
-  if (applications_menu_location == APP_MENU_LOCATION_NONE) {
+  if (creation_locations.applications_menu_location == APP_MENU_LOCATION_NONE) {
     return success;
   }
 
@@ -505,8 +479,9 @@ ShortcutLocations GetExistingShortcutLocations(
   ShortcutLocations locations;
 
   // Determine whether there is a shortcut on desktop.
-  base::FilePath desktop_path = GetDesktopPath();
-
+  base::FilePath desktop_path;
+  // If Get returns false, just leave desktop_path empty.
+  base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
   if (!desktop_path.empty()) {
     locations.on_desktop =
         base::PathExists(desktop_path.Append(shortcut_filename));
@@ -567,8 +542,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
 
   bool result = true;
   // Delete shortcuts from Desktop.
-  base::FilePath desktop_path = GetDesktopPath();
-  if (!desktop_path.empty()) {
+  base::FilePath desktop_path;
+  if (base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
     std::vector<base::FilePath> shortcut_filenames_desktop =
         shell_integration_linux::GetExistingProfileShortcutFilenames(
             profile_path, desktop_path);
@@ -635,7 +610,9 @@ std::vector<base::FilePath> GetShortcutLocations(
   DCHECK(!shortcut_filename.empty());
 
   if (locations.on_desktop) {
-    base::FilePath desktop_path = GetDesktopPath();
+    base::FilePath desktop_path;
+    // If Get returns false, just leave |desktop_path| empty.
+    base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
     if (!desktop_path.empty()) {
       base::FilePath desktop_shortcut_path =
           desktop_path.Append(shortcut_filename);

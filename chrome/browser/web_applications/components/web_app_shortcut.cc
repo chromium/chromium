@@ -90,22 +90,6 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(
 
 }  // namespace
 
-ShortcutOverrideForTesting::ShortcutOverrideForTesting() = default;
-ShortcutOverrideForTesting::ShortcutOverrideForTesting(
-    const ShortcutOverrideForTesting& other) = default;
-ShortcutOverrideForTesting::~ShortcutOverrideForTesting() = default;
-
-absl::optional<ShortcutOverrideForTesting>& GetShortcutOverrideForTesting() {
-  static base::NoDestructor<absl::optional<ShortcutOverrideForTesting>>
-      g_shortcut_override;
-  return *g_shortcut_override;
-}
-
-void SetShortcutOverrideForTesting(
-    absl::optional<ShortcutOverrideForTesting> shortcut_override_for_testing) {
-  GetShortcutOverrideForTesting() = shortcut_override_for_testing;
-}
-
 ShortcutInfo::ShortcutInfo() = default;
 
 ShortcutInfo::~ShortcutInfo() {
