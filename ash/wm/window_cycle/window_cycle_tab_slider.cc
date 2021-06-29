@@ -145,15 +145,15 @@ void WindowCycleTabSlider::OnModePrefsChanged() {
 
 void WindowCycleTabSlider::Layout() {
   const gfx::Size button_size = GetPreferredSizeForButtons();
-  buttons_container_->SetBounds(kTabSliderButtonFocusInsets,
-                                kTabSliderButtonFocusInsets,
-                                2 * button_size.width(), button_size.height());
+  buttons_container_->SetSize(
+      gfx::Size(2 * button_size.width(), button_size.height()));
 
   active_button_selector_->SetBounds(
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
-          ? button_size.width()
-          : 0,
-      0, button_size.width() + 2 * kTabSliderButtonFocusInsets,
+          ? button_size.width() - kTabSliderButtonFocusInsets
+          : -kTabSliderButtonFocusInsets,
+      -kTabSliderButtonFocusInsets,
+      button_size.width() + 2 * kTabSliderButtonFocusInsets,
       button_size.height() + 2 * kTabSliderButtonFocusInsets);
 }
 
@@ -187,7 +187,9 @@ void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
 
   const gfx::Size button_size = GetPreferredSizeForButtons();
   const gfx::Rect new_selector_bounds =
-      gfx::Rect(per_desk ? button_size.width() : 0, 0,
+      gfx::Rect(per_desk ? button_size.width() - kTabSliderButtonFocusInsets
+                         : -kTabSliderButtonFocusInsets,
+                -kTabSliderButtonFocusInsets,
                 button_size.width() + 2 * kTabSliderButtonFocusInsets,
                 button_size.height() + 2 * kTabSliderButtonFocusInsets);
   active_button_selector_layer->SetTransform(
