@@ -22,12 +22,8 @@ Polymer({
       value: false,
     },
 
-    /**
-     * @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
-     */
-    managedProperties: {
-      type: Object,
-    },
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: Object,
 
     prefs: {
       type: Object,

@@ -31,7 +31,7 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: Object,
 
     /**

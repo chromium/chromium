@@ -19,15 +19,15 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
-    managedProperties: {
-      type: Object,
-      observer: 'managedPropertiesChanged_',
-    },
-
     disabled: {
       type: Boolean,
       value: false,
+    },
+
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: {
+      type: Object,
+      observer: 'managedPropertiesChanged_',
     },
 
     /**

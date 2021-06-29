@@ -13,12 +13,6 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
-    managedProperties: {
-      type: Object,
-      observer: 'managedPropertiesChanged_',
-    },
-
     /** @type {?OncMojo.DeviceStateProperties} */
     deviceState: {
       type: Object,
@@ -28,6 +22,12 @@ Polymer({
     disabled: {
       type: Boolean,
       value: false,
+    },
+
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: {
+      type: Object,
+      observer: 'managedPropertiesChanged_',
     },
 
     /**
