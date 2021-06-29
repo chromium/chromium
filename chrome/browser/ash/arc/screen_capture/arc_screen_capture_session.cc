@@ -121,6 +121,8 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
   }
 
   auto context_provider = GetContextProvider();
+  context_provider->AddObserver(this);
+
   gl_helper_ = std::make_unique<gpu::GLHelper>(
       context_provider->ContextGL(), context_provider->ContextSupport());
 
@@ -165,6 +167,8 @@ void ArcScreenCaptureSession::Close() {
 }
 
 ArcScreenCaptureSession::~ArcScreenCaptureSession() {
+  GetContextProvider()->RemoveObserver(this);
+
   if (!display_root_window_)
     return;
 
@@ -372,6 +376,11 @@ void ArcScreenCaptureSession::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   compositor->RemoveAnimationObserver(this);
+}
+
+void ArcScreenCaptureSession::OnContextLost() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  Close();
 }
 
 }  // namespace arc

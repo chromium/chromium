@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "components/arc/mojom/screen_capture.mojom.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,7 +40,8 @@ class CopyOutputResult;
 namespace arc {
 
 class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
-                                public ui::CompositorAnimationObserver {
+                                public ui::CompositorAnimationObserver,
+                                public viz::ContextLostObserver {
  public:
   // Creates a new ScreenCaptureSession and returns the remote for passing back
   // across a Mojo pipe. This object will be automatically destructed when the
@@ -59,6 +61,9 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   // Implements ui::CompositorAnimationObserver.
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+
+  // Implements viz::ContextLostObserver
+  void OnContextLost() override;
 
  private:
   struct DesktopTexture;
