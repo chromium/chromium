@@ -20,8 +20,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -41,6 +44,13 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#endif
 
 using extensions::Extension;
 using extensions::MenuItem;
@@ -120,6 +130,14 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
  private:
   absl::optional<content::OpenURLParams> last_navigation_params_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class MockDlpRulesManager : public policy::DlpRulesManagerImpl {
+ public:
+  explicit MockDlpRulesManager(PrefService* local_state)
+      : DlpRulesManagerImpl(local_state) {}
+};
+#endif
 
 }  // namespace
 
@@ -462,6 +480,46 @@ TEST_F(RenderViewContextMenuPrefsTest,
   EXPECT_FALSE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verifies that SearchWebFor field is enabled/disabled based on DLP rules.
+TEST_F(RenderViewContextMenuPrefsTest,
+       DisableSearchWebForWhenClipboardIsBlocked) {
+  ScopedTestingLocalState testing_local_state(
+      TestingBrowserProcess::GetGlobal());
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = GURL("http://www.foo.com/");
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  menu->set_dlp_rules_manager(nullptr);
+  menu->set_selection_navigation_url(GURL("http://www.bar.com/"));
+
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  MockDlpRulesManager mock_dlp_rules_manager(testing_local_state.Get());
+  menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  base::Value rules(base::Value::Type::LIST);
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append("http://www.foo.com/");
+
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append("http://www.bar.com/");
+
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(policy::dlp_test_util::CreateRestrictionWithLevel(
+      policy::dlp::kClipboardRestriction, policy::dlp::kBlockLevel));
+
+  rules.Append(policy::dlp_test_util::CreateRule(
+      "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
+  testing_local_state.Get()->Set(policy::policy_prefs::kDlpRulesList,
+                                 std::move(rules));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+}
+#endif
 
 // Verifies Incognito Mode is not enabled for links disallowed in Incognito.
 TEST_F(RenderViewContextMenuPrefsTest,

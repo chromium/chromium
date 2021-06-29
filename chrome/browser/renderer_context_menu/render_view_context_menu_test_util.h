@@ -25,6 +25,11 @@ class WebContents;
 namespace ui {
 class MenuModel;
 }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace policy {
+class DlpRulesManager;
+}
+#endif
 
 class TestRenderViewContextMenu : public RenderViewContextMenu {
  public:
@@ -74,11 +79,25 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
     protocol_handler_registry_ = registry;
   }
 
+  void set_selection_navigation_url(GURL url) {
+    selection_navigation_url_ = url;
+  }
+
   using RenderViewContextMenu::AppendImageItems;
 
   void Show() override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const policy::DlpRulesManager* GetDlpRulesManager() const override;
+
+  void set_dlp_rules_manager(policy::DlpRulesManager* dlp_rules_manager);
+#endif
+
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
+#endif
+
   DISALLOW_COPY_AND_ASSIGN(TestRenderViewContextMenu);
 };
 

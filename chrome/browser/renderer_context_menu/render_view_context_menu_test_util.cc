@@ -10,6 +10,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#endif
+
 using ui::MenuModel;
 
 TestRenderViewContextMenu::TestRenderViewContextMenu(
@@ -93,3 +97,15 @@ int TestRenderViewContextMenu::GetCommandIDByProfilePath(
 
 void TestRenderViewContextMenu::Show() {
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const policy::DlpRulesManager* TestRenderViewContextMenu::GetDlpRulesManager()
+    const {
+  return dlp_rules_manager_;
+}
+
+void TestRenderViewContextMenu::set_dlp_rules_manager(
+    policy::DlpRulesManager* dlp_rules_manager) {
+  dlp_rules_manager_ = dlp_rules_manager;
+}
+#endif

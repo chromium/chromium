@@ -226,6 +226,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/open_with_menu.h"
 #include "chrome/browser/ash/arc/intent_helper/start_smart_selection_action_menu.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
@@ -2154,6 +2156,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return IsPrintPreviewEnabled();
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
+      return IsSearchWebForEnabled();
+
     case IDC_CONTENT_CONTEXT_GOTOURL:
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
@@ -2666,6 +2670,13 @@ void RenderViewContextMenu::EscapeAmpersands(std::u16string* text) {
   base::ReplaceChars(*text, u"&", u"&&", text);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
+    const {
+  return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+}
+#endif
+
 // Controller functions --------------------------------------------------------
 
 bool RenderViewContextMenu::IsReloadEnabled() const {
@@ -2823,6 +2834,24 @@ bool RenderViewContextMenu::IsPasteEnabled() const {
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/false).get(), &types);
   return !types.empty();
+}
+
+bool RenderViewContextMenu::IsSearchWebForEnabled() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const policy::DlpRulesManager* dlp_rules_manager = GetDlpRulesManager();
+  if (!dlp_rules_manager) {
+    return true;
+  }
+  policy::DlpRulesManager::Level level =
+      dlp_rules_manager->IsRestrictedDestination(
+          params_.page_url, selection_navigation_url_,
+          policy::DlpRulesManager::Restriction::kClipboard,
+          /*out_source_pattern=*/nullptr, /*out_destination_pattern=*/nullptr);
+  // TODO(crbug.com/1222057): show a warning if the level is kWarn
+  return level != policy::DlpRulesManager::Level::kBlock;
+#else
+  return true;
+#endif
 }
 
 bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {

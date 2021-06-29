@@ -67,6 +67,12 @@ namespace ui {
 class DataTransferEndpoint;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace policy {
+class DlpRulesManager;
+}  // namespace policy
+#endif
+
 class RenderViewContextMenu : public RenderViewContextMenuBase {
  public:
   RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
@@ -116,6 +122,10 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   // Returns true if keyboard lock is active and requires the user to press and
   // hold escape to exit exclusive access mode.
   bool IsPressAndHoldEscRequiredToExitFullscreen() const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
+#endif
 
  private:
   friend class RenderViewContextMenuTest;
@@ -216,6 +226,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   bool IsQRCodeGeneratorEnabled() const;
   bool IsRouteMediaEnabled() const;
   bool IsOpenLinkOTREnabled() const;
+  bool IsSearchWebForEnabled() const;
 
   // Command execution functions.
   void ExecOpenWebApp();
