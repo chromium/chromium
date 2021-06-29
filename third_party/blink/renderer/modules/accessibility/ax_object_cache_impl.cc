@@ -331,7 +331,18 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return true;
 
   // Slots are relevant if they have content.
-  return LayoutTreeBuilderTraversal::FirstChild(*slot_element);
+  // However, this can only be checked during safe times.
+  // During other times we must assume that the <slot> is relevant.
+  // TODO(accessibility) Consider removing this rule, but it will require
+  // a different way of dealing with these PDF test failures:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/2965317
+  // For some reason the iframe tests hang, waiting for content to change. In
+  // other words, returning true here causes some tree updates not to occur.
+  return node->GetDocument().IsFlatTreeTraversalForbidden() ||
+         node->GetDocument()
+             .GetSlotAssignmentEngine()
+             .HasPendingSlotAssignmentRecalc() ||
+         LayoutTreeBuilderTraversal::FirstChild(*slot_element);
 }
 
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
