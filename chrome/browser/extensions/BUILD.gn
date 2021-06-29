@@ -1020,8 +1020,6 @@ static_library("extensions") {
         "api/image_writer_private/image_writer_controller_lacros.cc",
         "api/image_writer_private/image_writer_controller_lacros.h",
         "api/messaging/native_message_host_lacros.cc",
-        "api/platform_keys/platform_keys_api_lacros.cc",
-        "api/platform_keys/platform_keys_api_lacros.h",
         "system_display/display_info_provider_lacros.cc",
         "system_display/display_info_provider_lacros.h",
       ]
@@ -1075,8 +1073,6 @@ static_library("extensions") {
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
       "api/networking_private/networking_private_ui_delegate_chromeos.cc",
       "api/networking_private/networking_private_ui_delegate_chromeos.h",
-      "api/platform_keys/platform_keys_api_ash.cc",
-      "api/platform_keys/platform_keys_api_ash.h",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.cc",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.cc",

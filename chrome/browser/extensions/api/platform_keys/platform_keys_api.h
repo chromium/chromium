@@ -18,12 +18,6 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/platform_keys/platform_keys_api_lacros.h"
-#else
-#include "chrome/browser/extensions/api/platform_keys/platform_keys_api_ash.h"
-#endif
-
 namespace extensions {
 namespace platform_keys {
 
