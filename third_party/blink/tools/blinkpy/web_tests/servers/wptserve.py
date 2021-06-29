@@ -16,11 +16,20 @@ _log = logging.getLogger(__name__)
 class WPTServe(server_base.ServerBase):
     def __init__(self, port_obj, output_dir):
         super(WPTServe, self).__init__(port_obj, output_dir)
+
         # These ports must match wpt_tools/wpt.config.json
-        http_port, http_alt_port, https_port, https_alt_port = (8001, 8081,
-                                                                8444, 8445)
+        http_port = 8001
+        http_alt_port = 8081
+        http_private_port = 8082
+        http_public_port = 8083
+        https_port = 8444
+        https_alt_port = 8445
+        https_private_port = 8446
+        https_public_port = 8447
         h2_port = 9000
-        ws_port, wss_port = (9001, 9444)
+        ws_port = 9001
+        wss_port = 9444
+
         self._name = 'wptserve'
         self._log_prefixes = ('wptserve_stderr', )
         self._mappings = [{
@@ -30,6 +39,12 @@ class WPTServe(server_base.ServerBase):
             'port': http_alt_port,
             'scheme': 'http'
         }, {
+            'port': http_private_port,
+            'scheme': 'http'
+        }, {
+            'port': http_public_port,
+            'scheme': 'http'
+        }, {
             'port': https_port,
             'scheme': 'https',
             'sslcert': True
@@ -37,6 +52,12 @@ class WPTServe(server_base.ServerBase):
             'port': https_alt_port,
             'scheme': 'https',
             'sslcert': True
+        }, {
+            'port': https_private_port,
+            'scheme': 'https'
+        }, {
+            'port': https_public_port,
+            'scheme': 'https'
         }, {
             'port': h2_port,
             'scheme': 'https',

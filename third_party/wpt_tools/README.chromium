@@ -14,3 +14,4 @@ Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
 - Local patch to work-around error where maybe_parse_tombstone is missing
   a parameter.
+- wpt.config.json defined to align with Blink web test runner setup.

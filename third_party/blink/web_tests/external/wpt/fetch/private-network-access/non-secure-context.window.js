@@ -1,4 +1,6 @@
 // META: script=resources/support.js
+// META: script=resources/ports.sub.js
+// META: script=resources/resolve_url.js
 //
 // Spec: https://wicg.github.io/private-network-access/#integration-fetch
 //
@@ -11,21 +13,74 @@ setup(() => {
 });
 
 promise_test(async t => {
-  return fetch("/common/blank.html")
-      .catch(reason => {unreached_func(reason)});
-}, "Local non secure page fetches local page.");
+  const response = await fetch("/common/blank-with-cors.html");
+  assert_true(response.ok);
+}, "Local non secure context fetches local subresource.");
 
-// For the following tests, we go through an iframe, because it is not possible
-// to directly import the test harness from a secured public page.
+// This test must go through an iframe because the treat-as-public-address
+// directive means that the document cannot import the test harness script, as
+// that would violate the secure context restriction...
+//
+// For consistency and simplicity, we run all other tests in the same way, even
+// though those could import the test harness from their respective origins.
 promise_test(async t => {
-  let iframe = await appendIframe(t, document,
-      "resources/treat-as-public-address.html");
-  let reply = futureMessage();
-  iframe.contentWindow.postMessage("/common/blank.html", "*");
-  assert_equals(await reply, "failure");
-}, "Public non secure page fetches local page.");
+  const url = "resources/fetcher.html" +
+      "?pipe=header(Content-Security-Policy,treat-as-public-address)";
+  const iframe = await appendIframe(t, document, url);
 
-// TODO(https://github.com/web-platform-tests/wpt/issues/26166):
-// Add tests for public variations when we are able to fetch resources using a
-// mechanism compatible with WPT guidelines regarding being self-contained.
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage("/common/blank-with-cors.html", "*");
+  assert_equals(await reply, "TypeError: Failed to fetch");
+}, "Treat-as-public non secure context fails to fetch local subresource.");
 
+promise_test(async t => {
+  const url = resolveUrl("resources/fetcher.html", {
+    protocol: "http:",
+    port: kPorts.httpPrivate,
+  });
+  const iframe = await appendIframe(t, document, url);
+
+  const targetUrl = resolveUrl("/common/blank-with-cors.html");
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage(targetUrl.href, "*");
+  assert_equals(await reply, "TypeError: Failed to fetch");
+}, "Private non secure context fails to fetch local subresource.");
+
+promise_test(async t => {
+  const url = resolveUrl("resources/fetcher.html", {
+    protocol: "http:",
+    port: kPorts.httpPublic,
+  });
+  const iframe = await appendIframe(t, document, url);
+
+  const targetUrl = resolveUrl("/common/blank-with-cors.html");
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage(targetUrl.href, "*");
+  assert_equals(await reply, "TypeError: Failed to fetch");
+}, "Public non secure context fails to fetch local subresource.");
+
+promise_test(async t => {
+  const url = resolveUrl("resources/fetcher.html", {
+    protocol: "https:",
+    port: kPorts.httpsPrivate,
+  });
+  const iframe = await appendIframe(t, document, url);
+
+  const targetUrl = resolveUrl("/common/blank-with-cors.html");
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage(targetUrl.href, "*");
+  assert_equals(await reply, "TypeError: Failed to fetch");
+}, "Private HTTPS yet non-secure context fails to fetch local subresource.");
+
+promise_test(async t => {
+  const url = resolveUrl("resources/fetcher.html", {
+    protocol: "https:",
+    port: kPorts.httpsPublic,
+  });
+  const iframe = await appendIframe(t, document, url);
+
+  const targetUrl = resolveUrl("/common/blank-with-cors.html");
+  const reply = futureMessage();
+  iframe.contentWindow.postMessage(targetUrl.href, "*");
+  assert_equals(await reply, "TypeError: Failed to fetch");
+}, "Public HTTPS yet non-secure context fails to fetch local subresource.");
