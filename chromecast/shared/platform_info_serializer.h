@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chromecast/public/media/decoder_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
@@ -17,6 +18,21 @@ namespace chromecast {
 // messages used for specifying the media capabilities of a Cast receiver.
 class PlatformInfoSerializer {
  public:
+  // Information about a supported audio codec.
+  struct AudioCodecInfo {
+    media::AudioCodec codec = media::AudioCodec::kAudioCodecUnknown;
+    media::SampleFormat sample_format =
+        media::SampleFormat::kUnknownSampleFormat;
+    int max_samples_per_second = 0;
+    int max_audio_channels = 0;
+  };
+
+  // Information about a supported video codec.
+  struct VideoCodecInfo {
+    media::VideoCodec codec = media::VideoCodec::kVideoCodecUnknown;
+    media::VideoProfile profile = media::VideoProfile::kVideoProfileUnknown;
+  };
+
   PlatformInfoSerializer();
   PlatformInfoSerializer(PlatformInfoSerializer&& other);
 
@@ -26,14 +42,14 @@ class PlatformInfoSerializer {
   bool operator==(const PlatformInfoSerializer& other) const;
   bool operator!=(const PlatformInfoSerializer& other) const;
 
-  // Tries to parse the provided json, returning base::nullopt on failure.
+  // Tries to parse the provided json, returning absl::nullopt on failure.
   static absl::optional<PlatformInfoSerializer> TryParse(
       base::StringPiece json);
 
   // Serializes |platform_info_| into json.
   std::string ToJson() const;
 
-  // Setters for known properties.
+  // Setters for known valid properties.
   void SetMaxWidth(int max_width);
   void SetMaxHeight(int max_height);
   void SetMaxFrameRate(int max_frame_rate);
@@ -51,10 +67,11 @@ class PlatformInfoSerializer {
   void SetSmpteSt2084Supported(bool is_supported);
   void SetHglSupported(bool is_supported);
   void SetHdrFeatureEnabled(bool is_enabled);
-  void SetSupportedLegacyVp9Levels(std::vector<int> levels);
   void SetHdcpVersion(int hdcp_version);
   void SetSpatialRenderingSupportMask(int mask);
   void SetMaxFillRate(int max_fill_rate);
+  void SetSupportedAudioCodecs(std::vector<AudioCodecInfo> codec_infos);
+  void SetSupportedVideoCodecs(std::vector<VideoCodecInfo> codec_infos);
 
   // Getters for the same properties. Returns absl::nullopt if no such value is
   // set, and the set value in all other cases.
@@ -75,15 +92,26 @@ class PlatformInfoSerializer {
   absl::optional<bool> IsSmpteSt2084Supported() const;
   absl::optional<bool> IsHglSupported() const;
   absl::optional<bool> IsHdrFeatureEnabled() const;
-  absl::optional<std::vector<int>> SupportedLegacyVp9Levels() const;
   absl::optional<int> HdcpVersion() const;
   absl::optional<int> SpatialRenderingSupportMask() const;
   absl::optional<int> MaxFillRate() const;
+  absl::optional<std::vector<AudioCodecInfo>> SupportedAudioCodecs() const;
+  absl::optional<std::vector<VideoCodecInfo>> SupportedVideoCodecs() const;
+
+  // Deprecated fields.
+  void SetSupportedLegacyVp9Levels(std::vector<int> levels);
+  absl::optional<std::vector<int>> SupportedLegacyVp9Levels() const;
 
  private:
   // All currently produced values.
   base::DictionaryValue platform_info_;
 };
+
+bool operator==(const PlatformInfoSerializer::AudioCodecInfo& first,
+                const PlatformInfoSerializer::AudioCodecInfo& second);
+
+bool operator==(const PlatformInfoSerializer::VideoCodecInfo& first,
+                const PlatformInfoSerializer::VideoCodecInfo& second);
 
 }  // namespace chromecast
 

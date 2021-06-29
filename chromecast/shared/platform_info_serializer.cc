@@ -47,11 +47,85 @@ constexpr char kSpatialRenderingSupportMaskProperty[] =
     "spatialRenderingSupportMask";
 constexpr char kMaxFillrateProperty[] = "maxFillrate";
 
+// Audio Codec information
+constexpr char kSupportedAudioCodecsProperty[] = "supportedAudioCodecs";
+constexpr char kAudioCodecInfoCodecKey[] = "codec";
+constexpr char kAudioCodecInfoSampleFormat[] = "sampleFormat";
+constexpr char kAudioCodecInfoSamplesPerSecond[] = "samplesPerSecond";
+constexpr char kAudioCodecInfoMaxAudioChannelsKey[] = "maxAudioChannels";
+
+// Video Codec information
+constexpr char kSupportedVideoCodecsProperty[] = "supportedVideoCodecs";
+constexpr char kVideoCodecInfoCodecKey[] = "codec";
+constexpr char kVideoCodecInfoProfileKey[] = "profile";
+
+// Attempts to parse |value| as the given type, returning absl::nullopt on
+// failure.
 template <typename T>
-absl::optional<T> Parse(const base::Value& value);
+struct Parser {
+  static absl::optional<T> Parse(const base::Value& value);
+};
+
+template <typename T>
+struct Parser<std::vector<T>> {
+  static absl::optional<std::vector<T>> Parse(const base::Value& value);
+};
+
+// Tries to populate values of the given type |T| from |value| into
+// |destination|, returning whether the operation succeeded.
+template <typename T>
+bool TryPopulateValue(const base::Value* value, T* destination) {
+  DCHECK(destination);
+
+  if (!value) {
+    return false;
+  }
+
+  auto parsed = Parser<T>::Parse(*value);
+  if (!parsed.has_value()) {
+    return false;
+  }
+
+  *destination = std::move(parsed.value());
+  return true;
+}
+
+// Parses an enum value. To be used as a helper when implementing the above.
+template <typename T>
+absl::optional<T> ParseEnum(const base::Value& value) {
+  absl::optional<int> parsed_int = Parser<int>::Parse(value);
+  if (!parsed_int.has_value()) {
+    return absl::nullopt;
+  }
+  return static_cast<T>(parsed_int.value());
+}
 
 template <>
-absl::optional<bool> Parse<bool>(const base::Value& value) {
+inline absl::optional<media::AudioCodec> Parser<media::AudioCodec>::Parse(
+    const base::Value& value) {
+  return ParseEnum<media::AudioCodec>(value);
+}
+
+template <>
+inline absl::optional<media::SampleFormat> Parser<media::SampleFormat>::Parse(
+    const base::Value& value) {
+  return ParseEnum<media::SampleFormat>(value);
+}
+
+template <>
+inline absl::optional<media::VideoCodec> Parser<media::VideoCodec>::Parse(
+    const base::Value& value) {
+  return ParseEnum<media::VideoCodec>(value);
+}
+
+template <>
+inline absl::optional<media::VideoProfile> Parser<media::VideoProfile>::Parse(
+    const base::Value& value) {
+  return ParseEnum<media::VideoProfile>(value);
+}
+
+template <>
+absl::optional<bool> Parser<bool>::Parse(const base::Value& value) {
   if (!value.is_bool()) {
     return absl::nullopt;
   }
@@ -59,7 +133,7 @@ absl::optional<bool> Parse<bool>(const base::Value& value) {
 }
 
 template <>
-absl::optional<int> Parse<int>(const base::Value& value) {
+absl::optional<int> Parser<int>::Parse(const base::Value& value) {
   if (!value.is_int()) {
     return absl::nullopt;
   }
@@ -67,7 +141,8 @@ absl::optional<int> Parse<int>(const base::Value& value) {
 }
 
 template <>
-absl::optional<std::string> Parse<std::string>(const base::Value& value) {
+absl::optional<std::string> Parser<std::string>::Parse(
+    const base::Value& value) {
   if (!value.is_string()) {
     return absl::nullopt;
   }
@@ -75,16 +150,67 @@ absl::optional<std::string> Parse<std::string>(const base::Value& value) {
 }
 
 template <>
-absl::optional<std::vector<int>> Parse<std::vector<int>>(
+absl::optional<PlatformInfoSerializer::AudioCodecInfo>
+Parser<PlatformInfoSerializer::AudioCodecInfo>::Parse(
+    const base::Value& value) {
+  if (!value.is_dict()) {
+    return absl::nullopt;
+  }
+
+  const base::Value* codec_value = value.FindKey(kAudioCodecInfoCodecKey);
+  const base::Value* sample_format_value =
+      value.FindKey(kAudioCodecInfoSampleFormat);
+  const base::Value* samples_per_second_value =
+      value.FindKey(kAudioCodecInfoSamplesPerSecond);
+  const base::Value* max_audio_channels_value =
+      value.FindKey(kAudioCodecInfoMaxAudioChannelsKey);
+
+  PlatformInfoSerializer::AudioCodecInfo audio_codec_info;
+  if (!TryPopulateValue(codec_value, &audio_codec_info.codec)) {
+    return absl::nullopt;
+  }
+
+  TryPopulateValue(sample_format_value, &audio_codec_info.sample_format);
+  TryPopulateValue(samples_per_second_value,
+                   &audio_codec_info.max_samples_per_second);
+  TryPopulateValue(max_audio_channels_value,
+                   &audio_codec_info.max_audio_channels);
+
+  return audio_codec_info;
+}
+
+template <>
+absl::optional<PlatformInfoSerializer::VideoCodecInfo>
+Parser<PlatformInfoSerializer::VideoCodecInfo>::Parse(
+    const base::Value& value) {
+  if (!value.is_dict()) {
+    return absl::nullopt;
+  }
+
+  const base::Value* codec_value = value.FindKey(kVideoCodecInfoCodecKey);
+  const base::Value* profiles_value = value.FindKey(kVideoCodecInfoProfileKey);
+
+  PlatformInfoSerializer::VideoCodecInfo video_codec_info;
+  if (!TryPopulateValue(codec_value, &video_codec_info.codec)) {
+    return absl::nullopt;
+  }
+
+  TryPopulateValue(profiles_value, &video_codec_info.profile);
+
+  return video_codec_info;
+}
+
+template <typename T>
+absl::optional<std::vector<T>> Parser<std::vector<T>>::Parse(
     const base::Value& value) {
   if (!value.is_list()) {
     return absl::nullopt;
   }
   base::Value::ConstListView list = value.GetList();
-  std::vector<int> results;
+  std::vector<T> results;
   results.reserve(list.size());
   for (const auto& element : list) {
-    auto parsed_element = Parse<int>(element);
+    auto parsed_element = Parser<T>::Parse(element);
     if (!parsed_element.has_value()) {
       return absl::nullopt;
     }
@@ -101,7 +227,38 @@ absl::optional<T> ParseWithKey(const base::DictionaryValue& dictionary,
     return absl::nullopt;
   }
 
-  return Parse<T>(*value);
+  return Parser<T>::Parse(*value);
+}
+
+void SetWithKey(base::DictionaryValue* dictionary,
+                std::vector<PlatformInfoSerializer::AudioCodecInfo> elements) {
+  DCHECK(dictionary);
+  base::ListValue list;
+  for (const auto& element : elements) {
+    base::DictionaryValue audio_codec_value;
+    audio_codec_value.SetIntKey(kAudioCodecInfoCodecKey, element.codec);
+    audio_codec_value.SetIntKey(kAudioCodecInfoSampleFormat,
+                                element.sample_format);
+    audio_codec_value.SetIntKey(kAudioCodecInfoSamplesPerSecond,
+                                element.max_samples_per_second);
+    audio_codec_value.SetIntKey(kAudioCodecInfoMaxAudioChannelsKey,
+                                element.max_audio_channels);
+    list.Append(std::move(audio_codec_value));
+  }
+  dictionary->SetKey(kSupportedAudioCodecsProperty, std::move(list));
+}
+
+void SetWithKey(base::DictionaryValue* dictionary,
+                std::vector<PlatformInfoSerializer::VideoCodecInfo> elements) {
+  DCHECK(dictionary);
+  base::ListValue list;
+  for (auto& element : elements) {
+    base::DictionaryValue video_codec_value;
+    video_codec_value.SetIntKey(kVideoCodecInfoCodecKey, element.codec);
+    video_codec_value.SetIntKey(kVideoCodecInfoProfileKey, element.profile);
+    list.Append(std::move(video_codec_value));
+  }
+  dictionary->SetKey(kSupportedVideoCodecsProperty, std::move(list));
 }
 
 }  // namespace
@@ -240,6 +397,16 @@ void PlatformInfoSerializer::SetMaxFillRate(int max_fill_rate) {
   platform_info_.SetIntKey(kMaxFillrateProperty, max_fill_rate);
 }
 
+void PlatformInfoSerializer::SetSupportedAudioCodecs(
+    std::vector<AudioCodecInfo> codec_infos) {
+  SetWithKey(&platform_info_, std::move(codec_infos));
+}
+
+void PlatformInfoSerializer::SetSupportedVideoCodecs(
+    std::vector<VideoCodecInfo> codec_infos) {
+  SetWithKey(&platform_info_, std::move(codec_infos));
+}
+
 absl::optional<int> PlatformInfoSerializer::MaxWidth() const {
   return ParseWithKey<int>(platform_info_, kMaxWidthProperty);
 }
@@ -342,11 +509,36 @@ absl::optional<int> PlatformInfoSerializer::MaxFillRate() const {
   return ParseWithKey<int>(platform_info_, kMaxFillrateProperty);
 }
 
+absl::optional<std::vector<PlatformInfoSerializer::AudioCodecInfo>>
+PlatformInfoSerializer::SupportedAudioCodecs() const {
+  return ParseWithKey<std::vector<AudioCodecInfo>>(
+      platform_info_, kSupportedAudioCodecsProperty);
+}
+
+absl::optional<std::vector<PlatformInfoSerializer::VideoCodecInfo>>
+PlatformInfoSerializer::SupportedVideoCodecs() const {
+  return ParseWithKey<std::vector<VideoCodecInfo>>(
+      platform_info_, kSupportedVideoCodecsProperty);
+}
+
 std::string PlatformInfoSerializer::ToJson() const {
   std::string json;
   bool success = base::JSONWriter::Write(platform_info_, &json);
   DCHECK(success);
   return json;
+}
+
+bool operator==(const PlatformInfoSerializer::AudioCodecInfo& first,
+                const PlatformInfoSerializer::AudioCodecInfo& second) {
+  return first.codec == second.codec &&
+         first.sample_format == second.sample_format &&
+         first.max_samples_per_second == second.max_samples_per_second &&
+         first.max_audio_channels == second.max_audio_channels;
+}
+
+bool operator==(const PlatformInfoSerializer::VideoCodecInfo& first,
+                const PlatformInfoSerializer::VideoCodecInfo& second) {
+  return first.codec == second.codec && first.profile == second.profile;
 }
 
 }  // namespace chromecast

@@ -11,7 +11,10 @@ cast_source_set("platform_info_serializer") {
     "platform_info_serializer.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
 }
 
 test("cast_shared_unittests") {

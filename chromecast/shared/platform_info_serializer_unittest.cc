@@ -253,4 +253,47 @@ TEST_F(PlatformInfoSerializerTest, MaxFillRate) {
   EXPECT_EQ(7, ConvertAndValidate(serializer_).MaxFillRate().value());
 }
 
+TEST_F(PlatformInfoSerializerTest, AudioCodecInfo) {
+  PlatformInfoSerializer::AudioCodecInfo first{
+      media::AudioCodec::kCodecAAC, media::SampleFormat::kSampleFormatU8, 42,
+      16};
+  PlatformInfoSerializer::AudioCodecInfo second{
+      media::AudioCodec::kCodecOpus, media::SampleFormat::kSampleFormatS32, 18,
+      34};
+  PlatformInfoSerializer::AudioCodecInfo third{
+      media::AudioCodec::kCodecAC3, media::SampleFormat::kSampleFormatPlanarS16,
+      9, 99};
+
+  std::vector<PlatformInfoSerializer::AudioCodecInfo> codec_infos{first, second,
+                                                                  third};
+  serializer_.SetSupportedAudioCodecs(codec_infos);
+
+  auto converted = ConvertAndValidate(serializer_).SupportedAudioCodecs();
+  ASSERT_TRUE(converted.has_value());
+  ASSERT_EQ(codec_infos.size(), converted.value().size());
+  for (int i = 0; i < static_cast<int>(codec_infos.size()); i++) {
+    EXPECT_EQ(codec_infos[i], converted.value()[i]);
+  }
+}
+
+TEST_F(PlatformInfoSerializerTest, VideoCodecInfo) {
+  PlatformInfoSerializer::VideoCodecInfo first{
+      media::VideoCodec::kCodecVP8, media::VideoProfile::kVP8ProfileAny};
+  PlatformInfoSerializer::VideoCodecInfo second{
+      media::VideoCodec::kCodecVP9, media::VideoProfile::kVP9Profile2};
+  PlatformInfoSerializer::VideoCodecInfo third{
+      media::VideoCodec::kCodecH264, media::VideoProfile::kH264Extended};
+
+  std::vector<PlatformInfoSerializer::VideoCodecInfo> codec_infos{first, second,
+                                                                  third};
+  serializer_.SetSupportedVideoCodecs(codec_infos);
+
+  auto converted = ConvertAndValidate(serializer_).SupportedVideoCodecs();
+  ASSERT_TRUE(converted.has_value());
+  ASSERT_EQ(codec_infos.size(), converted.value().size());
+  for (int i = 0; i < static_cast<int>(codec_infos.size()); i++) {
+    EXPECT_EQ(codec_infos[i], converted.value()[i]);
+  }
+}
+
 }  // namespace chromecast
