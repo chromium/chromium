@@ -36,8 +36,9 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
             test_file_prefix="tests_default",
             test_fixture="WebAppIntegrationBrowserTest")
 
-        with open(actions_filename) as actions_file, \
-                open(coverage_filename) as coverage_file, \
+        with open(actions_filename, "r", encoding="utf-8") as actions_file, \
+                open(coverage_filename, "r", encoding="utf-8") \
+                as coverage_file, \
                 tempfile.TemporaryDirectory() as output_dir:
             capturedOutput = StringIO()
             sys.stdout = capturedOutput
@@ -56,8 +57,10 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
                 gen_coverage_filename = os.path.join(output_dir, file_title)
                 expected_coverage_filename = os.path.join(
                     TEST_DATA_DIR, "expected_" + file_title)
-                with open(gen_coverage_filename) as coverage_file, \
-                        open(expected_coverage_filename) as expected_file:
+                with open(gen_coverage_filename, "r", encoding="utf-8") \
+                        as coverage_file, \
+                        open(expected_coverage_filename, "r", \
+                        encoding="utf-8") as expected_file:
                     self.assertListEqual(list(coverage_file.readlines()),
                                          list(expected_file.readlines()))
 

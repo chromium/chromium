@@ -73,7 +73,8 @@ def generate_framework_tests_and_coverage(
         graph_file = generage_graphviz_dot_file(coverage_root_node, None)
         output_coverage_graph_file_name = os.path.join(
             graph_output_dir, "coverage_required_graph.dot")
-        with open(output_coverage_graph_file_name, 'w') as coverage_graph_file:
+        with open(output_coverage_graph_file_name, "w",
+                  encoding="'utf-8") as coverage_graph_file:
             coverage_graph_file.write("# This is a generated file.\n")
             coverage_graph_file.write(graph_file)
             coverage_graph_file.close()
@@ -98,8 +99,8 @@ def generate_framework_tests_and_coverage(
             output_coverage_graph_file_name = os.path.join(
                 graph_output_dir,
                 "generated_tests_graph" + platform.suffix + ".dot")
-            with open(output_coverage_graph_file_name,
-                      'w') as coverage_graph_file:
+            with open(output_coverage_graph_file_name, "w",
+                      encoding="'utf-8") as coverage_graph_file:
                 coverage_graph_file.write("# This is a generated file.\n")
                 coverage_graph_file.write(graph_file)
 
@@ -149,7 +150,7 @@ def generate_framework_tests_and_coverage(
             platform)
         coverage_filename = os.path.join(coverage_output_dir,
                                          f"coverage{platform.suffix}.tsv")
-        with open(coverage_filename, 'w+') as file:
+        with open(coverage_filename, 'w+', encoding="'utf-8") as file:
             file.write("# This is a generated file.\n")
             file.write(f"# Full coverage: {full:.0%}, "
                        f"with partial coverage: {partial:.0%}\n")
@@ -204,8 +205,9 @@ def main():
     if options.graphs:
         graph_output_dir = script_dir
 
-    with open(actions_filename) as actions_file, open(
-            coverage_required_filename) as coverage_file:
+    with open(actions_filename, 'r', encoding="'utf-8") as actions_file, open(
+            coverage_required_filename, 'r',
+            encoding="'utf-8") as coverage_file:
         generate_framework_tests_and_coverage(actions_file, coverage_file,
                                               custom_partitions,
                                               default_partition,

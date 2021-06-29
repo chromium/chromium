@@ -140,7 +140,8 @@ def main():
 
     logging.info('Script directory: ' + script_dir)
 
-    actions_csv = csv.reader(open(actions_file), delimiter=',')
+    actions_csv = csv.reader(open(actions_file, "r", encoding="utf-8"),
+                             delimiter=',')
     (actions,
      action_base_name_to_default_param) = read_actions_file(actions_csv)
 
@@ -153,7 +154,10 @@ def main():
             print(action)
         return
     if options.cmd == 'list_coverage_tests':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -162,7 +166,10 @@ def main():
             print(test if options.v else test.id)
         return
     if options.cmd == 'list_processed_coverage_tests':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -173,7 +180,10 @@ def main():
             print(test if options.v else test.name)
         return
     if options.cmd == 'coverage_required_graph':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -186,7 +196,10 @@ def main():
         print(graph_file)
         return
     if options.cmd == 'generate_framework_tests_for_platform':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -214,7 +227,10 @@ def main():
         print("\n".join(lines))
         return
     if options.cmd == 'print_all_framework_tests':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -230,7 +246,10 @@ def main():
                 print(test.generate_browsertest(default_partition))
         return
     if options.cmd == 'save_or_modify_framework_test_files':
-        coverage_csv = csv.reader(open(coverage_required_file), delimiter=',')
+        coverage_csv = csv.reader(open(coverage_required_file,
+                                       "r",
+                                       encoding="utf-8"),
+                                  delimiter=',')
         required_coverage_tests = read_unprocessed_coverage_tests_file(
             coverage_csv, actions, action_base_name_to_default_param)
         required_coverage_tests = MaybeFilterCoverageTests(
@@ -248,7 +267,8 @@ def main():
             platforms = TestPlatform.get_platforms_from_browsertest_filename(
                 file)
             platforms = frozenset(platforms)
-            with open(options.dir + os.path.sep + file) as f:
+            with open(options.dir + os.path.sep + file, "r",
+                      encoding="utf-8") as f:
                 file = f.read()
                 tests = get_tests_in_browsertest(file)
                 existing_tests_by_platform_set[platforms] = list(tests.keys())

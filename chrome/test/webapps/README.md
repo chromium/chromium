@@ -135,7 +135,7 @@ The action also needs to be implemented by the testing framework. See the [Testi
 
 The test data is hosted in this [spreadsheet](https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit). To download the latest copy of the data, run the included script:
 ```sh
-./chrome/test/webapps/download_data_from_sheet.sh
+./chrome/test/webapps/download_data_from_sheet.py
 ```
 
 This will download the data from the sheet into csv files in the [data/](data/) directory:

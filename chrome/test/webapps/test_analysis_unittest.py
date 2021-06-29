@@ -75,7 +75,7 @@ class TestAnalysisTest(unittest.TestCase):
         actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
-        with open(actions_filename) as f:
+        with open(actions_filename, "r", encoding="utf-8") as f:
             actions_csv = csv.reader(f, delimiter=',')
             (actions, action_base_name_to_default_param
              ) = read_actions_file(actions_csv)
@@ -83,7 +83,7 @@ class TestAnalysisTest(unittest.TestCase):
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_unprocessed_coverage.csv")
         coverage_tests: List[CoverageTest] = []
-        with open(coverage_filename) as f:
+        with open(coverage_filename, "r", encoding="utf-8") as f:
             coverage_csv = csv.reader(f, delimiter=',')
             coverage_tests = read_unprocessed_coverage_tests_file(
                 coverage_csv, actions, action_base_name_to_default_param)
@@ -93,7 +93,7 @@ class TestAnalysisTest(unittest.TestCase):
         expected_processed_tests = []
         processed_filename = os.path.join(TEST_DATA_DIR,
                                           "expected_processed_coverage.csv")
-        with open(processed_filename) as f:
+        with open(processed_filename, "r", encoding="utf-8") as f:
             coverage_csv = csv.reader(f, delimiter=',')
             expected_processed_tests = read_unprocessed_coverage_tests_file(
                 coverage_csv, actions, action_base_name_to_default_param)
