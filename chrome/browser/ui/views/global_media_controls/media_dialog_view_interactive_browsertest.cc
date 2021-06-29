@@ -972,7 +972,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222873
+#define MAYBE_LiveCaptionProgressUpdate DISABLED_LiveCaptionProgressUpdate
+#else
+#define MAYBE_LiveCaptionProgressUpdate LiveCaptionProgressUpdate
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_LiveCaptionProgressUpdate) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
