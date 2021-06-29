@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -18,7 +19,19 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
-using Samples = std::vector<SignalDatabase::Sample>;
+using Sample = SignalDatabase::Sample;
+using proto::Aggregation;
+using proto::SignalType;
+
+namespace {
+constexpr base::TimeDelta kDefaultBucketDuration =
+    base::TimeDelta::FromHours(3);
+constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kTwoSeconds = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kThreeSeconds = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kFourSeconds = base::TimeDelta::FromSeconds(4);
+constexpr uint64_t kDefaultBucketCount = 6;
+}  // namespace
 
 class FeatureAggregatorImplTest : public testing::Test {
  public:
@@ -29,76 +42,311 @@ class FeatureAggregatorImplTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
     feature_aggregator_ = std::make_unique<FeatureAggregatorImpl>();
   }
+
+  // Returns samples which when using kDefaultBucketDuration will end up in the
+  // following 6 buckets with their respective values:
+  // bucket[0] = {1, 2}                (count=2, sum=3)
+  // bucket[1] = {3, 4, 5}             (count=3, sum=12)
+  // bucket[2] = {6, 7, 8, 9}          (count=4, sum=30)
+  // bucket[3] = {10}                  (count=1, sum=10)
+  // bucket[4] = {}                    (count=0, sum=0)
+  // bucket[5] = {11, 12, 13, 14, 15}  (count=5, sum=65)
+  std::vector<Sample> value_samples() {
+    return {
+        // First bucket.
+        {clock_.Now(), 1},
+        {clock_.Now() - kOneSecond, 2},
+        // Second bucket.
+        {clock_.Now() - kDefaultBucketDuration, 3},
+        {clock_.Now() - kDefaultBucketDuration - kOneSecond, 4},
+        {clock_.Now() - kDefaultBucketDuration - kTwoSeconds, 5},
+        // Third bucket.
+        {clock_.Now() - kDefaultBucketDuration * 2, 6},
+        {clock_.Now() - kDefaultBucketDuration * 2 - kOneSecond, 7},
+        {clock_.Now() - kDefaultBucketDuration * 2 - kTwoSeconds, 8},
+        {clock_.Now() - kDefaultBucketDuration * 2 - kThreeSeconds, 9},
+        // Fourth bucket.
+        {clock_.Now() - kDefaultBucketDuration * 3, 10},
+        // Fifth bucket is empty.
+        // Sixth bucket.
+        {clock_.Now() - kDefaultBucketDuration * 5, 11},
+        {clock_.Now() - kDefaultBucketDuration * 5 - kOneSecond, 12},
+        {clock_.Now() - kDefaultBucketDuration * 5 - kTwoSeconds, 13},
+        {clock_.Now() - kDefaultBucketDuration * 5 - kThreeSeconds, 14},
+        {clock_.Now() - kDefaultBucketDuration * 5 - kFourSeconds, 15},
+    };
+  }
+
+  // Returns samples which when using kDefaultBucketDuration will end up in the
+  // following 6 buckets with their respective values:
+  // bucket[0] = {0, 0}           (count=2, sum=0)
+  // bucket[1] = {0, 0, 0}        (count=3, sum=0)
+  // bucket[2] = {0, 0, 0, 0}     (count=4, sum=0)
+  // bucket[3] = {0}              (count=1, sum=0)
+  // bucket[4] = {}               (count=0, sum=0)
+  // bucket[5] = {0, 0, 0, 0, 0}  (count=5, sum=0)
+  std::vector<Sample> zero_value_samples() {
+    std::vector<Sample> samples = value_samples();
+    for (auto& sample : samples)
+      sample.second = 0;
+
+    return samples;
+  }
+
+  // Returns samples which when using kDefaultBucketDuration will end up in the
+  // following 5 buckets with their respective values:
+  // bucket[0] = {x, x}           (count=2, sum=0)
+  // bucket[1] = {x, x, x}        (count=3, sum=0)
+  // bucket[2] = {x, x, x, x}     (count=4, sum=0)
+  // bucket[3] = {x}              (count=1, sum=0)
+  // bucket[4] = {}               (count=0, sum=0)
+  // bucket[5] = {x, x, x, x, x}  (count=5, sum=0)
+  std::vector<Sample> no_value_samples() {
+    std::vector<Sample> samples = value_samples();
+    for (auto& sample : samples)
+      sample.second = absl::nullopt;
+
+    return samples;
+  }
+
+  // Verifies the result of a single invocation of Process(...), comparing to
+  // the expected output.
+  void Verify(SignalType signal_type,
+              Aggregation aggregation,
+              uint64_t bucket_count,
+              base::TimeDelta bucket_duration,
+              std::vector<Sample> samples,
+              std::vector<float> expected) {
+    std::vector<float> res =
+        feature_aggregator_->Process(signal_type, aggregation, bucket_count,
+                                     clock_.Now(), bucket_duration, samples);
+    EXPECT_EQ(expected, res);
+  }
+
+  // Verifies the result of a multiple invocations of Process(...), comparing to
+  // the expected output in the cases of using value samples, zero-value
+  // samples, no-value samples, and an empty input vector.
+  void VerifyAll(SignalType signal_type,
+                 Aggregation aggregation,
+                 std::vector<float> expected_value,
+                 std::vector<float> expected_zero_value,
+                 std::vector<float> expected_no_value,
+                 std::vector<float> expected_empty) {
+    // Value is always assumed to be 1 for USER_ACTION.
+    Verify(signal_type, aggregation, kDefaultBucketCount,
+           kDefaultBucketDuration, value_samples(), expected_value);
+
+    // Value is always assumed to be 1 for USER_ACTION.
+    Verify(signal_type, aggregation, kDefaultBucketCount,
+           kDefaultBucketDuration, zero_value_samples(), expected_zero_value);
+
+    // Value is always assumed to be 1 for USER_ACTION.
+    // Value is coerced to 0 for HISTOGRAM_ENUM and HISTOGRAM_VALUE.
+    Verify(signal_type, aggregation, kDefaultBucketCount,
+           kDefaultBucketDuration, no_value_samples(), expected_no_value);
+
+    Verify(signal_type, aggregation, kDefaultBucketCount,
+           kDefaultBucketDuration, {}, expected_empty);
+  }
+
   base::SimpleTestClock clock_;
   std::unique_ptr<FeatureAggregatorImpl> feature_aggregator_;
 };
 
-TEST_F(FeatureAggregatorImplTest, SumCountAggregation) {
-  Samples samples{
-      {clock_.Now(), 1},
-      {clock_.Now(), 2},
-      {clock_.Now(), 3},
-  };
+TEST_F(FeatureAggregatorImplTest, CountAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT, {15}, {15}, {15}, {0});
 
-  std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::COUNT, 1u,
-      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
-  // SUM_COUNT always produces a single value.
-  EXPECT_EQ(1u, res.size());
-  // We should have counted 3 samples.
-  EXPECT_EQ(3, res[0]);
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::COUNT, {15}, {15}, {15},
+            {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::COUNT, {15}, {15}, {15},
+            {0});
 }
 
-TEST_F(FeatureAggregatorImplTest, SumValuesAggregationHistogram) {
-  Samples samples{
-      {clock_.Now(), 1},
-      {clock_.Now(), 2},
-      {clock_.Now(), 3},
-  };
+TEST_F(FeatureAggregatorImplTest, CountBooleanAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::COUNT_BOOLEAN, {1}, {1}, {1},
+            {0});
 
-  std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM, 1u,
-      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
-  // SUM_VALUES always produces a single value.
-  EXPECT_EQ(1u, res.size());
-  // We should have summed up to 1+2+3=6.
-  EXPECT_EQ(6, res[0]);
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::COUNT_BOOLEAN, {1}, {1},
+            {1}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::COUNT_BOOLEAN, {1}, {1},
+            {1}, {0});
 }
 
-TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserAction) {
-  Samples samples{
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
-      {clock_.Now(), absl::nullopt},
-  };
+TEST_F(FeatureAggregatorImplTest, BucketedCountAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT,
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
+            {0, 0, 0, 0, 0, 0});
 
-  std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::USER_ACTION, proto::Aggregation::SUM, 1u, clock_.Now(),
-      base::TimeDelta::FromSeconds(10), samples);
-  // SUM_VALUES always produces a single value.
-  EXPECT_EQ(1u, res.size());
-  // We should have summed up to 1+1+1=3.
-  EXPECT_EQ(3, res[0]);
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT,
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT,
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
+            {0, 0, 0, 0, 0, 0});
 }
 
-TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserActionIgnoresValue) {
-  Samples samples{
-      {clock_.Now(), 1},
-      {clock_.Now(), 2},
-      {clock_.Now(), 3},
+TEST_F(FeatureAggregatorImplTest, BucketedCountBooleanAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
+            {0, 0, 0, 0, 0, 0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedCountBooleanTrueCountAggregation) {
+  VerifyAll(SignalType::USER_ACTION,
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM,
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE,
+            Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedCumulativeCountAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_CUMULATIVE_COUNT,
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_CUMULATIVE_COUNT,
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_CUMULATIVE_COUNT,
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
+            {0, 0, 0, 0, 0, 0});
+}
+
+TEST_F(FeatureAggregatorImplTest, SumAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM, {15}, {15}, {15}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM, {120}, {0}, {0}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::SUM, {120}, {0}, {0},
+            {0});
+}
+
+TEST_F(FeatureAggregatorImplTest, SumBooleanAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::SUM_BOOLEAN, {1}, {1}, {1},
+            {0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::SUM_BOOLEAN, {1}, {0}, {0},
+            {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::SUM_BOOLEAN, {1}, {0},
+            {0}, {0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedSumAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM,
+            {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5}, {2, 3, 4, 1, 0, 5},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM,
+            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM,
+            {3, 12, 30, 10, 0, 65}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedSumBooleanAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 0, 1},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM_BOOLEAN,
+            {1, 1, 1, 1, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedSumBooleanTrueCountAggregation) {
+  VerifyAll(SignalType::USER_ACTION,
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {5}, {5}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM,
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0}, {0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE,
+            Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT, {5}, {0}, {0}, {0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketedCumulativeSumAggregation) {
+  VerifyAll(SignalType::USER_ACTION, Aggregation::BUCKETED_CUMULATIVE_SUM,
+            {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15}, {2, 5, 9, 10, 10, 15},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_CUMULATIVE_SUM,
+            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+
+  VerifyAll(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_CUMULATIVE_SUM,
+            {3, 15, 45, 55, 55, 120}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketizationThresholds) {
+  std::vector<Sample> samples{
+      // First sample is exactly 1 day ago, part of second bucket.
+      {clock_.Now() - base::TimeDelta::FromDays(1), 1},
+      // Second sample is just over 1 day ago, part of second bucket.
+      {clock_.Now() - base::TimeDelta::FromDays(1) -
+           base::TimeDelta::FromSeconds(1),
+       2},
+      // Second sample is just under 1 day ago, part of first bucket.
+      {clock_.Now() - base::TimeDelta::FromDays(1) +
+           base::TimeDelta::FromSeconds(1),
+       3},
   };
 
-  std::vector<float> res = feature_aggregator_->Process(
-      proto::SignalType::USER_ACTION, proto::Aggregation::SUM, 1u, clock_.Now(),
-      base::TimeDelta::FromSeconds(10), samples);
-  // SUM_VALUES always produces a single value.
-  EXPECT_EQ(1u, res.size());
-  // We should have summed up to 1+1+1=3.
-  EXPECT_EQ(3, res[0]);
+  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_COUNT, 2,
+         base::TimeDelta::FromDays(1), samples, {1, 2});
+  Verify(SignalType::USER_ACTION, Aggregation::BUCKETED_SUM, 2,
+         base::TimeDelta::FromDays(1), samples, {1, 2});
+  Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_COUNT, 2,
+         base::TimeDelta::FromDays(1), samples, {1, 2});
+  Verify(SignalType::HISTOGRAM_ENUM, Aggregation::BUCKETED_SUM, 2,
+         base::TimeDelta::FromDays(1), samples, {3, 3});
+  Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 2,
+         base::TimeDelta::FromDays(1), samples, {1, 2});
+  Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 2,
+         base::TimeDelta::FromDays(1), samples, {3, 3});
+}
+
+TEST_F(FeatureAggregatorImplTest, BucketsOutOfBounds) {
+  std::vector<Sample> samples{
+      {clock_.Now() + base::TimeDelta::FromDays(1), 1},  // In the future.
+      {clock_.Now(), 2},
+      {clock_.Now() - base::TimeDelta::FromDays(1), 3},
+      {clock_.Now() - base::TimeDelta::FromDays(2), 4},
+      {clock_.Now() - base::TimeDelta::FromDays(3), 5},  // Too old.
+  };
+
+  // Using bucket count of 3, means the first sample is out of bounds for being
+  // in the future, and the last sample is out of bounds for being too old.
+  Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_COUNT, 3,
+         base::TimeDelta::FromDays(1), samples, {1, 1, 1});
+  Verify(SignalType::HISTOGRAM_VALUE, Aggregation::BUCKETED_SUM, 3,
+         base::TimeDelta::FromDays(1), samples, {2, 3, 4});
 }
 
 TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
-  Samples samples{
+  std::vector<Sample> samples{
       {clock_.Now(), 1}, {clock_.Now(), 2}, {clock_.Now(), 3},
       {clock_.Now(), 4}, {clock_.Now(), 5},
   };
