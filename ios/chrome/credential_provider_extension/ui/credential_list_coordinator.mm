@@ -19,6 +19,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/empty_credentials_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,6 +52,10 @@
 // Consent coordinator that shows a view requesting device auth in order to
 // enable the extension.
 @property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
+
+// Consent coordinator that shows a view requesting device auth in order to
+// enable the extension.
+@property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
 
 // Interface for |reauthenticationModule|, handling mostly the case when no
 // hardware for authentication is available.
@@ -164,6 +169,13 @@
   [detailsViewController presentCredential:credential];
 
   [self.viewController pushViewController:detailsViewController animated:YES];
+}
+
+- (void)showCreateNewPasswordUI {
+  self.createPasswordCoordinator = [[NewPasswordCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         context:self.context];
+  [self.createPasswordCoordinator start];
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

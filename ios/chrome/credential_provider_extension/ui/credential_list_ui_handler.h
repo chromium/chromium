@@ -19,6 +19,9 @@
 // Asks the presenter to display the details for given |credential|.
 - (void)showDetailsForCredential:(id<Credential>)credential;
 
+// Called when user wants to create a new credential.
+- (void)showCreateNewPasswordUI;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_CREDENTIAL_LIST_UI_HANDLER_H_

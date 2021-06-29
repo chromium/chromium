@@ -23,6 +23,9 @@
 // Called when user wants to see details for the given credential.
 - (void)showDetailsForCredential:(id<Credential>)credential;
 
+// Called when user taps the option to create a new password
+- (void)newPasswordWasSelected;
+
 @end
 
 @protocol CredentialListConsumer <NSObject>
@@ -32,7 +35,8 @@
 
 // Tells the consumer to show the passed in suggested and all passwords.
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
-                     allPasswords:(NSArray<id<Credential>>*)all;
+                     allPasswords:(NSArray<id<Credential>>*)all
+            showNewPasswordOption:(BOOL)showNewPasswordOption;
 
 @end
 

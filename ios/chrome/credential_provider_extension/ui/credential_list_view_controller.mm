@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,8 +19,10 @@
 
 namespace {
 
+// Reuse Identifiers for table views.
 NSString* kHeaderIdentifier = @"clvcHeader";
-NSString* kCellIdentifier = @"clvcCell";
+NSString* kCredentialCellIdentifier = @"clvcCredentialCell";
+NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
 const CGFloat kHeaderHeight = 70;
 }
@@ -54,6 +57,9 @@ const CGFloat kHeaderHeight = 70;
 
 // Current list of all passwords.
 @property(nonatomic, copy) NSArray<id<Credential>>* allPasswords;
+
+// Indicates if the option to create a new password should be presented.
+@property(nonatomic, assign) BOOL showNewPasswordOption;
 
 @end
 
@@ -101,9 +107,11 @@ const CGFloat kHeaderHeight = 70;
 #pragma mark - CredentialListConsumer
 
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
-                     allPasswords:(NSArray<id<Credential>>*)all {
+                     allPasswords:(NSArray<id<Credential>>*)all
+            showNewPasswordOption:(BOOL)showNewPasswordOption {
   self.suggestedPasswords = suggested;
   self.allPasswords = all;
+  self.showNewPasswordOption = showNewPasswordOption;
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];
 }
@@ -119,7 +127,7 @@ const CGFloat kHeaderHeight = 70;
   if ([self isEmptyTable]) {
     return 0;
   } else if ([self isSuggestedPasswordSection:section]) {
-    return self.suggestedPasswords.count;
+    return [self numberOfRowsInSuggestedPasswordSection];
   } else {
     return self.allPasswords.count;
   }
@@ -131,6 +139,9 @@ const CGFloat kHeaderHeight = 70;
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
                              @"No search results found");
   } else if ([self isSuggestedPasswordSection:section]) {
+    if (IsPasswordCreationEnabled()) {
+      return nil;
+    }
     if (self.suggestedPasswords.count > 1) {
       return NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
@@ -148,12 +159,26 @@ const CGFloat kHeaderHeight = 70;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathNewPasswordRow:indexPath]) {
+    UITableViewCell* cell = [tableView
+        dequeueReusableCellWithIdentifier:kNewPasswordCellIdentifier];
+    if (!cell) {
+      cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                    reuseIdentifier:kNewPasswordCellIdentifier];
+    }
+    cell.textLabel.text =
+        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREATE_PASSWORD_ROW",
+                          @"Add New Password");
+    cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+    return cell;
+  }
+
   UITableViewCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:kCellIdentifier];
+      [tableView dequeueReusableCellWithIdentifier:kCredentialCellIdentifier];
   if (!cell) {
     cell =
         [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                  reuseIdentifier:kCellIdentifier];
+                                  reuseIdentifier:kCredentialCellIdentifier];
     cell.accessoryView = [self infoIconButton];
   }
 
@@ -183,11 +208,19 @@ const CGFloat kHeaderHeight = 70;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
+  if (IsPasswordCreationEnabled() &&
+      [self isSuggestedPasswordSection:section]) {
+    return 0;
+  }
   return kHeaderHeight;
 }
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathNewPasswordRow:indexPath]) {
+    [self.delegate newPasswordWasSelected];
+    return;
+  }
   UpdateUMACountForKey(app_group::kCredentialExtensionPasswordUseCount);
   id<Credential> credential = [self credentialForIndexPath:indexPath];
   [self.delegate userSelectedCredential:credential];
@@ -263,7 +296,8 @@ const CGFloat kHeaderHeight = 70;
 // Returns number of sections to display based on |suggestedPasswords| and
 // |allPasswords|. If no sections with data, returns 1 for the 'no data' banner.
 - (int)numberOfSections {
-  if ([self.suggestedPasswords count] == 0 || [self.allPasswords count] == 0) {
+  if ([self numberOfRowsInSuggestedPasswordSection] == 0 ||
+      [self.allPasswords count] == 0) {
     return 1;
   }
   return 2;
@@ -271,7 +305,8 @@ const CGFloat kHeaderHeight = 70;
 
 // Returns YES if there is no data to display.
 - (BOOL)isEmptyTable {
-  return [self.suggestedPasswords count] == 0 && [self.allPasswords count] == 0;
+  return [self numberOfRowsInSuggestedPasswordSection] == 0 &&
+         [self.allPasswords count] == 0;
 }
 
 // Returns YES if given section is for suggested passwords.
@@ -285,12 +320,26 @@ const CGFloat kHeaderHeight = 70;
   }
 }
 
+// Returns the credential at the passed index.
 - (id<Credential>)credentialForIndexPath:(NSIndexPath*)indexPath {
   if ([self isSuggestedPasswordSection:indexPath.section]) {
     return self.suggestedPasswords[indexPath.row];
   } else {
     return self.allPasswords[indexPath.row];
   }
+}
+
+// Returns true if the passed index corresponds to the Create New Password Cell.
+- (BOOL)isIndexPathNewPasswordRow:(NSIndexPath*)indexPath {
+  if ([self isSuggestedPasswordSection:indexPath.section]) {
+    return indexPath.row == NSInteger(self.suggestedPasswords.count);
+  }
+  return NO;
+}
+
+// Returns the number of rows in suggested passwords section.
+- (NSUInteger)numberOfRowsInSuggestedPasswordSection {
+  return [self.suggestedPasswords count] + (self.showNewPasswordOption ? 1 : 0);
 }
 
 @end

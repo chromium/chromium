@@ -96,7 +96,8 @@ NSArray<id<Credential>>* allPasswords = @[
   [self.baseViewController pushViewController:self.viewController animated:YES];
 
   [self.viewController presentSuggestedPasswords:suggestedPasswords
-                                    allPasswords:allPasswords];
+                                    allPasswords:allPasswords
+                           showNewPasswordOption:NO];
 }
 
 #pragma mark - CredentialListHandler
@@ -121,7 +122,9 @@ NSArray<id<Credential>>* allPasswords = @[
       [all addObject:credential];
     }
   }
-  [self.viewController presentSuggestedPasswords:suggested allPasswords:all];
+  [self.viewController presentSuggestedPasswords:suggested
+                                    allPasswords:all
+                           showNewPasswordOption:NO];
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
@@ -134,6 +137,9 @@ NSArray<id<Credential>>* allPasswords = @[
   [detailsViewController presentCredential:credential];
   [self.baseViewController pushViewController:detailsViewController
                                      animated:YES];
+}
+
+- (void)newPasswordWasSelected {
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

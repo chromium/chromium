@@ -21,10 +21,17 @@ source_set("ui") {
     "credential_list_view_controller.mm",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
+    "new_password_coordinator.h",
+    "new_password_coordinator.mm",
+    "new_password_mediator.h",
+    "new_password_mediator.mm",
+    "new_password_view_controller.h",
+    "new_password_view_controller.mm",
     "stale_credentials_view_controller.h",
     "stale_credentials_view_controller.mm",
   ]
   deps = [
+    ":feature_flags",
     ":utils",
     "//base",
     "//ios/chrome/common:constants",
@@ -48,6 +55,15 @@ source_set("ui") {
     "AuthenticationServices.framework",
     "MobileCoreServices.framework",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("feature_flags") {
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
