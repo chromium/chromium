@@ -41,6 +41,10 @@ config("tflite_support_flags") {
 
 flatbuffer("metadata_schema") {
   sources = [ "src/tensorflow_lite_support/metadata/metadata_schema.fbs" ]
+
+  # Disable warnings as the flatbuffer uses snakecase for sentencePiece which
+  # now causes a warning message with flatc.
+  args = [ "--no-warnings" ]
 }
 
 static_library("tflite-support") {

@@ -98,6 +98,10 @@ template("flatbuffer") {
       args += [ "--gen-mutable" ]
     }
 
+    if (defined(invoker.args)) {
+      args += invoker.args
+    }
+
     args += [ "{{source}}" ]
 
     # The deps may have steps that have to run before running flatc.
