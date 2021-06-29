@@ -28,6 +28,8 @@ media::SpeechRecognitionResult GetSpeechRecognitionResultFromFinalEvent(
   for (const auto& part : final_event->hypothesis_part.value())
     timing.hypothesis_parts->emplace_back(part->text, part->alignment);
 
+  result.timing_information = timing;
+
   return result;
 }
 
