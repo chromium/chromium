@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 
 #include <cstdint>
 #include <map>
@@ -291,9 +291,10 @@ Browser* GetBrowserForWindowId(int32_t window_id) {
 
 }  // namespace
 
-class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
+class FullRestoreAppLaunchHandlerBrowserTest
+    : public extensions::PlatformAppBrowserTest {
  public:
-  AppLaunchHandlerBrowserTest()
+  FullRestoreAppLaunchHandlerBrowserTest()
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitAndEnableFeature(
@@ -301,7 +302,7 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
   }
-  ~AppLaunchHandlerBrowserTest() override = default;
+  ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
 
   void CreateWebApp() {
     auto web_application_info = std::make_unique<WebApplicationInfo>();
@@ -348,11 +349,13 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NoBrowserOnLaunch) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       NoBrowserOnLaunch) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotLaunchBrowser) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       NotLaunchBrowser) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
@@ -362,8 +365,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotLaunchBrowser) {
 
   size_t count = BrowserList::GetInstance()->size();
 
-  // Create AppLaunchHandler, and set should restore.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler, and set should restore.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
 
   content::RunAllTasksUntilIdle();
@@ -372,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotLaunchBrowser) {
   EXPECT_EQ(count, BrowserList::GetInstance()->size());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndAddApp) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       RestoreAndAddApp) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
@@ -384,8 +389,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndAddApp) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler, and set should restore.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler, and set should restore.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
 
   CreateWebApp();
@@ -397,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndAddApp) {
 
 // Tests that restoring windows that are minimized will restore their
 // pre-minimized window state when unminimizing.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, PreMinimizedState) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       PreMinimizedState) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
@@ -412,8 +419,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, PreMinimizedState) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler, and set should restore.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler, and set should restore.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
 
   // The web app window should be attainable.
@@ -433,7 +441,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, PreMinimizedState) {
   EXPECT_EQ(kCurrentBounds, app_window->GetBoundsInScreen());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       AddAppAndRestore) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
@@ -445,8 +454,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   CreateWebApp();
 
@@ -458,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {
   EXPECT_TRUE(FindWebAppWindow());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotRestore) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
@@ -475,8 +485,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotRestore) {
 
   size_t count = BrowserList::GetInstance()->size();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->LaunchBrowserWhenReady();
 
   CreateWebApp();
@@ -488,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotRestore) {
   EXPECT_FALSE(FindWebAppWindow());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       RestoreAndLaunchBrowser) {
   size_t count = BrowserList::GetInstance()->size();
 
   // Add the chrome browser launch info.
@@ -498,8 +510,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   // Set should restore.
   app_launch_handler->SetShouldRestore();
@@ -512,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
   EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndNoBrowserLaunchInfo) {
   size_t count = BrowserList::GetInstance()->size();
 
@@ -531,8 +544,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   // Set should restore.
   app_launch_handler->SetShouldRestore();
@@ -545,7 +559,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   EXPECT_EQ(count, BrowserList::GetInstance()->size());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       LaunchBrowserAndRestore) {
   size_t count = BrowserList::GetInstance()->size();
 
   // Add the chrome browser launch info.
@@ -555,8 +570,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
@@ -572,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
   EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndLaunchBrowserAndAddApp) {
   size_t count = BrowserList::GetInstance()->size();
 
@@ -590,8 +606,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler, and set should restore.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler, and set should restore.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -606,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   EXPECT_TRUE(FindWebAppWindow());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        LaunchBrowserAndAddAppAndRestore) {
   size_t count = BrowserList::GetInstance()->size();
 
@@ -624,8 +641,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
@@ -644,7 +662,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
 
 // Tests that the window properties on the browser window match the ones we set
 // in the window info.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       WindowProperties) {
   size_t count = BrowserList::GetInstance()->size();
 
   ::full_restore::SaveAppLaunchInfo(
@@ -655,7 +674,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   WaitForAppLaunchInfoSaved();
 
   // Launch the browser.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->LaunchBrowserWhenReady();
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
@@ -672,19 +692,20 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
 }
 
-class AppLaunchHandlerChromeAppBrowserTest
-    : public AppLaunchHandlerBrowserTest {
+class FullRestoreAppLaunchHandlerChromeAppBrowserTest
+    : public FullRestoreAppLaunchHandlerBrowserTest {
  public:
-  AppLaunchHandlerChromeAppBrowserTest() {
+  FullRestoreAppLaunchHandlerChromeAppBrowserTest() {
     ResetRestoreForTesting();
     set_launch_browser_for_testing(
         std::make_unique<
             chromeos::full_restore::ScopedLaunchBrowserForTesting>());
   }
-  ~AppLaunchHandlerChromeAppBrowserTest() override = default;
+  ~FullRestoreAppLaunchHandlerChromeAppBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest, RestoreChromeApp) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
+                       RestoreChromeApp) {
   // Have 4 desks total.
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
@@ -707,7 +728,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest, RestoreChromeApp) {
   WaitForAppLaunchInfoSaved();
 
   // Read from the restore data.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -746,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest, RestoreChromeApp) {
   RemoveInactiveDesks();
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                        RestoreMinimizedChromeApp) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
@@ -766,7 +788,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
   WaitForAppLaunchInfoSaved();
 
   // Read from the restore data.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -776,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
   EXPECT_TRUE(app_window->GetBaseWindow()->IsMinimized());
 }
 
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                        RestoreMultipleChromeAppWindows) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
@@ -802,7 +825,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
   WaitForAppLaunchInfoSaved();
 
   // Read from the restore data.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -844,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
 // Tests that fullscreened windows will not be restored as fullscreen, which is
 // not supported for full restore. Regression test for
 // https://crbug.com/1203010.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                        ImmersiveFullscreenApp) {
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
@@ -865,7 +889,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
   WaitForAppLaunchInfoSaved();
 
   // Read from the restore data.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -875,21 +900,22 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerChromeAppBrowserTest,
   EXPECT_FALSE(app_window->GetBaseWindow()->IsFullscreenOrPending());
 }
 
-class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
+class FullRestoreAppLaunchHandlerArcAppBrowserTest
+    : public FullRestoreAppLaunchHandlerBrowserTest {
  protected:
-  // AppLaunchHandlerBrowserTest:
+  // FullRestoreAppLaunchHandlerBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    AppLaunchHandlerBrowserTest::SetUpCommandLine(command_line);
+    FullRestoreAppLaunchHandlerBrowserTest::SetUpCommandLine(command_line);
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    AppLaunchHandlerBrowserTest::SetUpInProcessBrowserTestFixture();
+    FullRestoreAppLaunchHandlerBrowserTest::SetUpInProcessBrowserTestFixture();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
   }
 
   void SetUpOnMainThread() override {
-    AppLaunchHandlerBrowserTest::SetUpOnMainThread();
+    FullRestoreAppLaunchHandlerBrowserTest::SetUpOnMainThread();
     arc::SetArcPlayStoreEnabledForProfile(profile(), true);
 
     // This ensures app_prefs()->GetApp() below never returns nullptr.
@@ -974,7 +1000,8 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
   void Restore() {
     test_full_restore_info_observer_.Reset();
 
-    app_launch_handler_ = std::make_unique<AppLaunchHandler>(profile());
+    app_launch_handler_ =
+        std::make_unique<FullRestoreAppLaunchHandler>(profile());
     app_launch_handler_->SetShouldRestore();
     content::RunAllTasksUntilIdle();
   }
@@ -1073,9 +1100,10 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
 
   arc::mojom::AppHost* app_host() { return app_prefs(); }
 
-  AppLaunchHandler* app_launch_handler() {
+  FullRestoreAppLaunchHandler* app_launch_handler() {
     if (!app_launch_handler_)
-      app_launch_handler_ = std::make_unique<AppLaunchHandler>(profile());
+      app_launch_handler_ =
+          std::make_unique<FullRestoreAppLaunchHandler>(profile());
     return app_launch_handler_.get();
   }
 
@@ -1093,13 +1121,14 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
   }
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-  std::unique_ptr<AppLaunchHandler> app_launch_handler_;
+  std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
   TestFullRestoreInfoObserver test_full_restore_info_observer_;
 };
 
 // Test restoration when the ARC window is created before OnTaskCreated is
 // called.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                       RestoreArcApp) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
 
@@ -1188,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
 
 // Test restoration when the ARC ghost window is created before OnTaskCreated is
 // called.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                        RestoreArcGhostWindow) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
@@ -1272,7 +1301,8 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 }
 
 // Test the ARC ghost window is saved if the task is not created.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                       SaveArcGhostWindow) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
 
@@ -1378,7 +1408,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
 
 // Test restoration with multiple ARC apps, when the ARC windows are created
 // before and after OnTaskCreated is called.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                        RestoreMultipleArcApps) {
   SetProfile();
   InstallTestApps(kTestAppPackage, true);
@@ -1489,7 +1519,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 }
 
 // Tests that an ARC app's properties are restored when its surface is created.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                        RestoreArcAppWindowProperties) {
   constexpr int32_t kPreRestoreTaskId = 100;
   const int32_t kPreRestoreSessionId =
@@ -1591,7 +1621,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 
 // Test restoration when the ARC window is created before OnTaskCreated is
 // called.
-IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                        ArcAppThemeColorUpdate) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
@@ -1641,14 +1671,14 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   StopInstance();
 }
 
-class AppLaunchHandlerSystemWebAppsBrowserTest
+class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     : public SystemWebAppIntegrationTest {
  public:
-  AppLaunchHandlerSystemWebAppsBrowserTest() {
+  FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         ::full_restore::features::kFullRestore);
   }
-  ~AppLaunchHandlerSystemWebAppsBrowserTest() override = default;
+  ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override = default;
 
   Browser* LaunchSystemWebApp(const GURL& gurl,
                               web_app::SystemAppType system_app_type) {
@@ -1684,7 +1714,8 @@ class AppLaunchHandlerSystemWebAppsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
+                       LaunchSWA) {
   Browser* app_browser = LaunchSystemWebApp();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
@@ -1695,8 +1726,9 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
 
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   // Close app_browser so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser);
@@ -1720,7 +1752,7 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
   EXPECT_EQ(window_id, restore_window_id);
 }
 
-IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        WindowProperties) {
   Browser* app_browser = LaunchSystemWebApp();
   ASSERT_TRUE(app_browser);
@@ -1742,8 +1774,9 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   SaveWindowInfo(window);
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   // Close |app_browser| so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser);
@@ -1779,7 +1812,7 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
 
 // Tests that apps maintain splitview snap status after being relaunched with
 // full restore.
-IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
                        TabletSplitView) {
   ash::TabletMode::Get()->SetEnabledForTest(true);
 
@@ -1806,8 +1839,9 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   SaveWindowInfo(app2_window);
   WaitForAppLaunchInfoSaved();
 
-  // Create AppLaunchHandler.
-  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   // Close `app1_browser` and `app2_browser` so that the SWA can be relaunched.
   web_app::CloseAndWait(app1_browser);
@@ -1842,7 +1876,7 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    AppLaunchHandlerSystemWebAppsBrowserTest);
+    FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest);
 
 }  // namespace full_restore
 }  // namespace chromeos

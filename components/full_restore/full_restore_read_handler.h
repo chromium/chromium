@@ -25,7 +25,7 @@
 
 namespace chromeos {
 namespace full_restore {
-class AppLaunchHandlerBrowserTest;
+class FullRestoreAppLaunchHandlerBrowserTest;
 }
 }
 
@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
  private:
   friend class ArcReadHandler;
-  friend class ::chromeos::full_restore::AppLaunchHandlerBrowserTest;
+  friend class ::chromeos::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
   friend class FullRestoreReadHandlerTestApi;
 
   // Gets the app launch information from `profile_path` for `app_id` and

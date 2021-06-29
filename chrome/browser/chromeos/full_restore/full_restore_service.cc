@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_data_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
@@ -55,9 +55,9 @@ FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
 
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
-      app_launch_handler_(
-          std::make_unique<AppLaunchHandler>(profile_,
-                                             /*should_init_service=*/true)),
+      app_launch_handler_(std::make_unique<FullRestoreAppLaunchHandler>(
+          profile_,
+          /*should_init_service=*/true)),
       restore_data_handler_(
           std::make_unique<FullRestoreDataHandler>(profile_)) {}
 

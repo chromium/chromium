@@ -1,0 +1,242 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
+
+#include <set>
+#include <utility>
+
+#include "ash/constants/ash_switches.h"
+#include "base/bind.h"
+#include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_read_handler.h"
+#include "components/full_restore/full_restore_save_handler.h"
+#include "extensions/common/constants.h"
+
+namespace chromeos {
+namespace full_restore {
+
+namespace {
+
+bool g_launch_browser_for_testing = false;
+
+constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
+constexpr char kArcGhostWindowLaunchHistogramPrefix[] =
+    "Apps.ArcGhostWindowLaunch";
+
+}  // namespace
+
+FullRestoreAppLaunchHandler::FullRestoreAppLaunchHandler(
+    Profile* profile,
+    bool should_init_service)
+    : AppLaunchHandler(profile), should_init_service_(should_init_service) {
+  // FullRestoreReadHandler reads the full restore data from the full restore
+  // data file on a background task runner.
+  ::full_restore::FullRestoreReadHandler::GetInstance()->ReadFromFile(
+      profile_->GetPath(),
+      base::BindOnce(&FullRestoreAppLaunchHandler::OnGetRestoreData,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+FullRestoreAppLaunchHandler::~FullRestoreAppLaunchHandler() = default;
+
+void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady() {
+  if (g_launch_browser_for_testing ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kForceLaunchBrowser)) {
+    ForceLaunchBrowserForTesting();
+    return;
+  }
+
+  // If the restore data has been loaded, and the user has chosen to restore,
+  // launch the browser.
+  if (should_restore_ && restore_data_) {
+    LaunchBrowser();
+
+    // OS Setting should be launched after browser to have OS setting window in
+    // front.
+    UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
+    return;
+  }
+
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
+
+  // If the restore data hasn't been loaded, or the user hasn't chosen to
+  // restore, set `should_launch_browser_` as true, and wait the restore data
+  // loaded, and the user selection, then we can launch the browser.
+  should_launch_browser_ = true;
+}
+
+void FullRestoreAppLaunchHandler::SetShouldRestore() {
+  should_restore_ = true;
+  MaybePostRestore();
+}
+
+void FullRestoreAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
+  // If the restore flag `should_restore_` is true, launch the app for
+  // restoration.
+  if (should_restore_)
+    AppLaunchHandler::OnAppUpdate(update);
+}
+
+void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
+  ::full_restore::AddChromeBrowserLaunchInfoForTesting(profile_->GetPath());
+  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
+}
+
+base::WeakPtr<AppLaunchHandler>
+FullRestoreAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void FullRestoreAppLaunchHandler::OnGetRestoreData(
+    std::unique_ptr<::full_restore::RestoreData> restore_data) {
+  restore_data_ = std::move(restore_data);
+
+  // FullRestoreAppLaunchHandler could be created multiple times in browser
+  // tests, and used by the desk template. Only when it is created by
+  // FullRestoreService, we need to init FullRestoreService.
+  if (should_init_service_)
+    FullRestoreService::GetForProfile(profile_)->Init();
+
+  if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
+      user_manager::UserManager::Get()->GetPrimaryUser()) {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()
+        ->SetPrimaryProfilePath(profile_->GetPath());
+
+    // In Multi-Profile mode, only set for the primary user. For other users,
+    // active profile path is set when switch users.
+    ::full_restore::SetActiveProfilePath(profile_->GetPath());
+  }
+
+  MaybePostRestore();
+}
+
+void FullRestoreAppLaunchHandler::MaybePostRestore() {
+  // If the restore flag `should_restore_` is not true, or reading the restore
+  // data hasn't finished, don't restore.
+  if (!should_restore_ || !restore_data_)
+    return;
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&FullRestoreAppLaunchHandler::MaybeRestore,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FullRestoreAppLaunchHandler::MaybeRestore() {
+  if (should_launch_browser_) {
+    LaunchBrowser();
+    should_launch_browser_ = false;
+  }
+
+  LaunchApps();
+}
+
+void FullRestoreAppLaunchHandler::LaunchBrowser() {
+  // If the browser is not launched before reboot, don't launch browser during
+  // the startup phase.
+  const auto& launch_list = restore_data_->app_id_to_launch_list();
+  if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
+    return;
+
+  RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
+
+  restore_data_->RemoveApp(extension_misc::kChromeAppId);
+
+  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kHideCrashRestoreBubble);
+  }
+
+  // Modify the command line to restore browser sessions.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kRestoreLastSession);
+
+  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+}
+
+void FullRestoreAppLaunchHandler::LaunchArcApp(
+    const std::string& app_id,
+    const ::full_restore::RestoreData::LaunchList& launch_list) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
+  auto* arc_handler = FullRestoreArcTaskHandler::GetForProfile(profile_);
+
+  for (const auto& it : launch_list) {
+    RecordRestoredAppLaunch(apps::AppTypeName::kArc);
+
+    DCHECK(it.second->event_flag.has_value());
+
+    apps::mojom::WindowInfoPtr window_info =
+        HandleArcWindowInfo(it.second->GetAppWindowInfo());
+
+    // Set an ARC session id to find the restore window id based on the new
+    // created ARC task id in FullRestoreReadHandler.
+    int32_t arc_session_id =
+        ::full_restore::FullRestoreReadHandler::GetInstance()
+            ->GetArcSessionId();
+    window_info->window_id = arc_session_id;
+    ::full_restore::FullRestoreReadHandler::GetInstance()
+        ->SetArcSessionIdForWindowId(arc_session_id, it.first);
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+    if (!window_info->bounds.is_null() && arc_handler &&
+        arc_handler->window_handler()) {
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
+      arc_handler->window_handler()->LaunchArcGhostWindow(
+          app_id, arc_session_id, it.second.get());
+    } else {
+      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
+    }
+#endif
+
+    if (it.second->intent.has_value()) {
+      proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),
+                                 std::move(it.second->intent.value()),
+                                 apps::mojom::LaunchSource::kFromFullRestore,
+                                 std::move(window_info));
+    } else {
+      proxy->Launch(app_id, it.second->event_flag.value(),
+                    apps::mojom::LaunchSource::kFromFullRestore,
+                    std::move(window_info));
+    }
+  }
+}
+
+void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
+    apps::AppTypeName app_type_name) {
+  base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
+                                app_type_name);
+}
+
+void FullRestoreAppLaunchHandler::RecordArcGhostWindowLaunch(
+    bool is_arc_ghost_window) {
+  base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogramPrefix,
+                            is_arc_ghost_window);
+}
+
+ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {
+  g_launch_browser_for_testing = true;
+}
+
+ScopedLaunchBrowserForTesting::~ScopedLaunchBrowserForTesting() {
+  g_launch_browser_for_testing = false;
+}
+
+}  // namespace full_restore
+}  // namespace chromeos

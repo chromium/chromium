@@ -22,7 +22,7 @@ class Notification;
 namespace chromeos {
 namespace full_restore {
 
-class AppLaunchHandler;
+class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
 class NewUserRestorePrefHandler;
 
@@ -103,7 +103,7 @@ class FullRestoreService : public KeyedService,
 
   // |app_launch_handler_| is responsible for launching apps based on the
   // restore data.
-  std::unique_ptr<AppLaunchHandler> app_launch_handler_;
+  std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
 
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
 
