@@ -4,35 +4,6 @@
 
 module chromeos.ime.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
-
-// Method of an operation to apply to a text field.
-enum OperationMethodForRulebased {
-  COMMIT_TEXT = 0,
-  SET_COMPOSITION = 1,
-};
-
-// Operation to apply to a text field, in response to a Keypress.
-struct OperationForRulebased {
-  // The operation we wish to apply to the text field.
-  OperationMethodForRulebased method;
-
-  // Additional arguments of the method to apply to the text field.
-  mojo_base.mojom.String16 arguments;
-};
-
-// KeypressResponse represents the Rulebased engine response to a keypress.
-struct KeypressResponseForRulebased {
-  // result indicates if the function call was successful
-  // There must be a valid engine and the keypress must be valid for
-  // this to be the case.
-  bool result;
-
-  // An array of operations to apply to the text field in respoonse to
-  // the Keypress.
-  array<OperationForRulebased> operations;
-};
-
 enum KeyEventType {
   kKeyDown = 0,
   kKeyUp = 1,
@@ -71,6 +42,13 @@ struct PhysicalKeyEvent {
   string key;
 
   ModifierState modifier_state;
+};
+
+enum KeyEventResult {
+  // The event should be handled by the system.
+  kNeedsHandlingBySystem = 0,
+  // The event was consumed by the IME and should not be handled by the system.
+  kConsumedByIme = 1,
 };
 
 // Represents a directional text selection range.
@@ -136,8 +114,8 @@ interface InputMethod {
   // Called when the input field loses focus.
   OnBlur();
 
-  // Process a PhysicalKeyEvent for non-rule-based engines.
-  OnKeyEvent(PhysicalKeyEvent event) => (bool consumed);
+  // Processes a PhysicalKeyEvent and returns the processing result.
+  ProcessKeyEvent(PhysicalKeyEvent event) => (KeyEventResult result);
 
   // Informs the IME that the surrounding text has changed.
   // |text| is the text around the current text cursor position, including any
@@ -154,10 +132,4 @@ interface InputMethod {
   // Informs the IME that composition was canceled by the system. This can
   // for example happen if the user presses the Escape key.
   OnCompositionCanceledBySystem();
-
-  // Process a PhysicalKeyEvent using the rule-based engine and return a
-  // KeypressResponseForRulebased object with a list of operations to be handled
-  // by the caller.
-  ProcessKeypressForRulebased(PhysicalKeyEvent event)
-                              => (KeypressResponseForRulebased result);
 };

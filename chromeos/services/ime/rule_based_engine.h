@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace ime {
@@ -25,7 +26,8 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> receiver);
+      mojo::PendingReceiver<mojom::InputMethod> receiver,
+      mojo::PendingRemote<mojom::InputMethodHost> host);
 
   RuleBasedEngine(const RuleBasedEngine& other) = delete;
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
@@ -41,19 +43,19 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
       uint32_t offset,
       mojom::SelectionRangePtr selection_range) override {}
   void OnCompositionCanceledBySystem() override;
-  void ProcessKeypressForRulebased(
-      mojom::PhysicalKeyEventPtr event,
-      ProcessKeypressForRulebasedCallback callback) override;
-  void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) override {}
+  void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
+                       ProcessKeyEventCallback callback) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
  private:
   RuleBasedEngine(const std::string& ime_spec,
-                  mojo::PendingReceiver<mojom::InputMethod> receiver);
+                  mojo::PendingReceiver<mojom::InputMethod> receiver,
+                  mojo::PendingRemote<mojom::InputMethodHost> host);
 
   mojo::Receiver<mojom::InputMethod> receiver_;
+  mojo::Remote<mojom::InputMethodHost> host_;
+
   rulebased::Engine engine_;
 
   // Whether the AltRight key is held down or not.

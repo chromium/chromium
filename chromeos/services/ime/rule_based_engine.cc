@@ -31,9 +31,8 @@ std::string GetIdFromImeSpec(const std::string& ime_spec) {
              : std::string();
 }
 
-uint8_t GenerateModifierValueForRulebased(
-    const mojom::ModifierStatePtr& modifier_state,
-    bool is_alt_right_key_down) {
+uint8_t GenerateModifierValue(const mojom::ModifierStatePtr& modifier_state,
+                              bool is_alt_right_key_down) {
   uint8_t modifiers = 0;
   if (modifier_state->shift)
     modifiers |= rulebased::MODIFIER_SHIFT;
@@ -44,28 +43,27 @@ uint8_t GenerateModifierValueForRulebased(
   return modifiers;
 }
 
-mojom::KeypressResponseForRulebasedPtr GenerateKeypressResponseForRulebased(
-    rulebased::ProcessKeyResult& process_key_result) {
-  mojom::KeypressResponseForRulebasedPtr keypress_response =
-      mojom::KeypressResponseForRulebased::New();
-  keypress_response->result = process_key_result.key_handled;
-  if (!process_key_result.commit_text.empty()) {
-    keypress_response->operations.push_back(mojom::OperationForRulebased::New(
-        mojom::OperationMethodForRulebased::COMMIT_TEXT,
-        ConvertToUtf16AndNormalize(process_key_result.commit_text)));
+mojom::KeyEventResult HandleEngineResult(
+    const rulebased::ProcessKeyResult& result,
+    mojo::Remote<mojom::InputMethodHost>& host) {
+  if (!result.commit_text.empty()) {
+    host->CommitText(ConvertToUtf16AndNormalize(result.commit_text),
+                     mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
   }
-  // Need to add the setComposition operation to the result when the key is
-  // handled and commit_text and composition_text are both empty.
+  // Still need to set composition when the key is handled and commit_text and
+  // composition_text are both empty.
   // That is the case of using Backspace to delete the last character in
   // composition.
-  if (!process_key_result.composition_text.empty() ||
-      (process_key_result.key_handled &&
-       process_key_result.commit_text.empty())) {
-    keypress_response->operations.push_back(mojom::OperationForRulebased::New(
-        mojom::OperationMethodForRulebased::SET_COMPOSITION,
-        ConvertToUtf16AndNormalize(process_key_result.composition_text)));
+  if (!result.composition_text.empty() ||
+      (result.key_handled && result.commit_text.empty())) {
+    std::u16string text = ConvertToUtf16AndNormalize(result.composition_text);
+    std::vector<mojom::CompositionSpanPtr> spans;
+    spans.push_back(mojom::CompositionSpan::New(
+        0, text.length(), mojom::CompositionSpanStyle::kDefault));
+    host->SetComposition(std::move(text), std::move(spans));
   }
-  return keypress_response;
+  return result.key_handled ? mojom::KeyEventResult::kConsumedByIme
+                            : mojom::KeyEventResult::kNeedsHandlingBySystem;
 }
 
 bool IsModifierKey(const std::string& key_code) {
@@ -84,11 +82,12 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver) {
+    mojo::PendingReceiver<mojom::InputMethod> receiver,
+    mojo::PendingRemote<mojom::InputMethodHost> host) {
   // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
-             ? base::WrapUnique(
-                   new RuleBasedEngine(ime_spec, std::move(receiver)))
+             ? base::WrapUnique(new RuleBasedEngine(
+                   ime_spec, std::move(receiver), std::move(host)))
              : nullptr;
 }
 
@@ -99,9 +98,8 @@ void RuleBasedEngine::OnCompositionCanceledBySystem() {
   is_alt_right_key_down_ = false;
 }
 
-void RuleBasedEngine::ProcessKeypressForRulebased(
-    mojom::PhysicalKeyEventPtr event,
-    ProcessKeypressForRulebasedCallback callback) {
+void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
+                                      ProcessKeyEventCallback callback) {
   // According to the W3C spec, |altKey| is false if the AltGr key
   // is pressed [1]. However, all rule-based input methods on Chrome OS use
   // the US QWERTY layout as a base layout, with AltGr implemented at this
@@ -124,24 +122,22 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
   if (event->type != mojom::KeyEventType::kKeyDown ||
       (IsModifierKey(event->code) || event->modifier_state->control ||
        is_alt_down)) {
-    std::move(callback).Run(mojom::KeypressResponseForRulebased::New(
-        false, std::vector<mojom::OperationForRulebasedPtr>(0)));
+    std::move(callback).Run(mojom::KeyEventResult::kNeedsHandlingBySystem);
     return;
   }
 
-  rulebased::ProcessKeyResult process_key_result = engine_.ProcessKey(
-      event->code, GenerateModifierValueForRulebased(event->modifier_state,
-                                                     is_alt_right_key_down_));
-  mojom::KeypressResponseForRulebasedPtr keypress_response =
-      GenerateKeypressResponseForRulebased(process_key_result);
-
-  std::move(callback).Run(std::move(keypress_response));
+  std::move(callback).Run(HandleEngineResult(
+      engine_.ProcessKey(
+          event->code,
+          GenerateModifierValue(event->modifier_state, is_alt_right_key_down_)),
+      host_));
 }
 
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver)
-    : receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<mojom::InputMethod> receiver,
+    mojo::PendingRemote<mojom::InputMethodHost> host)
+    : receiver_(this, std::move(receiver)), host_(std::move(host)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 
   engine_.Activate(GetIdFromImeSpec(ime_spec));

@@ -162,12 +162,6 @@ class NativeInputMethodEngine
     void OnProfileWillBeDestroyed();
 
    private:
-    // Called when a rule-based key press is processed by Mojo.
-    void OnRuleBasedKeyEventResponse(
-        base::Time start,
-        ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback,
-        ime::mojom::KeypressResponseForRulebasedPtr response);
-
     PrefService* prefs_ = nullptr;
 
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;

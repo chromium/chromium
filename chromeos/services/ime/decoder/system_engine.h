@@ -40,11 +40,8 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // mojom::InputChannel:
   void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
   void OnBlur() override;
-  void ProcessKeypressForRulebased(
-      mojom::PhysicalKeyEventPtr event,
-      ProcessKeypressForRulebasedCallback callback) override {}
-  void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) override;
+  void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
+                       ProcessKeyEventCallback callback) override;
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
@@ -80,7 +77,7 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // Sequence ID for protobuf messages sent from the engine.
   uint64_t current_seq_id_ = 0;
 
-  std::map<uint64_t, OnKeyEventCallback> pending_key_event_callbacks_;
+  std::map<uint64_t, ProcessKeyEventCallback> pending_key_event_callbacks_;
 };
 
 }  // namespace ime

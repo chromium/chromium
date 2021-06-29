@@ -193,7 +193,7 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   input_method.FlushForTesting();
 }
 
-TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
+TEST_F(SystemEngineTest, ProcessKeyEventRepliesWithCallback) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
@@ -208,7 +208,6 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
       OnKeyEventToProto(/*seq_id=*/1, key_event.Clone());
 
   // Set up the mock shared library to reply to the key event.
-  bool consumed_by_test = false;
   EXPECT_CALL(decoder_entry_points_, Process)
       .With(EqualsProto(expected_proto))
       .WillOnce([this]() {
@@ -222,13 +221,12 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
         decoder_entry_points_.delegate()->Process(output.data(), output.size());
       });
 
-  input_method->OnKeyEvent(
+  input_method->ProcessKeyEvent(
       std::move(key_event),
-      base::BindLambdaForTesting(
-          [&consumed_by_test](bool consumed) { consumed_by_test = consumed; }));
+      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
+        EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
+      }));
   input_method.FlushForTesting();
-
-  EXPECT_TRUE(consumed_by_test);
 }
 
 TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {

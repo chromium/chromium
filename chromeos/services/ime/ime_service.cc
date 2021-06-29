@@ -106,7 +106,8 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
   if (IsRuleBasedInputMethod(ime_spec)) {
-    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method));
+    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method),
+                                            std::move(input_method_host));
     std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
     return;
   }

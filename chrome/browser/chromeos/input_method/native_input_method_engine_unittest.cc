@@ -63,13 +63,9 @@ class MockInputMethod : public ime::mojom::InputMethod {
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
   MOCK_METHOD(void,
-              ProcessKeypressForRulebased,
+              ProcessKeyEvent,
               (const ime::mojom::PhysicalKeyEventPtr event,
-               ProcessKeypressForRulebasedCallback),
-              (override));
-  MOCK_METHOD(void,
-              OnKeyEvent,
-              (const ime::mojom::PhysicalKeyEventPtr event, OnKeyEventCallback),
+               ProcessKeyEventCallback),
               (override));
   MOCK_METHOD(void,
               OnSurroundingTextChanged,
@@ -365,12 +361,13 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
     // move-only types like PhysicalKeyEvent.
-    EXPECT_CALL(mock_input_method, OnKeyEvent(_, _))
+    EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _))
         .Times(2)
         .WillRepeatedly(::testing::Invoke(
             [](ime::mojom::PhysicalKeyEventPtr,
-               ime::mojom::InputMethod::OnKeyEventCallback callback) {
-              std::move(callback).Run(false);
+               ime::mojom::InputMethod::ProcessKeyEventCallback callback) {
+              std::move(callback).Run(
+                  ime::mojom::KeyEventResult::kNeedsHandlingBySystem);
             }));
   }
 
