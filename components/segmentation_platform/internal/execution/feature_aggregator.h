@@ -37,7 +37,7 @@ class FeatureAggregator {
   // Removes all enum samples that are not accepted. If |accepted_enum_values|
   // is empty, all values are accepted. Note: This modifies the input |samples|.
   virtual void FilterEnumSamples(
-      const std::vector<uint32_t>& accepted_enum_values,
+      const std::vector<int32_t>& accepted_enum_ids,
       std::vector<SignalDatabase::Sample>& samples) const = 0;
 };
 

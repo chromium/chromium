@@ -104,11 +104,11 @@ TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
   };
 
   // Empty accept list should keep all samples.
-  feature_aggregator_->FilterEnumSamples(std::vector<uint32_t>(), samples);
+  feature_aggregator_->FilterEnumSamples(std::vector<int32_t>(), samples);
   EXPECT_EQ(5u, samples.size());
 
   // Only accept 1 and 3 as enum values.
-  feature_aggregator_->FilterEnumSamples(std::vector<uint32_t>{2, 4}, samples);
+  feature_aggregator_->FilterEnumSamples(std::vector<int32_t>{2, 4}, samples);
   EXPECT_EQ(2u, samples.size());
   EXPECT_EQ(2, samples[0].second.value());
   EXPECT_EQ(4, samples[1].second.value());

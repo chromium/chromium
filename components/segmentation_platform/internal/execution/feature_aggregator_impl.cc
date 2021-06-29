@@ -68,18 +68,18 @@ std::vector<float> FeatureAggregatorImpl::Process(
 }
 
 void FeatureAggregatorImpl::FilterEnumSamples(
-    const std::vector<uint32_t>& accepted_enum_values,
+    const std::vector<int32_t>& accepted_enum_ids,
     std::vector<SignalDatabase::Sample>& samples) const {
-  if (accepted_enum_values.size() == 0)
+  if (accepted_enum_ids.size() == 0)
     return;
 
   auto new_end = std::remove_if(
       samples.begin(), samples.end(),
-      [&accepted_enum_values](SignalDatabase::Sample sample) {
+      [&accepted_enum_ids](SignalDatabase::Sample sample) {
         DCHECK(sample.second.has_value());
         auto found =
-            std::find(accepted_enum_values.begin(), accepted_enum_values.end(),
-                      sample.second.value()) != accepted_enum_values.end();
+            std::find(accepted_enum_ids.begin(), accepted_enum_ids.end(),
+                      sample.second.value()) != accepted_enum_ids.end();
         return !found;
       });
   samples.erase(new_end, samples.end());

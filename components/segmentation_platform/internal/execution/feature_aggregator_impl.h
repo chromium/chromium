@@ -37,7 +37,7 @@ class FeatureAggregatorImpl : public FeatureAggregator {
       const base::TimeDelta& bucket_duration,
       const std::vector<SignalDatabase::Sample>& samples) const override;
   void FilterEnumSamples(
-      const std::vector<uint32_t>& accepted_enum_values,
+      const std::vector<int32_t>& accepted_enum_ids,
       std::vector<SignalDatabase::Sample>& samples) const override;
 };
 
