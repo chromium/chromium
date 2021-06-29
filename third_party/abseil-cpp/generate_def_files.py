@@ -16,7 +16,7 @@ Unless you are on a Windows machine, you need to set up your Chromium
 checkout for cross-compilation by following the instructions at
 https://chromium.googlesource.com/chromium/src.git/+/main/docs/win_cross.md.
 If you are on Windows, you may need to tweak this script to run, e.g. by
-changing "gn" to "gn.bat", changing "llvm-nm-9" to the name of your copy of
+changing "gn" to "gn.bat", changing "llvm-nm" to the name of your copy of
 llvm-nm, etc.
 """
 
@@ -71,7 +71,7 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
 
   gn = 'gn'
   autoninja = 'autoninja'
-  symbol_dumper = ['llvm-nm-9']
+  symbol_dumper = ['third_party/llvm-build/Release+Asserts/bin/llvm-nm']
   if sys.platform == 'win32':
     gn = 'gn.bat'
     autoninja = 'autoninja.bat'
