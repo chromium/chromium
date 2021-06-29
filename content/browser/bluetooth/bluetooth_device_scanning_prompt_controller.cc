@@ -20,8 +20,7 @@ BluetoothDeviceScanningPromptController::
         WebBluetoothServiceImpl* web_bluetooth_service,
         RenderFrameHost* render_frame_host)
     : web_bluetooth_service_(web_bluetooth_service),
-      render_frame_host_(render_frame_host),
-      web_contents_(WebContents::FromRenderFrameHost(render_frame_host_)) {}
+      render_frame_host_(render_frame_host) {}
 
 BluetoothDeviceScanningPromptController::
     ~BluetoothDeviceScanningPromptController() {
@@ -36,6 +35,9 @@ void BluetoothDeviceScanningPromptController::ShowPermissionPrompt() {
                           weak_ptr_factory_.GetWeakPtr());
 
   if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
+    // non-active RFHs can't show UI elements like prompts to the user.
+    if (!render_frame_host_->IsActive())
+      return;
     prompt_ = delegate->ShowBluetoothScanningPrompt(
         render_frame_host_, std::move(prompt_event_handler));
   }

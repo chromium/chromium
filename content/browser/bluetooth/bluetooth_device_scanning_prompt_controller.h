@@ -15,7 +15,6 @@
 namespace content {
 
 class RenderFrameHost;
-class WebContents;
 class WebBluetoothServiceImpl;
 
 // Class that interacts with a prompt.
@@ -44,8 +43,6 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
   WebBluetoothServiceImpl* const web_bluetooth_service_;
   // The RenderFrameHost that owns |web_bluetooth_service_|.
   RenderFrameHost* const render_frame_host_;
-  // The WebContents that owns |render_frame_host_|.
-  WebContents* const web_contents_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;
