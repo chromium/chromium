@@ -10,10 +10,13 @@
 #include <iterator>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ <= 7
+#include <vector>
+#endif
 
 // Some versions of libstdc++ have partial support for type_traits, but misses
 // a smaller subset while removing some of the older non-standard stuff. Assume

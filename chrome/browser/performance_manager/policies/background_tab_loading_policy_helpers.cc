@@ -5,6 +5,8 @@
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
 
 #include <math.h>
+
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"

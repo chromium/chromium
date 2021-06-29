@@ -6,9 +6,10 @@
 #define BASE_MEMORY_MADV_FREE_DISCARDABLE_MEMORY_POSIX_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <atomic>
-#include <cstdint>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"

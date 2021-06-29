@@ -5,10 +5,11 @@
 #ifndef UI_GFX_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
 #define UI_GFX_ANDROID_ANDROID_SURFACE_CONTROL_COMPAT_H_
 
-#include <memory>
-
 #include <android/hardware_buffer.h>
 #include <android/native_window.h>
+
+#include <memory>
+#include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"

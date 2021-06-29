@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/barrier_closure.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"

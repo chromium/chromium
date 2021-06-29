@@ -8,6 +8,9 @@
 
 #include <ctype.h>
 
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"

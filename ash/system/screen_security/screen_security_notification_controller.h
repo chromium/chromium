@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_SCREEN_SECURITY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_SCREEN_SECURITY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/shell_observer.h"
 #include "ash/system/screen_security/screen_capture_observer.h"
 #include "ash/system/screen_security/screen_share_observer.h"

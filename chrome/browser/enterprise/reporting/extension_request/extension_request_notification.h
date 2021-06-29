@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {

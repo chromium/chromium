@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_CHANGE_MONITOR_H_
 #define CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_CHANGE_MONITOR_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "ui/display/display_observer.h"
 

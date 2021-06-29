@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_NATIVE_EVENT_OBSERVER_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_NATIVE_EVENT_OBSERVER_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"

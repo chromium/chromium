@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_QUEUE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"

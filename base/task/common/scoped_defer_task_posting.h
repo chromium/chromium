@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_COMMON_SCOPED_DEFER_TASK_POSTING_H_
 #define BASE_TASK_COMMON_SCOPED_DEFER_TASK_POSTING_H_
 
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/location.h"
 #include "base/macros.h"

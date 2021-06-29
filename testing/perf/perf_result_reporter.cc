@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "testing/perf/perf_result_reporter.h"
+
+#include <vector>
+
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

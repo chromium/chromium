@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_CANVAS_SURFACE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"

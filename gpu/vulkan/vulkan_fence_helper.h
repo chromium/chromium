@@ -7,6 +7,10 @@
 
 #include <vulkan/vulkan.h>
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/component_export.h"

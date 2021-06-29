@@ -4,6 +4,10 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"

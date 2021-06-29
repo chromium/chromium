@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include <vector>
+
 #include "components/autofill/core/browser/field_types.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #include "ios/chrome/grit/ios_strings.h"

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_STATUS_SERVICE_IMPL_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_STATUS_SERVICE_IMPL_H_
 
+#include <string>
+#include <vector>
+
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"

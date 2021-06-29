@@ -5,6 +5,9 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_AV1_DECODER_H_
 #define MEDIA_GPU_VAAPI_TEST_AV1_DECODER_H_
 
+#include <memory>
+#include <vector>
+
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

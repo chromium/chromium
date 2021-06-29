@@ -5,6 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 #define CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"

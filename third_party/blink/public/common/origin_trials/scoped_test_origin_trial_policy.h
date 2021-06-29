@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_SCOPED_TEST_ORIGIN_TRIAL_POLICY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_SCOPED_TEST_ORIGIN_TRIAL_POLICY_H_
 
+#include <vector>
+
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
 namespace blink {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_info.h"

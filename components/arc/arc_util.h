@@ -10,8 +10,10 @@
 // users' preferences, and FeatureList.
 
 #include <stdint.h>
+
 #include <deque>
 #include <string>
+#include <vector>
 
 #include "chromeos/dbus/dbus_method_call_status.h"
 

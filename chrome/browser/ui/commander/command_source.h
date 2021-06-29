@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_COMMANDER_COMMAND_SOURCE_H_
 #define CHROME_BROWSER_UI_COMMANDER_COMMAND_SOURCE_H_
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/range/range.h"

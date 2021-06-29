@@ -5,6 +5,8 @@
 #ifndef SKIA_EXT_SKIA_UTILS_WIN_H_
 #define SKIA_EXT_SKIA_UTILS_WIN_H_
 
+#include <vector>
+
 #include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

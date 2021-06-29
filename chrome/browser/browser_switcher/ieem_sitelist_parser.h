@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_IEEM_SITELIST_PARSER_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_IEEM_SITELIST_PARSER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

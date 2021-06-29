@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
 

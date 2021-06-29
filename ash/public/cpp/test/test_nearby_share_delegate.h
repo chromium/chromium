@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TEST_TEST_NEARBY_SHARE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_TEST_TEST_NEARBY_SHARE_DELEGATE_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
 
