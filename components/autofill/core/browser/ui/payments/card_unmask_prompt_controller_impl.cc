@@ -53,7 +53,6 @@ void CardUnmaskPromptControllerImpl::ShowPrompt(
   card_unmask_view_->Show();
   unmasking_result_ = AutofillClient::NONE;
   unmasking_number_of_attempts_ = 0;
-  unmasking_initial_should_store_pan_ = GetStoreLocallyStartState();
   AutofillMetrics::LogUnmaskPromptEvent(AutofillMetrics::UNMASK_PROMPT_SHOWN,
                                         card_.HasNonEmptyValidNickname());
 }
@@ -132,7 +131,6 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     const std::u16string& cvc,
     const std::u16string& exp_month,
     const std::u16string& exp_year,
-    bool should_store_pan,
     bool enable_fido_auth) {
   verify_timestamp_ = AutofillClock::Now();
   unmasking_number_of_attempts_++;
@@ -146,8 +144,6 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     pending_details_.exp_month = exp_month;
     pending_details_.exp_year = exp_year;
   }
-  DCHECK(!should_store_pan);
-  pending_details_.should_store_pan = false;
 
   // On Android, the FIDO authentication checkbox is only shown when the flag is
   // turned on. If it is shown, then remember the last choice the user made on
@@ -353,13 +349,6 @@ void CardUnmaskPromptControllerImpl::LogOnCloseEvents() {
       AutofillMetrics::UNMASK_PROMPT_CLOSED_ABANDON_UNMASKING) {
     AutofillMetrics::LogTimeBeforeAbandonUnmasking(
         AutofillClock::Now() - verify_timestamp_,
-        card_.HasNonEmptyValidNickname());
-  }
-
-  bool final_should_store_pan = pending_details_.should_store_pan;
-  if (unmasking_result_ == AutofillClient::SUCCESS && final_should_store_pan) {
-    AutofillMetrics::LogUnmaskPromptEvent(
-        AutofillMetrics::UNMASK_PROMPT_SAVED_CARD_LOCALLY,
         card_.HasNonEmptyValidNickname());
   }
 }

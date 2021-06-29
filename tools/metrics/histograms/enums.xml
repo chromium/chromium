@@ -6552,7 +6552,11 @@ others/histograms.xml -->
   <int value="5" label="Closed, success w/ 1+ failures">
     Closed with successful unmask after failed attempts.
   </int>
-  <int value="6" label="Card saved locally"/>
+  <int value="6" label="(deprecated) Card saved locally">
+    <obsolete>
+      Removed 06/2021.
+    </obsolete>
+  </int>
   <int value="7" label="Did opt in of local save"/>
   <int value="8" label="Local save stayed disabled"/>
   <int value="9" label="Did opt out of local save"/>

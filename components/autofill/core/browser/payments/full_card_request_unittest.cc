@@ -748,34 +748,6 @@ TEST_F(FullCardRequestTest, UpdateExpDateForLocalCard) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify saving full PAN on disk.
-TEST_F(FullCardRequestTest, SaveRealPan) {
-  EXPECT_CALL(*result_delegate(), OnFullCardRequestSucceeded(
-                                      testing::Ref(*request()),
-                                      CardMatches(CreditCard::FULL_SERVER_CARD,
-                                                  "4111", "12", "2050"),
-                                      testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*personal_data(),
-              UpdateServerCreditCard(CardMatches(CreditCard::FULL_SERVER_CARD,
-                                                 "4111", "12", "2050")));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
-      ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_month = u"12";
-  details.exp_year = u"2050";
-  details.should_store_pan = true;
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
 // Verify getting full PAN and CVC for PaymentRequest.
 TEST_F(FullCardRequestTest, UnmaskForPaymentRequest) {
   EXPECT_CALL(*result_delegate(),

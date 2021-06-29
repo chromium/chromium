@@ -691,38 +691,41 @@ class AutofillMetrics {
   };
 
   // Events related to the Unmask Credit Card Prompt.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum UnmaskPromptEvent {
     // The prompt was shown.
     UNMASK_PROMPT_SHOWN = 0,
     // The prompt was closed without attempting to unmask the card.
-    UNMASK_PROMPT_CLOSED_NO_ATTEMPTS,
+    UNMASK_PROMPT_CLOSED_NO_ATTEMPTS = 1,
     // The prompt was closed without unmasking the card, but with at least
     // one attempt. The last failure was retriable.
-    UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_RETRIABLE_FAILURE,
+    UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_RETRIABLE_FAILURE = 2,
     // The prompt was closed without unmasking the card, but with at least
     // one attempt. The last failure was non retriable.
-    UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_NON_RETRIABLE_FAILURE,
+    UNMASK_PROMPT_CLOSED_FAILED_TO_UNMASK_NON_RETRIABLE_FAILURE = 3,
     // Successfully unmasked the card in the first attempt.
-    UNMASK_PROMPT_UNMASKED_CARD_FIRST_ATTEMPT,
+    UNMASK_PROMPT_UNMASKED_CARD_FIRST_ATTEMPT = 4,
     // Successfully unmasked the card after retriable failures.
-    UNMASK_PROMPT_UNMASKED_CARD_AFTER_FAILED_ATTEMPTS,
+    UNMASK_PROMPT_UNMASKED_CARD_AFTER_FAILED_ATTEMPTS = 5,
     // Saved the card locally (masked card was upgraded to a full card).
-    UNMASK_PROMPT_SAVED_CARD_LOCALLY,
+    // Deprecated.
+    // UNMASK_PROMPT_SAVED_CARD_LOCALLY = 6,
     // User chose to opt in (checked the checkbox when it was empty).
     // Only logged if there was an attempt to unmask.
-    UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_IN,
+    UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_IN = 7,
     // User did not opt in when they had the chance (left the checkbox
     // unchecked).  Only logged if there was an attempt to unmask.
-    UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_IN,
+    UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_IN = 8,
     // User chose to opt out (unchecked the checkbox when it was check).
     // Only logged if there was an attempt to unmask.
-    UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_OUT,
+    UNMASK_PROMPT_LOCAL_SAVE_DID_OPT_OUT = 9,
     // User did not opt out when they had a chance (left the checkbox checked).
     // Only logged if there was an attempt to unmask.
-    UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_OUT,
+    UNMASK_PROMPT_LOCAL_SAVE_DID_NOT_OPT_OUT = 10,
     // The prompt was closed while chrome was unmasking the card (user pressed
     // verify and we were waiting for the server response).
-    UNMASK_PROMPT_CLOSED_ABANDON_UNMASKING,
+    UNMASK_PROMPT_CLOSED_ABANDON_UNMASKING = 11,
     NUM_UNMASK_PROMPT_EVENTS,
   };
 

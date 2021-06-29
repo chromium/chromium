@@ -401,8 +401,7 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   controller->OnUnmaskPromptAccepted(
       base::SysNSStringToUTF16(_CVCItem.CVCText),
       base::SysNSStringToUTF16(_CVCItem.monthText),
-      base::SysNSStringToUTF16(yearText), /*should_store_pan=*/false,
-      /*enable_fido_auth=*/false);
+      base::SysNSStringToUTF16(yearText), /*enable_fido_auth=*/false);
 }
 
 - (void)onCancel:(id)sender {

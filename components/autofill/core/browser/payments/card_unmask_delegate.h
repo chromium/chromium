@@ -26,9 +26,6 @@ class CardUnmaskDelegate {
     // Four digit year.
     std::u16string exp_year;
 
-    // State of "copy to this device" checkbox.
-    bool should_store_pan;
-
     // User is opting-in for FIDO Authentication for future card unmasking.
     bool enable_fido_auth = false;
   };

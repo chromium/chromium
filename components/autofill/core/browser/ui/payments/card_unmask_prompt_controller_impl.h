@@ -45,7 +45,6 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void OnUnmaskPromptAccepted(const std::u16string& cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
-                              bool should_store_pan,
                               bool enable_fido_auth) override;
   void NewCardLinkClicked() override;
   std::u16string GetWindowTitle() const override;
@@ -86,7 +85,6 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   CardUnmaskPromptView* card_unmask_view_ = nullptr;
 
   AutofillClient::PaymentsRpcResult unmasking_result_ = AutofillClient::NONE;
-  bool unmasking_initial_should_store_pan_ = false;
   int unmasking_number_of_attempts_ = 0;
   base::Time shown_timestamp_;
   // Timestamp of the last time the user clicked the Verify button.

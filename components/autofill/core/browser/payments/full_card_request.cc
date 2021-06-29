@@ -291,8 +291,6 @@ void FullCardRequest::OnDidGetRealPan(
       } else if (response_details.card_type == AutofillClient::SERVER_CARD) {
         request_->card.set_record_type(CreditCard::FULL_SERVER_CARD);
         request_->card.SetServerStatus(CreditCard::OK);
-        if (request_->user_response.should_store_pan)
-          personal_data_manager_->UpdateServerCreditCard(request_->card);
       } else {
         NOTREACHED();
       }

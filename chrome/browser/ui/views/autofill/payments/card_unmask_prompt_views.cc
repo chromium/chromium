@@ -286,7 +286,6 @@ bool CardUnmaskPromptViews::Accept() {
       year_input_->GetVisible()
           ? year_input_->GetTextForRow(year_input_->GetSelectedIndex())
           : std::u16string(),
-      /*should_store_pan=*/false,
       /*enable_fido_auth=*/false);
   return false;
 }

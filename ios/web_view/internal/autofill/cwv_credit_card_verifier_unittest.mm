@@ -180,7 +180,6 @@ TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
 // Tests CWVCreditCardVerifier's verification method handles success case.
 TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
   NSString* cvc = @"123";
-  BOOL store_locally = NO;
   [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
   __block BOOL completionCalled = NO;
   __block NSError* completionError;
@@ -197,7 +196,6 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
   const FakeCardUnmaskDelegate::UserProvidedUnmaskDetails& unmask_details_ =
       card_unmask_delegate_.GetUserProvidedUnmaskDetails();
   EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
-  EXPECT_EQ(store_locally, unmask_details_.should_store_pan);
 
   [credit_card_verifier_
       didReceiveUnmaskVerificationResult:autofill::AutofillClient::SUCCESS];
@@ -208,7 +206,6 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
 // Tests CWVCreditCardVerifier's verification method handles failure case.
 TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
   NSString* cvc = @"123";
-  BOOL store_locally = NO;
   [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
   __block NSError* completionError;
   [credit_card_verifier_
@@ -223,7 +220,6 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
   const FakeCardUnmaskDelegate::UserProvidedUnmaskDetails& unmask_details_ =
       card_unmask_delegate_.GetUserProvidedUnmaskDetails();
   EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
-  EXPECT_EQ(store_locally, unmask_details_.should_store_pan);
 
   [credit_card_verifier_ didReceiveUnmaskVerificationResult:
                              autofill::AutofillClient::TRY_AGAIN_FAILURE];

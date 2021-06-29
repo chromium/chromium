@@ -73,8 +73,7 @@ void CardUnmaskPromptViewAndroid::OnUserInput(
   controller_->OnUnmaskPromptAccepted(
       base::android::ConvertJavaStringToUTF16(env, cvc),
       base::android::ConvertJavaStringToUTF16(env, month),
-      base::android::ConvertJavaStringToUTF16(env, year),
-      /*should_store_pan=*/false, enable_fido_auth);
+      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth);
 }
 
 void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(

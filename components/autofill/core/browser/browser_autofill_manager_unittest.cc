@@ -4258,7 +4258,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
       masked_server_card.guid(), kDefaultPageID, form, form.fields[1]);
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.should_store_pan = false;
   details.cvc = u"123";
   details.exp_month = u"10";
   details.exp_year = u"2998";
@@ -7648,7 +7647,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   }
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.should_store_pan = false;
   details.cvc = u"123";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4012888888881881");
@@ -7663,7 +7661,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   PrepareForRealPanResponse(&form, &card);
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.should_store_pan = false;
   details.cvc = u"123";
   details.exp_month = u"02";
   details.exp_year = u"2018";

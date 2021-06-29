@@ -78,11 +78,10 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   void OnUnmaskPromptAccepted(const std::u16string& cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
-                              bool should_store_pan,
                               bool enable_fido_auth) override {
     // Call the original implementation.
     CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
-        cvc, exp_month, exp_year, should_store_pan, enable_fido_auth);
+        cvc, exp_month, exp_year, enable_fido_auth);
 
     // Wait some time and show verification result. An empty message means
     // success is shown.
@@ -227,7 +226,6 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
   ShowUi(kExpiryExpired);
   controller()->OnUnmaskPromptAccepted(u"123", u"10",
                                        base::ASCIIToUTF16(test::NextYear()),
-                                       /*should_store_locally=*/false,
                                        /*enable_fido_auth=*/false);
   EXPECT_EQ(u"123", delegate()->details().cvc);
   controller()->OnVerificationResult(AutofillClient::SUCCESS);
