@@ -25,6 +25,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const = 0;
   virtual void UpdateMemoryUsage() = 0;
+  virtual size_t GetMemoryUsage() const = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(

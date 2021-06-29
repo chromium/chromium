@@ -37,6 +37,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1586,6 +1587,10 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
       externally_allocated_memory - externally_allocated_memory_);
   externally_allocated_memory_ = externally_allocated_memory;
+}
+
+size_t HTMLCanvasElement::GetMemoryUsage() const {
+  return base::saturated_cast<size_t>(externally_allocated_memory_);
 }
 
 void HTMLCanvasElement::ReplaceExisting2dLayerBridge(

@@ -126,6 +126,7 @@ class CORE_EXPORT OffscreenCanvas final
   void SetNeedsCompositingUpdate() override {}
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;
+  size_t GetMemoryUsage() const override;
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {

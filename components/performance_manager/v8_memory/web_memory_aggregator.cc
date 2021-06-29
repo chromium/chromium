@@ -190,6 +190,16 @@ void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
   // (https://github.com/WICG/performance-measure-memory/issues/20).
   uint64_t bytes_used = is_same_process ? data->v8_bytes_used() : 0;
   aggregation_point->memory->bytes += bytes_used;
+
+  // Add canvas memory similar to V8 memory above.
+  if (data->canvas_bytes_used()) {
+    uint64_t canvas_bytes_used =
+        is_same_process ? *data->canvas_bytes_used() : 0;
+    if (!aggregation_point->canvas_memory) {
+      aggregation_point->canvas_memory = mojom::WebMemoryUsage::New();
+    }
+    aggregation_point->canvas_memory->bytes += canvas_bytes_used;
+  }
 }
 
 const FrameNode* GetTopFrame(const FrameNode* frame) {

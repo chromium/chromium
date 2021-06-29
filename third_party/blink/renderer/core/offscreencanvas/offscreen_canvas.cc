@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -559,6 +560,10 @@ void OffscreenCanvas::UpdateMemoryUsage() {
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
       new_memory_usage - memory_usage_);
   memory_usage_ = new_memory_usage;
+}
+
+size_t OffscreenCanvas::GetMemoryUsage() const {
+  return base::saturated_cast<size_t>(memory_usage_);
 }
 
 void OffscreenCanvas::Trace(Visitor* visitor) const {

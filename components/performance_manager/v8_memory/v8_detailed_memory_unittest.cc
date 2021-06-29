@@ -2009,6 +2009,43 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   worker->RemoveClientFrame(frame.get());
 }
 
+TEST_F(V8DetailedMemoryDecoratorTest, CanvasMemory) {
+  V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests, graph());
+
+  MockV8DetailedMemoryReporter reporter;
+
+  auto process = CreateNode<ProcessNodeImpl>(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+
+  // Create a couple of frames with specified IDs.
+  auto page = CreateNode<PageNodeImpl>();
+
+  blink::LocalFrameToken frame_id = blink::LocalFrameToken();
+  auto frame = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr, 1,
+                                         2, frame_id);
+
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    AddIsolateMemoryUsage(frame_id, 1001u, data->isolates[0].get());
+    AddIsolateCanvasMemoryUsage(frame_id, 2002u, data->isolates[0].get());
+
+    ExpectBindAndRespondToQuery(&reporter, std::move(data));
+  }
+
+  task_env().RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&reporter);
+
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get()));
+  EXPECT_EQ(1001u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
+                ->v8_bytes_used());
+  EXPECT_EQ(2002u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
+                ->canvas_bytes_used()
+                .value());
+}
+
 }  // namespace v8_memory
 
 }  // namespace performance_manager

@@ -30,6 +30,10 @@
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
+using blink::ExecutionContextToken;
+using blink::mojom::PerContextCanvasMemoryUsagePtr;
+using blink::mojom::PerContextV8MemoryUsagePtr;
+
 namespace performance_manager {
 
 namespace v8_memory {
@@ -480,30 +484,38 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // it may have had. Any datum in the result that doesn't correspond to an
   // existing frame is likewise accrued to detached bytes.
   uint64_t detached_v8_bytes_used = 0;
+  uint64_t detached_canvas_bytes_used = 0;
   uint64_t shared_v8_bytes_used = 0;
   uint64_t blink_bytes_used = 0;
 
   // Create a mapping from token to execution context usage for the merge below.
-  std::vector<std::pair<blink::ExecutionContextToken,
-                        blink::mojom::PerContextV8MemoryUsagePtr>>
-      tmp;
+  std::vector<std::pair<ExecutionContextToken, PerContextV8MemoryUsagePtr>>
+      v8_memory;
+  std::vector<std::pair<ExecutionContextToken, PerContextCanvasMemoryUsagePtr>>
+      canvas_memory;
   for (auto& isolate : result->isolates) {
     for (auto& entry : isolate->contexts) {
-      tmp.emplace_back(entry->token, std::move(entry));
+      v8_memory.emplace_back(entry->token, std::move(entry));
+    }
+    for (auto& entry : isolate->canvas_contexts) {
+      canvas_memory.emplace_back(entry->token, std::move(entry));
     }
     detached_v8_bytes_used += isolate->detached_bytes_used;
     shared_v8_bytes_used += isolate->shared_bytes_used;
     blink_bytes_used += isolate->blink_bytes_used;
   }
 
-  size_t found_frame_count = tmp.size();
+  size_t v8_frame_count = v8_memory.size();
+  size_t canvas_frame_count = canvas_memory.size();
 
-  base::flat_map<blink::ExecutionContextToken,
-                 blink::mojom::PerContextV8MemoryUsagePtr>
-      associated_memory(std::move(tmp));
+  base::flat_map<ExecutionContextToken, PerContextV8MemoryUsagePtr>
+      associated_v8_memory(std::move(v8_memory));
+  base::flat_map<ExecutionContextToken, PerContextCanvasMemoryUsagePtr>
+      associated_canvas_memory(std::move(canvas_memory));
   // Validate that the frame tokens were all unique. If there are duplicates,
   // the map will arbitrarily drop all but one record per unique token.
-  DCHECK_EQ(associated_memory.size(), found_frame_count);
+  DCHECK_EQ(associated_v8_memory.size(), v8_frame_count);
+  DCHECK_EQ(associated_canvas_memory.size(), canvas_frame_count);
 
   std::vector<const execution_context::ExecutionContext*> execution_contexts;
   for (auto* node : process_node_->GetFrameNodes()) {
@@ -516,9 +528,15 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   }
 
   for (const execution_context::ExecutionContext* ec : execution_contexts) {
-    auto it = associated_memory.find(ec->GetToken());
-    if (it == associated_memory.end()) {
+    auto it = associated_v8_memory.find(ec->GetToken());
+    auto it_canvas = associated_canvas_memory.find(ec->GetToken());
+    if (it == associated_v8_memory.end()) {
       // No data for this node, clear any data associated with it.
+      // Note that we may have canvas memory for the context even if there
+      // is no V8 memory (e.g. when the context was added after V8 memory
+      // measurement but before canvas measurement). We drop such canvas
+      // memory for simplicity because such case are rare and not important
+      // for the users.
       ExecutionContextAttachedData::Destroy(ec);
     } else {
       ExecutionContextAttachedData* ec_data =
@@ -531,10 +549,14 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       // Zero out this datum as its usage has been consumed.
       // We avoid erase() here because it may take O(n) time.
       it->second.reset();
+      if (it_canvas != associated_canvas_memory.end()) {
+        ec_data->data_.set_canvas_bytes_used(it_canvas->second->bytes_used);
+        it_canvas->second.reset();
+      }
     }
   }
 
-  for (const auto& it : associated_memory) {
+  for (const auto& it : associated_v8_memory) {
     if (it.second.is_null()) {
       // Execution context was already consumed.
       continue;
@@ -543,8 +565,18 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
     detached_v8_bytes_used += it.second->bytes_used;
   }
 
+  for (const auto& it : associated_canvas_memory) {
+    if (it.second.is_null()) {
+      // Execution context was already consumed.
+      continue;
+    }
+    // Accrue the data for non-existent frames to detached bytes.
+    detached_canvas_bytes_used += it.second->bytes_used;
+  }
+
   data_available_ = true;
   data_.set_detached_v8_bytes_used(detached_v8_bytes_used);
+  data_.set_detached_canvas_bytes_used(detached_canvas_bytes_used);
   data_.set_shared_v8_bytes_used(shared_v8_bytes_used);
   data_.set_blink_bytes_used(blink_bytes_used);
 

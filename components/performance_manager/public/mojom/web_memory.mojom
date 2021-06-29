@@ -62,6 +62,10 @@ struct WebMemoryBreakdownEntry {
   // have a memory measurement (for example a frame that was added after the
   // measurement started).
   WebMemoryUsage? memory;
+  // The memory used by canvas elements in this breakdown. It is null for
+  // breakdowns that did not have a memory measurement (for example a frame
+  // that was added after the measurement started).
+  WebMemoryUsage? canvas_memory;
 
   array<WebMemoryAttribution> attribution;
 };

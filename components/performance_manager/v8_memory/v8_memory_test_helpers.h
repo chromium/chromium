@@ -245,6 +245,19 @@ class WebMemoryTestHarness : public GraphTestHarness {
                             src_attribute);
   }
 
+  // Creates and adds a new frame node to the graph.
+  FrameNodeImpl* AddFrameNodeWithCanvasMemory(
+      std::string url,
+      Bytes bytes,
+      Bytes canvas_bytes,
+      FrameNodeImpl* parent = nullptr,
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute, canvas_bytes);
+  }
+
   // Creates a frame node as if from window.open and adds it to the graph.
   FrameNodeImpl* AddFrameNodeFromOpener(absl::optional<std::string> url,
                                         Bytes bytes,
@@ -320,7 +333,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                   FrameNodeImpl* opener,
                                   ProcessNodeImpl* process,
                                   absl::optional<std::string> id_attribute,
-                                  absl::optional<std::string> src_attribute);
+                                  absl::optional<std::string> src_attribute,
+                                  Bytes canvas_bytes = absl::nullopt);
   WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
                                     std::string url,
                                     Bytes bytes);
@@ -343,6 +357,13 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
 void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
                            uint64_t bytes_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate);
+
+// Finds the PerContextCanvasMemoryUsage in |isolate| whose token is |token|,
+// or creates it if it does not exist, and sets its bytes_used to |bytes_used|.
+void AddIsolateCanvasMemoryUsage(
+    blink::ExecutionContextToken token,
+    uint64_t bytes_used,
+    blink::mojom::PerIsolateV8MemoryUsage* isolate);
 
 }  // namespace v8_memory
 }  // namespace performance_manager

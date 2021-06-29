@@ -19,6 +19,11 @@ struct PerContextV8MemoryUsage {
   string? url;
 };
 
+struct PerContextCanvasMemoryUsage {
+  ExecutionContextToken token;
+  uint64 bytes_used = 0;
+};
+
 struct PerIsolateV8MemoryUsage {
   // The number of V8 contexts not associated with an execution context,
   // likely web application leaks, and their associated byte usage.
@@ -33,8 +38,11 @@ struct PerIsolateV8MemoryUsage {
   // Bytes used on the Blink heap corresponding to this V8 isolate.
   uint64 blink_bytes_used;
 
-  // The V8 memory usage by individual V8 contexts in this process.
+  // The V8 memory usage by individual execution contexts in this process.
   array<PerContextV8MemoryUsage> contexts;
+  // The memory used by canvas elements in individual execution contexts in
+  // this process.
+  array<PerContextCanvasMemoryUsage> canvas_contexts;
 };
 
 struct PerProcessV8MemoryUsage {

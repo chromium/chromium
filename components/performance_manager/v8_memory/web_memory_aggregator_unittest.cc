@@ -27,11 +27,12 @@ namespace {
 using AttributionScope = mojom::WebMemoryAttribution::Scope;
 
 struct ExpectedMemoryBreakdown {
-  WebMemoryTestHarness::Bytes bytes;
+  WebMemoryTestHarness::Bytes bytes = 0;
   AttributionScope scope = AttributionScope::kWindow;
   absl::optional<std::string> url;
   absl::optional<std::string> id;
   absl::optional<std::string> src;
+  WebMemoryTestHarness::Bytes canvas_bytes = 0;
 
   ExpectedMemoryBreakdown() = default;
   ExpectedMemoryBreakdown(
@@ -39,12 +40,14 @@ struct ExpectedMemoryBreakdown {
       AttributionScope expected_scope,
       absl::optional<std::string> expected_url = absl::nullopt,
       absl::optional<std::string> expected_id = absl::nullopt,
-      absl::optional<std::string> expected_src = absl::nullopt)
+      absl::optional<std::string> expected_src = absl::nullopt,
+      WebMemoryTestHarness::Bytes expected_canvas_bytes = absl::nullopt)
       : bytes(expected_bytes),
         scope(expected_scope),
         url(std::move(expected_url)),
         id(std::move(expected_id)),
-        src(std::move(expected_src)) {}
+        src(std::move(expected_src)),
+        canvas_bytes(expected_canvas_bytes) {}
 
   ExpectedMemoryBreakdown(const ExpectedMemoryBreakdown& other) = default;
   ExpectedMemoryBreakdown& operator=(const ExpectedMemoryBreakdown& other) =
@@ -59,6 +62,10 @@ mojom::WebMemoryMeasurementPtr CreateExpectedMemoryMeasurement(
     if (breakdown.bytes) {
       expected_breakdown->memory = mojom::WebMemoryUsage::New();
       expected_breakdown->memory->bytes = breakdown.bytes.value();
+    }
+    if (breakdown.canvas_bytes) {
+      expected_breakdown->canvas_memory = mojom::WebMemoryUsage::New();
+      expected_breakdown->canvas_memory->bytes = breakdown.canvas_bytes.value();
     }
 
     auto attribution = mojom::WebMemoryAttribution::New();
@@ -688,6 +695,25 @@ TEST_F(WebMemoryAggregatorTest, WorkerWithoutData) {
   EXPECT_EQ(NormalizeMeasurement(result),
             NormalizeMeasurement(expected_result));
   worker->RemoveClientFrame(main_frame);
+}
+
+TEST_F(WebMemoryAggregatorTest, CanvasMemory) {
+  FrameNodeImpl* a_com =
+      AddFrameNodeWithCanvasMemory("https://a.com/", Bytes{10}, Bytes{20},
+                                   nullptr, absl::nullopt, absl::nullopt);
+  {
+    WebMemoryAggregator aggregator(a_com);
+    ExpectedMemoryBreakdown expected_breakdown;
+    expected_breakdown.bytes = 10;
+    expected_breakdown.scope = AttributionScope::kWindow;
+    expected_breakdown.url = "https://a.com/";
+    expected_breakdown.canvas_bytes = 20;
+    auto expected_result =
+        CreateExpectedMemoryMeasurement({expected_breakdown});
+    auto result = aggregator.AggregateMeasureMemoryResult();
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
+  }
 }
 
 }  // namespace v8_memory

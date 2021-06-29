@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -55,6 +56,33 @@ class MemoryUsageChecker {
  private:
   size_t expected_isolate_count_;
   size_t expected_context_count_;
+  bool called_ = false;
+};
+
+class CanvasMemoryUsageChecker {
+ public:
+  CanvasMemoryUsageChecker(size_t canvas_width, size_t canvas_height)
+      : canvas_width_(canvas_width), canvas_height_(canvas_height) {}
+
+  void Callback(mojom::blink::PerProcessV8MemoryUsagePtr result) {
+    const size_t kMinBytesPerPixel = 1;
+    size_t actual_context_count = 0;
+    for (const auto& isolate : result->isolates) {
+      for (const auto& entry : isolate->contexts) {
+        EXPECT_LE(canvas_width_ * canvas_height_ * kMinBytesPerPixel,
+                  entry->bytes_used);
+        ++actual_context_count;
+      }
+    }
+    EXPECT_EQ(1u, actual_context_count);
+    called_ = true;
+    test::ExitRunLoop();
+  }
+  bool IsCalled() { return called_; }
+
+ private:
+  size_t canvas_width_ = 0;
+  size_t canvas_height_ = 0;
   bool called_ = false;
 };
 
@@ -135,6 +163,50 @@ TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
       V8DetailedMemoryReporterImpl::Mode::EAGER,
       WTF::Bind(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
   test::EnterRunLoop();
+  EXPECT_TRUE(checker.IsCalled());
+}
+
+TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  // CanvasPerformanceMonitor::CurrentTaskDrawsToContext() which is invoked from
+  // JS below expects to be run from a task as it adds itself to as a
+  // TaskTimeObserver that is cleared when the task is finished. Not doing so
+  // violates CanvasPerformanceMonitor consistency.
+  Thread::Current()->GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&main_resource] {
+        main_resource.Complete(R"HTML(
+      <script>
+        window.onload = function () {
+          let canvas = document.getElementById('test');
+          let ctx = canvas.getContext("2d");
+          ctx.moveTo(0, 0);
+          ctx.lineTo(200, 100);
+          ctx.stroke();
+          console.log("main loaded");
+        }
+      </script>
+      <body>
+        <canvas id="test" width="10" height="10"></canvas>
+      </body>)HTML");
+      }));
+
+  test::RunPendingTasks();
+
+  // Ensure that main frame and subframe are loaded before measuring memory
+  // usage.
+  ASSERT_TRUE(ConsoleMessages().Contains("main loaded"));
+
+  V8DetailedMemoryReporterImpl reporter;
+  CanvasMemoryUsageChecker checker(10, 10);
+  reporter.GetV8MemoryUsage(V8DetailedMemoryReporterImpl::Mode::EAGER,
+                            WTF::Bind(&CanvasMemoryUsageChecker::Callback,
+                                      WTF::Unretained(&checker)));
+
+  test::EnterRunLoop();
+
   EXPECT_TRUE(checker.IsCalled());
 }
 

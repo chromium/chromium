@@ -46,6 +46,7 @@ namespace {
 
 // String constants used for building the result.
 constexpr const char* kCrossOriginUrl = "cross-origin-url";
+constexpr const char* kMemoryTypeCanvas = "Canvas";
 constexpr const char* kMemoryTypeDom = "DOM";
 constexpr const char* kMemoryTypeJavaScript = "JavaScript";
 constexpr const char* kMemoryTypeShared = "Shared";
@@ -242,7 +243,7 @@ MemoryAttribution* ConvertAttribution(
   return result;
 }
 
-MemoryBreakdownEntry* ConvertBreakdown(
+MemoryBreakdownEntry* ConvertJavaScriptBreakdown(
     const WebMemoryBreakdownEntryPtr& breakdown_entry) {
   auto* result = MemoryBreakdownEntry::Create();
   DCHECK(breakdown_entry->memory);
@@ -253,6 +254,20 @@ MemoryBreakdownEntry* ConvertBreakdown(
   }
   result->setAttribution(attribution);
   result->setTypes({WTF::AtomicString(kMemoryTypeJavaScript)});
+  return result;
+}
+
+MemoryBreakdownEntry* ConvertCanvasBreakdown(
+    const WebMemoryBreakdownEntryPtr& breakdown_entry) {
+  auto* result = MemoryBreakdownEntry::Create();
+  DCHECK(breakdown_entry->canvas_memory);
+  result->setBytes(breakdown_entry->canvas_memory->bytes);
+  HeapVector<Member<MemoryAttribution>> attribution;
+  for (const auto& entry : breakdown_entry->attribution) {
+    attribution.push_back(ConvertAttribution(entry));
+  }
+  result->setAttribution(attribution);
+  result->setTypes({WTF::AtomicString(kMemoryTypeCanvas)});
   return result;
 }
 
@@ -281,8 +296,13 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   HeapVector<Member<MemoryBreakdownEntry>> breakdown;
   for (const auto& entry : measurement->breakdown) {
     // Skip breakdowns that didn't get a measurement.
-    if (entry->memory)
-      breakdown.push_back(ConvertBreakdown(entry));
+    if (entry->memory) {
+      breakdown.push_back(ConvertJavaScriptBreakdown(entry));
+    }
+    // Skip breakdowns that didn't get a measurement.
+    if (entry->canvas_memory) {
+      breakdown.push_back(ConvertCanvasBreakdown(entry));
+    }
   }
   // Add breakdowns for memory that isn't attributed to an execution context.
   breakdown.push_back(CreateUnattributedBreakdown(measurement->shared_memory,
