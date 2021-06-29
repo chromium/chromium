@@ -56,9 +56,6 @@ class AuthenticationService : public KeyedService,
   // KeyedService
   void Shutdown() override;
 
-  // DEPRECATED, see SetReauthPromptForSignInAndSync().
-  void SetPromptForSignIn();
-
   // Reminds user to Sign in and sync to Chrome when a new tab is opened.
   void SetReauthPromptForSignInAndSync();
 

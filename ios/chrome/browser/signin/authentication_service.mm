@@ -169,10 +169,6 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   }
 }
 
-void AuthenticationService::SetPromptForSignIn() {
-  SetReauthPromptForSignInAndSync();
-}
-
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }
