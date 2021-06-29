@@ -902,10 +902,13 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
   DCHECK(!node.IsNull());
   focused_node_was_last_clicked_ = node.Focused();
 
-  if (IsTouchToFillEnabled() || IsKeyboardAccessoryEnabled() ||
-      !focus_requires_scroll_) {
+#if defined(ANDROID)
+  HandleFocusChangeComplete();
+#else
+  if (!focus_requires_scroll_) {
     HandleFocusChangeComplete();
   }
+#endif
 }
 
 void AutofillAgent::SelectControlDidChange(
@@ -972,8 +975,9 @@ void AutofillAgent::FormControlElementClicked(
   if (!input_element && !form_util::IsTextAreaElement(element))
     return;
 
-  if (IsTouchToFillEnabled())
-    password_autofill_agent_->TryToShowTouchToFill(element);
+#if defined(ANDROID)
+  password_autofill_agent_->TryToShowTouchToFill(element);
+#endif
 
   ShowSuggestionsOptions options;
   options.autofill_on_empty_values = true;

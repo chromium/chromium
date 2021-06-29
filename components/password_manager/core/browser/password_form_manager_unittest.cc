@@ -552,7 +552,8 @@ TEST_P(PasswordFormManagerTest, Autofill) {
   EXPECT_EQ(observed_form_.url, fill_data.url);
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
-#if defined(OS_ANDROID)
+  // On iOS bio-metric reauth will prevent autofilling as well.
+#if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
   EXPECT_FALSE(fill_data.wait_for_username);
@@ -815,14 +816,18 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
   // Tests that depending on whether we fill on page load or account select that
   // correct user action is recorded. Fill on account select is simulated by
   // pretending we are in incognito mode.
+#if !defined(OS_IOS) && !defined(ANDROID)
   for (bool is_incognito : {false, true}) {
     EXPECT_CALL(client_, IsIncognito).WillOnce(Return(is_incognito));
+#endif
     form_manager_->Fill();
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
     CheckPendingCredentials(/* expected */ saved_match_,
                             form_manager_->GetPendingCredentials());
+#if !defined(OS_IOS) && !defined(ANDROID)
   }
+#endif
 }
 
 // Tests that when submitted credentials are equal to already saved PSL

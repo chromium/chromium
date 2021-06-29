@@ -1678,6 +1678,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.MatchedFormType"
+    enum="PasswordManagerMatchedFormType" expires_after="M100">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric records the type of the preferred password for filling. It is
+    recorded when the browser instructs the renderer to fill the credentials on
+    page load.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.MediationOptional"
     enum="CredentialManagerGetResult" expires_after="M94">
   <owner>kazinova@google.com</owner>

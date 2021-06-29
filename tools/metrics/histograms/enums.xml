@@ -61955,13 +61955,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Insecure Origin">
     User is on a site with an insecure main frame origin.
   </int>
-  <int value="5" label="Touch To Fill">
+  <int value="5" label="Touch To Fill (obsolete)">
     User is browsing with the Touch To Fill feature enabled.
   </int>
   <int value="6" label="Fill On Select">
     User is browsing with the Fill On Select feature enabled.
   </int>
-  <int value="7" label="Reauth required">
+  <int value="7" label="Reauth required (obsolete)">
     Re-authenticaion for filling passwords is required.
   </int>
   <int value="8" label="Password is already filled">
@@ -61986,6 +61986,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Equivalent HTTPS, HSTS enabled"/>
   <int value="4" label="No Matching HTTPS, HSTS disabled"/>
   <int value="5" label="No Matching HTTPS, HSTS enabled"/>
+</enum>
+
+<enum name="PasswordManagerMatchedFormType">
+  <int value="0" label="Exact match"/>
+  <int value="1" label="Public suffix match">
+    A credential exists for a PSL matched site but not for the current security
+    origin.
+  </int>
+  <int value="2" label="Affiliated android app">
+    A credential exists for an affiliated android app but not for the current
+    security origin.
+  </int>
+  <int value="3" label="Affiliated website">
+    A credential exists for an affiliated site but not for the current security
+    origin.
+  </int>
 </enum>
 
 <enum name="PasswordManagerOfferedAndroidCredentials">

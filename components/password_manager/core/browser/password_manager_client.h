@@ -169,10 +169,6 @@ class PasswordManagerClient {
       const url::Origin& origin,
       CredentialsCallback callback) = 0;
 
-  // Indicates if re-auth with the device is needed before filling passwords.
-  // Currently only used by iOS.
-  virtual bool RequiresReauthToFill();
-
   // Instructs the client to show the Touch To Fill UI.
   virtual void ShowTouchToFill(PasswordManagerDriver* driver);
 

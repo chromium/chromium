@@ -64,14 +64,6 @@ bool IsKeyboardAccessoryEnabled() {
 #endif
 }
 
-bool IsTouchToFillEnabled() {
-#if defined(OS_ANDROID)
-  return true;
-#else  // !defined(OS_ANDROID)
-  return false;
-#endif
-}
-
 bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
     const std::u16string& suggestion,
     const std::u16string& field_contents,

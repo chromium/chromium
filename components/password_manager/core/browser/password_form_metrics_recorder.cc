@@ -510,6 +510,12 @@ void PasswordFormMetricsRecorder::RecordFirstWaitForUsernameReason(
   recorded_wait_for_username_reason_ = true;
 }
 
+void PasswordFormMetricsRecorder::RecordMatchedFormType(MatchedFormType type) {
+  if (!std::exchange(recorded_preferred_matched_password_type, true)) {
+    UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", type);
+  }
+}
+
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     const FormData& submitted_form,
     const std::set<std::pair<std::u16string, PasswordForm::Store>>&

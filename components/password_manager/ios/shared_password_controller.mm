@@ -376,8 +376,6 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       continue;
     }
     DCHECK(self.delegate.passwordManagerClient);
-    BOOL requiresReauth =
-        self.delegate.passwordManagerClient->RequiresReauthToFill();
     NSString* value =
         [rawSuggestion.value stringByAppendingString:kSuggestionSuffix];
     FormSuggestion* suggestion =
@@ -385,7 +383,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                          displayDescription:rawSuggestion.displayDescription
                                        icon:nil
                                  identifier:0
-                             requiresReauth:requiresReauth];
+                             requiresReauth:YES];
     [suggestions addObject:suggestion];
   }
   absl::optional<PasswordDropdownState> suggestionState;

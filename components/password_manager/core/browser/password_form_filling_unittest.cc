@@ -174,7 +174,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
       &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
-#if defined(OS_ANDROID)
+  // On iOS Reauth is always required.
+#if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
@@ -250,8 +251,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     // kFillOnAccountSelect.
     if (test_case.current_password_present) {
       // On Android Touch To Fill will prevent autofilling credentials on page
-      // load.
-#if defined(OS_ANDROID)
+      // load. On iOS Reauth is always required.
+#if defined(OS_ANDROID) || defined(OS_IOS)
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 #else
       EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
@@ -266,9 +267,9 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 // if server side classification thought the username was a placeholder or the
 // classification failed. Do not overwrite if username doesn't look like a
 // placeholder.
-// Skip for Android since it uses touch to fill, meaning placeholders will never
-// be overwritten.
-#if !defined(OS_ANDROID)
+// Skip for Android and iOS since it uses touch to fill, meaning placeholders
+// will never be overwritten.
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
   const struct {
     const char* description;
@@ -361,7 +362,9 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
   ASSERT_FALSE(GURL(saved_http_match.signon_realm).SchemeIsCryptographic());
   std::vector<const PasswordForm*> best_matches = {&saved_http_match};
 
+#if !defined(OS_IOS) && !defined(ANDROID)
   EXPECT_CALL(client_, IsCommittedMainFrameSecure).WillOnce(Return(false));
+#endif
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_http_form, best_matches, federated_matches_,
       &saved_http_match, /*blocked_by_user=*/false, metrics_recorder_.get());
@@ -412,9 +415,8 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   EXPECT_EQ(saved_match_.password_value, fill_data.password_field.value);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FirstWaitForUsernameReason",
-      PasswordFormMetricsRecorder::WaitForUsernameReason::kAffiliatedWebsite,
-      1);
+      "PasswordManager.MatchedFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites, 1);
 }
 
 TEST_F(PasswordFormFillingTest,

@@ -129,10 +129,6 @@ void IOSChromePasswordManagerClient::PromptUserToMovePasswordToAccount(
   NOTIMPLEMENTED();
 }
 
-bool IOSChromePasswordManagerClient::RequiresReauthToFill() {
-  return true;
-}
-
 void IOSChromePasswordManagerClient::ShowManualFallbackForSaving(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     bool has_generated_password,

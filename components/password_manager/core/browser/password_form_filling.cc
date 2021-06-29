@@ -58,10 +58,12 @@ bool ContainsAndroidCredentials(const PasswordFormFillData& fill_data) {
   return PreferredRealmIsFromAndroid(fill_data);
 }
 
+#if !defined(OS_IOS) && !defined(ANDROID)
 bool IsFillOnAccountSelectFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kFillOnAccountSelect);
 }
+#endif
 
 bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
   return form.is_public_suffix_match || form.is_affiliation_based_match;
@@ -191,6 +193,22 @@ LikelyFormFilling SendFillInformationToRenderer(
   const bool no_sign_in_form =
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
+  using FormType = PasswordFormMetricsRecorder::MatchedFormType;
+  FormType preferred_form_type = FormType::kExactMatch;
+  if (preferred_match->is_affiliation_based_match) {
+    preferred_form_type = IsValidAndroidFacetURI(preferred_match->signon_realm)
+                              ? FormType::kAffiliatedApp
+                              : FormType::kAffiliatedWebsites;
+  } else if (preferred_match->is_public_suffix_match) {
+    preferred_form_type = FormType::kPublicSuffixMatch;
+  }
+
+  if (!no_sign_in_form)
+    metrics_recorder->RecordMatchedFormType(preferred_form_type);
+
+// This metric will always record kReauthRequired on iOS and Android. So we can
+// drop it there.
+#if !defined(OS_IOS) && !defined(ANDROID)
   // Proceed to autofill.
   // Note that we provide the choices but don't actually prefill a value if:
   // (1) we are in Incognito mode, or
@@ -201,9 +219,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       PasswordFormMetricsRecorder::WaitForUsernameReason;
   WaitForUsernameReason wait_for_username_reason =
       WaitForUsernameReason::kDontWait;
-  if (client->RequiresReauthToFill()) {
-    wait_for_username_reason = WaitForUsernameReason::kReauthRequired;
-  } else if (client->IsIncognito()) {
+  if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
   } else if (preferred_match->is_affiliation_based_match &&
              !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
@@ -222,8 +238,6 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kPasswordPrefilled;
   } else if (!client->IsCommittedMainFrameSecure()) {
     wait_for_username_reason = WaitForUsernameReason::kInsecureOrigin;
-  } else if (autofill::IsTouchToFillEnabled()) {
-    wait_for_username_reason = WaitForUsernameReason::kTouchToFill;
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
   }
@@ -237,6 +251,9 @@ LikelyFormFilling SendFillInformationToRenderer(
 
   bool wait_for_username =
       wait_for_username_reason != WaitForUsernameReason::kDontWait;
+#else
+  bool wait_for_username = true;
+#endif  // !defined(OS_IOS) && !defined(ANDROID)
 
   if (wait_for_username) {
     metrics_recorder->SetManagerAction(

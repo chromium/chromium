@@ -27,10 +27,6 @@ bool PasswordManagerClient::IsFillingFallbackEnabled(const GURL& url) const {
   return true;
 }
 
-bool PasswordManagerClient::RequiresReauthToFill() {
-  return false;
-}
-
 void PasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver) {}
 
 void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}

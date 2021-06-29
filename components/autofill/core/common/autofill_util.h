@@ -33,9 +33,6 @@ bool IsShowAutofillSignaturesEnabled();
 // Returns true when keyboard accessory is enabled.
 bool IsKeyboardAccessoryEnabled();
 
-// Returns whether the Touch To Fill feature is enabled.
-bool IsTouchToFillEnabled();
-
 // A token is a sequences of contiguous characters separated by any of the
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.
 
