@@ -3235,15 +3235,6 @@
           'isolated_scripts': 'wpt_web_tests_input',
         },
       },
-      'mac-arm64-rel-tests': {
-        'mixins': [
-            'mac_arm64_apple_dtk_experimental',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
@@ -5092,6 +5083,15 @@
         'additional_compile_targets': [
           'all',
         ],
+      },
+      'mac-arm64-rel-tests': {
+        'mixins': [
+            'mac_11_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
       },
     },
   },

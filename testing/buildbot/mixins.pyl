@@ -698,15 +698,6 @@
       },
     },
   },
-  'mac_arm64_apple_dtk_experimental': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'arm64',
-        'os': 'Mac-11',
-        'pool': 'chromium.tests.mac-arm64',
-      },
-    },
-  },
   'mac_arm64_apple_m1_gpu': {
     'swarming': {
       'dimensions': {
