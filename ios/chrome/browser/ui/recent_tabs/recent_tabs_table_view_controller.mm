@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
+#import "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -1391,6 +1392,10 @@ API_AVAILABLE(ios(13.0))
   [self.handler showGoogleServicesSettingsFromViewController:self];
 }
 
+- (void)showSyncManagerSettings {
+  [self.handler showSyncSettingsFromViewController:self];
+}
+
 - (void)showAccountSettings {
   [self.handler showAccountsSettingsFromViewController:self];
 }
@@ -1438,7 +1443,11 @@ API_AVAILABLE(ios(13.0))
   if (syncState == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
     [self showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(syncState)) {
-    [self showGoogleServicesSettings];
+    if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+      [self showSyncManagerSettings];
+    } else {
+      [self showGoogleServicesSettings];
+    }
   } else if (syncState == SyncSetupService::kSyncServiceNeedsPassphrase) {
     [self showSyncPassphraseSettings];
   }
