@@ -130,6 +130,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handle invoked accessibility actions.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
+  // Gets the content restrictions based on the permissions which `engine_` has.
+  int GetContentRestrictions() const;
+
   bool GetDidCallStartLoadingForTesting() const {
     return did_call_start_loading_;
   }

@@ -336,17 +336,7 @@ void PdfViewPluginBase::DocumentLoadComplete() {
     return;
 
   DidStopLoading();
-
-  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
-    content_restrictions |= kContentRestrictionCopy;
-
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
-      !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
-    content_restrictions |= kContentRestrictionPrint;
-  }
-
-  SetContentRestrictions(content_restrictions);
+  SetContentRestrictions(GetContentRestrictions());
 }
 
 void PdfViewPluginBase::DocumentLoadFailed() {
@@ -644,6 +634,19 @@ void PdfViewPluginBase::EnableAccessibility() {
 void PdfViewPluginBase::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
+}
+
+int PdfViewPluginBase::GetContentRestrictions() const {
+  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
+  if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
+    content_restrictions |= kContentRestrictionCopy;
+
+  if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
+      !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
+    content_restrictions |= kContentRestrictionPrint;
+  }
+
+  return content_restrictions;
 }
 
 bool PdfViewPluginBase::UnsupportedFeatureIsReportedForTesting(

@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
+#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
@@ -47,6 +50,10 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   ~TestPDFiumEngine() override = default;
 
+  bool HasPermission(PDFEngine::DocumentPermission permission) const override {
+    return base::Contains(permissions_, permission);
+  }
+
   uint32_t GetLoadedByteSize() override { return sizeof(kSaveData); }
 
   bool ReadLoadedBytes(uint32_t length, void* buffer) override {
@@ -58,6 +65,17 @@ class TestPDFiumEngine : public PDFiumEngine {
   std::vector<uint8_t> GetSaveData() override {
     return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
   }
+
+  void SetPermissions(
+      const std::vector<PDFEngine::DocumentPermission>& permissions) {
+    permissions_.clear();
+
+    for (auto& permission : permissions)
+      permissions_.insert(permission);
+  }
+
+ private:
+  base::flat_set<PDFEngine::DocumentPermission> permissions_;
 };
 
 // This test approach relies on PdfViewPluginBase continuing to exist.
@@ -68,6 +86,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   // Public for testing.
   using PdfViewPluginBase::document_load_state;
   using PdfViewPluginBase::edit_mode;
+  using PdfViewPluginBase::engine;
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::InitializeEngine;
@@ -203,7 +222,7 @@ class PdfViewPluginBaseTest : public testing::Test {
   FakePdfViewPluginBase fake_plugin_;
 };
 
-class PdfViewPluginBaseSaveTest : public PdfViewPluginBaseTest {
+class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
  public:
   void SetUp() override {
     std::unique_ptr<TestPDFiumEngine> engine =
@@ -345,6 +364,8 @@ TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
   EXPECT_EQ(expected_response, fake_plugin_.sent_messages()[0]);
 }
 
+using PdfViewPluginBaseSaveTest = PdfViewPluginBaseWithEngineTest;
+
 #if BUILDFLAG(ENABLE_INK)
 TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
   ASSERT_FALSE(fake_plugin_.edit_mode());
@@ -472,6 +493,57 @@ TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
 
   fake_plugin_.HandleMessage(message);
   EXPECT_EQ(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  static constexpr int kContentRestrictionCutPaste =
+      kContentRestrictionCut | kContentRestrictionPaste;
+
+  // Test engine without any permissions.
+  engine->SetPermissions({});
+
+  int content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy |
+                kContentRestrictionPrint,
+            content_restrictions);
+
+  // Test engine with only copy permission.
+  engine->SetPermissions({PDFEngine::PERMISSION_COPY});
+
+  content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionPrint,
+            content_restrictions);
+
+  // Test engine with only print low quality permission.
+  engine->SetPermissions({PDFEngine::PERMISSION_PRINT_LOW_QUALITY});
+
+  content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy,
+            content_restrictions);
+
+  // Test engine with both copy and print low quality permissions.
+  engine->SetPermissions(
+      {PDFEngine::PERMISSION_COPY, PDFEngine::PERMISSION_PRINT_LOW_QUALITY});
+
+  content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste, content_restrictions);
+
+  // Test engine with print high and low quality permissions.
+  engine->SetPermissions({PDFEngine::PERMISSION_PRINT_HIGH_QUALITY,
+                          PDFEngine::PERMISSION_PRINT_LOW_QUALITY});
+
+  content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste | kContentRestrictionCopy,
+            content_restrictions);
+
+  // Test engine with copy, print high and low quality permissions.
+  engine->SetPermissions({PDFEngine::PERMISSION_COPY,
+                          PDFEngine::PERMISSION_PRINT_HIGH_QUALITY,
+                          PDFEngine::PERMISSION_PRINT_LOW_QUALITY});
+
+  content_restrictions = fake_plugin_.GetContentRestrictions();
+  EXPECT_EQ(kContentRestrictionCutPaste, content_restrictions);
 }
 
 }  // namespace chrome_pdf
