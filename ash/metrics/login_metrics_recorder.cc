@@ -85,6 +85,12 @@ const ShelfButtonClickMapping kShelfTargets[] = {
      LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::OobeUserClickTarget::kEnterpriseEnrollmentButton},
+    // |kOsInstallButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kOsInstallButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kOsInstallButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+
 };
 
 // Defines mapping of TrayClickTarget |original| to different UMA target in

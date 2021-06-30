@@ -221,6 +221,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "shelf_keyboard_newui.icon",
     "shelf_logout.icon",
     "shelf_notifications.icon",
+    "shelf_os_install_button.icon",
     "shelf_overflow.icon",
     "shelf_overflow_horizontal_dots.icon",
     "shelf_overview.icon",

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/lock_screen_action/lock_screen_action_background_state.h"
@@ -91,6 +92,7 @@ constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kBrowseAsGuest,
     LoginShelfView::kAddUser,
     LoginShelfView::kEnterpriseEnrollment,
+    LoginShelfView::kOsInstall,
 };
 
 // The color of the button text and icon in light mode. This is
@@ -150,6 +152,8 @@ LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
     case LoginShelfView::kEnterpriseEnrollment:
       return LoginMetricsRecorder::ShelfButtonClickTarget::
           kEnterpriseEnrollmentButton;
+    case LoginShelfView::kOsInstall:
+      return LoginMetricsRecorder::ShelfButtonClickTarget::kOsInstallButton;
   }
   return LoginMetricsRecorder::ShelfButtonClickTarget::kTargetCount;
 }
@@ -567,6 +571,11 @@ LoginShelfView::LoginShelfView(
                  base::Unretained(Shell::Get()->login_screen_controller()),
                  ash::LoginAcceleratorAction::kStartEnrollment),
              IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, chromeos::kEnterpriseIcon);
+  add_button(kOsInstall,
+             base::BindRepeating(
+                 &LoginScreenController::ShowOsInstallScreen,
+                 base::Unretained(Shell::Get()->login_screen_controller())),
+             IDS_ASH_SHELF_OS_INSTALL_BUTTON, kShelfOsInstallButtonIcon);
 
   // Adds observers for states that affect the visibility of different buttons.
   tray_action_observation_.Observe(Shell::Get()->tray_action());
@@ -829,6 +838,8 @@ void LoginShelfView::UpdateUi() {
   kiosk_apps_button_->SetVisible(kiosk_apps_button_->HasApps() &&
                                  ShouldShowAppsButton());
 
+  GetViewByID(kOsInstall)->SetVisible(ShouldShowOsInstallButton());
+
   // If there is no visible (and thus focusable) buttons, we shouldn't focus
   // LoginShelfView. We update it here, so we don't need to check visibility
   // every time we move focus to system tray.
@@ -858,6 +869,7 @@ void LoginShelfView::UpdateButtonsColors() {
   static_cast<LoginShelfButton*>(GetViewByID(kAddUser))->UpdateButtonColors();
   static_cast<LoginShelfButton*>(GetViewByID(kEnterpriseEnrollment))
       ->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kOsInstall))->UpdateButtonColors();
   kiosk_apps_button_->UpdateButtonColors();
 }
 
@@ -933,6 +945,25 @@ bool LoginShelfView::ShouldShowAppsButton() const {
 
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
+  if (session_state != SessionState::LOGIN_PRIMARY)
+    return false;
+
+  return true;
+}
+
+bool LoginShelfView::ShouldShowOsInstallButton() const {
+  if (!switches::IsOsInstallAllowed())
+    return false;
+
+  if (!ShouldShowGuestAndAppsButtons())
+    return false;
+
+  const SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+
+  if (session_state == SessionState::OOBE)
+    return is_first_signin_step_;
+
   if (session_state != SessionState::LOGIN_PRIMARY)
     return false;
 

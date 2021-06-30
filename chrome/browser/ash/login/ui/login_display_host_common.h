@@ -63,6 +63,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void ResyncUserData() final;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) final;
   SigninUI* GetSigninUI() final;
+  void ShowOsInstallScreen() final;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;

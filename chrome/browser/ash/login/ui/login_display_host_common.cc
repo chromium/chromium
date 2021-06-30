@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -543,6 +544,10 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
     gaia_screen->LoadOnline(prefilled_account);
     StartWizard(GaiaView::kScreenId);
   }
+}
+
+void LoginDisplayHostCommon::ShowOsInstallScreen() {
+  StartWizard(OsInstallScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::Cleanup() {

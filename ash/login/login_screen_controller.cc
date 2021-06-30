@@ -241,6 +241,12 @@ void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
   client_->ShowGaiaSignin(prefilled_account);
 }
 
+void LoginScreenController::ShowOsInstallScreen() {
+  if (!client_)
+    return;
+  client_->ShowOsInstallScreen();
+}
+
 void LoginScreenController::OnRemoveUserWarningShown() {
   if (!client_)
     return;

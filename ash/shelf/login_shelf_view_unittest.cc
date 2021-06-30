@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/lock_screen_action/test_lock_screen_action_background_controller.h"
@@ -745,7 +746,7 @@ TEST_F(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 }
 
-TEST_F(LoginShelfViewTest, EnterpriseEnrollmentButtonVisbility) {
+TEST_F(LoginShelfViewTest, EnterpriseEnrollmentButtonVisibility) {
   // Enterprise enrollment button should only be available when user creation
   // screen is shown in OOBE.
   login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
@@ -770,6 +771,23 @@ TEST_F(LoginShelfViewTest, EnterpriseEnrollmentButtonVisbility) {
   NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
   EXPECT_TRUE(
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kCancel}));
+}
+
+TEST_F(LoginShelfViewTest, OsInstallButtonHidden) {
+  // OS Install Button should be hidden if the kAllowOsInstall switch is
+  // not set.
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kAddUser}));
+
+  login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/true);
+  SetUserCount(0);
+  // When no user pods are visible, the Gaia dialog would normally pop up. We
+  // need to simulate that behavior in this test.
+  login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
+  EXPECT_TRUE(ShowsShelfButtons(
+      {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest}));
 }
 
 TEST_F(LoginShelfViewTest, TapShutdownWithSwipeDetectionEnabledOnLogin) {
@@ -885,6 +903,74 @@ TEST_F(LoginShelfViewTest, DisplayOff) {
   // This should go through.
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
+}
+
+class OsInstallButtonTest : public LoginShelfViewTest {
+ public:
+  OsInstallButtonTest() = default;
+  ~OsInstallButtonTest() override = default;
+  OsInstallButtonTest(const OsInstallButtonTest&) = delete;
+  void operator=(const OsInstallButtonTest&) = delete;
+
+  void SetUp() override {
+    LoginShelfViewTest::SetUp();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kAllowOsInstall);
+  }
+};
+
+TEST_F(OsInstallButtonTest, ClickOsInstallButton) {
+  auto client = std::make_unique<MockLoginScreenClient>();
+  EXPECT_CALL(*client, ShowOsInstallScreen);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  Click(LoginShelfView::kOsInstall);
+}
+
+TEST_F(OsInstallButtonTest, OsInstallButtonVisibility) {
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons(
+      {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
+       LoginShelfView::kAddUser, LoginShelfView::kOsInstall}));
+
+  NotifySessionStateChanged(SessionState::LOGGED_IN_NOT_ACTIVE);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
+
+  NotifySessionStateChanged(SessionState::ACTIVE);
+  EXPECT_TRUE(ShowsShelfButtons({}));
+
+  NotifySessionStateChanged(SessionState::LOCKED);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
+
+  NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kCancel}));
+
+  // OS Install button should be shown if the user_creation dialog was
+  // shown during OOBE.
+  SetUserCount(0);
+  login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/true);
+  login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
+  NotifySessionStateChanged(SessionState::OOBE);
+  EXPECT_TRUE(ShowsShelfButtons(
+      {LoginShelfView::kShutdown, LoginShelfView::kEnterpriseEnrollment,
+       LoginShelfView::kBrowseAsGuest, LoginShelfView::kOsInstall}));
+
+  // When no user pods are visible, the Gaia dialog would normally pop up. We
+  // need to simulate that behavior in this test.
+  login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kOsInstall}));
+
+  // OS Install button should be hidden if the user_creation dialog was
+  // opened from the primary login screen.
+  SetUserCount(1);
+  login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/false);
+  login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 }
 
 }  // namespace

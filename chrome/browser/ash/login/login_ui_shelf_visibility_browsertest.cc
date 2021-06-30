@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +41,22 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
+ protected:
+  void StartOnboardingFlow() {
+    auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+    EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+    LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetView<GaiaScreenHandler>()
+        ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
+                                  FakeGaiaMixin::kEmptyUserServices);
+
+    // Sync consent is the first post-login screen shown when a new user signs
+    // in.
+    OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
+  }
+
  private:
   LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(kExistingUserEmail, kExistingUserGaiaId)};
@@ -50,6 +68,18 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(LoginUIShelfVisibilityTest);
 };
 
+class OsInstallVisibilityTest : public LoginUIShelfVisibilityTest {
+ public:
+  OsInstallVisibilityTest() = default;
+  ~OsInstallVisibilityTest() override = default;
+  OsInstallVisibilityTest(const OsInstallVisibilityTest&) = delete;
+  void operator=(const OsInstallVisibilityTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoginUIShelfVisibilityTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kAllowOsInstall);
+  }
+};
 }  // namespace
 
 // Verifies that shelf buttons are shown by default on login screen.
@@ -71,20 +101,39 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
 // Verifies that guest button and add user button are hidden on post-login
 // screens, after a user session is started.
 IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
-  auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetView<GaiaScreenHandler>()
-      ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
-                                FakeGaiaMixin::kEmptyUserServices);
-
-  // Sync consent is the first post-login screen shown when a new user signs in.
-  OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
+  StartOnboardingFlow();
 
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+}
+
+// Verifies that OS install button is shown by default on login screen.
+IN_PROC_BROWSER_TEST_F(OsInstallVisibilityTest, DefaultVisibility) {
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOsInstallButtonShown());
+}
+
+// Verifies that OS install button is hidden when Gaia dialog is shown.
+IN_PROC_BROWSER_TEST_F(OsInstallVisibilityTest, GaiaDialogOpen) {
+  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOsInstallButtonShown());
+}
+
+// Verifies that guest button, add user button, enterprise enrollment button and
+// OS install button are hidden when os-install dialog is shown.
+IN_PROC_BROWSER_TEST_F(OsInstallVisibilityTest, OsInstallDialogOpen) {
+  EXPECT_TRUE(ash::LoginScreenTestApi::ClickOsInstallButton());
+  OobeScreenWaiter(OsInstallScreenView::kScreenId).Wait();
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOsInstallButtonShown());
+}
+
+// Verifies that OS install is hidden on post-login screens.
+IN_PROC_BROWSER_TEST_F(OsInstallVisibilityTest, PostLoginScreen) {
+  StartOnboardingFlow();
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOsInstallButtonShown());
 }
 
 class SamlInterstitialTest : public LoginManagerTest {

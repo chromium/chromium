@@ -36,6 +36,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool IsCancelButtonShown();
   static bool IsParentAccessButtonShown();
   static bool IsEnterpriseEnrollmentButtonShown();
+  static bool IsOsInstallButtonShown();
   static bool IsWarningBubbleShown();
   static bool IsUserAddingScreenIndicatorShown();
   static bool IsSystemInfoShown();
@@ -56,6 +57,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool ClickCancelButton();
   static bool ClickGuestButton();
   static bool ClickEnterpriseEnrollmentButton();
+  static bool ClickOsInstallButton();
   static bool PressAccelerator(const ui::Accelerator& accelerator);
   static bool WaitForUiUpdate(int64_t previous_update_count);
   static int GetUsersCount();

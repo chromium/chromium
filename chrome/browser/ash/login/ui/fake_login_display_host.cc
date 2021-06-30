@@ -112,6 +112,8 @@ bool FakeLoginDisplayHost::IsUserAllowlisted(
 
 void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
+void FakeLoginDisplayHost::ShowOsInstallScreen() {}
+
 void FakeLoginDisplayHost::HideOobeDialog() {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}

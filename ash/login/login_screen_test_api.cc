@@ -234,6 +234,11 @@ bool LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown() {
 }
 
 // static
+bool LoginScreenTestApi::IsOsInstallButtonShown() {
+  return IsLoginShelfViewButtonShown(LoginShelfView::kOsInstall);
+}
+
+// static
 bool LoginScreenTestApi::IsUserAddingScreenIndicatorShown() {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsView::TestApi lock_contents_test(
@@ -465,6 +470,11 @@ bool LoginScreenTestApi::ClickGuestButton() {
 // static
 bool LoginScreenTestApi::ClickEnterpriseEnrollmentButton() {
   return SimulateButtonPressedForTesting(LoginShelfView::kEnterpriseEnrollment);
+}
+
+// static
+bool LoginScreenTestApi::ClickOsInstallButton() {
+  return SimulateButtonPressedForTesting(LoginShelfView::kOsInstall);
 }
 
 // static
