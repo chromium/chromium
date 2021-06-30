@@ -177,6 +177,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 - (void)logPromoWasDismissed {
   self.currentPromoReason = PromoReasonNone;
+  self.webStateToListenTo = nullptr;
   self.promoIsShowing = NO;
 }
 
@@ -342,7 +343,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 - (void)startShowPromoTimer {
   DCHECK(self.currentPromoReason != PromoReasonNone);
 
-  if (!PromoCanBeDisplayed() || self.promoIsShowing || self.showPromoTimer) {
+  if (!PromoCanBeDisplayed()) {
+    self.currentPromoReason = PromoReasonNone;
+    self.webStateToListenTo = nullptr;
+    return;
+  }
+  
+  if (self.promoIsShowing || self.showPromoTimer) {
     return;
   }
 
@@ -375,6 +382,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   [self.showPromoTimer invalidate];
   self.showPromoTimer = nil;
   self.currentPromoReason = PromoReasonNone;
+  self.webStateToListenTo = nullptr;
 }
 
 - (void)showPromoTimerFinished {
