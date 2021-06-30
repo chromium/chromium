@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
@@ -24,9 +25,11 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/vector_icons.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace arc {
 
@@ -48,6 +51,63 @@ class ArcResizeLockManagerFactory
   friend struct base::DefaultSingletonTraits<ArcResizeLockManagerFactory>;
   ArcResizeLockManagerFactory() = default;
   ~ArcResizeLockManagerFactory() override = default;
+};
+
+// A self-deleting window activation observer that runs the given callback when
+// its associated window gets activated.
+class WindowActivationObserver : public wm::ActivationChangeObserver,
+                                 public aura::WindowObserver {
+ public:
+  WindowActivationObserver(const WindowActivationObserver&) = delete;
+  WindowActivationObserver& operator=(const WindowActivationObserver&) = delete;
+
+  static void RunOnActivated(aura::Window* window,
+                             base::OnceClosure on_activated) {
+    if (ash::Shell::Get()->activation_client()->GetActiveWindow() == window) {
+      std::move(on_activated).Run();
+      return;
+    }
+
+    // The following instance self-destructs when the window gets activated or
+    // destroyed before getting activated.
+    new WindowActivationObserver(window, std::move(on_activated));
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    DCHECK(observer_.IsObservingSource(window));
+    delete this;
+  }
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override {
+    if (gained_active != window_)
+      return;
+    RemoveAllObservers();
+    std::move(on_activated_).Run();
+    delete this;
+  }
+
+ private:
+  WindowActivationObserver(aura::Window* window, base::OnceClosure on_activated)
+      : window_(window), on_activated_(std::move(on_activated)) {
+    DCHECK(!on_activated_.is_null());
+    ash::Shell::Get()->activation_client()->AddObserver(this);
+    observer_.Observe(window_);
+  }
+
+  ~WindowActivationObserver() override { RemoveAllObservers(); }
+
+  void RemoveAllObservers() {
+    observer_.Reset();
+    ash::Shell::Get()->activation_client()->RemoveObserver(this);
+  }
+
+  aura::Window* const window_;
+  base::OnceClosure on_activated_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
 }  // namespace
@@ -146,7 +206,9 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     const bool is_for_unresizable =
         window->GetProperty(ash::kArcResizeLockTypeKey) ==
         ash::ArcResizeLockType::FULLY_LOCKED;
-    ArcSplashScreenDialogView::Show(window, is_for_unresizable);
+    WindowActivationObserver::RunOnActivated(
+        window, base::BindOnce(&ArcSplashScreenDialogView::Show, window,
+                               is_for_unresizable));
   }
 }
 
