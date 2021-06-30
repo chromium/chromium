@@ -701,6 +701,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.EnsureWorkVisibleDurationLowRes" units="ms"
+    expires_after="2022-04-01">
+  <owner>alemate@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Records the duration of EnsureWorkVisible GPU call. Since it's blocking UI
+    thread we want to measure it, and this histogram must be active as long as
+    this call is still blocking.
+
+    This is a sister histogram to GPU.EnsureWorkVisibleDuration. The former is
+    our target goal. However it's custom buckets do not have enough granularity
+    to measure improvement steps. This metric will instead cap at 5s, and allow
+    the buckets to give us better visibility into the 15ms-250ms interval
+    ranges. We will use this one until we improve the blocking call.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Error" enum="GLError" expires_after="2020-06-28">
   <owner>zmo@chromium.org</owner>
   <owner>vmiura@chromium.org</owner>

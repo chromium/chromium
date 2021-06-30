@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
@@ -479,6 +480,11 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   channel_->VerifyFlush(UINT32_MAX);
   GetUMAHistogramEnsureWorkVisibleDuration()->Add(
       elapsed_timer.Elapsed().InMicroseconds());
+
+  UMA_HISTOGRAM_CUSTOM_TIMES("GPU.EnsureWorkVisibleDurationLowRes",
+                             elapsed_timer.Elapsed(),
+                             base::TimeDelta::FromMilliseconds(1),
+                             base::TimeDelta::FromSeconds(5), 100);
 }
 
 gpu::CommandBufferNamespace CommandBufferProxyImpl::GetNamespaceID() const {
