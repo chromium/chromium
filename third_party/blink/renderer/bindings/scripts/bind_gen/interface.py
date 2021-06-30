@@ -2338,9 +2338,6 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
     body.extend([
         T("ThreadState::NoAllocationScope "
           "thread_no_alloc_scope(ThreadState::Current());"),
-        T("v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope("
-          "${isolate}, "
-          "v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);"),
         T("blink::NoAllocDirectCallScope no_alloc_direct_call_scope("
           "${blink_receiver}, &${v8_arg_callback_options});"),
         EmptyNode(),
