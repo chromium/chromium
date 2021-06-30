@@ -17,6 +17,9 @@
         <item name="colorControlActivated">@color/default_control_color_active</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
 
+        <!-- Control styles -->
+        <item name="switchStyle">@style/SwitchMaterialStyle</item>
+
         <!-- Window Properties -->
         <item name="android:windowBackground">@color/default_bg_color</item>
 
@@ -51,7 +54,6 @@
              TODO(crbug.com/1165077): Remove these when the widgets are being migrated. -->
         <item name="radioButtonStyle">@style/Widget.AppCompat.CompoundButton.RadioButton</item>
         <item name="checkboxStyle">@style/Widget.AppCompat.CompoundButton.CheckBox</item>
-        <item name="switchStyle">@style/Widget.AppCompat.CompoundButton.Switch</item>
     </style>
     <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI" />
 
@@ -138,13 +140,22 @@
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 
+    <!-- Switch styling -->
+    <style name="SwitchMaterialStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_tint</item>
+        <item name="trackTint">@color/switch_track_tint</item>
+        <item name="trackTintMode">src_in</item>
+    </style>
+
     <!-- Switch styling for dark theme -->
-    <style name="SwitchCompatDark" >
-        <item name="colorAccent">@color/default_control_color_active_dark</item>
-        <item name="colorControlNormal">@color/default_control_color_normal_dark</item>
-        <item name="colorControlActivated">@color/default_control_color_active_dark</item>
+    <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
+         -->
+    <style name="SwitchMaterialDark">
+        <item name="colorPrimary">@color/default_control_color_active_dark</item>
+        <item name="colorSwitchThumbNormal">@color/modern_grey_100</item>
+        <item name="colorSwitchTrackNormal">@color/neutral_variant_400</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
-        <item name="android:colorForeground">@color/modern_grey_100</item>
+        <item name="switchStyle">@style/SwitchMaterialStyle</item>
     </style>
 
     <!-- Styling for an app menu item row. -->
@@ -178,19 +189,28 @@
     </style>
 
     <style name="Base.ColorOverlay" parent="">
+        <!-- Attributes that point to the same color/attr in dark and light modes. -->
+        <item name="colorPrimaryContainer">@color/modern_blue_100</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+
+        <!-- Adaptive attributes -->
         <item name="colorPrimary">@color/modern_blue_600</item>
         <item name="colorError">@color/google_red_600</item>
         <item name="android:colorBackground">@color/modern_white</item>
         <item name="colorSurface">@color/modern_white</item>
+        <item name="colorSurfaceVariant">@color/neutral_variant_100</item>
         <item name="colorOnBackground">@color/modern_grey_900</item>
         <item name="colorOnSurface">@color/modern_grey_900</item>
         <item name="colorOnSurfaceVariant">@color/modern_grey_700</item>
         <item name="colorOnSurfaceInverse">@color/modern_white</item>
-        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/modern_grey_600</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+
+        <item name="colorSwitchThumbNormal">?attr/colorSurface</item>
+        <item name="colorSwitchThumbDisabled">?attr/colorSurface</item>
+        <item name="colorSwitchTrackNormal">?attr/colorSurfaceVariant</item>
     </style>
 
     <!-- It's logically backward, but this is applied to SettingsActivity when

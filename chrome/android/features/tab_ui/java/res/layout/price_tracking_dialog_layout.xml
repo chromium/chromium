@@ -60,7 +60,7 @@
                 android:text="@string/track_prices_on_tabs_description"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/track_prices_switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

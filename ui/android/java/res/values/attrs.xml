@@ -14,6 +14,18 @@
     <attr name="colorOnSurfaceVariant" format="color"/>
     <attr name="colorOnSurfaceInverse" format="color"/>
     <attr name="elevationOverlayAccentColor" format="color"/>
+    <attr name="colorPrimaryContainer" format="color"/>
+    <attr name="colorSurfaceVariant" format="color"/>
+    <attr name="colorOutline" format="color"/>
+
+    <!-- Used in SwitchMaterial tint lists because the color roles are different in light and dark
+         themes. -->
+    <attr name="colorSwitchTrackNormal" format="color"/>
+    <attr name="colorSwitchThumbDisabled" format="color"/>
+
+    <!-- Fixed colors that won't work with dynamic colors. -->
+    <!-- Used in SwitchMaterial thumb tint list for the disabled state. -->
+    <attr name="colorFixedOnSurfaceAlpha38OverSurface" format="color"/>
 
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->

@@ -88,12 +88,12 @@
             android:layout_alignParentStart="true"
             app:tint="@color/default_icon_color_light" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/cookie_controls_card_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:theme="@style/SwitchCompatDark"
+            android:theme="@style/SwitchMaterialDark"
             android:layout_alignParentEnd="true"
             app:showText="false" />
 

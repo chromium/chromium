@@ -80,6 +80,7 @@ public class PriceTrackingDialogTest {
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
+    private static final int RENDER_TEST_REVISION = 1;
 
     private ModalDialogManager mModalDialogManager;
 
@@ -87,8 +88,9 @@ public class PriceTrackingDialogTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
+                                                          .setRevision(RENDER_TEST_REVISION)
+                                                          .build();
 
     @Rule
     public IntentsTestRule<ChromeActivity> mIntentTestRule =

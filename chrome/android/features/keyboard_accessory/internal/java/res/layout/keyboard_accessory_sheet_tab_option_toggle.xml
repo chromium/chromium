@@ -37,7 +37,7 @@
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/option_toggle_switch"
         android:layout_marginStart="16dp"
         android:layout_width="48dp"

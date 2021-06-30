@@ -5,6 +5,12 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.ColorOverlay" parent="">
+        <!-- Attributes that point to the same color/attr in dark and light modes. -->
+        <item name="colorPrimaryContainer">@color/modern_blue_100</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+
+        <!-- Adaptive attributes -->
         <item name="colorPrimary">@color/modern_blue_300</item>
         <item name="colorError">@color/google_red_300</item>
         <item name="android:colorBackground">@color/modern_grey_900</item>
@@ -13,10 +19,14 @@
         <item name="colorOnSurface">@color/modern_grey_100</item>
         <item name="colorOnSurfaceVariant">@color/white_alpha_70</item>
         <item name="colorOnSurfaceInverse">@color/modern_grey_800</item>
-        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/modern_grey_200</item>
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
+        <item name="colorOutline">@color/neutral_variant_400</item>
+
+        <item name="colorSwitchThumbNormal">?attr/colorOnSurface</item>
+        <item name="colorSwitchThumbDisabled">?attr/colorFixedOnSurfaceAlpha38OverSurface</item>
+        <item name="colorSwitchTrackNormal">?attr/colorOutline</item>
+        <item name="colorFixedOnSurfaceAlpha38OverSurface">@color/modern_grey_900_with_grey_100_alpha_38</item>
     </style>
 </resources>

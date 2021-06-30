@@ -6,10 +6,14 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 2021 color palette -->
+    <color name="modern_blue_100">#D3E3FD</color>
     <color name="modern_blue_200">#A8C7FA</color>
     <color name="modern_blue_600">#0B57D0</color>
     <color name="modern_grey_100_alpha_12">#1EE3E3E3</color>
     <color name="modern_grey_900_alpha_12">#1E1F1F1F</color>
+    <color name="modern_grey_900_with_grey_100_alpha_38">#696969</color>
+    <color name="neutral_variant_100">#E1E3E1</color>
+    <color name="neutral_variant_400">#8E918F</color>
 
     <!-- Modern color palette -->
     <color name="modern_white">@android:color/white</color>

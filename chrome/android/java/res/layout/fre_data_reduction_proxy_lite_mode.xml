@@ -65,7 +65,7 @@
                         android:lineSpacingMultiplier="1.4"
                         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/enable_data_saver_switch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

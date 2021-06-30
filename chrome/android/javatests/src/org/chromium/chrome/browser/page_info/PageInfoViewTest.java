@@ -118,7 +118,7 @@ public class PageInfoViewTest {
 
     @Rule
     public RenderTestRule mRenderTestRule =
-            RenderTestRule.Builder.withPublicCorpus().setRevision(6).build();
+            RenderTestRule.Builder.withPublicCorpus().setRevision(7).build();
 
     private boolean mIsSystemLocationSettingEnabled = true;
 

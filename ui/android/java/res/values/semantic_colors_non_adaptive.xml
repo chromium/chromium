@@ -89,7 +89,7 @@
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/modern_blue_600</color>
-    <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/modern_blue_300</color>
+    <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/modern_blue_200</color>
     <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/modern_grey_700</color>
     <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/modern_grey_500</color>
     <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">
