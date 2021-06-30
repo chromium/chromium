@@ -139,10 +139,7 @@ void MessageView::SetIsNested() {
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
   slide_out_controller_.set_update_opacity(false);
 
-  SkColor border_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_UnfocusedBorderColor);
-  SetBorder(views::CreateRoundedRectBorder(
-      kNotificationBorderThickness, kNotificationCornerRadius, border_color));
+  UpdateNestedBorder();
 
   if (GetControlButtonsView())
     GetControlButtonsView()->ShowCloseButton(GetMode() != Mode::PINNED);
@@ -339,6 +336,7 @@ void MessageView::AddedToWidget() {
 
 void MessageView::OnThemeChanged() {
   View::OnThemeChanged();
+  UpdateNestedBorder();
   UpdateBackgroundPainter();
 }
 
@@ -490,6 +488,15 @@ void MessageView::UpdateBackgroundPainter() {
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color)));
+}
+
+void MessageView::UpdateNestedBorder() {
+  if (!is_nested_ || !GetWidget())
+    return;
+  SkColor border_color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_UnfocusedBorderColor);
+  SetBorder(views::CreateRoundedRectBorder(
+      kNotificationBorderThickness, kNotificationCornerRadius, border_color));
 }
 
 void MessageView::UpdateControlButtonsVisibility() {

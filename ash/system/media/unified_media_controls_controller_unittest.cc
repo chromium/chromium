@@ -265,6 +265,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MetadataUpdate) {
 }
 
 TEST_F(UnifiedMediaControlsControllerTest, UpdateArtworkConvertColor) {
+  CreateWidget();
   SkBitmap artwork;
   SkImageInfo image_info =
       SkImageInfo::Make(200, 200, kAlpha_8_SkColorType, kOpaque_SkAlphaType);

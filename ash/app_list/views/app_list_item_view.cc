@@ -696,7 +696,7 @@ void AppListItemView::Layout() {
     return;
 
   const gfx::Rect icon_bounds = GetIconBoundsForTargetViewBounds(
-      GetAppListConfig(), rect, icon_->GetImage().size(), icon_scale_);
+      GetAppListConfig(), rect, icon_->GetImageBounds().size(), icon_scale_);
   icon_->SetBoundsRect(icon_bounds);
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(

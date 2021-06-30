@@ -206,6 +206,13 @@ std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
       .BuildOwnsNativeWidget();
 }
 
+// static
+std::unique_ptr<views::Widget> AshTestBase::CreateFramelessTestWidget() {
+  return TestWidgetBuilder()
+      .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+      .BuildOwnsNativeWidget();
+}
+
 std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     const gfx::Rect& bounds_in_screen,
     AppType app_type,

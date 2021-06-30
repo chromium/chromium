@@ -22,13 +22,15 @@ class UnifiedSystemTray;
 class TrayContainer;
 class TrayItemView;
 class NotificationCounterView;
+class NotificationIconsController;
 class QuietModeView;
 class SeparatorTrayItemView;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
  public:
-  explicit NotificationIconTrayItemView(Shelf* shelf);
+  NotificationIconTrayItemView(Shelf* shelf,
+                               NotificationIconsController* controller_);
   ~NotificationIconTrayItemView() override;
   NotificationIconTrayItemView(const NotificationIconTrayItemView&) = delete;
   NotificationIconTrayItemView& operator=(const NotificationIconTrayItemView&) =
@@ -48,11 +50,14 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // TrayItemView:
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   // Store the id to make sure we still have it when notification is removed and
   // goes out of scope.
   std::string notification_id_;
+
+  NotificationIconsController* const controller_;
 };
 
 // Controller for notification icons in UnifiedSystemTray button. The icons will
@@ -112,12 +117,12 @@ class ASH_EXPORT NotificationIconsController
 
   bool icons_view_visible() const { return icons_view_visible_; }
 
- private:
-  friend class NotificationIconsControllerTest;
-
   // Iterate through the notifications in message center and update the icons
   // shown accordingly.
   void UpdateNotificationIcons();
+
+ private:
+  friend class NotificationIconsControllerTest;
 
   // If the notification with given id is currently shown in tray, returns the
   // pointer to that tray item. Otherwise, returns a null pointer.

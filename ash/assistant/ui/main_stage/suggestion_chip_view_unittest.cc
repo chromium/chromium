@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -35,12 +36,14 @@ AssistantSuggestion CreateSuggestionWithIconUrl(const std::string& icon_url) {
 using SuggestionChipViewTest = AshTestBase;
 
 TEST_F(SuggestionChipViewTest, ShouldHandleLocalIcons) {
-  SuggestionChipView suggestion_chip_view(
-      /*delegate=*/nullptr,
-      CreateSuggestionWithIconUrl(
-          "googleassistant://resource?type=icon&name=assistant"));
+  auto widget = CreateFramelessTestWidget();
+  auto* suggestion_chip_view =
+      widget->SetContentsView(std::make_unique<SuggestionChipView>(
+          /*delegate=*/nullptr,
+          CreateSuggestionWithIconUrl(
+              "googleassistant://resource?type=icon&name=assistant")));
 
-  const auto& actual = suggestion_chip_view.GetIcon();
+  const auto& actual = suggestion_chip_view->GetIcon();
   gfx::ImageSkia expected = gfx::CreateVectorIcon(
       gfx::IconDescription(chromeos::kAssistantIcon, /*size=*/16));
 
@@ -58,12 +61,14 @@ TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
             std::move(callback).Run(expected);
           }));
 
-  SuggestionChipView suggestion_chip_view(
-      &delegate,
-      CreateSuggestionWithIconUrl("https://www.gstatic.com/images/branding/"
-                                  "product/2x/googleg_48dp.png"));
+  auto widget = CreateFramelessTestWidget();
+  auto* suggestion_chip_view =
+      widget->SetContentsView(std::make_unique<SuggestionChipView>(
+          &delegate,
+          CreateSuggestionWithIconUrl("https://www.gstatic.com/images/branding/"
+                                      "product/2x/googleg_48dp.png")));
 
-  const auto& actual = suggestion_chip_view.GetIcon();
+  const auto& actual = suggestion_chip_view->GetIcon();
   EXPECT_TRUE(actual.BackedBySameObjectAs(expected));
 }
 

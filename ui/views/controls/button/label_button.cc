@@ -88,6 +88,10 @@ void LabelButton::SetImageModel(ButtonState for_state,
     UpdateImage();
 }
 
+bool LabelButton::HasImage(ButtonState for_state) const {
+  return !button_state_image_models_[for_state].IsEmpty();
+}
+
 const std::u16string& LabelButton::GetText() const {
   return label_->GetText();
 }

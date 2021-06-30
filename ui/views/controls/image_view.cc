@@ -65,6 +65,10 @@ gfx::ImageSkia ImageView::GetImage() const {
   return views::GetImageSkiaFromImageModel(image_model_, GetNativeTheme());
 }
 
+ui::ImageModel ImageView::GetImageModel() const {
+  return image_model_;
+}
+
 void ImageView::SetHorizontalAlignment(Alignment alignment) {
   if (alignment != horizontal_alignment_) {
     horizontal_alignment_ = alignment;

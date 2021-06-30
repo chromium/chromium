@@ -207,6 +207,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Updates the background painter using the themed background color and radii.
   void UpdateBackgroundPainter();
 
+  void UpdateNestedBorder();
+
   std::string notification_id_;
 
   const NotifierId notifier_id_;

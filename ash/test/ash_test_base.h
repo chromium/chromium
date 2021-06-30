@@ -123,6 +123,9 @@ class AshTestBase : public testing::Test {
       const gfx::Rect& bounds = gfx::Rect(),
       bool show = true);
 
+  // Creates a frameless widget for testing.
+  static std::unique_ptr<views::Widget> CreateFramelessTestWidget();
+
   // Creates a widget with a visible WINDOW_TYPE_NORMAL window with the given
   // |app_type|. If |app_type| is AppType::NON_APP, this window is considered a
   // non-app window.

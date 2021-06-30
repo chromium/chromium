@@ -36,6 +36,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -447,7 +448,9 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
   EXPECT_CALL(delegate, GetPrimaryUserGivenName)
       .WillOnce(testing::Return("Primary User Given Name"));
 
-  AssistantOnboardingView onboarding_view(&delegate);
+  auto widget = CreateFramelessTestWidget();
+  auto* onboarding_view = widget->SetContentsView(
+      std::make_unique<AssistantOnboardingView>(&delegate));
   EXPECT_CALL(delegate, DownloadImage)
       .WillOnce(testing::Invoke(
           [&](const GURL& url, ImageDownloader::DownloadCallback callback) {
@@ -458,7 +461,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
       "https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png")});
 
   AssistantOnboardingSuggestionView* suggestion_view = nullptr;
-  FindDescendentByClassName(&onboarding_view, &suggestion_view);
+  FindDescendentByClassName(onboarding_view, &suggestion_view);
   ASSERT_NE(nullptr, suggestion_view);
 
   const auto& actual = suggestion_view->GetIcon();

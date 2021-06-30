@@ -13,6 +13,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -34,12 +35,13 @@ class PhoneStatusViewTest : public AshTestBase,
   void SetUp() override {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
     AshTestBase::SetUp();
-
-    status_view_ = std::make_unique<PhoneStatusView>(&phone_model_, this);
+    widget_ = CreateFramelessTestWidget();
+    status_view_ = widget_->SetContentsView(
+        std::make_unique<PhoneStatusView>(&phone_model_, this));
   }
 
   void TearDown() override {
-    status_view_.reset();
+    widget_.reset();
     AshTestBase::TearDown();
   }
 
@@ -53,7 +55,8 @@ class PhoneStatusViewTest : public AshTestBase,
   }
 
  protected:
-  std::unique_ptr<PhoneStatusView> status_view_;
+  std::unique_ptr<views::Widget> widget_;
+  PhoneStatusView* status_view_ = nullptr;
   chromeos::phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   bool can_open_connected_device_settings_ = false;
@@ -112,7 +115,8 @@ TEST_F(PhoneStatusViewTest, ClickOnSettings) {
 
   // The settings button is visible if we can open settings.
   can_open_connected_device_settings_ = true;
-  status_view_ = std::make_unique<PhoneStatusView>(&phone_model_, this);
+  status_view_ = widget_->SetContentsView(
+      std::make_unique<PhoneStatusView>(&phone_model_, this));
   EXPECT_TRUE(status_view_->settings_button_->GetVisible());
 
   // Click on the settings button.

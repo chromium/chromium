@@ -22,6 +22,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/widget/widget.h"
 
 using chromeos::AudioNode;
 using chromeos::AudioNodeList;
@@ -253,6 +254,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   views::ToggleButton* toggle =
       (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
+  auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(toggle);
 
   // The toggle loaded the pref correctly.
   EXPECT_FALSE(toggle->GetIsOn());

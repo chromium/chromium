@@ -240,8 +240,10 @@ void CaptureLabelView::UpdateIconAndText() {
   if (!icon.isNull()) {
     label_->SetVisible(false);
     label_button_->SetVisible(true);
-    // Update the icon only if it has changed to reduce repainting.
-    if (!icon.BackedBySameObjectAs(
+    // Update the icon only if one is not already present or it has changed to
+    // reduce repainting.
+    if (!label_button_->HasImage(views::Button::STATE_NORMAL) ||
+        !icon.BackedBySameObjectAs(
             label_button_->GetImage(views::Button::STATE_NORMAL))) {
       label_button_->SetImage(views::Button::STATE_NORMAL, icon);
     }

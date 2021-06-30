@@ -70,6 +70,8 @@ class VIEWS_EXPORT ImageView : public View {
   // TODO(pkasting): Convert to an ImageModel getter.
   gfx::ImageSkia GetImage() const;
 
+  ui::ImageModel GetImageModel() const;
+
   // Set / Get the horizontal alignment.
   void SetHorizontalAlignment(Alignment ha);
   Alignment GetHorizontalAlignment() const;
