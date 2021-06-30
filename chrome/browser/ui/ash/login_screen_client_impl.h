@@ -120,7 +120,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
                                            const std::string& locale) override;
   void HandleAccelerator(ash::LoginAcceleratorAction action) override;
   void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window) override;
-  void ShowParentAccessHelpApp(gfx::NativeWindow parent_window) override;
+  void ShowParentAccessHelpApp() override;
   void ShowLockScreenNotificationSettings() override;
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnSystemTrayBubbleShown() override;

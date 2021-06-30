@@ -246,10 +246,11 @@ void LoginScreenClientImpl::ShowAccountAccessHelpApp(
       ->ShowHelpTopic(chromeos::HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }
 
-void LoginScreenClientImpl::ShowParentAccessHelpApp(
-    gfx::NativeWindow parent_window) {
+void LoginScreenClientImpl::ShowParentAccessHelpApp() {
+  // Don't pass in a parent window so that the size of the help dialog is not
+  // bounded by its parent window.
   scoped_refptr<chromeos::HelpAppLauncher>(
-      new chromeos::HelpAppLauncher(parent_window))
+      new chromeos::HelpAppLauncher(/*parent_window=*/nullptr))
       ->ShowHelpTopic(chromeos::HelpAppLauncher::HELP_PARENT_ACCESS_CODE);
 }
 

@@ -30,7 +30,7 @@ class ASH_EXPORT SecurityTokenRequestController
   PinRequestView::SubmissionResult OnPinSubmitted(
       const std::string& pin) override;
   void OnBack() override;
-  void OnHelp(gfx::NativeWindow parent_window) override;
+  void OnHelp() override;
 
   // Shows the PIN dialog configured by |request|. If there already is a
   // SecurityTokenPinRequest in progress, keeps the dialog open and updates the

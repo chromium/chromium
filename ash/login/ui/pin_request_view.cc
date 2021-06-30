@@ -356,10 +356,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   help_button_ = new FocusableLabelButton(
       base::BindRepeating(
-          [](PinRequestView* view) {
-            view->delegate_->OnHelp(view->GetWidget()->GetNativeWindow());
-          },
-          this),
+          [](PinRequestView* view) { view->delegate_->OnHelp(); }, this),
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PIN_REQUEST_HELP));
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);

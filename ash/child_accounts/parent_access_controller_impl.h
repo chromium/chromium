@@ -82,7 +82,7 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
   PinRequestView::SubmissionResult OnPinSubmitted(
       const std::string& pin) override;
   void OnBack() override;
-  void OnHelp(gfx::NativeWindow parent_window) override;
+  void OnHelp() override;
 
   // ParentAccessController:
   bool ShowWidget(const AccountId& child_account_id,

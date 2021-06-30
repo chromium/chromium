@@ -82,9 +82,7 @@ class PinRequestViewTest : public LoginTestBase,
 
   void OnBack() override { ++back_action_; }
 
-  void OnHelp(gfx::NativeWindow parent_window) override {
-    ++help_dialog_opened_;
-  }
+  void OnHelp() override { ++help_dialog_opened_; }
 
   void StartView(absl::optional<int> pin_length = 6) {
     PinRequest request;

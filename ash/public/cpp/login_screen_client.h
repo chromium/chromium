@@ -146,7 +146,7 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   virtual void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window) = 0;
 
   // Shows help app for users that have trouble using parent access code.
-  virtual void ShowParentAccessHelpApp(gfx::NativeWindow parent_window) = 0;
+  virtual void ShowParentAccessHelpApp() = 0;
 
   // Show the lockscreen notification settings page.
   virtual void ShowLockScreenNotificationSettings() = 0;

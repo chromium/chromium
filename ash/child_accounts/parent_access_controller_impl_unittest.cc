@@ -281,7 +281,7 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
       ParentAccessControllerImpl::UMAValidationResult::kInvalid,
       SupervisedAction::kUnlockTimeLimits, 1, 1);
 
-  EXPECT_CALL(*login_client_, ShowParentAccessHelpApp(_)).Times(1);
+  EXPECT_CALL(*login_client_, ShowParentAccessHelpApp()).Times(1);
   SimulateButtonPress(PinRequestView::TestApi(view_).help_button());
   ExpectUMAActionReported(ParentAccessControllerImpl::UMAAction::kGetHelp, 1,
                           2);

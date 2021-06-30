@@ -87,7 +87,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
    public:
     virtual SubmissionResult OnPinSubmitted(const std::string& pin) = 0;
     virtual void OnBack() = 0;
-    virtual void OnHelp(gfx::NativeWindow parent_window) = 0;
+    virtual void OnHelp() = 0;
 
    protected:
     virtual ~Delegate() = default;

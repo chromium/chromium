@@ -94,7 +94,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
                                            const std::string& locale);
   void HandleAccelerator(ash::LoginAcceleratorAction action);
   void ShowAccountAccessHelpApp(gfx::NativeWindow parent_window);
-  void ShowParentAccessHelpApp(gfx::NativeWindow parent_window);
+  void ShowParentAccessHelpApp();
   void ShowLockScreenNotificationSettings();
   void FocusOobeDialog();
   void NotifyUserActivity();

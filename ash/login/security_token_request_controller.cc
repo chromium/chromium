@@ -63,7 +63,7 @@ void SecurityTokenRequestController::OnBack() {
   ClosePinUi();
 }
 
-void SecurityTokenRequestController::OnHelp(gfx::NativeWindow parent_window) {
+void SecurityTokenRequestController::OnHelp() {
   NOTREACHED();
 }
 
