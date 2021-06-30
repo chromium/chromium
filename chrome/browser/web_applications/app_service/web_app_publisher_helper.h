@@ -181,6 +181,18 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                blink::mojom::DisplayMode display_mode,
                                bool in_experimental_tabbed_window);
 
+  // Execute the user command from the context menu items. Currently
+  // on the web app shortcut need to be execute in the publisher.
+  // The |app_id| represent the app that user selected, the |item_id|
+  // represents which shortcut item that user selected. |app_launch_source|
+  // is the launch source for a web app. The |display_id| represent where to
+  // display the app.
+  content::WebContents* ExecuteContextMenuCommand(
+      const std::string& app_id,
+      int32_t item_id,
+      apps::mojom::AppLaunchSource app_launch_source,
+      int64_t display_id);
+
   Profile* profile() { return profile_; }
 
   apps::mojom::AppType app_type() const { return app_type_; }

@@ -284,11 +284,6 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
                                                 int command_id,
                                                 const std::string& shortcut_id,
                                                 int64_t display_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
   apps::mojom::LaunchSource launch_source;
   // shortcut_id contains menu_type.
   switch (apps::MenuTypeFromString(shortcut_id)) {
@@ -299,21 +294,9 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
       launch_source = apps::mojom::LaunchSource::kFromAppListGridContextMenu;
       break;
   }
-
-  DisplayMode display_mode = GetRegistrar()->GetAppEffectiveDisplayMode(app_id);
-
-  apps::AppLaunchParams params(
-      app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::CURRENT_TAB,
+  publisher_helper().ExecuteContextMenuCommand(
+      app_id, command_id - ash::LAUNCH_APP_SHORTCUT_FIRST,
       apps::GetAppLaunchSource(launch_source), display_id);
-
-  size_t menu_item_index = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
-  if (menu_item_index < web_app->shortcuts_menu_item_infos().size()) {
-    params.override_url =
-        web_app->shortcuts_menu_item_infos()[menu_item_index].url;
-  }
-
-  publisher_helper().LaunchAppWithParams(std::move(params));
 }
 
 void WebAppsChromeOs::SetWindowMode(const std::string& app_id,

@@ -192,6 +192,14 @@ void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
   }
 }
 
+void WebAppsPublisherHost::ExecuteContextMenuCommand(const std::string& app_id,
+                                                     int32_t item_id,
+                                                     int64_t display_id) {
+  publisher_helper().ExecuteContextMenuCommand(
+      app_id, item_id, apps::mojom::AppLaunchSource::kSourceAppLauncher,
+      display_id);
+}
+
 void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
     const std::string& app_id,
     crosapi::mojom::MenuItemsPtr menu_items,

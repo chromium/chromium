@@ -82,6 +82,10 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int32_t item_id,
+                                 int64_t display_id);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, PauseUnpause);
 

@@ -679,6 +679,30 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
   delegate_->PublishWebApp(std::move(app));
 }
 
+content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
+    const std::string& app_id,
+    int32_t item_id,
+    apps::mojom::AppLaunchSource app_launch_source,
+    int64_t display_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return nullptr;
+  }
+
+  DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
+
+  apps::AppLaunchParams params(
+      app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
+      WindowOpenDisposition::CURRENT_TAB, app_launch_source, display_id);
+
+  if (static_cast<size_t>(item_id) <
+      web_app->shortcuts_menu_item_infos().size()) {
+    params.override_url = web_app->shortcuts_menu_item_infos()[item_id].url;
+  }
+
+  return LaunchAppWithParams(std::move(params));
+}
+
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
   return *provider_->registrar().AsWebAppRegistrar();
 }
