@@ -174,18 +174,17 @@ absl::optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
       if (auto* ec = GetExecutionContext(*description.execution_context_token,
                                          graph)) {
         return IsSynchronousIframeAttributionDataExpected(ec);
-      } else {
-        // Unable to be determined.
-        return absl::nullopt;
       }
-    } break;
+      // Unable to be determined.
+      return absl::nullopt;
+    }
 
     case mojom::V8ContextWorldType::kWorkerOrWorklet:
     case mojom::V8ContextWorldType::kExtension:
     case mojom::V8ContextWorldType::kIsolated:
     case mojom::V8ContextWorldType::kInspector:
-    case mojom::V8ContextWorldType::kRegExp: {
-    } break;
+    case mojom::V8ContextWorldType::kRegExp:
+      break;
   }
 
   return false;

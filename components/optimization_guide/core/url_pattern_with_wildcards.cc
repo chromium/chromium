@@ -32,7 +32,6 @@ std::vector<std::string> SplitURLPattern(const std::string& url_pattern) {
         search_start_pos, next_wildcard_pos - search_start_pos));
     search_start_pos = next_wildcard_pos + 1;
   }
-  return split_subpatterns;
 }
 
 }  // namespace

@@ -135,51 +135,39 @@ ConvertSettingsVisibleFieldTypeForMetrics(ServerFieldType field_type) {
   switch (field_type) {
     case ServerFieldType::NAME_FULL:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kName;
-      break;
 
     case ServerFieldType::EMAIL_ADDRESS:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kEmailAddress;
-      break;
 
     case ServerFieldType::PHONE_HOME_WHOLE_NUMBER:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kPhoneNumber;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_CITY:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCity;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_COUNTRY:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_ZIP:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kZip;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_STATE:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kState;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_STREET_ADDRESS:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
           kStreetAddress;
-      break;
 
     case ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
           kDependentLocality;
-      break;
 
     case ServerFieldType::NAME_HONORIFIC_PREFIX:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
           kHonorificPrefix;
-      break;
 
     default:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kUndefined;
-      NOTREACHED();
-      break;
   }
 }
 

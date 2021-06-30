@@ -267,25 +267,21 @@ std::u16string GetCounterTextFromResult(
     switch (displayed_strings.size()) {
       case 0:
         return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
-        break;
       case 1:
         return synced ? l10n_util::GetStringFUTF16(
                             IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
                             displayed_strings[0])
                       : displayed_strings[0];
-        break;
       case 2:
         return l10n_util::GetStringFUTF16(
             synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
                    : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
             displayed_strings[0], displayed_strings[1]);
-        break;
       case 3:
         return l10n_util::GetStringFUTF16(
             synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
                    : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
             displayed_strings[0], displayed_strings[1], displayed_strings[2]);
-        break;
       default:
         NOTREACHED();
     }

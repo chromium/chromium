@@ -39,8 +39,9 @@ bool EnterpriseMDMManagementStatusProvider::IsManaged() {
   return base::win::OSInfo::GetInstance()->version_type() !=
              base::win::SUITE_HOME &&
          base::win::IsDeviceRegisteredWithManagement();
-#endif
+#else
   return false;
+#endif
 }
 
 EnterpriseManagementAuthority

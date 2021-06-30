@@ -44,7 +44,6 @@ std::string TextDumpEventToString(mojom::TextDumpEvent event) {
   switch (event) {
     case mojom::TextDumpEvent::kFirstLayout:
       return "FirstLayout";
-      break;
     case mojom::TextDumpEvent::kFinishedLoad:
       return "FinishedLoad";
   }

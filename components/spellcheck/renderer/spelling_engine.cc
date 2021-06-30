@@ -29,13 +29,11 @@ SpellingEngine* CreateNativeSpellingEngine(
   // during native spell checking. It also doesn't affect Hunspell, since these
   // languages are skipped during the Hunspell check.
   return new HunspellEngine(embedder_provider);
-#endif  // defined(OS_WIN)
-
-#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#elif BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   return new PlatformSpellingEngine(embedder_provider);
-#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-
-#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+#elif BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   return new HunspellEngine(embedder_provider);
-#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+#else
+  return nullptr;
+#endif
 }

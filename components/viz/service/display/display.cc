@@ -258,8 +258,9 @@ bool SupportsSetFrameRate(const OutputSurface* output_surface) {
 #elif defined(OS_WIN)
   return output_surface->capabilities().supports_dc_layers &&
          features::ShouldUseSetPresentDuration();
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

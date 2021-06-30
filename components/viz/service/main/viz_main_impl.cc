@@ -304,7 +304,6 @@ void VizMainImpl::ExitProcess(ExitCode immediate_exit_code) {
     // Atomically shut down GPU process to make it faster and simpler.
     base::Process::TerminateCurrentProcessImmediately(
         static_cast<int>(immediate_exit_code));
-    return;
   }
 
   // Close mojom::VizMain bindings first so the browser can't try to reconnect.

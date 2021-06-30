@@ -184,7 +184,6 @@ bool DecisionTreePredictionModel::TraverseTree(
     default:
       return false;
   }
-  return false;
 }
 
 bool DecisionTreePredictionModel::EvaluateDecisionTree(

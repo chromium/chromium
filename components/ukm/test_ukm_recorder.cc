@@ -123,7 +123,6 @@ void TestUkmRecorder::ExpectEntrySourceHasUrl(const mojom::UkmEntry* entry,
   const UkmSource* src = GetSourceForSourceId(entry->source_id);
   if (src == nullptr) {
     FAIL() << "Entry source id has no associated Source.";
-    return;
   }
   EXPECT_EQ(src->url(), url);
 }
@@ -151,7 +150,6 @@ void TestUkmRecorder::ExpectEntryMetric(const mojom::UkmEntry* entry,
   const int64_t* metric = GetEntryMetric(entry, metric_name);
   if (metric == nullptr) {
     FAIL() << "Failed to find metric for event: " << metric_name;
-    return;
   }
   EXPECT_EQ(expected_value, *metric) << " for metric:" << metric_name;
 }

@@ -865,7 +865,6 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
   switch (state_->selected_app()->type()) {
     case PaymentApp::Type::AUTOFILL:
       return JourneyLogger::PaymentMethodCategory::kBasicCard;
-      break;
     case PaymentApp::Type::SERVICE_WORKER_APP:
       // Intentionally fall through.
     case PaymentApp::Type::NATIVE_MOBILE_APP: {

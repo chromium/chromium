@@ -113,8 +113,9 @@ RTLookupRequest::OSType GetRTLookupRequestOSType() {
   return RTLookupRequest::OS_TYPE_MAC;
 #elif defined(OS_WIN)
   return RTLookupRequest::OS_TYPE_WINDOWS;
-#endif
+#else
   return RTLookupRequest::OS_TYPE_UNSPECIFIED;
+#endif
 }
 
 }  // namespace

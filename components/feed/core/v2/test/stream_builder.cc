@@ -316,8 +316,6 @@ feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
       feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
   criteria->set_text(name + ".com");
   return result;
-
-  return result;
 }
 
 feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {

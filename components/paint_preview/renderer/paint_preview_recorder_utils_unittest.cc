@@ -252,7 +252,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
           return absl::nullopt;
 
         return {SerializedRecording(file_path)};
-      } break;
+      }
 
       case RecordingPersistence::kMemoryBuffer: {
         absl::optional<mojo_base::BigBuffer> buffer =
@@ -261,7 +261,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
           return absl::nullopt;
 
         return {SerializedRecording(std::move(buffer.value()))};
-      } break;
+      }
     }
 
     NOTREACHED();
