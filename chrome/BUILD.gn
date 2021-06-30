@@ -156,12 +156,6 @@ if (!is_android && !is_mac) {
       data_deps += [ "//sandbox/linux:chrome_sandbox" ]
     }
 
-    if (is_chromeos_lacros && also_build_ash_chrome) {
-      data_deps += [
-        "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)",
-      ]
-    }
-
     if (is_win) {
       sources += [
         "app/chrome_exe.rc",
