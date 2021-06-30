@@ -196,10 +196,16 @@ void VideoFrameSubmitter::OnBeginFrame(
 
   last_begin_frame_args_ = args;
 
-  for (const auto& pair : timing_details) {
-    if (viz::FrameTokenGT(pair.key, *next_frame_token_))
+  WTF::Vector<uint32_t> frame_tokens;
+  for (const auto& id : timing_details.Keys())
+    frame_tokens.push_back(id);
+  std::sort(frame_tokens.begin(), frame_tokens.end());
+
+  for (const auto& frame_token : frame_tokens) {
+    if (viz::FrameTokenGT(frame_token, *next_frame_token_))
       continue;
-    auto& feedback = pair.value.presentation_feedback;
+    auto& feedback =
+        timing_details.find(frame_token)->value.presentation_feedback;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // TODO: On Linux failure flag is unreliable, and perfectly rendered frames
     // are reported as failures all the time.
@@ -209,10 +215,11 @@ void VideoFrameSubmitter::OnBeginFrame(
         feedback.flags & gfx::PresentationFeedback::kFailure;
 #endif
     if (!presentation_failure &&
-        !ignorable_submitted_frames_.contains(pair.key)) {
+        !ignorable_submitted_frames_.contains(frame_token)) {
       frame_trackers_.NotifyFramePresented(
-          pair.key, gfx::PresentationFeedback(
-                        feedback.timestamp, feedback.interval, feedback.flags));
+          frame_token,
+          gfx::PresentationFeedback(feedback.timestamp, feedback.interval,
+                                    feedback.flags));
 
       // We assume that presentation feedback is reliable if
       // 1. (kHWCompletion) OS told us that the frame was shown at that time
@@ -222,13 +229,13 @@ void VideoFrameSubmitter::OnBeginFrame(
           gfx::PresentationFeedback::kHWCompletion |
           gfx::PresentationFeedback::kVSync;
       bool reliable_timestamp = feedback.flags & reliable_feedback_mask;
-      roughness_reporter_->FramePresented(pair.key, feedback.timestamp,
+      roughness_reporter_->FramePresented(frame_token, feedback.timestamp,
                                           reliable_timestamp);
     }
 
-    ignorable_submitted_frames_.erase(pair.key);
+    ignorable_submitted_frames_.erase(frame_token);
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "media", "VideoFrameSubmitter", TRACE_ID_LOCAL(pair.key),
+        "media", "VideoFrameSubmitter", TRACE_ID_LOCAL(frame_token),
         feedback.timestamp);
   }
   frame_trackers_.NotifyBeginImplFrame(args);
