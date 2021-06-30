@@ -159,17 +159,22 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
 // Sanity check that bookmarks from different profiles are separate.
-// DISABLED_ because it regularly times out: http://crbug.com/159002.
-IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
   BookmarkModel* bookmark_model1 = WaitForBookmarkModel(browser()->profile());
 
+  base::RunLoop run_loop;
+  Profile* profile2 = nullptr;
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
-      u"New Profile", 0, false, ProfileManager::CreateCallback());
-  Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
-  BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
+      u"New Profile", 0, false,
+      base::BindLambdaForTesting(
+          [&](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              profile2 = profile;
+              run_loop.Quit();
+            }
+          }));
+  run_loop.Run();
+  BookmarkModel* bookmark_model2 = WaitForBookmarkModel(profile2);
 
   bookmarks::AddIfNotBookmarked(bookmark_model1, GURL(kPersistBookmarkURL),
                                 kPersistBookmarkTitle);
