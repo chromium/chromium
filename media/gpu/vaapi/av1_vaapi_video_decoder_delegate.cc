@@ -21,6 +21,9 @@
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
+
+using DecodeStatus = AV1Decoder::AV1Accelerator::Status;
+
 namespace {
 
 #define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
@@ -766,7 +769,7 @@ bool AV1VaapiVideoDecoderDelegate::OutputPicture(const AV1Picture& pic) {
   return true;
 }
 
-bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
+DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& seq_header,
     const AV1ReferenceFrameVector& ref_frames,
@@ -783,14 +786,14 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
   std::vector<VASliceParameterBufferAV1> slice_params;
   if (!FillAV1PictureParameter(pic, seq_header, ref_frames, pic_param) ||
       !FillAV1SliceParameters(tile_buffers, tile_columns, data, slice_params)) {
-    return false;
+    return DecodeStatus::kFail;
   }
 
   if (!picture_params_) {
     picture_params_ = vaapi_wrapper_->CreateVABuffer(
         VAPictureParameterBufferType, sizeof(pic_param));
     if (!picture_params_)
-      return false;
+      return DecodeStatus::kFail;
   }
   if (slice_params_.size() != slice_params.size()) {
     while (slice_params_.size() < slice_params.size()) {
@@ -798,7 +801,7 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
           VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
       if (!slice_params_.back()) {
         slice_params_.clear();
-        return false;
+        return DecodeStatus::kFail;
       }
     }
     slice_params_.resize(slice_params.size());
@@ -813,7 +816,7 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
   auto encoded_data =
       vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType, data.size_bytes());
   if (!encoded_data)
-    return false;
+    return DecodeStatus::kFail;
 
   std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
       {{picture_params_->id(),
@@ -828,7 +831,9 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
   return vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->reconstruct_va_surface()->id(), buffers);
+             vaapi_pic->reconstruct_va_surface()->id(), buffers)
+             ? DecodeStatus::kOk
+             : DecodeStatus::kFail;
 }
 
 void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {

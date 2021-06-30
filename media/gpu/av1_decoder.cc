@@ -158,6 +158,7 @@ void AV1Decoder::ClearCurrentFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_frame_.reset();
   current_frame_header_.reset();
+  pending_pic_.reset();
 }
 
 AcceleratedVideoDecoder::DecodeResult AV1Decoder::Decode() {
@@ -178,6 +179,19 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
   while (parser_->HasData() || current_frame_header_) {
     base::ScopedClosureRunner clear_current_frame(
         base::BindOnce(&AV1Decoder::ClearCurrentFrame, base::Unretained(this)));
+    if (pending_pic_) {
+      const AV1Accelerator::Status status = DecodeAndOutputPicture(
+          std::move(pending_pic_), parser_->tile_buffers());
+      if (status == AV1Accelerator::Status::kFail)
+        return kDecodeError;
+      if (status == AV1Accelerator::Status::kTryAgain) {
+        clear_current_frame.ReplaceClosure(base::DoNothing());
+        return kTryAgain;
+      }
+      // Continue so that we force |clear_current_frame| to run before moving
+      // on.
+      continue;
+    }
     if (!current_frame_header_) {
       libgav1::StatusCode status_code = parser_->ParseOneFrame(&current_frame_);
       if (status_code != libgav1::kStatusOk) {
@@ -365,8 +379,14 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     pic->frame_header = frame_header;
     pic->set_decrypt_config(std::move(decrypt_config_));
-    if (!DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers()))
+    const AV1Accelerator::Status status =
+        DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers());
+    if (status == AV1Accelerator::Status::kFail)
       return kDecodeError;
+    if (status == AV1Accelerator::Status::kTryAgain) {
+      clear_current_frame.ReplaceClosure(base::DoNothing());
+      return kTryAgain;
+    }
   }
   return kRanOutOfStreamData;
 }
@@ -432,7 +452,7 @@ bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   return true;
 }
 
-bool AV1Decoder::DecodeAndOutputPicture(
+AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
     scoped_refptr<AV1Picture> pic,
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -443,16 +463,19 @@ bool AV1Decoder::DecodeAndOutputPicture(
   if (!CheckAndCleanUpReferenceFrames()) {
     DLOG(ERROR) << "The states of reference frames are different between "
                 << "|ref_frames_| and |state_|";
-    return false;
+    return AV1Accelerator::Status::kFail;
   }
-  if (!accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
-                                  tile_buffers,
-                                  base::make_span(stream_, stream_size_))) {
-    return false;
+  const AV1Accelerator::Status status = accelerator_->SubmitDecode(
+      *pic, *current_sequence_header_, ref_frames_, tile_buffers,
+      base::make_span(stream_, stream_size_));
+  if (status != AV1Accelerator::Status::kOk) {
+    if (status == AV1Accelerator::Status::kTryAgain)
+      pending_pic_ = std::move(pic);
+    return status;
   }
 
   if (pic->frame_header.show_frame && !accelerator_->OutputPicture(*pic))
-    return false;
+    return AV1Accelerator::Status::kFail;
 
   // |current_frame_header_->refresh_frame_flags| should be 0xff if the frame is
   // either a SWITCH_FRAME or a visible KEY_FRAME (Spec 5.9.2).
@@ -461,7 +484,7 @@ bool AV1Decoder::DecodeAndOutputPicture(
             current_frame_header_->show_frame)) ||
          current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
-  return true;
+  return AV1Accelerator::Status::kOk;
 }
 
 gfx::Size AV1Decoder::GetPicSize() const {

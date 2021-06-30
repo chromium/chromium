@@ -34,11 +34,11 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
 
   scoped_refptr<AV1Picture> CreateAV1Picture(bool apply_grain) override;
 
-  bool SubmitDecode(const AV1Picture& pic,
-                    const libgav1::ObuSequenceHeader& seq_header,
-                    const AV1ReferenceFrameVector& ref_frames,
-                    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
-                    base::span<const uint8_t> data) override;
+  Status SubmitDecode(const AV1Picture& pic,
+                      const libgav1::ObuSequenceHeader& seq_header,
+                      const AV1ReferenceFrameVector& ref_frames,
+                      const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
+                      base::span<const uint8_t> data) override;
 
   bool OutputPicture(const AV1Picture& pic) override;
 

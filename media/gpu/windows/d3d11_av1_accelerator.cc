@@ -282,6 +282,8 @@ typedef struct _DXVA_Tile_AV1 {
 
 namespace media {
 
+using DecodeStatus = AV1Decoder::AV1Accelerator::Status;
+
 class D3D11AV1Picture : public AV1Picture {
  public:
   explicit D3D11AV1Picture(D3D11PictureBuffer* d3d11_picture,
@@ -492,7 +494,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   return true;
 }
 
-bool D3D11AV1Accelerator::SubmitDecode(
+DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& seq_header,
     const AV1ReferenceFrameVector& ref_frames,
@@ -510,7 +512,7 @@ bool D3D11AV1Accelerator::SubmitDecode(
     } else if (FAILED(hr)) {
       RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
                     StatusCode::kDecoderBeginFrameFailed);
-      return false;
+      return DecodeStatus::kFail;
     }
   } while (true);
 
@@ -520,16 +522,16 @@ bool D3D11AV1Accelerator::SubmitDecode(
                 ref_frames, &pic_params);
 
   if (!SubmitDecoderBuffer(pic_params, tile_buffers))
-    return false;
+    return DecodeStatus::kFail;
 
   const auto hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
     RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
                   StatusCode::kDecoderEndFrameFailed);
-    return false;
+    return DecodeStatus::kFail;
   }
 
-  return true;
+  return DecodeStatus::kOk;
 }
 
 bool D3D11AV1Accelerator::OutputPicture(const AV1Picture& pic) {

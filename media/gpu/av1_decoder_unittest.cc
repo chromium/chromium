@@ -116,11 +116,11 @@ class MockAV1Accelerator : public AV1Decoder::AV1Accelerator {
 
   MOCK_METHOD1(CreateAV1Picture, scoped_refptr<AV1Picture>(bool));
   MOCK_METHOD5(SubmitDecode,
-               bool(const AV1Picture&,
-                    const libgav1::ObuSequenceHeader&,
-                    const AV1ReferenceFrameVector&,
-                    const libgav1::Vector<libgav1::TileBuffer>&,
-                    base::span<const uint8_t>));
+               Status(const AV1Picture&,
+                      const libgav1::ObuSequenceHeader&,
+                      const AV1ReferenceFrameVector&,
+                      const libgav1::Vector<libgav1::TileBuffer>&,
+                      base::span<const uint8_t>));
   MOCK_METHOD1(OutputPicture, bool(const AV1Picture&));
 };
 }  // namespace
@@ -166,7 +166,8 @@ void AV1DecoderTest::SetUp() {
 
 std::vector<AcceleratedVideoDecoder::DecodeResult> AV1DecoderTest::Decode(
     scoped_refptr<DecoderBuffer> buffer) {
-  decoder_->SetStream(bitstream_id_++, *buffer);
+  if (buffer)
+    decoder_->SetStream(bitstream_id_++, *buffer);
 
   std::vector<DecodeResult> results;
   DecodeResult res;
@@ -174,7 +175,8 @@ std::vector<AcceleratedVideoDecoder::DecodeResult> AV1DecoderTest::Decode(
     res = decoder_->Decode();
     results.push_back(res);
   } while (res != DecodeResult::kDecodeError &&
-           res != DecodeResult::kRanOutOfStreamData);
+           res != DecodeResult::kRanOutOfStreamData &&
+           res != DecodeResult::kTryAgain);
   return results;
 }
 
@@ -319,7 +321,7 @@ TEST_F(AV1DecoderTest, DecodeOneIFrame) {
           MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
                                       /*film_grain_params_present=*/false),
           _, NonEmptyTileBuffers(), MatchesFrameData(i_frame_buffer)))
-      .WillOnce(Return(true));
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
   EXPECT_CALL(*mock_accelerator_,
               OutputPicture(SameAV1PictureInstance(av1_picture)))
       .WillOnce(Return(true));
@@ -352,7 +354,7 @@ TEST_F(AV1DecoderTest, DecodeSimpleStream) {
             MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
                                         /*film_grain_params_present=*/false),
             _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
-        .WillOnce(Return(true));
+        .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
     EXPECT_CALL(*mock_accelerator_,
                 OutputPicture(SameAV1PictureInstance(av1_picture)))
         .WillOnce(Return(true));
@@ -389,7 +391,7 @@ TEST_F(AV1DecoderTest, DecodeShowExistingPictureStream) {
                                       /*film_grain_params_present=*/false),
           _, NonEmptyTileBuffers(), _))
       .Times(kDecodedFrames)
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(AV1Decoder::AV1Accelerator::Status::kOk));
   EXPECT_CALL(*mock_accelerator_, OutputPicture(_))
       .Times(kOutputFrames)
       .WillRepeatedly(Return(true));
@@ -425,7 +427,7 @@ TEST_F(AV1DecoderTest, Decode10bitStream) {
             MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/10, kFrameSize,
                                         /*film_grain_params_present=*/false),
             _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
-        .WillOnce(Return(true));
+        .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
     EXPECT_CALL(*mock_accelerator_,
                 OutputPicture(SameAV1PictureInstance(av1_picture)))
         .WillOnce(Return(true));
@@ -485,7 +487,7 @@ TEST_F(AV1DecoderTest, DecodeFilmGrain) {
                                       /*film_grain_params_present=*/true),
           _, NonEmptyTileBuffers(), _))
       .Times(kDecodedFrames)
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(AV1Decoder::AV1Accelerator::Status::kOk));
   EXPECT_CALL(*mock_accelerator_, OutputPicture(_))
       .Times(kOutputFrames)
       .WillRepeatedly(Return(true));
@@ -528,7 +530,7 @@ TEST_F(AV1DecoderTest, ConfigChange) {
                            kProfile, /*bitdepth=*/8, kFrameSizes[i],
                            /*film_grain_params_present=*/false),
                        _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
-          .WillOnce(Return(true));
+          .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
       EXPECT_CALL(*mock_accelerator_,
                   OutputPicture(SameAV1PictureInstance(av1_picture)))
           .WillOnce(Return(true));
@@ -573,7 +575,7 @@ TEST_F(AV1DecoderTest, Reset) {
               MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
                                           /*film_grain_params_present=*/false),
               _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
-          .WillOnce(Return(true));
+          .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
       EXPECT_CALL(*mock_accelerator_,
                   OutputPicture(SameAV1PictureInstance(av1_picture)))
           .WillOnce(Return(true));
@@ -627,7 +629,7 @@ TEST_F(AV1DecoderTest, ResetAndConfigChange) {
                            kProfile, /*bitdepth=*/8, kFrameSizes[i],
                            /*film_grain_params_present=*/false),
                        _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
-          .WillOnce(Return(true));
+          .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
       EXPECT_CALL(*mock_accelerator_,
                   OutputPicture(SameAV1PictureInstance(av1_picture)))
           .WillOnce(Return(true));
@@ -671,7 +673,8 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
     AV1ReferenceFrameVector ref_frames;
     EXPECT_CALL(*mock_accelerator_,
                 SubmitDecode(SameAV1PictureInstance(av1_picture), _, _, _, _))
-        .WillOnce(DoAll(SaveArg<2>(&ref_frames), Return(true)));
+        .WillOnce(DoAll(SaveArg<2>(&ref_frames),
+                        Return(AV1Decoder::AV1Accelerator::Status::kOk)));
     EXPECT_CALL(*mock_accelerator_,
                 OutputPicture(SameAV1PictureInstance(av1_picture)))
         .WillOnce(Return(true));
@@ -745,6 +748,54 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
   const libgav1::DecoderState* decoder_state = GetDecoderState();
   ASSERT_TRUE(decoder_state);
   EXPECT_EQ(base::STLCount(decoder_state->reference_frame, nullptr), 0);
+}
+
+TEST_F(AV1DecoderTest, TryAgainSubmitDecode) {
+  constexpr gfx::Size kFrameSize(320, 240);
+  constexpr gfx::Size kRenderSize(320, 240);
+  constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
+  const std::string kIFrame("av1-I-frame-320x240");
+  scoped_refptr<DecoderBuffer> i_frame_buffer = ReadDecoderBuffer(kIFrame);
+  ASSERT_TRUE(!!i_frame_buffer);
+  auto av1_picture = base::MakeRefCounted<AV1Picture>();
+  ::testing::InSequence s;
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+      .WillOnce(Return(av1_picture));
+  EXPECT_CALL(
+      *mock_accelerator_,
+      SubmitDecode(
+          MatchesFrameHeader(kFrameSize, kRenderSize,
+                             /*show_existing_frame=*/false,
+                             /*show_frame=*/true),
+          MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
+                                      /*film_grain_params_present=*/false),
+          _, NonEmptyTileBuffers(), MatchesFrameData(i_frame_buffer)))
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kTryAgain));
+  EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).Times(0);
+  std::vector<DecodeResult> results = Decode(i_frame_buffer);
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kTryAgain};
+  EXPECT_EQ(results, expected);
+
+  testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+
+  // Now try again and have it succeed.
+  EXPECT_CALL(
+      *mock_accelerator_,
+      SubmitDecode(
+          MatchesFrameHeader(kFrameSize, kRenderSize,
+                             /*show_existing_frame=*/false,
+                             /*show_frame=*/true),
+          MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
+                                      /*film_grain_params_present=*/false),
+          _, NonEmptyTileBuffers(), MatchesFrameData(i_frame_buffer)))
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+  EXPECT_CALL(*mock_accelerator_,
+              OutputPicture(SameAV1PictureInstance(av1_picture)))
+      .WillOnce(Return(true));
+  results = Decode(nullptr);
+  expected = {DecodeResult::kRanOutOfStreamData};
+  EXPECT_EQ(results, expected);
 }
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,

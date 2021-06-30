@@ -46,6 +46,24 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
  public:
   class MEDIA_GPU_EXPORT AV1Accelerator {
    public:
+    // Methods may return kTryAgain if they need additional data (provided
+    // independently) in order to proceed. Examples are things like not having
+    // an appropriate key to decode encrypted content. This is not considered an
+    // unrecoverable error, but rather a pause to allow an application to
+    // independently provide the required data. When AV1Decoder::Decode()
+    // is called again, it will attempt to resume processing of the stream
+    // by calling the same method again.
+    enum class Status {
+      // Operation completed successfully.
+      kOk,
+
+      // Operation failed.
+      kFail,
+
+      // Operation failed because some external data is missing. Retry the same
+      // operation later, once the data has been provided.
+      kTryAgain,
+    };
     AV1Accelerator() = default;
     virtual ~AV1Accelerator() = default;
     AV1Accelerator(const AV1Accelerator&) = delete;
@@ -74,8 +92,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
     // process is finished, but the caller may drop its references to |pic|
     // and |ref_frames| immediately, and |data| does not need to remain valid
     // after this method returns.
-    // Returns true when successful, false otherwise.
-    virtual bool SubmitDecode(
+    virtual Status SubmitDecode(
         const AV1Picture& pic,
         const libgav1::ObuSequenceHeader& sequence_header,
         const AV1ReferenceFrameVector& ref_frames,
@@ -114,7 +131,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
  private:
   friend class AV1DecoderTest;
 
-  bool DecodeAndOutputPicture(
+  AV1Accelerator::Status DecodeAndOutputPicture(
       scoped_refptr<AV1Picture> pic,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
   void UpdateReferenceFrames(scoped_refptr<AV1Picture> pic);
@@ -152,6 +169,9 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   const uint8_t* stream_ = nullptr;
   size_t stream_size_ = 0;
   std::unique_ptr<DecryptConfig> decrypt_config_;
+
+  // Pending picture for decode when accelerator returns kTryAgain.
+  scoped_refptr<AV1Picture> pending_pic_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
