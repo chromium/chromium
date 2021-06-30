@@ -69,6 +69,12 @@ constexpr base::TimeDelta kDefaultDelayForBackgroundAndNetworkIdleTabFreezing =
 constexpr base::TimeDelta kThrottledWakeUpDuration =
     base::TimeDelta::FromMilliseconds(3);
 
+// The duration for which intensive throttling should be inhibited for
+// same-origin frames when the page title or favicon is updated.
+constexpr base::TimeDelta
+    kTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate =
+        base::TimeDelta::FromSeconds(3);
+
 constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
     base::TimeDelta::FromSeconds(15);
 
@@ -167,6 +173,7 @@ base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
 }  // namespace
 
 constexpr base::TimeDelta PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
+constexpr base::TimeDelta PageSchedulerImpl::kIntensiveThrottledWakeUpInterval;
 
 PageSchedulerImpl::PageSchedulerImpl(
     PageScheduler::Delegate* delegate,
@@ -720,7 +727,7 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
 
   if (IsIntensiveWakeUpThrottlingEnabled()) {
     same_origin_intensive_wake_up_budget_pool_
-        ->AllowLowerAlignmentIfNoRecentWakeUp(base::TimeDelta::FromSeconds(1));
+        ->AllowLowerAlignmentIfNoRecentWakeUp(kDefaultThrottledWakeUpInterval);
   }
 
   UpdateWakeUpBudgetPools(lazy_now);
@@ -819,14 +826,6 @@ void PageSchedulerImpl::OnTitleOrFaviconUpdated() {
     // for same-origin frames. This enables alternating effects meant to grab
     // the user's attention. Cross-origin frames are not affected, since they
     // shouldn't be able to observe that the page title or favicon was updated.
-    base::TimeDelta time_to_inhibit_intensive_throttling =
-        GetTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate();
-
-    if (time_to_inhibit_intensive_throttling.is_zero()) {
-      // No inhibiting to be done.
-      return;
-    }
-
     had_recent_title_or_favicon_update_ = true;
     base::sequence_manager::LazyNow lazy_now(
         main_thread_scheduler_->tick_clock());
@@ -836,7 +835,7 @@ void PageSchedulerImpl::OnTitleOrFaviconUpdated() {
     reset_had_recent_title_or_favicon_update_.Cancel();
     main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, reset_had_recent_title_or_favicon_update_.GetCallback(),
-        time_to_inhibit_intensive_throttling);
+        kTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate);
   }
 }
 
@@ -858,7 +857,7 @@ base::TimeDelta PageSchedulerImpl::GetIntensiveWakeUpThrottlingDuration(
 
   if (are_wake_ups_intensively_throttled_ &&
       !opted_out_from_aggressive_throttling_)
-    return GetIntensiveWakeUpThrottlingDurationBetweenWakeUps();
+    return kIntensiveThrottledWakeUpInterval;
   else
     return kDefaultThrottledWakeUpInterval;
 }

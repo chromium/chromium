@@ -48,9 +48,13 @@ class WakeUpBudgetPool;
 
 class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
  public:
-  // Interval between throttled wake ups, when intensive throttling is disabled.
+  // Interval between throttled wake ups, without intensive throttling.
   static constexpr base::TimeDelta kDefaultThrottledWakeUpInterval =
       base::TimeDelta::FromSeconds(1);
+
+  // Interval between throttled wake ups, with intensive throttling.
+  static constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
+      base::TimeDelta::FromMinutes(1);
 
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
   PageSchedulerImpl(const PageSchedulerImpl&) = delete;

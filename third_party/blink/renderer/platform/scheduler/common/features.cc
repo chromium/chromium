@@ -63,26 +63,6 @@ bool IsIntensiveWakeUpThrottlingEnabled() {
 // that admins get consistent behaviour that clients can't override. Otherwise
 // use the base::FeatureParams.
 
-base::TimeDelta GetIntensiveWakeUpThrottlingDurationBetweenWakeUps() {
-  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
-
-  // Controls the period during which at most 1 wake up from throttleable
-  // TaskQueues in a page can take place.
-  static const base::FeatureParam<int>
-      kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds{
-          &features::kIntensiveWakeUpThrottling,
-          kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Name,
-          kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default};
-
-  int seconds =
-      kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default;
-  if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
-      PolicyOverride::NO_OVERRIDE) {
-    seconds = kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds.Get();
-  }
-  return base::TimeDelta::FromSeconds(seconds);
-}
-
 base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
   DCHECK(IsIntensiveWakeUpThrottlingEnabled());
 
@@ -100,42 +80,6 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
     seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
   }
   return base::TimeDelta::FromSeconds(seconds);
-}
-
-base::TimeDelta GetTimeToInhibitIntensiveThrottlingOnTitleOrFaviconUpdate() {
-  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
-
-  constexpr int kDefaultSeconds = 3;
-
-  static const base::FeatureParam<int> kFeatureParam{
-      &features::kIntensiveWakeUpThrottling,
-      "inhibit_seconds_on_title_or_favicon_update_seconds", kDefaultSeconds};
-
-  int seconds = kDefaultSeconds;
-  if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
-      PolicyOverride::NO_OVERRIDE) {
-    seconds = kFeatureParam.Get();
-  }
-
-  return base::TimeDelta::FromSeconds(seconds);
-}
-
-bool CanIntensivelyThrottleLowNestingLevel() {
-  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
-
-  static const base::FeatureParam<bool> kFeatureParam{
-      &features::kIntensiveWakeUpThrottling,
-      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Name,
-      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default};
-
-  bool value =
-      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default;
-  if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
-      PolicyOverride::NO_OVERRIDE) {
-    value = kFeatureParam.Get();
-  }
-
-  return value;
 }
 
 const base::Feature kDeprioritizeDOMTimersDuringPageLoading{

@@ -58,6 +58,8 @@ namespace {
 
 constexpr base::TimeDelta kDefaultThrottledWakeUpInterval =
     PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
+constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
+    PageSchedulerImpl::kIntensiveThrottledWakeUpInterval;
 constexpr auto kShortDelay = base::TimeDelta::FromMilliseconds(10);
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
@@ -606,19 +608,9 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase
  public:
   using Super = FrameSchedulerImplTest;
 
-  explicit FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase(
-      bool can_intensively_throttle_low_nesting_level)
-      : FrameSchedulerImplTest(
-            features::kIntensiveWakeUpThrottling,
-            // If |can_intensively_throttle_low_nesting_level| is true, set the
-            // feature param to "true". Otherwise, test the default behavior (no
-            // feature params).
-            can_intensively_throttle_low_nesting_level
-                ? base::FieldTrialParams(
-                      {{kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Name,
-                        "true"}})
-                : base::FieldTrialParams(),
-            {features::kStopInBackground}) {}
+  FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase()
+      : FrameSchedulerImplTest({features::kIntensiveWakeUpThrottling},
+                               {features::kStopInBackground}) {}
 
   void SetUp() override {
     Super::SetUp();
@@ -633,17 +625,12 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase
   const int kNumTasks = 5;
   const base::TimeDelta kGracePeriod =
       GetIntensiveWakeUpThrottlingGracePeriod();
-  const base::TimeDelta kIntensiveThrottlingDurationBetweenWakeUps =
-      GetIntensiveWakeUpThrottlingDurationBetweenWakeUps();
 };
 
 // Test param for FrameSchedulerImplTestWithIntensiveWakeUpThrottling
 struct IntensiveWakeUpThrottlingTestParam {
   // TaskType used to obtain TaskRunners from the FrameScheduler.
   TaskType task_type;
-  // Whether the feature param to allow throttling of timers with a low nesting
-  // level should be set to "true" at the beginning of the test.
-  bool can_intensively_throttle_low_nesting_level;
   // Whether it is expected that tasks will be intensively throttled.
   bool is_intensive_throttling_expected;
 };
@@ -652,9 +639,7 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottling
     : public FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase,
       public ::testing::WithParamInterface<IntensiveWakeUpThrottlingTestParam> {
  public:
-  FrameSchedulerImplTestWithIntensiveWakeUpThrottling()
-      : FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase(
-            GetParam().can_intensively_throttle_low_nesting_level) {}
+  FrameSchedulerImplTestWithIntensiveWakeUpThrottling() = default;
 
   TaskType GetTaskType() const { return GetParam().task_type; }
   bool IsIntensiveThrottlingExpected() const {
@@ -663,7 +648,7 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottling
 
   base::TimeDelta GetExpectedWakeUpInterval() const {
     if (IsIntensiveThrottlingExpected())
-      return kIntensiveThrottlingDurationBetweenWakeUps;
+      return kIntensiveThrottledWakeUpInterval;
     return kDefaultThrottledWakeUpInterval;
   }
 };
@@ -671,9 +656,7 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottling
 class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride
     : public FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase {
  public:
-  FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride()
-      : FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase(
-            /* can_intensively_throttle_low_nesting_level=*/false) {}
+  FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride() = default;
 
   // This should only be called once per test, and prior to the
   // PageSchedulerImpl logic actually parsing the policy switch.
@@ -858,8 +841,6 @@ void RePostTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 // Disable the kStopInBackground feature because it hides the effect of
 // intensive wake up throttling.
 TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
-  constexpr auto kTaskPeriod = base::TimeDelta::FromSeconds(1);
-
   // This TaskRunner is throttled.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(GetParam());
@@ -873,7 +854,7 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   int num_remaining_tasks =
       base::TimeDelta::FromSeconds(
           kIntensiveWakeUpThrottling_GracePeriodSeconds_Default)
-          .IntDiv(kTaskPeriod);
+          .IntDiv(kDefaultThrottledWakeUpInterval);
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RePostTask, task_runner, kShortDelay,
@@ -883,7 +864,7 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   // A task should run every second.
   while (num_remaining_tasks > 0) {
     int previous_num_remaining_tasks = num_remaining_tasks;
-    task_environment_.FastForwardBy(kTaskPeriod);
+    task_environment_.FastForwardBy(kDefaultThrottledWakeUpInterval);
     EXPECT_EQ(previous_num_remaining_tasks - 1, num_remaining_tasks);
   }
 
@@ -900,9 +881,8 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   // otherwise.
   const base::TimeDelta expected_period_after_grace_period =
       (GetParam() == TaskType::kJavascriptTimerDelayedLowNesting)
-          ? kTaskPeriod
-          : base::TimeDelta::FromSeconds(
-                kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default);
+          ? kDefaultThrottledWakeUpInterval
+          : kIntensiveThrottledWakeUpInterval;
 
   while (num_remaining_tasks > 0) {
     int previous_num_remaining_tasks = num_remaining_tasks;
@@ -2967,9 +2947,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       frame_scheduler_->GetTaskRunner(GetTaskType());
 
   // Snap the time to a multiple of
-  // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise, the time at which
+  // |kIntensiveThrottledWakeUpInterval|. Otherwise, the time at which
   // tasks can run after throttling is enabled will vary.
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
   const base::TimeTicks test_start = base::TimeTicks::Now();
 
   // Hide the page. This starts the delay to throttle background wake ups.
@@ -3030,7 +3010,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
           kShortDelay + i * kDefaultThrottledWakeUpInterval);
     }
 
-    FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+    FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
     if (IsIntensiveThrottlingExpected()) {
       const base::TimeTicks aligned_time =
@@ -3061,7 +3041,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                                  base::BindOnce(&RecordRunTime, &run_times),
                                  kDefaultThrottledWakeUpInterval);
 
-    task_environment_.FastForwardBy(kIntensiveThrottlingDurationBetweenWakeUps);
+    task_environment_.FastForwardBy(kIntensiveThrottledWakeUpInterval);
 
     EXPECT_THAT(run_times, testing::ElementsAre(scope_start +
                                                 GetExpectedWakeUpInterval()));
@@ -3077,8 +3057,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     std::vector<base::TimeTicks> run_times;
 
     const base::TimeDelta kLongDelay =
-        kIntensiveThrottlingDurationBetweenWakeUps * 5 +
-        kDefaultThrottledWakeUpInterval;
+        kIntensiveThrottledWakeUpInterval * 5 + kDefaultThrottledWakeUpInterval;
     task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordRunTime, &run_times), kLongDelay);
 
@@ -3146,9 +3125,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       frame_scheduler_->GetTaskRunner(GetTaskType());
 
   // Snap the time to a multiple of
-  // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise, the time at which
+  // |kIntensiveThrottledWakeUpInterval|. Otherwise, the time at which
   // tasks can run after throttling is enabled will vary.
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
   const base::TimeTicks test_start = base::TimeTicks::Now();
 
   // Hide the page. This starts the delay to throttle background wake ups.
@@ -3191,7 +3170,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                                  base::BindOnce(&RecordRunTime, &run_times),
                                  kDefaultThrottledWakeUpInterval);
 
-    task_environment_.FastForwardBy(kIntensiveThrottlingDurationBetweenWakeUps);
+    task_environment_.FastForwardBy(kIntensiveThrottledWakeUpInterval);
     EXPECT_THAT(run_times, testing::ElementsAre(scope_start +
                                                 GetExpectedWakeUpInterval()));
   }
@@ -3210,11 +3189,11 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
           kShortDelay + i * kDefaultThrottledWakeUpInterval);
     }
 
-    task_environment_.FastForwardBy(kIntensiveThrottlingDurationBetweenWakeUps);
+    task_environment_.FastForwardBy(kIntensiveThrottledWakeUpInterval);
 
     if (IsIntensiveThrottlingExpected()) {
       const base::TimeTicks aligned_time =
-          scope_start + kIntensiveThrottlingDurationBetweenWakeUps;
+          scope_start + kIntensiveThrottledWakeUpInterval;
       EXPECT_THAT(run_times,
                   testing::ElementsAre(aligned_time, aligned_time, aligned_time,
                                        aligned_time, aligned_time));
@@ -3241,7 +3220,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                                  base::BindOnce(&RecordRunTime, &run_times),
                                  kDefaultThrottledWakeUpInterval);
 
-    task_environment_.FastForwardBy(kIntensiveThrottlingDurationBetweenWakeUps);
+    task_environment_.FastForwardBy(kIntensiveThrottledWakeUpInterval);
     EXPECT_THAT(run_times, testing::ElementsAre(scope_start +
                                                 GetExpectedWakeUpInterval()));
   }
@@ -3256,8 +3235,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     EXPECT_EQ(scope_start, test_start + base::TimeDelta::FromMinutes(8));
     std::vector<base::TimeTicks> run_times;
 
-    const base::TimeDelta kLongDelay =
-        kIntensiveThrottlingDurationBetweenWakeUps * 6;
+    const base::TimeDelta kLongDelay = kIntensiveThrottledWakeUpInterval * 6;
     task_runner->PostDelayedTask(FROM_HERE,
                                  base::BindOnce(&RecordRunTime, &run_times),
                                  kLongDelay - kShortDelay);
@@ -3331,9 +3309,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       other_frame_scheduler->GetTaskRunner(GetTaskType());
 
   // Snap the time to a multiple of
-  // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise, the time at which
+  // |kIntensiveThrottledWakeUpInterval|. Otherwise, the time at which
   // tasks can run after throttling is enabled will vary.
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
   // Hide the page and wait until the intensive throttling grace period has
   // elapsed.
@@ -3357,10 +3335,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // last minute. The second task is 1-minute aligned if the TaskType supports
   // intensive throttling, or 1-second aligned otherwise.
   if (IsIntensiveThrottlingExpected()) {
-    EXPECT_THAT(run_times,
-                testing::ElementsAre(
-                    post_time + 2 * kDefaultThrottledWakeUpInterval,
-                    post_time + kIntensiveThrottlingDurationBetweenWakeUps));
+    EXPECT_THAT(run_times, testing::ElementsAre(
+                               post_time + 2 * kDefaultThrottledWakeUpInterval,
+                               post_time + kIntensiveThrottledWakeUpInterval));
   } else {
     EXPECT_THAT(
         run_times,
@@ -3385,9 +3362,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       other_frame_scheduler->GetTaskRunner(GetTaskType());
 
   // Fast-forward the time to a multiple of
-  // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise,
+  // |kIntensiveThrottledWakeUpInterval|. Otherwise,
   // the time at which tasks can run after throttling is enabled will vary.
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
   // Hide the page and wait until the intensive throttling grace period has
   // elapsed.
@@ -3408,11 +3385,10 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     if (IsIntensiveThrottlingExpected()) {
       // Note: Intensive throttling is not applied on the 1st task since there
       // is no recent wake up.
-      EXPECT_THAT(
-          run_times,
-          testing::ElementsAre(
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps));
+      EXPECT_THAT(run_times,
+                  testing::ElementsAre(
+                      scope_start + kDefaultThrottledWakeUpInterval,
+                      scope_start + kIntensiveThrottledWakeUpInterval));
     } else {
       EXPECT_THAT(run_times,
                   testing::ElementsAre(
@@ -3465,9 +3441,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   }
 
   // Fast-forward so that there is no recent wake up. Then, align the time on
-  // |kIntensiveThrottlingDurationBetweenWakeUps| to simplify expectations.
-  task_environment_.FastForwardBy(kIntensiveThrottlingDurationBetweenWakeUps);
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  // |kIntensiveThrottledWakeUpInterval| to simplify expectations.
+  task_environment_.FastForwardBy(kIntensiveThrottledWakeUpInterval);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
   {
     // Wake ups are intensively throttled, since there is no throttling opt-out.
@@ -3482,11 +3458,10 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     if (IsIntensiveThrottlingExpected()) {
       // Note: Intensive throttling is not applied on the 1st task since there
       // is no recent wake up.
-      EXPECT_THAT(
-          run_times,
-          testing::ElementsAre(
-              scope_start + kDefaultThrottledWakeUpInterval,
-              scope_start + kIntensiveThrottlingDurationBetweenWakeUps));
+      EXPECT_THAT(run_times,
+                  testing::ElementsAre(
+                      scope_start + kDefaultThrottledWakeUpInterval,
+                      scope_start + kIntensiveThrottledWakeUpInterval));
     } else {
       EXPECT_THAT(run_times,
                   testing::ElementsAre(
@@ -3515,9 +3490,9 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       cross_origin_frame_scheduler->GetTaskRunner(GetTaskType());
 
   // Snap the time to a multiple of
-  // |kIntensiveThrottlingDurationBetweenWakeUps|. Otherwise, the time at which
+  // |kIntensiveThrottledWakeUpInterval|. Otherwise, the time at which
   // tasks can run after throttling is enabled will vary.
-  FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+  FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
 
   // Hide the page and wait until the intensive throttling grace period has
   // elapsed.
@@ -3554,7 +3529,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       EXPECT_EQ(1, cross_origin_counter);
     }
 
-    FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+    FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
     EXPECT_EQ(1, counter);
     EXPECT_EQ(1, cross_origin_counter);
   }
@@ -3563,8 +3538,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
     // Post delayed tasks with long delays that aren't aligned with the wake up
     // interval. They should run at aligned times, since they are cross-origin.
     const base::TimeDelta kLongUnalignedDelay =
-        5 * kIntensiveThrottlingDurationBetweenWakeUps +
-        kDefaultThrottledWakeUpInterval;
+        5 * kIntensiveThrottledWakeUpInterval + kDefaultThrottledWakeUpInterval;
     int counter = 0;
     task_runner->PostDelayedTask(
         FROM_HERE,
@@ -3590,7 +3564,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       EXPECT_EQ(1, cross_origin_counter);
     }
 
-    FastForwardToAlignedTime(kIntensiveThrottlingDurationBetweenWakeUps);
+    FastForwardToAlignedTime(kIntensiveThrottledWakeUpInterval);
     EXPECT_EQ(1, counter);
     EXPECT_EQ(1, cross_origin_counter);
   }
@@ -3602,22 +3576,12 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kJavascriptTimerDelayedLowNesting,
-            /* can_intensively_throttle_low_nesting_level=*/false,
             /* is_intensive_throttling_expected=*/false},
         IntensiveWakeUpThrottlingTestParam{
-            /* task_type=*/TaskType::kJavascriptTimerDelayedLowNesting,
-            /* can_intensively_throttle_low_nesting_level=*/true,
-            /* is_intensive_throttling_expected=*/true},
-        IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kJavascriptTimerDelayedHighNesting,
-            /* can_intensively_throttle_low_nesting_level=*/false,
             /* is_intensive_throttling_expected=*/true}),
     [](const testing::TestParamInfo<IntensiveWakeUpThrottlingTestParam>& info) {
-      const std::string task_type =
-          TaskTypeNames::TaskTypeToString(info.param.task_type);
-      if (info.param.can_intensively_throttle_low_nesting_level)
-        return task_type + "_can_intensively_throttle_low_nesting_level";
-      return task_type;
+      return TaskTypeNames::TaskTypeToString(info.param.task_type);
     });
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
@@ -3629,13 +3593,6 @@ TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
   EXPECT_EQ(base::TimeDelta::FromSeconds(
                 kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
             GetIntensiveWakeUpThrottlingGracePeriod());
-  EXPECT_EQ(
-      base::TimeDelta::FromSeconds(
-          kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default),
-      GetIntensiveWakeUpThrottlingDurationBetweenWakeUps());
-  EXPECT_EQ(
-      kIntensiveWakeUpThrottling_CanIntensivelyThrottleLowNestingLevel_Default,
-      CanIntensivelyThrottleLowNestingLevel());
 }
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
