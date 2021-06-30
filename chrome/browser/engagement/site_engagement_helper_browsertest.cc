@@ -128,21 +128,25 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   // prerendering.
   EXPECT_FALSE(IsInputTrackerTimerRestarted(helper));
 
-  ui_test_utils::NavigateToURL(browser(), prerender_url);
+  prerender_helper()->NavigatePrimaryPage(*web_contents(), prerender_url);
 
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
   // Should be restarted since the page is activated from the prerendering.
   EXPECT_TRUE(IsInputTrackerTimerRestarted(helper));
-  // SiteEngagementMetrics::kEngagementTypeHistogram is increased to 3 with
-  // the prerendering activation.
+  // Renderer initiated activation is not counted as an engagement event. As a
+  // result, SiteEngagementMetrics::kEngagementTypeHistogram maintains a value
+  // of 2 with the prerendering activation.
+  //
+  // TODO(crbug.com/1166085): Add a test for browser-initiated/omnibox
+  // navigations when available.
   histogram_tester()->ExpectTotalCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram, 3);
-  // SiteEngagementMetrics::kEngagementTypeHistogram is should be 2 with
+      SiteEngagementMetrics::kEngagementTypeHistogram, 2);
+  // SiteEngagementMetrics::kEngagementTypeHistogram should be 1 with
   // EngagementType::kNavigation.
   histogram_tester()->ExpectBucketCount(
       SiteEngagementMetrics::kEngagementTypeHistogram,
-      EngagementType::kNavigation, 2);
+      EngagementType::kNavigation, 1);
 }
 
 }  // namespace site_engagement

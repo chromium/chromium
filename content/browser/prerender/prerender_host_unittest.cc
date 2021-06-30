@@ -81,8 +81,9 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 };
 
 TEST_F(PrerenderHostTest, Activate) {
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+  const GURL kOriginUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
@@ -95,8 +96,8 @@ TEST_F(PrerenderHostTest, Activate) {
 
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page.
-  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
-                                                    kPrerenderingUrl);
+  NavigationSimulatorImpl::NavigateAndCommitFromDocument(kPrerenderingUrl,
+                                                         initiator_rfh);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 
@@ -117,8 +118,8 @@ TEST_F(PrerenderHostTest, DontActivate) {
 // Tests that main frame navigations in a prerendered page cannot occur even if
 // they start after the prerendered page has been reserved for activation.
 TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+  const GURL kOriginUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
@@ -170,8 +171,8 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 //
 // Regression test for https://crbug.com/1190262.
 TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+  const GURL kOriginUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kOriginUrl);
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
@@ -251,8 +252,8 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page. The main expectation is that this navigation commits
   // successfully and doesn't hit any DCHECKs.
-  NavigationSimulatorImpl::NavigateAndCommitFromBrowser(web_contents.get(),
-                                                        kPrerenderingUrl);
+  NavigationSimulatorImpl::NavigateAndCommitFromDocument(kPrerenderingUrl,
+                                                         initiator_rfh);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 
   // Ensure that the the page_state was preserved.

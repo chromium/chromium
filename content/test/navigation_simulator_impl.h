@@ -19,9 +19,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_flags.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -172,6 +174,32 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void set_initiator_origin(
       const absl::optional<url::Origin>& initiator_origin) {
     initiator_origin_ = initiator_origin;
+  }
+
+  void set_request_headers(const std::string& headers) { headers_ = headers; }
+
+  void set_load_flags(int load_flags) { load_flags_ = load_flags; }
+
+  void set_mixed_content_context_type(
+      blink::mojom::MixedContentContextType mixed_content_context_type) {
+    mixed_content_context_type_ = mixed_content_context_type;
+  }
+
+  void set_searchable_form_url(const GURL& searchable_form_url) {
+    searchable_form_url_ = searchable_form_url;
+  }
+
+  void set_searchable_form_encoding(
+      const std::string& searchable_form_encoding) {
+    searchable_form_encoding_ = searchable_form_encoding;
+  }
+
+  void set_history_url_for_data_url(const GURL& history_url_for_data_url) {
+    history_url_for_data_url_ = history_url_for_data_url;
+  }
+
+  void set_href_translate(const std::string& href_translate) {
+    href_translate_ = href_translate;
   }
 
  private:
@@ -330,6 +358,14 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   int64_t post_id_ = -1;
   bool skip_service_worker_ = false;
   absl::optional<url::Origin> initiator_origin_;
+  std::string headers_;
+  int load_flags_ = net::LOAD_NORMAL;
+  blink::mojom::MixedContentContextType mixed_content_context_type_ =
+      blink::mojom::MixedContentContextType::kBlockable;
+  GURL searchable_form_url_;
+  std::string searchable_form_encoding_;
+  absl::optional<GURL> history_url_for_data_url_;
+  std::string href_translate_;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
   // would be in the network::mojom::URLResponseHead. The alias chain order

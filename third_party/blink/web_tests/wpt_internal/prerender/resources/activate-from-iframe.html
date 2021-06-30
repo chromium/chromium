@@ -43,29 +43,35 @@ try {
       // Wait for activation ready.
       const gotMessage = await new Promise(r => readyChannel.onmessage = r);
       assert_equals(gotMessage.data, 'activation ready');
+      resultChannel.postMessage('attempting prerender activation');
 
-      // Initiate navigation on the main frame. This should activate the
-      // prerendered page.
+      // Initiate navigation on the main frame. This will attempt to prerender
+      // a page from the iframe, but fail because the initiator of the
+      // navigation will not match. The url will be loaded from scratch,
+      // without prerendering.
       window.parent.location = prerenderingUrl.toString();
 
-      // Close this iframe. This shouldn't cancel activation.
+      // Close this iframe. This shouldn't cancel activation attempt.
       window.close();
       break;
     }
 
     // The main frame of the page being prerendered.
     case 'prerendering': {
-      assert_true(document.prerendering);
+      if (document.prerendering) {
+        // Inform the activator iframe that this page is ready for activation.
+        readyChannel.postMessage('activation ready');
 
-      // Inform the activator iframe that this page is ready for activation.
-      readyChannel.postMessage('activation ready');
-
-      // Wait until this page gets activated.
-      await new Promise(r => document.onprerenderingchange = r);
-      assert_false(document.prerendering);
-
-      // Inform the main test page that activation succeeded.
-      resultChannel.postMessage('activated');
+        // Waiting for a confirmation of prerendering activation, which will
+        // not come.
+        await new Promise(r => document.onprerenderingchange = r);
+      } else {
+        // This block is executed when the page is loaded from scratch after
+        // a failed prerender activation.
+        // Inform the main test page that activation failed, but page was
+        // loaded from scratch.
+        resultChannel.postMessage('loaded from scratch');
+      }
       break;
     }
   }

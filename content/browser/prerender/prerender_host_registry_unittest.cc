@@ -4,6 +4,7 @@
 
 #include "content/browser/prerender/prerender_host_registry.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -14,7 +15,9 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/load_flags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
 namespace {
@@ -68,9 +71,18 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
   EXPECT_TRUE(host.is_ready_for_activation());
 }
 
-TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+// Helper method to test that prerendering activation fails when an individual
+// NavigationParams parameter value does not match between the initial and
+// activation navigations. Use setup_callback to set the individual parameter
+// value that is to be tested.
+void CheckNotActivatedForParams(
+    base::OnceCallback<void(NavigationSimulatorImpl*)> setup_callback,
+    BrowserContext* browser_context) {
+  const GURL kOriginalUrl("https://example.com/");
+
+  std::unique_ptr<TestWebContents> web_contents(TestWebContents::Create(
+      browser_context, SiteInstanceImpl::Create(browser_context)));
+  web_contents->NavigateAndCommit(kOriginalUrl);
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -89,7 +101,39 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
                                                        render_frame_host);
-  // Implicitly will call ReserveHostToActivate.
+  // Change a parameter to differentiate the activation request from the
+  // prerendering request.
+  std::move(setup_callback).Run(navigation.get());
+  navigation->Start();
+  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
+  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
+            kNoFrameTreeNodeId);
+  EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
+TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
+  const GURL kOriginalUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(kOriginalUrl);
+  RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
+  ASSERT_TRUE(render_frame_host);
+
+  const GURL kPrerenderingUrl("https://example.com/next");
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry->FindHostByUrlForTesting(kPrerenderingUrl);
+  CommitPrerenderNavigation(*prerender_host);
+
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
+                                                       render_frame_host);
+  // Implicitly will call ReserveHostToActivate().
   navigation->Start();
   NavigationRequest* navigation_request = navigation->GetNavigationHandle();
   EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
@@ -99,8 +143,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
+  const GURL kOriginalUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+      CreateWebContents(kOriginalUrl);
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -139,8 +184,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
 }
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
+  const GURL kOriginalUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+      CreateWebContents(kOriginalUrl);
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -196,8 +242,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
 
 TEST_F(PrerenderHostRegistryTest,
        ReserveHostToActivateBeforeReadyForActivation) {
+  const GURL kOriginalUrl("https://example.com/");
   std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
+      CreateWebContents(kOriginalUrl);
   RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
   ASSERT_TRUE(render_frame_host);
 
@@ -253,37 +300,135 @@ TEST_F(PrerenderHostRegistryTest, CancelHost) {
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
+// -------------------------------------------------
+// Activation navigation parameter matching unit tests.
+// These tests change a parameter to differentiate the activation request from
+// the prerendering request.
+
 TEST_F(PrerenderHostRegistryTest,
-       CompareLoadAndActivationBeginParams_SkipServiceWorker) {
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("https://example.com/"));
-  RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
-  ASSERT_TRUE(render_frame_host);
-
-  const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
-
-  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
-  ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
-  PrerenderHost* prerender_host =
-      registry->FindHostByUrlForTesting(kPrerenderingUrl);
-  CommitPrerenderNavigation(*prerender_host);
-
-  std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
-                                                       render_frame_host);
-  // Change a parameter to differentiate the activation request from the
-  // prerendering request.
-  navigation->set_skip_service_worker(true);
-  navigation->Start();
-  NavigationRequest* navigation_request = navigation->GetNavigationHandle();
-  EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
-            kNoFrameTreeNodeId);
-  EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+       CompareInitialAndActivationBeginParams_InitiatorFrameToken) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        const GURL kOriginalUrl("https://example.com/");
+        navigation->SetInitiatorFrame(nullptr);
+        navigation->set_initiator_origin(url::Origin::Create(kOriginalUrl));
+      }),
+      std::move(GetBrowserContext()));
 }
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_Headers) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_request_headers("User-Agent: Test");
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_LoadFlags) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_load_flags(net::LOAD_ONLY_FROM_CACHE);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_SkipServiceWorker) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_skip_service_worker(true);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_MixedContentContextType) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_mixed_content_context_type(
+            blink::mojom::MixedContentContextType::kNotMixedContent);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_IsFormSubmission) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->SetIsFormSubmission(true);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_SearchableFormUrl) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        const GURL kOriginalUrl("https://example.com/");
+        navigation->set_searchable_form_url(kOriginalUrl);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationBeginParams_SearchableFormEncoding) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_searchable_form_encoding("Test encoding");
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_InitiatorOrigin) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_initiator_origin(url::Origin());
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_ShouldCheckMainWorldCSP) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_should_check_main_world_csp(
+            network::mojom::CSPDisposition::DO_NOT_CHECK);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_HistoryURLForDataURL) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        const GURL kOriginalUrl("https://example.com/");
+        navigation->set_history_url_for_data_url(kOriginalUrl);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_Method) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->SetMethod("POST");
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_HrefTranslate) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_href_translate("test");
+      }),
+      std::move(GetBrowserContext()));
+}
+
+// End navigation parameter matching tests ---------
 
 }  // namespace
 }  // namespace content

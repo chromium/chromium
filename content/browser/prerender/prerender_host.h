@@ -144,6 +144,11 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // Asks the registry to cancel prerendering.
   void Cancel(FinalStatus status);
 
+  bool AreBeginNavigationParamsCompatibleWithNavigation(
+      const mojom::BeginNavigationParams& potential_activation);
+  bool AreCommonNavigationParamsCompatibleWithNavigation(
+      const mojom::CommonNavigationParams& potential_activation);
+
   // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
   // PrerenderAttributesPtr.
   const blink::mojom::PrerenderAttributesPtr attributes_;

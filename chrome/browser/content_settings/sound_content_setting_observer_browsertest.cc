@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   EXPECT_TRUE(observer->HasLoggedSiteMutedUkmForTesting());
 
   // Activates the page from the prerendering.
-  ui_test_utils::NavigateToURL(browser(), prerender_url);
+  prerender_helper()->NavigatePrimaryPage(*web_contents(), prerender_url);
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
   // It should be reset.

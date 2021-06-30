@@ -3099,7 +3099,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplPrerenderingBrowserTest,
   content::test::PrerenderHostObserver host_observer_a(*web_contents(),
                                                        prerender_host_a);
   // Navigate to a new page on the same origin.
-  EXPECT_TRUE(NavigateToURL(shell(), prerender_url_a));
+  test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(),
+                                                 prerender_url_a);
   EXPECT_TRUE(host_observer_a.was_activated());
   player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
 

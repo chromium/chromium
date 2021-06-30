@@ -25,7 +25,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/load_flags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace content {
 
@@ -367,9 +369,150 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   // TODO(crbug.com/1181763): compare the rest of the navigation parameters. We
   // should introduce compile-time parameter checks as well, to ensure how new
   // fields should be compared for compatibility.
-  if (navigation_request.begin_params().skip_service_worker !=
-      begin_params_->skip_service_worker)
+
+  // As the initial prerender navigation is a) limited to HTTP(s) URLs and b)
+  // initiated by the PrerenderHost, we do not expect some navigation parameters
+  // connected to certain navigation types to be set and the DCHECKS below
+  // enforce that.
+  // The parameters of the potential activation, however, are coming from the
+  // renderer and we mostly don't have any guarantees what they are, so we
+  // should not DCHECK them. Instead, by default we compare them with initial
+  // prerender activation parameters and fail to activate when they differ.
+  // Note: some of those parameters should be never set (or should be ignored)
+  // for main-frame / HTTP(s) navigations, but we still compare them here as a
+  // defence-in-depth measure.
+  DCHECK(navigation_request.IsInPrimaryMainFrame());
+
+  // Compare BeginNavigationParams.
+  if (!AreBeginNavigationParamsCompatibleWithNavigation(
+          navigation_request.begin_params())) {
     return false;
+  }
+
+  // Compare CommonNavigationParams.
+  if (!AreCommonNavigationParamsCompatibleWithNavigation(
+          navigation_request.common_params())) {
+    return false;
+  }
+
+  return true;
+}
+
+bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
+    const mojom::BeginNavigationParams& potential_activation) {
+  if (potential_activation.initiator_frame_token !=
+      begin_params_->initiator_frame_token) {
+    return false;
+  }
+
+  if (potential_activation.headers != begin_params_->headers) {
+    return false;
+  }
+
+  if (potential_activation.load_flags != begin_params_->load_flags) {
+    return false;
+  }
+
+  if (potential_activation.skip_service_worker !=
+      begin_params_->skip_service_worker) {
+    return false;
+  }
+
+  if (potential_activation.mixed_content_context_type !=
+      begin_params_->mixed_content_context_type) {
+    return false;
+  }
+
+  // Initial prerender navigation cannot be a form submission.
+  DCHECK(!begin_params_->is_form_submission);
+  if (potential_activation.is_form_submission !=
+      begin_params_->is_form_submission) {
+    return false;
+  }
+
+  if (potential_activation.searchable_form_url !=
+      begin_params_->searchable_form_url) {
+    return false;
+  }
+
+  if (potential_activation.searchable_form_encoding !=
+      begin_params_->searchable_form_encoding) {
+    return false;
+  }
+
+  // Trust token params can be set only on subframe navigations, so both values
+  // should be null here.
+  DCHECK(!begin_params_->trust_token_params);
+  if (potential_activation.trust_token_params !=
+      begin_params_->trust_token_params) {
+    return false;
+  }
+
+  // Web bundle token cannot be set due because it is only set for child
+  // frame navigations.
+  DCHECK(!begin_params_->web_bundle_token);
+  if (potential_activation.web_bundle_token) {
+    return false;
+  }
+
+  return true;
+}
+
+bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
+    const mojom::CommonNavigationParams& potential_activation) {
+  if (potential_activation.initiator_origin !=
+      common_params_->initiator_origin) {
+    return false;
+  }
+
+  DCHECK_EQ(common_params_->navigation_type,
+            mojom::NavigationType::DIFFERENT_DOCUMENT);
+  if (potential_activation.navigation_type != common_params_->navigation_type) {
+    return false;
+  }
+
+  DCHECK(common_params_->base_url_for_data_url.is_empty());
+  if (potential_activation.base_url_for_data_url !=
+      common_params_->base_url_for_data_url) {
+    return false;
+  }
+
+  DCHECK(common_params_->history_url_for_data_url.is_empty());
+  if (potential_activation.history_url_for_data_url.is_empty() !=
+      common_params_->history_url_for_data_url.is_empty()) {
+    return false;
+  }
+
+  if (potential_activation.method != common_params_->method) {
+    return false;
+  }
+
+  // Initial prerender navigation can't be a form submission.
+  DCHECK(!common_params_->post_data);
+  if (potential_activation.post_data != common_params_->post_data) {
+    return false;
+  }
+
+  if (potential_activation.should_check_main_world_csp !=
+      common_params_->should_check_main_world_csp) {
+    return false;
+  }
+
+  if (potential_activation.initiator_origin_trial_features !=
+      common_params_->initiator_origin_trial_features) {
+    return false;
+  }
+
+  if (potential_activation.href_translate != common_params_->href_translate) {
+    return false;
+  }
+
+  // Initial prerender navigation can't be a history navigation.
+  DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
+  if (potential_activation.is_history_navigation_in_new_child_frame !=
+      common_params_->is_history_navigation_in_new_child_frame) {
+    return false;
+  }
 
   return true;
 }

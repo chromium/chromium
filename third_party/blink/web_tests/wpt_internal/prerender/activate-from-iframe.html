@@ -16,9 +16,15 @@ promise_test(async t => {
   const url = `resources/activate-from-iframe.html?mode=triggering`;
   window.open(url, '_blank', 'noopener');
 
-  const gotMessage = await new Promise(r => resultChannel.onmessage = r);
-  assert_equals(gotMessage.data, 'activated');
-}, `Navigation on the main frame initiated by an iframe via ` +
-   `window.parent.location should activate a prerendered page`);
+  const gotActivationMessage =
+      await new Promise(r => resultChannel.onmessage = r);
+  assert_equals(gotActivationMessage.data,
+      'attempting prerender activation');
+  const gotReloadMessage =
+      await new Promise(r => resultChannel.onmessage = r);
+  assert_equals(gotReloadMessage.data, 'loaded from scratch');
+}, `Navigation on the main frame initiated by window opened by an ` +
+    `iframe opening via window.parent.location should not activate a ` +
+    `prerendered page`);
 
 </script>

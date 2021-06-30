@@ -1212,14 +1212,12 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           initiator_frame_host_
               ? absl::make_optional(initiator_frame_host_->GetFrameToken())
               : absl::nullopt,
-          std::string() /* headers */, net::LOAD_NORMAL, skip_service_worker_,
+          headers_, load_flags_, skip_service_worker_,
           blink::mojom::RequestContextType::HYPERLINK,
           network::mojom::RequestDestination::kDocument,
-          blink::mojom::MixedContentContextType::kBlockable,
-          is_form_submission_, false /* was_initiated_by_link_click */,
-          GURL() /* searchable_form_url */,
-          std::string() /* searchable_form_encoding */,
-          GURL() /* client_side_redirect_url */,
+          mixed_content_context_type_, is_form_submission_,
+          false /* was_initiated_by_link_click */, searchable_form_url_,
+          searchable_form_encoding_, GURL() /* client_side_redirect_url */,
           absl::nullopt /* detools_initiator_info */,
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
@@ -1239,6 +1237,12 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->has_user_gesture = has_user_gesture_;
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
   common_params->should_replace_current_entry = should_replace_current_entry_;
+
+  if (history_url_for_data_url_.has_value()) {
+    common_params->history_url_for_data_url = history_url_for_data_url_.value();
+  }
+
+  common_params->href_translate = href_translate_;
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

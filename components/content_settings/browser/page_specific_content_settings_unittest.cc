@@ -532,7 +532,10 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
     MockSiteDataObserver mock_observer(web_contents());
     // OnSiteDataAccessed should be called after page is activated.
     EXPECT_CALL(mock_observer, OnSiteDataAccessed()).Times(1);
-    NavigateAndCommit(prerender_url);
+    std::unique_ptr<content::NavigationSimulator> navigation =
+        content::NavigationSimulator::CreateRendererInitiated(
+            prerender_url, web_contents()->GetMainFrame());
+    navigation->Commit();
   }
 }
 
@@ -570,7 +573,10 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   EXPECT_CALL(*mock_delegate, OnIndexedDBAccessAllowed(origin)).Times(1);
   EXPECT_CALL(*mock_delegate, OnDomStorageAccessAllowed(origin)).Times(1);
   EXPECT_CALL(*mock_delegate, OnWebDatabaseAccessAllowed(origin)).Times(1);
-  NavigateAndCommit(prerender_url);
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(
+          prerender_url, web_contents()->GetMainFrame());
+  navigation->Commit();
 }
 
 TEST_F(PageSpecificContentSettingsWithPrerenderTest,
@@ -588,7 +594,10 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   pscs->OnContentBlocked(ContentSettingsType::JAVASCRIPT);
 
   EXPECT_CALL(*mock_delegate, UpdateLocationBar()).Times(1);
-  NavigateAndCommit(prerender_url);
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(
+          prerender_url, web_contents()->GetMainFrame());
+  navigation->Commit();
 }
 
 TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
@@ -610,7 +619,10 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
       .Times(1);
   EXPECT_CALL(*mock_delegate, OnContentAllowed(ContentSettingsType::COOKIES))
       .Times(1);
-  NavigateAndCommit(prerender_url);
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(
+          prerender_url, web_contents()->GetMainFrame());
+  navigation->Commit();
 }
 
 }  // namespace content_settings
