@@ -62,6 +62,21 @@ void OnPairForReadDescriptorCallback(
   pairing_manager_delegate->RemoteDescriptorReadValue(descriptor_instance_id,
                                                       std::move(callback));
 }
+
+void OnPairForWriteDescriptorCallback(
+    const std::string& descriptor_instance_id,
+    WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
+    std::vector<uint8_t> value,
+    WebBluetoothService::RemoteDescriptorWriteValueCallback callback,
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code) {
+    std::move(callback).Run(
+        WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code));
+    return;
+  }
+  pairing_manager_delegate->RemoteDescriptorWriteValue(
+      descriptor_instance_id, value, std::move(callback));
+}
 }  // namespace
 
 constexpr int WebBluetoothPairingManager::kMaxPairAttempts;
@@ -143,6 +158,25 @@ void WebBluetoothPairingManager::PairForDescriptorReadValue(
       device_id, /*num_pair_attempts=*/0,
       base::BindOnce(&OnPairForReadDescriptorCallback, descriptor_instance_id,
                      pairing_manager_delegate_, std::move(read_callback)));
+}
+
+void WebBluetoothPairingManager::PairForDescriptorWriteValue(
+    const std::string& descriptor_instance_id,
+    const std::vector<uint8_t>& value,
+    WebBluetoothService::RemoteDescriptorWriteValueCallback callback) {
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetDescriptorDeviceId(descriptor_instance_id);
+  if (!device_id.IsValid()) {
+    std::move(callback).Run(
+        WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
+            BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN));
+    return;
+  }
+
+  PairDevice(device_id, /*num_pair_attempts=*/0,
+             base::BindOnce(&OnPairForWriteDescriptorCallback,
+                            descriptor_instance_id, pairing_manager_delegate_,
+                            std::move(value), std::move(callback)));
 }
 
 void WebBluetoothPairingManager::PairDevice(
