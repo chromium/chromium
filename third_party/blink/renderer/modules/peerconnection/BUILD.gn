@@ -144,6 +144,7 @@ blink_modules_sources("peerconnection") {
     "//jingle:webrtc_glue",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/webrtc",

@@ -292,6 +292,7 @@ component("core") {
     "//third_party/blink/public:image_resources_grit",
     "//third_party/blink/public:resources",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
     "//third_party/blink/public/strings",
     "//third_party/blink/renderer/core/typed_arrays:typed_arrays",
     "//ui/base/cursor:cursor_base",
