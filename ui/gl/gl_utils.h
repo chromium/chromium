@@ -94,6 +94,19 @@ class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
 #endif
 };
 
+class GL_EXPORT ScopedPixelStore {
+ public:
+  ScopedPixelStore(unsigned int name, int value);
+  ~ScopedPixelStore();
+  ScopedPixelStore(ScopedPixelStore&) = delete;
+  ScopedPixelStore& operator=(ScopedPixelStore&) = delete;
+
+ private:
+  const unsigned int name_;
+  const int old_value_;
+  const int value_;
+};
+
 }  // namespace gl
 
 #endif  // UI_GL_GL_UTILS_H_

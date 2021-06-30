@@ -22,6 +22,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
@@ -219,27 +220,6 @@ bool SupportsMapBufferRange(GLContext* context) {
   return context->GetVersionInfo()->IsAtLeastGLES(3, 0) ||
          context->HasExtension("GL_EXT_map_buffer_range");
 }
-
-class ScopedPixelStore {
- public:
-  ScopedPixelStore(GLenum name, GLint value) : name_(name), value_(value) {
-    glGetIntegerv(name_, &old_value_);
-    if (value_ != old_value_)
-      glPixelStorei(name_, value_);
-  }
-  ~ScopedPixelStore() {
-    if (value_ != old_value_)
-      glPixelStorei(name_, old_value_);
-  }
-
-  ScopedPixelStore(ScopedPixelStore&) = delete;
-  ScopedPixelStore& operator=(ScopedPixelStore&) = delete;
-
- private:
-  const GLenum name_;
-  const GLint value_;
-  GLint old_value_;
-};
 
 }  // namespace
 

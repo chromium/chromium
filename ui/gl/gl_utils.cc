@@ -33,11 +33,16 @@
 #include "ui/gl/gl_implementation.h"                     // nogncheck
 #endif
 
-#if defined(OS_MAC)
-#include "ui/gl/gl_bindings.h"
-#endif
-
 namespace gl {
+namespace {
+
+int GetIntegerv(unsigned int name) {
+  int value = 0;
+  glGetIntegerv(name, &value);
+  return value;
+}
+
+}  // namespace
 
 // Used by chrome://gpucrash and gpu_benchmarking_extension's
 // CrashForTesting.
@@ -209,5 +214,16 @@ ScopedEnableTextureRectangleInShaderCompiler::
 }
 
 #endif  // defined(OS_MAC)
+
+ScopedPixelStore::ScopedPixelStore(unsigned int name, int value)
+    : name_(name), old_value_(GetIntegerv(name)), value_(value) {
+  if (value_ != old_value_)
+    glPixelStorei(name_, value_);
+}
+
+ScopedPixelStore::~ScopedPixelStore() {
+  if (value_ != old_value_)
+    glPixelStorei(name_, old_value_);
+}
 
 }  // namespace gl

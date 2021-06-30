@@ -27,6 +27,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -81,28 +82,6 @@ static const struct {
 };
 static_assert(base::size(kFormatTable) == (viz::RESOURCE_FORMAT_MAX + 1),
               "kFormatTable does not handle all cases.");
-
-class ScopedPixelStore {
- public:
-  ScopedPixelStore(gl::GLApi* api, GLenum name, GLint value)
-      : api_(api), name_(name), value_(value) {
-    api_->glGetIntegervFn(name_, &old_value_);
-    if (value_ != old_value_)
-      api->glPixelStoreiFn(name_, value_);
-  }
-  ~ScopedPixelStore() {
-    if (value_ != old_value_)
-      api_->glPixelStoreiFn(name_, old_value_);
-  }
-
- private:
-  gl::GLApi* const api_;
-  const GLenum name_;
-  const GLint value_;
-  GLint old_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPixelStore);
-};
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -1093,11 +1072,11 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   checked_size *= size().height();
   DCHECK(checked_size.IsValid());
 
-  ScopedPixelStore pack_row_length(api, GL_PACK_ROW_LENGTH, 0);
-  ScopedPixelStore pack_skip_pixels(api, GL_PACK_SKIP_PIXELS, 0);
-  ScopedPixelStore pack_skip_rows(api, GL_PACK_SKIP_ROWS, 0);
+  gl::ScopedPixelStore pack_row_length(GL_PACK_ROW_LENGTH, 0);
+  gl::ScopedPixelStore pack_skip_pixels(GL_PACK_SKIP_PIXELS, 0);
+  gl::ScopedPixelStore pack_skip_rows(GL_PACK_SKIP_ROWS, 0);
   // Use 1 byte alignment for Vulkan image buffer copy.
-  ScopedPixelStore pack_alignment(api, GL_PACK_ALIGNMENT, 1);
+  gl::ScopedPixelStore pack_alignment(GL_PACK_ALIGNMENT, 1);
 
   WritePixelsWithCallback(
       checked_size.ValueOrDie(), 0,
@@ -1147,11 +1126,11 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
   gl::ScopedTextureBinder scoped_texture_binder(GL_TEXTURE_2D,
                                                 texture_service_id);
 
-  ScopedPixelStore unpack_row_length(api, GL_UNPACK_ROW_LENGTH, 0);
-  ScopedPixelStore unpack_skip_pixels(api, GL_UNPACK_SKIP_PIXELS, 0);
-  ScopedPixelStore unpack_skip_rows(api, GL_UNPACK_SKIP_ROWS, 0);
+  gl::ScopedPixelStore unpack_row_length(GL_UNPACK_ROW_LENGTH, 0);
+  gl::ScopedPixelStore unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  gl::ScopedPixelStore unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
   // Use 1 byte alignment for Vulkan image buffer copy.
-  ScopedPixelStore unpack_alignment(api, GL_UNPACK_ALIGNMENT, 1);
+  gl::ScopedPixelStore unpack_alignment(GL_UNPACK_ALIGNMENT, 1);
 
   ReadPixelsWithCallback(
       checked_size.ValueOrDie(), 0,
@@ -1195,11 +1174,11 @@ void ExternalVkImageBacking::CopyPixelsFromShmToGLTexture() {
   gl::ScopedTextureBinder scoped_texture_binder(GL_TEXTURE_2D,
                                                 texture_service_id);
 
-  ScopedPixelStore unpack_row_length(api, GL_UNPACK_ROW_LENGTH, 0);
-  ScopedPixelStore unpack_skip_pixels(api, GL_UNPACK_SKIP_PIXELS, 0);
-  ScopedPixelStore unpack_skip_rows(api, GL_UNPACK_SKIP_ROWS, 0);
+  gl::ScopedPixelStore unpack_row_length(GL_UNPACK_ROW_LENGTH, 0);
+  gl::ScopedPixelStore unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  gl::ScopedPixelStore unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
   // Chrome uses 4 bytes alignment for shared memory GMB.
-  ScopedPixelStore unpack_alignment(api, GL_UNPACK_ALIGNMENT, 4);
+  gl::ScopedPixelStore unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
 
   base::CheckedNumeric<size_t> checked_size = bytes_per_pixel;
   checked_size *= size().width();
