@@ -17,6 +17,7 @@ import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
 import org.chromium.components.payments.OriginSecurityChecker;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
@@ -174,6 +175,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         return new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate));
+                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate,
+                                PaymentAppServiceBridge::new));
     }
 }

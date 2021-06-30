@@ -28,7 +28,6 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
-import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
@@ -134,15 +133,6 @@ public class ChromePaymentRequestService
         @Nullable
         default Activity getActivity(WebContents webContents) {
             return ChromeActivity.fromWebContents(webContents);
-        }
-
-        /**
-         * Creates an instance of service-worker payment app factory.
-         * @return The instance, can be null for testing.
-         */
-        @Nullable
-        default PaymentAppFactoryInterface createServiceWorkerPaymentAppFactory() {
-            return new PaymentAppServiceBridge();
         }
 
         /**
@@ -315,10 +305,6 @@ public class ChromePaymentRequestService
     @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        String swFactoryId = PaymentAppServiceBridge.class.getName();
-        if (!service.containsFactory(swFactoryId)) {
-            service.addUniqueFactory(mDelegate.createServiceWorkerPaymentAppFactory(), swFactoryId);
-        }
 
         String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
         if (!service.containsFactory(autofillFactoryId)) {
@@ -626,9 +612,10 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onPaymentAppCreated(PaymentApp paymentApp) {
+    public boolean onPaymentAppCreated(PaymentApp paymentApp) {
         mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
+        return true;
     }
 
     // Implements BrowserPaymentRequest:

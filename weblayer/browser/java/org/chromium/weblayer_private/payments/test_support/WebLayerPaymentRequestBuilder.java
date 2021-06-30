@@ -103,7 +103,8 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
 
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));
+                        -> new PaymentRequestService(
+                                mRenderFrameHost, client, onClosed, /*delegate=*/this, () -> null));
         request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
         return request;
     }

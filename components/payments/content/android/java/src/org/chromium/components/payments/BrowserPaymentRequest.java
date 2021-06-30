@@ -144,8 +144,9 @@ public interface BrowserPaymentRequest {
     /**
      * Called when a new payment app is created.
      * @param paymentApp The new payment app.
+     * @return True if the payment app should be used; false if it should be ignored.
      */
-    default void onPaymentAppCreated(PaymentApp paymentApp) {}
+    boolean onPaymentAppCreated(PaymentApp paymentApp);
 
     /**
      * @return Whether payment sheet based payment app is supported, e.g., user entering credit

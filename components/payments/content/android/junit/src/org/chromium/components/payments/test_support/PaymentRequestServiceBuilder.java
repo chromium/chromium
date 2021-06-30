@@ -33,7 +33,6 @@ import java.util.Map;
 /** A builder of PaymentRequestService for testing. */
 public class PaymentRequestServiceBuilder implements Delegate {
     private static final String TWA_PACKAGE_NAME = "twa.package.name";
-    private final Delegate mDelegate;
     private final RenderFrameHost mRenderFrameHost;
     private final Runnable mOnClosedListener;
     private final PaymentAppService mPaymentAppService;
@@ -65,7 +64,6 @@ public class PaymentRequestServiceBuilder implements Delegate {
     public PaymentRequestServiceBuilder(Runnable onClosedListener, PaymentRequestClient client,
             PaymentAppService appService, BrowserPaymentRequest browserPaymentRequest,
             JourneyLogger journeyLogger) {
-        mDelegate = this;
         mWebContents = Mockito.mock(WebContents.class);
         setTopLevelOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
@@ -267,8 +265,8 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     public PaymentRequestService build() {
-        PaymentRequestService service =
-                new PaymentRequestService(mRenderFrameHost, mClient, mOnClosedListener, mDelegate);
+        PaymentRequestService service = new PaymentRequestService(
+                mRenderFrameHost, mClient, mOnClosedListener, /*delegate=*/this, () -> null);
         boolean success = service.init(mMethodData, mDetails, mOptions, mGooglePayBridgeEligible);
         return success ? service : null;
     }

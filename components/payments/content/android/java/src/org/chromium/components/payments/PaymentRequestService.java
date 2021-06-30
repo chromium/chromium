@@ -13,6 +13,7 @@ import androidx.collection.ArrayMap;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -80,6 +81,7 @@ public class PaymentRequestService
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
     private final List<PaymentApp> mPendingApps = new ArrayList<>();
+    private final Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
     private WebContents mWebContents;
     private JourneyLogger mJourneyLogger;
     private String mTopLevelOrigin;
@@ -397,9 +399,13 @@ public class PaymentRequestService
      * @param client The client of the renderer PaymentRequest, can be null.
      * @param onClosedListener A listener to be invoked when the service is closed.
      * @param delegate The delegate of this class.
+     * @param paymentAppServiceBridgeSupplier The supplier of PaymentAppServiceBridge - a C++
+     *        factory that creates service-worker payment apps, secure payment confirmation apps,
+     *        etc.
      */
     public PaymentRequestService(RenderFrameHost renderFrameHost,
-            @Nullable PaymentRequestClient client, Runnable onClosedListener, Delegate delegate) {
+            @Nullable PaymentRequestClient client, Runnable onClosedListener, Delegate delegate,
+            Supplier<PaymentAppServiceBridge> paymentAppServiceBridgeSupplier) {
         assert renderFrameHost != null;
         assert onClosedListener != null;
         assert delegate != null;
@@ -409,6 +415,7 @@ public class PaymentRequestService
         mOnClosedListener = onClosedListener;
         mDelegate = delegate;
         mHasClosed = false;
+        mPaymentAppServiceBridgeSupplier = paymentAppServiceBridgeSupplier;
     }
 
     /**
@@ -556,6 +563,12 @@ public class PaymentRequestService
     private void startPaymentAppService() {
         PaymentAppService service = mDelegate.getPaymentAppService();
         mBrowserPaymentRequest.addPaymentAppFactories(service, /*delegate=*/this);
+
+        String paymentAppServiceBridgeId = PaymentAppServiceBridge.class.getName();
+        if (!service.containsFactory(paymentAppServiceBridgeId)) {
+            service.addUniqueFactory(
+                    mPaymentAppServiceBridgeSupplier.get(), paymentAppServiceBridgeId);
+        }
 
         String androidFactoryId = AndroidPaymentAppFactory.class.getName();
         if (!service.containsFactory(androidFactoryId)) {
@@ -963,7 +976,7 @@ public class PaymentRequestService
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
         if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.onPaymentAppCreated(paymentApp);
+        if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
         mHasNonAutofillApp |= paymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
 

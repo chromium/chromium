@@ -14,6 +14,7 @@ import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.components.payments.PaymentRequestSpec;
@@ -56,6 +57,13 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {}
+
+    @Override
+    public boolean onPaymentAppCreated(PaymentApp paymentApp) {
+        // Ignores the service worker payment apps in WebLayer until -
+        // TODO(crbug.com/1224420): WebLayer supports Service worker payment apps.
+        return paymentApp.getPaymentAppType() != PaymentAppType.SERVICE_WORKER_APP;
+    }
 
     // Implements BrowserPaymentRequest:
     @Override
@@ -104,7 +112,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        // WebLayer only adds the GPay factory, but not using this method.
+        // There's no WebLayer specific factories.
     }
 
     // Implements BrowserPaymentRequest:

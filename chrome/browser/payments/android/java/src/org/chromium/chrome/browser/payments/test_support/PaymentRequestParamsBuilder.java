@@ -108,7 +108,8 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
 
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));
+                        -> new PaymentRequestService(
+                                mRenderFrameHost, client, onClosed, this, () -> null));
         request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
         return request;
     }
@@ -237,11 +238,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
 
     @Override
     public PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
-        return null;
-    }
-
-    @Override
-    public PaymentAppFactoryInterface createServiceWorkerPaymentAppFactory() {
         return null;
     }
 
