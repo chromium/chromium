@@ -55,7 +55,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
     @VisibleForTesting
-    static final String CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS = "CanOfferExtendedChromeSyncPromos";
+    static final String CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS = "gi2tklldmfya";
 
     private final AccountManagerDelegate mDelegate;
     private final AccountRestrictionPatternReceiver mAccountRestrictionPatternReceiver;
