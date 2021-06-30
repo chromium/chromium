@@ -73,11 +73,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 8 changes the conversions.conversion_data and
 // impressions.impression_data columns from TEXT to INTEGER and makes
 // conversions.impression_id NOT NULL.
-const int kCurrentVersionNumber = 8;
+//
+// Version 9 - 2021/06/30 - https://crrev.com/c/2951620
+//
+// Version 9 adds the conversions.priority column.
+const int kCurrentVersionNumber = 9;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 8;
+const int kCompatibleVersionNumber = 9;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -250,11 +254,91 @@ void ConversionStorageSql::StoreImpression(
                             /*conversion_id=*/absl::nullopt);
     report.report_time = delegate_->GetReportTime(report);
 
-    if (!StoreConversionReport(report, impression_id))
+    if (!StoreConversionReport(report, impression_id, /*priority=*/0))
       return;
   }
 
   transaction.Commit();
+}
+
+// Checks whether a new report is allowed to be stored for the given impression
+// based on `GetMaxConversionsPerImpression()`. If there's sufficient capacity,
+// the new report should be stored. Otherwise, if all existing reports were from
+// an earlier window, the corresponding impression is deactivated and the new
+// report should be dropped. Otherwise, If there's insufficient capacity, checks
+// the new report's priority against all existing ones for the same impression.
+// If all existing ones have greater priority, the new report should be dropped;
+// otherwise, the existing one with the lowest priority is deleted and the new
+// one should be stored.
+ConversionStorageSql::MaybeReplaceLowerPriorityReportResult
+ConversionStorageSql::MaybeReplaceLowerPriorityReport(
+    const StorableImpression& impression,
+    int num_conversions,
+    int64_t conversion_priority,
+    base::Time report_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(impression.impression_id().has_value());
+  DCHECK_GE(num_conversions, 0);
+
+  // If there's already capacity for the new report, there's nothing to do.
+  if (num_conversions <
+      delegate_->GetMaxConversionsPerImpression(impression.source_type())) {
+    return ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+        kAddNewReport;
+  }
+
+  // Prioritization is scoped within report windows.
+  // This is reasonably optimized as is, because we only store a ~small number
+  // of reports per impression_id.
+  const char kMinPrioritySql[] =
+      "SELECT MIN(priority), conversion_id "
+      "FROM conversions "
+      "WHERE impression_id = ? AND report_time = ?";
+  sql::Statement min_priority_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
+  min_priority_statement.BindInt64(0, *impression.impression_id());
+  min_priority_statement.BindTime(1, report_time);
+  if (!min_priority_statement.Step()) {
+    return ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::kError;
+  }
+
+  // Deactivate the impression as a new report will never be generated in the
+  // future.
+  if (min_priority_statement.GetColumnType(0) == sql::ColumnType::kNull) {
+    const char kDeactivateSql[] =
+        "UPDATE impressions SET active = 0 WHERE impression_id = ?";
+    sql::Statement deactivate_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
+    deactivate_statement.BindInt64(0, *impression.impression_id());
+    return deactivate_statement.Run()
+               ? ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+                     kDropNewReport
+               : ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+                     kError;
+  }
+
+  int64_t min_priority = min_priority_statement.ColumnInt64(0);
+  int64_t conversion_id_with_min_priority =
+      min_priority_statement.ColumnInt64(1);
+
+  // If the new report's priority is less than or equal to all existing ones,
+  // drop it.
+  if (conversion_priority <= min_priority) {
+    return ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+        kDropNewReport;
+  }
+
+  // Otherwise, delete the existing report with the lowest priority.
+  const char kDeleteConversionSql[] =
+      "DELETE FROM conversions WHERE conversion_id = ?";
+  sql::Statement delete_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionSql));
+  delete_statement.BindInt64(0, conversion_id_with_min_priority);
+  return delete_statement.Run()
+             ? ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+                   kReplaceOldReport
+             : ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+                   kError;
 }
 
 bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
@@ -285,7 +369,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   const char kGetMatchingImpressionsSql[] =
       "SELECT impression_origin, impression_id, impression_time, priority, "
       "impression_data, conversion_origin, expiry_time, "
-      "attributed_truthfully, source_type "
+      "attributed_truthfully, source_type, num_conversions "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? "
@@ -300,6 +384,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   absl::optional<StorableImpression> impression_to_attribute;
   StorableImpression::AttributionLogic attribution_logic =
       StorableImpression::AttributionLogic::kNever;
+  int num_conversions = 0;
   std::vector<int64_t> impression_ids_to_delete;
 
   while (statement.Step()) {
@@ -334,6 +419,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
           statement.ColumnInt(7));
       StorableImpression::SourceType source_type =
           static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
+      num_conversions = statement.ColumnInt(9);
 
       // There should never be an unattributed impression with `kFalsely`.
       DCHECK_NE(attribution_logic,
@@ -371,6 +457,22 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   if (!transaction.Begin())
     return false;
 
+  const auto maybe_replace_lower_priority_report_result =
+      MaybeReplaceLowerPriorityReport(report.impression, num_conversions,
+                                      conversion.priority(),
+                                      report.report_time);
+  if (maybe_replace_lower_priority_report_result ==
+      ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::kError) {
+    return false;
+  }
+
+  if (maybe_replace_lower_priority_report_result ==
+      ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+          kDropNewReport) {
+    transaction.Commit();
+    return false;
+  }
+
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
@@ -379,37 +481,29 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   if (create_report) {
     DCHECK(report.impression.impression_id().has_value());
-    if (!StoreConversionReport(report, *report.impression.impression_id()))
+    if (!StoreConversionReport(report, *report.impression.impression_id(),
+                               conversion.priority())) {
       return false;
+    }
   }
 
-  // Mark impressions inactive if they hit the max conversions allowed limit
-  // supplied by the delegate. Because only active impressions log conversions,
-  // we do not need to handle cases where active = 0 in this query. Update
-  // statements atomically update all values at once. Therefore, for the check
-  // |num_conversions < ?|, we used the max number of conversions - 1 as the
-  // param. This is not done inside the query to generate better opcodes.
-  const char kUpdateImpressionForConversionSql[] =
-      "UPDATE impressions SET num_conversions = num_conversions + 1, "
-      "active = num_conversions < ? "
-      "WHERE impression_id = ?";
-  sql::Statement impression_update_statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, kUpdateImpressionForConversionSql));
+  // Only increment the number of conversions associated with the impression if
+  // we are adding a new one, rather than replacing a dropped one.
+  if (maybe_replace_lower_priority_report_result ==
+      ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+          kAddNewReport) {
+    const char kUpdateImpressionForConversionSql[] =
+        "UPDATE impressions SET num_conversions = num_conversions + 1 "
+        "WHERE impression_id = ?";
+    sql::Statement impression_update_statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, kUpdateImpressionForConversionSql));
 
-  // Subtract one from the max number of conversions per the query comment
-  // above. We need to account for the new conversion in this comparison so we
-  // provide the max number of conversions prior to this new conversion being
-  // logged.
-  int max_prior_conversions_before_inactive =
-      delegate_->GetMaxConversionsPerImpression(
-          report.impression.source_type()) -
-      1;
-
-  // Update the attributed impression.
-  impression_update_statement.BindInt(0, max_prior_conversions_before_inactive);
-  impression_update_statement.BindInt64(1, *report.impression.impression_id());
-  if (!impression_update_statement.Run())
-    return false;
+    // Update the attributed impression.
+    impression_update_statement.BindInt64(0,
+                                          *report.impression.impression_id());
+    if (!impression_update_statement.Run())
+      return false;
+  }
 
   // Delete all unattributed impressions.
   const char kDeleteUnattributedImpressionsSql[] =
@@ -440,13 +534,14 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 }
 
 bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
-                                                 int64_t impression_id) {
+                                                 int64_t impression_id,
+                                                 int64_t priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const char kStoreConversionSql[] =
       "INSERT INTO conversions "
-      "(impression_id, conversion_data, conversion_time, report_time) "
-      "VALUES(?,?,?,?)";
+      "(impression_id, conversion_data, conversion_time, report_time, "
+      "priority) VALUES(?,?,?,?,?)";
   sql::Statement store_conversion_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
   store_conversion_statement.BindInt64(0, impression_id);
@@ -454,6 +549,7 @@ bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
       1, SerializeImpressionOrConversionData(report.conversion_data));
   store_conversion_statement.BindTime(2, report.conversion_time);
   store_conversion_statement.BindTime(3, report.report_time);
+  store_conversion_statement.BindInt64(4, priority);
   return store_conversion_statement.Run();
 }
 
@@ -1109,7 +1205,8 @@ bool ConversionStorageSql::CreateSchema() {
       " impression_id INTEGER NOT NULL,"
       " conversion_data INTEGER NOT NULL,"
       " conversion_time INTEGER NOT NULL,"
-      " report_time INTEGER NOT NULL)";
+      " report_time INTEGER NOT NULL,"
+      " priority INTEGER NOT NULL)";
   if (!db_->Execute(kConversionTableSql))
     return false;
 

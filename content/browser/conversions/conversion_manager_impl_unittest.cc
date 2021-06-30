@@ -525,4 +525,37 @@ TEST_F(ConversionManagerImplTest,
   ExpectNumStoredImpressions(1u);
 }
 
+// Tests that trigger priority cannot result in more than the maximum number of
+// reports being sent. A report will never be queued for the expiry window while
+// the source is active given we only queue reports which are reported within
+// the next 30 minutes, and the expiry window is one hour after expiry time.
+// This ensures that a queued report cannot be overwritten by a new, higher
+// priority trigger.
+TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now())
+          .SetExpiry(base::TimeDelta::FromDays(7))
+          .Build());
+  ExpectNumStoredImpressions(1u);
+
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetPriority(1).Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetPriority(1).Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetPriority(1).Build());
+  ExpectNumStoredReports(3u);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(7) -
+                                  base::TimeDelta::FromMinutes(30));
+  EXPECT_EQ(3u, test_reporter_->num_reports());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetPriority(2).Build());
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  EXPECT_EQ(3u, test_reporter_->num_reports());
+}
+
 }  // namespace content

@@ -356,6 +356,17 @@ TEST_F(ConversionStorageSqlTest,
           .SetConversionDestination(net::SchemefulSite(conversion_origin))
           .SetReportingOrigin(reporting_origin)
           .Build()));
+  EXPECT_EQ(1u, storage()->GetActiveImpressions().size());
+
+  // Force the impression to be deactivated by ensuring that the next report is
+  // in a different window.
+  delegate()->set_report_time_ms(1);
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(conversion_origin))
+          .SetReportingOrigin(reporting_origin)
+          .Build()));
+  EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_TRUE(storage()->DeleteConversion(1));
@@ -402,6 +413,17 @@ TEST_F(ConversionStorageSqlTest,
           .SetConversionDestination(net::SchemefulSite(conversion_origin))
           .SetReportingOrigin(reporting_origin)
           .Build()));
+  EXPECT_EQ(1u, storage()->GetActiveImpressions().size());
+
+  // Force the impression to be deactivated by ensuring that the next report is
+  // in a different window.
+  delegate()->set_report_time_ms(1);
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(conversion_origin))
+          .SetReportingOrigin(reporting_origin)
+          .Build()));
+  EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromDays(1));
   EXPECT_TRUE(storage()->DeleteConversion(1));

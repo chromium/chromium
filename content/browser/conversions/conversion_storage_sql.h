@@ -95,6 +95,18 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool HasCapacityForStoringImpression(const std::string& serialized_origin);
   int GetCapacityForStoringConversion(const std::string& serialized_origin);
 
+  enum class MaybeReplaceLowerPriorityReportResult {
+    kError,
+    kAddNewReport,
+    kDropNewReport,
+    kReplaceOldReport,
+  };
+  MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
+      const StorableImpression& impression,
+      int num_conversions,
+      int64_t conversion_priority,
+      base::Time report_time);
+
   // When storing an event-source impression, deletes active event-source
   // impressions in order by |impression_time| until there are sufficiently few
   // unique conversion destinations for the same |impression_site|.
@@ -104,7 +116,8 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   // Stores |report| in the database, but uses |impression_id| rather than
   // |ConversionReport::impression::impression_id()|, which may be null.
   bool StoreConversionReport(const ConversionReport& report,
-                             int64_t impression_id);
+                             int64_t impression_id,
+                             int64_t priority);
 
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if

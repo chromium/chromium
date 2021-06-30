@@ -736,6 +736,66 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion9(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Add new priority column to the conversions table. This follows the
+  // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
+  // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
+  // DEFAULT value for the column which is undesirable.
+  const char kNewTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions "
+      "(conversion_id INTEGER PRIMARY KEY,"
+      " impression_id INTEGER NOT NULL,"
+      " conversion_data INTEGER NOT NULL,"
+      " conversion_time INTEGER NOT NULL,"
+      " report_time INTEGER NOT NULL,"
+      " priority INTEGER NOT NULL)";
+  if (!db->Execute(kNewTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table, inserting 0 for the priority
+  // column.
+  const char kPopulateSql[] =
+      "INSERT INTO new_conversions SELECT "
+      "conversion_id,impression_id,conversion_data,conversion_time,"
+      "report_time,0 "
+      "FROM conversions";
+  sql::Statement populate_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateSql));
+  if (!populate_statement.Run())
+    return false;
+
+  const char kDropOldTableSql[] = "DROP TABLE conversions";
+  if (!db->Execute(kDropOldTableSql))
+    return false;
+
+  const char kRenameTableSql[] =
+      "ALTER TABLE new_conversions RENAME TO conversions";
+  if (!db->Execute(kRenameTableSql))
+    return false;
+
+  // Create the pre-existing conversion table indices on the new table.
+  const char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
+      "ON conversions(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql))
+    return false;
+
+  const char kConversionClickIdIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
+      "ON conversions(impression_id)";
+  if (!db->Execute(kConversionClickIdIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(9);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -768,6 +828,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 7) {
     if (!MigrateToVersion8(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 8) {
+    if (!MigrateToVersion9(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

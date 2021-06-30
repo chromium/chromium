@@ -895,15 +895,41 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
   delegate()->set_max_conversions_per_impression(1);
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
 
-  const auto conversion = DefaultConversion();
-  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(conversion));
-  EXPECT_TRUE(storage()->GetActiveImpressions().empty());
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
   std::vector<ConversionReport> actual_reports =
       storage()->GetConversionsToReport(clock()->Now());
   EXPECT_THAT(actual_reports, IsEmpty());
+}
+
+TEST_F(ConversionStorageTest, NeverAttributeImpression_Deactivates) {
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kNever);
+  delegate()->set_max_conversions_per_impression(1);
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).Build());
+
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  delegate()->set_attribution_logic(
+      StorableImpression::AttributionLogic::kTruthfully);
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).Build());
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetConversionData(7).Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(5u, actual_reports[0].impression.impression_data());
+  EXPECT_EQ(7u, actual_reports[0].conversion_data);
 }
 
 TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
@@ -1079,7 +1105,15 @@ TEST_F(ConversionStorageTest,
           .Build());
   EXPECT_EQ(1u, storage()->GetActiveImpressions().size());
 
-  storage()->MaybeCreateAndStoreConversionReport(DefaultConversion());
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  EXPECT_EQ(1u, storage()->GetActiveImpressions().size());
+
+  // Force the impression to be deactivated by ensuring that the next report is
+  // in a different window.
+  delegate()->set_report_time_ms(kReportTime + 1);
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
   EXPECT_EQ(0u, storage()->GetActiveImpressions().size());
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(1));
@@ -1219,6 +1253,95 @@ TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
 
   actual_reports = storage()->GetConversionsToReport(clock()->Now());
   EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+}
+
+TEST_F(ConversionStorageTest, TriggerPriority) {
+  delegate()->set_max_conversions_per_impression(1);
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).SetPriority(0).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).SetPriority(1).Build());
+
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  // This conversion should replace the one above because it has a higher
+  // priority.
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(2).SetConversionData(21).Build()));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(7).SetPriority(2).Build());
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(1).SetConversionData(22).Build()));
+  // This conversion should be dropped because it has a lower priority than the
+  // one above.
+  EXPECT_FALSE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(2u, actual_reports.size());
+
+  EXPECT_EQ(5u, actual_reports[0].impression.impression_data());
+  EXPECT_EQ(21u, actual_reports[0].conversion_data);
+
+  EXPECT_EQ(7u, actual_reports[1].impression.impression_data());
+  EXPECT_EQ(22u, actual_reports[1].conversion_data);
+}
+
+TEST_F(ConversionStorageTest, TriggerPriority_Simple) {
+  delegate()->set_max_conversions_per_impression(1);
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+
+  for (int i = 0; i < 10; i++) {
+    EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+        ConversionBuilder().SetPriority(i).SetConversionData(i).Build()));
+  }
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(9u, actual_reports[0].conversion_data);
+}
+
+TEST_F(ConversionStorageTest, TriggerPriority_DeactivatesImpression) {
+  delegate()->set_max_conversions_per_impression(1);
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(3).SetPriority(0).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now()).SetData(5).SetPriority(1).Build());
+  EXPECT_EQ(2u, storage()->GetActiveImpressions().size());
+
+  EXPECT_TRUE(
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  // Because the impression with data 5 has the highest priority, it is selected
+  // for attribution. The unselected impression with data 3 should be
+  // deactivated, but the one with data 5 should remain active.
+  std::vector<StorableImpression> active_impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, active_impressions.size());
+  EXPECT_EQ(5u, active_impressions[0].impression_data());
+
+  // Ensure that the next report is in a different window.
+  delegate()->set_report_time_ms(kReportTime + 1);
+
+  // This conversion should not be stored because all reports for the attributed
+  // impression were in an earlier window.
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder().SetPriority(2).Build()));
+
+  // As a result, the impression with data 5 should also be deactivated.
+  EXPECT_TRUE(storage()->GetActiveImpressions().empty());
 }
 
 }  // namespace content

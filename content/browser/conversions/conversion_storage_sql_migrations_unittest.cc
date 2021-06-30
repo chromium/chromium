@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 8;
+const int kCurrentVersionNumber = 9;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_8.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_9.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -522,6 +522,41 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion7ToCurrent) {
     ASSERT_EQ(0L, conversion_statement.ColumnInt64(0));
     ASSERT_EQ(0L, conversion_statement.ColumnInt64(1));
     ASSERT_FALSE(conversion_statement.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion8ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_8.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_FALSE(db.DoesColumnExist("conversions", "priority"));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Check that the relevant schema changes are made.
+    EXPECT_TRUE(db.DoesColumnExist("conversions", "priority"));
   }
 
   // DB migration histograms should be recorded.
