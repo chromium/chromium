@@ -225,6 +225,9 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   // https:://crbug.com/1165783: Performance is not yet as good as GL.
   if (device_info.properties.vendorID == kVendorQualcomm) {
+    if (device_info.properties.deviceName ==
+        base::StringPiece("Adreno (TM) 630"))
+      return true;
     return false;
   }
 
