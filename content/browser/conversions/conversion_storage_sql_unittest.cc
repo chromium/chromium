@@ -462,4 +462,31 @@ TEST_F(ConversionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {
                                 ConversionStorageSql::InitStatus::kSuccess, 1);
 }
 
+TEST_F(ConversionStorageSqlTest, MaxUint64StorageSucceeds) {
+  constexpr uint64_t kMaxUint64 = std::numeric_limits<uint64_t>::max();
+
+  OpenDatabase();
+
+  // Ensure that reading and writing `uint64_t` fields via
+  // `sql::Statement::ColumnInt64()` and `sql::Statement::BindInt64()` works
+  // with the maximum value.
+
+  const auto impression =
+      ImpressionBuilder(clock()->Now()).SetData(kMaxUint64).Build();
+  storage()->StoreImpression(impression);
+  std::vector<StorableImpression> impressions =
+      storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, impressions.size());
+  EXPECT_EQ(kMaxUint64, impressions[0].impression_data());
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(StorableConversion(
+      /*conversion_data=*/kMaxUint64, impression.ConversionDestination(),
+      impression.reporting_origin(), /*event_source_trigger_data=*/0)));
+
+  std::vector<ConversionReport> reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, reports.size());
+  EXPECT_EQ(kMaxUint64, reports[0].conversion_data);
+}
+
 }  // namespace content

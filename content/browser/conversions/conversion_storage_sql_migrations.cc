@@ -535,6 +535,207 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+struct ImpressionIdAndImpressionData {
+  int64_t impression_id;
+  std::string impression_data;
+};
+
+std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
+    sql::Database* db,
+    int64_t start_impression_id) {
+  const char kGetImpressionsSql[] =
+      "SELECT impression_id, impression_data "
+      "FROM impressions "
+      "WHERE impression_id >= ? "
+      "ORDER BY impression_id "
+      "LIMIT ?";
+
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
+  statement.BindInt64(0, start_impression_id);
+
+  const int kNumImpressions = 100;
+  statement.BindInt(1, kNumImpressions);
+
+  std::vector<ImpressionIdAndImpressionData> impressions;
+  while (statement.Step()) {
+    int64_t impression_id = statement.ColumnInt64(0);
+    std::string impression_data = statement.ColumnString(1);
+
+    impressions.push_back({impression_id, std::move(impression_data)});
+  }
+  if (!statement.Succeeded())
+    return {};
+  return impressions;
+}
+
+bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Change the impression_data column from TEXT to INTEGER. This follows the
+  // steps documented at https://sqlite.org/lang_altertable.html#otheralter.
+  // Other approaches, like using "ALTER ... ADD COLUMN" require setting a
+  // DEFAULT value for the column which is undesirable.
+  const char kNewImpressionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_impressions"
+      "(impression_id INTEGER PRIMARY KEY,"
+      "impression_data INTEGER NOT NULL,"
+      "impression_origin TEXT NOT NULL,"
+      "conversion_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "impression_time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL,"
+      "num_conversions INTEGER DEFAULT 0,"
+      "active INTEGER DEFAULT 1,"
+      "conversion_destination TEXT NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attributed_truthfully INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL)";
+  if (!db->Execute(kNewImpressionTableSql))
+    return false;
+
+  // Transfer the existing impressions rows to the new table with a placeholder
+  // for the impression_data column.
+  const char kPopulateNewImpressionsSql[] =
+      "INSERT INTO new_impressions SELECT "
+      "impression_id,0,impression_origin,conversion_origin,reporting_origin,"
+      "impression_time,expiry_time,num_conversions,active,"
+      "conversion_destination,source_type,attributed_truthfully,priority,"
+      "impression_site FROM impressions";
+  sql::Statement populate_new_impressions_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewImpressionsSql));
+  if (!populate_new_impressions_statement.Run())
+    return false;
+
+  // Update each of the impression rows to have the correct associated
+  // impression_data. We can't use the CAST SQL function here because it
+  // doesn't support the full range of `uint64_t`.
+  //
+  // We update a subset of rows at a time to avoid pulling the entire
+  // impressions table into memory.
+  std::vector<ImpressionIdAndImpressionData> impressions =
+      GetImpressionIdAndImpressionData(db, /*start_impression_id=*/0);
+
+  const char kUpdateImpressionDataSql[] =
+      "UPDATE new_impressions SET impression_data = ? WHERE impression_id = ?";
+  sql::Statement update_impression_data_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kUpdateImpressionDataSql));
+
+  while (!impressions.empty()) {
+    // Perform the column updates for each row we pulled into memory.
+    for (const auto& impression : impressions) {
+      // If we can't parse the data, skip the update to leave the column as 0.
+      uint64_t impression_data = 0u;
+      if (!base::StringToUint64(impression.impression_data, &impression_data))
+        continue;
+
+      update_impression_data_statement.Reset(/*clear_bound_vars=*/true);
+      update_impression_data_statement.BindInt64(
+          0, SerializeImpressionOrConversionData(impression_data));
+      update_impression_data_statement.BindInt64(1, impression.impression_id);
+      update_impression_data_statement.Run();
+    }
+
+    // Fetch the next batch of rows from the database.
+    impressions = GetImpressionIdAndImpressionData(
+        db, impressions.back().impression_id + 1);
+  }
+
+  const char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  if (!db->Execute(kDropOldImpressionTableSql))
+    return false;
+
+  const char kRenameImpressionTableSql[] =
+      "ALTER TABLE new_impressions RENAME TO impressions";
+  if (!db->Execute(kRenameImpressionTableSql))
+    return false;
+
+  // Create the pre-existing impression table indices on the new table.
+  const char kImpressionExpiryIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
+      "ON impressions(expiry_time)";
+  if (!db->Execute(kImpressionExpiryIndexSql))
+    return false;
+
+  const char kImpressionOriginIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_origin_idx "
+      "ON impressions(impression_origin)";
+  if (!db->Execute(kImpressionOriginIndexSql))
+    return false;
+
+  const char kConversionDestinationIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
+      "ON impressions(active, conversion_destination, reporting_origin)";
+  if (!db->Execute(kConversionDestinationIndexSql))
+    return false;
+
+  const char kImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_site_idx "
+      "ON impressions(active, impression_site, source_type)";
+  if (!db->Execute(kImpressionSiteIndexSql))
+    return false;
+
+  // Change the conversion_data column from TEXT to INTEGER and make
+  // impression_id NOT NULL. This follows the steps documented at
+  // https://sqlite.org/lang_altertable.html#otheralter./ Other approaches, like
+  // using "ALTER ... ADD COLUMN" require setting a DEFAULT value for the column
+  // which is undesirable.
+  const char kNewConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions "
+      "(conversion_id INTEGER PRIMARY KEY,"
+      " impression_id INTEGER NOT NULL,"
+      " conversion_data INTEGER NOT NULL,"
+      " conversion_time INTEGER NOT NULL,"
+      " report_time INTEGER NOT NULL)";
+  if (!db->Execute(kNewConversionTableSql))
+    return false;
+
+  // Transfer the existing conversions rows to the new table. See
+  // https://www.sqlite.org/lang_expr.html#castexpr for details on CAST, which
+  // we can use here because valid conversion_data is in the range [0, 8].
+  // Existing impression_id values should never be NULL, but if they are, we
+  // insert 0 instead of failing.
+  const char kPopulateNewConversionsSql[] =
+      "INSERT INTO new_conversions SELECT "
+      "conversion_id,IFNULL(impression_id,0),"
+      "CAST(conversion_data AS INTEGER),conversion_time,report_time "
+      "FROM conversions";
+  sql::Statement populate_new_conversions_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewConversionsSql));
+  if (!populate_new_conversions_statement.Run())
+    return false;
+
+  const char kDropOldConversionTableSql[] = "DROP TABLE conversions";
+  if (!db->Execute(kDropOldConversionTableSql))
+    return false;
+
+  const char kRenameConversionTableSql[] =
+      "ALTER TABLE new_conversions RENAME TO conversions";
+  if (!db->Execute(kRenameConversionTableSql))
+    return false;
+
+  // Create the pre-existing conversion table indices on the new table.
+  const char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
+      "ON conversions(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql))
+    return false;
+
+  const char kConversionClickIdIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
+      "ON conversions(impression_id)";
+  if (!db->Execute(kConversionClickIdIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(8);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -563,6 +764,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 6) {
     if (!MigrateToVersion7(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 7) {
+    if (!MigrateToVersion8(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

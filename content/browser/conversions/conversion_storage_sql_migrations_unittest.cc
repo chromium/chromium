@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 7;
+const int kCurrentVersionNumber = 8;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_7.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_8.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -301,13 +301,13 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion4ToCurrent) {
     ASSERT_TRUE(db.DoesColumnExist("conversions", "attribution_credit"));
 
     sql::Statement s(db.GetUniqueStatement(
-        "SELECT conversion_data FROM conversions ORDER BY conversion_id"));
+        "SELECT conversion_id FROM conversions ORDER BY conversion_id"));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("a", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(0));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("b", s.ColumnString(0));
+    ASSERT_EQ(2, s.ColumnInt(0));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("c", s.ColumnString(0));
+    ASSERT_EQ(3, s.ColumnInt(0));
     ASSERT_FALSE(s.Step());
   }
 
@@ -332,11 +332,11 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion4ToCurrent) {
 
     // Check that only the 0-credit conversions are deleted.
     sql::Statement s(db.GetUniqueStatement(
-        "SELECT conversion_data FROM conversions ORDER BY conversion_id"));
+        "SELECT conversion_id FROM conversions ORDER BY conversion_id"));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("a", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt(0));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("c", s.ColumnString(0));
+    ASSERT_EQ(3, s.ColumnInt(0));
     ASSERT_FALSE(s.Step());
 
     // Compare without quotes as sometimes migrations cause table names to be
@@ -375,6 +375,7 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion5ToCurrent) {
     EXPECT_TRUE(db.DoesTableExist("conversions"));
     EXPECT_TRUE(db.DoesTableExist("impressions"));
     EXPECT_TRUE(db.DoesTableExist("meta"));
+    EXPECT_TRUE(db.DoesTableExist("rate_limits"));
 
     // Compare without quotes as sometimes migrations cause table names to be
     // string literals.
@@ -446,6 +447,81 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion6ToCurrent) {
     ASSERT_EQ("https://b.impression.test", s.ColumnString(0));
     ASSERT_EQ("https://impression.test", s.ColumnString(1));
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion7ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_7.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    sql::Statement impression_statement(db.GetUniqueStatement(
+        "SELECT impression_data FROM impressions ORDER BY impression_id"));
+    ASSERT_TRUE(impression_statement.Step());
+    ASSERT_EQ("18446744073709551615", impression_statement.ColumnString(0));
+    ASSERT_TRUE(impression_statement.Step());
+    ASSERT_EQ("invalid", impression_statement.ColumnString(0));
+    ASSERT_FALSE(impression_statement.Step());
+
+    sql::Statement conversion_statement(
+        db.GetUniqueStatement("SELECT conversion_data, impression_id FROM "
+                              "conversions ORDER BY conversion_id"));
+    ASSERT_TRUE(conversion_statement.Step());
+    ASSERT_EQ("234", conversion_statement.ColumnString(0));
+    ASSERT_EQ(29L, conversion_statement.ColumnInt64(1));
+    ASSERT_TRUE(conversion_statement.Step());
+    ASSERT_EQ("invalid", conversion_statement.ColumnString(0));
+    ASSERT_EQ(sql::ColumnType::kNull, conversion_statement.GetColumnType(1));
+    ASSERT_FALSE(conversion_statement.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("conversions"));
+    EXPECT_TRUE(db.DoesTableExist("impressions"));
+    EXPECT_TRUE(db.DoesTableExist("meta"));
+    EXPECT_TRUE(db.DoesTableExist("rate_limits"));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    sql::Statement impression_statement(db.GetUniqueStatement(
+        "SELECT impression_data FROM impressions ORDER BY impression_id"));
+    ASSERT_TRUE(impression_statement.Step());
+    ASSERT_EQ(18446744073709551615UL,
+              static_cast<uint64_t>(impression_statement.ColumnInt64(0)));
+    ASSERT_TRUE(impression_statement.Step());
+    ASSERT_EQ(0L, impression_statement.ColumnInt64(0));
+    ASSERT_FALSE(impression_statement.Step());
+
+    sql::Statement conversion_statement(
+        db.GetUniqueStatement("SELECT conversion_data, impression_id FROM "
+                              "conversions ORDER BY conversion_id"));
+    ASSERT_TRUE(conversion_statement.Step());
+    ASSERT_EQ(234L, conversion_statement.ColumnInt64(0));
+    ASSERT_EQ(29L, conversion_statement.ColumnInt64(1));
+    ASSERT_TRUE(conversion_statement.Step());
+    ASSERT_EQ(0L, conversion_statement.ColumnInt64(0));
+    ASSERT_EQ(0L, conversion_statement.ColumnInt64(1));
+    ASSERT_FALSE(conversion_statement.Step());
   }
 
   // DB migration histograms should be recorded.

@@ -67,11 +67,17 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 7 - 2021/06/03 - https://crrev.com/c/2904386
 //
 // Version 7 adds the impressions.impression_site column.
-const int kCurrentVersionNumber = 7;
+//
+// Version 8 - 2021/06/30 - https://crrev.com/c/2888906
+//
+// Version 8 changes the conversions.conversion_data and
+// impressions.impression_data columns from TEXT to INTEGER and makes
+// conversions.impression_id NOT NULL.
+const int kCurrentVersionNumber = 8;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 7;
+const int kCompatibleVersionNumber = 8;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -204,7 +210,7 @@ void ConversionStorageSql::StoreImpression(
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
-  statement.BindString(
+  statement.BindInt64(
       0, SerializeImpressionOrConversionData(impression.impression_data()));
   statement.BindString(1, serialized_impression_origin);
   statement.BindString(2, SerializeOrigin(impression.conversion_origin()));
@@ -320,7 +326,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
       }
 
       uint64_t impression_data =
-          DeserializeImpressionOrConversionData(statement.ColumnString(4));
+          DeserializeImpressionOrConversionData(statement.ColumnInt64(4));
       url::Origin conversion_origin =
           DeserializeOrigin(statement.ColumnString(5));
       base::Time expiry_time = statement.ColumnTime(6);
@@ -444,7 +450,7 @@ bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
   sql::Statement store_conversion_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
   store_conversion_statement.BindInt64(0, impression_id);
-  store_conversion_statement.BindString(
+  store_conversion_statement.BindInt64(
       1, SerializeImpressionOrConversionData(report.conversion_data));
   store_conversion_statement.BindTime(2, report.conversion_time);
   store_conversion_statement.BindTime(3, report.report_time);
@@ -479,7 +485,7 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   std::vector<ConversionReport> conversions;
   while (statement.Step()) {
     uint64_t conversion_data =
-        DeserializeImpressionOrConversionData(statement.ColumnString(0));
+        DeserializeImpressionOrConversionData(statement.ColumnInt64(0));
     base::Time conversion_time = statement.ColumnTime(1);
     base::Time report_time = statement.ColumnTime(2);
     int64_t conversion_id = statement.ColumnInt64(3);
@@ -489,7 +495,7 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
         DeserializeOrigin(statement.ColumnString(5));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(6));
     uint64_t impression_data =
-        DeserializeImpressionOrConversionData(statement.ColumnString(7));
+        DeserializeImpressionOrConversionData(statement.ColumnInt64(7));
     base::Time impression_time = statement.ColumnTime(8);
     base::Time expiry_time = statement.ColumnTime(9);
     int64_t impression_id = statement.ColumnInt64(10);
@@ -869,7 +875,7 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
   std::vector<StorableImpression> impressions;
   while (statement.Step()) {
     uint64_t impression_data =
-        DeserializeImpressionOrConversionData(statement.ColumnString(0));
+        DeserializeImpressionOrConversionData(statement.ColumnInt64(0));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
     url::Origin conversion_origin =
@@ -1011,9 +1017,6 @@ bool ConversionStorageSql::CreateSchema() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
-  // TODO(https://crbug.com/1163599): Convert impression data and conversion
-  // data fields to integers.
-  //
   // TODO(johnidel, csharrison): Many impressions will share a target origin and
   // a reporting origin, so it makes sense to make a "shared string" table for
   // these to save disk / memory. However, this complicates the schema a lot, so
@@ -1043,7 +1046,7 @@ bool ConversionStorageSql::CreateSchema() {
   const char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"
-      "impression_data TEXT NOT NULL,"
+      "impression_data INTEGER NOT NULL,"
       "impression_origin TEXT NOT NULL,"
       "conversion_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
@@ -1103,8 +1106,8 @@ bool ConversionStorageSql::CreateSchema() {
   const char kConversionTableSql[] =
       "CREATE TABLE IF NOT EXISTS conversions "
       "(conversion_id INTEGER PRIMARY KEY,"
-      " impression_id INTEGER,"
-      " conversion_data TEXT NOT NULL,"
+      " impression_id INTEGER NOT NULL,"
+      " conversion_data INTEGER NOT NULL,"
       " conversion_time INTEGER NOT NULL,"
       " report_time INTEGER NOT NULL)";
   if (!db_->Execute(kConversionTableSql))
