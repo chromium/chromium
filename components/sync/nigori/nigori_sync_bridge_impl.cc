@@ -549,12 +549,6 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
     const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Sync.Crypto.CustomPassphraseKeyDerivationMethodOnNewPassphrase",
-      GetKeyDerivationMethodStateForMetrics(
-          CreateKeyDerivationParamsForCustomPassphrase(
-              random_salt_generator_)));
-
   QueuePendingLocalCommit(PendingLocalNigoriCommit::ForSetCustomPassphrase(
       passphrase, random_salt_generator_));
 }
