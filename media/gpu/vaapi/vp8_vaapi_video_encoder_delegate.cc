@@ -115,7 +115,7 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
   Reset();
 
   VideoBitrateAllocation initial_bitrate_allocation;
-  initial_bitrate_allocation.SetBitrate(0, 0, config.initial_bitrate);
+  initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
   return UpdateRates(initial_bitrate_allocation,
                      config.initial_framerate.value_or(
                          VideoEncodeAccelerator::kDefaultFramerate));

@@ -154,15 +154,15 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   // Checks if |level_| is valid. If it is invalid, set |level_| to a minimum
   // level that comforts Table A-1 in H.264 spec with specified bitrate,
   // framerate and dimension.
-  if (!CheckH264LevelLimits(profile_, level_, config.initial_bitrate,
+  if (!CheckH264LevelLimits(profile_, level_, config.bitrate.target(),
                             initial_framerate, mb_width_ * mb_height_)) {
     absl::optional<uint8_t> valid_level =
-        FindValidH264Level(profile_, config.initial_bitrate, initial_framerate,
+        FindValidH264Level(profile_, config.bitrate.target(), initial_framerate,
                            mb_width_ * mb_height_);
     if (!valid_level) {
       VLOGF(1) << "Could not find a valid h264 level for"
                << " profile=" << profile_
-               << " bitrate=" << config.initial_bitrate
+               << " bitrate=" << config.bitrate.target()
                << " framerate=" << initial_framerate
                << " size=" << config.input_visible_size.ToString();
       return false;
@@ -179,7 +179,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
                                            curr_params_.max_ref_pic_list1_size);
 
   VideoBitrateAllocation initial_bitrate_allocation;
-  initial_bitrate_allocation.SetBitrate(0, 0, config.initial_bitrate);
+  initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
   if (!UpdateRates(initial_bitrate_allocation, initial_framerate))
     return false;
 

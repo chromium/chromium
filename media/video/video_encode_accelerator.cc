@@ -39,7 +39,7 @@ BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 VideoEncodeAccelerator::Config::Config()
     : input_format(PIXEL_FORMAT_UNKNOWN),
       output_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
-      initial_bitrate(0),
+      bitrate(Bitrate::ConstantBitrate(0u)),
       content_type(ContentType::kCamera) {}
 
 VideoEncodeAccelerator::Config::Config(const Config& config) = default;
@@ -48,7 +48,7 @@ VideoEncodeAccelerator::Config::Config(
     VideoPixelFormat input_format,
     const gfx::Size& input_visible_size,
     VideoCodecProfile output_profile,
-    uint32_t initial_bitrate,
+    const Bitrate& bitrate,
     absl::optional<uint32_t> initial_framerate,
     absl::optional<uint32_t> gop_length,
     absl::optional<uint8_t> h264_output_level,
@@ -60,7 +60,7 @@ VideoEncodeAccelerator::Config::Config(
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
-      initial_bitrate(initial_bitrate),
+      bitrate(bitrate),
       initial_framerate(initial_framerate.value_or(
           VideoEncodeAccelerator::kDefaultFramerate)),
       gop_length(gop_length),
@@ -76,10 +76,10 @@ VideoEncodeAccelerator::Config::~Config() = default;
 std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   std::string str = base::StringPrintf(
       "input_format: %s, input_visible_size: %s, output_profile: %s, "
-      "initial_bitrate: %u",
+      "bitrate: %s",
       VideoPixelFormatToString(input_format).c_str(),
       input_visible_size.ToString().c_str(),
-      GetProfileName(output_profile).c_str(), initial_bitrate);
+      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str());
   if (initial_framerate) {
     str += base::StringPrintf(", initial_framerate: %u",
                               initial_framerate.value());
@@ -222,8 +222,7 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
                 const VideoEncodeAccelerator::Config& r) {
   return l.input_format == r.input_format &&
          l.input_visible_size == r.input_visible_size &&
-         l.output_profile == r.output_profile &&
-         l.initial_bitrate == r.initial_bitrate &&
+         l.output_profile == r.output_profile && l.bitrate == r.bitrate &&
          l.initial_framerate == r.initial_framerate &&
          l.gop_length == r.gop_length &&
          l.h264_output_level == r.h264_output_level &&

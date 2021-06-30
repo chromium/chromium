@@ -4,6 +4,7 @@
 
 #include "media/base/bitrate.h"
 #include "base/check_op.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 
@@ -15,6 +16,16 @@ bool Bitrate::operator==(const Bitrate& right) const {
 uint32_t Bitrate::peak() const {
   DCHECK_EQ(mode_ == Mode::kConstant, peak_ == 0u);
   return peak_;
+}
+
+std::string Bitrate::ToString() const {
+  switch (mode_) {
+    case Mode::kConstant:
+      return base::StringPrintf("CBR: %d bps", target_);
+    case Mode::kVariable:
+      return base::StringPrintf("VBR: target %d bps, peak %d bps", target_,
+                                peak_);
+  }
 }
 
 }  // namespace media

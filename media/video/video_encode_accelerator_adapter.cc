@@ -43,15 +43,16 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
   auto config = VideoEncodeAccelerator::Config(
       format, opts.frame_size, profile,
-      opts.bitrate.value_or(opts.frame_size.width() * opts.frame_size.height() *
-                            kVEADefaultBitratePerPixel),
+      Bitrate::ConstantBitrate(opts.bitrate.value_or(
+          opts.frame_size.width() * opts.frame_size.height() *
+          kVEADefaultBitratePerPixel)),
       initial_framerate, opts.keyframe_interval);
 
   if (opts.temporal_layers > 1) {
     VideoEncodeAccelerator::Config::SpatialLayer layer;
     layer.width = opts.frame_size.width();
     layer.height = opts.frame_size.height();
-    layer.bitrate_bps = config.initial_bitrate;
+    layer.bitrate_bps = config.bitrate.target();
     if (initial_framerate.has_value())
       layer.framerate = initial_framerate.value();
     layer.num_of_temporal_layers = opts.temporal_layers;

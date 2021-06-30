@@ -256,7 +256,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     frame_rate_ = config.initial_framerate.value();
   else
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
-  target_bitrate_ = config.initial_bitrate;
+  target_bitrate_ = config.bitrate.target();
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   gop_length_ = config.gop_length;
 

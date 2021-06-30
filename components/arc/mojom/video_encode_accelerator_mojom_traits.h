@@ -6,6 +6,7 @@
 #define COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
 #include "components/arc/mojom/video_encode_accelerator.mojom-shared.h"
+#include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace mojo {
@@ -75,9 +76,11 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.output_profile;
   }
 
+  // TODO(clarissagarvey): update arc Mojo to use the new
+  // VideoEncodeAccelerator::Config API in transport
   static uint32_t initial_bitrate(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_bitrate;
+    return input.bitrate.target();
   }
 
   static uint32_t initial_framerate(

@@ -97,7 +97,7 @@ VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
     const VideoEncodeAccelerator::Config& config) {
   VideoBitrateAllocation bitrate_allocation;
   if (!config.HasTemporalLayer() && !config.HasSpatialLayer()) {
-    bitrate_allocation.SetBitrate(0, 0, config.initial_bitrate);
+    bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
     return bitrate_allocation;
   }
 

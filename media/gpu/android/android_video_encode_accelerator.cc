@@ -176,7 +176,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   frame_size_ = config.input_visible_size;
-  last_set_bitrate_ = config.initial_bitrate;
+  last_set_bitrate_ = config.bitrate.target();
 
   // Only consider using MediaCodec if it's likely backed by hardware.
   if (MediaCodecUtil::IsKnownUnaccelerated(codec,
@@ -191,7 +191,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
   media_codec_ = MediaCodecBridgeImpl::CreateVideoEncoder(
-      codec, config.input_visible_size, config.initial_bitrate,
+      codec, config.input_visible_size, config.bitrate.target(),
       INITIAL_FRAMERATE, i_frame_interval, pixel_format);
 
   if (!media_codec_) {

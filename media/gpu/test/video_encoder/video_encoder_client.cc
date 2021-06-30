@@ -15,6 +15,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/bitrate.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/bitstream_helpers.h"
@@ -439,7 +440,8 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
 
   const VideoEncodeAccelerator::Config config(
       video_->PixelFormat(), encoder_client_config_.output_resolution,
-      encoder_client_config_.output_profile, encoder_client_config_.bitrate,
+      encoder_client_config_.output_profile,
+      Bitrate::ConstantBitrate(encoder_client_config_.bitrate),
       encoder_client_config_.framerate, absl::nullopt /* gop_length */,
       absl::nullopt /* h264_output_level*/, false /* is_constrained_h264 */,
       encoder_client_config_.input_storage_type,

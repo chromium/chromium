@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/bitrate.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -315,9 +316,11 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
         media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
+  // TODO(b/181797390): Use VBR bitrate mode.
   const media::VideoEncodeAccelerator::Config config(
-      pixel_format, input_visible_size_, codec_, bits_per_second_,
-      absl::nullopt, absl::nullopt, level_, false, storage_type,
+      pixel_format, input_visible_size_, codec_,
+      media::Bitrate::ConstantBitrate(bits_per_second_), absl::nullopt,
+      absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ || !video_encoder_->Initialize(config, this))
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);

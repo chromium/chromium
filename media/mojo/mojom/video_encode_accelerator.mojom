@@ -71,6 +71,22 @@ struct SpatialLayer {
   uint8 num_of_temporal_layers;
 };
 
+// This defines a mojo transport format for media::Bitrate
+struct Bitrate {
+  // See media::Bitrate::Mode
+  [Extensible]
+  enum Mode {
+    [Default] kConstant,
+    kVariable
+  };
+
+  // The defaults here match those in media::Bitrate (CBR, which has no peak).
+  // Target must be set for all bitrates.
+  Mode mode = kConstant;
+  uint32 target;
+  uint32 peak = 0;
+};
+
 // This defines a mojo transport format for
 // media::VideoEncodeAccelerator::Config.
 struct VideoEncodeAcceleratorConfig {
@@ -96,7 +112,7 @@ struct VideoEncodeAcceleratorConfig {
   VideoPixelFormat input_format;
   gfx.mojom.Size input_visible_size;
   VideoCodecProfile output_profile;
-  uint32 initial_bitrate;
+  Bitrate bitrate;
   uint32 initial_framerate;
   bool has_initial_framerate;  // Whether or not config has initial framerate
   uint32 gop_length;

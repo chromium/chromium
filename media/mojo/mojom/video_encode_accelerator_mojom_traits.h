@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom-shared.h"
@@ -254,6 +255,27 @@ struct StructTraits<media::mojom::SpatialLayerDataView,
 };
 
 template <>
+struct EnumTraits<media::mojom::Bitrate_Mode, media::Bitrate::Mode> {
+  static media::mojom::Bitrate_Mode ToMojom(media::Bitrate::Mode input);
+
+  static bool FromMojom(media::mojom::Bitrate_Mode,
+                        media::Bitrate::Mode* output);
+};
+
+template <>
+struct StructTraits<media::mojom::BitrateDataView, media::Bitrate> {
+  static media::Bitrate::Mode mode(const media::Bitrate& input) {
+    return input.mode();
+  }
+
+  static uint32_t target(const media::Bitrate& input) { return input.target(); }
+
+  static uint32_t peak(const media::Bitrate& input) { return input.peak(); }
+
+  static bool Read(media::mojom::BitrateDataView input, media::Bitrate* output);
+};
+
+template <>
 struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
                     media::VideoEncodeAccelerator::Config> {
   static media::VideoPixelFormat input_format(
@@ -271,9 +293,9 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.output_profile;
   }
 
-  static uint32_t initial_bitrate(
+  static const media::Bitrate& bitrate(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_bitrate;
+    return input.bitrate;
   }
 
   static uint32_t initial_framerate(

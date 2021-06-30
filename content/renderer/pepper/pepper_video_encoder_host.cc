@@ -20,6 +20,8 @@
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
+#include "media/base/bitrate.h"
+#include "media/video/video_encode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_graphics_3d.h"
@@ -275,7 +277,8 @@ int32_t PepperVideoEncoderHost::OnHostMsgInitialize(
 
   initialize_reply_context_ = context->MakeReplyMessageContext();
   const media::VideoEncodeAccelerator::Config config(
-      media_input_format_, input_size, media_profile, initial_bitrate);
+      media_input_format_, input_size, media_profile,
+      media::Bitrate::ConstantBitrate(initial_bitrate));
   if (encoder_->Initialize(config, this))
     return PP_OK_COMPLETIONPENDING;
 

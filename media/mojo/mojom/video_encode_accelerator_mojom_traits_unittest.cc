@@ -52,9 +52,9 @@ TEST(SpatialLayerStructTraitTest, RoundTrip) {
 TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
   std::vector<::media::VideoEncodeAccelerator::Config::SpatialLayer>
       input_spatial_layers(3);
-  gfx::Size kBaseSize(320, 180);
-  uint32_t kBaseBitrateBps = 123456u;
-  uint32_t kBaseFramerate = 24u;
+  constexpr gfx::Size kBaseSize(320, 180);
+  constexpr uint32_t kBaseBitrateBps = 123456u;
+  constexpr uint32_t kBaseFramerate = 24u;
   for (size_t i = 0; i < input_spatial_layers.size(); ++i) {
     input_spatial_layers[i].width =
         static_cast<int32_t>(kBaseSize.width() * (i + 1));
@@ -65,20 +65,38 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
     input_spatial_layers[i].max_qp = 30 * (i + 1) / 2;
     input_spatial_layers[i].num_of_temporal_layers = 3 - i;
   }
+  constexpr ::media::Bitrate kBitrate =
+      ::media::Bitrate::ConstantBitrate(kBaseBitrateBps);
+
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBaseBitrateBps, kBaseFramerate, absl::nullopt, absl::nullopt, false,
+      kBitrate, kBaseFramerate, absl::nullopt, absl::nullopt, false,
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
       input_spatial_layers,
       ::media::VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic);
-  DVLOG(4) << input_config.AsHumanReadableString();
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::VideoEncodeAcceleratorConfig>(
           input_config, output_config));
-  DVLOG(4) << output_config.AsHumanReadableString();
+  EXPECT_EQ(input_config, output_config);
+}
+
+TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
+  constexpr gfx::Size kBaseSize(320, 180);
+  constexpr uint32_t kBaseBitrateBps = 123456u;
+  constexpr uint32_t kMaximumBitrate = 999999u;
+  constexpr ::media::Bitrate kBitrate =
+      ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
+  ::media::VideoEncodeAccelerator::Config input_config(
+      ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
+      kBitrate);
+
+  ::media::VideoEncodeAccelerator::Config output_config{};
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoEncodeAcceleratorConfig>(
+          input_config, output_config));
   EXPECT_EQ(input_config, output_config);
 }
 

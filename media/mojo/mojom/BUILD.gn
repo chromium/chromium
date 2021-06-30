@@ -412,6 +412,10 @@ mojom("mojom") {
           cpp = "::media::VideoEncodeAccelerator::Config::SpatialLayer"
         },
         {
+          mojom = "media.mojom.Bitrate"
+          cpp = "::media::Bitrate"
+        },
+        {
           mojom = "media.mojom.VideoEncodeAcceleratorSupportedProfile"
           cpp = "::media::VideoEncodeAccelerator::SupportedProfile"
         },

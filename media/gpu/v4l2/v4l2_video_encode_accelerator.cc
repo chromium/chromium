@@ -340,8 +340,8 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
 
   encoder_state_ = kInitialized;
   RequestEncodingParametersChangeTask(
-      config.initial_bitrate, config.initial_framerate.value_or(
-                                  VideoEncodeAccelerator::kDefaultFramerate));
+      config.bitrate.target(), config.initial_framerate.value_or(
+                                   VideoEncodeAccelerator::kDefaultFramerate));
 
   // input_frame_size_ is the size of input_config of |image_processor_|.
   // On native_input_mode_, since the passed size in RequireBitstreamBuffers()
@@ -1766,15 +1766,15 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
 
   // Check whether the h264 level is valid.
   if (!CheckH264LevelLimits(config.output_profile, h264_level,
-                            config.initial_bitrate, framerate,
+                            config.bitrate.target(), framerate,
                             framesize_in_mbs)) {
     absl::optional<uint8_t> valid_level =
-        FindValidH264Level(config.output_profile, config.initial_bitrate,
+        FindValidH264Level(config.output_profile, config.bitrate.target(),
                            framerate, framesize_in_mbs);
     if (!valid_level) {
       VLOGF(1) << "Could not find a valid h264 level for"
                << " profile=" << config.output_profile
-               << " bitrate=" << config.initial_bitrate
+               << " bitrate=" << config.bitrate.target()
                << " framerate=" << framerate
                << " size=" << config.input_visible_size.ToString();
       NOTIFY_ERROR(kInvalidArgumentError);

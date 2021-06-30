@@ -98,7 +98,8 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return false;
 
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, input.initial_bitrate(),
+      input_format, input_visible_size, output_profile,
+      media::Bitrate::ConstantBitrate(input.initial_bitrate()),
       initial_framerate, absl::nullopt, h264_output_level, false, storage_type);
   return true;
 }

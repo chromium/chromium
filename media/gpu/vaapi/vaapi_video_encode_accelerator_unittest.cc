@@ -30,13 +30,15 @@ namespace {
 
 constexpr gfx::Size kDefaultEncodeSize(1280, 720);
 constexpr uint32_t kDefaultBitrateBps = 4 * 1000 * 1000;
+constexpr Bitrate kDefaultBitrate =
+    Bitrate::ConstantBitrate(kDefaultBitrateBps);
 constexpr uint32_t kDefaultFramerate = 30;
 constexpr size_t kMaxNumOfRefFrames = 3u;
 const VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,
     kDefaultEncodeSize,
     VP9PROFILE_PROFILE0,
-    kDefaultBitrateBps,
+    kDefaultBitrate,
     kDefaultFramerate);
 
 MATCHER_P2(MatchesVaapiVideoEncoderDelegateConfig,

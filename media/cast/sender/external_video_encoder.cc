@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/bitrate.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -130,7 +131,8 @@ class ExternalVideoEncoder::VEAClientImpl final
 
     requested_bit_rate_ = start_bit_rate;
     const media::VideoEncodeAccelerator::Config config(
-        media::PIXEL_FORMAT_I420, frame_size, codec_profile, start_bit_rate);
+        media::PIXEL_FORMAT_I420, frame_size, codec_profile,
+        media::Bitrate::ConstantBitrate(start_bit_rate));
     encoder_active_ = video_encode_accelerator_->Initialize(config, this);
     next_frame_id_ = first_frame_id;
     codec_profile_ = codec_profile;

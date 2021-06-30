@@ -293,6 +293,55 @@ bool StructTraits<media::mojom::SpatialLayerDataView,
 }
 
 // static
+media::mojom::Bitrate_Mode
+EnumTraits<media::mojom::Bitrate_Mode, media::Bitrate::Mode>::ToMojom(
+    media::Bitrate::Mode input) {
+  switch (input) {
+    case media::Bitrate::Mode::kConstant:
+      return media::mojom::Bitrate_Mode::kConstant;
+    case media::Bitrate::Mode::kVariable:
+      return media::mojom::Bitrate_Mode::kVariable;
+  }
+  NOTREACHED();
+  return media::mojom::Bitrate_Mode::kConstant;
+}
+
+// static
+bool EnumTraits<media::mojom::Bitrate_Mode, media::Bitrate::Mode>::FromMojom(
+    media::mojom::Bitrate_Mode input,
+    media::Bitrate::Mode* output) {
+  switch (input) {
+    case media::mojom::Bitrate_Mode::kConstant:
+      *output = media::Bitrate::Mode::kConstant;
+      return true;
+    case media::mojom::Bitrate_Mode::kVariable:
+      *output = media::Bitrate::Mode::kVariable;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+bool StructTraits<media::mojom::BitrateDataView, media::Bitrate>::Read(
+    media::mojom::BitrateDataView input,
+    media::Bitrate* output) {
+  switch (input.mode()) {
+    case media::mojom::Bitrate_Mode::kConstant:
+      if (input.peak() != 0u)
+        return false;
+      *output = media::Bitrate::ConstantBitrate(input.target());
+      return true;
+    case media::mojom::Bitrate_Mode::kVariable:
+      *output = media::Bitrate::VariableBitrate(input.target(), input.peak());
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
+// static
 bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
                   media::VideoEncodeAccelerator::Config>::
     Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,
@@ -308,6 +357,14 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   media::VideoCodecProfile output_profile;
   if (!input.ReadOutputProfile(&output_profile))
     return false;
+
+  media::Bitrate bitrate;
+  if (!input.ReadBitrate(&bitrate))
+    return false;
+  if (bitrate.mode() == media::Bitrate::Mode::kConstant &&
+      bitrate.peak() != 0u) {
+    return false;
+  }
 
   absl::optional<uint32_t> initial_framerate;
   if (input.has_initial_framerate())
@@ -344,11 +401,12 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return false;
 
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, input.initial_bitrate(),
+      input_format, input_visible_size, output_profile, bitrate,
       initial_framerate, gop_length, h264_output_level, is_constrained_h264,
       storage_type, content_type, spatial_layers, inter_layer_pred);
 
   output->require_low_delay = input.require_low_delay();
+
   return true;
 }
 

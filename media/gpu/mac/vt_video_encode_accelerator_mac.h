@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/bitrate.h"
 #include "media/base/mac/videotoolbox_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -105,7 +106,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;
   int32_t frame_rate_;
-  int32_t initial_bitrate_;
+  media::Bitrate bitrate_;
   int32_t target_bitrate_;
   int32_t encoder_set_bitrate_;
   VideoCodecProfile h264_profile_;

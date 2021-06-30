@@ -6,6 +6,7 @@
 #define MEDIA_BASE_BITRATE_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "media/base/media_export.h"
 
@@ -43,6 +44,8 @@ class MEDIA_EXPORT Bitrate {
   // Accessor for |peak_|. Returns 0 if |mode_| is
   // Mode::kConstantBitrate.
   uint32_t peak() const;
+
+  std::string ToString() const;
 
  private:
   constexpr Bitrate(Mode mode, uint32_t target_bitrate, uint32_t peak_bitrate)

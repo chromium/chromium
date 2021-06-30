@@ -167,7 +167,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     frame_rate_ = config.initial_framerate.value();
   else
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
-  initial_bitrate_ = config.initial_bitrate;
+  bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
 
@@ -504,7 +504,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
 
   const bool configure_rv = ConfigureCompressionSession();
   if (configure_rv)
-    RequestEncodingParametersChange(initial_bitrate_, frame_rate_);
+    RequestEncodingParametersChange(bitrate_.target(), frame_rate_);
   return configure_rv;
 }
 

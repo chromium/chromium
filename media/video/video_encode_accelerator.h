@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -178,7 +179,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     Config(VideoPixelFormat input_format,
            const gfx::Size& input_visible_size,
            VideoCodecProfile output_profile,
-           uint32_t initial_bitrate,
+           const Bitrate& bitrate,
            absl::optional<uint32_t> initial_framerate = absl::nullopt,
            absl::optional<uint32_t> gop_length = absl::nullopt,
            absl::optional<uint8_t> h264_output_level = absl::nullopt,
@@ -206,8 +207,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Codec profile of encoded output stream.
     VideoCodecProfile output_profile;
 
-    // Initial bitrate of encoded output stream in bits per second.
-    uint32_t initial_bitrate;
+    // Configuration details for the bitrate, indicating the bitrate mode (ex.
+    // variable or constant) and target bitrate.
+    Bitrate bitrate;
 
     // Initial encoding framerate in frames per second. This is optional and
     // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.

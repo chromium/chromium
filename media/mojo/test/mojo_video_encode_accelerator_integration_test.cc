@@ -28,9 +28,9 @@ using ::testing::_;
 
 namespace media {
 
-static const gfx::Size kInputVisibleSize(64, 48);
-static const uint32_t kInitialBitrate = 100000u;
-static const VideoCodecProfile kValidOutputProfile = H264PROFILE_MAIN;
+static constexpr gfx::Size kInputVisibleSize(64, 48);
+static constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
+static constexpr VideoCodecProfile kValidOutputProfile = H264PROFILE_MAIN;
 
 extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,

@@ -58,7 +58,8 @@ VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,
     gfx::Size(1280, 720),
     VP9PROFILE_PROFILE0,
-    14000000 /* = maximum bitrate in bits per second for level 3.1 */,
+    Bitrate::ConstantBitrate(14000000)
+    /* = maximum bitrate in bits per second for level 3.1 */,
     VideoEncodeAccelerator::kDefaultFramerate,
     absl::nullopt /* gop_length */,
     absl::nullopt /* h264 output level*/,
@@ -328,7 +329,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
 
   VideoBitrateAllocation initial_bitrate_allocation;
   initial_bitrate_allocation.SetBitrate(
-      0, 0, kDefaultVideoEncodeAcceleratorConfig.initial_bitrate);
+      0, 0, kDefaultVideoEncodeAcceleratorConfig.bitrate.target());
   if (num_spatial_layers > 1u || num_temporal_layers > 1u) {
     DCHECK_GT(num_spatial_layers, 0u);
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
@@ -341,7 +342,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
           config.input_visible_size.width() / resolution_denom;
       spatial_layer.height =
           config.input_visible_size.height() / resolution_denom;
-      spatial_layer.bitrate_bps = config.initial_bitrate * bitrate_factor;
+      spatial_layer.bitrate_bps = config.bitrate.target() * bitrate_factor;
       spatial_layer.framerate = *config.initial_framerate;
       spatial_layer.num_of_temporal_layers = num_temporal_layers;
       spatial_layer.max_qp = 30u;
@@ -354,7 +355,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
       UpdateRateControl(MatchRtcConfigWithRates(
           kDefaultVideoEncodeAcceleratorConfig.input_visible_size,
           GetDefaultVideoBitrateAllocation(
-              num_spatial_layers, num_temporal_layers, config.initial_bitrate),
+              num_spatial_layers, num_temporal_layers, config.bitrate.target()),
           VideoEncodeAccelerator::kDefaultFramerate, num_spatial_layers,
           num_temporal_layers)))
       .Times(1)
@@ -460,7 +461,7 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
       };
 
   const uint32_t kBitrate =
-      kDefaultVideoEncodeAcceleratorConfig.initial_bitrate;
+      kDefaultVideoEncodeAcceleratorConfig.bitrate.target();
   const uint32_t kFramerate =
       *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
   // Call UpdateRates before Encode.

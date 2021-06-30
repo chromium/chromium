@@ -101,7 +101,8 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
     EXPECT_CALL(*mock_mojo_vea_client(),
                 RequireBitstreamBuffers(_, kInputVisibleSize, _));
 
-    const uint32_t kInitialBitrate = 100000u;
+    constexpr media::Bitrate kInitialBitrate =
+        media::Bitrate::ConstantBitrate(100000u);
     const media::VideoEncodeAccelerator::Config config(
         PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
     mojo_vea_service()->Initialize(
@@ -230,7 +231,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
   mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient>
       invalid_mojo_vea_client;
 
-  const uint32_t kInitialBitrate = 100000u;
+  constexpr media::Bitrate kInitialBitrate =
+      media::Bitrate::ConstantBitrate(100000u);
   const media::VideoEncodeAccelerator::Config config(
       PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
   mojo_vea_service()->Initialize(
@@ -250,7 +252,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, InitializeFailure) {
       std::make_unique<MockMojoVideoEncodeAcceleratorClient>(),
       mojo_vea_client.InitWithNewPipeAndPassReceiver());
 
-  const uint32_t kInitialBitrate = 100000u;
+  constexpr media::Bitrate kInitialBitrate =
+      media::Bitrate::ConstantBitrate(100000u);
   const media::VideoEncodeAccelerator::Config config(
       PIXEL_FORMAT_I420, kInputVisibleSize, H264PROFILE_MIN, kInitialBitrate);
   mojo_vea_service()->Initialize(
