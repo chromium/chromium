@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
 
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
@@ -28,17 +29,19 @@
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
 @property(nonatomic, assign, readonly)
     ios::ChromeIdentityService* chromeIdentityService;
-// Pref service to retrieve preference values.
-@property(nonatomic, assign) PrefService* prefService;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
 @implementation ConsistencyAccountChooserMediator
 
 - (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity
-                             prefService:(PrefService*)prefService {
+                   accountManagerService:
+                       (ChromeAccountManagerService*)accountManagerService {
   if (self = [super init]) {
-    _prefService = prefService;
+    DCHECK(accountManagerService);
+    _accountManagerService = accountManagerService;
     _identityServiceObserver =
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
@@ -51,11 +54,11 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.prefService);
+  DCHECK(!self.accountManagerService);
 }
 
 - (void)disconnect {
-  self.prefService = nullptr;
+  self.accountManagerService = nullptr;
 }
 
 #pragma mark - Properties
@@ -79,13 +82,12 @@
 
 // Updates |self.sortedIdentityItemConfigurators| based on ChromeIdentity list.
 - (void)loadIdentityItemConfigurators {
-  if (!self.prefService) {
+  if (!self.accountManagerService) {
     return;
   }
 
   NSMutableArray* configurators = [NSMutableArray array];
-  NSArray* identities =
-      self.chromeIdentityService->GetAllIdentities(self.prefService);
+  NSArray* identities = self.accountManagerService->GetAllIdentities();
   BOOL hasSelectedIdentity = NO;
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =

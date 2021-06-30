@@ -9,10 +9,10 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_model_delegate.h"
 
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 @protocol ConsistencyAccountChooserConsumer;
 @class ConsistencyAccountChooserMediator;
-class PrefService;
 
 // Mediator for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserMediator
@@ -25,7 +25,8 @@ class PrefService;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity
-                             prefService:(PrefService*)prefService
+                   accountManagerService:
+                       (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.

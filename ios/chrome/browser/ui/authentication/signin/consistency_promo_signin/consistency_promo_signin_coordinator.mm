@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -214,17 +216,18 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       DCHECK(identity);
-      PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-      NSArray* identities = ios::GetChromeBrowserProvider()
-                                ->GetChromeIdentityService()
-                                ->GetAllIdentities(prefService);
-      DCHECK(identities.count > 0);
+      ChromeAccountManagerService* accountManagerService =
+          ChromeAccountManagerServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      ChromeIdentity* defaultIdentity =
+          accountManagerService->GetDefaultIdentity();
+      DCHECK(defaultIdentity);
       if ([self.addedGaiaIDs containsObject:identity.gaiaID]) {
         // Added identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
                 SIGNED_IN_WITH_ADDED_ACCOUNT);
-      } else if ([identities[0] isEqual:identity]) {
+      } else if ([defaultIdentity isEqual:identity]) {
         // Default identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::

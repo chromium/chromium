@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
-class PrefService;
 
 // Delegate for ConsistencyDefaultAccountMediator.
 @protocol ConsistencyDefaultAccountMediatorDelegate <NSObject>
@@ -25,7 +25,8 @@ class PrefService;
 @interface ConsistencyDefaultAccountMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithAccountManagerService:
+    (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
