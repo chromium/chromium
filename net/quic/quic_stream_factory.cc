@@ -1908,6 +1908,7 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
   const base::TimeDelta* srtt =
       GetServerNetworkStatsSmoothedRtt(server_id, network_isolation_key);
   if (srtt != nullptr) {
+    CHECK_GE(*srtt, base::TimeDelta());
     SetInitialRttEstimate(*srtt, INITIAL_RTT_CACHED, config);
     return;
   }
