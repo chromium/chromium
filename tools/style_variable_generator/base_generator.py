@@ -38,6 +38,7 @@ class Modes:
 class VariableType:
     COLOR = 'color'
     OPACITY = 'opacity'
+    UNTYPED_CSS = 'untyped_css'
 
 
 class ModeKeyedModel(object):
@@ -165,6 +166,12 @@ class BaseGenerator:
         self.model = {
             VariableType.COLOR: color_model,
             VariableType.OPACITY: opacity_model,
+            # A dict of client-defined groups to corresponding dicts of variable
+            # names to values. This is used to store CSS that doesn't have a
+            # dedicated model type. This is used for more freeform variables, or
+            # for variable types that haven't been implemented yet.
+            # See https://crbug.com/1018654.
+            VariableType.UNTYPED_CSS: dict(),
         }
 
         # A dictionary of variable names to objects containing information about
@@ -199,6 +206,11 @@ class BaseGenerator:
         except ValueError as err:
             raise ValueError('Error parsing opacity "%s": %s' %
                              (value_obj, err))
+
+    def AddUntypedCSSGroup(self, group_name, value_obj, context=None):
+        for var_name in value_obj.keys():
+          self._SetVariableContext(var_name, context)
+        self.model[VariableType.UNTYPED_CSS][group_name] = value_obj
 
     def AddJSONFileToModel(self, path):
         try:
@@ -238,6 +250,9 @@ class BaseGenerator:
                     '(lower case, 0-9, _, must end with _opacity)')
 
             self.AddOpacity(name, value, generator_context)
+
+        for name, value in data.get('untyped_css', {}).items():
+            self.AddUntypedCSSGroup(name, value, generator_context)
 
         return generator_context
 

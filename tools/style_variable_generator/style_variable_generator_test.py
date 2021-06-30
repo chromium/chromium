@@ -61,6 +61,11 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         }
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
+    def testUntypedCSS(self):
+        self.generator = CSSStyleGenerator()
+        self.generator.AddJSONFileToModel('untyped_css_test.json5')
+        expected_file_name = 'untyped_css_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):

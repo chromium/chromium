@@ -29,6 +29,18 @@ html:not(body) {
 
 }
 
+{%- if untyped_css %}
+
+html {
+{%-   for group_name, vars in untyped_css.items() %}
+  /* {{group_name}} */
+{%-     for name, value in vars.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+{%   endfor %}
+}
+{%- endif %}
+
 {%- if colors[Modes.DARK] and dark_mode_selector is not none %}
 
 {{dark_mode_selector}} {

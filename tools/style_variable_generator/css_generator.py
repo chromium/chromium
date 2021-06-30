@@ -37,6 +37,7 @@ class CSSStyleGenerator(BaseGenerator):
         return {
             'opacities': opacities,
             'colors': colors,
+            'untyped_css': self.model[VariableType.UNTYPED_CSS]
         }
 
     def GetFilters(self):
