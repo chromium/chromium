@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-#if defined(OS_CHROMEOS)
-// https://crbug.com/1212403. Flaky on linux-chromeos-rel.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+// https://crbug.com/1212403. Flaky on linux-chromeos-rel and other linux bots.
 #define MAYBE_ShowTooltipFromWebContentWithKeyboard \
   DISABLED_ShowTooltipFromWebContentWithKeyboard
 #else
