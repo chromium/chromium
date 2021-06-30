@@ -111,8 +111,7 @@ void OnDidFetchCapabilities(
 
       // Retry the operation which should now happen at a higher privilege
       // level.
-      auto& service = service_mgr.GetService(
-          g_browser_process->GetApplicationLocale(), device_name);
+      auto& service = service_mgr.GetService(device_name);
       service->FetchCapabilities(
           device_name,
           base::BindOnce(&OnDidFetchCapabilities, device_name,
@@ -232,7 +231,6 @@ void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.GetDefaultPrinterName(
-        g_browser_process->GetApplicationLocale(),
         base::BindOnce(&OnDidGetDefaultPrinterName, std::move(cb)));
   } else {
     VLOG(1) << "Getting default printer in-process";
@@ -254,7 +252,6 @@ void LocalPrinterHandlerDefault::StartGetPrinters(
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.EnumeratePrinters(
-        g_browser_process->GetApplicationLocale(),
         base::BindOnce(&OnDidEnumeratePrinters, std::move(callback),
                        std::move(done_callback)));
   } else {
@@ -278,7 +275,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
     service_mgr.FetchCapabilities(
-        g_browser_process->GetApplicationLocale(), device_name,
+        device_name,
         base::BindOnce(
             &OnDidFetchCapabilities, device_name,
             service_mgr.PrinterDriverRequiresElevatedPrivilege(device_name),

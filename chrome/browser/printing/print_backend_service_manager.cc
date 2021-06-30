@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -49,8 +50,7 @@ bool PrintBackendServiceManager::ShouldSandboxPrintBackendService() const {
 }
 
 const mojo::Remote<printing::mojom::PrintBackendService>&
-PrintBackendServiceManager::GetService(const std::string& locale,
-                                       const std::string& printer_name) {
+PrintBackendServiceManager::GetService(const std::string& printer_name) {
   // Value of `is_sandboxed_service_` will be referenced during the service
   // launch by `ShouldSandboxPrintBackendService()` if the service is started
   // via `content::ServiceProcessHost::Launch()`.
@@ -123,14 +123,13 @@ PrintBackendServiceManager::GetService(const std::string& locale,
                             remote_id));
 
     // Initialize the new service for the desired locale.
-    service->Init(locale);
+    service->Init(g_browser_process->GetApplicationLocale());
   }
 
   return service;
 }
 
 void PrintBackendServiceManager::EnumeratePrinters(
-    const std::string& locale,
     mojom::PrintBackendService::EnumeratePrintersCallback callback) {
   // Need to be able to run the callback either after a successful return from
   // the service or after the remote was disconnected, so save it here for
@@ -141,7 +140,7 @@ void PrintBackendServiceManager::EnumeratePrinters(
   // Note that `GetService()` will set state internally if this is sandboxed.
   const std::string kEmptyPrinterName;
   std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
-  auto& service = GetService(locale, kEmptyPrinterName);
+  auto& service = GetService(kEmptyPrinterName);
 
   SaveCallback(GetRemoteSavedEnumeratePrintersCallbacks(is_sandboxed_service_),
                remote_id, saved_callback_id, std::move(callback));
@@ -155,7 +154,6 @@ void PrintBackendServiceManager::EnumeratePrinters(
 }
 
 void PrintBackendServiceManager::FetchCapabilities(
-    const std::string& locale,
     const std::string& printer_name,
     mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
   // Need to be able to run the callback either after a successful return from
@@ -166,7 +164,7 @@ void PrintBackendServiceManager::FetchCapabilities(
 
   // Note that `GetService()` will set state internally if this is sandboxed.
   std::string remote_id = GetRemoteIdForPrinterName(printer_name);
-  auto& service = GetService(locale, printer_name);
+  auto& service = GetService(printer_name);
 
   SaveCallback(GetRemoteSavedFetchCapabilitiesCallbacks(is_sandboxed_service_),
                remote_id, saved_callback_id, std::move(callback));
@@ -181,7 +179,6 @@ void PrintBackendServiceManager::FetchCapabilities(
 }
 
 void PrintBackendServiceManager::GetDefaultPrinterName(
-    const std::string& locale,
     mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
   // Need to be able to run the callback either after a successful return from
   // the service or after the remote was disconnected, so save it here for
@@ -192,7 +189,7 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
   // Note that `GetService()` will set state internally if this is sandboxed.
   std::string remote_id =
       GetRemoteIdForPrinterName(/*printer_name=*/std::string());
-  auto& service = GetService(locale, /*printer_name=*/std::string());
+  auto& service = GetService(/*printer_name=*/std::string());
 
   SaveCallback(
       GetRemoteSavedGetDefaultPrinterNameCallbacks(is_sandboxed_service_),

@@ -29,19 +29,15 @@ class PrintBackendServiceManager {
   // Acquires a remote handle to the Print Backend Service instance, launching a
   // process to host the service if necessary.
   const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
-      const std::string& locale,
       const std::string& printer_name);
 
   // Wrappers around mojom::PrintBackendService call.
   void EnumeratePrinters(
-      const std::string& locale,
       mojom::PrintBackendService::EnumeratePrintersCallback callback);
   void FetchCapabilities(
-      const std::string& locale,
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback);
   void GetDefaultPrinterName(
-      const std::string& locale,
       mojom::PrintBackendService::GetDefaultPrinterNameCallback callback);
 
   // Query if printer driver has been found to require elevated privilege in

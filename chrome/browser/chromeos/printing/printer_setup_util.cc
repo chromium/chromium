@@ -128,8 +128,7 @@ void CapabilitiesFetchedFromService(
 
       // Retry the operation which should now happen at a higher privilege
       // level.
-      auto& service = service_mgr.GetService(
-          g_browser_process->GetApplicationLocale(), printer_id);
+      auto& service = service_mgr.GetService(printer_id);
       service->GetPrinterSemanticCapsAndDefaults(
           printer_id,
           base::BindOnce(&CapabilitiesFetchedFromService, printer_id,
@@ -155,8 +154,7 @@ void FetchCapabilities(const std::string& printer_id,
     VLOG(1) << "Fetching printer capabilities via service";
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
-    auto& service = service_mgr.GetService(
-        g_browser_process->GetApplicationLocale(), printer_id);
+    auto& service = service_mgr.GetService(printer_id);
     service->GetPrinterSemanticCapsAndDefaults(
         printer_id,
         base::BindOnce(
