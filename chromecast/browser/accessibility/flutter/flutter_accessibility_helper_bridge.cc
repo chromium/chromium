@@ -140,26 +140,32 @@ void FlutterAccessibilityHelperBridge::OnAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kScrollBackward:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_LEFT);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kScrollForward:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_RIGHT);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kScrollUp:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_UP);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kScrollDown:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_DOWN);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kScrollLeft:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_LEFT);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kScrollRight:
       request.set_action_type(
           OnAccessibilityActionRequest_AccessibilityActionType_SCROLL_RIGHT);
+      tree_source_->NotifyActionResult(data, false);
       break;
     case ax::mojom::Action::kCustomAction:
       request.set_action_type(

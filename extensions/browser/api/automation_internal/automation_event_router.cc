@@ -139,8 +139,8 @@ void AutomationEventRouter::DispatchActionResult(
   auto event = std::make_unique<Event>(
       events::AUTOMATION_INTERNAL_ON_ACTION_RESULT,
       api::automation_internal::OnActionResult::kEventName, std::move(args),
-      active_context_);
-  EventRouter::Get(active_context_)
+      browser_context);
+  EventRouter::Get(browser_context)
       ->DispatchEventToExtension(data.source_extension_id, std::move(event));
 }
 
