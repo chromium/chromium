@@ -2575,11 +2575,6 @@
           'chromium_builder_asan',
         ],
       },
-      'TSAN Release (deps-cache-full-files) (reclient)': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
       'TSAN Release (j-250) (reclient)': {
         'additional_compile_targets': [
           'chromium_builder_asan',

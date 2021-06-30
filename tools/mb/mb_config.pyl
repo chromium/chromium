@@ -299,7 +299,6 @@
       'TSAN Release (core-32) (goma)':  'tsan_disable_nacl_release_bot',
       'TSAN Release (core-32) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'TSAN Release (deps-cache) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
-      'TSAN Release (deps-cache-full-files) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'TSAN Release (j-250) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'TSAN Release (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'TSAN Release (runsc-exp) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
