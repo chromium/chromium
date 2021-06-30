@@ -626,9 +626,7 @@ if (is_android) {
   }
 }
 
-# TODO(https://crbug.com/961457): components_browsertests no-op build is not a
-# no - op under Fuchsia.
-if (!is_ios && !is_fuchsia) {
+if (!is_ios) {
   test("components_browsertests") {
     use_xvfb = use_xvfb_in_this_config
 
