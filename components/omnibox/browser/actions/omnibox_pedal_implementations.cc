@@ -46,19 +46,19 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() override {
     return {
         {
-            true,
-            true,
-            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_REQUIRED_CLEAR,
-        },
-        {
-            true,
-            true,
-            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_REQUIRED_DATA,
-        },
-        {
             false,
             true,
-            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_OPTIONAL_CHROME,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_DELETE,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_INFORMATION,
         },
     };
   }
