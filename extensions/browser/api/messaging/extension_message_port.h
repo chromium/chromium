@@ -96,9 +96,6 @@ class ExtensionMessagePort : public MessagePort {
                        const ExtensionId& extension_id,
                        content::BrowserContext* browser_context);
 
-  // Clears the `frames_` set.
-  void ClearFrames();
-
   // Registers a frame as a receiver / sender.
   void RegisterFrame(content::RenderFrameHost* rfh);
 

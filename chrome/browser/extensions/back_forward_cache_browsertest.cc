@@ -9,7 +9,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/common/extension.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -31,7 +30,6 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
           {{"content_injection_supported",
             allow_content_scripts ? "true" : "false"},
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"enable_same_site", "true"},
            {"all_extensions_allowed",
             all_extensions_allowed ? "true" : "false"},
            {"blocked_extensions", blocked_extensions},
@@ -44,7 +42,7 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     ExtensionBrowserTest::SetUpOnMainThread();
   }
 
-  void RunChromeRuntimeConnectTest() {
+  void RunChromeRuntimeTest(const std::string& action) {
     const Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                           .AppendASCII("content_script"));
@@ -58,49 +56,35 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     content::RenderFrameHost* rfh_a =
         ui_test_utils::NavigateToURL(browser(), url_a);
     content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-    std::u16string expected_title = u"connected";
-    content::TitleWatcher title_watcher(
-        browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
     constexpr int kMessagingBucket =
         (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
          << 16) +
-        static_cast<int>(back_forward_cache::DisabledReasonId::
-                             kExtensionMessagingForOpenPort);
+        static_cast<int>(
+            back_forward_cache::DisabledReasonId::kExtensionMessaging);
 
-    std::string action = base::StringPrintf(
-        R"HTML(
-        var p = chrome.runtime.connect('%s');
-        p.onMessage.addListener((m) => {document.title = m; });
-      )HTML",
-        extension->id().c_str());
-    EXPECT_TRUE(ExecJs(rfh_a, action));
-
-    // 2) Wait for the message port to be connected.
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-    // Expect that a channel is open.
-    EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+    EXPECT_TRUE(ExecJs(
+        rfh_a, base::StringPrintf(action.c_str(), extension->id().c_str())));
 
     EXPECT_EQ(0, histogram_tester_.GetBucketCount(
                      "BackForwardCache.HistoryNavigationOutcome."
                      "DisabledForRenderFrameHostReason2",
                      kMessagingBucket));
-    // 3) Navigate to B.
+    // 2) Navigate to B.
     ui_test_utils::NavigateToURL(browser(), url_b);
 
     // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
     // since it uses the chrome.runtime API.
     delete_observer_rfh_a.WaitUntilDeleted();
 
-    // 4) Go back to A.
+    // 3) Go back to A.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     web_contents->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents));
 
-    // Validate that the not restored reason is `ExtensionMessagingForOpenPort`
-    // due to an active message channel..
+    // Validate that the not restored reason is `ExtensionMessaging` due to the
+    // chrome.runtime usage.
     EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                      "BackForwardCache.HistoryNavigationOutcome."
                      "DisabledForRenderFrameHostReason2",
@@ -160,7 +144,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since there is an active non-component loaded extension.
@@ -189,7 +175,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since the active extension injected content_scripts.
@@ -219,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 2) Navigate to B.
   content::RenderFrameHost* rfh_b =
       ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -243,7 +232,9 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
@@ -271,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, MAYBE_CSSAllowed) {
   // 2) Navigate to B.
   content::RenderFrameHost* rfh_b =
       ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -305,6 +297,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 2) Navigate to B.
   content::RenderFrameHost* rfh_b =
       ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -358,247 +351,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 // entering bfcache.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
                        ChromeRuntimeConnectUsage) {
-  RunChromeRuntimeConnectTest();
+  RunChromeRuntimeTest("chrome.runtime.connect('%s');");
 }
 
-// Test that we correctly clear the bfcache disable reasons on a same-origin
-// cross document navigation for a document with an active channel, allowing
-// the frame to be bfcached subsequently.
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       ChromeRuntimeConnectUsageInIframe) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a = embedded_test_server()->GetURL("a.com", "/iframe.html");
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHost* primary_rfh =
-      ui_test_utils::NavigateToURL(browser(), url_a);
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(primary_rfh);
-  std::u16string expected_title = u"connected";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  content::RenderFrameHost* child = primary_rfh->GetFramesInSubtree().at(1);
-
-  std::string action = base::StringPrintf(
-      R"HTML(
-        var p = chrome.runtime.connect('%s');
-        p.onMessage.addListener((m) => {window.top.document.title = m; });
-      )HTML",
-      extension->id().c_str());
-  ASSERT_TRUE(ExecJs(child, action));
-
-  // 2) Wait for the message port to be connected.
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  // Expect that a channel is open.
-  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  // 3) Navigate the iframe.
-  GURL iframe_url = embedded_test_server()->GetURL("a.com", "/title2.html");
-  EXPECT_TRUE(NavigateToURLFromRenderer(child, iframe_url));
-
-  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  // 4) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
-
-  // 5) Expect that A is in the back forward cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_EQ(primary_rfh->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-}
-
-// Test if the chrome.runtime.sendMessage API is called, the page is allowed
-// to enter the bfcache.
+// Test if the chrome.runtime.sendMessage API is called, the page is prevented
+// from entering bfcache.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
                        ChromeRuntimeSendMessageUsage) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHost* rfh_a =
-      ui_test_utils::NavigateToURL(browser(), url_a);
-
-  std::u16string expected_title = u"sent";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  std::string action =
-      R"HTML(
-        chrome.runtime.sendMessage('%s', 'some message',
-          () => { document.title = 'sent'});
-      )HTML";
-  EXPECT_TRUE(ExecJs(
-      rfh_a, base::StringPrintf(action.c_str(), extension->id().c_str())));
-
-  // 2) Wait until the sendMessage has completed.
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-  // Expect that no channel is open.
-  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
-
-  // 4) Expect that A is in the back forward cache.
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-}
-
-// Test if the chrome.runtime.connect is called then disconnected, the page is
-// allowed to enter the bfcache.
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       ChromeRuntimeConnectDisconnect) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHost* rfh_a =
-      ui_test_utils::NavigateToURL(browser(), url_a);
-  std::u16string expected_title = u"connected";
-  auto title_watcher = std::make_unique<content::TitleWatcher>(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  std::string action = base::StringPrintf(
-      R"HTML(
-        var p = chrome.runtime.connect('%s');
-        p.onMessage.addListener((m) => {document.title = m; });
-      )HTML",
-      extension->id().c_str());
-  EXPECT_TRUE(ExecJs(rfh_a, action));
-
-  // 2) Wait for the message port to be connected.
-  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
-
-  expected_title = u"disconnect";
-  title_watcher = std::make_unique<content::TitleWatcher>(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  EXPECT_TRUE(ExecJs(rfh_a,
-                     R"HTML(
-        p.onDisconnect.addListener((m) => {document.title = 'disconnect';});
-        p.postMessage('disconnect');
-      )HTML"));
-
-  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
-
-  // Expect that the channel is closed.
-  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
-
-  // 4) Expect that A is in the back forward cache.
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-}
-
-// Test if the chrome.tabs.connect is called and then the page is navigated,
-// the page is not allowed to enter the bfcache due to an open channel.
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       ChromeTabsConnect) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHost* rfh_a =
-      ui_test_utils::NavigateToURL(browser(), url_a);
-  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  std::u16string expected_title = u"connected";
-
-  constexpr char kScript[] =
-      R"HTML(
-      var p;
-      chrome.tabs.query({}, (t) => {
-        p = chrome.tabs.connect(t[0].id);
-        p.onMessage.addListener(
-         (m) => {window.domAutomationController.send(m)}
-        );
-      });
-    )HTML";
-  EXPECT_EQ("connected",
-            ExecuteScriptInBackgroundPage(extension->id(), kScript));
-
-  // Expect that a channel is open.
-  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-
-  // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
-
-  // Expect that `rfh_a` is destroyed as it should be cleared from the cache.
-  delete_observer_rfh_a.WaitUntilDeleted();
-}
-
-// Test if the chrome.tabs.connect is called then disconnected, the page is
-// allowed to enter the bfcache.
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       ChromeTabsConnectDisconnect) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  content::RenderFrameHost* rfh_a =
-      ui_test_utils::NavigateToURL(browser(), url_a);
-  std::u16string expected_title = u"connected";
-
-  constexpr char kScript[] =
-      R"HTML(
-      var p;
-      chrome.tabs.query({}, (t) => {
-        p = chrome.tabs.connect(t[0].id);
-        p.onMessage.addListener(
-         (m) => {window.domAutomationController.send(m)}
-        );
-      });
-    )HTML";
-  EXPECT_EQ("connected",
-            ExecuteScriptInBackgroundPage(extension->id(), kScript));
-
-  constexpr char kDisconnectScript[] =
-      R"HTML(
-      p.postMessage('disconnect');
-      p.onDisconnect.addListener(() => {
-        window.domAutomationController.send('disconnect')
-      });
-    )HTML";
-  EXPECT_EQ("disconnect",
-            ExecuteScriptInBackgroundPage(extension->id(), kDisconnectScript));
-
-  // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
-
-  // 4) Expect that A is in the back forward cache.
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  RunChromeRuntimeTest(
+      "chrome.runtime.sendMessage('%s', 'some "
+      "message');");
 }
 
 // Test if the chrome.runtime.connect API is called, the page is prevented from
@@ -606,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ExtensionBackForwardCacheContentScriptDisabledBrowserTest,
     ChromeRuntimeConnectUsage) {
-  RunChromeRuntimeConnectTest();
+  RunChromeRuntimeTest("chrome.runtime.connect('%s');");
 
   // Validate also that the not restored reason is `IsolatedWorldScript` due to
   // the extension injecting a content script.
