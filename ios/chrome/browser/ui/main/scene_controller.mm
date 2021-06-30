@@ -67,6 +67,8 @@
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/constants.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -766,22 +768,26 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.mainInterface.browser->GetBrowserState());
+
   if (!signin::ExtendedSyncPromosCapabilityEnabled() ||
-      !identityService->HasIdentities()) {
+      !accountManagerService->HasIdentities()) {
     // Present the sign-in promo synchronously.
     [self presentSigninUpgradePromo];
     return;
   }
 
-  PrefService* prefService = self.mainInterface.browserState->GetPrefs();
-  ChromeIdentity* defaultIdentity =
-      identityService->GetAllIdentities(prefService)[0];
+  ChromeIdentity* defaultIdentity = accountManagerService->GetDefaultIdentity();
+  DCHECK(defaultIdentity);
+
+  __weak SceneController* weakSelf = self;
+  ios::ChromeIdentityService* identityService =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
 
   // Asynchronously checks whether the default identity can display extended
   // sync promos and displays the sign-in promo if possible.
-  __weak SceneController* weakSelf = self;
   identityService->CanOfferExtendedSyncPromos(
       defaultIdentity, ^(ios::ChromeIdentityCapabilityResult result) {
         if (result != ios::ChromeIdentityCapabilityResult::kTrue) {
