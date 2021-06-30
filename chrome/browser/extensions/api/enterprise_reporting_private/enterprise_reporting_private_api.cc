@@ -60,6 +60,10 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.on_security_event_providers =
       std::move(signals.on_security_event_providers);
   info.site_isolation_enabled = signals.site_isolation_enabled;
+  info.chrome_cleanup_enabled =
+      signals.chrome_cleanup_enabled.has_value()
+          ? std::make_unique<bool>(signals.chrome_cleanup_enabled.value())
+          : nullptr;
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::

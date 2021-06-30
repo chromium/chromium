@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/component_updater/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
@@ -64,7 +66,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.built_in_dns_client_enabled = GetBuiltInDnsClientEnabled();
   info.password_protection_warning_trigger =
       GetPasswordProtectionWarningTrigger();
-
+  info.chrome_cleanup_enabled = GetChromeCleanupEnabled();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
 }
@@ -130,6 +132,14 @@ ContextInfoFetcher::GetPasswordProtectionWarningTrigger() {
   return static_cast<safe_browsing::PasswordProtectionTrigger>(
       profile->GetPrefs()->GetInteger(
           prefs::kPasswordProtectionWarningTrigger));
+}
+absl::optional<bool> ContextInfoFetcher::GetChromeCleanupEnabled() {
+#if defined(OS_WIN)
+  return g_browser_process->local_state()->GetBoolean(
+      prefs::kSwReporterEnabled);
+#else
+  return absl::nullopt;
+#endif
 }
 
 }  // namespace enterprise_signals

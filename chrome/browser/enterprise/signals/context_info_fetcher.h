@@ -42,6 +42,7 @@ struct ContextInfo {
   bool built_in_dns_client_enabled;
   absl::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger;
+  absl::optional<bool> chrome_cleanup_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -91,6 +92,8 @@ class ContextInfoFetcher {
 
   absl::optional<safe_browsing::PasswordProtectionTrigger>
   GetPasswordProtectionWarningTrigger();
+
+  absl::optional<bool> GetChromeCleanupEnabled();
 
   content::BrowserContext* browser_context_;
 

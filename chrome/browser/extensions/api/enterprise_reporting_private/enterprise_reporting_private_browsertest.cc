@@ -292,6 +292,11 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
+#if defined(OS_WIN)
+  EXPECT_TRUE(*info.chrome_cleanup_enabled);
+#else
+  EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
