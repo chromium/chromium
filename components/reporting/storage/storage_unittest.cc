@@ -599,7 +599,6 @@ class StorageTest
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorageWithFailedKeyDelivery(
       const StorageOptions& options,
-      size_t failures_count,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(30)),
@@ -612,7 +611,7 @@ class StorageTest
     Storage::Create(
         options,
         base::BindRepeating(&StorageTest::AsyncStartMockUploaderFailing,
-                            base::Unretained(this), failures_count),
+                            base::Unretained(this)),
         encryption_module, compression_module, e.cb());
     ASSIGN_OR_RETURN(auto storage, e.result());
     return storage;
@@ -650,10 +649,9 @@ class StorageTest
   }
 
   void AsyncStartMockUploaderFailing(
-      size_t failures_count,
       bool need_encryption_key,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-    if (key_delivery_failure_count_.fetch_add(1) < failures_count) {
+    if (key_delivery_failure_.load()) {
       std::move(start_uploader_cb)
           .Run(Status(error::FAILED_PRECONDITION, "Test cannot start upload"));
       return;
@@ -746,7 +744,7 @@ class StorageTest
   scoped_refptr<Storage> storage_;
   SignedEncryptionInfo signed_encryption_key_;
   bool expect_to_need_key_{false};
-  std::atomic<size_t> key_delivery_failure_count_{0};
+  std::atomic<bool> key_delivery_failure_{false};
 
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all MockUploadClients created by test fixture.
@@ -1462,18 +1460,20 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   // Initialize Storage with failure to deliver key.
   ASSERT_FALSE(storage_) << "StorageTest already assigned";
   StatusOr<scoped_refptr<Storage>> storage_result =
-      CreateTestStorageWithFailedKeyDelivery(BuildTestStorageOptions(),
-                                             kFailuresCount);
+      CreateTestStorageWithFailedKeyDelivery(BuildTestStorageOptions());
   ASSERT_OK(storage_result)
       << "Failed to create StorageTest, error=" << storage_result.status();
   storage_ = std::move(storage_result.ValueOrDie());
 
+  key_delivery_failure_.store(true);
   for (size_t failure = 1; failure < kFailuresCount; ++failure) {
     // Failing attempt to write
     const Status write_result = WriteString(FAST_BATCH, kData[0]);
     EXPECT_FALSE(write_result.ok());
-    EXPECT_THAT(write_result.error_code(), Eq(error::FAILED_PRECONDITION));
-    EXPECT_THAT(write_result.message(), HasSubstr("Test cannot start upload"));
+    EXPECT_THAT(write_result.error_code(), Eq(error::FAILED_PRECONDITION))
+        << write_result;
+    EXPECT_THAT(write_result.message(), HasSubstr("Test cannot start upload"))
+        << write_result;
 
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -1482,6 +1482,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   // This time key delivery is to succeed.
   // Set uploader expectations for any queue; expect no records and need
   // key. Make sure no uploads happen, and key is requested.
+  key_delivery_failure_.store(false);
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(/*need_encryption_key=*/Eq(true), NotNull()))
       .WillOnce(WithArg<1>(Invoke([](MockUploadClient* mock_upload_client) {
