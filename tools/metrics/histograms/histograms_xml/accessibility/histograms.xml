@@ -99,7 +99,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.AndroidServiceInfo"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M93">
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M99">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
