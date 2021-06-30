@@ -894,6 +894,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_marshmallow_emulator_gtests',
+          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
         }
       },
       'android-marshmallow-x86-rel-non-cq': {
