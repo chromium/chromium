@@ -50,6 +50,7 @@
       </div>
       <!-- Accessible name for the following <div> is "item1 item2 item3" -->
       <div aria-describedby="node30"></div>
+      <header id="header">role=[banner] test</header>
     `,
       'Test finding DOM nodes by accessible name');
 
@@ -133,6 +134,11 @@
     testRunner.log('find all ignored nodes with role "presentation"');
     response = await dp.Accessibility.queryAXTree(
         {objectId: documentObjId, role: 'presentation'});
+    await logNodes(response.result.nodes);
+
+    testRunner.log('find all nodes with role "banner" (expected: 1 node)');
+    response = await dp.Accessibility.queryAXTree(
+        {objectId: documentObjId, role: 'banner'});
     await logNodes(response.result.nodes);
   }
 
