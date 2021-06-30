@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"

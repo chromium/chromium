@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/profiles/profile.h"

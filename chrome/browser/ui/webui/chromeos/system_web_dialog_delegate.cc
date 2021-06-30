@@ -8,8 +8,8 @@
 #include <list>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"

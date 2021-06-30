@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/pdf.h"

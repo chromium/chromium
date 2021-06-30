@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

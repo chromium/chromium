@@ -10,9 +10,9 @@
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"

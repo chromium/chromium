@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 
 #include <map>
 #include <memory>
@@ -15,7 +16,6 @@
 #endif
 
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "net/base/ip_address.h"

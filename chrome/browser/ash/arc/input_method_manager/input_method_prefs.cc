@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names.h"

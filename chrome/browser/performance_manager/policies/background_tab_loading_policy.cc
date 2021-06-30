@@ -5,8 +5,8 @@
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
