@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
+#include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,7 +55,7 @@ using password_manager::PasswordStore;
 
 namespace {
 
-void UpdateAllFormManagers(Profile* profile) {
+void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile)
       continue;
@@ -65,6 +66,10 @@ void UpdateAllFormManagers(Profile* profile) {
           ->UpdateFormManagers();
     }
   }
+  password_manager::PasswordReuseManager* reuse_manager =
+      PasswordReuseManagerFactory::GetForProfile(profile);
+  if (reuse_manager)
+    reuse_manager->AccountStoreStateChanged();
 }
 
 class UnsyncedCredentialsDeletionNotifierImpl
@@ -117,7 +122,8 @@ void SyncEnabledOrDisabled(Profile* profile) {
   NOTREACHED();
 #else
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateAllFormManagers, profile));
+      FROM_HERE,
+      base::BindOnce(&UpdateAllFormManagersAndPasswordReuseManager, profile));
 #endif  // defined(OS_ANDROID)
 }
 

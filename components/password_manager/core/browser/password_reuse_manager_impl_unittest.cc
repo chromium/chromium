@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -26,10 +27,14 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::Return;
+using ::testing::UnorderedElementsAreArray;
 
-PasswordForm CreateForm(base::StringPiece signon_realm,
-                        base::StringPiece16 username,
-                        base::StringPiece16 password) {
+PasswordForm CreateForm(
+    base::StringPiece signon_realm,
+    base::StringPiece16 username,
+    base::StringPiece16 password,
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.signon_realm = std::string(signon_realm);
@@ -40,7 +45,7 @@ PasswordForm CreateForm(base::StringPiece signon_realm,
       base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
   form.date_created =
       base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
-  form.in_store = PasswordForm::Store::kProfileStore;
+  form.in_store = store;
   return form;
 }
 
@@ -81,30 +86,35 @@ class PasswordReuseManagerImplTest : public testing::Test {
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
 
-    store_ = base::MakeRefCounted<TestPasswordStore>();
-    store_->Init(&prefs_);
-    reuse_manager()->Init(&prefs(), store());
+    profile_store_ = base::MakeRefCounted<TestPasswordStore>();
+    profile_store_->Init(&prefs_);
+    account_store_ = base::MakeRefCounted<TestPasswordStore>();
+    account_store_->Init(&prefs_);
+    reuse_manager_.Init(&prefs(), profile_store(), account_store());
     RunUntilIdle();
   }
 
   void TearDown() override {
     OSCryptMocker::TearDown();
-    store_->ShutdownOnUIThread();
+    reuse_manager_.Shutdown();
+    profile_store_->ShutdownOnUIThread();
+    account_store_->ShutdownOnUIThread();
     RunUntilIdle();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-  TestPasswordStore* store() { return store_.get(); }
-  PasswordReuseManager* reuse_manager() {
-    return store_->GetPasswordReuseManager();
-  }
+  TestPasswordStore* profile_store() { return profile_store_.get(); }
+  TestPasswordStore* account_store() { return account_store_.get(); }
+  PasswordReuseManager* reuse_manager() { return &reuse_manager_; }
   TestingPrefServiceSimple& prefs() { return prefs_; }
 
- protected:
+ private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
-  scoped_refptr<TestPasswordStore> store_;
+  scoped_refptr<TestPasswordStore> profile_store_;
+  scoped_refptr<TestPasswordStore> account_store_;
+  PasswordReuseManagerImpl reuse_manager_;
 };
 
 TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
@@ -113,7 +123,7 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
       CreateForm("https://facebook.com", u"username2", u"topsecret")};
 
   for (const auto& form : forms) {
-    store()->AddLogin(form);
+    profile_store()->AddLogin(form);
   }
 
   struct {
@@ -380,6 +390,60 @@ TEST_F(PasswordReuseManagerImplTest,
 
   // Check that |reuse_manager| is unsubscribed from sign-in events on shutdown.
   EXPECT_CALL(*notifier_weak, UnsubscribeFromSigninEvents());
+}
+
+TEST_F(PasswordReuseManagerImplTest,
+       CheckReuseCalledOnPasteReuseExistsInBothStores) {
+  std::vector<PasswordForm> profile_forms = {
+      CreateForm("https://www.google.com", u"username1", u"password"),
+      CreateForm("https://www.google.com", u"username2", u"secretword")};
+  PasswordForm account_form =
+      CreateForm("https://www.facebook.com", u"username3", u"password",
+                 PasswordForm::Store::kAccountStore);
+
+  for (const auto& form : profile_forms)
+    profile_store()->AddLogin(form);
+  account_store()->AddLogin(account_form);
+
+  RunUntilIdle();
+
+  MockPasswordReuseDetectorConsumer mock_consumer;
+  EXPECT_CALL(
+      mock_consumer,
+      OnReuseCheckDone(
+          /* is_reuse_found=*/true, /*password_length=*/8,
+          Matches(absl::nullopt),
+          UnorderedElementsAreArray(std::vector<MatchingReusedCredential>{
+              {"https://www.google.com", u"username1",
+               PasswordForm::Store::kProfileStore},
+              {"https://www.facebook.com", u"username3",
+               PasswordForm::Store::kAccountStore}}),
+          /*saved_passwords=*/3));
+  reuse_manager()->CheckReuse(u"12345password", "https://evil.com",
+                              &mock_consumer);
+  RunUntilIdle();
+}
+
+TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
+  std::vector<PasswordForm> account_forms = {
+      CreateForm("https://www.google.com", u"username1", u"password",
+                 PasswordForm::Store::kAccountStore),
+      CreateForm("https://www.google.com", u"username2", u"secretword",
+                 PasswordForm::Store::kAccountStore)};
+
+  for (const auto& form : account_forms)
+    account_store()->AddLogin(form);
+
+  RunUntilIdle();
+
+  account_store()->Clear();
+  reuse_manager()->AccountStoreStateChanged();
+  MockPasswordReuseDetectorConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer,
+              OnReuseCheckDone(/* is_reuse_found=*/false, _, _, IsEmpty(),
+                               /*saved_passwords=*/0));
+  reuse_manager()->CheckReuse(u"password", "https://evil.com", &mock_consumer);
+  RunUntilIdle();
 }
 
 }  // namespace

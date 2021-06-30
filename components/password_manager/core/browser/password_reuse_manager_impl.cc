@@ -74,8 +74,9 @@ void CheckReuseHelper(std::unique_ptr<CheckReuseRequest> request,
 }  // namespace
 
 PasswordReuseManagerImpl::PasswordReuseManagerImpl() = default;
+PasswordReuseManagerImpl::~PasswordReuseManagerImpl() = default;
 
-PasswordReuseManagerImpl::~PasswordReuseManagerImpl() {
+void PasswordReuseManagerImpl::Shutdown() {
   if (notifier_)
     notifier_->UnsubscribeFromSigninEvents();
 
@@ -86,24 +87,37 @@ PasswordReuseManagerImpl::~PasswordReuseManagerImpl() {
 }
 
 void PasswordReuseManagerImpl::Init(PrefService* prefs,
-                                    PasswordStoreInterface* store) {
+                                    PasswordStoreInterface* profile_store,
+                                    PasswordStoreInterface* account_store) {
   prefs_ = prefs;
   hash_password_manager_.set_prefs(prefs_);
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   DCHECK(main_task_runner_);
 
-  if (IsPasswordReuseDetectionEnabled()) {
-    background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-    DCHECK(background_task_runner_);
+  if (!IsPasswordReuseDetectionEnabled())
+    return;
 
-    reuse_detector_ = new PasswordReuseDetector();
-    DCHECK(store);
-    ScheduleTask(base::BindOnce(&PasswordReuseDetector::Init,
-                                base::Unretained(reuse_detector_),
-                                base::RetainedRef(store)));
-    store->GetAutofillableLogins(this);
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  DCHECK(background_task_runner_);
+
+  reuse_detector_ = new PasswordReuseDetector();
+  ScheduleTask(base::BindOnce(
+      &PasswordReuseDetector::Init, base::Unretained(reuse_detector_),
+      base::RetainedRef(profile_store), base::RetainedRef(account_store)));
+  profile_store->GetAutofillableLogins(/*consumer=*/this);
+  if (account_store) {
+    account_store->GetAutofillableLogins(/*consumer=*/this);
+    account_store_ = account_store;
   }
+}
+
+void PasswordReuseManagerImpl::AccountStoreStateChanged() {
+  DCHECK(account_store_);
+  ScheduleTask(
+      base::BindOnce(&PasswordReuseDetector::ClearCachedAccountStorePasswords,
+                     base::Unretained(reuse_detector_)));
+  account_store_->GetAutofillableLogins(this);
 }
 
 void PasswordReuseManagerImpl::ReportMetrics(

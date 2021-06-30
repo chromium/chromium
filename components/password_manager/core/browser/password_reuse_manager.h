@@ -32,7 +32,13 @@ class PasswordReuseManager : public KeyedService {
   PasswordReuseManager& operator=(const PasswordReuseManager&) = delete;
 
   // Always call this on the UI thread.
-  virtual void Init(PrefService* prefs, PasswordStoreInterface* store) = 0;
+  virtual void Init(PrefService* prefs,
+                    PasswordStoreInterface* profile_store,
+                    PasswordStoreInterface* account_store = nullptr) = 0;
+
+  // Clears existing cached passwords stored on the account store and schedules
+  // a request to re-fetch.
+  virtual void AccountStoreStateChanged() = 0;
 
   // Log whether a sync password hash saved.
   virtual void ReportMetrics(const std::string& username,

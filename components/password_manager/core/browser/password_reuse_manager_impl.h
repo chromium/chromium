@@ -19,8 +19,14 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   PasswordReuseManagerImpl();
   ~PasswordReuseManagerImpl() override;
 
+  // Implements KeyedService interface.
+  void Shutdown() override;
+
   // Implements PasswordReuseManager interface.
-  void Init(PrefService* prefs, PasswordStoreInterface* store) override;
+  void Init(PrefService* prefs,
+            PasswordStoreInterface* profile_store,
+            PasswordStoreInterface* account_store = nullptr) override;
+  void AccountStoreStateChanged() override;
   void ReportMetrics(const std::string& username,
                      bool is_under_advanced_protection) override;
   void PreparePasswordHashData(const std::string& sync_username,
@@ -75,6 +81,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   PrefService* prefs_ = nullptr;
+
+  scoped_refptr<PasswordStoreInterface> account_store_;
 
   // The 'reuse_detector_', owned by this PasswordReuseManager instance, but
   // living on the background thread. It will be deleted asynchronously during

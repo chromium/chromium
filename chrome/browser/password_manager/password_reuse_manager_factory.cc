@@ -78,9 +78,11 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
 
   password_manager::PasswordReuseManager* reuse_manager =
       new password_manager::PasswordReuseManagerImpl();
-  // TODO(crbug.bom/715987): Use Account PasswordStore too.
   reuse_manager->Init(profile->GetPrefs(),
                       PasswordStoreFactory::GetForProfile(
+                          profile, ServiceAccessType::EXPLICIT_ACCESS)
+                          .get(),
+                      AccountPasswordStoreFactory::GetForProfile(
                           profile, ServiceAccessType::EXPLICIT_ACCESS)
                           .get());
 

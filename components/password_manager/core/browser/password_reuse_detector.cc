@@ -89,16 +89,22 @@ PasswordReuseDetector::PasswordReuseDetector() {
 
 PasswordReuseDetector::~PasswordReuseDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (store_) {
-    store_->RemoveObserver(this);
-  }
+  if (profile_store_)
+    profile_store_->RemoveObserver(this);
+  if (account_store_)
+    account_store_->RemoveObserver(this);
 }
 
-void PasswordReuseDetector::Init(scoped_refptr<PasswordStoreInterface> store) {
+void PasswordReuseDetector::Init(
+    scoped_refptr<PasswordStoreInterface> profile_store,
+    scoped_refptr<PasswordStoreInterface> account_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store);
-  store_ = std::move(store);
-  store_->AddObserver(this);
+  DCHECK(profile_store);
+  profile_store_ = std::move(profile_store);
+  profile_store_->AddObserver(this);
+  account_store_ = std::move(account_store);
+  if (account_store_)
+    account_store_->AddObserver(this);
 }
 
 void PasswordReuseDetector::OnGetPasswordStoreResults(
@@ -106,6 +112,19 @@ void PasswordReuseDetector::OnGetPasswordStoreResults(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& form : results)
     AddPassword(*form);
+}
+
+void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& key_value : passwords_with_matching_reused_credentials_) {
+    // Delete account stored credentials.
+    base::EraseIf(key_value.second, [](const auto& credential) {
+      return credential.in_store == PasswordForm::Store::kAccountStore;
+    });
+  }
+  // Delete all passwords with no matching credentials.
+  base::EraseIf(passwords_with_matching_reused_credentials_,
+                [](const auto& pair) { return pair.second.empty(); });
 }
 
 void PasswordReuseDetector::CheckReuse(
@@ -354,6 +373,7 @@ void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
         stored_credentials_for_password_value.find(credential_criteria);
     if (credential_to_remove != stored_credentials_for_password_value.end()) {
       stored_credentials_for_password_value.erase(credential_to_remove);
+
       // If all credential values of the password key are deleted, remove the
       // password key from the map.
       if (stored_credentials_for_password_value.empty()) {

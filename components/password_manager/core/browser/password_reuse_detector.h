@@ -50,13 +50,17 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   PasswordReuseDetector();
   ~PasswordReuseDetector() override;
 
-  void Init(scoped_refptr<PasswordStoreInterface> store);
+  void Init(scoped_refptr<PasswordStoreInterface> profile_store,
+            scoped_refptr<PasswordStoreInterface> account_store = nullptr);
 
   PasswordReuseDetector(const PasswordReuseDetector&) = delete;
   PasswordReuseDetector& operator=(const PasswordReuseDetector&) = delete;
 
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results);
+
+  // Clears all the cached passwords which are stored on the account store.
+  void ClearCachedAccountStorePasswords();
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain| or to a sync password.
@@ -158,7 +162,10 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<PasswordStoreInterface> store_
+  scoped_refptr<PasswordStoreInterface> profile_store_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  scoped_refptr<PasswordStoreInterface> account_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Contains all passwords.

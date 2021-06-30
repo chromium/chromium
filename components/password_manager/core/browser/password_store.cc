@@ -402,6 +402,9 @@ void PasswordStore::ShutdownOnUIThread() {
       base::BindOnce(&PasswordStore::DestroyOnBackgroundSequence, this));
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
+  if (reuse_manager_) {
+    reuse_manager_->Shutdown();
+  }
   reuse_manager_.reset();
   shutdown_called_ = true;
 }
