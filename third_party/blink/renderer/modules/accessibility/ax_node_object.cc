@@ -3583,16 +3583,6 @@ void AXNodeObject::AddImageMapChildren() {
 
   // Get the primary image, which is the first image using this map.
   HTMLImageElement* primary_image_element = map->ImageElement();
-  DCHECK(primary_image_element);
-#if DCHECK_IS_ON()
-  // Prove that this is the same as getting the first image using this map.
-  String usemap_selector = "img[usemap=\"";
-  usemap_selector = usemap_selector + usemap + "\"]";
-  Element* first_image_with_this_usemap =
-      GetDocument()->QuerySelector(AtomicString(usemap_selector));
-  DCHECK(primary_image_element) << "No match for " << usemap_selector;
-  DCHECK_EQ(primary_image_element, first_image_with_this_usemap);
-#endif
 
   // Is this the primary image for this map?
   if (primary_image_element != curr_image_element) {

@@ -6,7 +6,6 @@
 # crbug.com/1138028 tracks the removal of these failure expectations
 
 # Crashes
-external/wpt/html/semantics/embedded-content/image-maps/image-map-processing-model/hash-name-reference.html [ CRASH ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/disable_controls_reposition.html [ CRASH ]
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ CRASH ]
 crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ CRASH ]
@@ -14,7 +13,6 @@ virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017
 virtual/layout_ng_block_frag/fast/multicol/change-column-rule.html [ CRASH ]
 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
 crbug.com/1093466 virtual/portals/external/wpt/portals/portals-adopt-predecessor.html [ CRASH ]
-virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/image-maps/image-map-processing-model/hash-name-reference.html [ CRASH ]
 virtual/text-antialias/letter-spacing-crash.html [ CRASH ]
 
 # Slow
