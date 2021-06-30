@@ -42,9 +42,18 @@ class SystemNotificationManager {
    *  Returns an instance of an 'ash' Notification.
    */
   std::unique_ptr<message_center::Notification> CreateNotification(
-      std::string notification_id,
+      const std::string& notification_id,
       const std::u16string& title,
       const std::u16string& message);
+
+  /**
+   *  Returns an instance of an 'ash' Notification with title and message
+   *  specified by string ID values (for 110n).
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      int title_id,
+      int message_id);
 
   /**
    * Returns the message center display service that manages notifications.
@@ -55,10 +64,7 @@ class SystemNotificationManager {
   /**
    * Helper function bound to notification instances that hides notifications.
    */
-  void Dismiss();
-
-  // TODO(adanilo) Remove this, purely interim definition.
-  const std::string kSWAnotification = "SWA notification";
+  void Dismiss(const std::string& notification_id);
 
   Profile* const profile_;
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
