@@ -427,7 +427,8 @@ ServiceWorkerDatabase::GetRegistrationsForStorageKey(
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), key, &registration);
       if (status != Status::kOk) {
         registrations->clear();
         if (opt_resources_list)
@@ -494,7 +495,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForStorageKey(
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), key, &registration);
       if (status != Status::kOk)
         break;
       out_usage += registration->resources_total_size_bytes;
@@ -540,12 +542,36 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
         break;
       }
 
+      // We need to extract the storage key from the registration key prefix so
+      // that we can pass it into ParseRegistrationData below.
+      //
+      // First remove the prefix and extract the serialized key + separator +
+      // registration ID string. (See ' key: "REG:" ' comment at the top of the
+      // file for more info).
+      std::string prefix_string;
       if (!RemovePrefix(itr->key().ToString(),
-                        service_worker_internals::kRegKeyPrefix, nullptr))
+                        service_worker_internals::kRegKeyPrefix,
+                        &prefix_string))
+        break;
+
+      // Now we need to remove the separator + registration ID from the end of
+      // the string or else the deserialize step will fail.
+      //
+      // Find the where the separator is.
+      size_t separator_pos =
+          prefix_string.find_first_of(service_worker_internals::kKeySeparator);
+      if (separator_pos == std::string::npos)
+        break;
+
+      // Then deserialize only the sub-string before the separator.
+      absl::optional<blink::StorageKey> key = blink::StorageKey::Deserialize(
+          prefix_string.substr(0, separator_pos));
+      if (!key)
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), *key, &registration);
       if (status != Status::kOk) {
         registrations->clear();
         break;
@@ -1536,13 +1562,14 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationData(
     return status;
   }
 
-  status = ParseRegistrationData(value, registration);
+  status = ParseRegistrationData(value, key, registration);
   HandleReadResult(FROM_HERE, status);
   return status;
 }
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     const std::string& serialized,
+    const blink::StorageKey& key,
     mojom::ServiceWorkerRegistrationDataPtr* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
@@ -1553,10 +1580,11 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
   if (!scope_url.is_valid() || !script_url.is_valid() ||
-      scope_url.GetOrigin() != script_url.GetOrigin()) {
+      scope_url.GetOrigin() != script_url.GetOrigin() ||
+      key.origin() != url::Origin::Create(scope_url)) {
     DLOG(ERROR) << "Scope URL '" << data.scope_url() << "' and/or script url '"
-                << data.script_url()
-                << "' are invalid or have mismatching origins.";
+                << data.script_url() << "' and/or the storage key's origin '"
+                << key.origin() << "' are invalid or have mismatching origins.";
     return Status::kErrorCorrupted;
   }
 

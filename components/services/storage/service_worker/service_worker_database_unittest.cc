@@ -2274,6 +2274,9 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   database->next_avail_registration_id_ = 2;
   database->next_avail_version_id_ = 2;
 
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
   // Write the serialization.
   std::string value;
   ASSERT_TRUE(data.SerializeToString(&value));
@@ -2281,7 +2284,7 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
   // Parse the serialized data. The invalid features should be ignored.
   RegistrationDataPtr registration;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ParseRegistrationData(value, &registration));
+            database->ParseRegistrationData(value, key, &registration));
   std::vector<blink::mojom::WebFeature> expect = {
       blink::mojom::WebFeature::kFetch,
       blink::mojom::WebFeature::kBackgroundSync,
@@ -2378,6 +2381,9 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   database->next_avail_registration_id_ = 2;
   database->next_avail_version_id_ = 2;
 
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
   // Write the serialization.
   std::string value;
   ASSERT_TRUE(data.SerializeToString(&value));
@@ -2385,7 +2391,7 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
   // Parse the serialized data. The policy is kNone if it's not set.
   RegistrationDataPtr registration;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ParseRegistrationData(value, &registration));
+            database->ParseRegistrationData(value, key, &registration));
   EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             registration->cross_origin_embedder_policy.value);
 }

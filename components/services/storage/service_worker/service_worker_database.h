@@ -303,6 +303,7 @@ class ServiceWorkerDatabase {
   // Parses |serialized| as a RegistrationData object and pushes it into |out|.
   ServiceWorkerDatabase::Status ParseRegistrationData(
       const std::string& serialized,
+      const blink::StorageKey& key,
       mojom::ServiceWorkerRegistrationDataPtr* out);
 
   // Populates |batch| with operations to write |registration|. It does not
