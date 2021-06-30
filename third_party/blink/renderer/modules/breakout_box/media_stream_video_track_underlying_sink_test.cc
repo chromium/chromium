@@ -44,7 +44,7 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   MediaStreamVideoTrackUnderlyingSink* CreateUnderlyingSink(
       ScriptState* script_state) {
     return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(
-        pushable_video_source_);
+        pushable_video_source_->GetBroker());
   }
 
   WebMediaStreamTrack CreateTrack() {

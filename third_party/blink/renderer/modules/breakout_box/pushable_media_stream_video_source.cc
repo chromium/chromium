@@ -7,19 +7,30 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_signal_observer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
-PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
-    const base::WeakPtr<MediaStreamVideoSource>& upstream_source)
-    : upstream_source_(upstream_source) {}
+PushableMediaStreamVideoSource::Broker::Broker(
+    PushableMediaStreamVideoSource* source)
+    : source_(source),
+      main_task_runner_(Thread::MainThread()->GetTaskRunner()),
+      io_task_runner_(source->io_task_runner()) {
+  DCHECK(main_task_runner_);
+  DCHECK(io_task_runner_);
+}
 
-void PushableMediaStreamVideoSource::PushFrame(
+bool PushableMediaStreamVideoSource::Broker::IsRunning() {
+  WTF::MutexLocker locker(mutex_);
+  return !frame_callback_.is_null();
+}
+
+void PushableMediaStreamVideoSource::Broker::PushFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!running_)
+  WTF::MutexLocker locker(mutex_);
+  if (!source_ || frame_callback_.is_null())
     return;
 
   // Note that although use of the IO thread is rare in blink, it's required
@@ -33,10 +44,65 @@ void PushableMediaStreamVideoSource::PushFrame(
   // CanvasCaptureHandler::SendFrame,
   // and HtmlVideoElementCapturerSource::sendNewFrame.
   PostCrossThreadTask(
-      *io_task_runner(), FROM_HERE,
-      CrossThreadBindOnce(deliver_frame_cb_, std::move(video_frame),
+      *io_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(frame_callback_, std::move(video_frame),
                           std::vector<scoped_refptr<media::VideoFrame>>(),
                           estimated_capture_time));
+}
+
+void PushableMediaStreamVideoSource::Broker::StopSource() {
+  if (main_task_runner_->BelongsToCurrentThread()) {
+    StopSourceOnMain();
+  } else {
+    PostCrossThreadTask(
+        *main_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &PushableMediaStreamVideoSource::Broker::StopSourceOnMain,
+            WrapRefCounted(this)));
+  }
+}
+
+void PushableMediaStreamVideoSource::Broker::OnSourceStarted(
+    VideoCaptureDeliverFrameCB frame_callback) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(!frame_callback.is_null());
+  if (!source_)
+    return;
+
+  WTF::MutexLocker locker(mutex_);
+  frame_callback_ = std::move(frame_callback);
+}
+
+void PushableMediaStreamVideoSource::Broker::OnSourceDestroyedOrStopped() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  WTF::MutexLocker locker(mutex_);
+  source_ = nullptr;
+  frame_callback_.Reset();
+}
+
+void PushableMediaStreamVideoSource::Broker::StopSourceOnMain() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!source_)
+    return;
+
+  source_->StopSource();
+}
+
+PushableMediaStreamVideoSource::PushableMediaStreamVideoSource()
+    : broker_(AdoptRef(new Broker(this))) {}
+
+PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
+    const base::WeakPtr<MediaStreamVideoSource>& upstream_source)
+    : upstream_source_(upstream_source), broker_(AdoptRef(new Broker(this))) {}
+
+PushableMediaStreamVideoSource::~PushableMediaStreamVideoSource() {
+  broker_->OnSourceDestroyedOrStopped();
+}
+
+void PushableMediaStreamVideoSource::PushFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    base::TimeTicks estimated_capture_time) {
+  broker_->PushFrame(std::move(video_frame), estimated_capture_time);
 }
 
 void PushableMediaStreamVideoSource::RequestRefreshFrame() {
@@ -78,14 +144,13 @@ void PushableMediaStreamVideoSource::StartSourceImpl(
     EncodedVideoFrameCB encoded_frame_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(frame_callback);
-  running_ = true;
-  deliver_frame_cb_ = frame_callback;
+  broker_->OnSourceStarted(std::move(frame_callback));
   OnStartDone(mojom::blink::MediaStreamRequestResult::OK);
 }
 
 void PushableMediaStreamVideoSource::StopSourceImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  running_ = false;
+  broker_->OnSourceDestroyedOrStopped();
 }
 
 base::WeakPtr<MediaStreamVideoSource>

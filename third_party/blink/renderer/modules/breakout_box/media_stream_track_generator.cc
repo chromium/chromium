@@ -205,7 +205,8 @@ void MediaStreamTrackGenerator::CreateVideoStream(ScriptState* script_state) {
       static_cast<PushableMediaStreamVideoSource*>(
           Component()->Source()->GetPlatformSource());
   video_underlying_sink_ =
-      MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(source);
+      MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(
+          source->GetBroker());
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state, video_underlying_sink_, /*high_water_mark=*/1,
       video_underlying_sink_->GetTransferringOptimizer());
