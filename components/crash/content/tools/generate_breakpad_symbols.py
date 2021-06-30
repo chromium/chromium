@@ -167,7 +167,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
     otool_path = 'otool'
 
   otool = subprocess.check_output(
-      [otool_path, '-l', binary], env=env).splitlines()
+      [otool_path, '-lm', binary], env=env).splitlines()
   rpaths = []
   dylib_id = None
   for idx, line in enumerate(otool):
@@ -187,7 +187,7 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   # the loading executables.
 
   otool = subprocess.check_output(
-      [otool_path, '-L', binary], env=env).splitlines()
+      [otool_path, '-Lm', binary], env=env).splitlines()
   lib_re = re.compile('\t(.*) \(compatibility .*\)$')
   deps = []
   for line in otool:
