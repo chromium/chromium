@@ -39,6 +39,9 @@ constexpr char kDefaultDownloadFileName[] = "download";
 // Dummy data to save.
 constexpr uint8_t kSaveData[] = {'1', '2', '3'};
 
+// Page number.
+constexpr uint32_t kPageNumber = 13u;
+
 class TestPDFiumEngine : public PDFiumEngine {
  public:
   explicit TestPDFiumEngine(PDFEngine::Client* client)
@@ -52,6 +55,10 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   bool HasPermission(PDFEngine::DocumentPermission permission) const override {
     return base::Contains(permissions_, permission);
+  }
+
+  int GetNumberOfPages() const override {
+    return static_cast<int>(kPageNumber);
   }
 
   uint32_t GetLoadedByteSize() override { return sizeof(kSaveData); }
@@ -544,6 +551,43 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {
 
   content_restrictions = fake_plugin_.GetContentRestrictions();
   EXPECT_EQ(kContentRestrictionCutPaste, content_restrictions);
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+
+  // Test engine without any permissions.
+  engine->SetPermissions({});
+
+  AccessibilityDocInfo doc_info = fake_plugin_.GetAccessibilityDocInfo();
+  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_FALSE(doc_info.text_accessible);
+  EXPECT_FALSE(doc_info.text_copyable);
+
+  // Test engine with only copy permission.
+  engine->SetPermissions({PDFEngine::PERMISSION_COPY});
+
+  doc_info = fake_plugin_.GetAccessibilityDocInfo();
+  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_FALSE(doc_info.text_accessible);
+  EXPECT_TRUE(doc_info.text_copyable);
+
+  // Test engine with only copy accessible permission.
+  engine->SetPermissions({PDFEngine::PERMISSION_COPY_ACCESSIBLE});
+
+  doc_info = fake_plugin_.GetAccessibilityDocInfo();
+  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_TRUE(doc_info.text_accessible);
+  EXPECT_FALSE(doc_info.text_copyable);
+
+  // Test engine with both copy and copy accessible permission.
+  engine->SetPermissions(
+      {PDFEngine::PERMISSION_COPY, PDFEngine::PERMISSION_COPY_ACCESSIBLE});
+
+  doc_info = fake_plugin_.GetAccessibilityDocInfo();
+  EXPECT_EQ(kPageNumber, doc_info.page_count);
+  EXPECT_TRUE(doc_info.text_accessible);
+  EXPECT_TRUE(doc_info.text_copyable);
 }
 
 }  // namespace chrome_pdf
