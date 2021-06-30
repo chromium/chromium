@@ -342,8 +342,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void UpdateStateForFrame(RenderFrameHostImpl* render_frame_host,
                            const blink::PageState& page_state);
 
-  // Like NavigationController::CreateNavigationEntry, but takes extra arguments
-  // like |source_site_instance| and |should_replace_entry|.
+  // Like NavigationController::CreateNavigationEntry, but takes an extra
+  // argument, |source_site_instance|.
   static std::unique_ptr<NavigationEntryImpl> CreateNavigationEntry(
       const GURL& url,
       Referrer referrer,
@@ -353,8 +353,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_renderer_initiated,
       const std::string& extra_headers,
       BrowserContext* browser_context,
-      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      bool should_replace_entry);
+      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
 
   // Called just before sending the commit to the renderer. Walks the
   // session history entries for the committing FrameTreeNode, forward and

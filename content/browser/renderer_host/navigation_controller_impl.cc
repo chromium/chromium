@@ -433,8 +433,6 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
     DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
         request->common_params().transition, entry->GetTransitionType()));
   }
-  DCHECK_EQ(request->common_params().should_replace_current_entry,
-            entry->should_replace_entry());
   DCHECK_EQ(request->commit_params().should_clear_history_list,
             entry->should_clear_history_list());
   DCHECK_EQ(request->common_params().has_user_gesture,
@@ -546,8 +544,7 @@ std::unique_ptr<NavigationEntry> NavigationController::CreateNavigationEntry(
   return NavigationControllerImpl::CreateNavigationEntry(
       url, referrer, std::move(initiator_origin),
       nullptr /* source_site_instance */, transition, is_renderer_initiated,
-      extra_headers, browser_context, std::move(blob_url_loader_factory),
-      false /* should_replace_entry */);
+      extra_headers, browser_context, std::move(blob_url_loader_factory));
 }
 
 // static
@@ -561,8 +558,7 @@ NavigationControllerImpl::CreateNavigationEntry(
     bool is_renderer_initiated,
     const std::string& extra_headers,
     BrowserContext* browser_context,
-    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    bool should_replace_entry) {
+    scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory) {
   GURL url_to_load;
   GURL virtual_url;
   bool reverse_on_redirect = false;
@@ -584,7 +580,6 @@ NavigationControllerImpl::CreateNavigationEntry(
   entry->set_user_typed_url(virtual_url);
   entry->set_update_virtual_url_with_url(reverse_on_redirect);
   entry->set_extra_headers(extra_headers);
-  entry->set_should_replace_entry(should_replace_entry);
   return entry;
 }
 
@@ -2438,7 +2433,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           GURL(url::kAboutBlankURL), referrer, initiator_origin,
           source_site_instance, page_transition, is_renderer_initiated,
           extra_headers, browser_context_,
-          nullptr /* blob_url_loader_factory */, should_replace_current_entry));
+          nullptr /* blob_url_loader_factory */));
     }
     // The UpdatePolicy doesn't matter here. |entry| is only used as a parameter
     // to CreateNavigationRequestFromLoadParams(), so while kReplace might
@@ -2459,7 +2454,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
         url, referrer, initiator_origin, source_site_instance, page_transition,
         is_renderer_initiated, extra_headers, browser_context_,
-        blob_url_loader_factory, should_replace_current_entry));
+        blob_url_loader_factory));
     entry->root_node()->frame_entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(source_site_instance));
     entry->root_node()->frame_entry->set_method(method);
@@ -3282,7 +3277,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
           GURL(url::kAboutBlankURL), params.referrer, params.initiator_origin,
           params.source_site_instance.get(), params.transition_type,
           params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-          blob_url_loader_factory, should_replace_current_entry));
+          blob_url_loader_factory));
     }
 
     entry->AddOrUpdateFrameEntry(
@@ -3302,7 +3297,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         params.url, params.referrer, params.initiator_origin,
         params.source_site_instance.get(), params.transition_type,
         params.is_renderer_initiated, extra_headers_crlf, browser_context_,
-        blob_url_loader_factory, should_replace_current_entry));
+        blob_url_loader_factory));
     entry->set_source_site_instance(
         static_cast<SiteInstanceImpl*>(params.source_site_instance.get()));
     entry->SetRedirectChain(params.redirect_chain);

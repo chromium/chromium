@@ -399,7 +399,6 @@ NavigationEntryImpl::NavigationEntryImpl(
       is_overriding_user_agent_(false),
       http_status_code_(0),
       is_renderer_initiated_(is_renderer_initiated),
-      should_replace_entry_(false),
       should_clear_history_list_(false),
       can_load_local_resources_(false),
       frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
@@ -806,11 +805,15 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
   return mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
       GetTransitionType(), navigation_type, download_policy,
-      should_replace_entry(), GetBaseURLForDataURL(), GetHistoryURLForDataURL(),
-      previews_state, navigation_start, frame_entry.method(),
-      post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
-      has_started_from_context_menu(), has_user_gesture(),
-      false /* has_text_fragment_token */,
+      // It's okay to pass false for `should_replace_entry` because we never
+      // replace an entry on session history / reload / restore navigation. New
+      // navigation that may use replacement create their CommonNavigationParams
+      // via NavigationRequest, for example, instead of via NavigationEntry.
+      false /* should_replace_entry */, GetBaseURLForDataURL(),
+      GetHistoryURLForDataURL(), previews_state, navigation_start,
+      frame_entry.method(), post_body ? post_body : post_data_,
+      network::mojom::SourceLocation::New(), has_started_from_context_menu(),
+      has_user_gesture(), false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start);
 }
@@ -897,7 +900,6 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
   // TODO(creis): This state should be moved to NavigationRequest.
   SetPostData(nullptr);
   set_is_renderer_initiated(false);
-  set_should_replace_entry(false);
 
   set_should_clear_history_list(false);
   set_frame_tree_node_id(FrameTreeNode::kFrameTreeNodeInvalidId);

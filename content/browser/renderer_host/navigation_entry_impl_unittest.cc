@@ -279,7 +279,6 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
 TEST_F(NavigationEntryTest, NavigationEntryClone) {
   // Set some additional values.
   entry2_->SetTransitionType(ui::PAGE_TRANSITION_RELOAD);
-  entry2_->set_should_replace_entry(true);
 
   std::unique_ptr<NavigationEntryImpl> clone(entry2_->Clone());
 
@@ -295,9 +294,6 @@ TEST_F(NavigationEntryTest, NavigationEntryClone) {
   // Value set after constructor.
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       clone->GetTransitionType(), entry2_->GetTransitionType()));
-
-  // Value not copied due to ResetForCommit.
-  EXPECT_NE(entry2_->should_replace_entry(), clone->should_replace_entry());
 }
 
 // Test timestamps.

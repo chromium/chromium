@@ -1219,8 +1219,6 @@ namespace {
 // current entry.
 bool RendererLocationReplace(Shell* shell, const GURL& url) {
   WebContents* web_contents = shell->web_contents();
-  NavigationControllerImpl& controller =
-      static_cast<NavigationControllerImpl&>(web_contents->GetController());
   WaitForLoadStop(web_contents);
   TestNavigationManager navigation_manager(web_contents, url);
   const GURL& current_url = web_contents->GetMainFrame()->GetLastCommittedURL();
@@ -1233,10 +1231,6 @@ bool RendererLocationReplace(Shell* shell, const GURL& url) {
   // only telling the browser side at the end.
   if (!current_url.EqualsIgnoringRef(url)) {
     EXPECT_TRUE(navigation_manager.WaitForRequestStart());
-    // Both should_replace_entry (in the pending NavigationEntry) and
-    // should_replace_current_entry (in NavigationRequest params) should be
-    // true.
-    EXPECT_TRUE(controller.GetPendingEntry()->should_replace_entry());
     EXPECT_TRUE(
         NavigationRequest::From(navigation_manager.GetNavigationHandle())
             ->common_params()
