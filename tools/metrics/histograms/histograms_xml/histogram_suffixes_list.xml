@@ -11738,6 +11738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NewTab" label="NTP loaded on a new tab."/>
   <suffix name="Startup" label="NTP loaded during browser startup."/>
   <suffix name="Web" label="Loaded server-side NTP."/>
+  <suffix name="WebUI3PNTP" label="Loaded 3P WebUI NTP."/>
   <suffix name="WebUINTP" label="Loaded WebUI NTP."/>
   <affected-histogram name="NewTabPage.LoadTime"/>
   <affected-histogram name="NewTabPage.TilesReceivedTime">

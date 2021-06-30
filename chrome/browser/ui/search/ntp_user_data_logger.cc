@@ -500,6 +500,8 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.Web.Other", load_time);
   } else if (ntp_url_ == GURL(chrome::kChromeUINewTabPageURL)) {
     UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUINTP", load_time);
+  } else if (ntp_url_ == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
+    UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.WebUI3PNTP", load_time);
   }
 
   // Split between Startup and non-startup.
