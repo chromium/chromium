@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webauth;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.ConditionVariable;
 import android.os.SystemClock;
@@ -23,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -157,7 +157,7 @@ public class Fido2CredentialRequestTest {
     /**
      * Mock class for tests.
      */
-    private class MockActivityWindowAndroid extends ActivityWindowAndroid {
+    private static class MockActivityWindowAndroid extends ActivityWindowAndroid {
         private int mResultCode = Activity.RESULT_OK;
         private boolean mCancelableIntentSuccess = true;
         private Intent mResponseIntent;
@@ -175,12 +175,12 @@ public class Fido2CredentialRequestTest {
          * Mocks sending the intent to GmsCore.
          * @param intent Fido2PendingIntent provided by the GmsCore API.
          * @param callback The intent callback.
-         * @param contents The browser webcontents.
+         * @param errorId The id of the error.
          * @return success status of the call.
          */
         @Override
-        public int showCancelableIntent(Callback<Integer> intentTrigger,
-                WindowAndroid.IntentCallback callback, Integer errorId) {
+        public int showCancelableIntent(
+                PendingIntent intent, WindowAndroid.IntentCallback callback, Integer errorId) {
             // Bypass GmsCore and just call onIntentCompleted.
             if (mCancelableIntentSuccess) {
                 callback.onIntentCompleted(this, mResultCode, mResponseIntent);
@@ -691,7 +691,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_success() {
-        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
+        InternalAuthenticator authenticator = InternalAuthenticator.createForTesting(mFrameHost);
+        ;
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
@@ -707,7 +708,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_resultCanceled() {
-        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
+        InternalAuthenticator authenticator = InternalAuthenticator.createForTesting(mFrameHost);
+        ;
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
@@ -927,7 +929,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorGetAssertionWithUvmRequestedWithUvmResponded_success() {
-        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
+        InternalAuthenticator authenticator = InternalAuthenticator.createForTesting(mFrameHost);
+        ;
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.userVerificationMethods = true;
@@ -945,7 +948,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorGetAssertion_resultCanceled() {
-        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
+        InternalAuthenticator authenticator = InternalAuthenticator.createForTesting(mFrameHost);
+        ;
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);

@@ -34,6 +34,11 @@ public class InternalAuthenticator {
         mAuthenticator = new AuthenticatorImpl(renderFrameHost);
     }
 
+    @VisibleForTesting
+    public static InternalAuthenticator createForTesting(RenderFrameHost renderFrameHost) {
+        return new InternalAuthenticator(-1, renderFrameHost);
+    }
+
     @CalledByNative
     public static InternalAuthenticator create(
             long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
