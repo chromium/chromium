@@ -957,6 +957,15 @@ Response InspectorAccessibilityAgent::queryAXTree(
                                              object_id, root_dom_node);
   if (!response.IsSuccess())
     return response;
+
+  // Shadow roots are missing from a11y tree.
+  // We start searching the host element instead as a11y tree does not
+  // care about shadow roots.
+  if (root_dom_node->IsShadowRoot()) {
+    root_dom_node = root_dom_node->OwnerShadowHost();
+  }
+  if (!root_dom_node)
+    return Response::InvalidParams("Root DOM node could not be found");
   Document& document = root_dom_node->GetDocument();
 
   document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
@@ -971,7 +980,8 @@ Response InspectorAccessibilityAgent::queryAXTree(
   const String sought_name = accessible_name.fromMaybe("");
 
   HeapVector<Member<AXObject>> reachable;
-  reachable.push_back(root_ax_node);
+  if (root_ax_node)
+    reachable.push_back(root_ax_node);
 
   while (!reachable.IsEmpty()) {
     AXObject* ax_object = reachable.back();
