@@ -714,8 +714,10 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
         aspect_ratio.GetRatio().Width());
     intrinsic_sizing_info.aspect_ratio.SetHeight(
         aspect_ratio.GetRatio().Height());
-    if (!IsHorizontalWritingMode())
-      intrinsic_sizing_info.Transpose();
+    if (!IsHorizontalWritingMode()) {
+      intrinsic_sizing_info.aspect_ratio =
+          intrinsic_sizing_info.aspect_ratio.TransposedSize();
+    }
   }
   if (aspect_ratio.GetType() == EAspectRatioType::kRatio)
     return;
