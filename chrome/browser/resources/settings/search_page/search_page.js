@@ -21,12 +21,22 @@ import '../settings_vars_css.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
 
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @appliesMixin {BaseMixin}
+ * @implements {BaseMixinInterface}
+ */
+const SettingsSearchPageElementBase = BaseMixin(PolymerElement);
+
 /** @polymer */
-export class SettingsSearchPageElement extends PolymerElement {
+export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   static get is() {
     return 'settings-search-page';
   }

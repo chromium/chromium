@@ -119,6 +119,7 @@ preprocess_if_expr("preprocess") {
     "autofill_page/password_check_behavior.js",
     "autofill_page/password_manager_proxy.js",
     "autofill_page/show_password_behavior.js",
+    "base_mixin.js",
     "chrome_cleanup_page/chrome_cleanup_proxy.js",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js",
     "controls/pref_control_behavior.js",
@@ -420,6 +421,7 @@ js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
+    ":base_mixin",
     ":extension_control_browser_proxy",
     ":global_scroll_target_behavior",
     ":hats_browser_proxy",
@@ -455,6 +457,12 @@ js_library("settings") {
     "safety_check_page:safety_check_browser_proxy",
     "search_engines_page:search_engines_browser_proxy",
     "settings_ui:settings_ui",
+  ]
+}
+
+js_library("base_mixin") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

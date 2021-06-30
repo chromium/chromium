@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
 
 js_library("search_page") {
   deps = [
+    "..:base_mixin",
     "..:route",
     "..:router",
     "../search_engines_page:search_engines_browser_proxy",
