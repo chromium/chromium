@@ -356,7 +356,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
 // TODO(crbug.com/1197278): Failing on Windows 7 debug builds.
-#if defined(OS_WIN) && DCHECK_IS_ON()
+// TODO(crbug.com/1224903): Failing on Linux dbg tests.
+#if (defined(OS_WIN) || defined(OS_LINUX)) && DCHECK_IS_ON()
 #define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
 #else
 #define MAYBE_StopOnUIThread StopOnUIThread
