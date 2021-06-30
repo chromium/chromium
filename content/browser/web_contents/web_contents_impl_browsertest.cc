@@ -4808,4 +4808,41 @@ IN_PROC_BROWSER_TEST_F(
   ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
 }
 
+class RenderFrameCreatedObserver : public WebContentsObserver {
+ public:
+  RenderFrameCreatedObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~RenderFrameCreatedObserver() override = default;
+
+  void WaitForRenderFrameCreated() { run_loop_.Run(); }
+
+  void RenderFrameCreated(RenderFrameHost* host) override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       ReinitializeMainFrameForCrashedTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  LoadStopNotificationObserver load_observer(
+      &shell()->web_contents()->GetController());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  load_observer.Wait();
+
+  CrashTab(shell()->web_contents());
+  EXPECT_TRUE(shell()->web_contents()->IsCrashed());
+
+  RenderFrameCreatedObserver frame_created_obs(shell()->web_contents());
+  static_cast<WebContentsImpl*>(shell()->web_contents())
+      ->GetFrameTree()
+      ->root()
+      ->render_manager()
+      ->InitializeMainRenderFrameForImmediateUse();
+  frame_created_obs.WaitForRenderFrameCreated();
+  EXPECT_FALSE(shell()->web_contents()->IsCrashed());
+}
+
 }  // namespace content

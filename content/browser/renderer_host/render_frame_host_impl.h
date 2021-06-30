@@ -558,6 +558,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   RenderViewHostImpl* render_view_host() { return render_view_host_.get(); }
   RenderFrameHostDelegate* delegate() { return delegate_; }
+
+  // FrameTree references are being removed from RenderFrameHostImpl as a part
+  // of MPArch. Please avoid using these APIs. See crbug.com/1179502 for
+  // details.
   FrameTree* frame_tree() const { return frame_tree_; }
   FrameTreeNode* frame_tree_node() const { return frame_tree_node_; }
 
@@ -2166,6 +2170,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // origin when recovering from a renderer crash).
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateSubresourceLoaderFactoriesForInitialEmptyDocument();
+
+  // Returns true if this document is current in the main frame for the
+  // associated WebContent's primary frame tree.
+  bool IsInPrimaryMainFrame();
 
  protected:
   friend class RenderFrameHostFactory;

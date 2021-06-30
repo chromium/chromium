@@ -35,8 +35,7 @@ bool PageImpl::IsPrimary() {
   // TODO(https://crbug.com/1222722): Query RenderFrameHost::IsInFencedFrame()
   // when it is available.
   return main_document_.lifecycle_state() ==
-             RenderFrameHostImpl::LifecycleStateImpl::kActive &&
-         !main_document_.InsidePortal();
+         RenderFrameHostImpl::LifecycleStateImpl::kActive;
 }
 
 void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {

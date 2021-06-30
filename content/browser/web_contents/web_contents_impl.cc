@@ -889,8 +889,9 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
                   this,
                   FrameTree::Type::kPrimary),
       is_load_to_different_document_(false),
-      main_frame_process_status_(base::TERMINATION_STATUS_STILL_RUNNING),
-      main_frame_process_error_code_(0),
+      primary_main_frame_process_status_(
+          base::TERMINATION_STATUS_STILL_RUNNING),
+      primary_main_frame_process_error_code_(0),
       waiting_for_response_(false),
       load_state_(net::LOAD_STATE_IDLE, std::u16string()),
       upload_size_(0),
@@ -2077,7 +2078,7 @@ void WebContentsImpl::SetHasPictureInPictureVideo(
 }
 
 bool WebContentsImpl::IsCrashed() {
-  switch (main_frame_process_status_) {
+  switch (primary_main_frame_process_status_) {
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
@@ -2105,25 +2106,27 @@ bool WebContentsImpl::IsCrashed() {
   return false;
 }
 
-void WebContentsImpl::SetMainFrameProcessStatus(base::TerminationStatus status,
-                                                int error_code) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetMainFrameProcessStatus",
+void WebContentsImpl::SetPrimaryMainFrameProcessStatus(
+    base::TerminationStatus status,
+    int error_code) {
+  OPTIONAL_TRACE_EVENT2("content",
+                        "WebContentsImpl::SetPrimaryMainFrameProcessStatus",
                         "status", static_cast<int>(status), "old_status",
-                        static_cast<int>(main_frame_process_status_));
-  if (status == main_frame_process_status_)
+                        static_cast<int>(primary_main_frame_process_status_));
+  if (status == primary_main_frame_process_status_)
     return;
 
-  main_frame_process_status_ = status;
-  main_frame_process_error_code_ = error_code;
+  primary_main_frame_process_status_ = status;
+  primary_main_frame_process_error_code_ = error_code;
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
 }
 
 base::TerminationStatus WebContentsImpl::GetCrashedStatus() {
-  return main_frame_process_status_;
+  return primary_main_frame_process_status_;
 }
 
 int WebContentsImpl::GetCrashedErrorCode() {
-  return main_frame_process_error_code_;
+  return primary_main_frame_process_error_code_;
 }
 
 bool WebContentsImpl::IsBeingDestroyed() {
@@ -6545,21 +6548,9 @@ void WebContentsImpl::RenderFrameCreated(
     RenderFrameHostImpl* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
                "render_frame_host", render_frame_host);
-  // The WebContents tracks the process state for the main frame's renderer.
-  // TODO(crbug.com/1199685): Under MPArch, with multiple frame trees in a
-  // WebContents, this is intended to just track the main frame of the root
-  // page.
-  if (!render_frame_host->GetParent()) {
-    bool was_crashed = IsCrashed();
-    SetMainFrameProcessStatus(base::TERMINATION_STATUS_STILL_RUNNING, 0);
 
-    // Restore the focus to the tab (otherwise the focus will be on the top
-    // window).
-    if (was_crashed && !FocusLocationBarByDefault()) {
-      if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
-        view_->Focus();
-      }
-    }
+  if (IsInPrimaryMainFrame(render_frame_host)) {
+    NotifyPrimaryMainFrameProcessIsAlive();
   }
 
   {
@@ -7062,6 +7053,9 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
     // The pending page's RenderViewHost is gone.
     return;
   }
+  DCHECK(IsInPrimaryMainFrame(rvh->GetMainFrame()))
+      << "GetRenderViewHost() must belong to the primary frame tree";
+
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
   // renderer may not have made a clean exit.
   if (IsFullscreen())
@@ -7082,7 +7076,8 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // webpage? Once this function is called at a more granular frame level, we
   // probably will need to more granularly reset the state here.
   ResetLoadProgressState();
-  SetMainFrameProcessStatus(status, error_code);
+
+  SetPrimaryMainFrameProcessStatus(status, error_code);
 
   TRACE_EVENT0("content",
                "Dispatching WebContentsObserver::RenderViewTerminated");
@@ -7761,18 +7756,17 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   TRACE_EVENT2("content", "WebContentsImpl::NotifySwappedFromRenderManager",
                "old_render_frame_host", old_frame, "new_render_frame_host",
                new_frame);
-
-  FrameTree* frame_tree = new_frame->frame_tree();
+  DCHECK_NE(new_frame->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 
   // Only fire RenderViewHostChanged if it is related to our FrameTree, as
   // observers can not deal with events coming from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (is_main_frame && IsPrimaryFrameTree(*frame_tree)) {
+  if (IsInPrimaryMainFrame(new_frame)) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
-    DCHECK_EQ(frame_tree->root()->current_frame_host(), new_frame);
-    DCHECK_EQ(frame_tree->root()->render_manager()->GetRenderWidgetHostView(),
+    DCHECK_EQ(frame_tree_.root()->render_manager()->GetRenderWidgetHostView(),
               new_frame->GetView());
 
     RenderViewHost* old_rvh =
@@ -7796,6 +7790,8 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
       // Historically, this was done to fix b/1079768 for interstitials.
       rwhv->SetSize(GetSizeForMainFrame());
     }
+
+    NotifyPrimaryMainFrameProcessIsAlive();
   }
 
   NotifyFrameSwapped(old_frame, new_frame, is_main_frame);
@@ -7809,7 +7805,7 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
   // from non-primary FrameTree.
   // TODO(https://crbug.com/1168562): Update observers to deal with the events,
   // and fire events for all frame trees.
-  if (!IsPrimaryFrameTree(*new_frame->frame_tree())) {
+  if (!IsInPrimaryMainFrame(new_frame)) {
     return;
   }
   NotifyViewSwapped(old_frame ? old_frame->GetRenderViewHost() : nullptr,
@@ -8948,8 +8944,12 @@ void WebContentsImpl::RenderFrameHostStateChanged(
                              render_frame_host, old_state, new_state);
 }
 
-bool WebContentsImpl::IsPrimaryFrameTree(const FrameTree& frame_tree) const {
-  return !frame_tree.is_prerendering();
+bool WebContentsImpl::IsInPrimaryMainFrame(
+    RenderFrameHost* render_frame_host) const {
+  const bool is_primary = static_cast<RenderFrameHostImpl*>(render_frame_host)
+                              ->IsInPrimaryMainFrame();
+  DCHECK_EQ(is_primary, frame_tree_.GetMainFrame() == render_frame_host);
+  return is_primary;
 }
 
 void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
@@ -8979,6 +8979,20 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
     capture_wake_lock_->CancelWakeLock();
 
   UpdateVisibilityAndNotifyPageAndView(GetVisibility());
+}
+
+void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
+  // The WebContents tracks the process state for the primary main frame's
+  // renderer.
+  bool was_crashed = IsCrashed();
+  SetPrimaryMainFrameProcessStatus(base::TERMINATION_STATUS_STILL_RUNNING, 0);
+  // Restore the focus to the tab (otherwise the focus will be on the top
+  // window).
+  if (was_crashed && !FocusLocationBarByDefault()) {
+    if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
+      view_->Focus();
+    }
+  }
 }
 
 }  // namespace content

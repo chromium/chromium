@@ -184,8 +184,6 @@ static_library("test_support") {
     "../public/test/mock_resource_context.h",
     "../public/test/mock_web_contents_observer.cc",
     "../public/test/mock_web_contents_observer.h",
-    "../public/test/multiple_pages_per_webcontents_helper.cc",
-    "../public/test/multiple_pages_per_webcontents_helper.h",
     "../public/test/navigation_handle_observer.cc",
     "../public/test/navigation_handle_observer.h",
     "../public/test/navigation_simulator.h",

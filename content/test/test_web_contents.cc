@@ -308,7 +308,7 @@ void TestWebContents::SetOpener(WebContents* opener) {
 
 void TestWebContents::SetIsCrashed(base::TerminationStatus status,
                                    int error_code) {
-  SetMainFrameProcessStatus(status, error_code);
+  SetPrimaryMainFrameProcessStatus(status, error_code);
 }
 
 void TestWebContents::AddPendingContents(

@@ -1502,8 +1502,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Indicates whether this tab should be considered crashed. The setter will
   // also notify the delegate when the flag is changed.
-  void SetMainFrameProcessStatus(base::TerminationStatus status,
-                                 int error_code);
+  void SetPrimaryMainFrameProcessStatus(base::TerminationStatus status,
+                                        int error_code);
 
   // Clears a pending contents that has been closed before being shown.
   void OnWebContentsDestroyed(WebContentsImpl* web_contents);
@@ -1750,9 +1750,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetSlowWebPreferences(const base::CommandLine& command_line,
                              blink::web_pref::WebPreferences* prefs);
 
-  // Checks whether the given FrameTree is the primary one (the one whose URL is
-  // shown in the address bar), as opposed to one in for example a Prerender.
-  bool IsPrimaryFrameTree(const FrameTree& frame_tree) const;
+  // Checks whether the given RenderFrameHost belongs to the primary FrameTree
+  // *and* is current, i.e., the document's URL is shown in the address bar.
+  // Non-primary documents would be for example a Prerender or an uncommitted
+  // navigation.
+  bool IsInPrimaryMainFrame(RenderFrameHost* render_frame_host) const;
 
   // This is the actual implementation of the various overloads of
   // |ForEachRenderFrameHost|.
@@ -1771,6 +1773,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Calculates the PageVisibilityState for |visibility|, taking the capturing
   // state into account.
   PageVisibilityState CalculatePageVisibilityState(Visibility visibility) const;
+
+  // Called when the process hosting the primary main RenderFrameHost is known
+  // to be alive.
+  void NotifyPrimaryMainFrameProcessIsAlive();
 
   // Data for core operation ---------------------------------------------------
 
@@ -1844,11 +1850,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // If the process is not live due to a crash, this will be reflected by
   // IsCrashed(), though it's possible to not be live while not indicating a
   // crash occurred.
-  // TODO(crbug.com/1199685): Under MPArch, with multiple frame trees in a
-  // WebContents, this just tracks the renderer process of the main frame of the
-  // root page. It should be named appropriately.
-  base::TerminationStatus main_frame_process_status_;
-  int main_frame_process_error_code_;
+  base::TerminationStatus primary_main_frame_process_status_;
+  int primary_main_frame_process_error_code_;
 
   // Whether this WebContents is waiting for a first-response for the
   // main resource of the page. This controls whether the throbber state is

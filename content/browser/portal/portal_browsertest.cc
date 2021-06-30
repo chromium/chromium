@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
   RenderFrameHostImpl* portal_rfh = portal->GetPortalContents()->GetMainFrame();
   EXPECT_NE(&primary_rfh->GetPage(), &portal_rfh->GetPage());
   EXPECT_TRUE(primary_rfh->GetPage().IsPrimary());
-  EXPECT_FALSE(portal_rfh->GetPage().IsPrimary());
+  EXPECT_TRUE(portal_rfh->GetPage().IsPrimary());
 }
 
 // Tests the the renderer can navigate a Portal.
