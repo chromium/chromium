@@ -195,7 +195,6 @@ class WatchTimeReporterTest
             case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
               // These keys do not support partial finalization.
               FAIL();
-              break;
           };
         }
       }

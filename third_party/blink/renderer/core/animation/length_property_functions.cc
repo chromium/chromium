@@ -457,8 +457,6 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
     case CSSPropertyID::kTabSize:
       return false;
 
-      return false;
-
     default:
       return false;
   }

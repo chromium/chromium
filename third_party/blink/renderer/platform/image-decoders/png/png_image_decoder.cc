@@ -524,7 +524,6 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     png_structp png = reader_->PngPtr();
     if (!InitFrameBuffer(current_frame_)) {
       longjmp(JMPBUF(png), 1);
-      return;
     }
 
     DCHECK_EQ(ImageFrame::kFramePartial, buffer.GetStatus());
@@ -538,12 +537,10 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
         interlace_buffer_size *= 2;
       if (!interlace_buffer_size.IsValid()) {
         longjmp(JMPBUF(png), 1);
-        return;
       }
       reader_->CreateInterlaceBuffer(interlace_buffer_size.ValueOrDie());
       if (!reader_->InterlaceBuffer()) {
         longjmp(JMPBUF(png), 1);
-        return;
       }
     }
 
@@ -764,7 +761,6 @@ void PNGImageDecoder::FrameComplete() {
   ImageFrame& buffer = frame_buffer_cache_[current_frame_];
   if (buffer.GetStatus() == ImageFrame::kFrameEmpty) {
     longjmp(JMPBUF(reader_->PngPtr()), 1);
-    return;
   }
 
   if (!current_buffer_saw_alpha_)

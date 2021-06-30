@@ -28,11 +28,11 @@ namespace {
 
 scoped_refptr<SharedBuffer> ReadFile(const char* name) {
   std::string file;
-  if (base::ReadFileToString(base::FilePath::FromUTF8Unsafe(name), &file))
-    return SharedBuffer::Create(file.data(), file.size());
-  perror(name);
-  exit(2);
-  return SharedBuffer::Create();
+  if (!base::ReadFileToString(base::FilePath::FromUTF8Unsafe(name), &file)) {
+    perror(name);
+    exit(2);
+  }
+  return SharedBuffer::Create(file.data(), file.size());
 }
 
 struct ImageMeta {

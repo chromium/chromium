@@ -4907,7 +4907,6 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
       return true;
     case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
       return RequestSetSequentialFocusNavigationStartingPointAction();
-      break;
     case ax::mojom::blink::Action::kSetValue:
       return RequestSetValueAction(
           WTF::String::FromUTF8(action_data.value.c_str()));

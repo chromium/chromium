@@ -137,16 +137,12 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
     case network::mojom::WebClientHintsType::kUA:
     case network::mojom::WebClientHintsType::kUAMobile:
       return true;
-      break;
     case network::mojom::WebClientHintsType::kUAPlatform:
-      if (base::FeatureList::IsEnabled(features::kUACHPlatformEnabledByDefault))
-        return true;
-      break;
+      return base::FeatureList::IsEnabled(
+          features::kUACHPlatformEnabledByDefault);
     default:
       return false;
-      break;
   }
-  return false;
 }
 
 // Add a list of Client Hints headers to be removed to the output vector, based

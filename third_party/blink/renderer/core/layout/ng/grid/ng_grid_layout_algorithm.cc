@@ -3005,7 +3005,6 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
 
       geometry.start_offset += FreeSpace();
       return geometry;
-      break;
     }
     case ContentPosition::kCenter: {
       geometry.start_offset += FreeSpace() / 2;

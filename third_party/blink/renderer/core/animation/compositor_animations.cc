@@ -202,7 +202,6 @@ bool CompositedAnimationRequiresProperties(const PropertyHandle& property) {
     default:
       return false;
   }
-  return false;
 }
 
 }  // namespace

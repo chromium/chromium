@@ -377,7 +377,6 @@ bool Scrollbar::GestureEvent(const WebGestureEvent& evt,
           NOTREACHED();
           return true;
       }
-      break;
     case WebInputEvent::Type::kGestureScrollUpdate:
       switch (evt.SourceDevice()) {
         case WebGestureDevice::kSyntheticAutoscroll:
@@ -402,7 +401,6 @@ bool Scrollbar::GestureEvent(const WebGestureEvent& evt,
           NOTREACHED();
           return true;
       }
-      break;
     case WebInputEvent::Type::kGestureScrollEnd:
       // If we see a GSE targeted at the scrollbar, clear the state that
       // says we injected GestureScrollBegin, since we no longer need to inject

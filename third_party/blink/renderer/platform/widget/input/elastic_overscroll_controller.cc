@@ -72,8 +72,9 @@ ElasticOverscrollController::Create(cc::ScrollElasticityHelper* helper) {
   return base::FeatureList::IsEnabled(features::kElasticOverscroll)
              ? std::make_unique<ElasticOverscrollControllerBezier>(helper)
              : nullptr;
-#endif
+#else
   return std::make_unique<ElasticOverscrollControllerExponential>(helper);
+#endif
 }
 
 void ElasticOverscrollController::ObserveRealScrollBegin(bool enter_momentum,

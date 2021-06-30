@@ -627,7 +627,6 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
 
   if (!IsValidCopyIB2TDestinationFormat(destination->texture()->Format())) {
     return exception_state.ThrowTypeError("Invalid gpu texture format.");
-    return;
   }
 
   bool isNoopCopy = dawn_copy_size.width == 0 || dawn_copy_size.height == 0 ||

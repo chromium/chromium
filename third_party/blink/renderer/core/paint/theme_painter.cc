@@ -235,8 +235,6 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
       // appearance values.
       return false;
   }
-
-  return false;
 }
 
 bool ThemePainter::PaintDecorations(const Node* node,

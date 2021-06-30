@@ -201,8 +201,6 @@ blink::AXObject* GetDOMTableAXAncestor(blink::Node* node,
     if (ax_object && !IsNeutralWithinTable(ax_object))
       return ax_object;
   }
-
-  return nullptr;
 }
 
 enum class AXAction {
@@ -1764,8 +1762,6 @@ unsigned AXNodeObject::HierarchicalLevel() const {
     default:
       return 0;
   }
-
-  return 0;
 }
 
 String AXNodeObject::AutoComplete() const {

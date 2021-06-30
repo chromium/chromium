@@ -61,17 +61,10 @@ NavigationPolicy NavigationPolicyFromEventModifiers(int16_t button,
     return kNavigationPolicyCurrentTab;
 
   if (new_tab_modifier) {
-    if (shift)
-      return kNavigationPolicyNewForegroundTab;
-    else
-      return kNavigationPolicyNewBackgroundTab;
-  } else {
-    if (shift)
-      return kNavigationPolicyNewWindow;
-    else
-      return kNavigationPolicyDownload;
+    return shift ? kNavigationPolicyNewForegroundTab
+                 : kNavigationPolicyNewBackgroundTab;
   }
-  return kNavigationPolicyCurrentTab;
+  return shift ? kNavigationPolicyNewWindow : kNavigationPolicyDownload;
 }
 
 NavigationPolicy NavigationPolicyFromEventInternal(const Event* event) {
