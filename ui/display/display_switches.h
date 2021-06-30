@@ -27,6 +27,9 @@ DISPLAY_EXPORT extern const char kUseFirstDisplayAsInternal[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 DISPLAY_EXPORT extern const char kEnableUnifiedDesktop[];
+
+// TODO(oshima): Remove once all tests are fixed. crbug.com/1225308.
+DISPLAY_EXPORT extern const char kRejectSquareDisplay[];
 #endif
 
 }  // namespace switches

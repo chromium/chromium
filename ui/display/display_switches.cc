@@ -57,6 +57,9 @@ const char kUseFirstDisplayAsInternal[] = "use-first-display-as-internal";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables unified desktop mode.
 const char kEnableUnifiedDesktop[] = "ash-enable-unified-desktop";
+
+// Used to find the test that uses square display.
+const char kRejectSquareDisplay[] = "reject-square-display";
 #endif
 
 }  // namespace switches

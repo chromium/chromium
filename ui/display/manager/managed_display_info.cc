@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -401,6 +403,13 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 }
 
 void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static bool reject_square = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kRejectSquareDisplay);
+  if (reject_square)
+    DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
+#endif
+
   bounds_in_native_ = new_bounds_in_native;
   size_in_pixel_ = new_bounds_in_native.size();
   UpdateDisplaySize();

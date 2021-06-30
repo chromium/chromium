@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -1407,7 +1408,8 @@ void DisplayManager::AddRemoveDisplay(
     gfx::Rect host_bounds = first_display.bounds_in_native();
     if (display_modes.empty()) {
       display_modes.emplace_back(
-          gfx::Size(600 /* width */, host_bounds.height()),
+          gfx::Size(host_bounds.height() + 100 /* width */,
+                    host_bounds.height()),
           60.0, /* refresh_rate */
           false /* is_interlaced */, true /* native */);
     }
