@@ -12,12 +12,10 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 # compatible, see below.
 # - Android: symbol wrapping is not universal for component builds.
 # - Chromecast on Android: causes issues with crash reporting, see b/178423326.
-# - ARM Chrome OS: see b/191314803
 _disable_partition_alloc =
     (is_win && (is_component_build || is_debug)) ||
     (is_android && is_component_build) || (is_android && is_chromecast) ||
-    (is_linux && is_component_build) || (is_chromeos && target_cpu == "arm") ||
-    (is_chromeos && target_cpu == "arm64")
+    (is_linux && is_component_build)
 _is_partition_alloc_platform = is_android || is_win || is_linux || is_chromeos
 
 # The debug CRT on Windows has some debug features that are incompatible with
