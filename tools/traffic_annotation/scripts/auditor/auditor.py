@@ -5,6 +5,7 @@
 
 import argparse
 import copy
+import datetime
 import logging
 import os
 import platform
@@ -12,6 +13,7 @@ import re
 import subprocess
 import sys
 import traceback
+import xml.etree.ElementTree
 
 from enum import Enum, auto
 from functools import reduce
@@ -24,7 +26,7 @@ from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, Set, Named
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Absolute path to chrome/src.
-SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../../../.."))
+SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "..", ".."))
 
 # TODO(nicolaso): Move extractor.py to this folder once the C++ auditor doesn't
 # depend on it anymore.
@@ -52,6 +54,21 @@ RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
 SUPPORTED_PLATFORMS = ["linux", "windows"]
+
+# Earliest valid milestone for added_in_milestone in annotations.xml.
+MIN_MILESTONE = 62
+
+# String that appears at the top of annotations.xml.
+XML_COMMENT = """<?xml version="1.0"?>
+<!--
+Copyright 2017 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Refer to README.md for content description and update process.
+-->
+
+<annotations>"""
 
 logging.basicConfig(level=logging.INFO,
                     format="%(filename)s:%(lineno)d:%(levelname)s: %(message)s")
@@ -129,6 +146,12 @@ def fill_proto_with_bogus(proto: Message, field_numbers: List[int]):
           field.type, "repeated" if repeated else "non-repeated"))
 
 
+def extract_annotation_id(line: str) -> Optional[UniqueId]:
+  """Returns the annotation id given an '<item id=...' line"""
+  m = re.search('id="([^"]+)"', line)
+  return UniqueId(m.group(1)) if m else None
+
+
 class AuditorError:
   class Type(Enum):
     # Annotation syntax is not right.
@@ -164,6 +187,12 @@ class AuditorError:
     MISSING_SECOND_ID = auto()
     # Two ids have equal hash codes.
     HASH_CODE_COLLISION = auto()
+    # Marked deprecated, but "os_list" is non-empty in annotations.xml
+    DEPRECATED_WITH_OS = auto()
+    # "os_list" is invalid in annotations.xml.
+    INVALID_OS = auto()
+    # "added_in_milestone" is invalid in annotations.xml.
+    INVALID_ADDED_IN = auto()
 
   def __init__(self,
                result_type: "AuditorError.Type",
@@ -264,6 +293,23 @@ class AuditorError:
       return ("MISSING_SECOND_ID: Second id of annotation at '{}:{}' should be "
               "updated, as it has the same hash code as the first one.".format(
                   self.file_path, self.line))
+
+    if self.type == AuditorError.Type.INVALID_OS:
+      assert len(self._details) == 2
+      return ("INVALID_OS: Invalid OS '{}' in annotation '{}' at {}.".format(
+          self._details[0], self._details[1], self.file_path))
+
+    if self.type == AuditorError.Type.DEPRECATED_WITH_OS:
+      assert self._details
+      return ("DEPRECATED_WITH_OS: Annotation '{}' has a deprecation date and "
+              "at least one active OS at {}.".format(self._details[0],
+                                                     self.file_path))
+
+    if self.type == AuditorError.Type.INVALID_ADDED_IN:
+      assert len(self._details) == 2
+      return ("INVALID_ADDED_IN: Invalid or missing added_in_milestone '{}' in "
+              "annotation '{}' at {}.".format(self._details[0],
+                                              self._details[1], self.file_path))
 
     raise NotImplementedError("Unimplemented AuditorError.Type: {}".format(
         self.type.name))
@@ -367,8 +413,8 @@ class Annotation:
     """Loads an annotation based on the data from annotations.xml."""
     annotation = Annotation()
     annotation.is_loaded_from_archive = True
-    annotation.type = Annotation.Type.from_int(archived.type)
-    annotation.unique_id = archived.unique_id
+    annotation.type = archived.type
+    annotation.unique_id = archived.id
     annotation.proto.source.file = archived.file_path
     annotation.archived_content_hash_code = archived.content_hash_code
     annotation.archived_added_in_milestone = archived.added_in_milestone
@@ -377,8 +423,8 @@ class Annotation:
       # We don't have the actual second id, so write a generated value to make
       # it non-empty. This is only relevant in tests.
       annotation.second_id = UniqueId("ARCHIVED_ID_{}".format(
-          annotation.second_id_hash_code))
-      annotation.second_id_hash_code = archived.second_id_hash_code
+          annotation.second_id))
+      annotation.second_id_hash_code = archived.second_id
 
     fill_proto_with_bogus(annotation.proto.semantics, archived.semantics_fields)
 
@@ -906,25 +952,365 @@ class IdChecker:
                          annotation2.proto.source.line))
 
 
-class ArchivedAnnotation(NamedTuple):
+class ArchivedAnnotation:
   """A record type for annotations.xml entries.
 
   All values are exactly the same as those stored in annotations.xml, except for
   some type conversions and default values."""
 
-  type: int = -1
-  unique_id: UniqueId = UniqueId("")
-  unique_id_hash_code: HashCode = HashCode(-1)
-  second_id_hash_code: HashCode = HashCode(-1)
-  content_hash_code: HashCode = HashCode(-1)
+  # Make sure the names and order are exactly the same as the attributes in
+  # the XML. This is used to serialize/deserialize the XML.
+  FIELDS = [
+      "id", "added_in_milestone", "hash_code", "type", "second_id",
+      "deprecated", "reserved", "content_hash_code", "os_list",
+      "semantics_fields", "policy_fields", "file_path"
+  ]
 
-  deprecation_date: str = ""
-  os_list: List[str] = []
-  added_in_milestone: int = 0
+  # Throw an error in Exporter if any of these fields is missing.
+  REQUIRED_FIELDS = [
+      "id", "hash_code", "type", "file_path", "added_in_milestone"
+  ]
 
-  semantics_fields: List[int] = []
-  policy_fields: List[int] = []
-  file_path: str = ""
+  def __init__(self,
+               id: UniqueId,
+               hash_code: HashCode,
+               type: Annotation.Type,
+               file_path: str,
+               added_in_milestone: int,
+               second_id: HashCode = HashCode(-1),
+               deprecated: str = "",
+               reserved: bool = False,
+               content_hash_code: HashCode = HashCode(-1),
+               os_list: List[str] = [],
+               semantics_fields: List[int] = [],
+               policy_fields: List[int] = []):
+    self.id = id
+    self.hash_code = hash_code
+    self.type = type
+    self.file_path = file_path
+    self.added_in_milestone = added_in_milestone
+    self.second_id = second_id
+    self.deprecated = deprecated
+    self.reserved = reserved
+    self.content_hash_code = content_hash_code
+    self.os_list = os_list
+    self.semantics_fields = semantics_fields
+    self.policy_fields = policy_fields
+
+  def __str__(self):
+    return "ArchivedAnnotation({})".format(",".join(
+        "{}={}".format(f, repr(getattr(self, f)))
+        for f in ArchivedAnnotation.FIELDS))
+
+
+class Exporter:
+  """Handles loading and saving ArchivedAnnotations in annotations.xml.
+
+  Attributes:
+    archive: Dict of """
+
+  ANNOTATIONS_XML_PATH = os.path.join(SCRIPT_DIR, "..", "..", "summary",
+                                      "annotations.xml")
+
+  def __init__(self):
+    self.archive: Dict[UniqueId, ArchivedAnnotation] = {}
+
+    self._current_platform = platform.system().lower()
+    if self._current_platform not in SUPPORTED_PLATFORMS:
+      raise ValueError("Unsupported platform {}".format(self._current_platform))
+
+    with open(os.path.join(SRC_DIR, "chrome", "VERSION")) as f:
+      contents = f.read()
+      m = re.search(r'MAJOR=(\d+)', contents)
+      if not m:
+        raise ValueError(
+            "Unable to extract MAJOR=... version from chrome/VERSION")
+      self._current_milestone = int(m.group(1))
+
+  def load_annotations_xml(self) -> None:
+    """Loads annotations from annotations.xml into self.archive using
+    ArchivedAnnotation objects."""
+    logger.info("Parsing {}".format(
+        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+
+    self.archive = {}
+
+    tree = xml.etree.ElementTree.parse(Exporter.ANNOTATIONS_XML_PATH)
+    root = tree.getroot()
+
+    for item in root.iter("item"):
+      assert item.tag == "item"
+
+      # This dictionary will be passed to ArchivedAnnotation's constructor as
+      # kwargs.
+      kwargs: Dict[str, Any] = dict(item.attrib)
+
+      # Check that all required attribs are present.
+      for field in ArchivedAnnotation.REQUIRED_FIELDS:
+        if field not in kwargs:
+          raise ValueError(
+              "Missing attribute '{}' in annotations.xml: {}".format(
+                  field, xml.etree.ElementTree.tostring(item, "unicode")))
+
+      # Check for unknown attribs. The constructor for ArchivedAnnotation can
+      # do this for us, but the error message is more readable this way.
+      unknown_fields = kwargs.keys() - set(ArchivedAnnotation.FIELDS)
+      for field in unknown_fields:
+        raise ValueError("Invalid attribute '{}' in annotations.xml: {}".format(
+            field, xml.etree.ElementTree.tostring(item, "unicode")))
+
+      # Perform some type conversions.
+      int_fields = [
+          "unique_id_hash_code", "second_id", "content_hash_code",
+          "added_in_milestone"
+      ]
+      for field in int_fields:
+        if field in kwargs:
+          kwargs[field] = int(kwargs[field])
+
+      kwargs["type"] = Annotation.Type.from_int(int(kwargs["type"]))
+
+      if "os_list" in kwargs:
+        kwargs["os_list"] = kwargs["os_list"].split(",")
+
+      for field in ["semantics_fields", "policy_fields"]:
+        if field in kwargs:
+          kwargs[field] = [int(f) for f in kwargs[field].split(",")]
+
+      if "reserved" in kwargs:
+        kwargs["reserved"] = True
+
+      # Create the annotation by passing kwargs.
+      annotation = ArchivedAnnotation(**kwargs)
+      self.archive[annotation.id] = annotation
+
+  def update_annotations(self, annotations: List[Annotation],
+                         reserved_ids: List[UniqueId]) -> List[AuditorError]:
+    """Updates self.archive with the extracted annotations and reserved ids."""
+    assert self.archive
+
+    current_platform_hashcodes: Set[HashCode] = set()
+
+    for annotation in annotations:
+      # annotations.xml only stores raw annotations.
+      if annotation.is_merged:
+        continue
+
+      # If annotation unique id is already in the imported list, check if other
+      # fields have changed.
+      if annotation.unique_id in self.archive:
+        archived = self.archive[annotation.unique_id]
+        archived.second_id = annotation.second_id_hash_code
+        archived.file_path = annotation.proto.source.file
+        if self._current_platform not in archived.os_list:
+          archived.os_list.append(self._current_platform)
+        # content_hash_code includes the proto, so this detects most changes.
+        archived.content_hash_code = annotation.get_content_hash_code()
+      else:
+        # If annotation is new, add it and assume it is on all platforms. Tests
+        # running on other platforms will request updating this if required.:
+        new_item = ArchivedAnnotation(
+            type=annotation.type,
+            id=annotation.unique_id,
+            hash_code=annotation.unique_id_hash_code,
+            content_hash_code=annotation.get_content_hash_code(),
+            os_list=SUPPORTED_PLATFORMS,
+            added_in_milestone=self._current_milestone,
+            file_path=annotation.proto.source.file)
+        if annotation.needs_two_ids():
+          new_item.second_id = annotation.second_id_hash_code
+        if annotation.type != Annotation.Type.COMPLETE:
+          new_item.semantics_fields = annotation.get_semantics_field_numbers()
+          new_item.policy_fields = annotation.get_policy_field_numbers()
+        self.archive[annotation.unique_id] = new_item
+      current_platform_hashcodes.add(annotation.unique_id_hash_code)
+
+    # If a non-reserved annotation is removed from the current platform, update
+    # it.
+    for unique_id, archived in self.archive.items():
+      if (self._current_platform in archived.os_list
+          and archived.content_hash_code != -1
+          and archived.hash_code not in current_platform_hashcodes):
+        archived.os_list.remove(self._current_platform)
+
+    # If there is a new reserved id, add it.
+    for reserved_id in reserved_ids:
+      if reserved_id not in self.archive:
+        self.archive[reserved_id] = ArchivedAnnotation(
+            id=reserved_id,
+            type=Annotation.Type.COMPLETE,
+            added_in_milestone=self._current_milestone,
+            hash_code=compute_hash_value(reserved_id),
+            reserved=True,
+            os_list=SUPPORTED_PLATFORMS,
+            file_path="")
+
+    # If there are annotations that are not used on any OS, set the deprecation
+    # flag.
+    for unique_id, archived in self.archive.items():
+      if not archived.os_list and not archived.deprecated:
+        archived.deprecated = datetime.date.today().strftime("%Y-%m-%d")
+        archived.file_path = ""
+        archived.semantics_fields = []
+        archived.policy_fields = []
+
+    return self.check_archived_annotations()
+
+  def _generate_serialized_xml(self) -> str:
+    """Generates XML for current report items, for saving to annotations.xml."""
+    lines = [XML_COMMENT]
+    # Preserve this order, so we always generate the exact same XML string
+    # given the same ArchivedAnnotation object.
+    for unique_id, archived in self.archive.items():
+      node = xml.etree.ElementTree.fromstring('<item/>')
+
+      # Perform the same type conversions as load_annotations_xml(), but in
+      # reverse. FIELDS are already in the right order for this <item/> to
+      # serialize deterministically.
+      for field in ArchivedAnnotation.FIELDS:
+        value = getattr(archived, field)
+        if isinstance(value, str):
+          # Remove empty strings, but preserve file_path="".
+          if value or field == "file_path":
+            node.attrib[field] = value
+        elif isinstance(value, bool):
+          # Boolean is "1" if True, or absent if False.
+          if value:
+            node.attrib[field] = "1"
+        elif isinstance(value, int):
+          # Filter out integers that are <= 0.
+          if value > 0:
+            node.attrib[field] = str(value)
+        elif isinstance(value, Annotation.Type):
+          # Use the integer value for enums.
+          node.attrib[field] = str(value.value[0])
+        elif isinstance(value, list):
+          # Lists are comma-separated, and absent if empty.
+          #
+          # N.B. this does not work well for deeper structures. Only 1 level
+          # of lists should be used.
+          if value:
+            node.attrib[field] = ",".join(map(str, value))
+
+      lines.append(" {}".format(xml.etree.ElementTree.tostring(node,
+                                                               "unicode")))
+
+    lines.append("</annotations>")
+    lines.append("")
+
+    # Replace ' />' with '/>' so output is exactly the same as the C++
+    # auditor (i.e., remove the space in self-closing tags).
+    # TODO(nicolaso): Remove this dirty 'replace' hack.
+    return "\n".join(re.sub(" />$", "/>", l) for l in lines)
+
+  def check_archived_annotations(self) -> List[AuditorError]:
+    """Runs tests on the contents of self.archive."""
+    assert self.archive
+    errors = []
+
+    # Check for annotation hash code duplications.
+    used_codes: dict[HashCode, UniqueId] = {}
+    for unique_id, archived in self.archive.items():
+      if archived.hash_code in used_codes:
+        errors.append(
+            AuditorError(AuditorError.Type.HASH_CODE_COLLISION,
+                         str(archived.hash_code), "", 0, unique_id))
+      else:
+        used_codes[archived.hash_code] = unique_id
+
+    # Check for coexistence of OS(es) and deprecation date.
+    for unique_id, archived in self.archive.items():
+      if archived.deprecated and archived.os_list:
+        errors.append(
+            AuditorError(AuditorError.Type.DEPRECATED_WITH_OS, unique_id,
+                         Exporter.ANNOTATIONS_XML_PATH))
+
+    # Check that listed OSes are valid.
+    for unique_id, archived in self.archive.items():
+      for os in archived.os_list:
+        if os not in SUPPORTED_PLATFORMS:
+          errors.append(
+              AuditorError(AuditorError.Type.INVALID_OS, "",
+                           Exporter.ANNOTATIONS_XML_PATH, 0, os, unique_id))
+
+    # Check for consistency of "added_in_milestone" attribute.
+    for unique_id, archived in self.archive.items():
+      if archived.added_in_milestone < MIN_MILESTONE:
+        errors.append(
+            AuditorError(AuditorError.Type.INVALID_ADDED_IN, "",
+                         Exporter.ANNOTATIONS_XML_PATH, 0,
+                         str(archived.added_in_milestone), unique_id))
+
+    logger.warning(self.get_required_updates())
+
+    return errors
+
+  def save_annotations_XML(self):
+    """Saves |self._archive| into annotations.xml"""
+    logger.info("Saving annotations to {}".format(
+        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+    xml_str = self._generate_serialized_xml()
+    with open(Exporter.ANNOTATIONS_XML_PATH, 'w') as f:
+      f.write(xml_str)
+
+  def get_deprecated_hash_codes(self) -> List[HashCode]:
+    """Produces the list of deprecated hash codes. Requires that annotations.xml
+    is loaded, i.e. into |self.archive|."""
+    assert self.archive
+    return [a.hash_code for a in self.archive.values() if a.deprecated]
+
+  def get_other_platforms_annotation_ids(self) -> List[UniqueId]:
+    """Returns a list of annotations that are not defined on this platform."""
+    assert self.archive
+    return [
+        a.id for a in self.archive.values()
+        if self._current_platform in a.os_list
+    ]
+
+  @classmethod
+  def _get_xml_items(cls, xml: str) -> Dict[UniqueId, str]:
+    """Returns the list of <item id="..."/> lines in the XML, keyed by their
+    id attribute."""
+    items: Dict[UniqueId, str] = {}
+    for line in xml.split("\n"):
+      id = extract_annotation_id(line)
+      if id is not None:
+        items[id] = line
+    return items
+
+  @classmethod
+  def _get_xml_differences(cls, old_xml: str, new_xml: str) -> str:
+    """Returns the required updates to convert one XML file to another."""
+    old_items = Exporter._get_xml_items(old_xml)
+    new_items = Exporter._get_xml_items(new_xml)
+
+    added_items = set(new_items.keys()) - old_items.keys()
+    removed_items = set(old_items.keys()) - new_items.keys()
+
+    message = []
+    for id in sorted(added_items):
+      message.append("\n\tAdd line: '{}'".format(new_items[id]))
+    for id in sorted(removed_items):
+      message.append("\n\tRemove line: '{}'".format(old_items[id]))
+    for id in sorted(old_items.keys()):
+      if id in new_items and old_items[id] != new_items[id]:
+        message.append("\n\tUpdate line: '{}' --> '{}'".format(
+            old_items[id], new_items[id]))
+
+    return "".join(message)
+
+  def get_required_updates(self) -> str:
+    """Returns the required updates to go from one state to another in
+    annotations.xml"""
+    logger.info("Computing required updates for {}".format(
+        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+
+    with open(Exporter.ANNOTATIONS_XML_PATH) as f:
+      old_xml = f.read()
+
+    new_xml = self._generate_serialized_xml()
+
+    return Exporter._get_xml_differences(old_xml, new_xml)
 
 
 class Auditor:

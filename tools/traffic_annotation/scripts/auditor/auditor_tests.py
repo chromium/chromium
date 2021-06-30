@@ -19,11 +19,12 @@ from typing import cast, Tuple
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Path to the test_data/ dir.
-TESTS_DIR = os.path.join(SCRIPT_DIR, "../test_data")
+TESTS_DIR = os.path.join(SCRIPT_DIR, "..", "test_data")
 
 # TODO(nicolaso): Move these to tools/traffic_annotation/scripts/test_data/ once
 # the Python auditor has fully replaced the C++ one.
-CPP_TESTS_DIR = os.path.join(SRC_DIR, "tools/traffic_annotation/auditor/tests")
+CPP_TESTS_DIR = os.path.join(SRC_DIR, "tools", "traffic_annotation", "auditor",
+                             "tests")
 
 TEST_DEPRECATED_IDS = [UniqueId("abc"), UniqueId("def"), UniqueId("ghi")]
 
@@ -604,25 +605,22 @@ class AuditorTest(unittest.TestCase):
 
   def test_load_from_archive(self):
     """Tests that Annotation.load_from_archive() works as expected."""
-    archived = ArchivedAnnotation(
-        type=Annotation.Type.PARTIAL.value[0],
-        unique_id="foobar",
-        unique_id_hash_code=compute_hash_value("foobar"),
-        second_id_hash_code=compute_hash_value("baz"),
-        content_hash_code=32,
-        os_list=["linux", "windows"],
-        added_in_milestone=62,
-        semantics_fields=[2, 3],
-        policy_fields=[-1, 3, 4],
-        file_path="foobar.cc")
+    archived = ArchivedAnnotation(type=Annotation.Type.PARTIAL,
+                                  id="foobar",
+                                  hash_code=compute_hash_value("foobar"),
+                                  second_id=compute_hash_value("baz"),
+                                  content_hash_code=32,
+                                  os_list=["linux", "windows"],
+                                  added_in_milestone=62,
+                                  semantics_fields=[2, 3],
+                                  policy_fields=[-1, 3, 4],
+                                  file_path="foobar.cc")
     annotation = Annotation.load_from_archive(archived)
     self.assertTrue(annotation.is_loaded_from_archive)
-    self.assertEqual(annotation.type, Annotation.Type.PARTIAL)
-    self.assertEqual(annotation.unique_id, archived.unique_id)
-    self.assertEqual(annotation.unique_id_hash_code,
-                     archived.unique_id_hash_code)
-    self.assertEqual(annotation.second_id_hash_code,
-                     archived.second_id_hash_code)
+    self.assertEqual(annotation.type, archived.type)
+    self.assertEqual(annotation.unique_id, archived.id)
+    self.assertEqual(annotation.unique_id_hash_code, archived.hash_code)
+    self.assertEqual(annotation.second_id_hash_code, archived.second_id)
     self.assertEqual(annotation.archived_content_hash_code, 32)
     self.assertEqual(annotation.archived_added_in_milestone, 62)
     self.assertEqual(annotation.get_semantics_field_numbers(),
@@ -631,29 +629,34 @@ class AuditorTest(unittest.TestCase):
                      archived.policy_fields)
     self.assertEqual(annotation.proto.source.file, archived.file_path)
 
-  @unittest.skip("not yet implemented")
   def test_annotations_xml(self):
     """Tests is annotations.xml has proper content."""
-    exporter = Exporter(SRC_DIR)
+    # annotations.xml should parse without errors.
+    exporter = Exporter()
     exporter.load_annotations_xml()
     errors = exporter.check_archived_annotations()
     self.assertEqual([], errors)
 
-  @unittest.skip("not yet implemented")
+    # The content of annotations.xml shouldn't change when writing it.
+    with open(Exporter.ANNOTATIONS_XML_PATH) as f:
+      old_xml = f.read()
+    new_xml = exporter._generate_serialized_xml()
+    self.assertEqual(old_xml, new_xml)
+
   def test_annotations_xml_differences(self):
     """Tests if annotations.xml changes are correctly reported."""
-    exporter = Exporter(SRC_DIR)
+    exporter = Exporter()
 
-    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample1.txt")) as f:
+    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample1.xml")) as f:
       xml1 = f.read()
-    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample2.txt")) as f:
+    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample2.xml")) as f:
       xml2 = f.read()
-    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample3.txt")) as f:
+    with open(os.path.join(CPP_TESTS_DIR, "annotations_sample3.xml")) as f:
       xml3 = f.read()
 
-    diff12 = exporter.get_xml_differences(xml1, xml2)
-    diff13 = exporter.get_xml_differences(xml1, xml3)
-    diff23 = exporter.get_xml_differences(xml2, xml3)
+    diff12 = exporter._get_xml_differences(xml1, xml2)
+    diff13 = exporter._get_xml_differences(xml1, xml3)
+    diff23 = exporter._get_xml_differences(xml2, xml3)
 
     with open(os.path.join(CPP_TESTS_DIR, "annotations_diff12.txt")) as f:
       expected_diff12 = f.read()
