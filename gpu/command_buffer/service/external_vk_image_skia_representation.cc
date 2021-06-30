@@ -201,7 +201,8 @@ sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginAccess(
     // Create an |end_access_semaphore_| which will be signalled by the caller.
     end_access_semaphore_ =
         backing_impl()->external_semaphore_pool()->GetOrCreateSemaphore();
-    DCHECK(end_access_semaphore_);
+    if (!end_access_semaphore_)
+      return nullptr;
     end_semaphores->emplace_back();
     end_semaphores->back().initVulkan(end_access_semaphore_.GetVkSemaphore());
   }
