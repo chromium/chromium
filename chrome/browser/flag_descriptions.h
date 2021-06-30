@@ -1319,6 +1319,9 @@ extern const char kSharingPreferVapidDescription[];
 extern const char kSharingSendViaSyncName[];
 extern const char kSharingSendViaSyncDescription[];
 
+extern const char kShelfDragToPinName[];
+extern const char kShelfDragToPinDescription[];
+
 extern const char kShelfHoverPreviewsName[];
 extern const char kShelfHoverPreviewsDescription[];
 
