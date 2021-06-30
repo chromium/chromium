@@ -1,5 +1,8 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
-    <head>
+<head>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
         <style type="text/css">
             #svgRoot {
                 margin: 0px;
@@ -7,19 +10,20 @@
                 position: absolute;
                 top: 0px;
                 left: 0px;
+                font-family: Ahem;
+                font-size: 10px;
             }
 
             .test { fill: blue; pointer-events: bounding-box; }
             .test:hover { fill: green; visibility: visible; }
         </style>
+        <title>Tests for pointer-events=bounding-box - hit testing.</title>
     </head>
     <body>
-        <p>Tests for pointer-events=bounding-box - hit testing.</p>
-        <p>On success, you will see a series of "PASS" messages and no "FAIL" messages.</p>
         <pre id="console"></pre>
 
-        <svg id="svgRoot" width="480px" height="360px"
-            viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"
+        <svg id="svgRoot" width="800px" height="360px"
+            viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" opacity="0">
             <g class="test" id="test1" transform="rotate(15)">
                 <circle id="circle1" cx="50" cy="50" r="10"/>
@@ -38,10 +42,6 @@
                 document.getElementById("console").innerHTML = "mouse at " + evt.x + "," + evt.y;
             };
 
-            if (window.testRunner)
-                testRunner.dumpAsText();
-
-            var resultString = "";
             var group1 = document.getElementById("test1");
             var circle1 = document.getElementById("circle1");
             var circle2 = document.getElementById("circle2");
@@ -86,7 +86,7 @@
             ];
 
             var pointsOnTspan1 = [
-                {x: 422, y: 63}
+                {x: 579, y: 46}
             ];
 
             var pointsNotOnText1 = [
@@ -104,7 +104,7 @@
             ];
 
             var pointsOnTspan2 = [
-                {x: 434, y: 268}
+                {x: 568, y: 283}
             ];
 
             var pointsNotOnText2 = [
@@ -132,90 +132,38 @@
                 {x: 45, y: 225}
             ];
 
-            pointsOnCircle1.forEach( function(point) {
-                var pass = (circle1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " circle1 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
+            function hitTest(point, element, shouldContain, optionalLabel) {
+              const label = optionalLabel || element.id;
+              test(() => {
+                let contain = element.contains(document.elementFromPoint(point.x, point.y));
+                if (shouldContain)
+                  assert_true(contain);
+                else
+                  assert_false(contain);
+                }, `${label} ${shouldContain ? 'contains' : 'does not contain'} point at (${point.x}, ${point.y})`);
+            }
 
-            pointsNotOnCircle1.forEach( function(point) {
-                var pass = (circle1 != document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " circle1 does not contain point at (" + point.x + ", " + point.y + ")\n";
-            });
+            pointsOnCircle1.forEach(point => hitTest(point, circle1, true));
+            pointsNotOnCircle1.forEach(point => hitTest(point, circle1, false));
+            pointsInsideBBoxOfCircle1.forEach(point => hitTest(point, group1, true, 'group1'));
 
-            pointsInsideBBoxOfCircle1.forEach( function(point) {
-                var pass = (group1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " group1 contains point at (" + (point.x) + ", " + point.y + ")\n";
-            });
+            pointsOnCircle2.forEach(point => hitTest(point, circle2, true));
+            pointsInsideBBoxOfCircle2.forEach(point => hitTest(point, circle2, true, 'bbox of circle2'));
 
-            pointsOnCircle2.forEach( function(point) {
-                var pass = (circle2 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " circle2 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
+            pointsOnText1.forEach(point => hitTest(point, text1, true));
+            pointsOnTspan1.forEach(point => hitTest(point, tspan1, true));
+            pointsNotOnText1.forEach(point => hitTest(point, text1, false));
+            pointsInsideBBoxOfText1.forEach(point => hitTest(point, text1, true, 'bbox of text1'));
 
-            pointsInsideBBoxOfCircle2.forEach( function(point) {
-                var pass = (circle2 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " bbox of circle2 contains point at (" + (point.x) + ", " + point.y + ")\n";
-            });
+            pointsOnText2.forEach(point => hitTest(point, text2, true));
+            pointsOnTspan2.forEach(point => hitTest(point, tspan2, true));
+            pointsNotOnText2.forEach(point => hitTest(point, text2, false));
+            pointsInsideBBoxOfText2.forEach(point => hitTest(point, text2, true, 'bbox of text2'));
 
-            pointsOnText1.forEach( function(point) {
-                var pass = (text1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " text1 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
+            pointsOnText3.forEach(point => hitTest(point, text3, true));
+            pointsNotOnText3.forEach(point => hitTest(point, text3, false));
 
-            pointsOnTspan1.forEach( function(point) {
-                var pass = (tspan1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " tspan1 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsNotOnText1.forEach( function(point) {
-                var elm = document.elementFromPoint(point.x, point.y);
-                var pass = (text1 != elm && tspan1 != elm);
-                resultString += ((pass) ? "PASS" : "FAIL") + " text1 does not contain point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsInsideBBoxOfText1.forEach( function(point) {
-                var pass = (text1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " bbox of text1 contains point at (" + (point.x) + ", " + point.y + ")\n";
-            });
-
-            pointsOnText2.forEach( function(point) {
-                var pass = (text2 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " text2 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsOnTspan2.forEach( function(point) {
-                var pass = (tspan2 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " tspan2 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsNotOnText2.forEach( function(point) {
-                var elm = document.elementFromPoint(point.x, point.y);
-                var pass = (text2 != elm && tspan2 != elm);
-                resultString += ((pass) ? "PASS" : "FAIL") + " text2 does not contain point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsInsideBBoxOfText2.forEach( function(point) {
-                var pass = (text2 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " bbox of text2 contains point at (" + (point.x) + ", " + point.y + ")\n";
-            });
-
-            pointsOnText3.forEach( function(point) {
-                var pass = (text3 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " text3 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsNotOnText3.forEach( function(point) {
-                var elm = document.elementFromPoint(point.x, point.y);
-                var pass = (text3 != elm && tspan3 != elm);
-                resultString += ((pass) ? "PASS" : "FAIL") + " text3 does not contain point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            pointsOnImage1.forEach( function(point) {
-                var pass = (image1 == document.elementFromPoint(point.x, point.y));
-                resultString += ((pass) ? "PASS" : "FAIL") + " image1 contains point at (" + point.x + ", " + point.y + ")\n";
-            });
-
-            document.getElementById("console").innerHTML = resultString;
+            pointsOnImage1.forEach(point => hitTest(point, image1, true));
         </script>
     </body>
 </html>
