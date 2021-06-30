@@ -1022,8 +1022,7 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;
-  return RuntimeEnabledFeatures::TimerThrottlingForHiddenFramesEnabled() &&
-         !frame_visible_ && IsCrossOriginToMainFrame();
+  return !frame_visible_ && IsCrossOriginToMainFrame();
 }
 
 bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {

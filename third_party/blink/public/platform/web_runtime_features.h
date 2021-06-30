@@ -197,7 +197,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void ForceOverlayFullscreenVideo(bool);
   BLINK_PLATFORM_EXPORT static void EnableTimerThrottlingForBackgroundTabs(
       bool);
-  BLINK_PLATFORM_EXPORT static void EnableTimerThrottlingForHiddenFrames(bool);
   BLINK_PLATFORM_EXPORT static void EnableExpensiveBackgroundTimerThrottling(
       bool);
   BLINK_PLATFORM_EXPORT static void

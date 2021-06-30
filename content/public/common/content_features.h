@@ -210,7 +210,6 @@ CONTENT_EXPORT extern const base::Feature kSubresourceWebBundles;
 CONTENT_EXPORT extern const base::Feature
     kSuppressDifferentOriginSubframeJSDialogs;
 CONTENT_EXPORT extern const base::Feature kSyntheticPointerActions;
-CONTENT_EXPORT extern const base::Feature kTimerThrottlingForHiddenFrames;
 CONTENT_EXPORT extern const base::Feature kTopLevelAwait;
 CONTENT_EXPORT extern const base::Feature kTouchpadAsyncPinchEvents;
 CONTENT_EXPORT extern const base::Feature kTouchpadOverscrollHistoryNavigation;

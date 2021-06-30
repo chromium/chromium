@@ -699,14 +699,12 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride
 // We test both (ExplicitInit/LazyInit) of them.
 
 TEST_F(FrameSchedulerImplTest, PageVisible) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   EXPECT_FALSE(throttleable_task_queue());
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
 }
 
 TEST_F(FrameSchedulerImplTest, PageHidden_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   page_scheduler_->SetPageVisible(false);
@@ -714,14 +712,12 @@ TEST_F(FrameSchedulerImplTest, PageHidden_ExplicitInit) {
 }
 
 TEST_F(FrameSchedulerImplTest, PageHidden_LazyInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(false);
   page_scheduler_->SetPageVisible(false);
   LazyInitThrottleableTaskQueue();
   EXPECT_TRUE(IsThrottled());
 }
 
 TEST_F(FrameSchedulerImplTest, PageHiddenThenVisible_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(false);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   page_scheduler_->SetPageVisible(false);
@@ -734,7 +730,6 @@ TEST_F(FrameSchedulerImplTest, PageHiddenThenVisible_ExplicitInit) {
 
 TEST_F(FrameSchedulerImplTest,
        FrameHiddenThenVisible_CrossOrigin_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   frame_scheduler_->SetFrameVisible(false);
@@ -750,33 +745,13 @@ TEST_F(FrameSchedulerImplTest,
 }
 
 TEST_F(FrameSchedulerImplTest, FrameHidden_CrossOrigin_LazyInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   frame_scheduler_->SetFrameVisible(false);
   frame_scheduler_->SetCrossOriginToMainFrame(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_TRUE(IsThrottled());
 }
 
-TEST_F(FrameSchedulerImplTest,
-       FrameHidden_CrossOrigin_NoThrottling_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(false);
-  LazyInitThrottleableTaskQueue();
-  EXPECT_FALSE(IsThrottled());
-  frame_scheduler_->SetFrameVisible(false);
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
-  EXPECT_FALSE(IsThrottled());
-}
-
-TEST_F(FrameSchedulerImplTest, FrameHidden_CrossOrigin_NoThrottling_LazyInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(false);
-  frame_scheduler_->SetFrameVisible(false);
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
-  LazyInitThrottleableTaskQueue();
-  EXPECT_FALSE(IsThrottled());
-}
-
 TEST_F(FrameSchedulerImplTest, FrameHidden_SameOrigin_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   frame_scheduler_->SetFrameVisible(false);
@@ -784,14 +759,12 @@ TEST_F(FrameSchedulerImplTest, FrameHidden_SameOrigin_ExplicitInit) {
 }
 
 TEST_F(FrameSchedulerImplTest, FrameHidden_SameOrigin_LazyInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   frame_scheduler_->SetFrameVisible(false);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
 }
 
 TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_ExplicitInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   EXPECT_TRUE(throttleable_task_queue());
@@ -802,7 +775,6 @@ TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_ExplicitInit) {
 }
 
 TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_LazyInit) {
-  ScopedTimerThrottlingForHiddenFramesForTest throttle_hidden_frames(true);
   frame_scheduler_->SetFrameVisible(true);
   frame_scheduler_->SetCrossOriginToMainFrame(true);
   LazyInitThrottleableTaskQueue();

@@ -2086,10 +2086,6 @@
       status: "stable",
     },
     {
-      name: "TimerThrottlingForHiddenFrames",
-      status: "stable",
-    },
-    {
       name: "TimeZoneChangeEvent",
       status: "experimental",
     },

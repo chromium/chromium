@@ -500,10 +500,6 @@ void WebRuntimeFeatures::EnableTimerThrottlingForBackgroundTabs(bool enable) {
   RuntimeEnabledFeatures::SetTimerThrottlingForBackgroundTabsEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableTimerThrottlingForHiddenFrames(bool enable) {
-  RuntimeEnabledFeatures::SetTimerThrottlingForHiddenFramesEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSendBeaconThrowForBlobWithNonSimpleType(
     bool enable) {
   RuntimeEnabledFeatures::SetSendBeaconThrowForBlobWithNonSimpleTypeEnabled(

@@ -297,8 +297,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSkipTouchEventFilter, blink::features::kSkipTouchEventFilter},
     {wf::EnableSubresourceWebBundles, features::kSubresourceWebBundles},
     {wf::EnableTextFragmentAnchor, blink::features::kTextFragmentAnchor},
-    {wf::EnableTimerThrottlingForHiddenFrames,
-     features::kTimerThrottlingForHiddenFrames},
     {wf::EnableTransformInterop, blink::features::kTransformInterop},
     {wf::EnableBackfaceVisibilityInterop,
      blink::features::kBackfaceVisibilityInterop},

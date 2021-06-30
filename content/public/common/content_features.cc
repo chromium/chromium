@@ -809,10 +809,6 @@ const base::Feature kSuppressDifferentOriginSubframeJSDialogs{
 const base::Feature kSyntheticPointerActions{"SyntheticPointerActions",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Throttle Blink timers in out-of-view cross origin frames.
-const base::Feature kTimerThrottlingForHiddenFrames{
-    "TimerThrottlingForHiddenFrames", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables async touchpad pinch zoom events. We check the ACK of the first
 // synthetic wheel event in a pinch sequence, then send the rest of the
 // synthetic wheel events of the pinch sequence as non-blocking if the first
