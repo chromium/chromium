@@ -69,7 +69,7 @@ class ConversionStorageTest : public testing::Test {
                                      const StorableConversion& conversion) {
     ConversionReport report(impression, conversion.conversion_data(),
                             /*conversion_time=*/clock_.Now(),
-                            /*report_time=*/clock_.Now() +
+                            /*report_time=*/impression.impression_time() +
                                 base::TimeDelta::FromMilliseconds(kReportTime),
                             /*conversion_id=*/absl::nullopt);
     return report;
@@ -450,12 +450,6 @@ TEST_F(ConversionStorageTest,
   EXPECT_TRUE(
       storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  // With the mock delegate, conversions are reported relative to impression
-  // time not conversion time. This report will match both the first and second
-  // conversion.
-  ConversionReport expected_report =
-      GetExpectedReport(first_impression, conversion);
-
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
   // Delete the report.
@@ -470,6 +464,9 @@ TEST_F(ConversionStorageTest,
 
   // The first impression should still be active and able to convert.
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+
+  ConversionReport expected_report =
+      GetExpectedReport(first_impression, conversion);
 
   // Verify it was the first impression that converted.
   EXPECT_THAT(storage()->GetConversionsToReport(clock()->Now()),
@@ -737,12 +734,12 @@ TEST_F(ConversionStorageTest, ClearDataRangeBetweenEvents) {
       ImpressionBuilder(start).SetExpiry(base::TimeDelta::FromDays(30)).Build();
   auto conversion = DefaultConversion();
 
-  const ConversionReport expected_report =
-      GetExpectedReport(impression, conversion);
-
   storage()->StoreImpression(impression);
 
   clock()->Advance(base::TimeDelta::FromDays(1));
+
+  const ConversionReport expected_report =
+      GetExpectedReport(impression, conversion);
 
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
 

@@ -319,7 +319,8 @@ bool operator==(const StorableImpression& a, const StorableImpression& b) {
 bool operator==(const ConversionReport& a, const ConversionReport& b) {
   const auto tie = [](const ConversionReport& conversion) {
     return std::make_tuple(conversion.impression, conversion.conversion_data,
-                           conversion.report_time, conversion.extra_delay);
+                           conversion.conversion_time, conversion.report_time,
+                           conversion.extra_delay);
   };
   return tie(a) == tie(b);
 }
