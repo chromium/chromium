@@ -36,6 +36,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.jank_tracker.JankScenario;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -151,6 +153,7 @@ class StartSurfaceMediator
     @Nullable
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
     private boolean mHadWarmStart;
+    private final JankTracker mJankTracker;
     private boolean mHideMVForNewSurface;
     private boolean mHideTabCarouselForNewSurface;
 
@@ -160,7 +163,8 @@ class StartSurfaceMediator
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
+            JankTracker jankTracker) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -172,6 +176,7 @@ class StartSurfaceMediator
         mExcludeMVTiles = excludeMVTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
+        mJankTracker = jankTracker;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
 
         if (mPropertyModel != null) {
@@ -406,6 +411,23 @@ class StartSurfaceMediator
             setOverviewStateInternal();
         }
         notifyStateChange();
+
+        // Start/Stop tracking jank for Homepage and Tab switcher. It is okay if finish or start are
+        // called multiple times consecutively.
+        switch (mStartSurfaceState) {
+            case StartSurfaceState.NOT_SHOWN:
+                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
+                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
+                break;
+            case StartSurfaceState.SHOWN_HOMEPAGE:
+                mJankTracker.startTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
+                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
+                break;
+            case StartSurfaceState.SHOWN_TABSWITCHER:
+                mJankTracker.finishTrackingScenario(JankScenario.START_SURFACE_HOMEPAGE);
+                mJankTracker.startTrackingScenario(JankScenario.START_SURFACE_TAB_SWITCHER);
+                break;
+        }
 
         setLaunchOrigin(launchOrigin);
         // Metrics collection

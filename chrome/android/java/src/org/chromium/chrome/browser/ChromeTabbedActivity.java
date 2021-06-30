@@ -658,7 +658,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                             getTabCreatorManagerSupplier().get(),
                             getMenuOrKeyboardActionController(),
-                            getMultiWindowModeStateDispatcher());
+                            getMultiWindowModeStateDispatcher(), mJankTracker);
                 }
             }
 

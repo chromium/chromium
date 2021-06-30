@@ -37,6 +37,10 @@ public class JankMetricUMARecorder {
                 return "TabSwitcher";
             case JankScenario.OPEN_LINK_IN_NEW_TAB:
                 return "OpenLinkInNewTab";
+            case JankScenario.START_SURFACE_HOMEPAGE:
+                return "StartSurfaceHomepage";
+            case JankScenario.START_SURFACE_TAB_SWITCHER:
+                return "StartSurfaceTabSwitcher";
             default:
                 throw new IllegalArgumentException("Invalid scenario value");
         }

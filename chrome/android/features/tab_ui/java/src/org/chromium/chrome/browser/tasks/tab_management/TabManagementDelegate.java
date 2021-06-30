@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -257,7 +258,8 @@ public interface TabManagementDelegate {
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher);
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull JankTracker jankTracker);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.

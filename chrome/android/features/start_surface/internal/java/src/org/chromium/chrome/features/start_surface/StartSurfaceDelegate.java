@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -59,13 +60,14 @@ public class StartSurfaceDelegate {
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull JankTracker jankTracker) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
                 browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher);
+                multiWindowModeStateDispatcher, jankTracker);
     }
 }

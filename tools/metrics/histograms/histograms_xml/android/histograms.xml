@@ -47,6 +47,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".Omnibox" summary="while Omnibox is open"/>
   <variant name=".OpenLinkInNewTab"
       summary="while opening a link in a new tab using the long press menu"/>
+  <variant name=".StartSurfaceHomepage"
+      summary="while the homepage on start surface is visible"/>
+  <variant name=".StartSurfaceTabSwitcher"
+      summary="while the tab switcher on start surface is visible"/>
   <variant name=".Startup" summary="while Chrome is starting"/>
   <variant name=".TabSwitcher" summary="while Tab switcher is open"/>
   <variant name=".Total"

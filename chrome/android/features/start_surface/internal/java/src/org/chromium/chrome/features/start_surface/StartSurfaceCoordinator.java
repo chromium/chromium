@@ -17,6 +17,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -212,7 +213,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull JankTracker jankTracker) {
         mFeedLaunchReliabilityLoggingState =
                 new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
@@ -256,7 +258,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                         mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                         mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                         this::isActivityFinishingOrDestroyed, excludeMVTiles,
-                        startSurfaceOneshotSupplier, hadWarmStart);
+                        startSurfaceOneshotSupplier, hadWarmStart, jankTracker);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
