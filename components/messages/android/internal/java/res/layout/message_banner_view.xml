@@ -44,12 +44,15 @@
         <TextView
             android:id="@+id/message_title"
             style="@style/TextAppearance.TextLarge.Primary"
+            android:textDirection="locale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/message_description"
             style="@style/TextAppearance.TextSmall.Secondary"
             android:visibility="gone"
+            android:breakStrategy="simple"
+            android:textDirection="locale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -58,12 +61,9 @@
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/message_secondary_button"
         app:tint="@color/default_icon_color_secondary"
-        android:paddingStart="@dimen/message_icon_padding"
-        android:paddingEnd="@dimen/message_icon_padding"
         android:visibility="gone"
         android:contentDescription="@null"
-        android:minWidth="@dimen/message_banner_button_min_width"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/message_banner_button_width"
         android:layout_height="match_parent"
         android:background="@null" />
 
@@ -85,7 +85,9 @@
         app:rippleCornerRadiusBottomStart="0dp"
         app:rippleCornerRadiusBottomEnd="@dimen/message_banner_radius"
         app:rippleCornerRadiusTopEnd="@dimen/message_banner_radius"
-        android:layout_width="@dimen/button_min_width"
+        android:maxWidth="@dimen/message_primary_button_max_width"
+        android:minWidth="@dimen/button_min_width"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
