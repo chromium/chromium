@@ -198,7 +198,7 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
 
     EXPECT_EQ(expected_profile_name, entry->GetName());
 
-    EXPECT_EQ(profile_path, GetCache()->GetPathOfProfileAtIndex(i));
+    EXPECT_EQ(profile_path, entry->GetPath());
 #if !defined(OS_ANDROID)
     const SkBitmap* actual_icon = entry->GetAvatarIcon().ToSkBitmap();
     EXPECT_EQ(icon->width(), actual_icon->width());
@@ -618,16 +618,11 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
 
     ASSERT_EQ(1u, GetCache()->profile_attributes_entries_.count(
                       profile_path.value()));
-    // TODO(anthonyvd) : check that the entry in |profile_attributes_entries_|
-    // is null before GetProfileAttributesWithPath is run. Currently this is
-    // impossible to check because GetProfileAttributesWithPath is called during
-    // profile creation.
 
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
-    EXPECT_EQ(
-        entry,
-        GetCache()->profile_attributes_entries_[profile_path.value()].get());
+    EXPECT_EQ(entry,
+              &GetCache()->profile_attributes_entries_[profile_path.value()]);
   }
 
   // Remove profiles.

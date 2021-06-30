@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -15,6 +16,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
@@ -40,7 +42,6 @@
 
 namespace {
 
-const char kAccountIdKey[] = "account_id_key";
 const char kProfileCountLastUpdatePref[] = "profile.profile_counts_reported";
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLegacyProfileNameMigrated[] = "legacy.profile.name.migrated";
@@ -153,7 +154,8 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
   // Assume newly created profiles use a default avatar.
   info->SetBoolean(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, true);
   if (params.account_id.HasAccountIdKey())
-    info->SetString(kAccountIdKey, params.account_id.GetAccountIdKey());
+    info->SetString(ProfileAttributesEntry::kAccountIdKey,
+                    params.account_id.GetAccountIdKey());
   info->SetBoolKey(prefs::kSignedInWithCredentialProvider,
                    params.is_signed_in_with_credential_provider);
   cache->SetKey(key, base::Value::FromUniquePtrValue(std::move(info)));
@@ -194,7 +196,6 @@ void ProfileInfoCache::DeleteProfileFromCache(
   base::DictionaryValue* cache = update.Get();
   std::string key = CacheKeyFromProfilePath(profile_path);
   cache->Remove(key, nullptr);
-  keys_.erase(std::find(keys_.begin(), keys_.end(), key));
   profile_attributes_entries_.erase(profile_path.value());
 
   // `OnProfileWasRemoved()` must be the first observer method being called
@@ -204,21 +205,6 @@ void ProfileInfoCache::DeleteProfileFromCache(
   }
 
   NotifyIfProfileNamesHaveChanged();
-}
-
-size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
-  // Ephemeral Guest profile is registered in profile attributes storage,
-  // because if Chrome crashes we need the registry to find and delete it.
-  // But it should not be counted as a regular profile.
-  return std::count_if(
-      profile_attributes_entries_.begin(), profile_attributes_entries_.end(),
-      [include_guest_profile](const auto& key_value) {
-        return !key_value.second->IsGuest() || include_guest_profile;
-      });
-}
-
-base::FilePath ProfileInfoCache::GetPathOfProfileAtIndex(size_t index) const {
-  return user_data_dir_.AppendASCII(keys_[index]);
 }
 
 const base::FilePath& ProfileInfoCache::GetUserDataDir() const {
@@ -232,16 +218,6 @@ void ProfileInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kLegacyProfileNameMigrated, false);
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-const base::DictionaryValue* ProfileInfoCache::GetInfoForProfileAtIndex(
-    size_t index) const {
-  DCHECK_LT(index, GetNumberOfProfiles(true));
-  const base::DictionaryValue* cache =
-      prefs_->GetDictionary(prefs::kProfileInfoCache);
-  const base::DictionaryValue* info = nullptr;
-  cache->GetDictionaryWithoutPathExpansion(keys_[index], &info);
-  return info;
 }
 
 std::string ProfileInfoCache::CacheKeyFromProfilePath(
@@ -271,16 +247,13 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 ProfileAttributesEntry* ProfileInfoCache::InitEntryWithKey(
     const std::string& key,
     bool is_omitted) {
-  DCHECK(!base::Contains(keys_, key));
-  keys_.push_back(key);
   base::FilePath path = user_data_dir_.AppendASCII(key);
   DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
-  auto new_entry = std::make_unique<ProfileAttributesEntry>();
-  auto* new_entry_raw = new_entry.get();
+  ProfileAttributesEntry* new_entry =
+      &profile_attributes_entries_[path.value()];
   new_entry->Initialize(this, path, prefs_);
   new_entry->SetIsOmittedInternal(is_omitted);
-  profile_attributes_entries_[path.value()] = std::move(new_entry);
-  return new_entry_raw;
+  return new_entry;
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -338,19 +311,17 @@ void ProfileInfoCache::AddProfile(ProfileAttributesInitParams params) {
 }
 
 void ProfileInfoCache::RemoveProfileByAccountId(const AccountId& account_id) {
-  for (size_t i = 0; i < GetNumberOfProfiles(true); i++) {
-    std::string account_id_key;
-    std::string gaia_id;
-    std::string user_name;
-    const base::DictionaryValue* info = GetInfoForProfileAtIndex(i);
-    if ((account_id.HasAccountIdKey() &&
-         info->GetString(kAccountIdKey, &account_id_key) &&
-         account_id_key == account_id.GetAccountIdKey()) ||
-        (info->GetString(ProfileAttributesEntry::kGAIAIdKey, &gaia_id) &&
-         !gaia_id.empty() && account_id.GetGaiaId() == gaia_id) ||
-        (info->GetString(ProfileAttributesEntry::kUserNameKey, &user_name) &&
-         !user_name.empty() && account_id.GetUserEmail() == user_name)) {
-      RemoveProfile(GetPathOfProfileAtIndex(i));
+  for (ProfileAttributesEntry* entry : GetAllProfilesAttributes(true)) {
+    bool account_id_keys_match =
+        account_id.HasAccountIdKey() &&
+        account_id.GetAccountIdKey() == entry->GetAccountIdKey();
+    bool gaia_ids_match = !entry->GetGAIAId().empty() &&
+                          account_id.GetGaiaId() == entry->GetGAIAId();
+    bool user_names_match =
+        !entry->GetUserName().empty() &&
+        account_id.GetUserEmail() == base::UTF16ToUTF8(entry->GetUserName());
+    if (account_id_keys_match || gaia_ids_match || user_names_match) {
+      RemoveProfile(entry->GetPath());
       return;
     }
   }
@@ -361,15 +332,4 @@ void ProfileInfoCache::RemoveProfileByAccountId(const AccountId& account_id) {
 
 void ProfileInfoCache::RemoveProfile(const base::FilePath& profile_path) {
   DeleteProfileFromCache(profile_path);
-}
-
-ProfileAttributesEntry* ProfileInfoCache::GetProfileAttributesWithPath(
-    const base::FilePath& path) {
-  const auto entry_iter = profile_attributes_entries_.find(path.value());
-  if (entry_iter == profile_attributes_entries_.end())
-    return nullptr;
-
-  ProfileAttributesEntry* entry = entry_iter->second.get();
-  DCHECK(entry);
-  return entry;
 }

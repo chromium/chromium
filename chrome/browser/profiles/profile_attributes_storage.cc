@@ -256,8 +256,8 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributes(
     bool include_guest_profile) const {
   std::vector<ProfileAttributesEntry*> ret;
-  for (const auto& path_and_entry : profile_attributes_entries_) {
-    ProfileAttributesEntry* entry = path_and_entry.second.get();
+  for (auto& path_and_entry : profile_attributes_entries_) {
+    ProfileAttributesEntry* entry = &path_and_entry.second;
     DCHECK(entry);
     if (!entry->IsGuest() || include_guest_profile)
       ret.push_back(entry);
@@ -296,6 +296,27 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName()
     const {
   return GetAllProfilesAttributesSorted(true);
+}
+
+ProfileAttributesEntry* ProfileAttributesStorage::GetProfileAttributesWithPath(
+    const base::FilePath& path) {
+  const auto entry_iter = profile_attributes_entries_.find(path.value());
+  if (entry_iter == profile_attributes_entries_.end())
+    return nullptr;
+
+  return &entry_iter->second;
+}
+
+size_t ProfileAttributesStorage::GetNumberOfProfiles(
+    bool include_guest_profile) const {
+  // Ephemeral Guest profile is registered in profile attributes storage,
+  // because if Chrome crashes we need the registry to find and delete it.
+  // But it should not be counted as a regular profile.
+  return std::count_if(
+      profile_attributes_entries_.begin(), profile_attributes_entries_.end(),
+      [include_guest_profile](const auto& key_value) {
+        return !key_value.second.IsGuest() || include_guest_profile;
+      });
 }
 
 std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(

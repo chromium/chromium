@@ -9,26 +9,16 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_info_cache_observer.h"
-#include "chrome/browser/profiles/profile_info_interface.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 class PrefService;
 class PrefRegistrySimple;
@@ -36,11 +26,7 @@ class PrefRegistrySimple;
 // This class saves various information about profiles to local preferences.
 // This cache can be used to display a list of profiles without having to
 // actually load the profiles from disk.
-// The ProfileInfoInterface is being deprecated. Prefer using the
-// ProfileAttributesStorage and avoid using the Get*AtIndex family of functions.
-class ProfileInfoCache : public ProfileInfoInterface,
-                         public ProfileAttributesStorage,
-                         public base::SupportsWeakPtr<ProfileInfoCache> {
+class ProfileInfoCache : public ProfileAttributesStorage {
  public:
   ProfileInfoCache(PrefService* prefs, const base::FilePath& user_data_dir);
   ProfileInfoCache(const ProfileInfoCache&) = delete;
@@ -52,11 +38,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // Deprecated. Use RemoveProfile instead.
   void DeleteProfileFromCache(const base::FilePath& profile_path);
 
-  // ProfileInfoInterface:
-  size_t GetNumberOfProfiles(bool include_guest_profile = false) const override;
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  base::FilePath GetPathOfProfileAtIndex(size_t index) const override;
-
   const base::FilePath& GetUserDataDir() const;
 
   // Register cache related preferences in Local State.
@@ -67,19 +48,12 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void RemoveProfileByAccountId(const AccountId& account_id) override;
   void RemoveProfile(const base::FilePath& profile_path) override;
 
-  ProfileAttributesEntry* GetProfileAttributesWithPath(
-      const base::FilePath& path) override;
   void DisableProfileMetricsForTesting() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
-                           DownloadHighResAvatarTest);
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest,
                            MigrateLegacyProfileNamesAndRecomputeIfNeeded);
-  FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest, PersistGAIAPicture);
-  FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest, EmptyGAIAInfo);
 
-  const base::DictionaryValue* GetInfoForProfileAtIndex(size_t index) const;
   std::string CacheKeyFromProfilePath(const base::FilePath& profile_path) const;
 
   // Download and high-res avatars used by the profiles.
@@ -103,9 +77,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::vector<std::string> keys_;
   const base::FilePath user_data_dir_;
-  base::WeakPtrFactory<ProfileInfoCache> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_H_

@@ -1384,7 +1384,6 @@ static_library("browser") {
     "profiles/profile_info_cache.cc",
     "profiles/profile_info_cache.h",
     "profiles/profile_info_cache_observer.h",
-    "profiles/profile_info_interface.h",
     "profiles/profile_io_data.cc",
     "profiles/profile_io_data.h",
     "profiles/profile_keep_alive_types.cc",

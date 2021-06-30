@@ -153,6 +153,9 @@ class ProfileAttributesEntry {
   // standard gmail.com account). Unlike for other string getters, the returned
   // value is UTF8 encoded.
   std::string GetHostedDomain() const;
+  // Returns an account id key of the user of the profile. Empty if the profile
+  // doesn't have any associated `user_manager::User`.
+  std::string GetAccountIdKey() const;
 
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
@@ -220,6 +223,7 @@ class ProfileAttributesEntry {
   static const char kIsUsingDefaultNameKey[];
   static const char kIsUsingDefaultAvatarKey[];
   static const char kUseGAIAPictureKey[];
+  static const char kAccountIdKey[];
 
  private:
   friend class ProfileAttributesStorage;

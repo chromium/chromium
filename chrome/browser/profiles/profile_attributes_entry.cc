@@ -128,6 +128,7 @@ const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
 const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
     "is_using_default_avatar";
 const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
+const char ProfileAttributesEntry::kAccountIdKey[] = "account_id_key";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -529,6 +530,10 @@ size_t ProfileAttributesEntry::GetMetricsBucketIndex() {
 
 std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
+}
+
+std::string ProfileAttributesEntry::GetAccountIdKey() const {
+  return GetString(kAccountIdKey);
 }
 
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,

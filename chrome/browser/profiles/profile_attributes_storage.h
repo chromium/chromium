@@ -76,11 +76,10 @@ class ProfileAttributesStorage
   // Returned value should not be cached because the profile entry may be
   // deleted at any time, an then using this value would cause use-after-free.
   virtual ProfileAttributesEntry* GetProfileAttributesWithPath(
-      const base::FilePath& path) = 0;
+      const base::FilePath& path);
 
   // Returns the count of known profiles.
-  virtual size_t GetNumberOfProfiles(
-      bool include_guest_profile = false) const = 0;
+  virtual size_t GetNumberOfProfiles(bool include_guest_profile = false) const;
 
   // Returns a unique name that can be assigned to a newly created profile.
   std::u16string ChooseNameForNewProfile(size_t icon_index) const;
@@ -191,8 +190,7 @@ class ProfileAttributesStorage
                              base::OnceClosure callback);
 
   PrefService* const prefs_;
-  mutable std::unordered_map<base::FilePath::StringType,
-                             std::unique_ptr<ProfileAttributesEntry>>
+  mutable std::unordered_map<base::FilePath::StringType, ProfileAttributesEntry>
       profile_attributes_entries_;
 
   mutable base::ObserverList<Observer>::Unchecked observer_list_;
