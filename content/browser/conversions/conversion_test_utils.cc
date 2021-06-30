@@ -295,9 +295,15 @@ ConversionBuilder& ConversionBuilder::SetReportingOrigin(
   return *this;
 }
 
+ConversionBuilder& ConversionBuilder::SetPriority(int64_t priority) {
+  priority_ = priority;
+  return *this;
+}
+
 StorableConversion ConversionBuilder::Build() const {
   return StorableConversion(conversion_data_, conversion_destination_,
-                            reporting_origin_, event_source_trigger_data_);
+                            reporting_origin_, event_source_trigger_data_,
+                            priority_);
 }
 
 // Custom comparator for StorableImpressions that does not take impression IDs

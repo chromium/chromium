@@ -1942,7 +1942,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
             .Build());
     conversion_manager->HandleConversion(
         StorableConversion(123, net::SchemefulSite(conv), reporter,
-                           /*event_source_trigger_data=*/0));
+                           /*event_source_trigger_data=*/0,
+                           /*priority=*/0));
   }
 
   EXPECT_EQ(5u, GetConversionsToReportForTesting(conversion_manager,

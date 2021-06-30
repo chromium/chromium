@@ -280,6 +280,8 @@ class ConversionBuilder {
 
   ConversionBuilder& SetReportingOrigin(const url::Origin& reporting_origin);
 
+  ConversionBuilder& SetPriority(int64_t priority);
+
   StorableConversion Build() const;
 
  private:
@@ -287,6 +289,7 @@ class ConversionBuilder {
   uint64_t event_source_trigger_data_ = 0;
   net::SchemefulSite conversion_destination_;
   url::Origin reporting_origin_;
+  int64_t priority_ = 0;
 };
 
 bool operator==(const StorableImpression& a, const StorableImpression& b);

@@ -313,7 +313,8 @@ void ConversionHost::RegisterConversion(
       conversion_destination, conversion->reporting_origin,
       conversion_manager->GetConversionPolicy()
           .GetSanitizedEventSourceTriggerData(
-              conversion->event_source_trigger_data));
+              conversion->event_source_trigger_data),
+      conversion->priority);
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(storable_conversion);

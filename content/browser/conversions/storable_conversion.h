@@ -24,7 +24,8 @@ class CONTENT_EXPORT StorableConversion {
   StorableConversion(uint64_t conversion_data,
                      net::SchemefulSite conversion_destination,
                      url::Origin reporting_origin,
-                     uint64_t event_source_trigger_data);
+                     uint64_t event_source_trigger_data,
+                     int64_t priority);
   StorableConversion(const StorableConversion& other);
   StorableConversion& operator=(const StorableConversion& other);
   StorableConversion(StorableConversion&& other);
@@ -43,6 +44,8 @@ class CONTENT_EXPORT StorableConversion {
     return event_source_trigger_data_;
   }
 
+  int64_t priority() const { return priority_; }
+
  private:
   // Conversion data associated with conversion registration event.
   uint64_t conversion_data_;
@@ -57,6 +60,11 @@ class CONTENT_EXPORT StorableConversion {
   // Event source trigger data specified in conversion redirect. Defaults to 0
   // if not provided.
   uint64_t event_source_trigger_data_;
+
+  // Priority specified in conversion redirect. Used to prioritize which reports
+  // to send among multiple different reports for the same attribution source.
+  // Defaults to 0 if not provided.
+  int64_t priority_;
 };
 
 }  // namespace content

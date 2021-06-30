@@ -14,11 +14,13 @@ StorableConversion::StorableConversion(
     uint64_t conversion_data,
     net::SchemefulSite conversion_destination,
     url::Origin reporting_origin,
-    uint64_t event_source_trigger_data)
+    uint64_t event_source_trigger_data,
+    int64_t priority)
     : conversion_data_(conversion_data),
       conversion_destination_(std::move(conversion_destination)),
       reporting_origin_(std::move(reporting_origin)),
-      event_source_trigger_data_(event_source_trigger_data) {
+      event_source_trigger_data_(event_source_trigger_data),
+      priority_(priority) {
   DCHECK(!reporting_origin_.opaque());
   DCHECK(!conversion_destination_.opaque());
 }

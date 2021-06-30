@@ -926,6 +926,16 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     conversion->event_source_trigger_data = is_valid_integer ? data : 0UL;
   }
 
+  const char kPriorityParam[] = "priority";
+  if (search_params->has(kPriorityParam)) {
+    bool is_valid_integer = false;
+    int64_t priority =
+        search_params->get(kPriorityParam).ToInt64Strict(&is_valid_integer);
+
+    // Default invalid params to 0.
+    conversion->priority = is_valid_integer ? priority : 0;
+  }
+
   mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
   GetFrame()->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);

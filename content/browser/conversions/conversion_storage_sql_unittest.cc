@@ -481,7 +481,8 @@ TEST_F(ConversionStorageSqlTest, MaxUint64StorageSucceeds) {
 
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(StorableConversion(
       /*conversion_data=*/kMaxUint64, impression.ConversionDestination(),
-      impression.reporting_origin(), /*event_source_trigger_data=*/0)));
+      impression.reporting_origin(), /*event_source_trigger_data=*/0,
+      /*priority=*/0)));
 
   std::vector<ConversionReport> reports =
       storage()->GetConversionsToReport(clock()->Now());
