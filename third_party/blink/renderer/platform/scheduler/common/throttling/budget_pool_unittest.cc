@@ -91,38 +91,6 @@ TEST_F(BudgetPoolTest, CPUTimeBudgetPool) {
   pool->Close();
 }
 
-TEST_F(BudgetPoolTest, CPUTimeBudgetPoolMinBudgetLevelToRun) {
-  CPUTimeBudgetPool* pool =
-      task_queue_throttler_->CreateCPUTimeBudgetPool("test");
-
-  pool->SetMinBudgetLevelToRun(SecondsAfterStart(0),
-                               base::TimeDelta::FromMilliseconds(10));
-  pool->SetTimeBudgetRecoveryRate(SecondsAfterStart(0), 0.1);
-
-  EXPECT_TRUE(pool->CanRunTasksAt(SecondsAfterStart(0), false));
-  EXPECT_EQ(SecondsAfterStart(0),
-            pool->GetNextAllowedRunTime(SecondsAfterStart(0)));
-
-  pool->RecordTaskRunTime(nullptr, SecondsAfterStart(0),
-                          MillisecondsAfterStart(10));
-  EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(15), false));
-  EXPECT_FALSE(pool->CanRunTasksAt(MillisecondsAfterStart(150), false));
-  // We need to wait extra 100ms to get budget of 10ms.
-  EXPECT_EQ(MillisecondsAfterStart(200),
-            pool->GetNextAllowedRunTime(SecondsAfterStart(0)));
-
-  pool->RecordTaskRunTime(nullptr, MillisecondsAfterStart(200),
-                          MillisecondsAfterStart(205));
-  // We can run when budget is non-negative even when it less than 10ms.
-  EXPECT_EQ(MillisecondsAfterStart(205),
-            pool->GetNextAllowedRunTime(SecondsAfterStart(0)));
-
-  pool->RecordTaskRunTime(nullptr, MillisecondsAfterStart(205),
-                          MillisecondsAfterStart(215));
-  EXPECT_EQ(MillisecondsAfterStart(350),
-            pool->GetNextAllowedRunTime(SecondsAfterStart(0)));
-}
-
 TEST_F(BudgetPoolTest, WakeUpBudgetPool) {
   WakeUpBudgetPool* pool =
       task_queue_throttler_->CreateWakeUpBudgetPool("test");

@@ -42,9 +42,6 @@ FindInPageBudgetPoolController::FindInPageBudgetPoolController(
   base::TimeTicks now = scheduler_->GetTickClock()->NowTicks();
   find_in_page_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
       "FindInPageBudgetPool", this, &scheduler_->tracing_controller_, now);
-  // Set no minimum budget for find-in-page, so that we won't delay running
-  // find-in-page tasks when budget is available.
-  find_in_page_budget_pool_->SetMinBudgetLevelToRun(now, base::TimeDelta());
   find_in_page_budget_pool_->SetMaxBudgetLevel(now, kFindInPageMaxBudget);
   find_in_page_budget_pool_->SetTimeBudgetRecoveryRate(
       now, kFindInPageBudgetRecoveryRate);

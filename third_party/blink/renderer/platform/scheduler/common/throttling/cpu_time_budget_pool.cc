@@ -50,13 +50,6 @@ void CPUTimeBudgetPool::SetMaxThrottlingDelay(
   EnforceBudgetLevelRestrictions();
 }
 
-void CPUTimeBudgetPool::SetMinBudgetLevelToRun(
-    base::TimeTicks now,
-    base::TimeDelta min_budget_level_to_run) {
-  Advance(now);
-  min_budget_level_to_run_ = min_budget_level_to_run;
-}
-
 void CPUTimeBudgetPool::SetTimeBudgetRecoveryRate(base::TimeTicks now,
                                                   double cpu_percentage) {
   Advance(now);
@@ -94,8 +87,7 @@ base::TimeTicks CPUTimeBudgetPool::GetNextAllowedRunTime(
   if (!is_enabled_ || current_budget_level_->InMicroseconds() >= 0)
     return last_checkpoint_;
   // Subtract because current_budget is negative.
-  return last_checkpoint_ +
-         (-current_budget_level_ + min_budget_level_to_run_) / cpu_percentage_;
+  return last_checkpoint_ + (-current_budget_level_ / cpu_percentage_);
 }
 
 void CPUTimeBudgetPool::RecordTaskRunTime(TaskQueue* queue,
@@ -137,8 +129,6 @@ void CPUTimeBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
   dict.Add("last_checkpoint_seconds_ago",
            (now - last_checkpoint_).InSecondsF());
   dict.Add("is_enabled", is_enabled_);
-  dict.Add("min_budget_level_to_run_in_seconds",
-           min_budget_level_to_run_.InSecondsF());
 
   if (max_throttling_delay_) {
     dict.Add("max_throttling_delay_in_seconds",
