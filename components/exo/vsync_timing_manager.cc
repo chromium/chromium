@@ -4,7 +4,7 @@
 
 #include "components/exo/vsync_timing_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 

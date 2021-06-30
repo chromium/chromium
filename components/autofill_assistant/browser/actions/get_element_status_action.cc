@@ -4,7 +4,7 @@
 
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"

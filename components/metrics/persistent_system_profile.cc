@@ -9,10 +9,10 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "components/variations/active_field_trials.h"
 
 namespace metrics {

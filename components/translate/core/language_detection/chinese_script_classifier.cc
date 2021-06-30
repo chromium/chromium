@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/unistr.h"

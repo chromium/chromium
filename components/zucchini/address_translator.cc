@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 
 namespace zucchini {
 

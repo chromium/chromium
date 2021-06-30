@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/login_database.h"

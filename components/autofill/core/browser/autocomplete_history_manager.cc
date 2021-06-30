@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_metrics.h"

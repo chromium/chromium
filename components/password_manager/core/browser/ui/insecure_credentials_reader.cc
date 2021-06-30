@@ -6,8 +6,8 @@
 
 #include <iterator>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {

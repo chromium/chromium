@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

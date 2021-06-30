@@ -9,13 +9,13 @@
 #include <unordered_set>
 
 #include "base/base64.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/guid.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"

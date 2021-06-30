@@ -9,8 +9,8 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"

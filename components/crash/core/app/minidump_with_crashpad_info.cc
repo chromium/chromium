@@ -4,8 +4,8 @@
 
 #include "components/crash/core/app/minidump_with_crashpad_info.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/settings.h"

@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
 

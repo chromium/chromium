@@ -11,7 +11,7 @@
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

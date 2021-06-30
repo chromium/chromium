@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"

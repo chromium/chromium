@@ -6,9 +6,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/stl_util.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_switches.h"
 

@@ -10,7 +10,7 @@
 #include <iterator>
 
 #include "base/containers/circular_deque.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_piece.h"
 
 namespace {

@@ -4,7 +4,7 @@
 
 #include "components/ui_devtools/views/dom_agent_aura.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "components/ui_devtools/views/window_element.h"
 #include "ui/aura/env.h"

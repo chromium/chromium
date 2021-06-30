@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "components/zucchini/encoded_view.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/suffix_array.h"

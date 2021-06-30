@@ -4,9 +4,9 @@
 
 #include "components/feed/core/v2/config.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/v2/public/stream_type.h"
