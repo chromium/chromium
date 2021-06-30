@@ -90,8 +90,6 @@ public class WebContentsAccessibilityTest {
     private static final String INPUT_RANGE_EVENT_ERROR =
             "TYPE_VIEW_SCROLLED event not received before timeout.";
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
-    private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
-            "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -1048,34 +1046,6 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(result[0].left < result[1].left);
         Assert.assertTrue(result[1].left < result[2].left);
         Assert.assertTrue(result[2].left < result[3].left);
-    }
-
-    @Test
-    @SmallTest
-    public void testNodeInfo_extras_unclippedBounds() {
-        // Build a simple web page with a scrollable view.
-        setupTestFromFile("content/test/data/android/scroll_element_offscreen.html");
-
-        // Find the <div> that contains example paragraphs that can be scrolled.
-        int vvIdDiv = waitForNodeMatching(sClassNameMatcher, "android.view.View");
-        mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        // Scroll window up so container goes slightly off-screen.
-        executeJS("scrollUp()");
-
-        // Signal end of test.
-        mActivityTestRule.sendEndOfTestSignal();
-
-        // Refresh the AccessibilityNodeInfo object for the container.
-        mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
-
-        // Check that the container has unclipped values set.
-        Assert.assertNotNull(NODE_EXTRAS_UNCLIPPED_ERROR, mNodeInfo.getExtras());
-        Assert.assertTrue(NODE_EXTRAS_UNCLIPPED_ERROR,
-                mNodeInfo.getExtras().getInt("AccessibilityNodeInfo.unclippedTop") < 0);
-        Assert.assertTrue(NODE_EXTRAS_UNCLIPPED_ERROR,
-                mNodeInfo.getExtras().getInt("AccessibilityNodeInfo.unclippedBottom") > 0);
     }
 
     /**

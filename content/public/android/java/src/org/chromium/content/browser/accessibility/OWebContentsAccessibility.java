@@ -63,7 +63,7 @@ public class OWebContentsAccessibility extends WebContentsAccessibilityImpl {
         for (int i = 0; i < positionInfoLength; i++) {
             Rect rect = new Rect(
                     coords[4 * i + 0], coords[4 * i + 1], coords[4 * i + 2], coords[4 * i + 3]);
-            convertWebRectToAndroidCoordinates(rect, info.getExtras());
+            convertWebRectToAndroidCoordinates(rect);
             boundingRects[i] = new RectF(rect);
         }
 
