@@ -54,26 +54,6 @@ const base::Feature kVeryHighPriorityForCompositingAfterDelay{
 constexpr base::FeatureParam<int> kCompositingDelayLength{
     &kVeryHighPriorityForCompositingAfterDelay, "CompositingDelayLength", 100};
 
-// If enabled, compositor priority will be set to kVeryHighPriority until
-// a budget has been exhausted. Once the budget runs out, the priority will
-// be set to kNormalPriority until there is enough budget to reprioritize.
-const base::Feature kVeryHighPriorityForCompositingBudget{
-    "BlinkSchedulerVeryHighPriorityForCompositingBudget",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Param for kVeryHighPriorityForCompositingBudget experiment. This param
-// controls how much CPU time the compositor will be prioritized for, its
-// budget. Measured in ms.
-constexpr base::FeatureParam<int> kInitialCompositorBudgetInMilliseconds{
-    &kVeryHighPriorityForCompositingBudget,
-    "InitialCompositorBudgetInMilliseconds", 250};
-
-// Param for kVeryHighPriorityForCompositingBudget experiment. This param
-// controls the rate at which the budget is recovered.
-constexpr base::FeatureParam<double> kCompositorBudgetRecoveryRate{
-    &kVeryHighPriorityForCompositingBudget, "CompositorBudgetRecoveryRate",
-    0.25};
-
 // This feature functions as an experiment parameter for the
 // VeryHighPriorityForCompositing alternating, delay, and budget experiments.
 // When enabled, it does nothing unless one of these experiments is also

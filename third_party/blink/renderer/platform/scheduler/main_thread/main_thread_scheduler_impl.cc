@@ -321,9 +321,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     SetVirtualTimePolicy(VirtualTimePolicy::kPause);
   }
 
-  main_thread_only()
-      .compositor_priority_experiments.OnMainThreadSchedulerInitialized();
-
   main_thread_only().current_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
@@ -661,8 +658,6 @@ void MainThreadSchedulerImpl::Shutdown() {
 
   base::TimeTicks now = tick_clock()->NowTicks();
   main_thread_only().metrics_helper.OnRendererShutdown(now);
-  main_thread_only()
-      .compositor_priority_experiments.OnMainThreadSchedulerShutdown();
 
   ShutdownAllQueues();
   task_queue_throttler_.reset();
