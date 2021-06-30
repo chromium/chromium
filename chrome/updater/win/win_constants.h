@@ -29,7 +29,7 @@ extern const wchar_t kPrefsAccessMutex[];
 
 #define COMPANY_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"
-#define UPDATER_POLICIES_KEY COMPANY_POLICIES_KEY UPDATER_KEY L"\\"
+#define UPDATER_POLICIES_KEY COMPANY_POLICIES_KEY L"Update\\"
 
 #define USER_REG_VISTA_LOW_INTEGRITY_HKCU     \
   L"Software\\Microsoft\\Internet Explorer\\" \
