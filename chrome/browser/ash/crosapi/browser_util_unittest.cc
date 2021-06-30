@@ -335,8 +335,8 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
   }
 
   {
@@ -349,8 +349,8 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
-    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
   }
 }
 
