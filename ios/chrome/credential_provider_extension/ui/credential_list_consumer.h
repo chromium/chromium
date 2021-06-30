@@ -38,6 +38,9 @@
                      allPasswords:(NSArray<id<Credential>>*)all
             showNewPasswordOption:(BOOL)showNewPasswordOption;
 
+// Sets the prompt to show for the view.
+- (void)setTopPrompt:(NSString*)prompt;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_CREDENTIAL_LIST_CONSUMER_H_

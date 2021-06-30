@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,12 +50,23 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 @synthesize delegate;
 
+- (instancetype)init {
+  UITableViewStyle style = IsPasswordCreationEnabled()
+                               ? UITableViewStyleInsetGrouped
+                               : UITableViewStylePlain;
+  self = [super initWithStyle:style];
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  UIColor* backgroundColor =
+      IsPasswordCreationEnabled()
+          ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+          : [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = backgroundColor;
   self.navigationController.navigationBar.translucent = NO;
-  self.navigationController.navigationBar.backgroundColor =
-      [UIColor colorNamed:kBackgroundColor];
+  self.navigationController.navigationBar.backgroundColor = backgroundColor;
   self.navigationItem.rightBarButtonItem = [self navigationCancelButton];
   self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 

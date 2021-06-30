@@ -62,6 +62,10 @@
 }
 
 - (void)fetchCredentials {
+  NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
+  NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
+  [self.consumer setTopPrompt:promptURL.host];
+
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
   dispatch_async(priorityQueue, ^{

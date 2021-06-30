@@ -25,6 +25,13 @@ NSString* kCredentialCellIdentifier = @"clvcCredentialCell";
 NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
 const CGFloat kHeaderHeight = 70;
+const CGFloat kNewCredentialHeaderHeight = 35;
+
+UIColor* BackgroundColor() {
+  return IsPasswordCreationEnabled()
+             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+             : [UIColor colorNamed:kBackgroundColor];
+}
 }
 
 // This cell just adds a simple hover pointer interaction to the TableViewCell.
@@ -67,20 +74,31 @@ const CGFloat kHeaderHeight = 70;
 
 @synthesize delegate;
 
+- (instancetype)init {
+  UITableViewStyle style = IsPasswordCreationEnabled()
+                               ? UITableViewStyleInsetGrouped
+                               : UITableViewStylePlain;
+  self = [super initWithStyle:style];
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_TITLE",
                         @"AutoFill Chrome Password");
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.navigationItem.rightBarButtonItem = [self navigationCancelButton];
+  self.view.backgroundColor = BackgroundColor();
+  if (IsPasswordCreationEnabled()) {
+    self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
+  } else {
+    self.navigationItem.rightBarButtonItem = [self navigationCancelButton];
+  }
 
   self.searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
   self.searchController.searchResultsUpdater = self;
   self.searchController.obscuresBackgroundDuringPresentation = NO;
-  self.searchController.searchBar.barTintColor =
-      [UIColor colorNamed:kBackgroundColor];
+  self.searchController.searchBar.barTintColor = BackgroundColor();
   // Add en empty space at the bottom of the list, the size of the search bar,
   // to allow scrolling up enough to see last result, otherwise it remains
   // hidden under the accessories.
@@ -89,8 +107,7 @@ const CGFloat kHeaderHeight = 70;
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
-  self.navigationController.navigationBar.barTintColor =
-      [UIColor colorNamed:kBackgroundColor];
+  self.navigationController.navigationBar.barTintColor = BackgroundColor();
   self.navigationController.navigationBar.tintColor =
       [UIColor colorNamed:kBlueColor];
   self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
@@ -114,6 +131,10 @@ const CGFloat kHeaderHeight = 70;
   self.showNewPasswordOption = showNewPasswordOption;
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];
+}
+
+- (void)setTopPrompt:(NSString*)prompt {
+  self.navigationController.navigationBar.topItem.prompt = prompt;
 }
 
 #pragma mark - UITableViewDataSource
@@ -200,9 +221,11 @@ const CGFloat kHeaderHeight = 70;
     viewForHeaderInSection:(NSInteger)section {
   UITableViewHeaderFooterView* view = [self.tableView
       dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
-  view.textLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  view.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  UIFontTextStyle textStyle = IsPasswordCreationEnabled()
+                                  ? UIFontTextStyleHeadline
+                                  : UIFontTextStyleCaption1;
+  view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
+  view.contentView.backgroundColor = BackgroundColor();
   return view;
 }
 
@@ -211,6 +234,9 @@ const CGFloat kHeaderHeight = 70;
   if (IsPasswordCreationEnabled() &&
       [self isSuggestedPasswordSection:section]) {
     return 0;
+  }
+  if (IsPasswordCreationEnabled()) {
+    return kNewCredentialHeaderHeight;
   }
   return kHeaderHeight;
 }
