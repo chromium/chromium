@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/system/statistics_provider.h"
 
 namespace policy {
 
@@ -21,6 +22,16 @@ namespace policy {
 // setting.
 class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
  public:
+  // Types of policies for device name functionality.
+  enum class DeviceNamePolicy {
+    // No policy in place for administrator to choose a hostname.
+    kUnmanagedDevice,
+
+    // Policy in place allowing administrator to specify a template
+    // used to generate and format the hostname.
+    kHostnameChosenByAdministrator,
+  };
+
   explicit DeviceNamePolicyHandler(ash::CrosSettings* cros_settings);
   ~DeviceNamePolicyHandler() override;
 
@@ -33,18 +44,38 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
   // shill. This is the hostname after formatting (by FormatHostname()).
   const std::string& GetDeviceHostname() const;
 
+  // Provides the type of policy to be used for device name functionality.
+  DeviceNamePolicy GetDeviceNamePolicy() const;
+
+  // Provides hostname if requested by administrator.
+  // Returns null if no hostname was requested by administrator.
+  absl::optional<std::string> GetHostnameChosenByAdministrator() const;
+
  private:
+  friend class DeviceNamePolicyHandlerTest;
+
+  DeviceNamePolicyHandler(
+      ash::CrosSettings* cros_settings,
+      chromeos::system::StatisticsProvider* statistics_provider);
+
   void OnDeviceHostnamePropertyChanged();
 
   void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();
 
   ash::CrosSettings* cros_settings_;
+  chromeos::system::StatisticsProvider* statistics_provider_;
+
+  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kUnmanagedDevice;
   base::CallbackListSubscription policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<DeviceNamePolicyHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceNamePolicyHandler);
 };
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const DeviceNamePolicyHandler::DeviceNamePolicy& state);
 
 }  // namespace policy
 

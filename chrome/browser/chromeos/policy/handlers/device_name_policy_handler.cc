@@ -15,13 +15,19 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
-#include "chromeos/system/statistics_provider.h"
 
 namespace policy {
 
 DeviceNamePolicyHandler::DeviceNamePolicyHandler(
     ash::CrosSettings* cros_settings)
-    : cros_settings_(cros_settings) {
+    : DeviceNamePolicyHandler(
+          cros_settings,
+          chromeos::system::StatisticsProvider::GetInstance()) {}
+
+DeviceNamePolicyHandler::DeviceNamePolicyHandler(
+    ash::CrosSettings* cros_settings,
+    chromeos::system::StatisticsProvider* statistics_provider)
+    : cros_settings_(cros_settings), statistics_provider_(statistics_provider) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceHostnameTemplate,
       base::BindRepeating(
@@ -34,7 +40,7 @@ DeviceNamePolicyHandler::DeviceNamePolicyHandler(
   OnDeviceHostnamePropertyChanged();
 }
 
-DeviceNamePolicyHandler::~DeviceNamePolicyHandler() {}
+DeviceNamePolicyHandler::~DeviceNamePolicyHandler() = default;
 
 void DeviceNamePolicyHandler::Shutdown() {
   if (chromeos::NetworkHandler::IsInitialized()) {
@@ -45,6 +51,20 @@ void DeviceNamePolicyHandler::Shutdown() {
 
 const std::string& DeviceNamePolicyHandler::GetDeviceHostname() const {
   return hostname_;
+}
+
+DeviceNamePolicyHandler::DeviceNamePolicy
+DeviceNamePolicyHandler::GetDeviceNamePolicy() const {
+  return device_name_policy_;
+}
+
+absl::optional<std::string>
+DeviceNamePolicyHandler::GetHostnameChosenByAdministrator() const {
+  if (GetDeviceNamePolicy() ==
+      DeviceNamePolicy::kHostnameChosenByAdministrator) {
+    return hostname_;
+  }
+  return absl::nullopt;
 }
 
 void DeviceNamePolicyHandler::DefaultNetworkChanged(
@@ -61,11 +81,10 @@ void DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged() {
     return;
 
   // Continue when machine statistics are loaded, to avoid blocking.
-  chromeos::system::StatisticsProvider::GetInstance()
-      ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-          &DeviceNamePolicyHandler::
-              OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded,
-          weak_factory_.GetWeakPtr()));
+  statistics_provider_->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
+      &DeviceNamePolicyHandler::
+          OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded,
+      weak_factory_.GetWeakPtr()));
 }
 
 void DeviceNamePolicyHandler::
@@ -75,8 +94,14 @@ void DeviceNamePolicyHandler::
                                  &hostname_template)) {
     // Do not set an empty hostname (which would overwrite any custom hostname
     // set) if DeviceHostnameTemplate is not specified by policy.
+    // No policy is set for administrator to choose hostname.
+    device_name_policy_ = DeviceNamePolicy::kUnmanagedDevice;
     return;
   }
+
+  // If we reach here, we know that the administrator specified a template
+  // to generate the hostname of the device.
+  device_name_policy_ = DeviceNamePolicy::kHostnameChosenByAdministrator;
 
   const std::string serial = chromeos::system::StatisticsProvider::GetInstance()
                                  ->GetEnterpriseMachineID();
@@ -110,6 +135,21 @@ void DeviceNamePolicyHandler::
   hostname_ = policy::FormatHostname(hostname_template, asset_id, serial, mac,
                                      machine_name, location);
   handler->SetHostname(hostname_);
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const DeviceNamePolicyHandler::DeviceNamePolicy& state) {
+  switch (state) {
+    case DeviceNamePolicyHandler::DeviceNamePolicy::kUnmanagedDevice:
+      stream << "[No policy]";
+      break;
+    case DeviceNamePolicyHandler::DeviceNamePolicy::
+        kHostnameChosenByAdministrator:
+      stream << "[Admin chooses hostname template]";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace policy
