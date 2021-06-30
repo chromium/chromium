@@ -500,19 +500,7 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
       break;
   }
 
-  switch (channel) {
-    case Channel::UNKNOWN:
-      // Currently, developer build is only a way to enable Lacros as a Primary
-      // web browser.
-      return true;
-    case Channel::CANARY:
-    case Channel::DEV:
-    case Channel::BETA:
-    case Channel::STABLE:
-      // Canary/dev/beta/stable builds cannot use Lacros as a primary
-      // browser, yet.
-      return false;
-  }
+  return true;
 }
 
 bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel) {

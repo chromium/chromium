@@ -286,20 +286,20 @@ TEST_F(BrowserUtilTest, LacrosPrimaryBrowserForChannels) {
       {chromeos::features::kLacrosPrimary, chromeos::features::kLacrosSupport},
       {});
   EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::CANARY));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::CANARY));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
 }
 
 TEST_F(BrowserUtilTest, LacrosPrimaryBrowserAllowedForChannels) {
   AddRegularUser("user@test.com");
 
   EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::CANARY));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
-  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::CANARY));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
