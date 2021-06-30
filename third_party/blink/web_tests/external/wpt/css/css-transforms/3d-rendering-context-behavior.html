@@ -73,9 +73,13 @@
 <script>
   test(function() {
     assert_equals(childOfPreserve3D.getBoundingClientRect().width, 200);
+  }, "Direct DOM parent is root of rendering context (normal flow)");
+  test(function() {
     assert_equals(absChildOfPreserve3D.getBoundingClientRect().width, 200);
+  }, "Direct DOM parent is root of rendering context (absolute)");
+  test(function() {
     assert_equals(fixedChildOfPreserve3D.getBoundingClientRect().width, 200);
-  }, "Direct DOM parent is root of rendering context");
+  }, "Direct DOM parent is root of rendering context (fixed)");
 
   test(function() {
     assert_equals(childWithIntermediate.getBoundingClientRect().width, 100);

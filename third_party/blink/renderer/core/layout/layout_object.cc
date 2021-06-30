@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
@@ -3256,10 +3257,21 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   // Text objects just copy their parent's computed style, so we need to ignore
   // them.
   bool use_transforms = !(mode & kIgnoreTransforms);
-  bool preserve3d =
-      use_transforms &&
-      ((container->StyleRef().Preserves3D() && !container->IsText()) ||
-       (StyleRef().Preserves3D() && !IsText()));
+
+  const bool container_preserves_3d =
+      container->StyleRef().Preserves3D() ||
+      (!RuntimeEnabledFeatures::TransformInteropEnabled() &&
+       !PaintPropertyTreeBuilder::NeedsTransform(*container,
+                                                 CompositingReasons()));
+  // Just because container and this have preserve-3d doesn't mean all
+  // the DOM elements between them do.  (We know they don't have a
+  // transform, though, since otherwise they'd be the container.)
+  const bool path_preserves_3d =
+      !RuntimeEnabledFeatures::TransformInteropEnabled() ||
+      container == NearestAncestorForElement();
+  const bool preserve3d = use_transforms && container_preserves_3d &&
+                          !container->IsText() && path_preserves_3d;
+
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
     TransformationMatrix t;
     GetTransformFromContainer(container, container_offset, t);
@@ -3309,8 +3321,20 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
 
   PhysicalOffset container_offset = OffsetFromContainer(container);
   bool use_transforms = !(mode & kIgnoreTransforms);
-  bool preserve3d = use_transforms && (container->StyleRef().Preserves3D() ||
-                                       StyleRef().Preserves3D());
+
+  // Just because container and this have preserve-3d doesn't mean all
+  // the DOM elements between them do.  (We know they don't have a
+  // transform, though, since otherwise they'd be the container.)
+  if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
+      container != NearestAncestorForElement()) {
+    transform_state.Move(PhysicalOffset(), TransformState::kFlattenTransform);
+  }
+
+  const bool preserve3d =
+      use_transforms && (StyleRef().Preserves3D() ||
+                         (!RuntimeEnabledFeatures::TransformInteropEnabled() &&
+                          !PaintPropertyTreeBuilder::NeedsTransform(
+                              *this, CompositingReasons())));
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
     TransformationMatrix t;
     GetTransformFromContainer(container, container_offset, t);

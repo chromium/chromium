@@ -44,6 +44,8 @@ namespace blink {
 // This is mainly used by other layout geometry mapping functions/classes (e.g.
 // LayoutObject::LocalToAncestorPoint() and LayoutGeometryMap). In most cases
 // other code should not use this class directly.
+// TODO(crbug.com/1222769): This class should go away and its users should use
+// GeometryMapper instead.
 class CORE_EXPORT TransformState {
   STACK_ALLOCATED();
 
