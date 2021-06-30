@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
@@ -48,6 +49,21 @@ const int kMaxQuantizer = 50;
 // sending higher-quality (lower quantizer) frames would use up bandwidth
 // without any appreciable gain in image quality.
 const int kMinQuantizer = 10;
+
+const int64_t kPixelsPerMegapixel = 1000000;
+
+// Threshold in number of updated pixels used to detect "big" frames. These
+// frames update significant portion of the screen compared to the preceding
+// frames. For these frames min quantizer may need to be adjusted in order to
+// ensure that they get delivered to the client as soon as possible, in exchange
+// for lower-quality image.
+const int kBigFrameThresholdPixels = 300000;
+
+// Estimated size (in bytes per megapixel) of encoded frame at target quantizer
+// value (see kTargetQuantizerForTopOff). Compression ratio varies depending
+// on the image, so this is just a rough estimate. It's used to predict when
+// encoded "big" frame may be too large to be delivered to the client quickly.
+const int kEstimatedBytesPerMegapixel = 100000;
 
 std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   using EncodeResult = WebrtcVideoEncoder::EncodeResult;
@@ -101,7 +117,9 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
   }
 }
 
-WebrtcVideoEncoderWrapper::~WebrtcVideoEncoderWrapper() = default;
+WebrtcVideoEncoderWrapper::~WebrtcVideoEncoderWrapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void WebrtcVideoEncoderWrapper::SetEncoderForTest(
     std::unique_ptr<WebrtcVideoEncoder> encoder) {
@@ -237,7 +255,9 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   // instead of hard-coding this value here.
   frame_params.fps = kTargetFrameRate;
 
-  frame_params.vpx_min_quantizer = kMinQuantizer;
+  frame_params.vpx_min_quantizer =
+      ShouldDropQualityForLargeFrame(*desktop_frame) ? kMaxQuantizer
+                                                     : kMinQuantizer;
   frame_params.vpx_max_quantizer = kMaxQuantizer;
   frame_params.clear_active_map = !top_off_active_;
 
@@ -436,6 +456,34 @@ void WebrtcVideoEncoderWrapper::SetTopOffActive(bool active) {
         FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnTopOffActive,
                                   video_channel_state_observer_, active));
   }
+}
+
+bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
+    const webrtc::DesktopFrame& frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (codec_type_ != webrtc::kVideoCodecVP8) {
+    return false;
+  }
+
+  int64_t updated_area = 0;
+  for (webrtc::DesktopRegion::Iterator r(frame.updated_region()); !r.IsAtEnd();
+       r.Advance()) {
+    updated_area += r.rect().width() * r.rect().height();
+  }
+
+  bool should_drop_quality = false;
+  if (updated_area - updated_region_area_.Max() > kBigFrameThresholdPixels) {
+    int expected_frame_size =
+        updated_area * kEstimatedBytesPerMegapixel / kPixelsPerMegapixel;
+    base::TimeDelta expected_send_delay = base::TimeDelta::FromSecondsD(
+        expected_frame_size * 8 / (bitrate_kbps_ * 1000.0));
+    if (expected_send_delay > kTargetFrameInterval) {
+      should_drop_quality = true;
+    }
+  }
+
+  updated_region_area_.Record(updated_area);
+  return should_drop_quality;
 }
 
 }  // namespace protocol

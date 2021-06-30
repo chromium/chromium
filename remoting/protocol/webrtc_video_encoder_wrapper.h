@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "remoting/base/running_samples.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -51,6 +52,8 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
 
  private:
+  static constexpr int kStatsWindow = 5;
+
   // Returns an encoded frame to WebRTC's registered callback.
   webrtc::EncodedImageCallback::Result ReturnEncodedFrame(
       const WebrtcVideoEncoder::EncodedFrame& frame);
@@ -65,6 +68,13 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // Sets whether top-off is active, and fires a notification if the setting
   // changes.
   void SetTopOffActive(bool active);
+
+  // Returns whether the frame should be encoded at low quality, to reduce
+  // latency for large frame updates. This is only done here for VP8, as VP9
+  // automatically detects target-overshoot and re-encodes the frame at
+  // lower quality. This calculation is based on |frame|'s update-region
+  // (compared with recent history) and the current bandwidth-estimation.
+  bool ShouldDropQualityForLargeFrame(const webrtc::DesktopFrame& frame);
 
   std::unique_ptr<WebrtcVideoEncoder> encoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -108,6 +118,12 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // always lies within the frame's bounding rect).
   webrtc::VideoFrame::UpdateRect accumulated_update_rect_
       GUARDED_BY_CONTEXT(sequence_checker_){};
+
+  // Used by ShouldDropQualityForLargeFrame(). This stores the most recent
+  // update-region areas of previously-encoded frames, in order to detect an
+  // unusually-large update.
+  RunningSamples updated_region_area_ GUARDED_BY_CONTEXT(sequence_checker_){
+      kStatsWindow};
 
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
