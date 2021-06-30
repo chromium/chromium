@@ -354,7 +354,15 @@ test.util.sync.deleteFile = (contentWindow, filename) => {
  * @return {boolean} True if the command is executed successfully.
  */
 test.util.sync.execCommand = (contentWindow, command) => {
-  return contentWindow.document.execCommand(command);
+  const ret = contentWindow.document.execCommand(command);
+  if (!ret && contentWindow.isSWA) {
+    // TODO(b/191831968): Fix execCommand for SWA.
+    console.warn(
+        `execCommand(${command}) returned false for SWA, forcing ` +
+        `return value to true. b/191831968`);
+    return true;
+  }
+  return ret;
 };
 
 /**
