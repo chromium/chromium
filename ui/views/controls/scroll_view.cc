@@ -825,7 +825,6 @@ bool ScrollView::HandleAccessibleAction(const ui::AXActionData& action_data) {
       return true;
     default:
       return View::HandleAccessibleAction(action_data);
-      break;
   }
 }
 

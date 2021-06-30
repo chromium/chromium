@@ -264,7 +264,6 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     remaining =
         remaining.substr(current_template.start + current_template.length);
   }
-  return true;
 }
 
 std::string ReplaceTemplateExpressions(base::StringPiece source,

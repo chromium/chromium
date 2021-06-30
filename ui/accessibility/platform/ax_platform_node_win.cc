@@ -4922,7 +4922,7 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
       if (SUCCEEDED(hr))
         result->Insert<VT_UNKNOWN>(not_supported_value.Get());
       return hr;
-    } break;
+    }
   }
 
   return S_OK;
@@ -8079,7 +8079,6 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
 
     case UIA_ScrollItemPatternId:
       return &PatternProvider<IScrollItemProvider>;
-      break;
 
     case UIA_SelectionItemPatternId:
       if (IsSelectionItemSupported()) {
