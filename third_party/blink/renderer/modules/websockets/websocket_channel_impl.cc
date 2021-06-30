@@ -341,6 +341,10 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
       connector.BindNewPipeAndPassReceiver(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)));
 
+  absl::optional<base::UnguessableToken> devtools_token;
+  probe::WillCreateWebSocket(execution_context_, identifier_, url, protocol,
+                             &devtools_token);
+
   connector->Connect(
       url, protocols, GetBaseFetchContext()->GetSiteForCookies(),
       execution_context_->UserAgent(),
@@ -366,7 +370,6 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "WebSocketCreate", InspectorWebSocketCreateEvent::Data,
       execution_context_, identifier_, url, protocol);
-  probe::DidCreateWebSocket(execution_context_, identifier_, url, protocol);
   return true;
 }
 

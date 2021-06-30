@@ -1615,11 +1615,13 @@ InspectorNetworkAgent::BuildInitiatorObject(
       .build();
 }
 
-void InspectorNetworkAgent::DidCreateWebSocket(
+void InspectorNetworkAgent::WillCreateWebSocket(
     ExecutionContext* execution_context,
     uint64_t identifier,
     const KURL& request_url,
-    const String&) {
+    const String&,
+    absl::optional<base::UnguessableToken>* devtools_token) {
+  *devtools_token = devtools_token_;
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
       current_stack_trace =
           SourceLocation::Capture(execution_context)->BuildInspectorObject();
