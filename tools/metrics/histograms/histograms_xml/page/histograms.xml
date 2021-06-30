@@ -56,7 +56,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <variants name="Window">
   <variant name="SessionWindow"/>
-  <variant name="SessionWindowByInputs"/>
+  <variant name="SessionWindowByInputs">
+    <obsolete>
+      Removed in 06/2021.
+    </obsolete>
+  </variant>
 </variants>
 
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
